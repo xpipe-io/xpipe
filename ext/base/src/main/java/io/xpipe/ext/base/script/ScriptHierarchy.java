@@ -14,7 +14,7 @@ import java.util.function.Predicate;
 public class ScriptHierarchy {
 
     public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<SimpleScriptStore>> include) {
-        var all = new HashSet<>(ScriptStore.getEnabledScripts());
+        var all = new HashSet<>(ScriptStoreSetup.getEnabledScripts());
 
         // Add individual children of groups
         // This is not recursive

@@ -1,5 +1,7 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.core.store.FilePath;
+
 import javafx.collections.ObservableList;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +26,6 @@ public interface BrowserHistorySavedState {
     class Entry {
 
         UUID uuid;
-        String path;
+        FilePath path;
     }
 }

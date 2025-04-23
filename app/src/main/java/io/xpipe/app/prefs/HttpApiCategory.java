@@ -1,10 +1,10 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class HttpApiCategory extends AppPrefsCategory {
@@ -24,11 +24,10 @@ public class HttpApiCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableHttpApi)
                         .nameAndDescription("openApiDocs")
                         .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"), () -> {
-                            Hyperlinks.open(
-                                    "http://localhost:" + AppBeaconServer.get().getPort());
+                            DocumentationLink.API.open();
                         }))
                         .pref(prefs.apiKey)
-                        .addString(prefs.apiKey)
+                        .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.disableApiAuthentication)
                         .addToggle(prefs.disableApiAuthentication))
                 .buildComp();

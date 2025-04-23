@@ -1,16 +1,19 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
+
+import lombok.SneakyThrows;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -32,15 +35,12 @@ public class BrowserFileOpener {
         }
 
         var info = (FileInfo.Unix) file.getInfo();
-        var zero = Integer.valueOf(0);
-        var otherWrite = info.getPermissions().charAt(7) == 'w';
-        var requiresRoot = zero.equals(info.getUid()) && zero.equals(info.getGid()) && !otherWrite;
-        if (!requiresRoot || model.getCache().isRoot()) {
+        var requiresSudo = requiresSudo(model, info, file.getPath());
+        if (!requiresSudo) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
 
-        var elevate = AppWindowHelper.showConfirmationAlert(
-                "app.fileWriteSudoTitle", "app.fileWriteSudoHeader", "app.fileWriteSudoContent");
+        var elevate = AppDialog.confirm("fileWriteSudo");
         if (!elevate) {
             return fileSystem.openOutput(file.getPath(), totalBytes);
         }
@@ -63,16 +63,48 @@ public class BrowserFileOpener {
         }
     }
 
-    private static int calculateKey(FileEntry entry) {
-        return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo());
+    private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
+            throws Exception {
+        if (model.getCache().isRoot()) {
+            return false;
+        }
+
+        if (info != null) {
+            var otherWrite = info.getPermissions().charAt(7) == 'w';
+            if (otherWrite) {
+                return false;
+            }
+
+            var userOwned = info.getUid() != null
+                            && model.getCache().getUidForUser(model.getCache().getUsername()) == info.getUid()
+                    || info.getUser() != null && model.getCache().getUsername().equals(info.getUser());
+            var userWrite = info.getPermissions().charAt(1) == 'w';
+            if (userOwned && userWrite) {
+                return false;
+            }
+        }
+
+        var test = model.getFileSystem()
+                .getShell()
+                .orElseThrow()
+                .command(CommandBuilder.of().add("test", "-w").addFile(filePath))
+                .executeAndCheck();
+        return !test;
+    }
+
+    @SneakyThrows
+    private static int calculateKey(BrowserFileSystemTabModel model, FileEntry entry) {
+        // Use different key for empty / non-empty files to prevent any issues from blanked files when transfer fails
+        var empty = model.getFileSystem().getFileSize(entry.getPath()) == 0;
+        return Objects.hash(entry.getPath(), entry.getFileSystem(), entry.getKind(), entry.getInfo(), empty);
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -90,10 +122,10 @@ public class BrowserFileOpener {
 
     public static void openInDefaultApplication(BrowserFileSystemTabModel model, FileEntry entry) {
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {
@@ -116,10 +148,10 @@ public class BrowserFileOpener {
         }
 
         var file = entry.getPath();
-        var key = calculateKey(entry);
+        var key = calculateKey(model, entry);
         FileBridge.get()
                 .openIO(
-                        FileNames.getFileName(file),
+                        file.getFileName(),
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> {

@@ -1,10 +1,6 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.ContainerImageStore;
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LicenseRequiredException;
@@ -43,10 +39,16 @@ public class PodmanContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 FixedServiceCreatorStore,
                 SelfReferentialStore,
-                ContainerImageStore {
+                ContainerImageStore,
+                NameableStore {
 
     DataStoreEntryRef<PodmanCmdStore> cmd;
     String containerName;
+
+    @Override
+    public String getName() {
+        return containerName;
+    }
 
     @Override
     public String getImageName() {
@@ -59,19 +61,18 @@ public class PodmanContainerStore
 
     @Override
     public void start() throws Exception {
-        var view = commandView(getCmd().getStore().getHost().getStore().getOrStartSession());
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
         view.start(containerName);
-        var state = getState().toBuilder().running(true).containerState("Up").build();
-        setState(state);
+        refreshContainerState(sc);
     }
 
     @Override
     public void stop() throws Exception {
-        var view = commandView(getCmd().getStore().getHost().getStore().getOrStartSession());
+        var sc = getCmd().getStore().getHost().getStore().getOrStartSession();
+        var view = commandView(sc);
         view.stop(containerName);
-        var state =
-                getState().toBuilder().running(false).containerState("Exited").build();
-        setState(state);
+        refreshContainerState(sc);
     }
 
     @Override
@@ -134,38 +135,36 @@ public class PodmanContainerStore
             }
 
             @Override
-            public ShellControl control(ShellControl parent) {
+            public ShellControl control(ShellControl parent) throws Exception {
+                refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
                 var pc = new PodmanCommandView(parent).container().exec(containerName);
                 pc.withSourceStore(PodmanContainerStore.this);
                 pc.withShellStateInit(PodmanContainerStore.this);
-                pc.onInit(shellControl -> {
-                    var s = getState().toBuilder()
-                            .osType(shellControl.getOsType())
-                            .shellDialect(shellControl.getShellDialect())
-                            .ttyState(shellControl.getTtyState())
-                            .running(true)
-                            .osName(shellControl.getOsName())
-                            .build();
-                    setState(s);
-                });
                 pc.onStartupFail(throwable -> {
                     if (throwable instanceof LicenseRequiredException) {
                         return;
                     }
 
-                    var stateBuilder = getState().toBuilder();
-                    stateBuilder.running(false);
                     var hasShell = throwable.getMessage() == null
                             || !throwable.getMessage().contains("OCI runtime exec failed");
                     if (!hasShell) {
-                        stateBuilder.containerState("No shell available");
-                    } else {
-                        stateBuilder.containerState("Connection failed");
+                        var stateBuilder = getState().toBuilder();
+                        stateBuilder.shellMissing(true);
+                        setState(stateBuilder.build());
                     }
-                    setState(stateBuilder.build());
                 });
                 return pc;
             }
         };
+    }
+
+    private void refreshContainerState(ShellControl sc) throws Exception {
+        var state = getState();
+        var view = new PodmanCommandView(sc).container();
+        var displayState = view.queryState(containerName);
+        var running = displayState.startsWith("Up");
+        var newState =
+                state.toBuilder().containerState(displayState).running(running).build();
+        setState(newState);
     }
 }

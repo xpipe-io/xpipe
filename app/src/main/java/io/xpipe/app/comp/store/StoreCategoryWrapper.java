@@ -2,16 +2,15 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
-import javafx.collections.FXCollections;
 
 import lombok.Getter;
 
@@ -29,13 +28,13 @@ public class StoreCategoryWrapper {
     private final DataStoreCategory category;
     private final Property<Instant> lastAccess;
     private final Property<StoreSortMode> sortMode;
-    private final Property<Boolean> sync;
+    private final BooleanProperty sync;
     private final DerivedObservableList<StoreCategoryWrapper> children;
     private final DerivedObservableList<StoreEntryWrapper> directContainedEntries;
     private final IntegerProperty shownContainedEntriesCount = new SimpleIntegerProperty();
     private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
-    private final Property<DataColor> color = new SimpleObjectProperty<>();
+    private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private StoreCategoryWrapper cachedParent;
 
@@ -57,10 +56,12 @@ public class StoreCategoryWrapper {
         this.name = new SimpleStringProperty(category.getName());
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
         this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
-        this.sync = new SimpleObjectProperty<>(category.isSync());
-        this.children = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
-        this.directContainedEntries = new DerivedObservableList<>(FXCollections.observableArrayList(), true);
-        this.color.setValue(category.getColor());
+        this.sync = new SimpleBooleanProperty(Boolean.TRUE.equals(
+                DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
+        this.children = DerivedObservableList.arrayList(true);
+        this.directContainedEntries = DerivedObservableList.arrayList(true);
+        this.color.setValue(
+                DataStorage.get().getEffectiveCategoryConfig(category).getColor());
         setupListeners();
     }
 
@@ -144,10 +145,6 @@ public class StoreCategoryWrapper {
         sortMode.addListener((observable, oldValue, newValue) -> {
             category.setSortMode(newValue);
         });
-
-        sync.addListener((observable, oldValue, newValue) -> {
-            DataStorage.get().syncCategory(category, newValue);
-        });
     }
 
     public void toggleExpanded() {
@@ -168,9 +165,10 @@ public class StoreCategoryWrapper {
 
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
         sortMode.setValue(category.getSortMode());
-        sync.setValue(category.isSync());
+        sync.setValue(Boolean.TRUE.equals(
+                DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         expanded.setValue(category.isExpanded());
-        color.setValue(category.getColor());
+        color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
 
         var allEntries = new ArrayList<>(StoreViewState.get().getAllEntries().getList());
         directContainedEntries.setContent(allEntries.stream()

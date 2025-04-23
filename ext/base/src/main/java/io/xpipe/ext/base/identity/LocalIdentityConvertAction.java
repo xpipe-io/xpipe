@@ -1,12 +1,13 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
+import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -33,8 +34,8 @@ public class LocalIdentityConvertAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<LocalIdentityStore> store) {
-                return "mdi2g-git";
+            public LabelGraphic getIcon(DataStoreEntryRef<LocalIdentityStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2g-git");
             }
 
             @Override
@@ -44,7 +45,7 @@ public class LocalIdentityConvertAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<LocalIdentityStore> o) {
-                return DataStorage.get().supportsSharing();
+                return DataStorage.get().supportsSync();
             }
         };
     }
@@ -63,7 +64,7 @@ public class LocalIdentityConvertAction implements ActionProvider {
                     .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
                     .perUser(false)
                     .build();
-            StoreCreationComp.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
+            StoreCreationDialog.showCreation(synced, DataStoreCreationCategory.IDENTITY, dataStoreEntry -> {}, true);
         }
     }
 }

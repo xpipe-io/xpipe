@@ -1,11 +1,12 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.core.AppI18n;
 
 import javafx.geometry.Pos;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
@@ -32,7 +33,7 @@ public class StoreActiveComp extends SimpleComp {
         pane.setAlignment(Pos.CENTER);
         pane.visibleProperty().bind(wrapper.getSessionActive());
         pane.getStyleClass().add("store-active-comp");
-        new TooltipAugment<>("sessionActive", null).augment(pane);
+        Tooltip.install(pane, TooltipHelper.create(AppI18n.observable("sessionActive"), null));
         return pane;
     }
 }

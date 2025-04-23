@@ -13,7 +13,6 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.Animation;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -35,7 +34,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var overlay = AppDialog.getModalOverlay();
+        var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();

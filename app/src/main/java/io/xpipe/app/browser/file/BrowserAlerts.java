@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class BrowserAlerts {
 
-    public static FileConflictChoice showFileConflictAlert(String file, boolean multiple) {
+    public static FileConflictChoice showFileConflictAlert(FilePath file, boolean multiple) {
         var map = new LinkedHashMap<ButtonType, FileConflictChoice>();
         map.put(new ButtonType(AppI18n.get("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
         if (multiple) {
@@ -74,8 +74,10 @@ public class BrowserAlerts {
                 .orElse(false);
     }
 
-    public static boolean showDeleteAlert(List<FileEntry> source) {
-        if (!AppPrefs.get().confirmDeletions().get()
+    public static boolean showDeleteAlert(BrowserFileSystemTabModel model, List<FileEntry> source) {
+        var config =
+                DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
+        if (!Boolean.TRUE.equals(config.getConfirmAllModifications())
                 && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
             return true;
         }
@@ -96,7 +98,7 @@ public class BrowserAlerts {
         var names = namesHeader + "\n"
                 + source.stream()
                         .limit(10)
-                        .map(entry -> "- " + new FilePath(entry.getPath()).getFileName())
+                        .map(entry -> "- " + entry.getPath().getFileName())
                         .collect(Collectors.joining("\n"));
         if (source.size() > 10) {
             names += "\n+ " + (source.size() - 10) + " ...";

@@ -8,13 +8,16 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.core.store.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -49,9 +52,11 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     private Region createContent() {
         var root = new VBox();
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
-        overview.setOnAction(e -> model.cdAsync(null));
-        new TooltipAugment<>("overview", new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
-                .augment(overview);
+        overview.setOnAction(e -> model.cdAsync((FilePath) null));
+        Tooltip.install(
+                overview,
+                TooltipHelper.create(
+                        AppI18n.observable("overview"), new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)));
         overview.disableProperty().bind(model.getInOverview());
         overview.setAccessibleText("System overview");
         InputHelper.onKeyCombination(
@@ -158,14 +163,14 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 root, new KeyCodeCombination(KeyCode.UP, KeyCombination.ALT_DOWN), true, keyEvent -> {
                     var p = model.getCurrentParentDirectory();
                     if (p != null) {
-                        model.cdAsync(p.getPath());
+                        model.cdAsync(p.getPath().toString());
                     }
                     keyEvent.consume();
                 });
         InputHelper.onKeyCombination(root, new KeyCodeCombination(KeyCode.BACK_SPACE), false, keyEvent -> {
             var p = model.getCurrentParentDirectory();
             if (p != null) {
-                model.cdAsync(p.getPath());
+                model.cdAsync(p.getPath().toString());
             }
             keyEvent.consume();
         });
@@ -203,11 +208,13 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 });
 
         var home = new BrowserOverviewComp(model).styleClass("browser-overview");
-        var stack = new MultiContentComp(Map.of(
-                home,
-                model.getCurrentPath().isNull(),
-                fileList,
-                model.getCurrentPath().isNull().not()), false);
+        var stack = new MultiContentComp(
+                Map.of(
+                        home,
+                        model.getCurrentPath().isNull(),
+                        fileList,
+                        model.getCurrentPath().isNull().not()),
+                false);
         var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

@@ -51,7 +51,7 @@ public class BrowserTransferComp extends SimpleComp {
                 .styleClass("gray")
                 .styleClass("download-background");
 
-        var binding = new DerivedObservableList<>(model.getItems(), true)
+        var binding = DerivedObservableList.wrap(model.getItems(), true)
                 .mapped(item -> item.getBrowserEntry())
                 .getList();
         var list = new BrowserFileSelectionListComp(binding, entry -> {
@@ -65,14 +65,14 @@ public class BrowserTransferComp extends SimpleComp {
                         return Bindings.createStringBinding(
                                 () -> {
                                     var p = sourceItem.get().getProgress().getValue();
-                                    var hideProgress = sourceItem
-                                            .get()
-                                            .downloadFinished()
-                                            .get();
+                                    if (p == null || !p.hasKnownTotalSize()) {
+                                        return entry.getFileName();
+                                    }
+
+                                    var hideProgress =
+                                            sourceItem.get().downloadFinished().get();
                                     var share = p != null ? (p.getTransferred() * 100 / p.getTotal()) : 0;
-                                    var progressSuffix = hideProgress
-                                            ? ""
-                                            : " " + share + "%";
+                                    var progressSuffix = hideProgress ? "" : " " + share + "%";
                                     return entry.getFileName() + progressSuffix;
                                 },
                                 sourceItem.get().getProgress());

@@ -28,7 +28,8 @@ public class SshIdentityStrategyHelper {
                             p);
         }
 
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
@@ -86,6 +87,30 @@ public class SshIdentityStrategyHelper {
                         p);
     }
 
+    private static OptionsBuilder passwordManagerAgent(
+            Property<SshIdentityStrategy.PasswordManagerAgent> p, boolean allowForward) {
+        if (!allowForward) {
+            return new OptionsBuilder()
+                    .bind(
+                            () -> {
+                                return new SshIdentityStrategy.PasswordManagerAgent(false);
+                            },
+                            p);
+        }
+
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        return new OptionsBuilder()
+                .nameAndDescription("forwardAgent")
+                .addToggle(forward)
+                .nonNull()
+                .bind(
+                        () -> {
+                            return new SshIdentityStrategy.PasswordManagerAgent(forward.get());
+                        },
+                        p);
+    }
+
     private static OptionsBuilder otherExternal(Property<SshIdentityStrategy.OtherExternal> p, boolean allowForward) {
         if (!allowForward) {
             return new OptionsBuilder()
@@ -127,7 +152,7 @@ public class SshIdentityStrategyHelper {
             Property<SshIdentityStrategy.File> fileProperty,
             Predicate<Path> perUserFile,
             boolean allowSync) {
-        var keyPath = new SimpleStringProperty(
+        var keyPath = new SimpleObjectProperty<>(
                 fileProperty.getValue() != null && fileProperty.getValue().getFile() != null
                         ? fileProperty.getValue().getFile().toAbsoluteFilePath(null)
                         : null);
@@ -183,6 +208,8 @@ public class SshIdentityStrategyHelper {
                 new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.CustomPkcs11Library f ? f : null);
         var agent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.SshAgent a ? a : null);
         var pageant = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.Pageant a ? a : null);
+        var passwordManagerAgent =
+                new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.PasswordManagerAgent a ? a : null);
         var gpgAgent = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.GpgAgent a ? a : null);
         var otherExternal = new SimpleObjectProperty<>(strat instanceof SshIdentityStrategy.OtherExternal a ? a : null);
 
@@ -193,6 +220,7 @@ public class SshIdentityStrategyHelper {
         map.put(AppI18n.observable("base.none"), new OptionsBuilder());
         map.put(AppI18n.observable("base.keyFile"), fileIdentity(proxy, file, perUserFile, allowSync));
         map.put(AppI18n.observable("base.sshAgent"), agent(agent, allowForward));
+        map.put(AppI18n.observable("passwordManagerAgent"), passwordManagerAgent(passwordManagerAgent, allowForward));
         map.put(AppI18n.observable("base.pageant"), pageant(pageant, allowForward));
         map.put(gpgFeature.suffixObservable("base.gpgAgent"), gpgAgent(gpgAgent, allowForward));
         map.put(pkcs11Feature.suffixObservable("base.yubikeyPiv"), new OptionsBuilder());
@@ -205,22 +233,25 @@ public class SshIdentityStrategyHelper {
                                 ? 1
                                 : strat instanceof SshIdentityStrategy.SshAgent
                                         ? 2
-                                        : strat instanceof SshIdentityStrategy.Pageant
+                                        : strat instanceof SshIdentityStrategy.PasswordManagerAgent
                                                 ? 3
-                                                : strat instanceof SshIdentityStrategy.GpgAgent
+                                                : strat instanceof SshIdentityStrategy.Pageant
                                                         ? 4
-                                                        : strat instanceof SshIdentityStrategy.YubikeyPiv
+                                                        : strat instanceof SshIdentityStrategy.GpgAgent
                                                                 ? 5
-                                                                : strat
-                                                                                instanceof
-                                                                                SshIdentityStrategy.CustomPkcs11Library
+                                                                : strat instanceof SshIdentityStrategy.YubikeyPiv
                                                                         ? 6
                                                                         : strat
                                                                                         instanceof
                                                                                         SshIdentityStrategy
-                                                                                                .OtherExternal
+                                                                                                .CustomPkcs11Library
                                                                                 ? 7
-                                                                                : strat == null ? -1 : 0);
+                                                                                : strat
+                                                                                                instanceof
+                                                                                                SshIdentityStrategy
+                                                                                                        .OtherExternal
+                                                                                        ? 8
+                                                                                        : strat == null ? -1 : 0);
         return new OptionsBuilder()
                 .longDescription("base:sshKey")
                 .choice(identityMethodSelected, map)
@@ -230,11 +261,12 @@ public class SshIdentityStrategyHelper {
                                 case 0 -> new SimpleObjectProperty<>(new SshIdentityStrategy.None());
                                 case 1 -> file;
                                 case 2 -> agent;
-                                case 3 -> pageant;
-                                case 4 -> gpgAgent;
-                                case 5 -> new SimpleObjectProperty<>(new SshIdentityStrategy.YubikeyPiv());
-                                case 6 -> customPkcs11;
-                                case 7 -> otherExternal;
+                                case 3 -> passwordManagerAgent;
+                                case 4 -> pageant;
+                                case 5 -> gpgAgent;
+                                case 6 -> new SimpleObjectProperty<>(new SshIdentityStrategy.YubikeyPiv());
+                                case 7 -> customPkcs11;
+                                case 8 -> otherExternal;
                                 default -> new SimpleObjectProperty<>();
                             };
                         },

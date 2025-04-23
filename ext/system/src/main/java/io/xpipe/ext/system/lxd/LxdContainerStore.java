@@ -1,9 +1,6 @@
 package io.xpipe.ext.system.lxd;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellControlFunction;
-import io.xpipe.app.ext.ShellControlParentStoreFunction;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
@@ -34,11 +31,17 @@ public class LxdContainerStore
                 StatefulDataStore<ContainerStoreState>,
                 StartableStore,
                 StoppableStore,
-                PauseableStore {
+                PauseableStore,
+                NameableStore {
 
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public String getName() {
+        return containerName;
+    }
 
     @Override
     public Class<ContainerStoreState> getStateClass() {
@@ -71,40 +74,35 @@ public class LxdContainerStore
             }
 
             @Override
-            public ShellControl control(ShellControl parent) {
+            public ShellControl control(ShellControl parent) throws Exception {
+                refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
+
                 var user = identity != null ? identity.unwrap().getUsername() : null;
-                var base = new LxdCommandView(parent).exec(containerName, user, () -> {
+                var sc = new LxdCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
-                    var alpine = state.getOsName() != null && state.getOsName().toLowerCase().contains("alpine");
+                    var alpine = state.getOsName() != null
+                            && state.getOsName().toLowerCase().contains("alpine");
                     return alpine;
                 });
                 if (identity != null && identity.unwrap().getPassword() != null) {
-                    base.setElevationHandler(new BaseElevationHandler(
+                    sc.setElevationHandler(new BaseElevationHandler(
                                     LxdContainerStore.this, identity.unwrap().getPassword())
-                            .orElse(base.getElevationHandler()));
+                            .orElse(sc.getElevationHandler()));
                 }
-                return base.withSourceStore(LxdContainerStore.this)
-                        .onInit(shellControl -> {
-                            var s = getState().toBuilder()
-                                    .osType(shellControl.getOsType())
-                                    .shellDialect(shellControl.getShellDialect())
-                                    .ttyState(shellControl.getTtyState())
-                                    .running(true)
-                                    .osName(shellControl.getOsName())
-                                    .build();
-                            setState(s);
-                        })
-                        .onStartupFail(throwable -> {
-                            if (throwable instanceof LicenseRequiredException) {
-                                return;
-                            }
+                sc.withSourceStore(LxdContainerStore.this);
+                sc.withShellStateInit(LxdContainerStore.this);
+                sc.onStartupFail(throwable -> {
+                    if (throwable instanceof LicenseRequiredException) {
+                        return;
+                    }
 
-                            var s = getState().toBuilder()
-                                    .running(false)
-                                    .containerState("Connection failed")
-                                    .build();
-                            setState(s);
-                        });
+                    var s = getState().toBuilder()
+                            .running(false)
+                            .containerState("Connection failed")
+                            .build();
+                    setState(s);
+                });
+                return sc;
             }
         };
     }

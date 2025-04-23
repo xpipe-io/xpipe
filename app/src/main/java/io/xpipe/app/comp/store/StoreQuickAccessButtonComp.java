@@ -14,6 +14,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
@@ -83,13 +84,17 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     public CompStructure<Button> createBase() {
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
+            AtomicReference<ContextMenu> menu = new AtomicReference<>();
             struc.get().setOnAction(event -> {
-                var cm = createMenu();
-                if (cm == null) {
+                if (menu.get() == null) {
+                    menu.set(createMenu());
+                }
+
+                if (menu.get() == null) {
                     return;
                 }
 
-                ContextMenuHelper.toggleShow(cm, struc.get(), Side.RIGHT);
+                ContextMenuHelper.toggleShow(menu.get(), struc.get(), Side.RIGHT);
                 event.consume();
             });
         });

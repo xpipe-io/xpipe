@@ -2,8 +2,7 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.util.MarkdownHelper;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.process.OsType;
@@ -14,16 +13,15 @@ import com.sun.net.httpserver.HttpServer;
 import lombok.Getter;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 public class AppBeaconServer {
 
@@ -47,9 +45,6 @@ public class AppBeaconServer {
 
     @Getter
     private String localAuthSecret;
-
-    private String notFoundHtml;
-    private final Map<String, String> resources = new HashMap<>();
 
     public static void setupPort() {
         int port;
@@ -112,7 +107,8 @@ public class AppBeaconServer {
         executor.shutdown();
         try {
             executor.awaitTermination(30, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private void initAuthSecret() throws IOException {
@@ -150,17 +146,6 @@ public class AppBeaconServer {
         });
         server.setExecutor(executor);
 
-        var resourceMap = Map.of(
-                "openapi.yaml", "misc/openapi.yaml",
-                "markdown.css", "misc/github-markdown-dark.css",
-                "highlight.min.js", "misc/highlight.min.js",
-                "github-dark.min.css", "misc/github-dark.min.css");
-        resourceMap.forEach((s, s2) -> {
-            server.createContext("/" + s, exchange -> {
-                handleResource(exchange, s2);
-            });
-        });
-
         server.createContext("/", exchange -> {
             handleCatchAll(exchange);
         });
@@ -169,53 +154,9 @@ public class AppBeaconServer {
         running = true;
     }
 
-    private void handleResource(HttpExchange exchange, String resource) throws IOException {
-        if (!resources.containsKey(resource)) {
-            AppResources.with(AppResources.XPIPE_MODULE, resource, file -> {
-                resources.put(resource, Files.readString(file));
-            });
-        }
-        var body = resources.get(resource).getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(200, body.length);
-        try (var out = exchange.getResponseBody()) {
-            out.write(body);
-        }
-    }
-
     private void handleCatchAll(HttpExchange exchange) throws IOException {
-        if (notFoundHtml == null) {
-            AppResources.with(AppResources.XPIPE_MODULE, "misc/api.md", file -> {
-                var md = Files.readString(file);
-                md = md.replaceAll(
-                        Pattern.quote(
-                                """
-                        > 400 Response
-
-                        ```json
-                        {
-                          "message": "string"
-                        }
-                        ```
-                        """),
-                        "");
-                notFoundHtml = MarkdownHelper.toHtml(
-                        md,
-                        head -> {
-                            return head + "\n" + "<link rel=\"stylesheet\" href=\"markdown.css\">"
-                                    + "\n" + "<link rel=\"stylesheet\" href=\"github-dark.min.css\">"
-                                    + "\n" + "<script src=\"highlight.min.js\"></script>"
-                                    + "\n" + "<script>hljs.highlightAll();</script>";
-                        },
-                        s -> {
-                            return "<div style=\"max-width: 800px;margin: auto;\">" + s + "</div>";
-                        },
-                        "standalone");
-            });
-        }
-        var body = notFoundHtml.getBytes(StandardCharsets.UTF_8);
-        exchange.sendResponseHeaders(200, body.length);
-        try (var out = exchange.getResponseBody()) {
-            out.write(body);
-        }
+        exchange.getResponseHeaders().add("Location", DocumentationLink.API.getLink());
+        exchange.sendResponseHeaders(HttpURLConnection.HTTP_SEE_OTHER, 0);
+        exchange.close();
     }
 }

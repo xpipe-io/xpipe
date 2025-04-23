@@ -5,6 +5,10 @@
     -fx-background-radius: 4;
 }
 
+.modal-overlay-comp .modal-box > .content {
+    -fx-padding: 15 27 10 27;
+}
+
 .modal-overlay-comp .modal-box .button-bar .button {
     -fx-padding: 0.45em 0.8em 0.45em 0.8em;
     -fx-border-width: 1px;

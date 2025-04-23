@@ -7,14 +7,15 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LabelGraphic;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -23,7 +24,6 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
@@ -37,7 +37,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -70,7 +69,7 @@ public class StoreCategoryComp extends SimpleComp {
                 () -> {
                     var exp = category.getExpanded().get()
                             && category.getChildren().getList().size() > 0;
-                    return new LabelGraphic.IconGraphic(exp ? "mdi2m-menu-down-outline" : "mdi2m-menu-right-outline");
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());
@@ -97,7 +96,7 @@ public class StoreCategoryComp extends SimpleComp {
                         return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
-                    if (!DataStorage.get().supportsSharing()
+                    if (!DataStorage.get().supportsSync()
                             || (!category.getCategory().canShare())) {
                         return new LabelGraphic.IconGraphic("mdi2g-git");
                     }
@@ -128,7 +127,7 @@ public class StoreCategoryComp extends SimpleComp {
                 string -> "(" + string + ")");
         count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
 
-        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSharing()))
+        var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
                 .or(showing);
         var focus = new SimpleBooleanProperty();
         var h = new HorizontalComp(List.of(
@@ -187,7 +186,7 @@ public class StoreCategoryComp extends SimpleComp {
             });
 
             category.getColor().subscribe((c) -> {
-                DataColor.applyStyleClasses(c, struc.get());
+                DataStoreColor.applyStyleClasses(c, struc.get());
             });
         });
 
@@ -204,62 +203,28 @@ public class StoreCategoryComp extends SimpleComp {
             contextMenu.getItems().add(copyId);
         }
 
-        var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
+        if (AppPrefs.get().developerMode().getValue()) {
+            var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
+            browse.setOnAction(event ->
+                    DesktopHelper.browsePathLocal(category.getCategory().getDirectory()));
+            contextMenu.getItems().add(browse);
+        }
+
+        var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
             DataStorage.get()
                     .addStoreCategory(
-                            DataStoreCategory.createNew(category.getCategory().getUuid(), "New category"));
+                            DataStoreCategory.createNew(category.getCategory().getUuid(), AppI18n.get("newCategory")));
         });
         contextMenu.getItems().add(newCategory);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 
-        var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-        var none = new MenuItem();
-        none.textProperty().bind(AppI18n.observable("none"));
-        none.setOnAction(event -> {
-            category.getCategory().setColor(null);
-            event.consume();
+        var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench"));
+        configure.setOnAction(event -> {
+            StoreCategoryConfigComp.show(category);
         });
-        color.getItems().add(none);
-        Arrays.stream(DataColor.values()).forEach(dataStoreColor -> {
-            MenuItem m = new MenuItem();
-            m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
-            m.setOnAction(event -> {
-                category.getCategory().setColor(dataStoreColor);
-                event.consume();
-            });
-            color.getItems().add(m);
-        });
-        contextMenu.getItems().add(color);
-
-        if (DataStorage.get().supportsSharing() && category.getCategory().canShare()) {
-            var share = new MenuItem();
-            share.textProperty()
-                    .bind(Bindings.createStringBinding(
-                            () -> {
-                                if (category.getSync().getValue()) {
-                                    return AppI18n.get("unshare");
-                                } else {
-                                    return AppI18n.get("share");
-                                }
-                            },
-                            category.getSync()));
-            share.graphicProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                if (category.getSync().getValue()) {
-                                    return new FontIcon("mdi2b-block-helper");
-                                } else {
-                                    return new FontIcon("mdi2g-git");
-                                }
-                            },
-                            category.getSync()));
-            share.setOnAction(event -> {
-                category.getSync().setValue(!category.getSync().getValue());
-            });
-            contextMenu.getItems().add(share);
-        }
+        contextMenu.getItems().add(configure);
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
         rename.setOnAction(event -> {

@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -17,7 +16,7 @@ import java.nio.file.Path;
 public class DesktopHelper {
 
     private static final String[] browsers = {
-            "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
+        "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
     };
 
     public static void openUrl(String uri) {
@@ -33,10 +32,10 @@ public class DesktopHelper {
                 for (String b : browsers) {
                     if (browser == null
                             && Runtime.getRuntime()
-                            .exec(new String[] {"which", b})
-                            .getInputStream()
-                            .read()
-                            != -1) {
+                                            .exec(new String[] {"which", b})
+                                            .getInputStream()
+                                            .read()
+                                    != -1) {
                         Runtime.getRuntime().exec(new String[] {browser = b, uri});
                     }
                 }
@@ -85,15 +84,17 @@ public class DesktopHelper {
         return Path.of(System.getProperty("user.home") + "/Downloads");
     }
 
-    public static void browsePathRemote(ShellControl sc, String path, FileKind kind) throws Exception {
+    public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {
         var d = sc.getShellDialect();
         switch (sc.getOsType()) {
             case OsType.Windows windows -> {
                 // Explorer does not support single quotes, so use normal quotes
                 if (kind == FileKind.DIRECTORY) {
-                    sc.executeSimpleCommand("explorer " + d.quoteArgument(path));
+                    sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString()))
+                            .execute();
                 } else {
-                    sc.executeSimpleCommand("explorer /select," + d.quoteArgument(path));
+                    sc.command(CommandBuilder.of().add("explorer", "/select,\"" + path.toString() + "\""))
+                            .execute();
                 }
             }
             case OsType.Linux linux -> {
@@ -110,14 +111,17 @@ public class DesktopHelper {
                     return;
                 }
 
-                var file = new FilePath(path);
                 sc.command(CommandBuilder.of()
                                 .add("xdg-open")
-                                .addFile(kind == FileKind.DIRECTORY ? file : file.getParent()))
+                                .addFile(kind == FileKind.DIRECTORY ? path : path.getParent()))
                         .execute();
             }
             case OsType.MacOs macOs -> {
-                sc.executeSimpleCommand("open " + (kind == FileKind.DIRECTORY ? "" : "-R ") + d.fileArgument(path));
+                sc.command(CommandBuilder.of()
+                                .add("open")
+                                .addIf(kind == FileKind.DIRECTORY, "-R")
+                                .addFile(path))
+                        .execute();
             }
             case OsType.Bsd bsd -> {}
             case OsType.Solaris solaris -> {}
@@ -135,7 +139,8 @@ public class DesktopHelper {
 
         ThreadHelper.runAsync(() -> {
             var xdg = OsType.getLocal() == OsType.LINUX;
-            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN) && AppDistributionType.get() != AppDistributionType.WEBTOP) {
+            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)
+                    && AppDistributionType.get() != AppDistributionType.WEBTOP) {
                 try {
                     Desktop.getDesktop().open(file.toFile());
                     return;

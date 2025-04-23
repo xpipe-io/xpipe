@@ -1,15 +1,11 @@
 package io.xpipe.ext.system.lxd;
 
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellStoreFormat;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
@@ -22,6 +18,25 @@ import java.util.List;
 
 public class LxdContainerStoreProvider implements ShellStoreProvider {
 
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
+            var state = (ContainerStoreState) o;
+            var cs = state.getContainerState();
+            if (cs != null && cs.toLowerCase().contains("stopped")) {
+                return SystemStateComp.State.FAILURE;
+            } else if (cs != null && cs.toLowerCase().contains("running")) {
+                return SystemStateComp.State.SUCCESS;
+            } else {
+                return SystemStateComp.State.OTHER;
+            }
+        }));
+    }
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.LXC;
+    }
+
     @Override
     public boolean shouldShow(StoreEntryWrapper w) {
         LxdContainerStore s = w.getEntry().getStore().asNeeded();
@@ -33,22 +48,6 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     @Override
     public boolean shouldShowScan() {
         return false;
-    }
-
-    public String createInsightsMarkdown(DataStore store) {
-        var lxd = (LxdContainerStore) store;
-        return String.format(
-                """
-                    XPipe will execute:
-                    ```
-                    %s
-                    ```
-                    in a host shell of `%s` to open a shell into the container.
-                    """,
-                new LxdCommandView(null)
-                        .execCommand(lxd.getContainerName(), true)
-                        .buildSimple(),
-                lxd.getCmd().getStore().getHost().get().getName());
     }
 
     @Override
@@ -71,8 +70,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                 .disable()
                 .name("container")
                 .description("lxdContainerDescription")
-                .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
-                .disable()
+                .addStaticString(st.getContainerName())
                 .sub(IdentityChoice.container(identity), identity)
                 .bind(
                         () -> {
@@ -96,8 +94,10 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(
-                section, (ContainerStoreState s) -> DataStoreFormatter.capitalize(s.getContainerState()));
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
+                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 
     @Override

@@ -10,8 +10,9 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.ext.base.script.ScriptStore;
+import io.xpipe.app.terminal.TerminalPromptManager;
+import io.xpipe.app.util.StoreStateFormat;
+import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -25,7 +26,9 @@ public interface ShellStoreProvider extends DataStoreProvider {
             public void execute() throws Exception {
                 var replacement = ProcessControlProvider.get().replace(entry.ref());
                 ShellStore store = replacement.getStore().asNeeded();
-                var control = ScriptStore.controlWithDefaultScripts(store.tempControl());
+                var control = store.standaloneControl();
+                ScriptStoreSetup.controlWithDefaultScripts(control);
+                TerminalPromptManager.configurePromptScript(control);
                 TerminalLauncher.open(
                         replacement.get(),
                         DataStorage.get().getStoreEntryDisplayName(replacement.get()),
@@ -57,6 +60,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section, state -> null);
+        return StoreStateFormat.shellStore(section, state -> null);
     }
 }

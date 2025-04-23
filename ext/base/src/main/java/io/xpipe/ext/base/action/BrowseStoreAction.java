@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -42,8 +43,8 @@ public class BrowseStoreAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                return "mdi2f-folder-open-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2f-folder-open-outline");
             }
         };
     }

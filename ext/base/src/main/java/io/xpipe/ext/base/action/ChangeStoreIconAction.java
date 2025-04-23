@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.application.Platform;
@@ -39,8 +40,8 @@ public class ChangeStoreIconAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<DataStore> store) {
-                return "mdi2t-tooltip-image-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2t-tooltip-image-outline");
             }
         };
     }

@@ -28,6 +28,11 @@ public class DeveloperCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected boolean show() {
+        return AppPrefs.get().developerMode().getValue();
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();
@@ -64,6 +69,8 @@ public class DeveloperCategory extends AppPrefsCategory {
                 .addToggle(prefs.developerPrintInitFiles);
         if (AppProperties.get().isDevelopmentEnvironment()) {
             sub.nameAndDescription("developerForceSshTty").addToggle(prefs.developerForceSshTty);
+            sub.nameAndDescription("developerDisableSshTunnelGateways")
+                    .addToggle(prefs.developerDisableSshTunnelGateways);
         }
         sub.nameAndDescription("shellCommandTest").addComp(runLocalCommand);
         return new OptionsBuilder().addTitle("developer").sub(sub).buildComp();

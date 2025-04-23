@@ -82,8 +82,8 @@ public class OsLogoComp extends SimpleComp {
         }
 
         return ICONS.entrySet().stream()
-                .filter(e -> name.toLowerCase().contains(e.getKey()) ||
-                        name.toLowerCase().replaceAll("\\s+", "").contains(e.getKey()))
+                .filter(e -> name.toLowerCase().contains(e.getKey())
+                        || name.toLowerCase().replaceAll("\\s+", "").contains(e.getKey()))
                 .findAny()
                 .map(e -> e.getValue())
                 .orElse("os/linux.svg");

@@ -25,47 +25,6 @@ public interface ErrorAction {
         };
     }
 
-    static ErrorAction reportOnGithub() {
-        return new ErrorAction() {
-            @Override
-            public String getName() {
-                return AppI18n.get("reportOnGithub");
-            }
-
-            @Override
-            public String getDescription() {
-                return AppI18n.get("reportOnGithubDescription");
-            }
-
-            @Override
-            public boolean handle(ErrorEvent event) {
-                var url = "https://github.com/xpipe-io/xpipe/issues/new";
-                Hyperlinks.open(url);
-                return false;
-            }
-        };
-    }
-
-    static ErrorAction automaticallyReport() {
-        return new ErrorAction() {
-            @Override
-            public String getName() {
-                return AppI18n.get("reportError");
-            }
-
-            @Override
-            public String getDescription() {
-                return AppI18n.get("reportErrorDescription");
-            }
-
-            @Override
-            public boolean handle(ErrorEvent event) {
-                UserReportComp.show(event);
-                return true;
-            }
-        };
-    }
-
     static ErrorAction ignore() {
         return new ErrorAction() {
             @Override

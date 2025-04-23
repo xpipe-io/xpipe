@@ -2,14 +2,11 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.update.GitHubUpdater;
-import io.xpipe.app.update.PortableUpdater;
-import io.xpipe.app.update.UpdateHandler;
-import io.xpipe.app.update.WebtopUpdater;
+import io.xpipe.app.update.*;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleHelper;
+import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;
@@ -26,11 +23,41 @@ public enum AppDistributionType implements Translatable {
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
-    HOMEBREW("homebrew", true, () -> new PortableUpdater(true)),
-    APT_REPO("apt", true, () -> new PortableUpdater(true)),
-    RPM_REPO("rpm", true, () -> new PortableUpdater(true)),
+    HOMEBREW("homebrew", true, () -> {
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        return new CommandUpdater(
+                ShellScript.lines("brew upgrade --cask xpipe-io/tap/" + pkg, AppRestart.getTerminalRestartCommand()));
+    }),
+    APT_REPO("apt", true, () -> {
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        return new CommandUpdater(ShellScript.lines(
+                "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
+                "sudo apt update",
+                "sudo apt install -y " + pkg,
+                AppRestart.getTerminalRestartCommand()));
+    }),
+    RPM_REPO("rpm", true, () -> {
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        return new CommandUpdater(ShellScript.lines(
+                "echo \"+ sudo yum upgrade " + pkg + " --refresh -y\"",
+                "sudo yum upgrade " + pkg + " --refresh -y",
+                AppRestart.getTerminalRestartCommand()));
+    }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
-    CHOCO("choco", true, () -> new PortableUpdater(true));
+    CHOCO("choco", true, () -> {
+        var systemWide =
+                Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        if (systemWide) {
+            return new CommandUpdater(ShellScript.lines(
+                    "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
+                            + "\"",
+                    AppRestart.getTerminalRestartCommand()));
+        } else {
+            return new CommandUpdater(
+                    ShellScript.lines("choco upgrade " + pkg, AppRestart.getTerminalRestartCommand()));
+        }
+    });
 
     private static AppDistributionType type;
 
@@ -54,7 +81,7 @@ public enum AppDistributionType implements Translatable {
             return;
         }
 
-        if (!ModuleHelper.isImage()) {
+        if (!AppProperties.get().isImage()) {
             type = DEVELOPMENT;
             return;
         }
@@ -111,7 +138,7 @@ public enum AppDistributionType implements Translatable {
     public static AppDistributionType determine() {
         var base = XPipeInstallation.getCurrentInstallationBasePath();
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.toString().equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+            if (!base.equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
                 return PORTABLE;
             }
 
@@ -138,7 +165,7 @@ public enum AppDistributionType implements Translatable {
             return WEBTOP;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
             var out = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (out.isPresent()) {
                 if (out.get().contains("xpipe")) {
@@ -147,15 +174,13 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        // In theory, we can also add  && !AppProperties.get().isStaging() here, but we want to replicate the
-        // production behavior
         if (OsType.getLocal().equals(OsType.MACOS)) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
                     var split = s.split(" ");
                     return split.length == 2
-                            && split[0].equals("xpipe")
+                            && split[0].equals(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")
                             && split[1].equals(AppProperties.get().getVersion());
                 })) {
                     return HOMEBREW;

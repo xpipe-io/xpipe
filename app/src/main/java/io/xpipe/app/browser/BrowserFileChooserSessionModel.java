@@ -4,16 +4,16 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 import io.xpipe.core.util.FailableFunction;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import lombok.Getter;
@@ -40,8 +40,10 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                 return;
             }
 
-            var l = new DerivedObservableList<>(fileSelection, true);
-            l.bindContent(newValue.getFileList().getSelection());
+            fileSelection.setAll(newValue.getFileList().getSelection());
+            newValue.getFileList().getSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
+                fileSelection.setAll(newValue.getFileList().getSelection());
+            });
         });
     }
 
@@ -65,7 +67,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         onFinish.accept(stores);
     }
 
-    public void finishWithoutChoice() {
+    public void closeFileSystem() {
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
@@ -78,7 +80,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
-            FailableFunction<BrowserFileSystemTabModel, String, Exception> path,
+            FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy) {
         if (store == null) {
             return;
@@ -96,7 +98,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                     sessionEntries.add(model);
                 }
                 if (path != null) {
-                    model.initWithGivenDirectory(FileNames.toDirectory(path.apply(model)));
+                    model.initWithGivenDirectory(path.apply(model).toDirectory());
                 } else {
                     model.initWithDefaultDirectory();
                 }

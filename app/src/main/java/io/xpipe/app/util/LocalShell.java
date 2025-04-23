@@ -1,11 +1,14 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 public class LocalShell {
 
@@ -20,14 +23,32 @@ public class LocalShell {
         localCache = new LocalShellCache(local);
     }
 
-    public static void reset() {
+    public static void reset(boolean force) {
         if (local != null) {
-            local.kill();
+            if (!force) {
+                try {
+                    local.exitAndWait();
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).omit().handle();
+                    local.kill();
+                }
+            } else {
+                local.kill();
+            }
             local = null;
         }
         localCache = null;
         if (localPowershell != null) {
-            localPowershell.kill();
+            if (!force) {
+                try {
+                    localPowershell.exitAndWait();
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).omit().handle();
+                    local.kill();
+                }
+            } else {
+                localPowershell.kill();
+            }
             localPowershell = null;
         }
     }
@@ -55,11 +76,16 @@ public class LocalShell {
         return local != null;
     }
 
-    public static ShellControl getShell() throws Exception {
+    @SneakyThrows
+    public static ShellControl getShell() {
         if (local == null) {
             throw new IllegalStateException("Local shell not initialized yet");
         }
 
         return local.start();
+    }
+
+    public static ShellDialect getDialect() {
+        return ProcessControlProvider.get().getEffectiveLocalDialect();
     }
 }

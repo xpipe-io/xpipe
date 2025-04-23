@@ -5,7 +5,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.beans.value.ObservableValue;
 
@@ -42,7 +42,7 @@ public final class BrowserHistoryTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public DataColor getColor() {
+    public DataStoreColor getColor() {
         return null;
     }
 

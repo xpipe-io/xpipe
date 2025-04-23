@@ -21,6 +21,10 @@ testing {
                         jvmArgs += ["-Xmx2g"]
                         jvmArgs += jvmRunArgs
 
+                        def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
+                        classpath += exts
+                        dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
+
                         systemProperty 'io.xpipe.app.fullVersion', "true"
                         systemProperty 'io.xpipe.beacon.printDaemonOutput', "false"
                         systemProperty 'io.xpipe.app.useVirtualThreads', "false"

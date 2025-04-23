@@ -11,12 +11,15 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.PlatformThread;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -40,13 +43,13 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
-    private final Property<String> filePath;
+    private final Property<FilePath> filePath;
     private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             Property<DataStoreEntryRef<T>> fileSystem,
-            Property<String> filePath,
+            Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences) {
         this.sync = sync;
@@ -86,7 +89,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             var currentPath = filePath.getValue();
-            if (currentPath == null || currentPath.isBlank()) {
+            if (currentPath == null) {
                 return;
             }
 
@@ -95,22 +98,34 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var source = Path.of(currentPath.trim());
-                var target = sync.getTargetLocation().apply(source);
-                if (Files.exists(source)) {
-                    var shouldCopy = AppWindowHelper.showConfirmationAlert(
-                            "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
-                    if (!shouldCopy) {
-                        return;
-                    }
-
-                    var handler = DataStorageSyncHandler.getInstance();
-                    var syncedTarget = handler.addDataFile(
-                            source, target, sync.getPerUser().test(source));
-                    Platform.runLater(() -> {
-                        filePath.setValue(syncedTarget.toString());
-                    });
+                var source = currentPath.asLocalPath();
+                if (!Files.exists(source)) {
+                    ErrorEvent.fromMessage("Unable to resolve local file path " + source).expected().handle();
+                    return;
                 }
+
+                var target = sync.getTargetLocation().apply(source);
+                var shouldCopy = AppWindowHelper.showConfirmationAlert(
+                        "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
+                if (!shouldCopy) {
+                    return;
+                }
+
+                var handler = DataStorageSyncHandler.getInstance();
+                var syncedTarget = handler.addDataFile(
+                        source, target, sync.getPerUser().test(source));
+
+                var pubSource = Path.of(source + ".pub");
+                if (Files.exists(pubSource)) {
+                    var pubTarget = sync.getTargetLocation().apply(pubSource);
+                    DataStorageSyncHandler.getInstance()
+                            .addDataFile(
+                                    pubSource, pubTarget, sync.getPerUser().test(pubSource));
+                }
+
+                Platform.runLater(() -> {
+                    filePath.setValue(FilePath.of(syncedTarget));
+                });
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             }
@@ -147,7 +162,14 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var items = allFiles.stream()
                 .map(previousFileReference -> previousFileReference.getPath().toString())
                 .toList();
-        var combo = new ComboTextFieldComp(filePath, items, param -> {
+        var prop = new SimpleStringProperty();
+        filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
+            prop.set(s != null ? s.toString() : null);
+        }));
+        prop.addListener((observable, oldValue, newValue) -> {
+            filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
+        });
+        var combo = new ComboTextFieldComp(prop, items, param -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -172,7 +194,14 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     private Comp<?> createTextField() {
-        var fileNameComp = new TextFieldComp(filePath)
+        var prop = new SimpleStringProperty();
+        filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
+            prop.set(s != null ? s.toString() : null);
+        }));
+        prop.addListener((observable, oldValue, newValue) -> {
+            filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
+        });
+        var fileNameComp = new TextFieldComp(prop)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);

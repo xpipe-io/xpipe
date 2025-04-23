@@ -3,6 +3,7 @@ package io.xpipe.ext.system.podman;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.ext.base.store.StoreRestartAction;
 import io.xpipe.ext.base.store.StoreStartAction;
 import io.xpipe.ext.base.store.StoreStopAction;
@@ -33,8 +34,8 @@ public class PodmanContainerActionMenu implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
-                return "mdi2p-package-variant-closed";
+            public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-package-variant-closed");
             }
 
             @Override

@@ -1,10 +1,7 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
@@ -14,19 +11,16 @@ import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.*;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import lombok.SneakyThrows;
@@ -37,7 +31,6 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class AppWindowHelper {
@@ -82,32 +75,6 @@ public class AppWindowHelper {
                     };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
-    }
-
-    public static Stage sideWindow(
-            String title, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
-        var stage = AppWindowBounds.centerStage();
-        ModifiedStage.prepareStage(stage);
-        if (AppMainWindow.getInstance() != null) {
-            stage.initOwner(AppMainWindow.getInstance().getStage());
-        }
-        stage.setTitle(title);
-
-        addIcons(stage);
-        setupContent(stage, contentFunc, bindSize, loading);
-        setupStylesheets(stage.getScene());
-        AppWindowHelper.setupClickShield(stage);
-        AppWindowBounds.fixInvalidStagePosition(stage);
-        AppWindowHelper.addFontSize(stage);
-
-        if (AppPrefs.get() != null && AppPrefs.get().enforceWindowModality().get()) {
-            stage.initModality(Modality.WINDOW_MODAL);
-        }
-
-        stage.setOnShown(e -> {
-            AppTheme.initThemeHandlers(stage);
-        });
-        return stage;
     }
 
     public static void setContent(Alert alert, String s) {
@@ -266,53 +233,5 @@ public class AppWindowHelper {
                 event.consume();
             }
         });
-    }
-
-    public static void setupContent(
-            Stage stage, Function<Stage, Comp<?>> contentFunc, boolean bindSize, ObservableValue<Boolean> loading) {
-        var baseComp = contentFunc.apply(stage);
-        var content = loading != null ? LoadingOverlayComp.noProgress(baseComp, loading) : baseComp;
-        var contentR = content.createRegion();
-        var scene = new Scene(bindSize ? new Pane(contentR) : contentR, -1, -1, false);
-        scene.setFill(Color.TRANSPARENT);
-        stage.setScene(scene);
-        contentR.requestFocus();
-        if (bindSize) {
-            bindSize(stage, contentR);
-            stage.setResizable(false);
-        }
-
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                stage.close();
-                event.consume();
-            }
-        });
-    }
-
-    private static void bindSize(Stage stage, Region r) {
-        if (r.getPrefWidth() == Region.USE_COMPUTED_SIZE) {
-            r.widthProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        } else {
-            stage.setWidth(r.getPrefWidth());
-            r.prefWidthProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        }
-
-        if (r.getPrefHeight() == Region.USE_COMPUTED_SIZE) {
-            r.heightProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        } else {
-            stage.setHeight(r.getPrefHeight());
-            r.prefHeightProperty().addListener((c, o, n) -> {
-                stage.sizeToScene();
-            });
-        }
-
-        stage.sizeToScene();
     }
 }

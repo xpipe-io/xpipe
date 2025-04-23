@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.SecretReference;
 
+import java.time.Duration;
 import java.util.Optional;
 
 public interface SecretQuery {
@@ -53,8 +54,8 @@ public interface SecretQuery {
             }
 
             @Override
-            public boolean cache() {
-                return true;
+            public Duration cacheDuration() {
+                return null;
             }
 
             @Override
@@ -78,8 +79,8 @@ public interface SecretQuery {
             }
 
             @Override
-            public boolean cache() {
-                return cache;
+            public Duration cacheDuration() {
+                return cache ? null : Duration.ZERO;
             }
 
             @Override
@@ -101,7 +102,7 @@ public interface SecretQuery {
 
     SecretQueryResult query(String prompt);
 
-    boolean cache();
+    Duration cacheDuration();
 
     boolean retryOnFail();
 

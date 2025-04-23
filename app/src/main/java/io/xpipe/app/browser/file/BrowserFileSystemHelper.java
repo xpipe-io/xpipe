@@ -2,10 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.core.store.*;
 
 import java.time.Instant;
 import java.util.List;
@@ -67,7 +64,7 @@ public class BrowserFileSystemHelper {
         }
     }
 
-    public static String resolveDirectoryPath(BrowserFileSystemTabModel model, String path, boolean allowRewrite)
+    public static FilePath resolveDirectoryPath(BrowserFileSystemTabModel model, FilePath path, boolean allowRewrite)
             throws Exception {
         if (path == null) {
             return null;
@@ -82,23 +79,23 @@ public class BrowserFileSystemHelper {
             return path;
         }
 
-        var resolved = shell.get()
+        var resolved = FilePath.of(shell.get()
                 .getShellDialect()
-                .resolveDirectory(shell.get(), path)
-                .readStdoutOrThrow();
+                .resolveDirectory(shell.get(), path.toString())
+                .readStdoutOrThrow());
 
-        if (!FileNames.isAbsolute(resolved)) {
+        if (!resolved.isAbsolute()) {
             throw new IllegalArgumentException(String.format("Directory %s is not absolute", resolved));
         }
 
-        if (allowRewrite && model.getFileSystem().fileExists(path)) {
-            return FileNames.toDirectory(FileNames.getParent(path));
+        if (allowRewrite && model.getFileSystem().fileExists(resolved)) {
+            return resolved.getParent().toDirectory();
         }
 
-        return FileNames.toDirectory(resolved);
+        return resolved.toDirectory();
     }
 
-    public static void validateDirectoryPath(BrowserFileSystemTabModel model, String path, boolean verifyExists)
+    public static void validateDirectoryPath(BrowserFileSystemTabModel model, FilePath path, boolean verifyExists)
             throws Exception {
         if (path == null) {
             return;
@@ -114,7 +111,8 @@ public class BrowserFileSystemHelper {
         }
 
         if (verifyExists && !model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.expected(new IllegalArgumentException(String.format("Directory %s does not exist", path)));
+            throw ErrorEvent.expected(new IllegalArgumentException(
+                    String.format("Directory %s does not exist or is not accessible", path)));
         }
 
         try {
@@ -125,12 +123,12 @@ public class BrowserFileSystemHelper {
         }
     }
 
-    public static FileEntry getRemoteWrapper(FileSystem fileSystem, String file) throws Exception {
+    public static FileEntry getRemoteWrapper(FileSystem fileSystem, FilePath file) throws Exception {
         return new FileEntry(
                 fileSystem,
                 file,
                 Instant.now(),
-                fileSystem.getFileSize(file),
+                "" + fileSystem.getFileSize(file),
                 null,
                 fileSystem.directoryExists(file) ? FileKind.DIRECTORY : FileKind.FILE);
     }

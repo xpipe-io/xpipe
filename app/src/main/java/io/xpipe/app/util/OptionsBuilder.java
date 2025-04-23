@@ -8,8 +8,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.util.InPlaceSecretValue;
 
 import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -54,6 +57,13 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder choice(IntegerProperty selectedIndex, Map<ObservableValue<String>, OptionsBuilder> options) {
+        return choice(selectedIndex, options, null);
+    }
+
+    public OptionsBuilder choice(
+            IntegerProperty selectedIndex,
+            Map<ObservableValue<String>, OptionsBuilder> options,
+            Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
                         e.getKey(), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
@@ -67,6 +77,9 @@ public class OptionsBuilder {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
         });
         var pane = new ChoicePaneComp(list, selected);
+        if (transformer != null) {
+            pane.setTransformer(transformer);
+        }
 
         var validatorMap = new LinkedHashMap<ChoicePaneComp.Entry, Validator>();
         for (int i = 0; i < list.size(); i++) {
@@ -202,6 +215,10 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder hide(boolean b) {
+        return hide(new SimpleBooleanProperty(b));
+    }
+
     public OptionsBuilder hide(ObservableValue<Boolean> b) {
         lastCompHeadReference.hide(b);
         return this;
@@ -275,12 +292,28 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addYesNoToggle(Property<Boolean> prop) {
-        var comp = new ToggleGroupComp<>(
-                prop,
-                new SimpleObjectProperty<>(Map.of(
-                        Boolean.TRUE, AppI18n.observable("app.yes"), Boolean.FALSE, AppI18n.observable("app.no"))));
+        var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
+        map.put(Boolean.FALSE, AppI18n.observable("app.no"));
+        map.put(Boolean.TRUE, AppI18n.observable("app.yes"));
+        var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
         pushComp(comp);
         props.add(prop);
+        return this;
+    }
+
+    public OptionsBuilder addStaticString(Object o) {
+        return addStaticString(new SimpleStringProperty(o != null ? o.toString() : null));
+    }
+
+    public OptionsBuilder addStaticString(ObservableValue<String> s) {
+        var prop = new SimpleStringProperty();
+        s.subscribe(prop::set);
+        var comp = new TextFieldComp(prop, false);
+        comp.apply(struc -> {
+            struc.get().setEditable(false);
+            struc.get().setOpacity(0.9);
+        });
+        pushComp(comp);
         return this;
     }
 
@@ -322,7 +355,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder separator() {
-        return addComp(Comp.separator());
+        return addComp(Comp.hseparator());
     }
 
     public OptionsBuilder name(String nameKey) {
@@ -344,9 +377,17 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder longDescription(DocumentationLink link) {
+        finishCurrent();
+        longDescription = link.getLink();
+        return this;
+    }
+
     public OptionsBuilder longDescription(String descriptionKey) {
         finishCurrent();
-        longDescription = AppI18n.get().getMarkdownDocumentation(descriptionKey);
+        longDescription = descriptionKey.startsWith("http")
+                ? descriptionKey
+                : AppI18n.get().getMarkdownDocumentation(descriptionKey);
         return this;
     }
 
@@ -390,13 +431,22 @@ public class OptionsBuilder {
 
     public final <T, V extends T> OptionsBuilder bindChoice(
             Supplier<Property<? extends V>> creator, Property<T> toSet) {
+        var current = new AtomicReference<Property<? extends V>>(creator.get());
+        var listener = new ChangeListener<V>() {
+            @Override
+            public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+                toSet.setValue(newValue);
+            }
+        };
+        current.get().addListener(listener);
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
-                toSet.unbind();
-                toSet.bind(creator.get());
+                current.get().removeListener(listener);
+                current.set(creator.get());
+                toSet.setValue(current.get().getValue());
+                current.get().addListener(listener);
             });
         });
-        toSet.bind(creator.get());
         return this;
     }
 

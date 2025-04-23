@@ -133,7 +133,7 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
             try (var sc = LocalShell.getShell().start()) {
                 var out = CommandSupport.findProgram(sc, executable);
                 if (out.isPresent()) {
-                    return out.map(Path::of);
+                    return out.map(filePath -> Path.of(filePath.toString()));
                 }
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).omit().handle();

@@ -3,6 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 
@@ -30,32 +32,58 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
         if (initialWidth != null) {
             sidebar.setPrefWidth(initialWidth);
         }
-        var r = new SplitPane(sidebar, c);
+        var r = new SplitPane(c);
 
         AtomicBoolean setInitial = new AtomicBoolean(false);
         r.widthProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.doubleValue() <= 0) {
+            if (newValue.doubleValue() <= 0 || !r.getItems().contains(sidebar)) {
                 return;
             }
 
-            if (!setInitial.get() && initialWidth != null) {
+            if (!setInitial.get() && initialWidth != null && r.getDividers().size() > 0) {
                 r.getDividers().getFirst().setPosition(initialWidth / newValue.doubleValue());
                 setInitial.set(true);
             }
         });
 
-        SplitPane.setResizableWithParent(sidebar, false);
-        r.getDividers().getFirst().positionProperty().addListener((observable, oldValue, newValue) -> {
-            if (r.getWidth() <= 0) {
+        var dividerPosition = new SimpleDoubleProperty();
+        ChangeListener<Number> changeListener = (observable, oldValue, newValue) -> {
+            if (r.getWidth() <= 0 || !r.getItems().contains(sidebar)) {
                 return;
             }
 
             if (onDividerChange != null) {
                 onDividerChange.accept(newValue.doubleValue() * r.getWidth());
             }
+
+            dividerPosition.set(newValue.doubleValue());
+        };
+
+        sidebar.managedProperty().subscribe(m -> {
+            var divs = r.getDividers();
+            if (!m) {
+                if (!divs.isEmpty()) {
+                    divs.getFirst().positionProperty().removeListener(changeListener);
+                }
+                r.getItems().remove(sidebar);
+                if (onDividerChange != null) {
+                    onDividerChange.accept(0.0);
+                }
+            } else if (!r.getItems().contains(sidebar)) {
+                r.getItems().addFirst(sidebar);
+                var d = dividerPosition.get();
+                divs.getFirst().setPosition(d);
+                r.layout();
+                if (onDividerChange != null) {
+                    onDividerChange.accept(d);
+                }
+                divs.getFirst().positionProperty().addListener(changeListener);
+            }
         });
+
+        SplitPane.setResizableWithParent(sidebar, false);
         r.getStyleClass().add("side-split-pane-comp");
-        return new Structure(sidebar, c, r, r.getDividers().getFirst());
+        return new Structure(sidebar, c, r);
     }
 
     public LeftSplitPaneComp withInitialWidth(double val) {
@@ -74,7 +102,6 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
         Region left;
         Region center;
         SplitPane pane;
-        SplitPane.Divider divider;
 
         @Override
         public SplitPane get() {

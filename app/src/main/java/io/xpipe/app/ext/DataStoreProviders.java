@@ -71,10 +71,6 @@ public class DataStoreProviders {
                     .collect(Collectors.toList());
             ALL.removeIf(p -> {
                 try {
-                    if (!p.preInit()) {
-                        return true;
-                    }
-
                     p.validate();
                     return false;
                 } catch (Throwable e) {
@@ -84,7 +80,6 @@ public class DataStoreProviders {
             });
 
             for (DataStoreProvider p : getAll()) {
-                TrackEvent.trace("Loaded data store provider " + p.getId());
                 JacksonMapper.configure(objectMapper -> {
                     for (Class<?> storeClass : p.getStoreClasses()) {
                         objectMapper.registerSubtypes(new NamedType(storeClass));

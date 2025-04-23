@@ -18,7 +18,10 @@ public class TerminalDockModel {
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal) {
         terminalInstances.add(terminal);
-        terminal.alwaysInFront();
+        // The main window always loses focus when the terminal is opened,
+        // so only put it in front
+        // If we refocus the main window, it will get put always in front then
+        terminal.frontOfMainWindow();
         if (viewBounds != null) {
             terminal.updatePosition(viewBounds);
         }

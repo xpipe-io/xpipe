@@ -6,6 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.CommandDialog;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
@@ -68,6 +69,31 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                         model.withShell(
                                 pc -> {
                                     for (BrowserEntry entry : entries) {
+                                        var c = createCommand(pc, model, entry);
+                                        if (c == null) {
+                                            return;
+                                        }
+
+                                        var cmd = pc.command(c);
+                                        CommandDialog.runAsyncAndShow(cmd);
+                                    }
+                                },
+                                true);
+                    }
+
+                    @Override
+                    public ObservableValue<String> getName(
+                            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return AppI18n.observable("runInFileBrowser");
+                    }
+                },
+                new BrowserLeafAction() {
+
+                    @Override
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        model.withShell(
+                                pc -> {
+                                    for (BrowserEntry entry : entries) {
                                         var cmd = createCommand(pc, model, entry);
                                         if (cmd == null) {
                                             continue;
@@ -85,7 +111,7 @@ public abstract class MultiExecuteAction implements BrowserBranchAction {
                     @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return AppI18n.observable("executeInBackground");
+                        return AppI18n.observable("runSilent");
                     }
                 });
     }

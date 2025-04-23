@@ -13,7 +13,7 @@ buildscript {
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.10.1' apply false
+    id 'org.gradlex.extra-java-module-info' version '1.12' apply false
     id("com.diffplug.spotless") version "7.0.2" apply false
 }
 
@@ -124,19 +124,9 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    javafxVersion = '24-ea+5'
+    devJavafxVersion = '25-ea+10'
     platformName = getPlatformName()
     jvmRunArgs = [
-            "--add-opens", "java.base/java.lang=io.xpipe.app",
-            "--add-opens", "java.base/java.lang=io.xpipe.core",
-            "--add-opens", "java.desktop/java.awt=io.xpipe.app",
-            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
-            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
-            "--add-exports", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
-            "--add-exports", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
-            "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
-            "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
-            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app",
             "-Dio.xpipe.app.arch=$rootProject.arch",
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=XPipe",
@@ -144,12 +134,40 @@ project.ext {
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
 
+    // Disable JDK24 warnings
+    jvmRunArgs += [
+            "--enable-native-access=com.sun.jna",
+            "--enable-native-access=javafx.graphics",
+            "--enable-native-access=javafx.web",
+            "--sun-misc-unsafe-memory-access=allow",
+    ]
+
+    // Module access fixes
+    jvmRunArgs += [
+            "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
+            "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
+            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
+            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
+            "--add-opens", "java.base/java.lang=io.xpipe.app",
+            "--add-exports", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
+            "--add-exports", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
+            "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
+            "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app"
+    ]
+
+    // Use project liliput
+    jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
+
     // GC config
     jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];
 
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    // Fix platform theme detection on macOS
+    if (os.isMacOsX()) {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
+
     useBundledJavaFx = fullVersion
     useBundledJna = fullVersion
     announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
@@ -157,15 +175,16 @@ project.ext {
             file("$rootDir/dist/changelogs/${versionString}.md") :
             file("$rootDir/dist/changelogs/${canonicalVersionString}.md")
     incrementalChangelogFile = file("$rootDir/dist/changelogs/${canonicalVersionString}_incremental.md")
-    signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : System.getenv('GPG_KEY_ID')
-    signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : System.getenv('GPG_KEY')
-    signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : System.getenv('GPG_KEY_PASSWORD')
-    if (signingPassword == null) {
-        signingPassword = ''
-    }
-    deeplApiKey = findProperty('DEEPL_API_KEY')
-    customJavaFxPath = null
+    signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : (System.getenv('GPG_KEY_ID') != null ? System.getenv('GPG_KEY_ID') : "")
+    signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : (System.getenv('GPG_KEY') != null ? System.getenv('GPG_KEY') : "")
+    signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : (System.getenv('GPG_KEY_PASSWORD') != null ? System.getenv('GPG_KEY_PASSWORD') : "")
+    deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
+
+    // Define a custom JavaFX SDK location
+    // customJavaFxPath = null
+
     bundleCds = ci && fullVersion
+
     windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
 }
 

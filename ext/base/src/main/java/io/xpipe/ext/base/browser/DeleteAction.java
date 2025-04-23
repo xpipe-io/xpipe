@@ -23,7 +23,7 @@ public class DeleteAction implements BrowserLeafAction {
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         var toDelete = entries.stream().map(entry -> entry.getRawFileEntry()).toList();
-        if (!BrowserAlerts.showDeleteAlert(toDelete)) {
+        if (!BrowserAlerts.showDeleteAlert(model, toDelete)) {
             return;
         }
 

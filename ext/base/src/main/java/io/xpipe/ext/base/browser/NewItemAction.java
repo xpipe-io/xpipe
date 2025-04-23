@@ -11,6 +11,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -119,7 +120,7 @@ public class NewItemAction implements BrowserAction, BrowserBranchAction {
                                         .buildComp()
                                         .prefWidth(350));
                         modal.withDefaultButtons(() -> {
-                            model.createLinkAsync(linkName.getValue(), target.getValue());
+                            model.createLinkAsync(linkName.getValue(), FilePath.of(target.getValue()));
                         });
                         modal.show();
                     }

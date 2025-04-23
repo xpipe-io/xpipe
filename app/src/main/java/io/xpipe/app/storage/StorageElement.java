@@ -1,11 +1,8 @@
 package io.xpipe.app.storage;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import lombok.experimental.NonFinal;
-import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -13,7 +10,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 public abstract class StorageElement {
@@ -43,15 +39,12 @@ public abstract class StorageElement {
     @Getter
     protected boolean expanded;
 
-    protected @NonFinal @Getter DataColor color;
-
     public StorageElement(
             Path directory,
             UUID uuid,
             String name,
             Instant lastUsed,
             Instant lastModified,
-            DataColor color,
             boolean expanded,
             boolean dirty) {
         this.directory = directory;
@@ -59,7 +52,6 @@ public abstract class StorageElement {
         this.name = name;
         this.lastUsed = lastUsed;
         this.lastModified = lastModified;
-        this.color = color;
         this.expanded = expanded;
         this.dirty = dirty;
     }
@@ -96,14 +88,6 @@ public abstract class StorageElement {
 
     public final void deleteFromDisk() throws IOException {
         FileUtils.deleteDirectory(directory.toFile());
-    }
-
-    public void setColor(DataColor newColor) {
-        var changed = !Objects.equals(color, newColor);
-        this.color = newColor;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
     }
 
     public abstract void writeDataToDisk() throws Exception;
@@ -145,16 +129,5 @@ public abstract class StorageElement {
 
     public interface Listener {
         void onUpdate();
-    }
-
-    @Builder
-    @Jacksonized
-    @Value
-    public static class Configuration {
-        boolean deletable;
-
-        public static Configuration defaultConfiguration() {
-            return new Configuration(true);
-        }
     }
 }

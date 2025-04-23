@@ -21,11 +21,11 @@ public class LocalShellCache extends ShellControlCache {
                         switch (OsType.getLocal()) {
                             case OsType.Linux linux -> {
                                 yield CommandSupport.findProgram(getShellControl(), "code")
-                                        .map(s -> Path.of(s));
+                                        .map(s -> s.asLocalPath());
                             }
                             case OsType.MacOs macOs -> {
                                 yield CommandSupport.findProgram(getShellControl(), "code")
-                                        .map(s -> Path.of(s));
+                                        .map(s -> s.asLocalPath());
                             }
                             case OsType.Windows windows -> {
                                 yield ExternalEditorType.VSCODE_WINDOWS.findExecutable();

@@ -5,7 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.css.PseudoClass;
@@ -26,7 +26,10 @@ public class AppPrefsSidebarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var buttons = AppPrefs.get().getCategories().stream()
+        var effectiveCategories = AppPrefs.get().getCategories().stream()
+                .filter(appPrefsCategory -> appPrefsCategory.show())
+                .toList();
+        var buttons = effectiveCategories.stream()
                 .<Comp<?>>map(appPrefsCategory -> {
                     return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), () -> {
                                 AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
@@ -43,7 +46,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
-            OperationMode.restart();
+            AppRestart.restart();
         });
         restartButton.grow(true, false);
         restartButton.visible(AppPrefs.get().getRequiresRestart());
@@ -55,7 +58,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    var index = val != null ? AppPrefs.get().getCategories().indexOf(val) : 0;
+                    var index = val != null ? effectiveCategories.indexOf(val) : 0;
                     if (index >= struc.get().getChildren().size()) {
                         return;
                     }

@@ -40,16 +40,19 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
 
     private static BrowserHistorySavedStateImpl load() {
         return AppCache.getNonNull("browser-state", BrowserHistorySavedStateImpl.class, () -> {
-            return new BrowserHistorySavedStateImpl(FXCollections.observableArrayList());
+            return new BrowserHistorySavedStateImpl(
+                    FXCollections.synchronizedObservableList(FXCollections.observableArrayList()));
         });
     }
 
     @Override
     public synchronized void add(BrowserHistorySavedState.Entry entry) {
-        lastSystems.removeIf(s -> s.getUuid().equals(entry.getUuid()));
-        lastSystems.addFirst(entry);
-        if (lastSystems.size() > 15) {
-            lastSystems.removeLast();
+        synchronized (lastSystems) {
+            lastSystems.removeIf(e -> e == null || e.getUuid().equals(entry.getUuid()));
+            lastSystems.addFirst(entry);
+            if (lastSystems.size() > 15) {
+                lastSystems.removeLast();
+            }
         }
     }
 

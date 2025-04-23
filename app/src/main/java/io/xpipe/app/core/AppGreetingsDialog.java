@@ -50,7 +50,7 @@ public class AppGreetingsDialog {
         return tp;
     }
 
-    public static void showIfNeeded() {
+    public static void showAndWaitIfNeeded() {
         boolean set = AppCache.getBoolean("legalAccepted", false);
         if (set
                 || AppProperties.get().isDevelopmentEnvironment()
@@ -105,6 +105,7 @@ public class AppGreetingsDialog {
         AppDialog.showAndWait(modal);
 
         if (!AppCache.getBoolean("legalAccepted", false)) {
+            AppProperties.get().resetInitialLaunch();
             OperationMode.halt(1);
         }
     }

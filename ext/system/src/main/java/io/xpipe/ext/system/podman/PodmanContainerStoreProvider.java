@@ -1,17 +1,12 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ShellStoreFormat;
-import io.xpipe.app.util.SimpleValidator;
+import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.service.FixedServiceGroupStore;
 import io.xpipe.ext.base.store.ShellStoreProvider;
@@ -23,6 +18,25 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public class PodmanContainerStoreProvider implements ShellStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.PODMAN;
+    }
+
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
+            var state = (ContainerStoreState) o;
+            var cs = state.getContainerState();
+            if (cs != null && cs.toLowerCase().contains("exited")) {
+                return SystemStateComp.State.FAILURE;
+            } else if (cs != null && cs.toLowerCase().contains("up")) {
+                return SystemStateComp.State.SUCCESS;
+            } else {
+                return SystemStateComp.State.OTHER;
+            }
+        }));
+    }
 
     public void onParentRefresh(DataStoreEntry entry) {
         var services = FixedServiceGroupStore.builder().parent(entry.ref()).build();
@@ -43,20 +57,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     @Override
     public boolean shouldShowScan() {
         return false;
-    }
-
-    public String createInsightsMarkdown(DataStore store) {
-        var podman = (PodmanContainerStore) store;
-        return String.format(
-                """
-                    XPipe will execute:
-                    ```
-                    %s
-                    ```
-                    in a host shell of `%s` to open a shell into the container.
-                    """,
-                podman.commandView(null).execCommand(true).buildSimple(),
-                podman.getCmd().get().getName());
     }
 
     @Override
@@ -80,8 +80,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                 .disable()
                 .name("container")
                 .description("podmanContainerDescription")
-                .addString(new SimpleObjectProperty<>(st.getContainerName()), false)
-                .disable()
+                .addStaticString(st.getContainerName())
                 .buildComp();
         return new GuiDialog(q, val);
     }
@@ -95,7 +94,10 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        return ShellStoreFormat.shellStore(section, (ContainerStoreState s) -> s.getContainerState());
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return StoreStateFormat.shellStore(
+                section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
     }
 
     @Override

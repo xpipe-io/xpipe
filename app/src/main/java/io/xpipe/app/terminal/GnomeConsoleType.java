@@ -1,9 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
 
 public class GnomeConsoleType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
 

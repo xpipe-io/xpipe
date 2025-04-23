@@ -6,7 +6,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -82,7 +81,7 @@ public class AppExtensionManager {
         if (!AppProperties.get().isFullVersion()) {
             var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(
                     AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
-            Path p = Path.of(localInstallation);
+            Path p = localInstallation;
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
                         "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
@@ -116,7 +115,7 @@ public class AppExtensionManager {
 
     private static String getLocalInstallVersion() throws Exception {
         var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
-        var exec = Path.of(localInstallation, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+        var exec = localInstallation.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
         var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
         var proc = fc.start();
         var out = new String(proc.getInputStream().readAllBytes());
@@ -208,10 +207,6 @@ public class AppExtensionManager {
                             .anyMatch(extension -> extension.getName().equals(ext.get().name))) {
                         return Optional.empty();
                     }
-
-                    ext.get().getModule().getPackages().forEach(pkg -> {
-                        ModuleHelper.exportAndOpen(pkg, ext.get().getModule());
-                    });
 
                     TrackEvent.withInfo("Loaded extension module")
                             .tag("name", ext.get().getName())

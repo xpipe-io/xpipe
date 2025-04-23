@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.value.ObservableValue;
@@ -36,8 +37,8 @@ public class LxdContainerEditRunConfigAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<LxdContainerStore> store) {
-                return "mdi2m-movie-edit";
+            public LabelGraphic getIcon(DataStoreEntryRef<LxdContainerStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2m-movie-edit");
             }
 
             @Override
@@ -57,10 +58,10 @@ public class LxdContainerEditRunConfigAction implements ActionProvider {
             var d = (LxdContainerStore) store.getStore();
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getCmd().getStore().getHost().get().ref());
-            var file = new FilePath("/run/lxd/" + d.getContainerName() + "/lxc.conf");
-            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                    elevatedRef, m -> file.getParent().toString(), null, true);
-            var found = model.findFile(file.toString());
+            var file = FilePath.of("/run/lxd/" + d.getContainerName() + "/lxc.conf");
+            var model =
+                    BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, m -> file.getParent(), null, true);
+            var found = model.findFile(file);
             if (found.isEmpty()) {
                 return;
             }

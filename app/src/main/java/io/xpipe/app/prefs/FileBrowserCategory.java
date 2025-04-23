@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class FileBrowserCategory extends AppPrefsCategory {
@@ -20,10 +21,10 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableTerminalDocking)
                         .pref(prefs.editFilesWithDoubleClick)
                         .addToggle(prefs.editFilesWithDoubleClick)
-                        .pref(prefs.confirmAllDeletions)
-                        .addToggle(prefs.confirmAllDeletions)
                         .pref(prefs.downloadsDirectory)
-                        .addString(prefs.downloadsDirectory)
+                        .addComp(
+                                new TextFieldComp(prefs.downloadsDirectory).maxWidth(getCompWidth()),
+                                prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)
                         .addToggle(prefs.pinLocalMachineOnStartup))
                 .buildComp();

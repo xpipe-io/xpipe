@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.store;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -13,11 +14,11 @@ import io.xpipe.app.util.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -27,11 +28,14 @@ public class StoreViewState {
 
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> allEntries =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+            DerivedObservableList.synchronizedArrayList(true);
 
     @Getter
     private final DerivedObservableList<StoreCategoryWrapper> categories =
-            new DerivedObservableList<>(FXCollections.observableList(new CopyOnWriteArrayList<>()), true);
+            DerivedObservableList.synchronizedArrayList(true);
+
+    @Getter
+    private final IntegerProperty entriesListVisibilityObservable = new SimpleIntegerProperty();
 
     @Getter
     private final IntegerProperty entriesListUpdateObservable = new SimpleIntegerProperty();
@@ -41,6 +45,34 @@ public class StoreViewState {
 
     @Getter
     private final Property<StoreSortMode> sortMode = new SimpleObjectProperty<>();
+
+    @Getter
+    private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
+
+    @Getter
+    private final DerivedObservableList<StoreEntryWrapper> batchModeSelection =
+            DerivedObservableList.synchronizedArrayList(true);
+
+    private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
+
+    @Getter
+    private boolean initialized = false;
+
+    @Getter
+    private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
+            storeEntryWrapper -> {
+                if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
+                    return false;
+                }
+
+                if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+                    return false;
+                }
+
+                return true;
+            },
+            entriesListVisibilityObservable,
+            entriesListUpdateObservable);
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -60,6 +92,8 @@ public class StoreViewState {
         INSTANCE.initSections();
         INSTANCE.updateContent();
         INSTANCE.initFilterListener();
+        INSTANCE.initBatchListeners();
+        INSTANCE.initialized = true;
     }
 
     public static void reset() {
@@ -80,6 +114,34 @@ public class StoreViewState {
         return INSTANCE;
     }
 
+    public boolean isBatchModeSelected(StoreEntryWrapper entry) {
+        return batchModeSelectionSet.contains(entry);
+    }
+
+    public void selectBatchMode(StoreSection section) {
+        var wrapper = section.getWrapper();
+        if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
+            batchModeSelection.getList().add(wrapper);
+        }
+        if (wrapper == null
+                || (wrapper.getValidity().getValue().isUsable()
+                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+            section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
+        }
+    }
+
+    public void unselectBatchMode(StoreSection section) {
+        var wrapper = section.getWrapper();
+        if (wrapper != null) {
+            batchModeSelection.getList().remove(wrapper);
+        }
+        if (wrapper == null
+                || (wrapper.getValidity().getValue().isUsable()
+                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+            section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
+        }
+    }
+
     private void updateContent() {
         categories.getList().forEach(c -> c.update());
         allEntries.getList().forEach(e -> e.update());
@@ -88,13 +150,16 @@ public class StoreViewState {
     private void initSections() {
         try {
             currentTopLevelSection = StoreSection.createTopLevel(
-                    allEntries, storeEntryWrapper -> true, filter, activeCategory, entriesListUpdateObservable);
+                    allEntries,
+                    batchModeSelectionSet,
+                    storeEntryWrapper -> true,
+                    filter,
+                    activeCategory,
+                    entriesListVisibilityObservable,
+                    entriesListUpdateObservable);
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
-                    null,
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    0);
+                    null, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), 0);
             ErrorEvent.fromThrowable(exception).handle();
         }
     }
@@ -112,6 +177,31 @@ public class StoreViewState {
             if (matchingCats.size() == 1) {
                 activeCategory.setValue(matchingCats.getFirst());
             }
+        });
+    }
+
+    private void initBatchListeners() {
+        batchModeSelection.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            if (c.getList().isEmpty()) {
+                batchModeSelectionSet.clear();
+                return;
+            }
+
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    batchModeSelectionSet.addAll(c.getAddedSubList());
+                } else if (c.wasRemoved()) {
+                    c.getRemoved().forEach(batchModeSelectionSet::remove);
+                }
+            }
+        });
+
+        allEntries.getList().addListener((ListChangeListener<? super StoreEntryWrapper>) c -> {
+            batchModeSelection.getList().retainAll(c.getList());
+        });
+
+        batchMode.addListener((observable, oldValue, newValue) -> {
+            batchModeSelection.getList().clear();
         });
     }
 
@@ -151,11 +241,13 @@ public class StoreViewState {
                         .orElseThrow()));
     }
 
-    public void updateDisplay() {
-        toggleStoreListUpdate();
+    public void triggerStoreListVisibilityUpdate() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            entriesListVisibilityObservable.set(entriesListVisibilityObservable.get() + 1);
+        });
     }
 
-    public void toggleStoreListUpdate() {
+    public void triggerStoreListUpdate() {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
@@ -180,7 +272,7 @@ public class StoreViewState {
             @Override
             public void onStoreListUpdate() {
                 Platform.runLater(() -> {
-                    toggleStoreListUpdate();
+                    triggerStoreListUpdate();
                 });
             }
 

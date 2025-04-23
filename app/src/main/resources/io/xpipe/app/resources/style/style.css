@@ -100,16 +100,42 @@
     -fx-font-size: 0.9em;
 }
 
-.store-creator > .top > .choice-comp {
+.store-creator > .choice-comp {
     -fx-opacity: 0.9;
 }
 
-.store-creator > .top > .choice-comp * {
+.store-creator > .choice-comp * {
     -fx-opacity: 1.0;
 }
 
 .store-creator .combo-box:disabled .arrow {
     -fx-background-color: transparent;
+}
+
+.store-creator .store-creator-options {
+    -fx-padding: -5 4 0 5;
+}
+
+.icon-button-comp.batch-mode-button {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-width: 1;
+    -fx-border-color: -color-fg-subtle;
+}
+
+.root.nord .icon-button-comp.batch-mode-button {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+}
+
+.batch-mode-button .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+}
+
+.batch-mode-button:active .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
 }
 
 .root:pretty:light .store-active-comp .dot {
@@ -126,4 +152,8 @@
 
 .root:performance:dark .store-active-comp .dot {
     -fx-fill: rgb(30, 180, 30, 0.7);
+}
+
+.toggle-group-comp .toggle-button {
+    -fx-padding: 3 10;
 }

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AppDialog {
 
     @Getter
-    private static final ObservableList<ModalOverlay> modalOverlay = FXCollections.observableArrayList();
+    private static final ObservableList<ModalOverlay> modalOverlays = FXCollections.observableArrayList();
 
     private static void showMainWindow() {
         PlatformInit.init(true);
@@ -34,26 +34,32 @@ public class AppDialog {
 
     public static void closeDialog(ModalOverlay overlay) {
         PlatformThread.runLaterIfNeeded(() -> {
-            synchronized (modalOverlay) {
-                modalOverlay.remove(overlay);
+            synchronized (modalOverlays) {
+                modalOverlays.remove(overlay);
             }
         });
     }
 
     public static void waitForAllDialogsClose() {
-        while (!modalOverlay.isEmpty()) {
+        while (!modalOverlays.isEmpty()) {
             ThreadHelper.sleep(10);
         }
     }
 
     private static void waitForDialogClose(ModalOverlay overlay) {
-        while (modalOverlay.contains(overlay)) {
+        while (modalOverlays.contains(overlay)) {
             ThreadHelper.sleep(10);
         }
     }
 
     public static void show(ModalOverlay o) {
         show(o, false);
+    }
+
+    public static void hide(ModalOverlay o) {
+        PlatformThread.runLaterIfNeeded(() -> {
+            modalOverlays.remove(o);
+        });
     }
 
     public static void showAndWait(ModalOverlay o) {
@@ -64,8 +70,8 @@ public class AppDialog {
         showMainWindow();
         if (!Platform.isFxApplicationThread()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
-                synchronized (modalOverlay) {
-                    modalOverlay.add(o);
+                synchronized (modalOverlays) {
+                    modalOverlays.add(o);
                 }
             });
             if (wait) {
@@ -75,9 +81,9 @@ public class AppDialog {
         } else {
             var key = new Object();
             PlatformThread.runLaterIfNeededBlocking(() -> {
-                synchronized (modalOverlay) {
-                    modalOverlay.add(o);
-                    modalOverlay.addListener(new ListChangeListener<>() {
+                synchronized (modalOverlays) {
+                    modalOverlays.add(o);
+                    modalOverlays.addListener(new ListChangeListener<>() {
                         @Override
                         public void onChanged(Change<? extends ModalOverlay> c) {
                             if (!c.getList().contains(o)) {
@@ -88,7 +94,7 @@ public class AppDialog {
                                     }
                                 });
                                 transition.play();
-                                modalOverlay.removeListener(this);
+                                modalOverlays.removeListener(this);
                             }
                         }
                     });

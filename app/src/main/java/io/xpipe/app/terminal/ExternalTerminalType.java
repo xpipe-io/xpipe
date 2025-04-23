@@ -59,7 +59,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //    };
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
-        if (type != XSHELL && type != MOBAXTERM && type != SECURECRT && type != TERMIUS && !(type instanceof WaveTerminalType)) {
+        if (type != null
+                && type != XSHELL
+                && type != MOBAXTERM
+                && type != SECURECRT
+                && type != TERMIUS
+                && !(type instanceof WaveTerminalType)) {
             return type;
         }
 
@@ -434,9 +439,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {

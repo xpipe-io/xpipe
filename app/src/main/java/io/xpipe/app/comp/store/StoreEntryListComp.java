@@ -4,28 +4,34 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
+import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class StoreEntryListComp extends SimpleComp {
 
     private Comp<?> createList() {
+        var shown = StoreViewState.get()
+                .getCurrentTopLevelSection()
+                .getShownChildren()
+                .getList();
+        var all = StoreViewState.get()
+                .getCurrentTopLevelSection()
+                .getAllChildren()
+                .getList();
         var content = new ListBoxViewComp<>(
-                StoreViewState.get()
-                        .getCurrentTopLevelSection()
-                        .getShownChildren()
-                        .getList(),
-                StoreViewState.get()
-                        .getCurrentTopLevelSection()
-                        .getAllChildren()
-                        .getList(),
+                shown,
+                all,
                 (StoreSection e) -> {
                     var custom = StoreSection.customSection(e).hgrow();
                     return custom;
@@ -48,7 +54,15 @@ public class StoreEntryListComp extends SimpleComp {
                 struc.get().setVvalue(0);
             });
         });
-        return content.styleClass("store-list-comp");
+        content.styleClass("store-list-comp");
+        content.vgrow();
+
+        var statusBar = new StoreEntryListStatusBarComp();
+        statusBar.apply(struc -> {
+            VBox.setMargin(struc.get(), new Insets(3, 6, 4, 2));
+        });
+        statusBar.hide(StoreViewState.get().getBatchMode().not());
+        return new VerticalComp(List.of(content, statusBar));
     }
 
     @Override

@@ -37,16 +37,16 @@ public class RunAction extends MultiExecuteAction {
         var os = shell.get().getOsType();
         if (os.equals(OsType.WINDOWS)
                 && Stream.of("exe", "bat", "ps1", "cmd")
-                        .anyMatch(s -> e.getPath().endsWith(s))) {
+                        .anyMatch(s -> e.getPath().toString().endsWith(s))) {
             return true;
         }
 
         if (ShellDialects.isPowershell(shell.get())
-                && Stream.of("ps1").anyMatch(s -> e.getPath().endsWith(s))) {
+                && Stream.of("ps1").anyMatch(s -> e.getPath().toString().endsWith(s))) {
             return true;
         }
 
-        if (Stream.of("sh", "command").anyMatch(s -> e.getPath().endsWith(s))) {
+        if (Stream.of("sh", "command").anyMatch(s -> e.getPath().toString().endsWith(s))) {
             return true;
         }
 
@@ -76,6 +76,6 @@ public class RunAction extends MultiExecuteAction {
     protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) {
         return CommandBuilder.of()
                 .add(sc.getShellDialect()
-                        .runScriptCommand(sc, entry.getRawFileEntry().getPath()));
+                        .runScriptCommand(sc, entry.getRawFileEntry().getPath().toString()));
     }
 }

@@ -2,18 +2,18 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.FilterComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
@@ -21,6 +21,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.MenuButton;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -94,12 +96,26 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         && e.getValidity().isUsable()
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
+
+            var applicableMatch =
+                    StoreViewState.get().getCurrentTopLevelSection().anyMatches(applicable);
+            if (!applicableMatch) {
+                selectedCategory.set(initialCategory);
+            }
+
+            var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
+                    .filter(applicable)
+                    .count();
+            var initialExpanded = applicableCount < 20;
+
             var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(),
+                            Set.of(),
                             applicable,
                             filterText,
                             selectedCategory,
+                            StoreViewState.get().getEntriesListVisibilityObservable(),
                             StoreViewState.get().getEntriesListUpdateObservable()),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
@@ -111,7 +127,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             this.selected.setValue(sec.getWrapper().getEntry().ref());
                             popover.hide();
                         }
-                    });
+                    },
+                    initialExpanded);
+
             var category = new DataStoreCategoryChoiceComp(
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
@@ -124,7 +142,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
                         m.setMinHeight(0);
-                        StoreCreationMenu.addButtons(m);
+                        StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
                     .accessibleTextKey("addConnection")
@@ -158,11 +176,29 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                     })
                     .createStructure()
                     .get();
-            var r = section.vgrow().createRegion();
+
+            var emptyText = Bindings.createStringBinding(
+                    () -> {
+                        var count = StoreViewState.get().getAllEntries().getList().stream()
+                                .filter(applicable)
+                                .count();
+                        return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
+                    },
+                    StoreViewState.get().getAllEntries().getList());
+            var emptyLabel =
+                    new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
+            emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
+            emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
+            emptyLabel.minHeight(80);
+
+            var listStack = new StackComp(List.of(emptyLabel, section));
+            listStack.vgrow();
+
+            var r = listStack.createRegion();
             var content = new VBox(top, r);
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");
-            content.setPrefWidth(500);
+            content.setPrefWidth(480);
             content.setMaxHeight(550);
 
             popover.setContentNode(content);
@@ -172,6 +208,11 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
             popover.setDetachable(true);
             popover.setTitle(AppI18n.get("selectConnection"));
             AppFontSizes.xs(popover.getContentNode());
+
+            // Hide on connection creation dialog
+            AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+                popover.hide();
+            });
         }
 
         return popover;
@@ -230,7 +271,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             return;
                         }
 
-                        selected.setValue(mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
+                        selected.setValue(
+                                mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
                         event.consume();
                     });
                 })

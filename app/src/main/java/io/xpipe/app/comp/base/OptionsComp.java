@@ -4,16 +4,21 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
+import javafx.util.Duration;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
@@ -24,20 +29,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class OptionsComp extends Comp<CompStructure<Pane>> {
+public class OptionsComp extends Comp<CompStructure<VBox>> {
 
-    private final List<OptionsComp.Entry> entries;
+    private final List<Entry> entries;
 
-    public OptionsComp(List<OptionsComp.Entry> entries) {
+    public OptionsComp(List<Entry> entries) {
         this.entries = entries;
     }
 
     @Override
-    public CompStructure<Pane> createBase() {
-        Pane pane;
-        var content = new VBox();
-        content.setSpacing(7);
-        pane = content;
+    public CompStructure<VBox> createBase() {
+        VBox pane = new VBox();
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
@@ -58,7 +60,6 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
             if (showVertical) {
                 var line = new VBox();
                 line.prefWidthProperty().bind(pane.widthProperty());
-                line.setSpacing(2);
 
                 var name = new Label();
                 name.getStyleClass().add("name");
@@ -67,10 +68,18 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
+                    VBox.setVgrow(line, VBox.getVgrow(compRegion));
+                    line.spacingProperty()
+                            .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                                    () -> {
+                                        return name.isManaged() ? 2.0 : 0.0;
+                                    },
+                                    name.managedProperty())));
                     name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
                     name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                 }
                 line.getChildren().add(name);
+                VBox.setMargin(name, new Insets(0, 0, 0, 1));
 
                 if (entry.description() != null) {
                     var description = new Label();
@@ -84,15 +93,20 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
                     }
 
-                    if (entry.longDescriptionSource() != null) {
-                        var markDown = new MarkdownComp(entry.longDescriptionSource(), s -> s, true)
-                                .apply(struc -> struc.get().setMaxWidth(500))
-                                .apply(struc -> struc.get().setMaxHeight(400));
-                        var popover = new Popover(markDown.createRegion());
-                        popover.setCloseButtonEnabled(false);
-                        popover.setHeaderAlwaysVisible(false);
-                        popover.setDetachable(true);
-                        AppFontSizes.xs(popover.getContentNode());
+                    if (entry.longDescription() != null) {
+                        Popover popover;
+                        if (!entry.longDescription().startsWith("http")) {
+                            var markDown = new MarkdownComp(entry.longDescription(), s -> s, true)
+                                    .apply(struc -> struc.get().setMaxWidth(500))
+                                    .apply(struc -> struc.get().setMaxHeight(400));
+                            popover = new Popover(markDown.createRegion());
+                            popover.setCloseButtonEnabled(false);
+                            popover.setHeaderAlwaysVisible(false);
+                            popover.setDetachable(true);
+                            AppFontSizes.xs(popover.getContentNode());
+                        } else {
+                            popover = null;
+                        }
 
                         var extendedDescription = new Button("... ?");
                         extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
@@ -102,9 +116,19 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         extendedDescription.setAccessibleText("Help");
                         AppFontSizes.xl(extendedDescription);
                         extendedDescription.setOnAction(e -> {
-                            popover.show(extendedDescription);
+                            if (entry.longDescription().startsWith("http")) {
+                                Hyperlinks.open(entry.longDescription());
+                            } else if (popover != null) {
+                                popover.show(extendedDescription);
+                            }
                             e.consume();
                         });
+
+                        if (entry.longDescription().startsWith("http")) {
+                            var tt = TooltipHelper.create(new SimpleStringProperty(entry.longDescription()), null);
+                            tt.setShowDelay(Duration.millis(1));
+                            Tooltip.install(extendedDescription, tt);
+                        }
 
                         var descriptionBox =
                                 new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
@@ -112,6 +136,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                         descriptionBox.setAlignment(Pos.CENTER_LEFT);
                         line.getChildren().add(descriptionBox);
+                        VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
 
                         if (compRegion != null) {
                             descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
@@ -120,6 +145,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     } else {
                         line.getChildren().add(description);
                         line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
+                        VBox.setMargin(description, new Insets(0, 0, 0, 1));
                     }
                 }
 
@@ -163,6 +189,16 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
                     pane.getChildren().add(compRegion);
                 }
             }
+
+            var last = entry.equals(entries.getLast());
+            if (!last) {
+                Spacer spacer = new Spacer(7, Orientation.VERTICAL);
+                pane.getChildren().add(spacer);
+                if (compRegion != null) {
+                    spacer.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
+                    spacer.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                }
+            }
         }
 
         if (entries.size() == 1 && firstComp != null) {
@@ -196,7 +232,7 @@ public class OptionsComp extends Comp<CompStructure<Pane>> {
     public record Entry(
             String key,
             ObservableValue<String> description,
-            String longDescriptionSource,
+            String longDescription,
             ObservableValue<String> name,
             Comp<?> comp) {}
 }

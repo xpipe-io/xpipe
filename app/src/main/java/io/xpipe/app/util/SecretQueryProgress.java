@@ -145,13 +145,14 @@ public class SecretQueryProgress {
         }
 
         if (shouldCache) {
-            SecretManager.set(ref, r.getSecret());
+            SecretManager.cache(ref, r.getSecret(), sup.cacheDuration());
         }
         return r.getSecret();
     }
 
     private boolean shouldCache(SecretQuery query, String prompt) {
-        var shouldCache = query.cache()
+        var hasDuration = query.cacheDuration() == null || query.cacheDuration().isPositive();
+        var shouldCache = hasDuration
                 && !SecretManager.isSpecialPrompt(prompt)
                 && (!query.respectDontCacheSetting()
                         || !AppPrefs.get().dontCachePasswords().get());

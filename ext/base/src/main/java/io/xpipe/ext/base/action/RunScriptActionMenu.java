@@ -1,13 +1,19 @@
 package io.xpipe.ext.base.action;
 
+import io.xpipe.app.comp.store.StoreCategoryConfigComp;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.CommandDialog;
+import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 import io.xpipe.ext.base.script.ScriptHierarchy;
@@ -17,6 +23,7 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RunScriptActionMenu implements ActionProvider {
@@ -61,13 +68,113 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2d-desktop-mac";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
                 }
 
                 @Override
                 public Class<?> getApplicableClass() {
                     return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    var t = AppPrefs.get().terminalType().getValue();
+                    return AppI18n.observable(
+                            "executeInTerminal",
+                            t != null ? t.toTranslatedString().getValue() : "?");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+            };
+        }
+    }
+
+    @Value
+    private static class HubRunActionProvider implements ActionProvider {
+
+        ScriptHierarchy hierarchy;
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return () -> {
+                        var sc = store.getStore().getOrStartSession();
+                        var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                        var cmd = sc.command(script);
+                        CommandDialog.runAsyncAndShow(cmd);
+                    };
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("runInConnectionHub");
+                }
+
+                @Override
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<ShellStore> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("runInConnectionHub");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public Action createAction(List<DataStoreEntryRef<ShellStore>> stores) {
+                    return () -> {
+                        var map = new LinkedHashMap<String, CommandControl>();
+                        for (DataStoreEntryRef<ShellStore> ref : stores) {
+                            var sc = ref.getStore().getOrStartSession();
+                            var script = hierarchy.getLeafBase().getStore().assembleScriptChain(sc);
+                            var cmd = sc.command(script);
+                            map.put(ref.get().getName(), cmd);
+                        }
+                        CommandDialog.runAsyncAndShow(map);
+                    };
                 }
             };
         }
@@ -106,13 +213,44 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2f-flip-to-back";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
                 }
 
                 @Override
                 public Class<?> getApplicableClass() {
                     return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public Class<ShellStore> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("executeInBackground");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store);
+                }
+
+                @Override
+                public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    return List.of();
                 }
             };
         }
@@ -142,14 +280,17 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2p-play-box-multiple-outline";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.ImageGraphic(
+                            hierarchy.getBase().get().getEffectiveIconFile(), 16);
                 }
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
                     return List.of(
-                            new TerminalRunActionProvider(hierarchy), new BackgroundRunActionProvider(hierarchy));
+                            new TerminalRunActionProvider(hierarchy),
+                            new HubRunActionProvider(hierarchy),
+                            new BackgroundRunActionProvider(hierarchy));
                 }
             };
         }
@@ -177,12 +318,52 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2p-play-box-multiple-outline";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
                 }
 
                 @Override
                 public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+                    return hierarchy.getChildren().stream()
+                            .map(c -> new ScriptActionProvider(c))
+                            .toList();
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+
+                @Override
+                public ObservableValue<String> getName() {
+                    return new SimpleStringProperty(hierarchy.getBase().get().getName());
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return null;
+                }
+
+                @Override
+                public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                    if (hierarchy.isLeaf()) {
+                        return List.of(
+                                new TerminalRunActionProvider(hierarchy),
+                                new HubRunActionProvider(hierarchy),
+                                new BackgroundRunActionProvider(hierarchy));
+                    }
+
                     return hierarchy.getChildren().stream()
                             .map(c -> new ScriptActionProvider(c))
                             .toList();
@@ -215,8 +396,8 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2i-image-filter-none";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
                 }
 
                 @Override
@@ -225,17 +406,103 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
             };
         }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("noScriptsAvailable");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(List<DataStoreEntryRef<ShellStore>> stores) {
+                    return new Action();
+                }
+            };
+        }
     }
 
-    private static class NoStateActionProvider implements ActionProvider {
+    private static class ScriptsDisabledActionProvider implements ActionProvider {
 
         private static class Action implements ActionProvider.Action {
 
+            private final DataStoreEntry entry;
+
+            private Action(DataStoreEntry entry) {
+                this.entry = entry;
+            }
+
             @Override
             public void execute() {
-                StoreViewState.get().getAllScriptsCategory().select();
+                var wrapper = StoreViewState.get()
+                        .getCategoryWrapper(DataStorage.get().getStoreCategory(entry));
+                StoreCategoryConfigComp.show(wrapper);
             }
         }
+
+        @Override
+        public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
+            return new LeafDataStoreCallSite<ShellStore>() {
+                @Override
+                public Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action(store.get());
+                }
+
+                @Override
+                public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+                    return AppI18n.observable("scriptsDisabled");
+                }
+
+                @Override
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("scriptsDisabled");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(List<DataStoreEntryRef<ShellStore>> stores) {
+                    return new Action(stores.getFirst().get());
+                }
+            };
+        }
+    }
+
+    private static class NoStateActionProvider implements ActionProvider {
 
         @Override
         public LeafDataStoreCallSite<?> getLeafDataStoreCallSite() {
@@ -256,13 +523,43 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                    return "mdi2i-image-filter-none";
+                public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
                 }
 
                 @Override
                 public Class<?> getApplicableClass() {
                     return ShellStore.class;
+                }
+            };
+        }
+
+        @Override
+        public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+            return new BatchDataStoreCallSite<ShellStore>() {
+                @Override
+                public ObservableValue<String> getName() {
+                    return AppI18n.observable("noScriptStateAvailable");
+                }
+
+                @Override
+                public LabelGraphic getIcon() {
+                    return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+                }
+
+                @Override
+                public Class<?> getApplicableClass() {
+                    return ShellStore.class;
+                }
+
+                @Override
+                public ActionProvider.Action createAction(DataStoreEntryRef<ShellStore> store) {
+                    return new Action() {
+                        @Override
+                        public void execute() {
+                            store.get().validate();
+                        }
+                    };
                 }
             };
         }
@@ -293,8 +590,8 @@ public class RunScriptActionMenu implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<ShellStore> store) {
-                return "mdi2p-play-box-multiple-outline";
+            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
             }
 
             @Override
@@ -314,6 +611,12 @@ public class RunScriptActionMenu implements ActionProvider {
 
             @Override
             public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+                if (Boolean.TRUE.equals(DataStorage.get()
+                        .getEffectiveCategoryConfig(store.get())
+                        .getDontAllowScripts())) {
+                    return List.of(new ScriptsDisabledActionProvider());
+                }
+
                 var replacement = ProcessControlProvider.get().replace(store);
                 var state = replacement.get().getStorePersistentState();
                 if (!(state instanceof SystemState systemState) || systemState.getShellDialect() == null) {
@@ -333,6 +636,86 @@ public class RunScriptActionMenu implements ActionProvider {
                 });
                 var list = hierarchy.getChildren().stream()
                         .map(c -> new ScriptActionProvider(c))
+                        .toList();
+                if (list.isEmpty()) {
+                    return List.of(new NoScriptsActionProvider());
+                } else {
+                    return list;
+                }
+            }
+        };
+    }
+
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<ShellStore>() {
+
+            @Override
+            public Class<ShellStore> getApplicableClass() {
+                return ShellStore.class;
+            }
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("runScript");
+            }
+
+            @Override
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
+            }
+
+            @Override
+            public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+                if (batch.stream()
+                        .anyMatch(store -> Boolean.TRUE.equals(DataStorage.get()
+                                .getEffectiveCategoryConfig(store.get())
+                                .getDontAllowScripts()))) {
+                    return List.of(new ScriptsDisabledActionProvider());
+                }
+
+                var stateMissing = batch.stream().anyMatch(ref -> {
+                    var state = ref.get().getStorePersistentState();
+                    if (state instanceof SystemState systemState) {
+                        if (systemState.getShellDialect() == null) {
+                            return true;
+                        }
+
+                        if (systemState.getTtyState() == null || systemState.getTtyState() != ShellTtyState.NONE) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (stateMissing) {
+                    return List.of(new NoStateActionProvider());
+                }
+
+                var hierarchy = ScriptHierarchy.buildEnabledHierarchy(scriptRef -> {
+                    var compatible = batch.stream().allMatch(ref -> {
+                        var state = ref.get().getStorePersistentState();
+                        if (state instanceof SystemState systemState) {
+                            return scriptRef
+                                    .getStore()
+                                    .getMinimumDialect()
+                                    .isCompatibleTo(systemState.getShellDialect());
+                        } else {
+                            return false;
+                        }
+                    });
+                    if (!compatible) {
+                        return false;
+                    }
+
+                    if (!scriptRef.getStore().isRunnableScript()) {
+                        return false;
+                    }
+
+                    return true;
+                });
+                var list = hierarchy.getChildren().stream()
+                        .<ActionProvider>map(c -> new ScriptActionProvider(c))
                         .toList();
                 if (list.isEmpty()) {
                     return List.of(new NoScriptsActionProvider());

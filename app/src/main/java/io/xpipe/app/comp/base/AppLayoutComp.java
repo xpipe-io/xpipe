@@ -26,10 +26,9 @@ import java.util.stream.Collectors;
 
 public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
 
-    private final AppLayoutModel model = AppLayoutModel.get();
-
     @Override
     public Structure createBase() {
+        var model = AppLayoutModel.get();
         Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .filter(entry -> entry.comp() != null)
                 .collect(Collectors.toMap(
@@ -43,7 +42,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         multi.styleClass("background");
 
         var pane = new BorderPane();
-        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries());
+        var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
         StackPane multiR = (StackPane) multi.createRegion();
         pane.setCenter(multiR);
         var sidebarR = sidebar.createRegion();
@@ -55,7 +54,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
             }
 
             if (o != null && o.equals(model.getEntries().get(0))) {
-                StoreViewState.get().updateDisplay();
+                StoreViewState.get().triggerStoreListUpdate();
             }
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {

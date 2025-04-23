@@ -14,8 +14,8 @@ import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconManager;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.password.KeePassXcManager;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.*;
 import io.xpipe.app.storage.DataStorage;
@@ -56,6 +56,7 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
+        AppPathCorruptCheck.check();
         AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
@@ -70,9 +71,9 @@ public class BaseMode extends OperationMode {
         // You can still update manually in the about tab
         if (AppPrefs.get().automaticallyUpdate().get()
                 || AppPrefs.get().checkForSecurityUpdates().get()) {
-            UpdateAvailableDialog.showIfNeeded();
+            UpdateAvailableDialog.showIfNeeded(true);
         } else {
-            UpdateNagDialog.showIfNeeded();
+            UpdateNagDialog.showAndWaitIfNeeded();
         }
 
         var imagesLoaded = new CountDownLatch(1);
@@ -95,8 +96,10 @@ public class BaseMode extends OperationMode {
                 },
                 () -> {
                     shellLoaded.await();
-                    AppMainWindow.loadingText("loadingGit");
                     DataStorageSyncHandler.getInstance().init();
+                    if (DataStorageSyncHandler.getInstance().supportsSync()) {
+                        AppMainWindow.loadingText("loadingGit");
+                    }
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();
                     AppMainWindow.loadingText("loadingSettings");
                     AppPrefs.initSharedRemote();
@@ -104,26 +107,17 @@ public class BaseMode extends OperationMode {
                     DataStorage.init();
                     storageLoaded.countDown();
                     StoreViewState.init();
-                    AppMainWindow.loadingText("loadingUserInterface");
+                    TrackEvent.info("Connection storage initialization thread completed");
+                },
+                () -> {
                     AppLayoutModel.init();
                     PlatformInit.init(true);
-                    PlatformThread.runLaterIfNeededBlocking(() -> {
-                        AppGreetingsDialog.showIfNeeded();
-                    });
                     imagesLoaded.await();
                     browserLoaded.await();
                     iconsLoaded.await();
-                    TrackEvent.info("Waiting for startup dialogs to close");
-                    AppDialog.waitForAllDialogsClose();
-                    PlatformThread.runLaterIfNeededBlocking(() -> {
-                        try {
-                            AppMainWindow.initContent();
-                        } catch (Throwable t) {
-                            ErrorEvent.fromThrowable(t).term().handle();
-                        }
-                    });
-                    UpdateChangelogAlert.showIfNeeded();
-                    TrackEvent.info("Connection storage initialization thread completed");
+                    AppMainWindow.loadingText("loadingUserInterface");
+                    AppMainWindow.initContent();
+                    TrackEvent.info("Window content initialization thread completed");
                 },
                 () -> {
                     AppFileWatcher.init();
@@ -137,7 +131,6 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
-                    storageLoaded.await();
                     SystemIconManager.init();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
@@ -151,8 +144,16 @@ public class BaseMode extends OperationMode {
                     browserLoaded.countDown();
                     TrackEvent.info("Browser initialization thread completed");
                 });
+
+        AppGreetingsDialog.showAndWaitIfNeeded();
+        TrackEvent.info("Waiting for startup dialogs to close");
+        AppDialog.waitForAllDialogsClose();
+        UpdateChangelogAlert.showIfNeeded();
+
         ActionProvider.initProviders();
         DataStoreProviders.init();
+
+        AppConfigurationDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;
@@ -169,11 +170,12 @@ public class BaseMode extends OperationMode {
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
         BrowserFullSessionModel.DEFAULT.reset();
-        LocalShell.reset();
+        LocalShell.reset(false);
         BrowserLocalFileSystem.reset();
         ProcessControlProvider.get().reset();
         AppPrefs.reset();
         AppBeaconServer.reset();
+        KeePassXcManager.reset();
         StoreViewState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();
@@ -184,6 +186,7 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
+        GlobalTimer.reset();
         TrackEvent.info("Base mode shutdown finished");
     }
 }

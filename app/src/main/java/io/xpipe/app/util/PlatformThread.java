@@ -266,8 +266,7 @@ public class PlatformThread {
             return false;
         }
 
-        // Once the shutdown hooks are run, the toolkit is shutdown, causing it to no longer perform runLater operations
-        if (OperationMode.isInShutdownHook()) {
+        if (OperationMode.isInShutdown()) {
             return false;
         }
 

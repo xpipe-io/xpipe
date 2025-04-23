@@ -3,7 +3,9 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 
@@ -17,6 +19,11 @@ import lombok.SneakyThrows;
 import java.util.List;
 
 public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.SCRIPTING;
+    }
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {
@@ -90,7 +97,7 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return ScriptGroupStore.builder().build();
     }
 

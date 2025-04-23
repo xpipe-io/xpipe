@@ -5,7 +5,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -66,8 +65,9 @@ public final class BrowserFileListModel {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
-                            var name = FileNames.getFileName(
-                                            entry.getRawFileEntry().getPath())
+                            var name = entry.getRawFileEntry()
+                                    .getPath()
+                                    .getFileName()
                                     .toLowerCase(Locale.ROOT);
                             var filterString =
                                     fileSystemModel.getFilter().getValue().toLowerCase(Locale.ROOT);
@@ -99,8 +99,8 @@ public final class BrowserFileListModel {
             return old;
         }
 
-        var fullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), old.getFileName());
-        var newFullPath = FileNames.join(fileSystemModel.getCurrentPath().get(), newName);
+        var fullPath = fileSystemModel.getCurrentPath().get().join(old.getFileName());
+        var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file
         // So skip it in this case
@@ -144,7 +144,7 @@ public final class BrowserFileListModel {
     public void onDoubleClick(BrowserEntry entry) {
         var r = entry.getRawFileEntry().resolved();
         if (r.getKind() == FileKind.DIRECTORY) {
-            fileSystemModel.cdAsync(r.getPath());
+            fileSystemModel.cdAsync(r.getPath().toString());
         }
 
         if (AppPrefs.get().editFilesWithDoubleClick().get() && r.getKind() == FileKind.FILE) {

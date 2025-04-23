@@ -45,7 +45,9 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
-                .sub(SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false, true), identity)
+                .sub(
+                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false, true),
+                        identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()
@@ -77,7 +79,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
                 .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))

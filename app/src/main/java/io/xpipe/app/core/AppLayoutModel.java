@@ -8,10 +8,15 @@ import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -19,6 +24,7 @@ import javafx.scene.input.KeyCombination;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
@@ -35,10 +41,15 @@ public class AppLayoutModel {
 
     private final Property<Entry> selected;
 
+    private final ObservableList<QueueEntry> queueEntries;
+
+    private final BooleanProperty ptbAvailable = new SimpleBooleanProperty();
+
     public AppLayoutModel(SavedState savedState) {
         this.savedState = savedState;
         this.entries = createEntryList();
         this.selected = new SimpleObjectProperty<>(entries.getFirst());
+        this.queueEntries = FXCollections.observableArrayList();
     }
 
     public static AppLayoutModel get() {
@@ -46,7 +57,7 @@ public class AppLayoutModel {
     }
 
     public static void init() {
-        var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(260, 300));
+        var state = AppCache.getNonNull("layoutState", SavedState.class, () -> new SavedState(270, 300));
         INSTANCE = new AppLayoutModel(state);
     }
 
@@ -60,19 +71,27 @@ public class AppLayoutModel {
     }
 
     public void selectBrowser() {
-        selected.setValue(entries.get(1));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(1));
+        });
     }
 
     public void selectSettings() {
-        selected.setValue(entries.get(2));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(2));
+        });
     }
 
     public void selectLicense() {
-        selected.setValue(entries.get(3));
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.get(3));
+        });
     }
 
     public void selectConnections() {
-        selected.setValue(entries.getFirst());
+        PlatformThread.runLaterIfNeeded(() -> {
+            selected.setValue(entries.getFirst());
+        });
     }
 
     private List<Entry> createEntryList() {
@@ -102,6 +121,12 @@ public class AppLayoutModel {
                         null,
                         null),
                 new Entry(
+                        AppI18n.observable("docs"),
+                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
+                        null,
+                        () -> Hyperlinks.open(Hyperlinks.DOCS),
+                        null),
+                new Entry(
                         AppI18n.observable("visitGithubRepository"),
                         new LabelGraphic.IconGraphic("mdi2g-github"),
                         null,
@@ -112,27 +137,21 @@ public class AppLayoutModel {
                         new LabelGraphic.IconGraphic("mdi2d-discord"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
-                        null),
-                //                new Entry(
-                //                        AppI18n.observable("api"),
-                //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-                //                        null,
-                //                        () -> Hyperlinks.open(
-                //                                "http://localhost:" + AppBeaconServer.get().getPort()),
-                //                        null),
-                new Entry(
-                        AppI18n.observable("documentation"),
-                        new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
-                        null,
-                        () -> Hyperlinks.open(Hyperlinks.DOCS),
                         null)));
+        //                new Entry(
+        //                        AppI18n.observable("api"),
+        //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
+        //                        null,
+        //                        () -> Hyperlinks.open(
+        //                                "http://localhost:" + AppBeaconServer.get().getPort()),
+        //                        null),);
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
-                            AppI18n.observable("webtop"),
-                            new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
-                            null,
-                            () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
-                            null));
+                    AppI18n.observable("webtop"),
+                    new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                    null,
+                    () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
+                    null));
         }
         return l;
     }
@@ -152,4 +171,12 @@ public class AppLayoutModel {
             Comp<?> comp,
             Runnable action,
             KeyCombination combination) {}
+
+    @Value
+    public static class QueueEntry {
+
+        ObservableValue<String> name;
+        LabelGraphic icon;
+        Runnable action;
+    }
 }

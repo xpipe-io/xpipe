@@ -4,13 +4,12 @@ import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataColor;
+import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.terminal.TerminalDockComp;
 import io.xpipe.app.terminal.TerminalDockModel;
 import io.xpipe.app.terminal.TerminalView;
@@ -19,6 +18,8 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -26,13 +27,13 @@ import javafx.collections.ObservableList;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     private final BrowserSessionTab origin;
     private final ObservableList<UUID> terminalRequests;
     private final TerminalDockModel dockModel = new TerminalDockModel();
+    private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;
 
@@ -47,7 +48,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     @Override
     public Comp<?> comp() {
-        return new TerminalDockComp(dockModel);
+        return new TerminalDockComp(dockModel, opened);
     }
 
     @Override
@@ -57,7 +58,6 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     @Override
     public void init() throws Exception {
-        var hasOpened = new AtomicBoolean();
         listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
@@ -65,7 +65,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                     return;
                 }
 
-                hasOpened.set(true);
+                opened.set(true);
                 var sessions = TerminalView.get().getSessions();
                 var tv = sessions.stream()
                         .filter(s -> terminalRequests.contains(s.getRequest())
@@ -116,7 +116,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
         // If the terminal launch fails
         ThreadHelper.runAsync(() -> {
             ThreadHelper.sleep(5000);
-            if (!hasOpened.get()) {
+            if (!opened.get()) {
                 refreshShowingState();
             }
         });
@@ -138,7 +138,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 dockModel.toggleView(aBoolean);
             });
         });
-        AppDialog.getModalOverlay().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
                 dockModel.toggleView(false);
             } else {
@@ -177,7 +177,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public DataColor getColor() {
+    public DataStoreColor getColor() {
         return null;
     }
 }

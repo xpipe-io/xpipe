@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -36,7 +37,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var state = BrowserHistorySavedStateImpl.get();
-        var list = new DerivedObservableList<>(state.getEntries(), true)
+        var list = DerivedObservableList.wrap(state.getEntries(), true)
                 .filtered(e -> {
                     if (DataStorage.get() == null) {
                         return false;
@@ -101,7 +102,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                 .grow(true, false)
                 .accessibleTextKey("restoreAllSessions");
 
-        var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.separator(), tile));
+        var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.hseparator(), tile));
         layout.styleClass("welcome");
         layout.spacing(14);
         layout.maxWidth(1000);
@@ -113,15 +114,24 @@ public class BrowserHistoryTabComp extends SimpleComp {
     }
 
     private Comp<?> createEmptyDisplay() {
-        var intro = new IntroComp(
+        var docs = new IntroComp("browserWelcomeDocs", new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
+        docs.setButtonAction(() -> {
+            DocumentationLink.GETTING_STARTED.open();
+        });
+        docs.setButtonDefault(true);
+
+        var open = new IntroComp(
                 "browserWelcomeEmpty",
                 new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
-        intro.setButtonAction(() -> {
+        open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
                     DataStorage.get().local().ref(), null, null);
         });
-        intro.setButtonDefault(true);
-        return intro;
+
+        var v = new VerticalComp(List.of(docs, open));
+        v.spacing(70);
+        v.apply(struc -> struc.get().setAlignment(Pos.CENTER));
+        return v;
     }
 
     private Comp<?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
@@ -154,7 +164,9 @@ public class BrowserHistoryTabComp extends SimpleComp {
         var name = Bindings.createStringBinding(
                 () -> {
                     var n = e.getPath();
-                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                    return AppPrefs.get().censorMode().get()
+                            ? "*".repeat(n.toString().length())
+                            : n.toString();
                 },
                 AppPrefs.get().censorMode());
         return new ButtonComp(name, () -> {
@@ -162,7 +174,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                         model.restoreStateAsync(e, disable);
                     });
                 })
-                .accessibleText(e.getPath())
+                .accessibleText(e.getPath().toString())
                 .disable(disable)
                 .styleClass("directory-button")
                 .apply(struc -> struc.get().setMaxWidth(20000))

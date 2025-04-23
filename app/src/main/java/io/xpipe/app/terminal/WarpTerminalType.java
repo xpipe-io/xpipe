@@ -1,10 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.prefs.ExternalApplicationHelper;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.TerminalInitFunction;
@@ -27,10 +23,19 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            if (!configuration.isPreferTabs()) {
-                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
-            } else {
-                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            try (var sc = LocalShell.getShell().start()) {
+                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
+                        + "\n"
+                        + configuration
+                                .getScriptDialect()
+                                .runScriptCommand(
+                                        sc, configuration.getScriptFile().toString());
+                var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
+                if (!configuration.isPreferTabs()) {
+                    DesktopHelper.openUrl("warp://action/new_window?path=" + script);
+                } else {
+                    DesktopHelper.openUrl("warp://action/new_tab?path=" + script);
+                }
             }
         }
 
@@ -52,7 +57,6 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         }
     }
 
-
     class Linux implements WarpTerminalType {
 
         @Override
@@ -61,7 +65,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         }
 
         @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) {
             if (!configuration.isPreferTabs()) {
                 DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
             } else {

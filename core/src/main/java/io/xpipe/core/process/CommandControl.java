@@ -1,5 +1,7 @@
 package io.xpipe.core.process;
 
+import io.xpipe.core.store.FilePath;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -34,7 +36,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl notComplex();
 
-    CommandControl withWorkingDirectory(String directory);
+    CommandControl withWorkingDirectory(FilePath directory);
 
     default void execute() throws Exception {
         try (var c = start()) {
@@ -55,6 +57,8 @@ public interface CommandControl extends ProcessControl {
     OutputStream startExternalStdin() throws Exception;
 
     void setExitTimeout(Duration duration);
+
+    void setStartTimeout(Duration duration);
 
     boolean waitFor();
 

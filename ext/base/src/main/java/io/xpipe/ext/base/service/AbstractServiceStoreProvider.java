@@ -10,7 +10,8 @@ import io.xpipe.app.ext.SingletonSessionStoreProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.ShellStoreFormat;
+import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
@@ -19,6 +20,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.SERVICES;
+    }
 
     @Override
     public ActionProvider.Action launchAction(DataStoreEntry store) {
@@ -62,7 +68,12 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
+                    if (!w.getEntry().getValidity().isUsable()) {
+                        return SystemStateComp.State.OTHER;
+                    }
+
                     AbstractServiceStore s = w.getEntry().getStore().asNeeded();
+
                     if (!s.requiresTunnel()) {
                         return SystemStateComp.State.SUCCESS;
                     }
@@ -122,7 +133,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                             : s.isSessionRunning()
                                     ? AppI18n.get("active")
                                     : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new ShellStoreFormat(null, desc, type, state).format();
+                    return new StoreStateFormat(null, desc, type, state).format();
                 },
                 section.getWrapper().getCache(),
                 AppI18n.activeLanguage());

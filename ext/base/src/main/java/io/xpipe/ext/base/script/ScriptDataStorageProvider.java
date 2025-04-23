@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -11,6 +12,11 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
 
     @Override
     public void storageInit() {
+        // Don't regenerate if the user deleted anything
+        if (!AppProperties.get().isInitialLaunch()) {
+            return;
+        }
+
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),

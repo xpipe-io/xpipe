@@ -7,6 +7,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellScript;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -172,10 +173,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 throw ErrorEvent.expected(new IllegalStateException("No custom editor command specified"));
             }
 
-            var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            var command = CommandBuilder.of().add(ExternalApplicationHelper.replaceFileArgument(format, "FILE", file.toString()));
+            var format =
+                    customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            var command = CommandBuilder.of()
+                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLauncher.openDirect(file.toString(), sc -> command.buildFull(sc), AppPrefs.get().terminalType.get());
+                TerminalLauncher.openDirect(file.toString(), sc -> new ShellScript(command.buildFull(sc)));
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }
@@ -191,12 +194,36 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm", false);
     ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
-    List<ExternalEditorType> WINDOWS_EDITORS =
-            List.of(CURSOR_WINDOWS, WINDSURF_WINDOWS, TRAE_WINDOWS, VSCODIUM_WINDOWS, VSCODE_INSIDERS_WINDOWS, VSCODE_WINDOWS, NOTEPADPLUSPLUS, NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS =
-            List.of(ExternalEditorType.WINDSURF_LINUX, VSCODIUM_LINUX, VSCODE_LINUX, ZED_LINUX, KATE, GEDIT, PLUMA, LEAFPAD, MOUSEPAD, GNOME);
-    List<ExternalEditorType> MACOS_EDITORS =
-            List.of(CURSOR_MACOS, WINDSURF_MACOS, TRAE_MACOS, BBEDIT, VSCODIUM_MACOS, VSCODE_MACOS, SUBLIME_MACOS, ZED_MACOS, TEXT_EDIT);
+    List<ExternalEditorType> WINDOWS_EDITORS = List.of(
+            CURSOR_WINDOWS,
+            WINDSURF_WINDOWS,
+            TRAE_WINDOWS,
+            VSCODIUM_WINDOWS,
+            VSCODE_INSIDERS_WINDOWS,
+            VSCODE_WINDOWS,
+            NOTEPADPLUSPLUS,
+            NOTEPAD);
+    List<LinuxPathType> LINUX_EDITORS = List.of(
+            ExternalEditorType.WINDSURF_LINUX,
+            VSCODIUM_LINUX,
+            VSCODE_LINUX,
+            ZED_LINUX,
+            KATE,
+            GEDIT,
+            PLUMA,
+            LEAFPAD,
+            MOUSEPAD,
+            GNOME);
+    List<ExternalEditorType> MACOS_EDITORS = List.of(
+            CURSOR_MACOS,
+            WINDSURF_MACOS,
+            TRAE_MACOS,
+            BBEDIT,
+            VSCODIUM_MACOS,
+            VSCODE_MACOS,
+            SUBLIME_MACOS,
+            ZED_MACOS,
+            TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")

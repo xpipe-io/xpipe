@@ -95,8 +95,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public List<ShellInitCommand> getInitCommands() {
-        return parent.getInitCommands();
+    public List<ShellTerminalInitCommand> getTerminalInitCommands() {
+        return parent.getTerminalInitCommands();
     }
 
     @Override
@@ -339,8 +339,13 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withInitSnippet(ShellInitCommand snippet) {
+    public ShellControl withInitSnippet(ShellTerminalInitCommand snippet) {
         return parent.withInitSnippet(snippet);
+    }
+
+    @Override
+    public Optional<ShellControl> getActiveReplacementBackgroundSession() throws Exception {
+        return parent.getActiveReplacementBackgroundSession();
     }
 
     @Override

@@ -9,21 +9,20 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
 
 @Getter
+@AllArgsConstructor
 public final class BrowserConnectionListFilterComp extends SimpleComp {
 
-    private final Property<StoreCategoryWrapper> category =
-            new SimpleObjectProperty<>(StoreViewState.get().getActiveCategory().getValue());
-    private final Property<String> filter = new SimpleStringProperty();
+    private final Property<StoreCategoryWrapper> category;
+    private final Property<String> filter;
 
     @Override
     protected Region createSimple() {

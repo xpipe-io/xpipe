@@ -2,13 +2,9 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeInstallation;
@@ -18,6 +14,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -43,36 +41,25 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
-
-        // wt can't elevate a command consisting out of multiple parts if wt is configured to elevate by default
-        // So work around it by just passing a script file if possible
-        if (ShellDialects.isPowershell(configuration.getScriptDialect())) {
-            var usesPowershell =
-                    ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
-            if (usesPowershell) {
-                // We can't work around it in this case, so let's just hope that there's no elevation configured
-                cmd.add(configuration.getDialectLaunchCommand());
-            } else {
-                // There might be a mismatch if we are for example using logging
-                // In this case we can actually work around the problem
-                cmd.addFile(shellControl -> {
-                    var script = ScriptHelper.createExecScript(
-                            shellControl,
-                            configuration.getDialectLaunchCommand().buildFull(shellControl));
-                    return script.toString();
-                });
-            }
-        } else {
-            cmd.addFile(configuration.getScriptFile());
-        }
-
+        cmd.add(configuration.getDialectLaunchCommand());
         return cmd;
     }
 
     default void checkProfile() throws IOException {
+        // Update old configs
+        var before =
+                LocalDate.of(2025, 4, 2).atStartOfDay(ZoneId.systemDefault()).toInstant();
+        var outdated = AppCache.getModifiedTime("wtProfileSet")
+                .map(instant -> instant.isBefore(before))
+                .orElse(false);
+
         var profileSet = AppCache.getBoolean("wtProfileSet", false);
-        if (profileSet) {
+        if (profileSet && !outdated) {
             return;
+        }
+
+        if (outdated) {
+            AppCache.clear("wtProfileSet");
         }
 
         if (!Files.exists(getConfigFile())) {
@@ -97,6 +84,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);
+        newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {
             var dir = XPipeInstallation.getLocalDefaultInstallationIcon();
             newProfile.put("icon", dir.toString());
@@ -109,13 +97,6 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     @Override
     default TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-    }
-
-    @Override
-    default int getProcessHierarchyOffset() {
-        var powershell = AppPrefs.get().enableTerminalLogging().get()
-                && !ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
-        return powershell ? 1 : 0;
     }
 
     @Override
@@ -139,7 +120,16 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             checkProfile();
-            super.launch(configuration);
+
+            var inPath = LocalShell.getShell().view().findProgram("wt").isPresent();
+            if (inPath) {
+                super.launch(configuration);
+            } else {
+                LocalShell.getShell()
+                        .executeSimpleCommand(CommandBuilder.of()
+                                .addFile(getPath().toString())
+                                .add(toCommand(configuration)));
+            }
         }
 
         @Override
@@ -150,6 +140,11 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return WindowsTerminalType.toCommand(configuration);
+        }
+
+        private Path getPath() {
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local).resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override

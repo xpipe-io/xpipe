@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
@@ -42,7 +41,7 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         return "AES/GCM/NoPadding";
     }
 
-    protected abstract SecretKey getSecretKey() throws InvalidKeySpecException;
+    protected abstract SecretKey getSecretKey();
 
     @Override
     @SneakyThrows

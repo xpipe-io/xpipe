@@ -4,7 +4,6 @@ import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.ModuleHelper;
 import io.xpipe.core.util.XPipeDaemonMode;
 
 import lombok.Getter;
@@ -57,6 +56,8 @@ public class AppProperties {
 
     boolean aotTrainMode;
 
+    boolean debugPlatformThreadAccess;
+
     AppArguments arguments;
 
     XPipeDaemonMode explicitMode;
@@ -82,7 +83,12 @@ public class AppProperties {
         }
         var referenceDir = Files.exists(appDir) ? appDir : Path.of(System.getProperty("user.dir"));
 
-        image = ModuleHelper.isImage();
+        image = AppProperties.class
+                .getProtectionDomain()
+                .getCodeSource()
+                .getLocation()
+                .getProtocol()
+                .equals("jrt");
         arguments = AppArguments.init(args);
         fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
@@ -103,6 +109,9 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(true);
         debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        debugPlatformThreadAccess = Optional.ofNullable(System.getProperty("io.xpipe.app.debugPlatformThreadAccess"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
@@ -156,6 +165,10 @@ public class AppProperties {
                 .orElse(null);
     }
 
+    public void resetInitialLaunch() {
+        AppCache.clear("lastBuildId");
+    }
+
     private static boolean isJUnitTest() {
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
             if (element.getClassName().startsWith("org.junit.")) {
@@ -185,7 +198,6 @@ public class AppProperties {
                 .tag("raw", arguments.getRawArgs())
                 .tag("resolved", arguments.getResolvedArgs())
                 .tag("resolvedCommand", arguments.getOpenArgs())
-                .tag("resolvedMode", arguments.getModeArg())
                 .handle();
 
         for (var e : System.getProperties().entrySet()) {

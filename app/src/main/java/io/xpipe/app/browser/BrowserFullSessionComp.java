@@ -4,15 +4,12 @@ import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserTransferComp;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.AnchorComp;
-import io.xpipe.app.comp.base.LeftSplitPaneComp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
-import io.xpipe.app.comp.base.StackComp;
-import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
+import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
@@ -22,10 +19,11 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 
 import java.util.HashMap;
@@ -43,7 +41,7 @@ public class BrowserFullSessionComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var vertical = createLeftSide();
+        var left = Comp.of(() -> createLeftSide());
 
         var leftSplit = new SimpleDoubleProperty();
         var rightSplit = new SimpleDoubleProperty();
@@ -57,7 +55,7 @@ public class BrowserFullSessionComp extends SimpleComp {
             AnchorPane.setRightAnchor(struc.get(), 0.0);
         });
 
-        vertical.apply(struc -> {
+        left.apply(struc -> {
             struc.get()
                     .paddingProperty()
                     .bind(Bindings.createObjectBinding(
@@ -74,10 +72,15 @@ public class BrowserFullSessionComp extends SimpleComp {
 
         var loadingStack = new AnchorComp(List.of(tabs, pinnedStack, loadingIndicator));
         loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
-        var splitPane = new LeftSplitPaneComp(vertical, loadingStack)
+        var delayedStack = new DelayedInitComp(
+                left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
+        delayedStack.hide(AppMainWindow.getInstance().getStage().widthProperty().lessThan(1000));
+        var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
-                    AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
+                    if (d > 0.0) {
+                        AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
+                    }
                     leftSplit.set(d);
                 });
         splitPane.apply(struc -> {
@@ -104,7 +107,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         return r;
     }
 
-    private Comp<CompStructure<VBox>> createLeftSide() {
+    private Region createLeftSide() {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
             if (!storeEntryWrapper.getEntry().getValidity().isUsable()) {
                 return false;
@@ -131,7 +134,10 @@ public class BrowserFullSessionComp extends SimpleComp {
             });
         };
 
-        var bookmarkTopBar = new BrowserConnectionListFilterComp();
+        var category = new SimpleObjectProperty<>(
+                StoreViewState.get().getActiveCategory().getValue());
+        var filter = new SimpleStringProperty();
+        var bookmarkTopBar = new BrowserConnectionListFilterComp(category, filter);
         var bookmarksList = new BrowserConnectionListComp(
                 BindingsHelper.map(
                         model.getSelectedEntry(),
@@ -140,8 +146,8 @@ public class BrowserFullSessionComp extends SimpleComp {
                                 : null),
                 applicable,
                 action,
-                bookmarkTopBar.getCategory(),
-                bookmarkTopBar.getFilter());
+                category,
+                filter);
         var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
         bookmarksContainer
                 .apply(struc -> {
@@ -168,7 +174,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         localDownloadStage.maxHeight(200);
         var vertical =
                 new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
-        return vertical;
+        return vertical.createRegion();
     }
 
     private StackComp createSplitStack(SimpleDoubleProperty rightSplit, BrowserSessionTabsComp tabs) {

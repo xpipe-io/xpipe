@@ -6,13 +6,12 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.SshLocalBridge;
-import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -72,11 +71,11 @@ public class TermiusTerminalType implements ExternalTerminalType {
             return;
         }
 
-        var host = "localhost";
         var b = SshLocalBridge.get();
+        var host = b.getHost();
         var port = b.getPort();
-        var user = b.getUser();
-        var name = b.getIdentityKey().getFileName().toString();
+        var user = URLEncoder.encode(b.getUser(), StandardCharsets.UTF_8);
+        var name = b.getName();
         Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
                 + user + "&os=undefined");
     }
@@ -91,7 +90,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var keyContent = Files.readString(b.getIdentityKey());
         var activated =
                 AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyContent);
-        var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s, false).prefWidth(450));
+        var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s, false).prefWidth(550));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("termiusSetup", true);
         }));

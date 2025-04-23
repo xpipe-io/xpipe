@@ -6,6 +6,7 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.util.ScanDialog;
 
+import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -17,16 +18,18 @@ import java.util.Comparator;
 
 public class StoreCreationMenu {
 
-    public static void addButtons(MenuButton menu) {
-        var automatically = new MenuItem();
-        automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
-        automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
-        automatically.setOnAction(event -> {
-            ScanDialog.showAsync(null);
-            event.consume();
-        });
-        menu.getItems().add(automatically);
-        menu.getItems().add(new SeparatorMenuItem());
+    public static void addButtons(MenuButton menu, boolean allowSearch) {
+        if (allowSearch) {
+            var automatically = new MenuItem();
+            automatically.setGraphic(new FontIcon("mdi2e-eye-plus-outline"));
+            automatically.textProperty().bind(AppI18n.observable("addAutomatically"));
+            automatically.setOnAction(event -> {
+                ScanDialog.showSingleAsync(null);
+                event.consume();
+            });
+            menu.getItems().add(automatically);
+            menu.getItems().add(new SeparatorMenuItem());
+        }
 
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
@@ -67,7 +70,7 @@ public class StoreCreationMenu {
             item.setGraphic(new FontIcon(graphic));
             item.textProperty().bind(AppI18n.observable(name));
             item.setOnAction(event -> {
-                StoreCreationComp.showCreation(
+                StoreCreationDialog.showCreation(
                         defaultProvider != null
                                 ? DataStoreProviders.byId(defaultProvider).orElseThrow()
                                 : null,
@@ -85,12 +88,16 @@ public class StoreCreationMenu {
                 return;
             }
 
-            StoreCreationComp.showCreation(
-                    defaultProvider != null
-                            ? DataStoreProviders.byId(defaultProvider).orElseThrow()
-                            : null,
-                    category);
-            event.consume();
+            Platform.runLater(() -> {
+                StoreCreationDialog.showCreation(
+                        defaultProvider != null
+                                ? DataStoreProviders.byId(defaultProvider).orElseThrow()
+                                : null,
+                        category);
+            });
+
+            // Fix weird JavaFX NPE
+            menu.getParentPopup().hide();
         });
 
         var providers = sub.stream()
@@ -108,7 +115,7 @@ public class StoreCreationMenu {
             item.setGraphic(PrettyImageHelper.ofFixedSizeSquare(dataStoreProvider.getDisplayIconFileName(null), 16)
                     .createRegion());
             item.setOnAction(event -> {
-                StoreCreationComp.showCreation(dataStoreProvider, category);
+                StoreCreationDialog.showCreation(dataStoreProvider, category);
                 event.consume();
             });
             menu.getItems().add(item);

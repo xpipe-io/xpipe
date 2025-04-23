@@ -3,21 +3,16 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.storage.DataColor;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -26,15 +21,20 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
     private final BooleanProperty expanded;
     private final BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment;
     private final Consumer<StoreSection> action;
+    private final boolean forceInitialExpand;
 
     public StoreSectionMiniComp(
             StoreSection section,
             BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment,
-            Consumer<StoreSection> action) {
+            Consumer<StoreSection> action,
+            boolean forceInitialExpand) {
         super(section);
         this.augment = augment;
         this.action = action;
-        this.expanded = new SimpleBooleanProperty(section.getWrapper() == null || section.getWrapper().getExpanded().getValue());
+        this.forceInitialExpand = forceInitialExpand;
+        this.expanded = new SimpleBooleanProperty(section.getWrapper() == null
+                || section.getWrapper().getExpanded().getValue()
+                || forceInitialExpand);
     }
 
     @Override
@@ -48,12 +48,13 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
             root.maxWidth(2000);
             root.styleClass("item");
             root.apply(struc -> {
-                        struc.get().setAlignment(Pos.CENTER_LEFT);
-                        struc.get().setGraphic(PrettyImageHelper.ofFixedSize(
-                                                section.getWrapper().getIconFile(), 16, 16)
-                                        .createRegion());
-                        struc.get().setMnemonicParsing(false);
-                    });
+                struc.get().setAlignment(Pos.CENTER_LEFT);
+                struc.get()
+                        .setGraphic(PrettyImageHelper.ofFixedSize(
+                                        section.getWrapper().getIconFile(), 16, 16)
+                                .createRegion());
+                struc.get().setMnemonicParsing(false);
+            });
             augment.accept(section, root);
 
             var expandButton = createExpandButton(() -> expanded.set(!expanded.get()), 20, expanded);
@@ -73,19 +74,21 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
             list.add(h);
         }
 
-        var content = createChildrenList(c -> new StoreSectionMiniComp(c, this.augment, this.action), Bindings.not(expanded));
+        var content = createChildrenList(
+                c -> new StoreSectionMiniComp(c, this.augment, this.action, this.forceInitialExpand),
+                Bindings.not(expanded));
         list.add(content);
 
         var full = new VerticalComp(list);
         full.styleClass("store-section-mini-comp");
         full.apply(struc -> {
-                    struc.get().setFillWidth(true);
-                    addPseudoClassListeners(struc.get(), expanded);
-                    if (section.getWrapper() != null) {
-                        var hbox = ((HBox) struc.get().getChildren().getFirst());
-                        addVisibilityListeners(struc.get(), hbox);
-                    }
-                });
+            struc.get().setFillWidth(true);
+            addPseudoClassListeners(struc.get(), expanded);
+            if (section.getWrapper() != null) {
+                var hbox = ((HBox) struc.get().getChildren().getFirst());
+                addVisibilityListeners(struc.get(), hbox);
+            }
+        });
         return full.createStructure();
     }
 }

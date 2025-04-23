@@ -47,6 +47,7 @@ open module io.xpipe.beacon {
             ConnectionRefreshExchange,
             AskpassExchange,
             TerminalPrepareExchange,
+            TerminalRegisterExchange,
             TerminalWaitExchange,
             TerminalLaunchExchange,
             TerminalExternalLaunchExchange,

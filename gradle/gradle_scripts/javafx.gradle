@@ -18,7 +18,7 @@ configurations {
     javafx
 }
 
-if (customJavaFxPath != null) {
+if (rootProject.hasProperty("customJavaFxPath")) {
     repositories {
         flatDir {
             dirs customJavaFxPath
@@ -30,10 +30,10 @@ if (customJavaFxPath != null) {
 } else {
     // Always use maven version for now
     dependencies {
-        javafx "org.openjfx:javafx-base:${javafxVersion}:${platform}"
-        javafx "org.openjfx:javafx-controls:${javafxVersion}:${platform}"
-        javafx "org.openjfx:javafx-graphics:${javafxVersion}:${platform}"
-        javafx "org.openjfx:javafx-media:${javafxVersion}:${platform}"
-        javafx "org.openjfx:javafx-web:${javafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-base:${devJavafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-controls:${devJavafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-graphics:${devJavafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-media:${devJavafxVersion}:${platform}"
+        javafx "org.openjfx:javafx-web:${devJavafxVersion}:${platform}"
     }
 }

@@ -7,7 +7,7 @@ The XPipe beacon component is responsible for handling all communications betwee
 and the APIs and the CLI. It provides an API that supports all kinds
 of different operations.
 
-For a full documentation, see the [OpenAPI spec](/../openapi.yaml)
+For a full documentation, see the [OpenAPI spec](https://docs.xpipe.io/api)
 
 ### Inner Workings
 

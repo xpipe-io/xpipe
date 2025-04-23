@@ -7,7 +7,8 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.PlatformThread;
@@ -46,7 +47,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                             ? BrowserIconManager.getFileIcon(model.getCurrentDirectory())
                             : null;
                 },
-                model.getCurrentPath());
+                PlatformThread.sync(model.getCurrentPath()));
         var breadcrumbsGraphic = PrettyImageHelper.ofFixedSize(graphic, 24, 24)
                 .styleClass("path-graphic")
                 .createRegion();
@@ -65,8 +66,10 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         historyButton.getStyleClass().add(Styles.RIGHT_PILL);
         new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu)
                 .augment(new SimpleCompStructure<>(historyButton));
-        new TooltipAugment<>("history", new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN))
-                .augment(historyButton);
+        Tooltip.install(
+                historyButton,
+                TooltipHelper.create(
+                        AppI18n.observable("history"), new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)));
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 
@@ -85,7 +88,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                                     && !model.getInOverview().get();
                         },
                         pathRegion.focusedProperty(),
-                        model.getInOverview()));
+                        PlatformThread.sync(model.getInOverview())));
         var stack = new StackPane(pathRegion, breadcrumbsRegion);
         stack.setAlignment(Pos.CENTER_LEFT);
         pathRegion.prefHeightProperty().bind(stack.heightProperty());
@@ -133,9 +136,11 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     }
 
     private Comp<CompStructure<TextField>> createPathBar() {
-        var path = new SimpleStringProperty(model.getCurrentPath().get());
+        var path = new SimpleStringProperty();
         model.getCurrentPath().subscribe((newValue) -> {
-            path.set(newValue);
+            PlatformThread.runLaterIfNeeded(() -> {
+                path.set(newValue != null ? newValue.toString() : null);
+            });
         });
         path.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runFailableAsync(() -> {
@@ -202,7 +207,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 continue;
             }
 
-            var mi = new MenuItem(f.get(i));
+            var mi = new MenuItem(f.get(i).toString());
             int target = i + 1;
             mi.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {
@@ -219,7 +224,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         }
 
         if (model.getHistory().getCurrent() != null) {
-            var current = new MenuItem(model.getHistory().getCurrent());
+            var current = new MenuItem(model.getHistory().getCurrent().toString());
             current.setDisable(true);
             cm.getItems().add(current);
         }
@@ -234,7 +239,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 continue;
             }
 
-            var mi = new MenuItem(b.get(i));
+            var mi = new MenuItem(b.get(i).toString());
             int target = i + 1;
             mi.setOnAction(event -> {
                 ThreadHelper.runFailableAsync(() -> {

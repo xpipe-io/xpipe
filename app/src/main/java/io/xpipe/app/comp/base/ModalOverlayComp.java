@@ -12,15 +12,14 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -45,7 +44,8 @@ public class ModalOverlayComp extends SimpleComp {
     protected Region createSimple() {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
-        modal.setInTransitionFactory(null);
+        modal.setInTransitionFactory(
+                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
         modal.setOutTransitionFactory(
                 OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -86,7 +86,7 @@ public class ModalOverlayComp extends SimpleComp {
             }
         });
 
-        modal.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+        modal.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 var ov = overlayContent.getValue();
                 if (ov != null) {
@@ -150,9 +150,9 @@ public class ModalOverlayComp extends SimpleComp {
 
     private void showModalBox(ModalPane modal, ModalOverlay overlay) {
         var modalBox = toBox(modal, overlay);
-        modal.setPersistent(overlay.isPersistent());
+        modal.setPersistent(overlay.isRequireCloseButtonForClose());
         modal.show(modalBox);
-        if (overlay.isPersistent() || overlay.getTitleKey() == null) {
+        if (!overlay.isHasCloseButton() || overlay.getTitle() == null) {
             var closeButton = modalBox.lookup(".close-button");
             if (closeButton != null) {
                 closeButton.setVisible(false);
@@ -164,17 +164,17 @@ public class ModalOverlayComp extends SimpleComp {
         Region r = newValue.getContent().createRegion();
 
         var content = new VBox(r);
+        content.getStyleClass().add("content");
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {
                 r.requestFocus();
             }
         });
-        content.setSpacing(25);
-        content.setPadding(new Insets(13, 27, 20, 27));
+        content.setSpacing(20);
 
-        if (newValue.getTitleKey() != null) {
+        if (newValue.getTitle() != null) {
             var l = new Label(
-                    AppI18n.get(newValue.getTitleKey()),
+                    newValue.getTitle().getValue(),
                     newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
             l.setGraphicTextGap(8);
             AppFontSizes.xl(l);
@@ -184,20 +184,38 @@ public class ModalOverlayComp extends SimpleComp {
         }
 
         if (newValue.getButtons().size() > 0) {
-            var buttonBar = new ButtonBar();
+            var max = new SimpleDoubleProperty();
+            var buttonBar = new HBox();
+            buttonBar.getStyleClass().add("button-bar");
+            buttonBar.setSpacing(10);
+            buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
                 var node = o instanceof ModalButton mb ? toButton(mb) : ((Comp<?>) o).createRegion();
-                buttonBar.getButtons().add(node);
-                ButtonBar.setButtonUniformSize(node, o instanceof ModalButton);
+                if (o instanceof ModalButton) {
+                    node.widthProperty().addListener((observable, oldValue, n) -> {
+                        var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);
+                        if (d > max.get()) {
+                            max.set(d);
+                        }
+                    });
+                }
+                node.minWidthProperty().bind(max);
+                buttonBar.getChildren().add(node);
                 if (o instanceof ModalButton) {
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
             }
             content.getChildren().add(buttonBar);
-            AppFontSizes.xs(buttonBar);
+            AppFontSizes.apply(buttonBar, sizes -> {
+                if (sizes.getBase().equals("10.5")) {
+                    return sizes.getBase();
+                } else {
+                    return sizes.getSm();
+                }
+            });
         }
 
-        var modalBox = new ModalBox(content) {
+        var modalBox = new ModalBox(pane, content) {
 
             @Override
             protected void setCloseButtonPosition() {
@@ -205,18 +223,23 @@ public class ModalOverlayComp extends SimpleComp {
                 setRightAnchor(closeButton, 19d);
             }
         };
+        if (newValue.getHideAction() != null) {
+            modalBox.setOnMinimize(event -> {
+                newValue.getHideAction().run();
+                event.consume();
+            });
+        }
         modalBox.setOnClose(event -> {
             overlayContent.setValue(null);
             event.consume();
         });
-        r.maxHeightProperty().bind(pane.heightProperty().subtract(200));
+        content.maxHeightProperty().bind(pane.heightProperty().subtract(40));
+        modalBox.minHeightProperty().bind(content.heightProperty());
 
         content.prefWidthProperty().bind(modalBox.widthProperty());
         modalBox.setMinWidth(100);
-        modalBox.setMinHeight(100);
         modalBox.prefWidthProperty().bind(modalBoxWidth(pane, r));
         modalBox.maxWidthProperty().bind(modalBox.prefWidthProperty());
-        modalBox.prefHeightProperty().bind(modalBoxHeight(pane, content));
         modalBox.setMaxHeight(Region.USE_PREF_SIZE);
         modalBox.focusedProperty().addListener((o, old, n) -> {
             if (n) {
@@ -228,14 +251,6 @@ public class ModalOverlayComp extends SimpleComp {
             var busy = mocc.busy();
             if (busy != null) {
                 var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
-                //                loading.apply(struc -> {
-                //                    var bg = struc.get().getChildren().getFirst();
-                //                    struc.get().getChildren().get(1).addEventFilter(MouseEvent.MOUSE_PRESSED, event ->
-                // {
-                //                        bg.fireEvent(event);
-                //                        event.consume();
-                //                    });
-                //                });
                 return loading.createRegion();
             }
         }
@@ -256,23 +271,6 @@ public class ModalOverlayComp extends SimpleComp {
                 r.prefWidthProperty());
     }
 
-    private ObservableDoubleValue modalBoxHeight(ModalPane pane, Region content) {
-        return Bindings.createDoubleBinding(
-                () -> {
-                    var max = pane.getHeight() - 20;
-                    if (content.getPrefHeight() != Region.USE_COMPUTED_SIZE) {
-                        return Math.min(max, content.getPrefHeight());
-                    }
-
-                    return Math.min(max, content.getHeight());
-                },
-                pane.heightProperty(),
-                pane.prefHeightProperty(),
-                content.prefHeightProperty(),
-                content.heightProperty(),
-                content.maxHeightProperty());
-    }
-
     private Button toButton(ModalButton mb) {
         var button = new Button(mb.getKey() != null ? AppI18n.get(mb.getKey()) : null);
         if (mb.isDefaultButton()) {
@@ -281,6 +279,7 @@ public class ModalOverlayComp extends SimpleComp {
         if (mb.getAugment() != null) {
             mb.getAugment().accept(button);
         }
+        button.managedProperty().bind(button.visibleProperty());
         button.setOnAction(event -> {
             if (mb.getAction() != null) {
                 mb.getAction().run();
@@ -291,20 +290,5 @@ public class ModalOverlayComp extends SimpleComp {
             event.consume();
         });
         return button;
-    }
-
-    private Timeline fadeInDelyed(Node node) {
-        var t = new Timeline(
-                new KeyFrame(Duration.ZERO, new KeyValue(node.opacityProperty(), 0.01)),
-                new KeyFrame(Duration.millis(50), new KeyValue(node.opacityProperty(), 0.01, Animations.EASE)),
-                new KeyFrame(Duration.millis(1250), new KeyValue(node.opacityProperty(), 1, Animations.EASE)));
-
-        t.statusProperty().addListener((obs, old, val) -> {
-            if (val == Animation.Status.STOPPED) {
-                node.setOpacity(1);
-            }
-        });
-
-        return t;
     }
 }

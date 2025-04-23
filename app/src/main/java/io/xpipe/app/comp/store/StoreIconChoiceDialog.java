@@ -34,7 +34,7 @@ public class StoreIconChoiceDialog {
 
     private ModalOverlay createOverlay() {
         var filterText = new SimpleStringProperty();
-        var filter = new FilterComp(filterText).grow(true, false);
+        var filter = new FilterComp(filterText).hgrow();
         filter.focusOnShow();
         var github = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();

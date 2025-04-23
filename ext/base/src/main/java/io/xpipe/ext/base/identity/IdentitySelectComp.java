@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreCreationComp;
+import io.xpipe.app.comp.store.StoreCreationDialog;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFontSizes;
@@ -30,10 +30,9 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -95,7 +94,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     .sshIdentity(ssh)
                     .build();
         }
-        StoreCreationComp.showCreation(
+        StoreCreationDialog.showCreation(
                 id,
                 DataStoreCreationCategory.IDENTITY,
                 dataStoreEntry -> {
@@ -112,7 +111,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             return;
         }
 
-        StoreCreationComp.showEdit(id.get());
+        StoreCreationDialog.showEdit(id.get());
     }
 
     @Override
@@ -273,7 +272,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             struc.get().getStyleClass().add("clear-button");
             AppFontSizes.xs(struc.get());
             AnchorPane.setRightAnchor(struc.get(), 30.0);
-            AnchorPane.setTopAnchor(struc.get(),  3.0);
+            AnchorPane.setTopAnchor(struc.get(), 3.0);
             AnchorPane.setBottomAnchor(struc.get(), 3.0);
         });
 

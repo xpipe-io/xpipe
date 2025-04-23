@@ -6,10 +6,8 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -56,7 +54,7 @@ public class VaultCategory extends AppPrefsCategory {
                         ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ? "Legacy" : "Personal")
                         : "Team";
 
-        builder.addTitle("vaultUsers")
+        builder.addTitle("vault")
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
@@ -66,7 +64,7 @@ public class VaultCategory extends AppPrefsCategory {
                                 uh.getActiveUser() != null
                                         ? "userManagementDescription"
                                         : "userManagementDescriptionEmpty")
-                        .addComp(uh.createOverview())
+                        .addComp(uh.createOverview().maxWidth(getCompWidth()))
                         .nameAndDescription("teamVaults")
                         .addComp(Comp.empty())
                         .licenseRequirement("team")
@@ -79,18 +77,11 @@ public class VaultCategory extends AppPrefsCategory {
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync())));
-        builder.addTitle("vaultSecurity")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.lockVaultOnHibernation)
-                        .addToggle(prefs.lockVaultOnHibernation)
-                        .pref(prefs.encryptAllVaultData)
-                        .addToggle(encryptVault));
-        builder.addTitle("vault")
-                .sub(new OptionsBuilder()
-                        .nameAndDescription("browseVault")
-                        .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
-                            DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());
-                        })));
+        builder.sub(new OptionsBuilder()
+                .pref(prefs.lockVaultOnHibernation)
+                .addToggle(prefs.lockVaultOnHibernation)
+                .pref(prefs.encryptAllVaultData)
+                .addToggle(encryptVault));
         return builder.buildComp();
     }
 }

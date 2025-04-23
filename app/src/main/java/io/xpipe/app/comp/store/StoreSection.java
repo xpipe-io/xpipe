@@ -12,13 +12,13 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
@@ -54,12 +54,7 @@ public class StoreSection {
     }
 
     public static Comp<?> customSection(StoreSection e) {
-        var prov = e.getWrapper().getEntry().getProvider();
-        if (prov != null) {
-            return prov.customSectionComp(e);
-        } else {
-            return new StoreSectionComp(e);
-        }
+        return new StoreSectionComp(e);
     }
 
     private static DerivedObservableList<StoreSection> sorted(
@@ -107,9 +102,11 @@ public class StoreSection {
 
     public static StoreSection createTopLevel(
             DerivedObservableList<StoreEntryWrapper> all,
+            Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         var topLevel = all.filtered(
                 section -> {
@@ -118,8 +115,17 @@ public class StoreSection {
                 },
                 category,
                 updateObservable);
-        var cached = topLevel.mapped(storeEntryWrapper ->
-                create(List.of(), storeEntryWrapper, 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = topLevel.mapped(storeEntryWrapper -> create(
+                List.of(),
+                storeEntryWrapper,
+                1,
+                all,
+                selected,
+                entryFilter,
+                filterString,
+                category,
+                visibilityObservable,
+                updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
@@ -143,16 +149,15 @@ public class StoreSection {
             StoreEntryWrapper e,
             int depth,
             DerivedObservableList<StoreEntryWrapper> all,
+            Set<StoreEntryWrapper> selected,
             Predicate<StoreEntryWrapper> entryFilter,
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
+            ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
-                    e,
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    new DerivedObservableList<>(FXCollections.observableArrayList(), true),
-                    depth);
+                    e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
         }
 
         var allChildren = all.filtered(
@@ -169,43 +174,77 @@ public class StoreSection {
                         return false;
                     }
 
-                    var showProvider = true;
-                    try {
-                        showProvider = other.getEntry().getProvider().shouldShow(other);
-                    } catch (Exception ignored) {
-                    }
-                    return showProvider;
+                    return true;
                 },
                 e.getPersistentState(),
                 e.getCache(),
+                visibilityObservable,
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
-        var cached = allChildren.mapped(
-                c -> create(l, c, depth + 1, all, entryFilter, filterString, category, updateObservable));
+        var cached = allChildren.mapped(c -> create(
+                l,
+                c,
+                depth + 1,
+                all,
+                selected,
+                entryFilter,
+                filterString,
+                category,
+                visibilityObservable,
+                updateObservable));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
-                    // matches filter
-                    return (filterString == null
-                                    || section.matchesFilter(filterString.getValue())
-                                    || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue())))
-                            &&
-                            // matches selector
-                            section.anyMatches(entryFilter)
-                            &&
-                            // matches category
-                            // Prevent updates for children on category switching by checking depth
-                            (showInCategory(category.getValue(), section.getWrapper()) || depth > 0)
-                            &&
-                            // not root
-                            // If this entry is already shown as root due to a different category than parent, don't
-                            // show it
-                            // again here
-                            !DataStorage.get()
-                                    .isRootEntry(
-                                            section.getWrapper().getEntry(),
-                                            category.getValue().getCategory());
+                    var isBatchSelected = selected.contains(section.getWrapper());
+
+                    var matchesFilter = filterString == null
+                            || section.matchesFilter(filterString.getValue())
+                            || l.stream().anyMatch(p -> p.matchesFilter(filterString.getValue()));
+                    if (!isBatchSelected && !matchesFilter) {
+                        return false;
+                    }
+
+                    var hasFilter = filterString != null
+                            && filterString.getValue() != null
+                            && filterString.getValue().length() > 0;
+                    if (!isBatchSelected && !hasFilter) {
+                        var showProvider = true;
+                        try {
+                            showProvider = section.getWrapper()
+                                    .getEntry()
+                                    .getProvider()
+                                    .shouldShow(section.getWrapper());
+                        } catch (Exception ignored) {
+                        }
+                        if (!showProvider) {
+                            return false;
+                        }
+                    }
+
+                    var matchesSelector = section.anyMatches(entryFilter);
+                    if (!isBatchSelected && !matchesSelector) {
+                        return false;
+                    }
+
+                    // Prevent updates for children on category switching by checking depth
+                    var showCategory = showInCategory(category.getValue(), section.getWrapper()) || depth > 0;
+                    if (!showCategory) {
+                        return false;
+                    }
+
+                    // If this entry is already shown as root due to a different category than parent, don't
+                    // show it
+                    // again here
+                    var notRoot = !DataStorage.get()
+                            .isRootEntry(
+                                    section.getWrapper().getEntry(),
+                                    category.getValue().getCategory());
+                    if (!notRoot) {
+                        return false;
+                    }
+
+                    return true;
                 },
                 category,
                 filterString,
@@ -240,7 +279,7 @@ public class StoreSection {
 
     public boolean anyMatches(Predicate<StoreEntryWrapper> c) {
         return c == null
-                || c.test(wrapper)
+                || (wrapper != null && c.test(wrapper))
                 || allChildren.getList().stream().anyMatch(storeEntrySection -> storeEntrySection.anyMatches(c));
     }
 }

@@ -1,7 +1,6 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
@@ -26,8 +25,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
 
     @Override
     public int getProcessHierarchyOffset() {
-        var powershell = ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.POWERSHELL
-                || AppPrefs.get().enableTerminalLogging().get();
+        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
         return powershell ? -1 : 0;
     }
 
@@ -47,7 +45,7 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")
                     .add("-File")
-                    .addFile(configuration.getScriptFile());
+                    .addQuoted(configuration.getScriptFile().toString());
         }
 
         return CommandBuilder.of()

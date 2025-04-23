@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -67,9 +68,11 @@ public final class BrowserConnectionListComp extends SimpleComp {
         var section = new StoreSectionMiniComp(
                 StoreSection.createTopLevel(
                         StoreViewState.get().getAllEntries(),
+                        Set.of(),
                         this::filter,
                         filter,
                         category,
+                        StoreViewState.get().getEntriesListVisibilityObservable(),
                         StoreViewState.get().getEntriesListUpdateObservable()),
                 augment,
                 selectedAction -> {
@@ -82,7 +85,8 @@ public final class BrowserConnectionListComp extends SimpleComp {
                             busyEntries.remove(selectedAction);
                         }
                     });
-                });
+                },
+                false);
 
         var r = section.vgrow().createRegion();
         r.getStyleClass().add("bookmark-list");

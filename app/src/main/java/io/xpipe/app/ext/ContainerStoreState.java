@@ -19,6 +19,7 @@ public class ContainerStoreState extends ShellStoreState {
 
     String imageName;
     String containerState;
+    Boolean shellMissing;
 
     @Override
     public DataStoreState mergeCopy(DataStoreState newer) {
@@ -32,5 +33,6 @@ public class ContainerStoreState extends ShellStoreState {
         super.mergeBuilder(css, b);
         b.containerState(useNewer(containerState, css.getContainerState()));
         b.imageName(useNewer(imageName, css.getImageName()));
+        b.shellMissing(useNewer(shellMissing, css.getShellMissing()));
     }
 }

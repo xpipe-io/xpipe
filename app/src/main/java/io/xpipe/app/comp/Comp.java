@@ -2,7 +2,7 @@ package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.comp.base.TooltipAugment;
+import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
@@ -12,6 +12,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -30,7 +31,11 @@ public abstract class Comp<S extends CompStructure<?>> {
     private List<Augment<S>> augments;
 
     public static Comp<CompStructure<Region>> empty() {
-        return of(() -> new Region());
+        return of(() -> {
+            var r = new Region();
+            r.getStyleClass().add("empty");
+            return r;
+        });
     }
 
     public static Comp<CompStructure<Spacer>> hspacer(double size) {
@@ -58,8 +63,12 @@ public abstract class Comp<S extends CompStructure<?>> {
         };
     }
 
-    public static Comp<CompStructure<Separator>> separator() {
+    public static Comp<CompStructure<Separator>> hseparator() {
         return of(() -> new Separator(Orientation.HORIZONTAL));
+    }
+
+    public static Comp<CompStructure<Separator>> vseparator() {
+        return of(() -> new Separator(Orientation.VERTICAL));
     }
 
     @SuppressWarnings("unchecked")
@@ -208,15 +217,24 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> tooltip(ObservableValue<String> text) {
-        return apply(new TooltipAugment<>(text, null));
+        return apply(struc -> {
+            var tt = TooltipHelper.create(text, null);
+            Tooltip.install(struc.get(), tt);
+        });
     }
 
     public Comp<S> tooltipKey(String key) {
-        return apply(new TooltipAugment<>(key, null));
+        return apply(struc -> {
+            var tt = TooltipHelper.create(AppI18n.observable(key), null);
+            Tooltip.install(struc.get(), tt);
+        });
     }
 
     public Comp<S> tooltipKey(String key, KeyCombination shortcut) {
-        return apply(new TooltipAugment<>(key, shortcut));
+        return apply(struc -> {
+            var tt = TooltipHelper.create(AppI18n.observable(key), shortcut);
+            Tooltip.install(struc.get(), tt);
+        });
     }
 
     public Region createRegion() {

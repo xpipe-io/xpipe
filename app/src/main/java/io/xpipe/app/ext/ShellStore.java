@@ -1,5 +1,6 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.StubShellControl;
@@ -8,6 +9,11 @@ import io.xpipe.core.store.*;
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
     default ShellControl getOrStartSession() throws Exception {
+        // For tests, the cache is not available
+        if (AppProperties.get().isTest()) {
+            return standaloneControl();
+        }
+
         var session = getSession();
         if (session != null) {
             session.getShellControl().refreshRunningState();
@@ -16,7 +22,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             } else {
                 try {
                     session.getShellControl().command(" echo xpipetest").execute();
-                    return session.getShellControl();
+                    return new StubShellControl(session.getShellControl());
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();
@@ -26,6 +32,26 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
 
         startSessionIfNeeded();
         return new StubShellControl(getSession().getShellControl());
+    }
+
+    default boolean checkSessionAlive() {
+        var session = getSession();
+        if (session == null || !session.isRunning()) {
+            return false;
+        }
+
+        try {
+            session.getShellControl().command(" echo xpipetest").execute();
+            return true;
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e).expected().omit().handle();
+            try {
+                stopSessionIfNeeded();
+            } catch (Exception se) {
+                ErrorEvent.fromThrowable(se).expected().omit().handle();
+            }
+            return false;
+        }
     }
 
     @Override

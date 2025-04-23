@@ -1,12 +1,11 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.window.NativeWinWindowControl;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import lombok.Getter;
 import lombok.Value;
@@ -15,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class TerminalView {
 
@@ -78,6 +78,22 @@ public class TerminalView {
         this.listeners.remove(listener);
     }
 
+    public static void focus(TerminalSession term) {
+        var control = term.controllable();
+        if (control.isPresent()) {
+            control.get().show();
+            control.get().focus();
+        } else {
+            if (OsType.getLocal() == OsType.MACOS) {
+                // Just focus the app, this is correct most of the time
+                var terminalType = AppPrefs.get().terminalType().getValue();
+                if (terminalType instanceof ExternalApplicationType.MacApplication m) {
+                    m.focus();
+                }
+            }
+        }
+    }
+
     public synchronized void open(UUID request, long pid) {
         var processHandle = ProcessHandle.of(pid);
         if (processHandle.isEmpty() || !processHandle.get().isAlive()) {
@@ -108,16 +124,21 @@ public class TerminalView {
 
         if (!terminalInstances.contains(tv.get())) {
             terminalInstances.add(tv.get());
-            listeners.forEach(listener -> listener.onTerminalOpened(tv.get()));
+            forListeners(listener -> listener.onTerminalOpened(tv.get()));
         }
 
         var session = new ShellSession(request, shell.get(), tv.get());
         sessions.add(session);
-        listeners.forEach(listener -> listener.onSessionOpened(session));
+        forListeners(listener -> listener.onSessionOpened(session));
 
         TrackEvent.withTrace("Terminal instance opened")
                 .tag("terminalPid", terminal.get().pid())
                 .handle();
+    }
+
+    private void forListeners(Consumer<Listener> consumer) {
+        var copy = new ArrayList<>(listeners);
+        copy.forEach(consumer);
     }
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
@@ -149,14 +170,7 @@ public class TerminalView {
             return Optional.empty();
         }
 
-        // Adjust for terminal logging script setup
         var off = trackableTerminalType.getProcessHierarchyOffset();
-        if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() != OsType.WINDOWS) {
-            off += 2;
-        } else if (AppPrefs.get().enableTerminalLogging().get() && OsType.getLocal() == OsType.WINDOWS) {
-            off += ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect()) ? 0 : 1;
-        }
-
         var current = Optional.of(shell);
         for (int i = 0; i < 1 + off; i++) {
             current = current.flatMap(processHandle -> processHandle.parent());
@@ -188,7 +202,7 @@ public class TerminalView {
             var alive = session.shell.isAlive() && session.getTerminal().isRunning();
             if (!alive) {
                 sessions.remove(session);
-                listeners.forEach(listener -> listener.onSessionClosed(session));
+                forListeners(listener -> listener.onSessionClosed(session));
             }
         }
 
@@ -199,7 +213,7 @@ public class TerminalView {
                 TrackEvent.withTrace("Terminal session is dead")
                         .tag("pid", terminalInstance.getTerminalProcess().pid())
                         .handle();
-                listeners.forEach(listener -> listener.onTerminalClosed(terminalInstance));
+                forListeners(listener -> listener.onTerminalClosed(terminalInstance));
             }
         }
     }

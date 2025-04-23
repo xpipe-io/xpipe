@@ -11,6 +11,7 @@ import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,11 @@ import javafx.beans.value.ObservableValue;
 import java.util.List;
 
 public class PodmanCmdStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.PODMAN;
+    }
 
     @Override
     public DataStoreUsageCategory getUsageCategory() {

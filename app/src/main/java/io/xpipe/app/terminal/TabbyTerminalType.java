@@ -83,7 +83,10 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                         .executeSimpleCommand(CommandBuilder.of()
                                 .addFile(file.toString())
                                 .add("run")
-                                .add(configuration.getDialectLaunchCommand())
+                                .add(sc -> configuration
+                                        .getDialectLaunchCommand()
+                                        .buildFull(sc)
+                                        .replaceFirst("\\.exe", ""))
                                 .discardAllOutput());
             }
         }

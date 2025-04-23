@@ -1,5 +1,7 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
@@ -44,13 +46,44 @@ public class ErrorHandlerDialog {
             var comp = new ErrorHandlerComp(event, () -> {
                 AppDialog.closeDialog(modal.get());
             });
-            comp.prefWidth(550);
+            comp.prefWidth(event.getThrowable() != null ? 600 : 500);
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
-            modal.set(ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
+            var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
                 graphic.setIconColor(Color.RED);
                 return graphic;
-            })));
+            }));
+            if (event.getThrowable() != null && event.isReportable()) {
+                errorModal.addButton(new ModalButton(
+                        "stackTrace",
+                        () -> {
+                            var content =
+                                    new ErrorDetailsComp(event).prefWidth(650).prefHeight(750);
+                            var detailsModal = ModalOverlay.of("errorDetails", content);
+                            detailsModal.show();
+                        },
+                        false,
+                        false));
+            }
+            if (event.isReportable()) {
+                errorModal.addButton(new ModalButton(
+                        "report",
+                        () -> {
+                            if (UserReportComp.show(event)) {
+                                comp.getTakenAction().setValue(ErrorAction.ignore());
+                                errorModal.close();
+                            }
+                        },
+                        false,
+                        false));
+                errorModal.addButtonBarComp(Comp.hspacer());
+            }
+            var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
+            var hideOk = hasCustomActions;
+            if (!hideOk) {
+                errorModal.addButton(ModalButton.ok());
+            }
+            modal.set(errorModal);
             AppDialog.showAndWait(modal.get());
             if (comp.getTakenAction().getValue() == null) {
                 ErrorAction.ignore().handle(event);

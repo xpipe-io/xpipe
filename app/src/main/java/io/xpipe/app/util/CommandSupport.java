@@ -1,8 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableSupplier;
 
 import java.io.IOException;
@@ -10,11 +12,11 @@ import java.util.Optional;
 
 public class CommandSupport {
 
-    public static Optional<String> findProgram(ShellControl processControl, String name) throws Exception {
+    public static Optional<FilePath> findProgram(ShellControl processControl, String name) throws Exception {
         var out = processControl
                 .command(processControl.getShellDialect().getWhichCommand(name))
                 .readStdoutIfPossible();
-        return out.flatMap(s -> s.lines().findFirst()).map(String::trim);
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(FilePath::of);
     }
 
     public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
@@ -22,22 +24,30 @@ public class CommandSupport {
                 processControl.getShellDialect().getWhichCommand(executable));
     }
 
-    public static boolean isInPathSilent(ShellControl processControl, String executable) {
-        try {
-            return processControl.executeSimpleBooleanCommand(
-                    processControl.getShellDialect().getWhichCommand(executable));
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-            return false;
+    public static void isInPathOrThrow(ShellControl processControl, String executable) throws Exception {
+        isInPathOrThrow(processControl, executable, null);
+    }
+
+    public static void isInPathOrThrow(ShellControl processControl, String executable, String displayName)
+            throws Exception {
+        var source = processControl.getSourceStoreId();
+        if (source.isPresent()) {
+            var entry = DataStorage.get().getStoreEntryIfPresent(source.get());
+            if (entry.isPresent()) {
+                isInPathOrThrow(processControl, executable, displayName, entry.get());
+                return;
+            }
         }
+        isInPathOrThrow(processControl, executable, displayName, null);
     }
 
     public static void isInPathOrThrow(
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!isInPath(processControl, executable)) {
-            throw ErrorEvent.expected(new IOException(displayName + " executable " + executable + " not found in PATH"
-                    + (connection != null ? " on system " + connection.getName() : "")));
+            var prefix = displayName != null ? displayName + " executable " + executable : executable + " executable";
+            throw ErrorEvent.expected(new IOException(
+                    prefix + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
 
@@ -47,5 +57,26 @@ public class CommandSupport {
             throw ErrorEvent.expected(new IOException(displayName + " is not supported"
                     + (connection != null ? " on system " + connection.getName() : "")));
         }
+    }
+
+    public static boolean isInLocalPath(String executable) throws Exception {
+        try (var sc = LocalShell.getShell().start()) {
+            var r = sc.command(sc.getShellDialect().getWhichCommand(executable)).executeAndCheck();
+            return r;
+        }
+    }
+
+    public static void isInLocalPathOrThrow(String displayName, String executable) throws Exception {
+        var present = isInLocalPath(executable);
+        var prefix = displayName != null
+                ? displayName + " executable \"" + executable + "\""
+                : "\"" + executable + "\" executable";
+        if (present) {
+            return;
+        }
+        throw ErrorEvent.expected(
+                new IOException(
+                        prefix
+                                + " not found in PATH. Install the executable, add it to the PATH, and refresh the environment by restarting XPipe to fix this."));
     }
 }

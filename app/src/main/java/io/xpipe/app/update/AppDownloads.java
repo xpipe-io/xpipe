@@ -1,143 +1,65 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import lombok.Value;
 import org.apache.commons.io.FileUtils;
-import org.kohsuke.github.GHRelease;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.RateLimitHandler;
-import org.kohsuke.github.authorization.AuthorizationProvider;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.time.Duration;
 
 public class AppDownloads {
 
-    private static GHRepository repository;
-
-    @SuppressWarnings("deprecation")
-    private static GHRepository getRepository() throws IOException {
-        if (repository != null) {
-            return repository;
+    public static Path downloadInstaller(String version) throws Exception {
+        var release = Release.of(version);
+        var builder = HttpRequest.newBuilder();
+        var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
+        var client = HttpHelper.client();
+        var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+        if (response.statusCode() >= 400) {
+            throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
         }
 
-        var github = new GitHubBuilder()
-                .withRateLimitHandler(RateLimitHandler.FAIL)
-                .withAuthorizationProvider(AuthorizationProvider.ANONYMOUS)
-                .build();
-        repository = github.getRepository(AppProperties.get().isStaging() ? "xpipe-io/xpipe-ptb" : "xpipe-io/xpipe");
-        return repository;
+        var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
+        Files.write(downloadFile, response.body());
+        TrackEvent.withInfo("Downloaded asset")
+                .tag("version", version)
+                .tag("url", release.getUrl())
+                .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
+                .tag("target", downloadFile)
+                .handle();
+
+        return downloadFile;
     }
 
-    public static Optional<Path> downloadInstaller(
-            AppInstaller.InstallerAssetType iAsset, String version, boolean omitErrors) {
-        var release = AppDownloads.getRelease(version, omitErrors);
-        if (release.isEmpty()) {
-            return Optional.empty();
+    public static String downloadChangelog(String version) throws Exception {
+        var uri = URI.create("https://api.xpipe.io/changelog?from="
+                + AppProperties.get().getVersion() + "&to=" + version + "&stage="
+                + AppProperties.get().isStaging());
+        var builder = HttpRequest.newBuilder();
+        var httpRequest = builder.uri(uri).GET().build();
+        var client = HttpHelper.client();
+        var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() >= 400) {
+            throw new IOException(response.body());
         }
-
-        try {
-            var asset = release.orElseThrow().listAssets().toList().stream()
-                    .filter(ghAsset -> iAsset.isCorrectAsset(ghAsset.getName()))
-                    .findAny();
-            if (asset.isEmpty()) {
-                ErrorEvent.fromMessage("No matching asset found for " + iAsset.getExtension());
-                return Optional.empty();
-            }
-
-            var builder = HttpRequest.newBuilder();
-            var httpRequest = builder.uri(URI.create(asset.get().getBrowserDownloadUrl()))
-                    .GET()
-                    .build();
-            var client = HttpClient.newBuilder()
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .build();
-            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-            if (response.statusCode() != 200) {
-                throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
-            }
-            var downloadFile =
-                    FileUtils.getTempDirectory().toPath().resolve(asset.get().getName());
-            Files.write(downloadFile, response.body());
-            TrackEvent.withInfo("Downloaded asset")
-                    .tag("version", version)
-                    .tag("url", asset.get().getBrowserDownloadUrl())
-                    .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
-                    .tag("target", downloadFile)
-                    .handle();
-
-            return Optional.of(downloadFile);
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).expected().handle();
-            return Optional.empty();
-        }
-    }
-
-    public static Optional<String> downloadChangelog(String version, boolean omitErrors) {
-        var release = AppDownloads.getRelease(version, omitErrors);
-        if (release.isEmpty()) {
-            return Optional.empty();
-        }
-
-        try {
-            var uri = URI.create("https://api.xpipe.io/changelog?from="
-                    + AppProperties.get().getVersion() + "&to=" + version + "&stage="
-                    + AppProperties.get().isStaging());
-            var builder = HttpRequest.newBuilder();
-            var httpRequest = builder.uri(uri).GET().build();
-            var client = HttpClient.newBuilder()
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .build();
-            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                throw new IOException(response.body());
-            }
-            var json = JacksonMapper.getDefault().readTree(response.body());
-            var changelog = json.required("changelog").asText();
-            return Optional.of(changelog);
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().expected().handle();
-        }
-
-        try {
-            var asset = release.get().listAssets().toList().stream()
-                    .filter(ghAsset -> ghAsset.getName().equals("changelog.md"))
-                    .findAny();
-
-            if (asset.isEmpty()) {
-                return Optional.empty();
-            }
-
-            var uri = URI.create(asset.get().getBrowserDownloadUrl());
-            var builder = HttpRequest.newBuilder();
-            var httpRequest = builder.uri(uri).GET().build();
-            var client = HttpClient.newBuilder()
-                    .followRedirects(HttpClient.Redirect.NORMAL)
-                    .build();
-            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200) {
-                throw new IOException(response.body());
-            }
-            return Optional.of(response.body());
-        } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omitted(omitErrors).expected().handle();
-            return Optional.empty();
-        }
+        var json = JacksonMapper.getDefault().readTree(response.body());
+        var changelog = json.required("changelog").asText();
+        return changelog;
     }
 
     private static String queryLatestVersion(boolean first, boolean securityOnly) throws Exception {
@@ -158,11 +80,9 @@ public class AppDownloads {
         var httpRequest = builder.uri(url)
                 .POST(HttpRequest.BodyPublishers.ofString(req.toPrettyString()))
                 .build();
-        var client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
+        var client = HttpHelper.client();
         var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
+        if (response.statusCode() >= 400) {
             throw new IOException(response.body());
         }
 
@@ -173,27 +93,52 @@ public class AppDownloads {
 
         var json = JacksonMapper.getDefault().readTree(response.body());
         var ver = json.required("version").asText();
+        var ptbAvailable = json.get("ptbAvailable");
+        if (ptbAvailable != null) {
+            var b = ptbAvailable.asBoolean();
+            if (b) {
+                GlobalTimer.delay(
+                        () -> {
+                            AppLayoutModel.get().getPtbAvailable().set(true);
+                        },
+                        Duration.ofSeconds(20));
+            }
+        }
         return ver;
     }
 
-    public static Optional<GHRelease> queryLatestRelease(boolean first, boolean securityOnly) throws Exception {
+    public static Release queryLatestRelease(boolean first, boolean securityOnly) throws Exception {
         try {
             var ver = queryLatestVersion(first, securityOnly);
-            var repo = getRepository();
-            var rel = repo.getReleaseByTagName(ver);
-            return Optional.ofNullable(rel);
+            return Release.of(ver);
         } catch (Exception e) {
             throw ErrorEvent.expected(e);
         }
     }
 
-    public static Optional<GHRelease> getRelease(String version, boolean omitErrors) {
-        try {
-            var repo = getRepository();
-            return Optional.ofNullable(repo.getReleaseByTagName(version));
-        } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(omitErrors).expected().handle();
-            return Optional.empty();
+    @Value
+    public static class Release {
+
+        public static Release of(String tag) {
+            var type = AppInstaller.getSuitablePlatformAsset();
+            var os =
+                    switch (OsType.getLocal()) {
+                        case OsType.Linux linux -> "linux";
+                        case OsType.MacOs macOs -> "macos";
+                        case OsType.Windows windows -> "windows";
+                    };
+            var arch = AppProperties.get().getArch();
+            var name = "xpipe-installer-%s-%s.%s".formatted(os, arch, type.getExtension());
+            var url = "https://github.com/xpipe-io/%s/releases/download/%s/%s"
+                    .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag, name);
+            var browser = "https://github.com/xpipe-io/%s/releases/%s"
+                    .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag);
+            return new Release(tag, url, browser, name);
         }
+
+        String tag;
+        String url;
+        String browserUrl;
+        String file;
     }
 }

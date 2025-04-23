@@ -48,11 +48,11 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         var addButton = new Button(null, new FontIcon("mdi2p-play-circle"));
         addButton.textProperty().bind(AppI18n.observable("createIdentity"));
         addButton.setOnAction(event -> {
-            var canSync = DataStorage.get().supportsSharing();
+            var canSync = DataStorage.get().supportsSync();
             var prov = canSync
                     ? DataStoreProviders.byId("syncedIdentity").orElseThrow()
                     : DataStoreProviders.byId("localIdentity").orElseThrow();
-            StoreCreationComp.showCreation(prov, DataStoreCreationCategory.IDENTITY);
+            StoreCreationDialog.showCreation(prov, DataStoreCreationCategory.IDENTITY);
             event.consume();
         });
 
@@ -97,7 +97,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         fi.setIconSize(80);
         var img = new StackPane(fi);
         img.setPrefWidth(100);
-        img.setPrefHeight(150);
+        img.setPrefHeight(120);
         var text = new VBox(title, importDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);

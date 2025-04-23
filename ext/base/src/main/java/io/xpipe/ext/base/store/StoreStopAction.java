@@ -3,6 +3,7 @@ package io.xpipe.ext.base.store;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -30,13 +31,39 @@ public class StoreStopAction implements ActionProvider {
             }
 
             @Override
-            public String getIcon(DataStoreEntryRef<StoppableStore> store) {
-                return "mdi2s-stop";
+            public LabelGraphic getIcon(DataStoreEntryRef<StoppableStore> store) {
+                return new LabelGraphic.IconGraphic("mdi2s-stop");
             }
 
             @Override
             public boolean requiresValidStore() {
                 return false;
+            }
+        };
+    }
+
+    @Override
+    public BatchDataStoreCallSite<?> getBatchDataStoreCallSite() {
+        return new BatchDataStoreCallSite<StoppableStore>() {
+
+            @Override
+            public ObservableValue<String> getName() {
+                return AppI18n.observable("stop");
+            }
+
+            @Override
+            public LabelGraphic getIcon() {
+                return new LabelGraphic.IconGraphic("mdi2s-stop");
+            }
+
+            @Override
+            public Class<?> getApplicableClass() {
+                return StoppableStore.class;
+            }
+
+            @Override
+            public ActionProvider.Action createAction(DataStoreEntryRef<StoppableStore> store) {
+                return new Action(store);
             }
         };
     }

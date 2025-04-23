@@ -15,26 +15,24 @@ public class SystemCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        builder.addTitle("appBehaviour")
+        var localShellBuilder =
+                new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell);
+        builder.addTitle("system")
                 .sub(new OptionsBuilder()
                         .pref(prefs.startupBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.startupBehaviour,
                                         PrefsChoiceValue.getSupported(StartupBehaviour.class),
                                         false)
-                                .minWidth(300))
+                                .minWidth(getCompWidth() / 2.0))
                         .pref(prefs.closeBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .minWidth(300)))
-                .addTitle("advanced")
-                .sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode))
-                .addTitle("updates")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.automaticallyCheckForUpdates)
-                        .addToggle(prefs.automaticallyCheckForUpdates));
+                                .minWidth(getCompWidth() / 2.0)));
+        builder.sub(localShellBuilder);
+        builder.sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();
     }
 }

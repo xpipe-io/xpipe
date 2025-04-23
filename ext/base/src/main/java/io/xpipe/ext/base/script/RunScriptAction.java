@@ -10,6 +10,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
@@ -49,6 +50,20 @@ public class RunScriptAction implements BrowserAction, BrowserBranchAction {
     @Override
     public List<? extends BrowserAction> getBranchingActions(
             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var config =
+                DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
+        if (Boolean.TRUE.equals(config.getDontAllowScripts())) {
+            return List.of(new BrowserLeafAction() {
+                @Override
+                public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {}
+
+                @Override
+                public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    return AppI18n.observable("scriptsDisabled");
+                }
+            });
+        }
+
         var actions = createActionForScriptHierarchy(model, entries);
         if (actions.isEmpty()) {
             actions = List.of(new BrowserLeafAction() {

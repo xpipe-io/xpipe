@@ -7,13 +7,13 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FileNames;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -22,7 +22,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
     public DataStoreCreationCategory getCreationCategory() {
-        return DataStorage.get().supportsSharing() ? DataStoreCreationCategory.IDENTITY : null;
+        return DataStorage.get().supportsSync() ? DataStoreCreationCategory.IDENTITY : null;
     }
 
     @Override
@@ -49,9 +49,15 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 return;
             }
 
-            var source = Path.of(f.getFile().toAbsoluteFilePath(null));
-            var target = Path.of("keys", FileNames.getFileName(f.getFile().toAbsoluteFilePath(null)));
+            var source = Path.of(f.getFile().toAbsoluteFilePath(null).toString());
+            var target = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
+
+            var pub = Path.of(source + ".pub");
+            var pubTarget = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
+            if (Files.exists(pub)) {
+                DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
+            }
         });
 
         return new OptionsBuilder()
@@ -112,7 +118,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public DataStore defaultStore() {
+    public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
                 .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
                 .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))

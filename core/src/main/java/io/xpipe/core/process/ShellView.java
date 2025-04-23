@@ -3,6 +3,8 @@ package io.xpipe.core.process;
 import io.xpipe.core.store.FilePath;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class ShellView {
@@ -15,6 +17,26 @@ public class ShellView {
 
     protected ShellDialect getDialect() {
         return shellControl.getShellDialect();
+    }
+
+    public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
+        var hash = Math.abs(text.hashCode());
+        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + "." + base.getExtension());
+        if (fileExists(target)) {
+            return target;
+        }
+        writeTextFile(target, text);
+        return target;
+    }
+
+    public byte[] readRawFile(FilePath path) throws Exception {
+        var s = getDialect().getFileReadCommand(shellControl, path.toString()).readRawBytesOrThrow();
+        return s;
+    }
+
+    public String readTextFile(FilePath path) throws Exception {
+        var s = getDialect().getFileReadCommand(shellControl, path.toString()).readStdoutOrThrow();
+        return s;
     }
 
     public void writeTextFile(FilePath path, String text) throws Exception {
@@ -36,13 +58,33 @@ public class ShellView {
     }
 
     public FilePath userHome() throws Exception {
-        return new FilePath(shellControl.getOsType().getUserHomeDirectory(shellControl));
+        return FilePath.of(shellControl.getOsType().getUserHomeDirectory(shellControl));
     }
 
     public boolean fileExists(FilePath path) throws Exception {
         return getDialect()
                 .createFileExistsCommand(shellControl, path.toString())
                 .executeAndCheck();
+    }
+
+    public void deleteDirectory(FilePath path) throws Exception {
+        getDialect().deleteFileOrDirectory(shellControl, path.toString()).execute();
+    }
+
+    public void deleteFile(FilePath path) throws Exception {
+        getDialect().getFileDeleteCommand(shellControl, path.toString()).execute();
+    }
+
+    public void deleteFileIfPossible(FilePath path) throws Exception {
+        getDialect().getFileDeleteCommand(shellControl, path.toString()).executeAndCheck();
+    }
+
+    public void mkdir(FilePath path) throws Exception {
+        shellControl.command(getDialect().getMkdirsCommand(path.toString())).execute();
+    }
+
+    public boolean directoryExists(FilePath path) throws Exception {
+        return getDialect().directoryExists(shellControl, path.toString()).executeAndCheck();
     }
 
     public String user() throws Exception {
@@ -72,11 +114,17 @@ public class ShellView {
         return isRoot;
     }
 
-    public Optional<String> findProgram(String name) throws Exception {
+    public Optional<FilePath> findProgram(String name) throws Exception {
         var out = shellControl
                 .command(shellControl.getShellDialect().getWhichCommand(name))
                 .readStdoutIfPossible();
-        return out.flatMap(s -> s.lines().findFirst()).map(String::trim);
+        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(s -> FilePath.of(s));
+    }
+
+    public void transferLocalFile(Path localPath, FilePath target) throws Exception {
+        try (var in = Files.newInputStream(localPath)) {
+            writeStreamFile(target, in, in.available());
+        }
     }
 
     public boolean isInPath(String executable) throws Exception {
@@ -88,5 +136,24 @@ public class ShellView {
         var d = shellControl.getShellDialect();
         var cmd = shellControl.command(d.getCdCommand(directory));
         cmd.executeAndCheck();
+    }
+
+    public String getEnvironmentVariable(String name) throws Exception {
+        return shellControl
+                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))
+                .readStdoutOrThrow();
+    }
+
+    public void setEnvironmentVariable(String name, String value) throws Exception {
+        shellControl
+                .command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value))
+                .execute();
+    }
+
+    public void setSensitiveEnvironmentVariable(String name, String value) throws Exception {
+        var command =
+                shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
+        command.setSensitive();
+        command.execute();
     }
 }
