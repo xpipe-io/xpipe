@@ -210,11 +210,11 @@ public class StoreCategoryComp extends SimpleComp {
             contextMenu.getItems().add(browse);
         }
 
-        var newCategory = new MenuItem(AppI18n.get("newCategory"), new FontIcon("mdi2p-plus-thick"));
+        var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
             DataStorage.get()
                     .addStoreCategory(
-                            DataStoreCategory.createNew(category.getCategory().getUuid(), "New category"));
+                            DataStoreCategory.createNew(category.getCategory().getUuid(), AppI18n.get("newCategory")));
         });
         contextMenu.getItems().add(newCategory);
 

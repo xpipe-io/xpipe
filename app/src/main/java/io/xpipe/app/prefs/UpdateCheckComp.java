@@ -69,6 +69,7 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdates");
                 },
+                AppI18n.activeLanguage(),
                 updateReady,
                 checking);
         var description = Bindings.createStringBinding(
@@ -85,6 +86,7 @@ public class UpdateCheckComp extends SimpleComp {
 
                     return AppI18n.get("checkForUpdatesDescription");
                 },
+                AppI18n.activeLanguage(),
                 updateReady,
                 checking);
         var graphic = Bindings.createObjectBinding(

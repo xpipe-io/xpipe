@@ -28,6 +28,7 @@ public enum SupportedLocale implements PrefsChoiceValue {
     INDONESIAN(Locale.of("id"), "id", false),
     SWEDISH(Locale.of("sv"), "sv", false),
     POLISH(Locale.of("pl"), "pl", false),
+    KOREAN(Locale.of("ko"), "ko", false),
     TURKISH(Locale.of("tr"), "tr", true);
 
     private final Locale locale;
