@@ -185,6 +185,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerDisableUpdateVersionCheck", Boolean.class, false);
     final BooleanProperty developerForceSshTty =
             mapLocal(new SimpleBooleanProperty(false), "developerForceSshTty", Boolean.class, false);
+    final BooleanProperty developerDisableSshTunnelGateways =
+            mapLocal(new SimpleBooleanProperty(false), "developerDisableSshTunnelGateways", Boolean.class, false);
     final BooleanProperty developerPrintInitFiles =
             mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
 
@@ -509,6 +511,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue developerForceSshTty() {
         return developerForceSshTty;
+    }
+
+    public ObservableBooleanValue developerDisableSshTunnelGateways() {
+        return developerDisableSshTunnelGateways;
     }
 
     @SuppressWarnings("unchecked")

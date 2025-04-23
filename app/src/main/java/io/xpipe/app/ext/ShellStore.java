@@ -22,7 +22,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             } else {
                 try {
                     session.getShellControl().command(" echo xpipetest").execute();
-                    return session.getShellControl();
+                    return new StubShellControl(session.getShellControl());
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();

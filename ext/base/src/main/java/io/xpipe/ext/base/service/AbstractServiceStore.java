@@ -59,7 +59,7 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         }
 
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
-        return getHost().getStore().sessionChain(l, remotePort, "localhost");
+        return getHost().getStore().createTunnelSession(l, remotePort, "localhost");
     }
 
     @Override
