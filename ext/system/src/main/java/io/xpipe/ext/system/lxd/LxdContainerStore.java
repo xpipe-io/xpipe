@@ -75,11 +75,7 @@ public class LxdContainerStore
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
-                refreshContainerState(getCmd()
-                        .getStore()
-                        .getHost()
-                        .getStore()
-                        .getOrStartSession());
+                refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
 
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var sc = new LxdCommandView(parent).exec(containerName, user, () -> {

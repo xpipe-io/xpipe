@@ -186,13 +186,15 @@ public class DerivedObservableList<T> {
             synchronized (list) {
                 var listSet = new HashSet<>(list);
                 cache.keySet().removeIf(t -> !listSet.contains(t));
-                toApply = listStream().map(v -> {
-                    if (!cache.containsKey(v)) {
-                        cache.put(v, map.apply(v));
-                    }
+                toApply = listStream()
+                        .map(v -> {
+                            if (!cache.containsKey(v)) {
+                                cache.put(v, map.apply(v));
+                            }
 
-                    return cache.get(v);
-                }).toList();
+                            return cache.get(v);
+                        })
+                        .toList();
             }
             l1.setContent(toApply);
         };
@@ -225,7 +227,9 @@ public class DerivedObservableList<T> {
         Runnable runnable = () -> {
             List<T> toApply;
             synchronized (list) {
-                toApply = predicate.getValue() != null ? listStream().filter(predicate.getValue()).toList() : list;
+                toApply = predicate.getValue() != null
+                        ? listStream().filter(predicate.getValue()).toList()
+                        : list;
             }
             d.setContent(toApply);
         };

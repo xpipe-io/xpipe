@@ -4,7 +4,6 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FilePath;

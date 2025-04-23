@@ -138,13 +138,13 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null)));
-                //                new Entry(
-                //                        AppI18n.observable("api"),
-                //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-                //                        null,
-                //                        () -> Hyperlinks.open(
-                //                                "http://localhost:" + AppBeaconServer.get().getPort()),
-                //                        null),);
+        //                new Entry(
+        //                        AppI18n.observable("api"),
+        //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
+        //                        null,
+        //                        () -> Hyperlinks.open(
+        //                                "http://localhost:" + AppBeaconServer.get().getPort()),
+        //                        null),);
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
                     AppI18n.observable("webtop"),

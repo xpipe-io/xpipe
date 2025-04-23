@@ -45,9 +45,11 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.performanceMode)
                         .addToggle(prefs.performanceMode)
                         .pref(prefs.uiScale)
-                        .addComp(new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
-                            struc.get().setPromptText("100");
-                        }), prefs.uiScale)
+                        .addComp(
+                                new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
+                                    struc.get().setPromptText("100");
+                                }),
+                                prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
@@ -101,9 +103,7 @@ public class AppearanceCategory extends AppPrefsCategory {
             });
         });
         c.minWidth(600 / 2.0);
-        return new OptionsBuilder()
-                .pref(prefs.theme)
-                .addComp(c, prefs.theme);
+        return new OptionsBuilder().pref(prefs.theme).addComp(c, prefs.theme);
     }
 
     public static OptionsBuilder languageChoice() {
@@ -118,8 +118,6 @@ public class AppearanceCategory extends AppPrefsCategory {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
-        return new OptionsBuilder()
-                .pref(prefs.language)
-                .addComp(h, prefs.language);
+        return new OptionsBuilder().pref(prefs.language).addComp(h, prefs.language);
     }
 }

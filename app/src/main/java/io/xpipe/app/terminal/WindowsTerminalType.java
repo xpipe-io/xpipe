@@ -2,13 +2,9 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileNames;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeInstallation;

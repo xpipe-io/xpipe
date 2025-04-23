@@ -76,7 +76,8 @@ public class TerminalLaunchConfiguration {
                 .replaceAll(" ", "_"));
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
-                var launcherScript = ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, promptRestart);
+                var launcherScript =
+                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, promptRestart);
                 var content =
                         """
                               echo 'Transcript started, output file is "sessions\\%s"'

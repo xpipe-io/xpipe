@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.sun.jna.*;

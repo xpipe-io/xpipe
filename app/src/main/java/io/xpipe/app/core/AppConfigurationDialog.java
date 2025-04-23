@@ -8,11 +8,10 @@ import io.xpipe.app.prefs.AppearanceCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
 import io.xpipe.app.util.OptionsBuilder;
-import javafx.geometry.Insets;
+
 import javafx.scene.layout.Region;
 
 public class AppConfigurationDialog {
-
 
     public static void showIfNeeded() {
         if (!AppProperties.get().isInitialLaunch()) {

@@ -62,12 +62,11 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
                 // .sub(terminalInitScript())
-                .sub(new OptionsBuilder()
-                        .pref(prefs.clearTerminalOnInit)
-                        .addToggle(prefs.clearTerminalOnInit)
-//                        .pref(prefs.terminalPromptForRestart)
-//                        .addToggle(prefs.terminalPromptForRestart)
-                )
+                .sub(
+                        new OptionsBuilder().pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
+                        //                        .pref(prefs.terminalPromptForRestart)
+                        //                        .addToggle(prefs.terminalPromptForRestart)
+                        )
                 .buildComp();
     }
 
@@ -138,7 +137,11 @@ public class TerminalCategory extends AppPrefsCategory {
                                     null,
                                     ProcessControlProvider.get()
                                             .createLocalProcessControl(true)
-                                            .command(ProcessControlProvider.get().getEffectiveLocalDialect().getEchoCommand("If you can read this, the terminal integration works", false)),
+                                            .command(ProcessControlProvider.get()
+                                                    .getEffectiveLocalDialect()
+                                                    .getEchoCommand(
+                                                            "If you can read this, the terminal integration works",
+                                                            false)),
                                     UUID.randomUUID(),
                                     false);
                         }
@@ -168,7 +171,10 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .ref()
                         : DataStorage.get().local().ref());
         ref.addListener((observable, oldValue, newValue) -> {
-            prefs.terminalProxy.setValue(newValue != null && !newValue.get().equals(DataStorage.get().local()) ? newValue.get().getUuid() : null);
+            prefs.terminalProxy.setValue(
+                    newValue != null && !newValue.get().equals(DataStorage.get().local())
+                            ? newValue.get().getUuid()
+                            : null);
         });
         var proxyChoice = new DelayedInitComp(
                 Comp.of(() -> {

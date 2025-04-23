@@ -236,7 +236,8 @@ public class StoreCreationModel {
         // Start session for later
         if (s instanceof ShellStore ss) {
             var sc = ss.getOrStartSession();
-            var unsupported = !sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction() || sc.getTtyState() != ShellTtyState.NONE;
+            var unsupported = !sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()
+                    || sc.getTtyState() != ShellTtyState.NONE;
             if (unsupported) {
                 ss.stopSessionIfNeeded();
             }

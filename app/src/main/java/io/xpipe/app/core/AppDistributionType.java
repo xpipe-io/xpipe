@@ -166,8 +166,7 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
-            var out = LocalExec.readStdoutIfPossible(
-                    "choco", "list", "xpipe");
+            var out = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (out.isPresent()) {
                 if (out.get().contains("xpipe")) {
                     return CHOCO;

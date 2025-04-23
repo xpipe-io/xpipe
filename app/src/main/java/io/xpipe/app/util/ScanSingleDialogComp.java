@@ -11,9 +11,6 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
-
-import static javafx.scene.layout.Priority.ALWAYS;
 
 class ScanSingleDialogComp extends ModalOverlayContentComp {
 

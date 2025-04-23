@@ -13,8 +13,6 @@ import javafx.geometry.Pos;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
-
 public class EditorCategory extends AppPrefsCategory {
 
     @Override
@@ -46,7 +44,8 @@ public class EditorCategory extends AppPrefsCategory {
         var builder = new OptionsBuilder()
                 .nameAndDescription("editorProgram")
                 .addComp(ChoiceComp.ofTranslatable(
-                        prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false).prefWidth(300))
+                                prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false)
+                        .prefWidth(300))
                 .nameAndDescription("customEditorCommand")
                 .addComp(new TextFieldComp(prefs.customEditorCommand, true)
                         .apply(struc -> struc.get().setPromptText("myeditor $FILE")))

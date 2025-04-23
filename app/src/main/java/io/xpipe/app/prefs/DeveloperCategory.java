@@ -69,7 +69,8 @@ public class DeveloperCategory extends AppPrefsCategory {
                 .addToggle(prefs.developerPrintInitFiles);
         if (AppProperties.get().isDevelopmentEnvironment()) {
             sub.nameAndDescription("developerForceSshTty").addToggle(prefs.developerForceSshTty);
-            sub.nameAndDescription("developerDisableSshTunnelGateways").addToggle(prefs.developerDisableSshTunnelGateways);
+            sub.nameAndDescription("developerDisableSshTunnelGateways")
+                    .addToggle(prefs.developerDisableSshTunnelGateways);
         }
         sub.nameAndDescription("shellCommandTest").addComp(runLocalCommand);
         return new OptionsBuilder().addTitle("developer").sub(sub).buildComp();

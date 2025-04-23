@@ -16,7 +16,6 @@ import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;
 
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -583,7 +582,9 @@ public class AppPrefs {
         }
 
         // Migrate legacy password manager
-        if (passwordManagerCommand.get() != null && !passwordManagerCommand.get().isBlank() && passwordManager.getValue() == null) {
+        if (passwordManagerCommand.get() != null
+                && !passwordManagerCommand.get().isBlank()
+                && passwordManager.getValue() == null) {
             passwordManager.setValue(PasswordManagerCommand.builder()
                     .script(new ShellScript(passwordManagerCommand.get()))
                     .build());

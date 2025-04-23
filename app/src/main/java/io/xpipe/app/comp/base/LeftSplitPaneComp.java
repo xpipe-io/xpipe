@@ -5,7 +5,6 @@ import io.xpipe.app.comp.CompStructure;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 

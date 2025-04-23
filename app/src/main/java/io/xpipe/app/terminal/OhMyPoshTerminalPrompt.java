@@ -197,7 +197,8 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
         } else {
             var configArg = config != null ? " --config \"" + config + "\"" : "";
             if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg + ") -join \"`n\"))");
+                lines.add("& ([ScriptBlock]::Create((oh-my-posh init $(oh-my-posh get shell) --print" + configArg
+                        + ") -join \"`n\"))");
             } else if (dialect == ShellDialects.FISH) {
                 lines.add("oh-my-posh init fish" + configArg + " | source");
             } else {

@@ -136,11 +136,7 @@ public class PodmanContainerStore
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
-                refreshContainerState(getCmd()
-                        .getStore()
-                        .getHost()
-                        .getStore()
-                        .getOrStartSession());
+                refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
                 var pc = new PodmanCommandView(parent).container().exec(containerName);
                 pc.withSourceStore(PodmanContainerStore.this);
                 pc.withShellStateInit(PodmanContainerStore.this);
@@ -167,7 +163,8 @@ public class PodmanContainerStore
         var view = new PodmanCommandView(sc).container();
         var displayState = view.queryState(containerName);
         var running = displayState.startsWith("Up");
-        var newState = state.toBuilder().containerState(displayState).running(running).build();
+        var newState =
+                state.toBuilder().containerState(displayState).running(running).build();
         setState(newState);
     }
 }

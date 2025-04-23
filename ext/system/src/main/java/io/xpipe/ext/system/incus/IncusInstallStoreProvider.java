@@ -23,7 +23,6 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
         return DocumentationLink.LXC;
     }
 
-
     @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.GROUP;

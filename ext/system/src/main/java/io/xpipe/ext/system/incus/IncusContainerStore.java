@@ -72,11 +72,8 @@ public class IncusContainerStore
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
-                refreshContainerState(getInstall()
-                        .getStore()
-                        .getHost()
-                        .getStore()
-                        .getOrStartSession());
+                refreshContainerState(
+                        getInstall().getStore().getHost().getStore().getOrStartSession());
 
                 var user = identity != null ? identity.unwrap().getUsername() : null;
                 var sc = new IncusCommandView(parent).exec(containerName, user, () -> {

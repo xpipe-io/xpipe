@@ -77,7 +77,7 @@ public class PodmanCommandView extends CommandViewBase {
 
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
-                    "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
+                            "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
                     .readStdoutOrThrow();
         }
 
