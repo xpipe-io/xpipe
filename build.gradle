@@ -144,8 +144,7 @@ project.ext {
 
     // Module access fixes
     jvmRunArgs += [
-            "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
-            "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
+            "--add-opens", "java.base/java.lang=io.xpipe.app",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
             "--add-opens", "java.base/java.nio.file=io.xpipe.app",
             "--add-opens", "java.base/java.lang=io.xpipe.app",
@@ -156,6 +155,13 @@ project.ext {
             "--add-opens", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
             "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app"
     ]
+
+    if (fullVersion) {
+        jvmRunArgs += [
+                "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
+                "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
+        ]
+    }
 
     // Use project liliput
     jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']

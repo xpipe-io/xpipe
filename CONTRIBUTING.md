@@ -35,7 +35,7 @@ sdk install java 24-graalce
 sdk default java 24-graalce
 ```
 .
-On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=21).
+On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=24).
 
 You can configure a few development options in the file `app/dev.properties` which will be automatically generated when gradle is first run.
 
