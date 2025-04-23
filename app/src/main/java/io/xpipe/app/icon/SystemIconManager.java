@@ -3,6 +3,7 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.util.ValidationException;
@@ -26,8 +27,10 @@ public class SystemIconManager {
                 .path(DataStorage.getStorageDirectory().resolve("icons"))
                 .id("custom")
                 .build());
+        // For chinese users, GitHub link might be unreliable
+        // So use an alternative chinese mirror they can use
         all.add(SystemIconSource.GitRepository.builder()
-                .remote("https://github.com/selfhst/icons")
+                .remote(AppPrefs.get().language().getValue() == SupportedLocale.CHINESE ? "https://gitcode.com/gh_mirrors/icons13/icons" : "https://github.com/selfhst/icons")
                 .id("selfhst")
                 .build());
         for (var pref : prefs) {

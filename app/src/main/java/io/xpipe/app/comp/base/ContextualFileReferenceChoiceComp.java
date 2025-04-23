@@ -98,31 +98,34 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var source = Path.of(currentPath.toString());
-                var target = sync.getTargetLocation().apply(source);
-                if (Files.exists(source)) {
-                    var shouldCopy = AppWindowHelper.showConfirmationAlert(
-                            "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
-                    if (!shouldCopy) {
-                        return;
-                    }
-
-                    var handler = DataStorageSyncHandler.getInstance();
-                    var syncedTarget = handler.addDataFile(
-                            source, target, sync.getPerUser().test(source));
-
-                    var pubSource = Path.of(source + ".pub");
-                    if (Files.exists(pubSource)) {
-                        var pubTarget = sync.getTargetLocation().apply(pubSource);
-                        DataStorageSyncHandler.getInstance()
-                                .addDataFile(
-                                        pubSource, pubTarget, sync.getPerUser().test(pubSource));
-                    }
-
-                    Platform.runLater(() -> {
-                        filePath.setValue(FilePath.of(syncedTarget));
-                    });
+                var source = currentPath.asLocalPath();
+                if (!Files.exists(source)) {
+                    ErrorEvent.fromMessage("Unable to resolve local file path " + source).expected().handle();
+                    return;
                 }
+
+                var target = sync.getTargetLocation().apply(source);
+                var shouldCopy = AppWindowHelper.showConfirmationAlert(
+                        "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
+                if (!shouldCopy) {
+                    return;
+                }
+
+                var handler = DataStorageSyncHandler.getInstance();
+                var syncedTarget = handler.addDataFile(
+                        source, target, sync.getPerUser().test(source));
+
+                var pubSource = Path.of(source + ".pub");
+                if (Files.exists(pubSource)) {
+                    var pubTarget = sync.getTargetLocation().apply(pubSource);
+                    DataStorageSyncHandler.getInstance()
+                            .addDataFile(
+                                    pubSource, pubTarget, sync.getPerUser().test(pubSource));
+                }
+
+                Platform.runLater(() -> {
+                    filePath.setValue(FilePath.of(syncedTarget));
+                });
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             }
