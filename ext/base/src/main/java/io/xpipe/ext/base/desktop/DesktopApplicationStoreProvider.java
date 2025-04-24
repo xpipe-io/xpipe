@@ -23,7 +23,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
 
     @Override
     public DocumentationLink getHelpLink() {
-        return DocumentationLink.DESKTOPS;
+        return DocumentationLink.DESKTOP_APPLICATIONS;
     }
 
     @Override

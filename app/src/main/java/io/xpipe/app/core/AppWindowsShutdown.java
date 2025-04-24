@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -20,13 +21,17 @@ public class AppWindowsShutdown {
     private static final WinShutdownHookProc PROC = new WinShutdownHookProc();
 
     public static void registerHook(WinDef.HWND hwnd) {
-        int windowThreadID = User32.INSTANCE.GetWindowThreadProcessId(hwnd, null);
-        if (windowThreadID == 0) {
-            return;
-        }
+        try {
+            int windowThreadID = User32.INSTANCE.GetWindowThreadProcessId(hwnd, null);
+            if (windowThreadID == 0) {
+                return;
+            }
 
-        PROC.hwnd = hwnd;
-        PROC.hhook = User32.INSTANCE.SetWindowsHookEx(4, PROC, null, windowThreadID);
+            PROC.hwnd = hwnd;
+            PROC.hhook = User32.INSTANCE.SetWindowsHookEx(4, PROC, null, windowThreadID);
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).omit().handle();
+        }
     }
 
     public static class CWPSSTRUCT extends Structure {

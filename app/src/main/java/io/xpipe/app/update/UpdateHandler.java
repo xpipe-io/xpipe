@@ -108,10 +108,10 @@ public abstract class UpdateHandler {
                     var run = !AppProperties.get().isRestarted();
                     while (true) {
                         if (run
-                                && (AppPrefs.get().automaticallyUpdate().get()
+                                && (AppPrefs.get() != null && (AppPrefs.get().automaticallyUpdate().get()
                                         || AppPrefs.get()
                                                 .checkForSecurityUpdates()
-                                                .get())) {
+                                                .get()))) {
                             event("Performing background update");
                             refreshUpdateCheckSilent(
                                     !checked,

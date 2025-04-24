@@ -14,7 +14,7 @@ public enum DocumentationLink {
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
     GETTING_STARTED("guide/getting-started"),
-    DESKTOPS("guide/desktops"),
+    DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
     SCRIPTING_COMPATIBILITY("guide/scripting#shell-compatibility"),
