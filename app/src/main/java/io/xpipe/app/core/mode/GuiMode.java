@@ -4,6 +4,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
@@ -17,8 +18,8 @@ public class GuiMode extends PlatformMode {
     @Override
     public void onSwitchFrom() {
         // If we are in an externally started shutdown hook, don't close the windows until the platform exits
-        // That way, it is kept open to block for shutdowns
-        if (!OperationMode.isInShutdownHook()) {
+        // That way, it is kept open to block for shutdowns on Windows systems
+        if (OsType.getLocal() == OsType.WINDOWS && !OperationMode.isInShutdownHook()) {
             Platform.runLater(() -> {
                 TrackEvent.info("Closing windows");
                 Stage.getWindows().stream().toList().forEach(w -> {

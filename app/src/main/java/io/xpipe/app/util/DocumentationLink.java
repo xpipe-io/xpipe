@@ -35,6 +35,7 @@ public enum DocumentationLink {
     SSH("guide/ssh"),
     PSSESSION("guide/pssession"),
     RDP("guide/rdp"),
+    TUNNELS("guide/ssh-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
     KEEPASSXC("guide/password-manager#keepassxc"),

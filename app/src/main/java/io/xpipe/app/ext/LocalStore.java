@@ -40,6 +40,6 @@ public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataS
 
     @Override
     public NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) {
-        throw new UnsupportedOperationException();
+        return null;
     }
 }
