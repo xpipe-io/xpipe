@@ -33,11 +33,11 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
     @Override
     public ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config) {
         return ShellScript.lines(
-                "tmux kill-session -t xpipe",
+                "tmux kill-session -t xpipe >/dev/null 2>&1",
                 "tmux new-session -d -s xpipe",
                 "tmux rename-window \"" + escape(config.getDisplayName(), true) + "\"",
-                "tmux send-keys -t xpipe ' stty -echo' Enter C-l",
                 "tmux send-keys -t xpipe ' " + escape(command, false) + "; exit' Enter",
+                "tmux send-keys -t xpipe 'C-l'",
                 "tmux attach -d -t xpipe");
     }
 

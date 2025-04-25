@@ -106,6 +106,11 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             }
         });
         InputHelper.onExactKeyCode(tableView, KeyCode.SPACE, true, event -> {
+            // Don't show when renaming files
+            if (fileList.getEditing().getValue() != null) {
+                return;
+            }
+
             var selection = typedSelection.get() + " ";
             var found = fileList.getShown().getValue().stream()
                     .filter(browserEntry ->

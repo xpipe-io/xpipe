@@ -37,8 +37,10 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
     @Override
     protected Comp<?> create() {
+        var prefs = AppPrefs.get();
         OptionsBuilder b = new OptionsBuilder()
                 .addTitle("troubleshootingOptions")
+                .sub(new OptionsBuilder().pref(prefs.sshVerboseOutput).addToggle(prefs.sshVerboseOutput))
                 .spacer(19)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
