@@ -24,7 +24,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
-    AtomicInteger windowCounter = new AtomicInteger(2);
+    AtomicInteger windowCounter = new AtomicInteger(10);
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         var cmd = CommandBuilder.of()

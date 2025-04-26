@@ -2,10 +2,8 @@ DELIMITER="-------------------------------------"
 
 hostname -f &> /dev/null && printf "Hostname : $(hostname -f)" || printf "Hostname : $(hostname -s)"
 
-[ -f /etc/os-release ] && echo $(egrep -w "NAME|VERSION" /etc/os-release|awk -F= '{ print $2 }'|sed 's/"//g') || cat /etc/system-release
-
 echo -e "Kernel Version :" $(uname -r)
-printf "OS Architecture :"$(arch | grep x86_64 &> /dev/null) && printf " 64 Bit OS\n"  || printf " 32 Bit OS\n"
+which arch && printf "OS Architecture :"$(arch | grep x86_64 &> /dev/null) && printf " 64 Bit OS\n"  || printf " 32 Bit OS\n"
 
 echo -en "System Uptime : " $(uptime -p)
 echo -e "\nCurrent System Date & Time : "$(date +%c)
