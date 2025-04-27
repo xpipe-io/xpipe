@@ -122,7 +122,7 @@ public class TerminalDockComp extends SimpleComp {
         var hide = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                update(stack);
+                model.onClose();
             }
         };
 
