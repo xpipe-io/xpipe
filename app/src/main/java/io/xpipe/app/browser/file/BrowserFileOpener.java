@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
@@ -27,6 +28,16 @@ public class BrowserFileOpener {
         var fileSystem = model.getFileSystem();
         if (model.isClosed() || fileSystem.getShell().isEmpty()) {
             return OutputStream.nullOutputStream();
+        }
+
+        if (totalBytes == 0) {
+            var existingSize = model.getFileSystem().getFileSize(file.getPath());
+            if (existingSize != 0) {
+                var blank = AppDialog.confirm("fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
+                if (!blank) {
+                    return OutputStream.nullOutputStream();
+                }
+            }
         }
 
         var sc = fileSystem.getShell().get();
