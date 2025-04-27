@@ -100,6 +100,11 @@ public class BrowserFileOpener {
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
+        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+            FileOpener.openWithAnyApplication(entry.getPath().toString());
+            return;
+        }
+
         var file = entry.getPath();
         var key = calculateKey(model, entry);
         FileBridge.get()
@@ -121,6 +126,11 @@ public class BrowserFileOpener {
     }
 
     public static void openInDefaultApplication(BrowserFileSystemTabModel model, FileEntry entry) {
+        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+            FileOpener.openInDefaultApplication(entry.getPath().toString());
+            return;
+        }
+
         var file = entry.getPath();
         var key = calculateKey(model, entry);
         FileBridge.get()
@@ -144,6 +154,10 @@ public class BrowserFileOpener {
     public static void openInTextEditor(BrowserFileSystemTabModel model, FileEntry entry) {
         var editor = AppPrefs.get().externalEditor().getValue();
         if (editor == null) {
+            return;
+        }
+        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+            FileOpener.openInTextEditor(entry.getPath().toString());
             return;
         }
 
