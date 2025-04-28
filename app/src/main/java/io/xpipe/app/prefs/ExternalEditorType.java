@@ -10,6 +10,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("Programs")
                     .resolve("VSCodium")
                     .resolve("bin")
-                    .resolve("codium.cmd"));
+                    .resolve("codium.cmd"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -45,7 +47,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                     .resolve("Programs")
                     .resolve("cursor")
-                    .resolve("Cursor.exe"));
+                    .resolve("Cursor.exe"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -57,7 +60,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("Programs")
                     .resolve("Windsurf")
                     .resolve("bin")
-                    .resolve("windsurf.cmd"));
+                    .resolve("windsurf.cmd"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -69,7 +73,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                     .resolve("Programs")
                     .resolve("TheiaIDE")
-                    .resolve("TheiaIDE.exe"));
+                    .resolve("TheiaIDE.exe"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -81,7 +86,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("Programs")
                     .resolve("Trae")
                     .resolve("bin")
-                    .resolve("trae.cmd"));
+                    .resolve("trae.cmd"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -93,7 +99,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("Programs")
                     .resolve("Microsoft VS Code")
                     .resolve("bin")
-                    .resolve("code.cmd"));
+                    .resolve("code.cmd"))
+                    .filter(path -> Files.exists(path));
         }
     };
 
@@ -105,7 +112,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("Programs")
                     .resolve("Microsoft VS Code Insiders")
                     .resolve("bin")
-                    .resolve("code-insiders.cmd"));
+                    .resolve("code-insiders.cmd"))
+                    .filter(path -> Files.exists(path));
         }
     };
 

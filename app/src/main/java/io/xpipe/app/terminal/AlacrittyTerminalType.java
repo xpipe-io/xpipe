@@ -32,7 +32,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
     class Windows extends SimplePathType implements AlacrittyTerminalType {
 
         public Windows() {
-            super("app.alacritty", "alacritty", false);
+            super("app.alacritty", "alacritty", true);
         }
 
         @Override

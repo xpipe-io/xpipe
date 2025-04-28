@@ -36,7 +36,7 @@ public class DataStateProviderImpl extends DataStateProvider {
             return def.get();
         }
 
-        if (!(store instanceof StatefulDataStore<?> sds)) {
+        if (!(store instanceof StatefulDataStore<?>)) {
             return def.get();
         }
 
@@ -44,7 +44,8 @@ public class DataStateProviderImpl extends DataStateProvider {
         if (found == null) {
             entry.get().setStorePersistentState(def.get());
         }
-        return entry.get().getStorePersistentState();
+        T r = entry.get().getStorePersistentState();
+        return r != null ? r : def.get();
     }
 
     @Override

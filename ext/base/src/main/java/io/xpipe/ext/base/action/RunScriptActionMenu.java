@@ -698,8 +698,7 @@ public class RunScriptActionMenu implements ActionProvider {
                         if (state instanceof SystemState systemState) {
                             return scriptRef
                                     .getStore()
-                                    .getMinimumDialect()
-                                    .isCompatibleTo(systemState.getShellDialect());
+                                    .isCompatible(systemState.getShellDialect());
                         } else {
                             return false;
                         }

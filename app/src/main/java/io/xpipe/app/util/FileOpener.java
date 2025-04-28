@@ -1,5 +1,8 @@
 package io.xpipe.app.util;
 
+import com.sun.jna.platform.win32.Shell32;
+import com.sun.jna.platform.win32.ShellAPI;
+import com.sun.jna.platform.win32.User32;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
@@ -39,8 +42,17 @@ public class FileOpener {
         try {
             switch (OsType.getLocal()) {
                 case OsType.Windows windows -> {
-                    var cmd = CommandBuilder.of().add("rundll32.exe", "shell32.dll,OpenAs_RunDLL", localFile);
-                    LocalShell.getShell().executeSimpleCommand(cmd);
+                    // See https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shellexecuteinfoa
+                    var struct = new ShellAPI.SHELLEXECUTEINFO();
+                    struct.fMask = 0x100 | 0xC;
+                    struct.lpVerb = "openas";
+                    struct.lpFile = localFile;
+                    struct.nShow = User32.SW_SHOWDEFAULT;
+                    Shell32.INSTANCE.ShellExecuteEx(struct);
+
+                    // This solution does not support spaces in file names
+                    // var cmd = CommandBuilder.of().add("rundll32.exe", "shell32.dll,OpenAs_RunDLL", localFile);
+                    // LocalShell.getShell().executeSimpleCommand(cmd);
                 }
                 case OsType.Linux linux -> {
                     throw new UnsupportedOperationException();
@@ -49,7 +61,7 @@ public class FileOpener {
                     throw new UnsupportedOperationException();
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
         }
     }
