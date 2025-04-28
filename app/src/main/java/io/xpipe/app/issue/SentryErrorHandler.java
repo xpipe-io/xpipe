@@ -20,6 +20,8 @@ import java.io.ObjectOutputStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
@@ -88,6 +90,13 @@ public class SentryErrorHandler implements ErrorHandler {
             var causeField = Throwable.class.getDeclaredField("cause");
             causeField.setAccessible(true);
             causeField.set(copy, adjustCopy(throwable.getCause(), true));
+
+            var suppressedField = Throwable.class.getDeclaredField("suppressedExceptions");
+            suppressedField.setAccessible(true);
+            var suppressed = throwable.getSuppressed();
+            if (suppressed.length > 0) {
+                suppressedField.set(copy, Arrays.stream(suppressed).map(s -> adjustCopy(s, true)).toList());
+            }
 
             return copy;
         } catch (Throwable e) {
