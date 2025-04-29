@@ -120,9 +120,9 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
         return Bindings.createStringBinding(
                 () -> {
+                    AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
                     var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
                                     && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)
