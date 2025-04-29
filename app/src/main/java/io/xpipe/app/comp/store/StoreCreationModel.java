@@ -123,7 +123,7 @@ public class StoreCreationModel {
         var rootCategory = DataStorage.get()
                 .getRootCategory(DataStorage.get()
                         .getStoreCategoryIfPresent(targetCategory)
-                        .orElseThrow());
+                        .orElse(DataStorage.get().getAllConnectionsCategory()));
 
         // Don't put it in the wrong root category
         if ((provider.getValue().getCreationCategory() == null
@@ -177,6 +177,10 @@ public class StoreCreationModel {
         }
 
         if (store.getValue() == null) {
+            return;
+        }
+
+        if (entry.getValue() == null) {
             return;
         }
 
