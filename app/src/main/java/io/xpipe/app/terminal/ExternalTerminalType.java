@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
@@ -120,7 +121,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public boolean isRecommended() {
             // Tabs are only supported when single process option is enabled in konsole
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override
@@ -183,7 +184,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override
@@ -335,7 +336,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override
@@ -429,7 +430,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override
@@ -531,7 +532,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override
@@ -563,7 +564,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean isRecommended() {
-            return false;
+            return AppPrefs.get().terminalMultiplexer().getValue() != null;
         }
 
         @Override

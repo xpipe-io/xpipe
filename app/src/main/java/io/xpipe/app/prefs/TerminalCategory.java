@@ -78,6 +78,14 @@ public class TerminalCategory extends AppPrefsCategory {
         c.apply(struc -> {
             struc.get().setCellFactory(param -> {
                 return new ListCell<>() {
+
+                    {
+                        // Update recommended state on changes
+                        prefs.terminalMultiplexer().addListener((observable, oldValue, newValue) -> {
+                            updateItem(getItem(), isEmpty());
+                        });
+                    }
+
                     @Override
                     protected void updateItem(ExternalTerminalType item, boolean empty) {
                         super.updateItem(item, empty);

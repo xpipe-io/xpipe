@@ -79,8 +79,8 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     @Override
     default boolean isRecommended() {
-        // There are some race conditions with the socket
-        return false;
+        // There are some race conditions with the socket, although that should be fixed to some degree
+        return true;
     }
 
     @Override

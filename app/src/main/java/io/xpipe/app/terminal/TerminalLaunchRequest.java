@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServerException;
@@ -45,7 +46,7 @@ public class TerminalLaunchRequest {
             }
 
             if (getResult() == null) {
-                throw new BeaconServerException("Launch request aborted");
+                throw ErrorEvent.expected(new BeaconServerException("Launch request aborted"));
             }
 
             var r = getResult();

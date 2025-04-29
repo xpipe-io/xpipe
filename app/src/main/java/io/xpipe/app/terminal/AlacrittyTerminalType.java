@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
 
@@ -21,7 +22,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
     @Override
     default boolean isRecommended() {
-        return false;
+        return AppPrefs.get().terminalMultiplexer().getValue() != null;
     }
 
     @Override
