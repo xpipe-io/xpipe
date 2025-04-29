@@ -226,10 +226,10 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsType.getLocal().makeFileSystemCompatible(title);
-        var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".rdp");
+        var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
         var string = input.toString();
-        Files.writeString(file.toLocalPath(), string);
-        return file.toLocalPath();
+        Files.writeString(file, string);
+        return file;
     }
 
     @Value
@@ -375,7 +375,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
 
         private Path writeRemminaConfigFile(LaunchConfiguration configuration, String password) throws Exception {
             var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
-            var file = LocalShell.getShell().getSystemTemporaryDirectory().join(name + ".remmina");
+            var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".remmina");
             var string =
                     """
                          [remmina]
@@ -399,8 +399,8 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                                             .orElseThrow()
                                             .getValue(),
                                     password);
-            Files.writeString(file.toLocalPath(), string);
-            return file.toLocalPath();
+            Files.writeString(file, string);
+            return file;
         }
 
         @Override
