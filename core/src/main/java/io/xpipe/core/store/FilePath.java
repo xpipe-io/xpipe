@@ -9,9 +9,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-@EqualsAndHashCode
 public final class FilePath {
 
     public static boolean isProbableFilePath(OsType osType, String s) {
@@ -43,6 +43,20 @@ public final class FilePath {
         if (!value.equals(value.trim())) {
             throw new IllegalArgumentException();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        FilePath filePath = (FilePath) o;
+        return Objects.equals(value, filePath.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 
     public FilePath fileSystemCompatible(OsType osType) {
