@@ -87,6 +87,11 @@ public class SshIdentityStateManager {
     }
 
     public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
+        var found = sc.view().findProgram("ssh-add");
+        if (found.isEmpty()) {
+            throw ErrorEvent.expected(new IllegalStateException("SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
+        }
+
         try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock))
                 .start()) {
             var r = c.readStdoutAndStderr();
