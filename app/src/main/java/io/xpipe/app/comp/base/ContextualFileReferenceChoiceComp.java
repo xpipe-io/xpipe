@@ -199,7 +199,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             prop.set(s != null ? s.toString() : null);
         }));
         prop.addListener((observable, oldValue, newValue) -> {
-            filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
+            filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue) : null);
         });
         var fileNameComp = new TextFieldComp(prop)
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
