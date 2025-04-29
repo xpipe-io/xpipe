@@ -320,11 +320,7 @@ public class TerminalLauncher {
             return Optional.empty();
         }
 
-        var changedDialect = launchConfiguration.getScriptDialect()
-                != ProcessControlProvider.get().getEffectiveLocalDialect();
-        var openCommand = changedDialect
-                ? launchConfiguration.getDialectLaunchCommand().buildSimple()
-                : launchConfiguration.getScriptContent();
+        var openCommand = launchConfiguration.getDialectLaunchCommand().buildSimple();
         var launchCommand = proxyControl
                 .get()
                 .prepareIntermediateTerminalOpen(
