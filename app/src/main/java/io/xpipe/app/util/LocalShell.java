@@ -2,10 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.ProcessOutputException;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.*;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -20,6 +17,13 @@ public class LocalShell {
 
     public static void init() throws Exception {
         local = ProcessControlProvider.get().createLocalProcessControl(false).start();
+
+        // Ensure that electron applications on Linux use wayland features if possible
+        // https://github.com/microsoft/vscode/issues/207033#issuecomment-2167500295
+        if (OsType.getLocal() == OsType.LINUX) {
+            local.writeLine(local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
+        }
+
         localCache = new LocalShellCache(local);
     }
 
