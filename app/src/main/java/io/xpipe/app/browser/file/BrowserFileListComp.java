@@ -330,6 +330,11 @@ public final class BrowserFileListComp extends SimpleComp {
                 return;
             }
 
+            // Don't apply actions while renaming
+            if (fileList.getEditing().getValue() != null) {
+                return;
+            }
+
             var selected = fileList.getSelection();
             var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
