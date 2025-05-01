@@ -43,8 +43,13 @@ public class BrowserOverviewComp extends SimpleComp {
             var common = sc.getOsType().determineInterestingPaths(sc).stream()
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
+                        var fs = model.getFileSystem();
+                        if (fs == null) {
+                            return false;
+                        }
+
                         try {
-                            return model.getFileSystem().directoryExists(entry.getPath());
+                            return fs.directoryExists(entry.getPath());
                         } catch (Exception e) {
                             ErrorEvent.fromThrowable(e).handle();
                             return false;
