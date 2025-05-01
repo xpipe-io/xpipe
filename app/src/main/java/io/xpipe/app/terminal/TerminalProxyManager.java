@@ -54,6 +54,11 @@ public class TerminalProxyManager {
             return Optional.empty();
         }
 
+        var foundEntry = DataStorage.get().getStoreEntryIfPresent(uuid);
+        if (foundEntry.isEmpty()) {
+            return Optional.empty();
+        }
+
         var matchingSession = activeSession != null && activeSession.uuid.equals(uuid) ? activeSession : null;
         if (matchingSession != null) {
             // Probably incompatible
@@ -71,9 +76,8 @@ public class TerminalProxyManager {
             }
         }
 
-        DataStoreEntryRef<DataStore> ref = DataStorage.get().getStoreEntry(uuid).ref();
         try {
-            var control = createControl(ref);
+            var control = createControl(foundEntry.get().ref());
             if (control.isPresent()) {
                 control.get().start();
                 activeSession = new ActiveSession(uuid, control.get());
