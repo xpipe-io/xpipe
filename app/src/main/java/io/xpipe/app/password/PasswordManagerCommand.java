@@ -105,6 +105,10 @@ public class PasswordManagerCommand implements PasswordManager {
 
     @Override
     public String retrievePassword(String key) {
+        if (script == null) {
+            return null;
+        }
+
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         return retrieveWithCommand(cmd);
     }

@@ -7,6 +7,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 
+import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -105,7 +106,8 @@ public class BrowserTransferModel {
                     return;
                 }
 
-                Path file = TEMP.resolve(name);
+                var fixedFile = entry.getRawFileEntry().getPath().fileSystemCompatible(OsType.getLocal());
+                Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);
             });
