@@ -228,6 +228,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         var name = OsType.getLocal().makeFileSystemCompatible(title);
         var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
         var string = input.toString();
+        Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
     }
@@ -399,6 +400,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
                                             .orElseThrow()
                                             .getValue(),
                                     password);
+            Files.createDirectories(file.getParent());
             Files.writeString(file, string);
             return file;
         }
