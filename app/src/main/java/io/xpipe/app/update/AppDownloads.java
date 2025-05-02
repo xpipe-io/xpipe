@@ -25,25 +25,27 @@ import java.time.Duration;
 public class AppDownloads {
 
     public static Path downloadInstaller(String version) throws Exception {
-        var release = Release.of(version);
-        var builder = HttpRequest.newBuilder();
-        var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
-        var client = HttpHelper.client();
-        var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
-        if (response.statusCode() >= 400) {
-            throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
+        try {
+            var release = Release.of(version);
+            var builder = HttpRequest.newBuilder();
+            var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
+            var client = HttpHelper.client();
+            var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() >= 400) {
+                throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
+            }
+
+            var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
+            Files.write(downloadFile, response.body());
+            TrackEvent.withInfo("Downloaded asset").tag("version", version).tag("url", release.getUrl()).tag("size",
+                    FileUtils.byteCountToDisplaySize(response.body().length)).tag("target", downloadFile).handle();
+
+            return downloadFile;
+        } catch (IOException ex) {
+            // All sorts of things can go wrong when downloading, this is expected
+            ErrorEvent.expected(ex);
+            throw ex;
         }
-
-        var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
-        Files.write(downloadFile, response.body());
-        TrackEvent.withInfo("Downloaded asset")
-                .tag("version", version)
-                .tag("url", release.getUrl())
-                .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
-                .tag("target", downloadFile)
-                .handle();
-
-        return downloadFile;
     }
 
     public static String downloadChangelog(String version) throws Exception {
