@@ -39,8 +39,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         return ShellScript.lines(
                 "zellij delete-session -f xpipe > /dev/null 2>&1",
                 "zellij attach --create-background xpipe",
+                "sleep 0.5",
                 "zellij -s xpipe run -c --name \"" + escape(config.getDisplayName(), false, true) + "\" -- "
                         + escape(" " + command, false, false),
+                "sleep 0.5",
                 "zellij attach xpipe");
     }
 
