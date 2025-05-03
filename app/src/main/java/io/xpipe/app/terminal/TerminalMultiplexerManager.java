@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.process.OsType;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,7 +30,18 @@ public class TerminalMultiplexerManager {
 
     public static Optional<TerminalMultiplexer> getEffectiveMultiplexer() {
         var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-        return Optional.ofNullable(multiplexer);
+        if (multiplexer == null) {
+            return Optional.empty();
+        }
+
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            var hasProxy = AppPrefs.get().terminalProxy().getValue() != null;
+            if (!hasProxy) {
+                return Optional.empty();
+            }
+        }
+
+        return Optional.of(multiplexer);
     }
 
     public static void synchronizeMultiplexerLaunchTiming() {
