@@ -67,9 +67,12 @@ public class StoreCategoryComp extends SimpleComp {
 
         var expandIcon = Bindings.createObjectBinding(
                 () -> {
-                    var exp = category.getExpanded().get()
-                            && category.getChildren().getList().size() > 0;
-                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdal-keyboard_arrow_right");
+                    if (category.getChildren().getList().size() == 0) {
+                        return new LabelGraphic.IconGraphic("mdal-keyboard_arrow_right");
+                    }
+
+                    var exp = category.getExpanded().get();
+                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdi2c-chevron-double-right");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());
