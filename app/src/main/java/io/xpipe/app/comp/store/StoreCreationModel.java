@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 @Getter
 public class StoreCreationModel {
 
+    ObjectProperty<DataStore> initialStore = new SimpleObjectProperty<>();
     Property<DataStoreProvider> provider;
     ObjectProperty<DataStore> store;
     Predicate<DataStoreProvider> filter;
@@ -169,6 +170,15 @@ public class StoreCreationModel {
         ThreadHelper.runFailableAsync(() -> {
             action.execute();
         });
+    }
+
+    boolean hasBeenModified() {
+        if (initialStore.getValue() == null) {
+            return true;
+        }
+
+        var eq = initialStore.getValue().equals(store.getValue());
+        return !eq;
     }
 
     void finish() {

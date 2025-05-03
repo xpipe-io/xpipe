@@ -5,11 +5,14 @@ import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -41,11 +44,6 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 .addString(model.getName(), false)
                 .nonNull(propVal)
                 .buildComp()
-                .onSceneAssign(struc -> {
-                    if (model.isStaticDisplay()) {
-                        struc.get().requestFocus();
-                    }
-                })
                 .styleClass("store-creator-options")
                 .createRegion();
     }
@@ -54,6 +52,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var layout = new BorderPane();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(model.getFilter(), model.getProvider());
+        providerChoice.grow(true, false);
         var provider = model.getProvider().getValue() != null
                 ? model.getProvider().getValue()
                 : providerChoice.getProviders().getFirst();
@@ -62,16 +61,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         if (model.isStaticDisplay()) {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
-        if (showProviders) {
-            providerChoice.onSceneAssign(struc -> struc.get().requestFocus());
-        }
-        providerChoice.apply(GrowAugment.create(true, false));
 
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
                 var propVal = new SimpleValidator();
                 var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
+                model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
                 valSp.getChildren().add(propR);
@@ -91,6 +87,10 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
+
+                Platform.runLater(() -> {
+                    propR.requestFocus();
+                });
 
                 layout.setCenter(vbox);
 

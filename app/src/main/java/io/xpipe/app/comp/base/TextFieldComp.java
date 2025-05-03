@@ -57,12 +57,13 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         text.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 text.getScene().getRoot().requestFocus();
+                ke.consume();
             }
 
             if (lazy && ke.getCode().equals(KeyCode.ENTER)) {
                 lastAppliedValue.setValue(currentValue.getValue());
+                ke.consume();
             }
-            ke.consume();
         });
 
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {

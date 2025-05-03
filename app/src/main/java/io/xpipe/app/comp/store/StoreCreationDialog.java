@@ -18,6 +18,8 @@ import io.xpipe.core.store.DataStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -127,12 +129,12 @@ public class StoreCreationDialog {
     }
 
     private static boolean showInvalidConfirmAlert() {
-        var skipped = new SimpleBooleanProperty();
+        var retry = new SimpleBooleanProperty();
         var modal = ModalOverlay.of("confirmInvalidStoreTitle", AppDialog.dialogTextKey("confirmInvalidStoreContent"));
-        modal.addButton(new ModalButton("retry", null, true, false));
-        modal.addButton(new ModalButton("skip", () -> skipped.set(true), true, true));
+        modal.addButton(new ModalButton("retry", () -> retry.set(true), true, false));
+        modal.addButton(new ModalButton("skip", null, true, true));
         modal.showAndWait();
-        return skipped.get();
+        return !retry.get();
     }
 
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
@@ -146,6 +148,17 @@ public class StoreCreationDialog {
                 ? new LabelGraphic.ImageGraphic(
                         provider.getDisplayIconFileName(model.getStore().get()), 20)
                 : new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
+        comp.apply(struc -> {
+            struc.get().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+                if (e.getCode() == KeyCode.ESCAPE) {
+                    var changed = model.hasBeenModified();
+                    if (!changed) {
+                        modal.close();
+                        e.consume();
+                    }
+                }
+            });
+        });
         modal.hideable(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
             modal.show();
         });
