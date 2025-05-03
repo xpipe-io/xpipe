@@ -70,6 +70,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
                     BrowserFileChooserSessionComp.openSingleFile(
                             () -> fileSystem.getValue(),
+                            () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
                             fileStore -> {
                                 if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());

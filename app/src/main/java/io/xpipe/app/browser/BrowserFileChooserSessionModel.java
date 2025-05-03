@@ -97,11 +97,15 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                     selectedEntry.setValue(model);
                     sessionEntries.add(model);
                 }
+
                 if (path != null) {
-                    model.initWithGivenDirectory(path.apply(model).toDirectory());
-                } else {
-                    model.initWithDefaultDirectory();
+                    var initialPath = path.apply(model);
+                    if (initialPath != null) {
+                        model.initWithGivenDirectory(initialPath.toDirectory());
+                        return;
+                    }
                 }
+                model.initWithDefaultDirectory();
             }
         });
     }

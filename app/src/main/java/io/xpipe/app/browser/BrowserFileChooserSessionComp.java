@@ -17,6 +17,7 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
 import javafx.beans.property.BooleanProperty;
@@ -42,7 +43,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
     }
 
     public static void openSingleFile(
-            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Consumer<FileReference> file, boolean save) {
+            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Supplier<FilePath> initialPath, Consumer<FileReference> file, boolean save) {
         var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
@@ -69,7 +70,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
         modal.show();
         ThreadHelper.runAsync(() -> {
-            model.openFileSystemAsync(store.get(), null, null);
+            model.openFileSystemAsync(store.get(), (sc) -> initialPath.get(), null);
         });
     }
 
@@ -147,6 +148,6 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                 });
-        return splitPane.createRegion();
+        return splitPane.prefHeight(2000).createRegion();
     }
 }
