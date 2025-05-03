@@ -30,7 +30,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
             AppLayoutModel.get().getQueueEntries().add(qe);
             GlobalTimer.delay(() -> {
                 AppLayoutModel.get().getQueueEntries().remove(qe);
-            }, Duration.ofSeconds(1));
+            }, Duration.ofSeconds(3));
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 
