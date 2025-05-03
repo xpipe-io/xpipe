@@ -28,5 +28,5 @@ public abstract class DataStateProvider {
 
     public abstract <T> T getCache(DataStore store, String key, Class<T> c, Supplier<T> def);
 
-    public abstract boolean isInStorage(DataStore store);
+    public abstract boolean canCacheToStorage(DataStore store);
 }

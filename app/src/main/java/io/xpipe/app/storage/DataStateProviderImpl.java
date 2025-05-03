@@ -83,8 +83,9 @@ public class DataStateProviderImpl extends DataStateProvider {
         return c.cast(r);
     }
 
-    public boolean isInStorage(DataStore store) {
-        var entry = DataStorage.get().getStoreEntryIfPresent(store, true);
+    public boolean canCacheToStorage(DataStore store) {
+        var entry = DataStorage.get().getStoreEntryIfPresent(store, true).or(() -> DataStorage.get()
+                .getStoreEntryInProgressIfPresent(store));
         return entry.isPresent();
     }
 }

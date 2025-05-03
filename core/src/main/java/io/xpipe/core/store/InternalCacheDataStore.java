@@ -17,4 +17,8 @@ public interface InternalCacheDataStore extends DataStore {
     default void setCache(String key, Object val) {
         DataStateProvider.get().putCache(this, key, val);
     }
+
+    default boolean canCacheToStorage() {
+        return DataStateProvider.get().canCacheToStorage(this);
+    }
 }

@@ -9,20 +9,20 @@ import io.xpipe.core.store.*;
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
     default ShellControl getOrStartSession() throws Exception {
-        // For tests, the cache is not available
-        if (AppProperties.get().isTest()) {
-            return standaloneControl();
+        // Check if the cache is not available
+        if (!canCacheToStorage()) {
+            return standaloneControl().start();
         }
 
-        var session = getSession();
-        if (session != null) {
-            session.getShellControl().refreshRunningState();
-            if (!session.isRunning()) {
+        var existingSession = getSession();
+        if (existingSession != null) {
+            existingSession.getShellControl().refreshRunningState();
+            if (!existingSession.isRunning()) {
                 stopSessionIfNeeded();
             } else {
                 try {
-                    session.getShellControl().command(" echo xpipetest").execute();
-                    return new StubShellControl(session.getShellControl());
+                    existingSession.getShellControl().command(" echo xpipetest").execute();
+                    return new StubShellControl(existingSession.getShellControl());
                 } catch (Exception e) {
                     ErrorEvent.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();
@@ -31,7 +31,15 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         }
 
         startSessionIfNeeded();
-        return new StubShellControl(getSession().getShellControl());
+
+        var session = getSession();
+        // This might be null if this store has been removed from this storage since the session was started
+        // Then, the cache returns null
+        if (session == null) {
+            return standaloneControl().start();
+        }
+
+        return new StubShellControl(session.getShellControl());
     }
 
     default boolean checkSessionAlive() {
