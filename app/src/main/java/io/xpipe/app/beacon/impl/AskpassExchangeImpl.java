@@ -8,6 +8,7 @@ import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.core.util.InPlaceSecretValue;
 
 public class AskpassExchangeImpl extends AskpassExchange {
 
@@ -21,7 +22,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         // SSH auth with a smartcard will prompt to confirm user presence
         // Maybe we can show some dialog for this in the future
         if (msg.getPrompt() != null && msg.getPrompt().toLowerCase().contains("confirm user presence")) {
-            return Response.builder().build();
+            return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 
         if (msg.getRequest() == null) {
