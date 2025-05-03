@@ -403,11 +403,6 @@ public interface SshIdentityStrategy {
                         return sc.getShellDialect().fileArgument(getFile(sc));
                     });
         }
-
-        @Override
-        public SecretRetrievalStrategy getAskpassStrategy() {
-            return new SecretRetrievalStrategy.Prompt();
-        }
     }
 
     @Value
