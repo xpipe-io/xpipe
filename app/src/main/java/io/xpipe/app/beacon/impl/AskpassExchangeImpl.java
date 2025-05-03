@@ -1,14 +1,17 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.terminal.TerminalView;
-import io.xpipe.app.util.AskpassAlert;
-import io.xpipe.app.util.SecretManager;
-import io.xpipe.app.util.SecretQueryState;
+import io.xpipe.app.util.*;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
 
 import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.core.util.InPlaceSecretValue;
+import javafx.beans.property.SimpleStringProperty;
+
+import java.time.Duration;
 
 public class AskpassExchangeImpl extends AskpassExchange {
 
@@ -22,6 +25,12 @@ public class AskpassExchangeImpl extends AskpassExchange {
         // SSH auth with a smartcard will prompt to confirm user presence
         // Maybe we can show some dialog for this in the future
         if (msg.getPrompt() != null && msg.getPrompt().toLowerCase().contains("confirm user presence")) {
+            var qe = new AppLayoutModel.QueueEntry(new SimpleStringProperty(msg.getPrompt()),
+                    new LabelGraphic.IconGraphic("mdi2f-fingerprint"), () -> {});
+            AppLayoutModel.get().getQueueEntries().add(qe);
+            GlobalTimer.delay(() -> {
+                AppLayoutModel.get().getQueueEntries().remove(qe);
+            }, Duration.ofSeconds(1));
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 

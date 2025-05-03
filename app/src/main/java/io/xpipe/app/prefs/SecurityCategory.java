@@ -23,6 +23,8 @@ public class SecurityCategory extends AppPrefsCategory {
                         .addToggle(prefs.disableCertutilUse)
                         .pref(prefs.dontAcceptNewHostKeys)
                         .addToggle(prefs.dontAcceptNewHostKeys)
+                        .pref(prefs.disableSshPinCaching)
+                        .addToggle(prefs.disableSshPinCaching)
                         .pref(prefs.dontAutomaticallyStartVmSshServer)
                         .addToggle(prefs.dontAutomaticallyStartVmSshServer)
                         .pref(prefs.disableTerminalRemotePasswordPreparation)

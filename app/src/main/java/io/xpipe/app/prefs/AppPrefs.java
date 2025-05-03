@@ -188,6 +188,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "developerDisableSshTunnelGateways", Boolean.class, false);
     final BooleanProperty developerPrintInitFiles =
             mapLocal(new SimpleBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
+    final BooleanProperty disableSshPinCaching =
+            mapLocal(new SimpleBooleanProperty(false), "disableSshPinCaching", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
             new SimpleObjectProperty<>(SupportedLocale.getInitial()), "language", SupportedLocale.class, false);
@@ -224,6 +226,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableTerminalDocking() {
         return enableTerminalDocking;
+    }
+
+    public ObservableBooleanValue disableSshPinCaching() {
+        return disableSshPinCaching;
     }
 
     @Getter
