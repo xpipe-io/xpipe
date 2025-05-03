@@ -28,7 +28,7 @@ public class AskpassAlert {
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
                     // Link to help page for double prompt
-                    if (SecretManager.isSpecialPrompt(prompt)) {
+                    if (SecretManager.disableCachingForPrompt(prompt)) {
                         var type = new ButtonType("Help", ButtonBar.ButtonData.HELP);
                         alert.getButtonTypes().add(type);
                         var button = alert.getDialogPane().lookupButton(type);

@@ -318,7 +318,8 @@ public interface SshIdentityStrategy {
 
         @Override
         public SecretRetrievalStrategy getAskpassStrategy() {
-            return password;
+            // Always try to cache passphrase
+            return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
         }
     }
 

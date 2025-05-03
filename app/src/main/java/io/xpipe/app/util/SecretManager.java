@@ -50,7 +50,7 @@ public class SecretManager {
                 secretQueryProgress -> secretQueryProgress.getRequestId().equals(request));
     }
 
-    public static boolean isSpecialPrompt(String prompt) {
+    public static boolean disableCachingForPrompt(String prompt) {
         var l = prompt.toLowerCase(Locale.ROOT);
         // 2FA
         if (l.contains("passcode") || l.contains("verification code")) {
