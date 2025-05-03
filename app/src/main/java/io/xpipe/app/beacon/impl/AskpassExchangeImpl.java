@@ -18,6 +18,12 @@ public class AskpassExchangeImpl extends AskpassExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
+        // SSH auth with a smartcard will prompt to confirm user presence
+        // Maybe we can show some dialog for this in the future
+        if (msg.getPrompt() != null && msg.getPrompt().toLowerCase().contains("confirm user presence")) {
+            return Response.builder().build();
+        }
+
         if (msg.getRequest() == null) {
             var r = AskpassAlert.queryRaw(msg.getPrompt(), null);
             return Response.builder().value(r.getSecret()).build();
