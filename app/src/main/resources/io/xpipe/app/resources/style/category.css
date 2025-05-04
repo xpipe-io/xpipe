@@ -28,36 +28,72 @@
     -fx-font-weight: BOLD;
 }
 
+.category.gray > .category-button .expand-button:disabled .ikonli-font-icon {
+    -fx-opacity: 0.5;
+}
+
 .root:light .category.yellow > .category-button .expand-button .ikonli-font-icon {
-    -fx-icon-color: #888800;
+    -fx-icon-color: #bc9925;
+}
+
+.root:light .category.yellow > .category-button .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #887028;
 }
 
 .root:light .category.green > .category-button .expand-button .ikonli-font-icon {
     -fx-icon-color: #0d770d;
 }
 
+.root:light .category.green > .category-button .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #085908;
+}
+
 .root:light .category.blue > .category-button  .expand-button .ikonli-font-icon {
     -fx-icon-color: #1c62be;
+}
+
+.root:light .category.blue > .category-button  .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #124d98;
 }
 
 .root:light .category.red > .category-button  .expand-button .ikonli-font-icon {
     -fx-icon-color: #a40000;
 }
 
+.root:light .category.red > .category-button  .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #800000;
+}
+
 .root:dark .category.yellow > .category-button .expand-button .ikonli-font-icon {
     -fx-icon-color: yellow;
 }
 
+.root:dark .category.yellow > .category-button .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #a1a116;
+}
+
 .root:dark .category.green > .category-button .expand-button .ikonli-font-icon {
-    -fx-icon-color: green;
+    -fx-icon-color: #00a300;
+}
+
+.root:dark .category.green > .category-button .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #007000;
 }
 
 .root:dark .category.blue > .category-button  .expand-button .ikonli-font-icon {
-    -fx-icon-color: #397fd5;
+    -fx-icon-color: #2a78da;
+}
+
+.root:dark .category.blue > .category-button  .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: #2459a1;
 }
 
 .root:dark .category.red > .category-button  .expand-button .ikonli-font-icon {
     -fx-icon-color: red;
+}
+
+.root:dark .category.red > .category-button  .expand-button:disabled .ikonli-font-icon {
+    -fx-icon-color: darkred;
 }
 
 .category-button  .expand-button:disabled {
