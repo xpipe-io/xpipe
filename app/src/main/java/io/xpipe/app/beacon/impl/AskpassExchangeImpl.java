@@ -25,12 +25,16 @@ public class AskpassExchangeImpl extends AskpassExchange {
         // SSH auth with a smartcard will prompt to confirm user presence
         // Maybe we can show some dialog for this in the future
         if (msg.getPrompt() != null && msg.getPrompt().toLowerCase().contains("confirm user presence")) {
-            var qe = new AppLayoutModel.QueueEntry(new SimpleStringProperty(msg.getPrompt()),
-                    new LabelGraphic.IconGraphic("mdi2f-fingerprint"), () -> {});
-            AppLayoutModel.get().getQueueEntries().add(qe);
-            GlobalTimer.delay(() -> {
-                AppLayoutModel.get().getQueueEntries().remove(qe);
-            }, Duration.ofSeconds(3));
+            var shown = AppLayoutModel.get().getQueueEntries().stream().anyMatch(queueEntry ->
+                            msg.getPrompt().equals(queueEntry.getName().getValue()));
+            if (!shown) {
+                var qe = new AppLayoutModel.QueueEntry(new SimpleStringProperty(msg.getPrompt()), new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
+                        () -> {});
+                AppLayoutModel.get().getQueueEntries().add(qe);
+                GlobalTimer.delay(() -> {
+                    AppLayoutModel.get().getQueueEntries().remove(qe);
+                }, Duration.ofSeconds(10));
+            }
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 

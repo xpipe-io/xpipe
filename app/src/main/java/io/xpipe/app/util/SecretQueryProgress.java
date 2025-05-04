@@ -60,7 +60,7 @@ public class SecretQueryProgress {
         }
 
         for (SecretQueryFilter filter : filters) {
-            var o = filter.filter(prompt);
+            var o = filter.filter(this, prompt);
             if (o.isPresent()) {
                 return o.get();
             }

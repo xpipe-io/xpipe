@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface SecretQueryFilter {
 
-    Optional<SecretValue> filter(String prompt);
+    Optional<SecretValue> filter(SecretQueryProgress progress, String prompt);
 }
