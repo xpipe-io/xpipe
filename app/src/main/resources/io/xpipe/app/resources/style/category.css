@@ -29,7 +29,7 @@
 }
 
 .category.gray > .category-button .expand-button:disabled .ikonli-font-icon {
-    -fx-opacity: 0.5;
+    -fx-opacity: 0.3;
 }
 
 .root:light .category.yellow > .category-button .expand-button .ikonli-font-icon {

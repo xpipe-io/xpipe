@@ -111,6 +111,7 @@ public class BaseMode extends OperationMode {
                     DataStorage.init();
                     storageLoaded.countDown();
                     StoreViewState.init();
+                    AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
                 },
                 () -> {

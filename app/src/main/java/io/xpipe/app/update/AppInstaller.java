@@ -174,7 +174,11 @@ public class AppInstaller {
                                              }
 
                                              cd ~
-                                             runinstaller || echo "Update failed ..." && read key
+                                             runinstaller
+                                             if [ "$?" != 0 ]; then
+                                               echo "Update failed ..."
+                                               read key
+                                             fi
                                              """,
                         file, file, AppRestart.getTerminalRestartCommand()));
                 runAndClose(() -> {
@@ -203,7 +207,11 @@ public class AppInstaller {
                                              }
 
                                              cd ~
-                                             runinstaller || read -rsp "Update failed ..."$'\\n' -n 1 key
+                                             runinstaller
+                                             if [ "$?" != 0 ]; then
+                                               echo "Update failed ..."
+                                               read key
+                                             fi
                                              """,
                         file, file, AppRestart.getTerminalRestartCommand()));
 
@@ -233,7 +241,11 @@ public class AppInstaller {
                                            }
 
                                            cd ~
-                                           runinstaller || echo "Update failed ..." && read -rs -k 1 key
+                                           runinstaller
+                                           if [ "$?" != 0 ]; then
+                                             echo "Update failed ..."
+                                             read -rs -k 1 key
+                                           fi
                                            """,
                         file, file, AppRestart.getTerminalRestartCommand()));
 
