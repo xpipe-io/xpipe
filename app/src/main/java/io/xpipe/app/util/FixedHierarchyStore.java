@@ -8,6 +8,10 @@ import java.util.List;
 
 public interface FixedHierarchyStore extends DataStore {
 
+    default boolean canManuallyRefresh() {
+        return true;
+    }
+
     default boolean removeLeftovers() {
         return true;
     }

@@ -42,6 +42,11 @@ public class RefreshChildrenStoreAction implements ActionProvider {
             public LabelGraphic getIcon(DataStoreEntryRef<FixedHierarchyStore> store) {
                 return new LabelGraphic.IconGraphic("mdi2r-refresh");
             }
+
+            @Override
+            public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
+                return o.getStore().canManuallyRefresh();
+            }
         };
     }
 
@@ -61,7 +66,7 @@ public class RefreshChildrenStoreAction implements ActionProvider {
 
             @Override
             public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
-                return DataStorage.get().getStoreChildren(o.get()).size() == 0;
+                return o.getStore().canManuallyRefresh() && DataStorage.get().getStoreChildren(o.get()).size() == 0;
             }
         };
     }
