@@ -82,6 +82,7 @@ public class BaseMode extends OperationMode {
         var browserLoaded = new CountDownLatch(1);
         var shellLoaded = new CountDownLatch(1);
         var storageLoaded = new CountDownLatch(1);
+        var localPrefsLoaded = new CountDownLatch(1);
         ThreadHelper.load(
                 true,
                 () -> {
@@ -90,7 +91,9 @@ public class BaseMode extends OperationMode {
                     shellLoaded.countDown();
                     AppRosettaCheck.check();
                     AppTestCommandCheck.check();
+                    // This might be slow on macOS and might take longer than the platform init
                     AppPrefs.setLocalDefaultsIfNeeded();
+                    localPrefsLoaded.countDown();
                     PlatformInit.init(true);
                     AppMainWindow.addUpdateTitleListener();
                     TrackEvent.info("Shell initialization thread completed");
@@ -115,6 +118,7 @@ public class BaseMode extends OperationMode {
                     imagesLoaded.await();
                     browserLoaded.await();
                     iconsLoaded.await();
+                    localPrefsLoaded.await();
                     AppMainWindow.loadingText("loadingUserInterface");
                     AppMainWindow.initContent();
                     TrackEvent.info("Window content initialization thread completed");
