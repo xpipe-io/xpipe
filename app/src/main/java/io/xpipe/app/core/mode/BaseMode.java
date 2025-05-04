@@ -62,6 +62,7 @@ public class BaseMode extends OperationMode {
         AppJavaOptionsCheck.check();
         AppSid.init();
         AppBeaconServer.init();
+        AppLayoutModel.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             PtbDialog.showIfNeeded();
@@ -110,7 +111,6 @@ public class BaseMode extends OperationMode {
                     TrackEvent.info("Connection storage initialization thread completed");
                 },
                 () -> {
-                    AppLayoutModel.init();
                     PlatformInit.init(true);
                     imagesLoaded.await();
                     browserLoaded.await();

@@ -94,6 +94,11 @@ public class StandardStorage extends DataStorage {
         }
         dataStorageUserHandler.login();
 
+        var teamVault = dataStorageUserHandler.getUserCount() > 1;
+        if (teamVault) {
+            dataStorageSyncHandler.initTeamVault();
+        }
+
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
         var dataDir = getDataDir();

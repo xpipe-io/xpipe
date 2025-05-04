@@ -33,6 +33,8 @@ public interface DataStorageSyncHandler {
 
     void handleDeletion(Path target, String name);
 
+    void initTeamVault();
+
     Path getDirectory();
 
     List<Path> getSavedDataFiles();

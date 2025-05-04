@@ -20,9 +20,11 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
+import javafx.util.Duration;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -101,7 +103,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                         item.getAction().run();
                         queueEntries.remove(item);
                     });
-                    b.tooltip(item.getName());
+                    b.apply(struc -> {
+                        var tt = TooltipHelper.create(item.getName(), null);
+                        tt.setShowDelay(Duration.millis(50));
+                        Tooltip.install(struc.get(), tt);
+                    });
                     b.accessibleText(item.getName());
                     var stack = createStyle(null, b);
                     queueButtons.getChildren().add(stack.createRegion());
