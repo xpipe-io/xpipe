@@ -36,8 +36,7 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
                 "tmux kill-session -t xpipe >/dev/null 2>&1",
                 "tmux new-session -d -s xpipe",
                 "tmux rename-window \"" + escape(config.getDisplayName(), true) + "\"",
-                "tmux send-keys -t xpipe ' " + escape(command, false) + "; exit' Enter",
-                "tmux send-keys -t xpipe 'C-l'",
+                "tmux send-keys -t xpipe ' clear; " + escape(command, false) + "; exit' Enter",
                 "tmux attach -d -t xpipe");
     }
 
