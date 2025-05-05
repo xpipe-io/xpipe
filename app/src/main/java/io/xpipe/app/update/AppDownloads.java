@@ -1,6 +1,5 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
@@ -10,7 +9,6 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import lombok.Value;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -26,7 +24,7 @@ public class AppDownloads {
 
     public static Path downloadInstaller(String version) throws Exception {
         try {
-            var release = Release.of(version);
+            var release = AppRelease.of(version);
             var builder = HttpRequest.newBuilder();
             var httpRequest = builder.uri(URI.create(release.getUrl())).GET().build();
             var client = HttpHelper.client();
@@ -109,38 +107,13 @@ public class AppDownloads {
         return ver;
     }
 
-    public static Release queryLatestRelease(boolean first, boolean securityOnly) throws Exception {
+    public static AppRelease queryLatestRelease(boolean first, boolean securityOnly) throws Exception {
         try {
             var ver = queryLatestVersion(first, securityOnly);
-            return Release.of(ver);
+            return AppRelease.of(ver);
         } catch (Exception e) {
             throw ErrorEvent.expected(e);
         }
     }
 
-    @Value
-    public static class Release {
-
-        public static Release of(String tag) {
-            var type = AppInstaller.getSuitablePlatformAsset();
-            var os =
-                    switch (OsType.getLocal()) {
-                        case OsType.Linux linux -> "linux";
-                        case OsType.MacOs macOs -> "macos";
-                        case OsType.Windows windows -> "windows";
-                    };
-            var arch = AppProperties.get().getArch();
-            var name = "xpipe-installer-%s-%s.%s".formatted(os, arch, type.getExtension());
-            var url = "https://github.com/xpipe-io/%s/releases/download/%s/%s"
-                    .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag, name);
-            var browser = "https://github.com/xpipe-io/%s/releases/%s"
-                    .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag);
-            return new Release(tag, url, browser, name);
-        }
-
-        String tag;
-        String url;
-        String browserUrl;
-        String file;
-    }
 }

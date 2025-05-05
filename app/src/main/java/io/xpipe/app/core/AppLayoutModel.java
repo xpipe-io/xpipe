@@ -5,6 +5,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.store.StoreLayoutComp;
 import io.xpipe.app.prefs.AppPrefsComp;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;

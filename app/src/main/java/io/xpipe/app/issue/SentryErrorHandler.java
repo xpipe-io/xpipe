@@ -1,6 +1,6 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -21,7 +21,6 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {

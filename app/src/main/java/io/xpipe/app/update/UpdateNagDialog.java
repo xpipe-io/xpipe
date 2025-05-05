@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;

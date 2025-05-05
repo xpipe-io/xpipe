@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.Hyperlinks;

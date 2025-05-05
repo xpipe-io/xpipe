@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellScript;

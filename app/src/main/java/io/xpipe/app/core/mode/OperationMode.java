@@ -10,6 +10,7 @@ import io.xpipe.app.issue.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviour;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.FailableRunnable;

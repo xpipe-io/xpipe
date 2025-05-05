@@ -3,7 +3,6 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppDistributionType;
 import io.xpipe.app.issue.TrackEvent;
 
 public class UpdateAvailableDialog {

@@ -1,8 +1,8 @@
-package io.xpipe.app.core;
+package io.xpipe.app.update;
 
+import io.xpipe.app.core.*;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.update.*;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.OsType;
@@ -44,20 +44,8 @@ public enum AppDistributionType implements Translatable {
                 AppRestart.getTerminalRestartCommand()));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
-    CHOCO("choco", true, () -> {
-        var systemWide =
-                Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
-        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
-        if (systemWide) {
-            return new CommandUpdater(ShellScript.lines(
-                    "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
-                            + "\"",
-                    AppRestart.getTerminalRestartCommand()));
-        } else {
-            return new CommandUpdater(
-                    ShellScript.lines("choco upgrade " + pkg, AppRestart.getTerminalRestartCommand()));
-        }
-    });
+    CHOCO("choco", true, () -> new ChocoUpdater()),
+    WINGET("winget", true, () -> new WingetUpdater());
 
     private static AppDistributionType type;
 
@@ -166,12 +154,19 @@ public enum AppDistributionType implements Translatable {
         }
 
         if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
-            var out = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
-            if (out.isPresent()) {
-                if (out.get().contains("xpipe")) {
+            var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
+            if (chocoOut.isPresent()) {
+                if (chocoOut.get().contains("xpipe") && chocoOut.get().contains(AppProperties.get().getVersion())) {
                     return CHOCO;
                 }
             }
+
+//            var wingetOut = LocalExec.readStdoutIfPossible("winget", "show", "--id", "xpipe-io.xpipe", "--source", "--winget");
+//            if (wingetOut.isPresent()) {
+//                if (wingetOut.get().contains("xpipe-io.xpipe") && wingetOut.get().contains(AppProperties.get().getVersion())) {
+//                    return WINGET;
+//                }
+//            }
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {

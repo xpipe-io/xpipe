@@ -3,7 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppDistributionType;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.util.JfxHelper;
