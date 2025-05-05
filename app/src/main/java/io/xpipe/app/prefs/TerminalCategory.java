@@ -63,7 +63,9 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(terminalMultiplexer())
                 // .sub(terminalInitScript())
                 .sub(
-                        new OptionsBuilder().pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
+                        new OptionsBuilder()
+                                .pref(prefs.terminalAlwaysPromptForRestart).addToggle(prefs.terminalAlwaysPromptForRestart)
+                                .pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )

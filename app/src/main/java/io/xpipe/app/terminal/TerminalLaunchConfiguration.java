@@ -49,13 +49,13 @@ public class TerminalLaunchConfiguration {
             String cleanTitle,
             String adjustedTitle,
             boolean preferTabs,
-            boolean promptRestart)
+            boolean alwaysPromptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
             var d = ProcessControlProvider.get().getEffectiveLocalDialect();
-            var launcherScript = d.terminalLauncherScript(request, adjustedTitle, promptRestart);
+            var launcherScript = d.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, launcherScript, d);
             return config;
@@ -77,7 +77,7 @@ public class TerminalLaunchConfiguration {
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var launcherScript =
-                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, promptRestart);
+                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
                 var content =
                         """
                               echo 'Transcript started, output file is "sessions\\%s"'
@@ -100,7 +100,7 @@ public class TerminalLaunchConfiguration {
                         ShellDialects.POWERSHELL);
                 return config;
             } else {
-                var launcherScript = sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, promptRestart);
+                var launcherScript = sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
 
                 var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
                         .executeAndCheck();

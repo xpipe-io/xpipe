@@ -158,11 +158,11 @@ public class TerminalLauncher {
                         && AppPrefs.get().clearTerminalOnInit().get()
                         && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var promptRestart = AppPrefs.get().terminalPromptForRestart().getValue();
+        var alwaysPromptRestart = AppPrefs.get().terminalAlwaysPromptForRestart().getValue();
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
 
         var config = TerminalLaunchConfiguration.create(
-                request, entry, cleanTitle, adjustedTitle, preferTabs, promptRestart);
+                request, entry, cleanTitle, adjustedTitle, preferTabs, alwaysPromptRestart);
 
         synchronized (TerminalLauncher.class) {
             // There will be timing issues when launching multiple tabs in a short time span

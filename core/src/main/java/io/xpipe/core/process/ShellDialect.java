@@ -25,7 +25,7 @@ public interface ShellDialect {
         return null;
     }
 
-    String terminalLauncherScript(UUID request, String name, boolean promptRestart);
+    String terminalLauncherScript(UUID request, String name, boolean alwaysPromptRestart);
 
     String getExecutableName();
 
