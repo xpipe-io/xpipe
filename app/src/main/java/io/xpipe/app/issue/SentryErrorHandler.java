@@ -11,6 +11,7 @@ import io.sentry.*;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
+import io.xpipe.app.util.LicenseRequiredException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
@@ -54,6 +55,10 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         if (!clear) {
+            return throwable;
+        }
+
+        if (throwable instanceof LicenseRequiredException) {
             return throwable;
         }
 
@@ -114,7 +119,7 @@ public class SentryErrorHandler implements ErrorHandler {
         }
 
         if (ee.getThrowable() != null) {
-            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics() && !ee.isLicenseRequired());
+            var adjusted = adjustCopy(ee.getThrowable(), !ee.isShouldSendDiagnostics());
             return Sentry.captureException(adjusted, sc -> fillScope(ee, sc));
         }
 
@@ -196,7 +201,7 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
-        s.setTag("licenseRequired", Boolean.toString(ee.isLicenseRequired()));
+        s.setTag("licenseRequired", Boolean.toString(ee.getThrowable() instanceof LicenseRequiredException));
         s.setTag(
                 "fallbackShell",
                 AppPrefs.get() != null
@@ -207,7 +212,7 @@ public class SentryErrorHandler implements ErrorHandler {
         var exMessage = ee.getThrowable() != null ? ee.getThrowable().getMessage() : null;
         if (ee.getDescription() != null
                 && !ee.getDescription().equals(exMessage)
-                && (ee.isShouldSendDiagnostics() || ee.isLicenseRequired())) {
+                && (ee.isShouldSendDiagnostics() || ee.getThrowable() instanceof LicenseRequiredException)) {
             s.setTag("message", ee.getDescription().lines().collect(Collectors.joining(" ")));
         }
 

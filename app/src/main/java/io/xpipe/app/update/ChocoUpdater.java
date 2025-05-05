@@ -114,7 +114,7 @@ public class ChocoUpdater extends UpdateHandler {
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
-                    var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+                    var pkg = "xpipe";
                     return ShellScript.lines(
                             "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
                                     + "\"",
