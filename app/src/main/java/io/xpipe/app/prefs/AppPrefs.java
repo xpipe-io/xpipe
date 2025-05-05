@@ -118,8 +118,8 @@ public class AppPrefs {
             .valueClass(TerminalMultiplexer.class)
             .log(false)
             .build());
-    final Property<Boolean> terminalAlwaysPromptForRestart =
-            mapLocal(new SimpleBooleanProperty(true), "terminalAlwaysPromptForRestart", Boolean.class, false);
+    final Property<Boolean> terminalAlwaysPauseOnExit =
+            mapLocal(new SimpleBooleanProperty(true), "terminalAlwaysPauseOnExit", Boolean.class, false);
     final Property<TerminalPrompt> terminalPrompt = map(Mapping.builder()
             .property(new SimpleObjectProperty<>(null))
             .key("terminalPrompt")
@@ -135,8 +135,8 @@ public class AppPrefs {
         return terminalProxy;
     }
 
-    public ObservableValue<Boolean> terminalAlwaysPromptForRestart() {
-        return terminalAlwaysPromptForRestart;
+    public ObservableValue<Boolean> terminalAlwaysPauseOnExit() {
+        return terminalAlwaysPauseOnExit;
     }
 
     public final StringProperty passwordManagerCommand =
