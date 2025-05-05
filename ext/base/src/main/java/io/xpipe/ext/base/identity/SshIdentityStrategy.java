@@ -86,6 +86,14 @@ public interface SshIdentityStrategy {
                 var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
                 return socketEnvVariable;
             });
+            builder.environment("SSH_AGENT_PID", sc -> {
+                if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                var pidEnvVariable = System.getenv("SSH_AGENT_PID");
+                return pidEnvVariable;
+            });
 
             builder.add("-oIdentitiesOnly=no");
             if (forwardAgent) {
@@ -313,7 +321,8 @@ public interface SshIdentityStrategy {
                                 .readStdoutOrThrow();
                         return sc.getShellDialect().fileArgument(resolved);
                     })
-                    .add("-oIdentitiesOnly=yes");
+                    .add("-oIdentitiesOnly=yes")
+                    .add("-oIdentityAgent=none");
         }
 
         @Override
