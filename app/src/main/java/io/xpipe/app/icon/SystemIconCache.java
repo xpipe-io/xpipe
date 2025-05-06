@@ -9,6 +9,7 @@ import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
 import lombok.Getter;
+import org.apache.commons.io.FileUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,8 +17,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.*;
 import java.security.MessageDigest;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 public class SystemIconCache {
@@ -32,6 +34,7 @@ public class SystemIconCache {
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[] {16, 24, 40, 80};
+    private static final int VERSION = 2;
 
     @Getter
     private static boolean built = false;
@@ -53,17 +56,27 @@ public class SystemIconCache {
 
     public static void rebuildCache(Map<SystemIconSource, SystemIconSourceData> all) {
         try {
+            var versionFile = DIRECTORY.resolve("version");
+            var version = Files.exists(versionFile) ? Files.readString(versionFile).strip() : null;
+            if (!String.valueOf(VERSION).equals(version)) {
+                FileUtils.cleanDirectory(DIRECTORY.toFile());
+                Files.writeString(versionFile, String.valueOf(VERSION));
+            }
+
             for (var e : all.entrySet()) {
                 var target = DIRECTORY.resolve(e.getKey().getId());
                 Files.createDirectories(target);
 
-                for (var icon : e.getValue().getIcons()) {
-                    var dark = icon.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK;
-                    if (refreshChecksum(icon.getFile(), target, icon.getName(), dark)) {
+                Map<String, ImageColorScheme> colorSchemeMap = new HashMap<>();
+
+                var baseIcons = e.getValue().getIcons().stream().filter(
+                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DEFAULT).toList();
+                for (var icon : baseIcons) {
+                    if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
                         continue;
                     }
 
-                    var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), dark);
+                    var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), false);
                     if (scheme == ImageColorScheme.TRANSPARENT) {
                         var message = "Failed to rasterize icon icon "
                                 + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
@@ -71,22 +84,40 @@ public class SystemIconCache {
                         continue;
                     }
 
-                    if (scheme != ImageColorScheme.DARK
-                            || icon.getColorSchemeData() != SystemIconSourceFile.ColorSchemeData.DEFAULT) {
+                    colorSchemeMap.put(icon.getName(), scheme);
+                }
+
+                var darkIconNames = e.getValue().getIcons().stream().filter(
+                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).map(f -> f.getName())
+                        .collect(Collectors.toSet());
+                var darkIcons = e.getValue().getIcons().stream().filter(
+                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).toList();
+                for (var icon : darkIcons) {
+                    var existingBaseScheme = colorSchemeMap.get(icon.getName());
+                    var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK;
+                    if (generateDarkIcon) {
+                        if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
+                            continue;
+                        }
+
+                        var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), true);
+                        if (scheme == ImageColorScheme.TRANSPARENT) {
+                            var message = "Failed to rasterize icon icon "
+                                    + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
+                            ErrorEvent.fromMessage(message).omit().expected().handle();
+                        }
+
                         continue;
                     }
+                }
 
-                    var hasExplicitDark = e.getValue().getIcons().stream()
-                            .anyMatch(systemIconSourceFile ->
-                                    systemIconSourceFile.getSource().equals(icon.getSource())
-                                            && systemIconSourceFile.getName().equals(icon.getName())
-                                            && systemIconSourceFile.getColorSchemeData()
-                                                    == SystemIconSourceFile.ColorSchemeData.DARK);
-                    if (hasExplicitDark) {
+                for (var icon : baseIcons) {
+                    var existingBaseScheme = colorSchemeMap.get(icon.getName());
+                    var generateDarkModeInverse = existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
+                    if (generateDarkModeInverse) {
+                        rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                         continue;
                     }
-
-                    rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                 }
             }
         } catch (Exception e) {
@@ -185,7 +216,7 @@ public class SystemIconCache {
     }
 
     private static BufferedImage invert(BufferedImage image) {
-        var buffer = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        var buffer = new BufferedImage(image.getWidth(), image.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
                 int clr = image.getRGB(x, y);
@@ -215,11 +246,11 @@ public class SystemIconCache {
                     transparent = false;
                 }
 
-                if (alpha < 200) {
+                if (alpha < 100) {
                     continue;
                 }
 
-                mean += red + green + blue;
+                mean += (red + green + blue) * (alpha / 255.0);
                 counter++;
             }
         }
@@ -228,10 +259,14 @@ public class SystemIconCache {
             return ImageColorScheme.TRANSPARENT;
         }
 
+        if (counter == 0) {
+            return ImageColorScheme.TRANSPARENT;
+        }
+
         mean /= counter * 3;
-        if (mean < 50) {
+        if (mean < 60) {
             return ImageColorScheme.DARK;
-        } else if (mean > 205) {
+        } else if (mean > 195) {
             return ImageColorScheme.LIGHT;
         } else {
             return ImageColorScheme.MIXED;

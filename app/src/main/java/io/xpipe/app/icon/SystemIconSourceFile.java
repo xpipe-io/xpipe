@@ -8,6 +8,7 @@ import java.nio.file.Path;
 public class SystemIconSourceFile {
 
     public static enum ColorSchemeData {
+        LIGHT,
         DARK,
         DEFAULT;
     }

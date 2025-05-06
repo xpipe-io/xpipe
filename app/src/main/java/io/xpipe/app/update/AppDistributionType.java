@@ -43,6 +43,13 @@ public enum AppDistributionType implements Translatable {
                 "sudo yum upgrade " + pkg + " --refresh -y",
                 AppRestart.getTerminalRestartCommand()));
     }),
+    AUR("aur", true, () -> {
+        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        return new CommandUpdater(ShellScript.lines(
+                "echo \"+ sudo pacman -Syu " + pkg,
+                "sudo pacman -Syu " + pkg,
+                AppRestart.getTerminalRestartCommand()));
+    }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater());
@@ -145,6 +152,10 @@ public enum AppDistributionType implements Translatable {
         } else {
             var file = base.resolve("installation");
             if (!Files.exists(file)) {
+                if (OsType.getLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {
+                    return AUR;
+                }
+
                 return PORTABLE;
             }
         }
