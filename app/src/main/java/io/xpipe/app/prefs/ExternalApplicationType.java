@@ -53,6 +53,20 @@ public abstract class ExternalApplicationType implements PrefsChoiceValue {
         }
 
         public Optional<Path> findApp() throws Exception {
+            // Perform a quick check because mdfind is slow
+            var applicationsDef = Path.of("/Applications/" + applicationName + ".app");
+            if (Files.exists(applicationsDef)) {
+                return Optional.of(applicationsDef);
+            }
+            var systemApplicationsDef = Path.of("/System/Applications/" + applicationName + ".app");
+            if (Files.exists(systemApplicationsDef)) {
+                return Optional.of(systemApplicationsDef);
+            }
+            var userApplicationsDef = Path.of(System.getProperty("user.home") + "/Applications/" + applicationName + ".app");
+            if (Files.exists(userApplicationsDef)) {
+                return Optional.of(userApplicationsDef);
+            }
+
             try (ShellControl pc = LocalShell.getShell().start()) {
                 var out = pc.command(String.format(
                                 "mdfind -literal 'kMDItemFSName = \"%s.app\"' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications",
