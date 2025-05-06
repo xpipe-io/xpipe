@@ -24,8 +24,10 @@ import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @JsonTypeName("enpass")
 @Getter
@@ -98,7 +100,7 @@ public class EnpassPasswordManager implements PasswordManager {
             vaultDir = vaultDir.getParent();
         }
 
-        var pass = SecretManager.retrieve(new SecretRetrievalStrategy.Prompt(), "Enter vault master password", MASTER_PASSWORD_UUID, 0, true);
+        var pass = SecretManager.retrieve(new SecretRetrievalStrategy.Prompt(), "Enter Enpass vault master password", MASTER_PASSWORD_UUID, 0, true);
         if (pass == null) {
             return null;
         }
@@ -113,7 +115,7 @@ public class EnpassPasswordManager implements PasswordManager {
                     return null;
                 }
 
-                var json = JacksonMapper.getDefault().readTree(out.get());
+                var json = JacksonMapper.getDefault().readTree(out.get().lines().skip(1).collect(Collectors.joining("\n")));
                 if (!json.isArray()) {
                     return null;
                 }
@@ -123,10 +125,17 @@ public class EnpassPasswordManager implements PasswordManager {
                 }
 
                 if (json.size() > 1) {
-                    throw ErrorEvent.expected(new IllegalArgumentException("Ambiguous item name, multiple password entries match"));
+                    var matches = new ArrayList<String>();
+                    json.iterator().forEachRemaining(item -> {
+                        var title = item.get("title");
+                        if (title != null) {
+                            matches.add(title.asText());
+                        }
+                    });
+                    throw ErrorEvent.expected(new IllegalArgumentException("Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
-                var secret = json.get(1).asText();
+                var secret = json.get(0).get("password").asText();
                 return secret;
             }
         } catch (Exception ex) {
