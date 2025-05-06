@@ -19,6 +19,7 @@ public interface PasswordManager {
         l.add(DashlanePasswordManager.class);
         if (OsType.getLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
+            l.add(EnpassPasswordManager.class);
         }
         l.add(KeeperPasswordManager.class);
         if (OsType.getLocal() == OsType.WINDOWS) {

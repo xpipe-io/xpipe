@@ -7,6 +7,7 @@ import io.xpipe.core.util.FailableFunction;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.nio.file.Path;
 import java.util.*;
 
 public class CommandBuilder {
@@ -217,6 +218,10 @@ public class CommandBuilder {
     }
 
     public CommandBuilder addFile(FilePath s) {
+        return addFile(s != null ? s.toString() : null);
+    }
+
+    public CommandBuilder addFile(Path s) {
         return addFile(s != null ? s.toString() : null);
     }
 
