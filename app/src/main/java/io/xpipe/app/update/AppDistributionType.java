@@ -213,6 +213,11 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
+        // Fix for community AUR builds that use the RPM dist
+        if (OsType.getLocal() == OsType.LINUX && Files.exists(Path.of("/etc/arch-release"))) {
+            return PORTABLE;
+        }
+
         return AppDistributionType.NATIVE_INSTALLATION;
     }
 
