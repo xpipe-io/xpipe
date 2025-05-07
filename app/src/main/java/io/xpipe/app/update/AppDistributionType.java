@@ -46,8 +46,8 @@ public enum AppDistributionType implements Translatable {
     AUR("aur", true, () -> {
         var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
         return new CommandUpdater(ShellScript.lines(
-                "echo \"+ sudo pacman -Syu " + pkg,
-                "sudo pacman -Syu " + pkg,
+                "echo \"+ sudo pacman -Syu " + pkg + "\"",
+                "cd $(mktemp -d) && git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
                 AppRestart.getTerminalRestartCommand()));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
