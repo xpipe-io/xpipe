@@ -287,7 +287,7 @@ public class StoreCreationModel {
                         || p.getCreationCategory().getCategory().equals(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID)
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
-                        ? "script"
+                        ? (p.getId().equals("scriptGroup") ? "scriptGroup" : "script")
                         : "identity";
         return nameKey;
     }

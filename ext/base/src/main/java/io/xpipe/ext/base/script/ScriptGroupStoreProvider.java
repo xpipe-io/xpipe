@@ -58,7 +58,7 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
                 .description("descriptionDescription")
                 .addString(description)
                 .name("scriptGroup")
-                .description("scriptGroupDescription")
+                .description("scriptGroupGroupDescription")
                 .addComp(
                         new StoreChoiceComp<>(
                                 StoreChoiceComp.Mode.OTHER,
