@@ -7,9 +7,8 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Value
 public class SystemIconSourceData {
@@ -31,7 +30,7 @@ public class SystemIconSourceData {
             }
 
             var files = Files.walk(dir).toList();
-            List<Path> flatFiles = files.stream()
+            var flatFiles = files.stream()
                     .filter(path -> Files.isRegularFile(path))
                     .filter(path -> path.toString().endsWith(".svg"))
                     .map(path -> {
@@ -40,7 +39,7 @@ public class SystemIconSourceData {
                         var cleanedPath = path.getParent().resolve(cleanedName + ".svg");
                         return cleanedPath;
                     })
-                    .toList();
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
             for (var file : flatFiles) {
                 var name = FilenameUtils.getBaseName(file.getFileName().toString());
                 var displayName = name.toLowerCase(Locale.ROOT);

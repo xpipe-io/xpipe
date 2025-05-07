@@ -59,7 +59,11 @@ public class SystemIconCache {
             var versionFile = DIRECTORY.resolve("version");
             var version = Files.exists(versionFile) ? Files.readString(versionFile).strip() : null;
             if (!String.valueOf(VERSION).equals(version)) {
-                FileUtils.cleanDirectory(DIRECTORY.toFile());
+                if (Files.isDirectory(DIRECTORY)) {
+                    FileUtils.cleanDirectory(DIRECTORY.toFile());
+                } else {
+                    Files.createDirectories(DIRECTORY);
+                }
                 Files.writeString(versionFile, String.valueOf(VERSION));
             }
 
@@ -72,27 +76,34 @@ public class SystemIconCache {
                 var baseIcons = e.getValue().getIcons().stream().filter(
                         f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DEFAULT).toList();
                 for (var icon : baseIcons) {
+                    var schemeFile = target.resolve(icon.getName() + ".scheme");
                     if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
-                        continue;
+                        if (Files.exists(schemeFile)) {
+                            var scheme = Files.readString(schemeFile);
+                            var schemeValue = ImageColorScheme.valueOf(scheme.toUpperCase());
+                            colorSchemeMap.put(icon.getName(), schemeValue);
+                            continue;
+                        }
                     }
 
                     var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), false);
                     if (scheme == ImageColorScheme.TRANSPARENT) {
-                        var message = "Failed to rasterize icon icon "
+                        var message = "Failed to rasterize icon "
                                 + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
                         ErrorEvent.fromMessage(message).omit().expected().handle();
                         continue;
                     }
 
                     colorSchemeMap.put(icon.getName(), scheme);
+                    Files.writeString(schemeFile, scheme.name().toLowerCase(Locale.ROOT));
                 }
 
                 var darkIconNames = e.getValue().getIcons().stream().filter(
                         f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).map(f -> f.getName())
                         .collect(Collectors.toSet());
-                var darkIcons = e.getValue().getIcons().stream().filter(
+                var darkAvailableIcons = e.getValue().getIcons().stream().filter(
                         f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).toList();
-                for (var icon : darkIcons) {
+                for (var icon : darkAvailableIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
                     var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK;
                     if (generateDarkIcon) {
@@ -102,7 +113,7 @@ public class SystemIconCache {
 
                         var scheme = rasterizeSizes(icon.getFile(), target, icon.getName(), true);
                         if (scheme == ImageColorScheme.TRANSPARENT) {
-                            var message = "Failed to rasterize icon icon "
+                            var message = "Failed to rasterize icon "
                                     + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
                             ErrorEvent.fromMessage(message).omit().expected().handle();
                         }
@@ -161,7 +172,7 @@ public class SystemIconCache {
         } catch (Exception ex) {
             var message = "Failed to rasterize icon icon " + path.getFileName().toString() + ": " + ex.getMessage();
             ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
-            return null;
+            return ImageColorScheme.TRANSPARENT;
         }
     }
 
