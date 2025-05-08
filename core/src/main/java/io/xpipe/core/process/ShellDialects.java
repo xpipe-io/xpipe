@@ -26,6 +26,7 @@ public class ShellDialects {
     public static ShellDialect NO_INTERACTION;
     public static ShellDialect CISCO;
     public static ShellDialect MIKROTIK;
+    public static ShellDialect PALO_ALTO;
     public static ShellDialect RBASH;
     public static ShellDialect CONSTRAINED_POWERSHELL;
     public static ShellDialect OVH_BASTION;
@@ -90,6 +91,7 @@ public class ShellDialects {
             NO_INTERACTION = byId("noInteraction");
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
+            PALO_ALTO = byId("paloAlto");
             RBASH = byId("rbash");
             CONSTRAINED_POWERSHELL = byId("constrainedPowershell");
             OVH_BASTION = byId("ovhBastion");
