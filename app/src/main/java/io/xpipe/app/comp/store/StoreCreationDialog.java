@@ -44,7 +44,6 @@ public class StoreCreationDialog {
                                 && newE.getValidity().isUsable();
                         DataStorage.get().updateEntry(e, newE);
                         if (madeValid) {
-                            StoreViewState.get().triggerStoreListUpdate();
                             if (validated
                                     && e.getProvider().shouldShowScan()
                                     && AppPrefs.get()

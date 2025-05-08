@@ -190,10 +190,6 @@ public class StoreCreationModel {
             return;
         }
 
-        if (entry.getValue() == null) {
-            return;
-        }
-
         // We didn't change anything
         if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
             commit(false);
@@ -209,6 +205,10 @@ public class StoreCreationModel {
                     .getText();
             ErrorEvent.fromMessage(msg).expected().handle();
             changedSinceError.setValue(false);
+            return;
+        }
+
+        if (entry.getValue() == null) {
             return;
         }
 

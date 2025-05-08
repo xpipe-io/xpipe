@@ -73,7 +73,9 @@ public class LocalShell {
                 throw ProcessOutputException.withPrefix("Failed to start local powershell process", ex);
             }
         }
-        return localPowershell.start();
+        var sc = localPowershell.start();
+        sc.getShellDialect().getDumbMode().throwIfUnsupported();
+        return sc;
     }
 
     public static boolean isLocalShellInitialized() {

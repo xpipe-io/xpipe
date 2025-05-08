@@ -92,9 +92,9 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
             int intValue = Integer.parseInt(newValue);
             if (minValue > intValue || intValue > maxValue) {
                 field.textProperty().setValue(oldValue);
+            } else {
+                value.setValue(intValue);
             }
-
-            value.setValue(Integer.parseInt(field.textProperty().get()));
         });
 
         return new SimpleCompStructure<>(field);

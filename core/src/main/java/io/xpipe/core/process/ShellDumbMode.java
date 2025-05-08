@@ -27,37 +27,4 @@ public interface ShellDumbMode {
         shellControl.writeLine(" exit");
     }
 
-    class Unsupported implements ShellDumbMode {
-
-        private final String message;
-
-        public Unsupported(String message) {
-            this.message = message;
-        }
-
-        public void throwIfUnsupported() {
-            throw new UnsupportedOperationException(message);
-        }
-
-        @Override
-        public boolean supportsAnyPossibleInteraction() {
-            return false;
-        }
-
-        @Override
-        public CommandBuilder prepareInlineDumbCommand(
-                ShellControl self, ShellControl parent, ShellOpenFunction function) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void prepareDumbInit(ShellControl shellControl) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void prepareDumbExit(ShellControl shellControl) {
-            shellControl.kill();
-        }
-    }
 }

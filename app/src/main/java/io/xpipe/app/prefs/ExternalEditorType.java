@@ -8,6 +8,8 @@ import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -173,6 +175,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
     ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
+
+        @Override
+        public ObservableValue<String> toTranslatedString() {
+            var customCommand = AppPrefs.get().customEditorCommand().getValue();
+            if (customCommand == null || customCommand.isBlank() || customCommand.replace("$FILE", "").strip().contains(" ")) {
+                return ExternalEditorType.super.toTranslatedString();
+            }
+
+            return new SimpleStringProperty(customCommand);
+        }
 
         @Override
         public void launch(Path file) throws Exception {
