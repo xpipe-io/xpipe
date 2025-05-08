@@ -77,7 +77,7 @@ public class TerminalLaunchConfiguration {
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var launcherScript =
-                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
+                        ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
                 var content =
                         """
                               echo 'Transcript started, output file is "sessions\\%s"'
@@ -100,8 +100,6 @@ public class TerminalLaunchConfiguration {
                         ShellDialects.POWERSHELL);
                 return config;
             } else {
-                var launcherScript = sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
-
                 var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
                         .executeAndCheck();
                 if (!found) {
@@ -112,6 +110,8 @@ public class TerminalLaunchConfiguration {
                             "Logging requires the script command to be installed. " + suffix));
                 }
 
+                var launcherScript = ScriptHelper.createExecScript(sc,
+                        sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
                 var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                         ? """
                        echo "Transcript started, output file is sessions/%s"
