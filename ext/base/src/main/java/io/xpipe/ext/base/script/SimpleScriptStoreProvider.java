@@ -13,6 +13,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
+import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.DataStore;
@@ -21,12 +22,15 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -211,22 +215,17 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
         SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
-        var init = st.isInitScript() ? AppI18n.get("init") : null;
-        var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
-        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
-        var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
-        var type = st.getMinimumDialect() != null
-                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
-                : AppI18n.get("genericScript");
-        var suffix = String.join(
-                " / ",
-                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
-        if (!suffix.isEmpty()) {
-            suffix = "(" + suffix + ")";
-        } else {
-            suffix = null;
+        if (!st.isShellScript()) {
+            return null;
         }
-        return DataStoreFormatter.join(type, suffix);
+
+        var name = wrapper.getName().getValue().toLowerCase(Locale.ROOT).replaceAll(" ", "_");
+        if (st.getMinimumDialect() == null) {
+            return OsType.LINUX.makeFileSystemCompatible(name) + ".sh";
+        }
+
+        var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect()) ? OsType.WINDOWS : OsType.LINUX;
+        return os.makeFileSystemCompatible(name) + "." + st.getMinimumDialect().getScriptFileEnding();
     }
 
     @SneakyThrows
@@ -260,5 +259,26 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(SimpleScriptStore.class);
+    }
+
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        SimpleScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
+        var init = st.isInitScript() ? AppI18n.get("init") : null;
+        var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
+        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
+        var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
+        var type = st.getMinimumDialect() != null
+                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
+                : AppI18n.get("genericScript");
+        var suffix = String.join(
+                " / ",
+                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
+        if (!suffix.isEmpty()) {
+            suffix = "(" + suffix + ")";
+        } else {
+            suffix = null;
+        }
+        return new SimpleStringProperty(DataStoreFormatter.join(type, suffix));
     }
 }
