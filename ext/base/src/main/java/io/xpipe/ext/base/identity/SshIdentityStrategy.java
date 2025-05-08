@@ -96,6 +96,7 @@ public interface SshIdentityStrategy {
             });
 
             builder.add("-oIdentitiesOnly=no");
+            builder.add("-oIdentityFile=none");
             if (forwardAgent) {
                 builder.add(1, "-A");
             }
@@ -131,6 +132,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.add("-oIdentitiesOnly=no");
+            builder.add("-oIdentityFile=none");
             builder.environment("SSH_AUTH_SOCK", parent -> {
                 if (parent.getOsType().equals(OsType.WINDOWS)) {
                     return getPageantWindowsPipe(parent);
@@ -191,6 +193,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.add("-oIdentitiesOnly=no");
+            builder.add("-oIdentityFile=none");
             if (forwardAgent) {
                 builder.add(1, "-A");
             }
@@ -218,6 +221,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.add("-oIdentitiesOnly=no");
+            builder.add("-oIdentityFile=none");
             builder.environment("SSH_AUTH_SOCK", sc -> {
                 if (sc.getOsType() == OsType.WINDOWS) {
                     return null;
@@ -403,6 +407,7 @@ public interface SshIdentityStrategy {
                             builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
                         }
                     })
+                    .add("-oIdentityFile=none")
                     .add("-I")
                     .add(sc -> {
                         if (sc == null) {
@@ -445,6 +450,7 @@ public interface SshIdentityStrategy {
                     builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
                 }
             });
+            builder.add("-oIdentityFile=none");
             builder.add("-I").addFile(file);
         }
     }
@@ -465,6 +471,7 @@ public interface SshIdentityStrategy {
             if (forwardAgent) {
                 builder.add(1, "-A");
             }
+            builder.add("-oIdentityFile=none");
             builder.add("-oIdentitiesOnly=no");
         }
     }
