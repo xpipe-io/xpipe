@@ -52,7 +52,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             // Don't use any agent keys to prevent too many authentication failures
-            builder.add("-oIdentitiesOnly=yes").add("-oIdentityAgent=none");
+            builder.add("-oIdentitiesOnly=yes").add("-oIdentityAgent=none").add("-oIdentityFile=none");
         }
     }
 
