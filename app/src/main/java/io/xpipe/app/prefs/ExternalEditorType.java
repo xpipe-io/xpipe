@@ -54,6 +54,17 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    WindowsType VOID_WINDOWS = new WindowsType("app.void", "Void", true) {
+
+        @Override
+        protected Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
+                            .resolve("Void")
+                            .resolve("Void.exe"))
+                    .filter(path -> Files.exists(path));
+        }
+    };
+
     WindowsType WINDSURF_WINDOWS = new WindowsType("app.windsurf", "windsurf.cmd", false) {
 
         @Override
@@ -172,6 +183,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor");
+    ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void");
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
     ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
@@ -215,6 +227,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(
+            VOID_WINDOWS,
             CURSOR_WINDOWS,
             WINDSURF_WINDOWS,
             TRAE_WINDOWS,
@@ -235,6 +248,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             MOUSEPAD,
             GNOME);
     List<ExternalEditorType> MACOS_EDITORS = List.of(
+            VOID_MACOS,
             CURSOR_MACOS,
             WINDSURF_MACOS,
             TRAE_MACOS,
