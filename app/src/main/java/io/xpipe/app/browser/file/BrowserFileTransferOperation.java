@@ -490,8 +490,9 @@ public class BrowserFileTransferOperation {
         if (!same) {
             var sourceShell = sourceFs.getShell().orElseThrow();
             var targetShell = targetFs.getShell().orElseThrow();
-            return !sourceShell.getStdout().isClosed()
-                    && !targetShell.getStdin().isClosed();
+            // Check for null on shell reset
+            return sourceShell.getStdout() != null && !sourceShell.getStdout().isClosed()
+                    && targetShell.getStdin() != null && !targetShell.getStdin().isClosed();
         } else {
             return true;
         }
