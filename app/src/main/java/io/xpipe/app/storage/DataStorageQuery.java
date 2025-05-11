@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryUserInput(String connection) {
-        var found = query("**", "**" + connection + "*", "*");
+        var found = query("**", "**" + connection + "**", "*");
         if (found.size() > 1) {
             var narrow = found.stream()
                     .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection))

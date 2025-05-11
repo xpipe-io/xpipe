@@ -999,7 +999,6 @@ public abstract class DataStorage {
 
     public StorePath getStorePath(DataStoreEntry entry) {
         return StorePath.create(getStoreParentHierarchy(entry).stream()
-                .filter(e -> (entry.getStore() instanceof LocalStore) || !(e.getStore() instanceof LocalStore))
                 .map(e -> e.getName().toLowerCase().replaceAll("/", "_"))
                 .toArray(String[]::new));
     }
