@@ -87,7 +87,7 @@ public interface OsType {
         @Override
         public String makeFileSystemCompatible(String name) {
             // Technically the backslash is supported, but it causes all kinds of troubles, so we also exclude it
-            return name.replaceAll("/\\\\", "_").replaceAll("\0", "");
+            return name.replaceAll("[/\\\\]", "_").replaceAll("\0", "");
         }
 
         @Override
