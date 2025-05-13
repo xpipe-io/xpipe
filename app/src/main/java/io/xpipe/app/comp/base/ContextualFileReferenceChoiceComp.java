@@ -6,6 +6,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -68,8 +70,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     public CompStructure<HBox> createBase() {
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
+                    var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
                     BrowserFileChooserSessionComp.openSingleFile(
-                            () -> fileSystem.getValue(),
+                            () -> replacement,
                             () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
                             fileStore -> {
                                 if (fileStore != null) {
