@@ -168,7 +168,7 @@ public class SystemIconCache {
                 }
                 write(dir, name, dark, size, image);
             }
-            return c;
+            return c != null ? c : ImageColorScheme.TRANSPARENT;
         } catch (Exception ex) {
             var message = "Failed to rasterize icon icon " + path.getFileName().toString() + ": " + ex.getMessage();
             ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
@@ -176,10 +176,9 @@ public class SystemIconCache {
         }
     }
 
-    private static ImageColorScheme rasterizeSizesInverted(Path path, Path dir, String name, boolean dark)
+    private static void rasterizeSizesInverted(Path path, Path dir, String name, boolean dark)
             throws IOException {
         try {
-            ImageColorScheme c = null;
             for (var size : sizes) {
                 var image = rasterize(path, size);
                 if (image == null) {
@@ -189,14 +188,12 @@ public class SystemIconCache {
                 var invert = invert(image);
                 write(dir, name, dark, size, invert);
             }
-            return c;
         } catch (Exception ex) {
             if (ex instanceof IOException) {
                 throw ex;
             }
 
             ErrorEvent.fromThrowable(ex).omit().expected().handle();
-            return null;
         }
     }
 

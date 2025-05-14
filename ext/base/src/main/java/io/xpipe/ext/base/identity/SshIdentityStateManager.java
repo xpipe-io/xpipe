@@ -5,10 +5,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,6 +103,12 @@ public class SshIdentityStateManager {
                     eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
                 }
                 ErrorEvent.preconfigure(eventBuilder);
+                throw ex;
+            }
+        } catch (ProcessOutputException ex) {
+            if (sc.getOsType() == OsType.WINDOWS && ex.getOutput().contains("No such file or directory")) {
+                throw ProcessOutputException.withPrefix("Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?", ex);
+            } else {
                 throw ex;
             }
         }
