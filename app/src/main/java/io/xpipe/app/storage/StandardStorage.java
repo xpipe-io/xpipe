@@ -41,7 +41,6 @@ public class StandardStorage extends DataStorage {
 
     private boolean saveQueued;
     private final ReentrantLock busyIo = new ReentrantLock();
-    private final Set<UUID> inaccessibleEntries = new HashSet<>();
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
@@ -75,14 +74,7 @@ public class StandardStorage extends DataStorage {
                     .handle();
         }
 
-        try {
-            initVaultKey();
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault key file", e)
-                    .terminal(true)
-                    .build()
-                    .handle();
-        }
+        initVaultKey();
 
         try {
             dataStorageUserHandler.init();
@@ -285,9 +277,6 @@ public class StandardStorage extends DataStorage {
                 .map(dataStoreEntry -> dataStoreEntry.getDirectory())
                 .toList());
         toRemove.forEach(storeEntries::remove);
-        inaccessibleEntries.addAll(toRemove.stream()
-                .map(dataStoreEntry -> dataStoreEntry.getUuid())
-                .collect(Collectors.toSet()));
     }
 
     private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
@@ -500,17 +489,24 @@ public class StandardStorage extends DataStorage {
         }
     }
 
-    private void initVaultKey() throws IOException {
+    private void initVaultKey() {
         var file = dir.resolve("vaultkey");
-        if (Files.exists(file)) {
-            var s = Files.readString(file);
-            var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
-            vaultKey = EncryptionKey.getVaultSecretKey(id);
-        } else {
-            FileUtils.forceMkdir(dir.toFile());
-            var id = UUID.randomUUID().toString();
-            Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
-            vaultKey = EncryptionKey.getVaultSecretKey(id);
+        try {
+            if (Files.exists(file)) {
+                var s = Files.readString(file);
+                var id = new String(Base64.getDecoder().decode(s), StandardCharsets.UTF_8);
+                vaultKey = EncryptionKey.getVaultSecretKey(id);
+            } else {
+                FileUtils.forceMkdir(dir.toFile());
+                var id = UUID.randomUUID().toString();
+                Files.writeString(file, Base64.getEncoder().encodeToString(id.getBytes(StandardCharsets.UTF_8)));
+                vaultKey = EncryptionKey.getVaultSecretKey(id);
+            }
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable("Unable to load vault key file " + file + " to decrypt vault contents. Is it corrupted?", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
         }
     }
 
