@@ -100,7 +100,7 @@ public interface IdentityValue {
 
         @Override
         public LocalIdentityStore unwrap() {
-            return identityStore;
+        return identityStore != null ? identityStore : LocalIdentityStore.builder().build();
         }
 
         @Override
