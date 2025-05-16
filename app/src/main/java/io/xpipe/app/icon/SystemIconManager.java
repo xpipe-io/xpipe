@@ -94,21 +94,14 @@ public class SystemIconManager {
         }
     }
 
-    private static void clearInvalidImages() {
-        AppImages.remove(s -> s.startsWith("icons/"));
-        try {
-            for (var source : getEffectiveSources()) {
-                AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
-            }
-        } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
-        }
-    }
-
     public static synchronized void reload() throws Exception {
         Files.createDirectories(DIRECTORY);
         for (var source : getEffectiveSources()) {
-            source.refresh();
+            try {
+                source.refresh();
+            } catch (Exception e) {
+                ErrorEvent.fromThrowable(e).expected().handle();
+            }
         }
         reloadSources();
         SystemIconCache.rebuildCache(LOADED);
