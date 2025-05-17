@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.browser;
 
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
 import io.xpipe.app.browser.file.BrowserEntry;
@@ -10,6 +11,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 
+import io.xpipe.core.store.FileKind;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -44,25 +46,72 @@ public class ChgrpAction implements BrowserBranchAction {
     }
 
     @Override
-    public List<BrowserLeafAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return Stream.concat(
+    public List<BrowserAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (entries.stream().anyMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY)) {
+            return List.of(new Flat(), new Recursive());
+        } else {
+            return getLeafActions(model, false);
+        }
+    }
+
+    private static class Flat implements BrowserBranchAction {
+
+        @Override
+        public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return new FontIcon("mdi2f-file-outline");
+        }
+
+        @Override
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return AppI18n.observable("flat");
+        }
+
+        @Override
+        public List<BrowserAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return getLeafActions(model, false);
+        }
+    }
+
+    private static class Recursive implements BrowserBranchAction {
+
+        @Override
+        public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return new FontIcon("mdi2f-file-tree");
+        }
+
+        @Override
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return AppI18n.observable("recursive");
+        }
+
+        @Override
+        public List<BrowserAction> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return getLeafActions(model, true);
+        }
+    }
+
+    private static List<BrowserAction> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+        List<BrowserAction> actions = Stream.<BrowserAction>concat(
                         model.getCache().getGroups().entrySet().stream()
                                 .filter(e -> !e.getValue().equals("nohome")
                                         && !e.getValue().equals("nogroup")
                                         && !e.getValue().equals("nobody")
                                         && (e.getKey().equals(0) || e.getKey() >= 900))
                                 .map(e -> e.getValue())
-                                .map(s -> (BrowserLeafAction) new Chgrp(s)),
-                        Stream.of(new Custom()))
+                                .map(s -> (BrowserLeafAction) new Chgrp(s, recursive)),
+                        Stream.of(new Custom(recursive)))
                 .toList();
+        return actions;
     }
 
     private static class Chgrp implements BrowserLeafAction {
 
         private final String option;
+        private final boolean recursive;
 
-        private Chgrp(String option) {
+        private Chgrp(String option, boolean recursive) {
             this.option = option;
+            this.recursive = recursive;
         }
 
         @Override
@@ -76,7 +125,9 @@ public class ChgrpAction implements BrowserBranchAction {
                     .getShell()
                     .orElseThrow()
                     .executeSimpleCommand(CommandBuilder.of()
-                            .add("chgrp", option)
+                            .add("chgrp")
+                            .addIf(recursive, "-R")
+                            .add(option)
                             .addFiles(entries.stream()
                                     .map(browserEntry -> browserEntry
                                             .getRawFileEntry()
@@ -87,6 +138,10 @@ public class ChgrpAction implements BrowserBranchAction {
     }
 
     private static class Custom implements BrowserLeafAction {
+
+        private final boolean recursive;
+
+        private Custom(boolean recursive) {this.recursive = recursive;}
 
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -106,7 +161,9 @@ public class ChgrpAction implements BrowserBranchAction {
 
                 model.runCommandAsync(
                         CommandBuilder.of()
-                                .add("chgrp", group.getValue())
+                                .add("chgrp")
+                                .addIf(recursive, "-R")
+                                .add(group.getValue())
                                 .addFiles(entries.stream()
                                         .map(browserEntry -> browserEntry
                                                 .getRawFileEntry()
