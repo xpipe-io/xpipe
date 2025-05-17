@@ -7,6 +7,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -29,6 +30,23 @@ public class StoreCreationMenu {
             });
             menu.getItems().add(automatically);
             menu.getItems().add(new SeparatorMenuItem());
+
+            var disableSearch = Bindings.createBooleanBinding(
+                    () -> {
+                        var allCat = StoreViewState.get().getAllConnectionsCategory();
+                        var connections = StoreViewState.get().getAllEntries().getList().stream()
+                                .filter(wrapper -> allCat.equals(
+                                        wrapper.getCategory().getValue().getRoot()))
+                                .toList();
+                        return 1 == connections.size()
+                                && StoreViewState.get()
+                                .getActiveCategory()
+                                .getValue()
+                                .getRoot()
+                                .equals(allCat);
+                    },
+                    StoreViewState.get().getAllEntries().getList());
+            automatically.disableProperty().bind(disableSearch);
         }
 
         menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
