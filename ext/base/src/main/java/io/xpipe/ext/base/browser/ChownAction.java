@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.browser;
 
-import io.sentry.protocol.Browser;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserBranchAction;
 import io.xpipe.app.browser.action.BrowserLeafAction;
