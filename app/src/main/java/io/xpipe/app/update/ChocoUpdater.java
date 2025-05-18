@@ -88,7 +88,7 @@ public class ChocoUpdater extends UpdateHandler {
 
         var chocoRelease = getOutdatedPackageUpdateVersion();
         // Use current release if the update is not available for choco yet
-        if (chocoRelease.isPresent() && !chocoRelease.get().equals(rel.getTag())) {
+        if (chocoRelease.isEmpty() || !chocoRelease.get().equals(rel.getTag())) {
             rel = AppRelease.of(AppProperties.get().getVersion());
         }
 
