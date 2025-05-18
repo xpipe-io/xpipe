@@ -21,6 +21,7 @@ import javafx.scene.shape.Circle;
 
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
+import javafx.scene.shape.Rectangle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
@@ -81,15 +82,25 @@ public class AppearanceCategory extends AppPrefsCategory {
                 @Override
                 protected void updateItem(AppTheme.Theme theme, boolean empty) {
                     super.updateItem(theme, empty);
-                    setText(theme != null ? theme.toTranslatedString().getValue() : null);
+                    if (theme == null) {
+                        setText(null);
+                        setGraphic(null);
+                        return;
+                    }
 
-                    var b = new Circle(7);
+                    setText(theme.toTranslatedString().getValue());
+
+                    var b = new Rectangle(8, 8);
+                    b.setArcWidth(theme.getDisplayBorderRadius());
+                    b.setArcHeight(theme.getDisplayBorderRadius());
                     b.getStyleClass().add("dot");
-                    b.setFill(theme != null ? theme.getBaseColor() : Color.TRANSPARENT);
+                    b.setFill(theme.getBaseColor());
 
-                    var d = new Circle(8);
+                    var d = new Rectangle(10, 10);
+                    d.setArcWidth(theme.getDisplayBorderRadius() + 2);
+                    d.setArcHeight(theme.getDisplayBorderRadius() + 2);
                     d.getStyleClass().add("dot");
-                    d.setFill(theme != null ? theme.getBorderColor() : Color.TRANSPARENT);
+                    d.setFill(theme.getBorderColor());
                     d.setFill(Color.GRAY);
 
                     var s = new StackPane(d, b);

@@ -125,7 +125,7 @@ public class ScanDialogBase {
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
             var n = AppI18n.get(s.getNameKey());
-            if (s.getLicensedFeatureId() == null) {
+            if (s.getLicensedFeatureId() == null || s.isDisabled()) {
                 return n;
             }
 

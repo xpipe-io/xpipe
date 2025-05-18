@@ -51,10 +51,16 @@
 }
 
 .context-menu {
-    -fx-padding: 12 0 12 0;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+    -fx-padding: 4 0 4 0;
+    -fx-background-radius: 4px;
+    -fx-border-radius: 4px;
     -fx-border-color: -color-border-default;
+}
+
+.root.nord .context-menu {
+    -fx-padding: 0;
+    -fx-background-radius:0;
+    -fx-border-radius: 0;
 }
 
 .context-menu * .context-menu, .context-menu.condensed {
