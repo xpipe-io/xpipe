@@ -88,7 +88,7 @@ public class StoreCreationModel {
         });
         this.entry = Bindings.createObjectBinding(
                 () -> {
-                    if (name.getValue() == null || store.getValue() == null) {
+                    if (name.getValue() == null || store.getValue() == null || name.getValue().isBlank()) {
                         return null;
                     }
 
@@ -107,7 +107,7 @@ public class StoreCreationModel {
 
         skippable.bind(Bindings.createBooleanBinding(
                 () -> {
-                    if (name.get() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
+                    if (entry.getValue() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
                         return true;
                     } else {
                         return false;
