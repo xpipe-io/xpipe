@@ -20,7 +20,7 @@ public class LocalExec {
             if (process.exitValue() != 0) {
                 return Optional.empty();
             } else {
-                var s = new String(out, StandardCharsets.UTF_8).trim();
+                var s = new String(out, StandardCharsets.UTF_8).strip();
                 TrackEvent.withTrace("Local command finished")
                         .tag("command", String.join(" ", command))
                         .tag("stdout", s)

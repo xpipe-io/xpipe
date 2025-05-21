@@ -88,7 +88,7 @@ public class PasswordManagerCommand implements PasswordManager {
             if (cmd.contains("dcli")) {
                 out = out.lines()
                         .findFirst()
-                        .map(s -> s.trim().replaceAll("\\s+$", ""))
+                        .map(s -> s.strip().replaceAll("\\s+$", ""))
                         .orElse(null);
             }
 

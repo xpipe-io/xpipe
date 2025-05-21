@@ -37,7 +37,7 @@ public class Validators {
     }
 
     public static void notEmpty(String string) throws ValidationException {
-        if (string.trim().length() == 0) {
+        if (string.strip().length() == 0) {
             throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
         }
     }

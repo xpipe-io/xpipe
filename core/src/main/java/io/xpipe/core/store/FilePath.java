@@ -40,7 +40,7 @@ public final class FilePath {
         if (value.isBlank()) {
             throw new IllegalArgumentException();
         }
-        if (!value.equals(value.trim())) {
+        if (!value.equals(value.strip())) {
             throw new IllegalArgumentException();
         }
     }

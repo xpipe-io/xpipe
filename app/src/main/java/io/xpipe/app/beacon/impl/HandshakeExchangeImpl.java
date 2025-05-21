@@ -31,12 +31,12 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
 
     private boolean checkAuth(BeaconAuthMethod authMethod) {
         if (authMethod instanceof BeaconAuthMethod.Local local) {
-            var c = local.getAuthFileContent().trim();
+            var c = local.getAuthFileContent().strip();
             return AppBeaconServer.get().getLocalAuthSecret().equals(c);
         }
 
         if (authMethod instanceof BeaconAuthMethod.ApiKey key) {
-            var c = key.getKey().trim();
+            var c = key.getKey().strip();
             return AppPrefs.get().apiKey().get().equals(c);
         }
 

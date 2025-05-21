@@ -135,7 +135,7 @@ public class IncusCommandView extends CommandViewBase {
             var output = c.readStdoutOrThrow();
             return output.lines()
                     .collect(Collectors.toMap(
-                            s -> s.trim().split(",")[0], s -> s.trim().split(",")[1], (x, y) -> y, LinkedHashMap::new));
+                            s -> s.strip().split(",")[0], s -> s.strip().split(",")[1], (x, y) -> y, LinkedHashMap::new));
         }
     }
 

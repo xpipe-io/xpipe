@@ -14,7 +14,7 @@ public class BrowserFileSystemHelper {
             return null;
         }
 
-        path = path.trim();
+        path = path.strip();
         if (path.isBlank()) {
             return null;
         }

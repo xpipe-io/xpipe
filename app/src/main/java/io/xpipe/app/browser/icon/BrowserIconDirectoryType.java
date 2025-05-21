@@ -53,15 +53,15 @@ public abstract class BrowserIconDirectoryType {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
-                    var id = split[0].trim();
+                    var id = split[0].strip();
                     var filter = Arrays.stream(split[1].split(","))
                             .map(s -> {
-                                return s.trim();
+                                return s.strip();
                             })
                             .collect(Collectors.toSet());
 
-                    var closedIcon = "browser/" + split[2].trim();
-                    var lightClosedIcon = split.length > 4 ? "browser/" + split[4].trim() : closedIcon;
+                    var closedIcon = "browser/" + split[2].strip();
+                    var lightClosedIcon = split.length > 4 ? "browser/" + split[4].strip() : closedIcon;
 
                     ALL.add(new Simple(id, new BrowserIconVariant(lightClosedIcon, closedIcon), filter));
                 }

@@ -108,13 +108,13 @@ project.ext {
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
-    rawVersion = file('version').text.trim()
+    rawVersion = file('version').text.strip()
     versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
     versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
     canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
     buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
     obfuscate = true
-    changelog = file("dist/changelogs/${canonicalVersionString}.md").exists() ? file("dist/changelogs/${canonicalVersionString}.md").text.trim() + '\n' : ""
+    changelog = file("dist/changelogs/${canonicalVersionString}.md").exists() ? file("dist/changelogs/${canonicalVersionString}.md").text.strip() + '\n' : ""
     productName = isStage ? 'XPipe PTB' : 'XPipe'
     kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
     flatcaseProductName = isStage ? 'xpipeptb' : 'xpipe'

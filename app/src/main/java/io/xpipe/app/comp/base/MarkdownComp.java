@@ -127,7 +127,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         engine.getLoadWorker()
                 .stateProperty()
                 .addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
-                    String toBeopen = engine.getLoadWorker().getMessage().trim().replace("Loading ", "");
+                    String toBeopen = engine.getLoadWorker().getMessage().strip().replace("Loading ", "");
                     if (toBeopen.contains("http://") || toBeopen.contains("https://") || toBeopen.contains("mailto:")) {
                         engine.getLoadWorker().cancel();
                         Hyperlinks.open(toBeopen);

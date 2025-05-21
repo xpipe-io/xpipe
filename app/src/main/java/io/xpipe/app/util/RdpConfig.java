@@ -46,11 +46,11 @@ public class RdpConfig {
             }
 
             if (split.length == 2) {
-                map.put(split[0].trim(), new RdpConfig.TypedValue("s", split[1].trim()));
+                map.put(split[0].strip(), new RdpConfig.TypedValue("s", split[1].strip()));
             }
 
             if (split.length == 3) {
-                map.put(split[0].trim(), new RdpConfig.TypedValue(split[1].trim(), split[2].trim()));
+                map.put(split[0].strip(), new RdpConfig.TypedValue(split[1].strip(), split[2].strip()));
             }
         });
         return new RdpConfig(map);

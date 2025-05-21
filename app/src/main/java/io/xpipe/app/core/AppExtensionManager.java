@@ -85,7 +85,7 @@ public class AppExtensionManager {
             var installVersion = AppVersion.parse(iv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
             var sv = !AppProperties.get().isImage()
-                    ? Files.readString(Path.of("version")).trim()
+                    ? Files.readString(Path.of("version")).strip()
                     : AppProperties.get().getVersion();
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
@@ -107,7 +107,7 @@ public class AppExtensionManager {
         var proc = fc.start();
         var out = new String(proc.getInputStream().readAllBytes());
         proc.waitFor(1, TimeUnit.SECONDS);
-        return out.trim();
+        return out.strip();
     }
 
     public Set<Module> getContentModules() {

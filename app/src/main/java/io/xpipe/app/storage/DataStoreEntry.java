@@ -165,7 +165,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 uuid,
                 categoryUuid,
-                name.trim(),
+                name.strip(),
                 Instant.now(),
                 Instant.now(),
                 storeFromNode,
@@ -215,7 +215,7 @@ public class DataStoreEntry extends StorageElement {
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
-        var name = json.required("name").textValue().trim();
+        var name = json.required("name").textValue().strip();
         var color = Optional.ofNullable(json.get("color"))
                 .map(node -> {
                     try {

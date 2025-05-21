@@ -69,7 +69,7 @@ task createChecksums(type: Checksum) {
                 continue
             }
 
-            artifactChecksumsSha256Hex.put(name, file.text.trim())
+            artifactChecksumsSha256Hex.put(name, file.text.strip())
         }
 
         file(layout.buildDirectory.dir("dist/checksums/sha256sums.txt")).text = artifactChecksumsSha256Hex.entrySet().stream()

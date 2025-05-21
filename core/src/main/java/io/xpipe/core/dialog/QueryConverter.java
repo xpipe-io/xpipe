@@ -72,7 +72,7 @@ public abstract class QueryConverter<T> {
                 throw new IllegalArgumentException("Too many colons");
             }
 
-            return new AbstractMap.SimpleEntry<>(split[0].trim(), split[1].trim());
+            return new AbstractMap.SimpleEntry<>(split[0].strip(), split[1].strip());
         }
 
         @Override
