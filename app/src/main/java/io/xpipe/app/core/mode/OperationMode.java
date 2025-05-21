@@ -66,18 +66,22 @@ public abstract class OperationMode {
         return null;
     }
 
+    public static void externalShutdown() {
+        // If we used System.exit(), we don't want to do this
+        if (OperationMode.isInShutdown()) {
+            return;
+        }
+
+        inShutdownHook = true;
+        TrackEvent.info("Received SIGTERM externally");
+        OperationMode.shutdown(false);
+    }
+
     private static void setup(String[] args) {
         try {
             // Only for handling SIGTERM
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                // If we used System.exit(), we don't want to do this
-                if (OperationMode.isInShutdown()) {
-                    return;
-                }
-
-                inShutdownHook = true;
-                TrackEvent.info("Received SIGTERM externally");
-                OperationMode.shutdown(false);
+                externalShutdown();
             }));
 
             // Handle uncaught exceptions
@@ -318,13 +322,16 @@ public abstract class OperationMode {
             OperationMode.halt(1);
         }
 
-        if (inShutdown) {
-            return;
-        }
-
         TrackEvent.info("Starting shutdown ...");
 
-        inShutdown = true;
+        synchronized (OperationMode.class) {
+            if (inShutdown) {
+                return;
+            }
+
+            inShutdown = true;
+        }
+
         // Keep a non-daemon thread running
         var thread = ThreadHelper.createPlatformThread("shutdown", false, () -> {
             try {
