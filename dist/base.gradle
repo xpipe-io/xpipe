@@ -70,12 +70,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/lang"
             }
 
-            // Fixes a JPackage bug
-            copy {
-                from "$distDir/base/lib/app/xpiped.cfg"
-                into "$distDir/base/"
-            }
-
             file("$distDir/base/scripts").mkdirs()
             def debug = file("$distDir/base/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
