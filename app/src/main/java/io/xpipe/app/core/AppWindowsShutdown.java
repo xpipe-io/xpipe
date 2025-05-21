@@ -70,7 +70,9 @@ public class AppWindowsShutdown {
 
                     // We don't always receive an exit signal with a queryendsession, e.g. in case an .msi wants to shut it down
                     // Guarantee that the shutdown is run regardless
-                    OperationMode.externalShutdown();
+                    ThreadHelper.runAsync(() -> {
+                        OperationMode.externalShutdown();
+                    });
 
                     // Indicates that we need to run the endsession case blocking
                     return new WinDef.LRESULT(0);
