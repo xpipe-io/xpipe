@@ -1,6 +1,9 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
+import org.apache.commons.io.FileUtils;
 
 public class AppShellCheck {
 
@@ -17,6 +20,11 @@ public class AppShellCheck {
                     - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
                     - Some elementary command-line tools are not available or not working correctly
                 """;
+                        }
+
+                        @Override
+                        protected boolean fallBackInstantly() {
+                            return false;
                         }
                     };
                     case OsType.MacOs macOs -> new AppShellChecker() {
@@ -36,6 +44,11 @@ public class AppShellCheck {
                     - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
                     - Some elementary command-line tools are not available or not working correctly
                 """;
+                        }
+
+                        @Override
+                        protected boolean fallBackInstantly() {
+                            return false;
                         }
                     };
                     case OsType.Windows windows -> new AppShellChecker() {
@@ -59,6 +72,13 @@ public class AppShellCheck {
                 - Some elementary command-line tools are not available or not working correctly
                 - Applocker might block script execution
                 """;
+                        }
+
+                        @Override
+                        protected boolean fallBackInstantly() {
+                            var complex = ShellDialects.CMD.requiresScript(System.getenv("USERPROFILE")) ||
+                                    ShellDialects.CMD.requiresScript(System.getenv("TEMP"));
+                            return complex;
                         }
                     };
                 };
