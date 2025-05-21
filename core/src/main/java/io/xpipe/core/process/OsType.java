@@ -62,8 +62,19 @@ public interface OsType {
 
         @Override
         public String getUserHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeSimpleStringCommand(
+            var profile = pc.executeSimpleStringCommand(
                     pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
+            if (!profile.isEmpty()) {
+                return profile;
+            }
+
+            var name = pc.executeSimpleStringCommand(
+                    pc.getShellDialect().getPrintEnvironmentVariableCommand("USERNAME"));
+            if (!name.isEmpty()) {
+                return "C:\\Users\\" + name;
+            }
+
+            return "C:\\Users\\User";
         }
 
         @Override
