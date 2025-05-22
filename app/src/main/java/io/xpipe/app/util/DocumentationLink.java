@@ -32,6 +32,7 @@ public enum DocumentationLink {
     KVM("guide/kvm"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
+    REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
     PSSESSION("guide/pssession"),
     RDP_ADDITIONAL_OPTIONS("guide/rdp#additional-rdp-options"),
