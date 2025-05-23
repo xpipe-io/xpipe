@@ -862,6 +862,12 @@ public abstract class DataStorage {
         return false;
     }
 
+    public boolean getEffectiveReadOnlyState(DataStoreEntry entry) {
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
+        var catConfig = getEffectiveCategoryConfig(cat);
+        return catConfig.getReadOnly() != null ? catConfig.getReadOnly() : entry.isReadOnly();
+    }
+
     public DataStoreColor getEffectiveColor(DataStoreEntry entry) {
         var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
         var root = getRootForEntry(entry, cat);

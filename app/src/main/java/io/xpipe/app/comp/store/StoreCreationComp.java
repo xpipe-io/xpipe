@@ -3,6 +3,8 @@ package io.xpipe.app.comp.store;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
@@ -37,12 +39,16 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
     private Region createStoreProperties(Comp<?> comp, Validator propVal) {
         var nameKey = model.storeTypeNameKey();
-        return new OptionsBuilder()
+        return new OptionsBuilder(propVal)
                 .addComp(comp, model.getStore())
                 .name(nameKey + "Name")
                 .description(nameKey + "NameDescription")
                 .addString(model.getName(), false)
                 .nonNull(propVal)
+                .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
+                    var same = s != null && model.getExistingEntry() != null && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry()) && s.equals(model.getExistingEntry().getName());
+                    return !same;
+                }))
                 .buildComp()
                 .styleClass("store-creator-options")
                 .createRegion();

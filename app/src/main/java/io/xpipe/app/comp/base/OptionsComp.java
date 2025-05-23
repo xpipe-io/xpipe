@@ -201,11 +201,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
             }
         }
 
-        if (entries.size() == 1 && firstComp != null) {
-            pane.visibleProperty().bind(PlatformThread.sync(firstComp.visibleProperty()));
-            pane.managedProperty().bind(PlatformThread.sync(firstComp.managedProperty()));
-        }
-
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
             var nameWidthBinding = Bindings.createDoubleBinding(
                     () -> {

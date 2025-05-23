@@ -57,6 +57,7 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownInformation;
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
+    private final BooleanProperty readOnly = new SimpleBooleanProperty();
 
     private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
@@ -200,9 +201,10 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
+        readOnly.setValue(entry.isReadOnly());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
-        deletable.setValue(!(entry.getStore() instanceof LocalStore));
+        deletable.setValue(!(entry.getStore() instanceof LocalStore) && !DataStorage.get().getEffectiveReadOnlyState(entry));
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());

@@ -78,6 +78,10 @@ public class DataStoreEntry extends StorageElement {
     @Getter
     DataStoreColor color;
 
+    @NonFinal
+    @Getter
+    boolean readOnly;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -94,7 +98,8 @@ public class DataStoreEntry extends StorageElement {
             DataStoreColor color,
             String notes,
             Order explicitOrder,
-            String icon) {
+            String icon,
+            boolean readOnly) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;
@@ -106,6 +111,7 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
         this.icon = icon;
+        this.readOnly = readOnly;
     }
 
     private DataStoreEntry(
@@ -117,7 +123,8 @@ public class DataStoreEntry extends StorageElement {
             Instant lastModified,
             DataStore store,
             Order explicitOrder,
-            String icon) {
+            String icon,
+            boolean readOnly) {
         super(directory, uuid, name, lastUsed, lastModified, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -128,6 +135,7 @@ public class DataStoreEntry extends StorageElement {
         this.expanded = false;
         this.provider = null;
         this.storePersistentStateNode = null;
+        this.readOnly = readOnly;
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -140,7 +148,8 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 store,
                 null,
-                null);
+                null,
+                false);
     }
 
     public static DataStoreEntry createNew(@NonNull NameableStore store) {
@@ -177,7 +186,8 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
-                null);
+                null,
+                false);
         return entry;
     }
 
@@ -225,6 +235,9 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
+        var readOnly = Optional.ofNullable(json.get("readOnly"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(false);
 
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
@@ -307,7 +320,8 @@ public class DataStoreEntry extends StorageElement {
                 color,
                 notes,
                 order,
-                icon));
+                icon,
+                readOnly));
     }
 
     public void setExplicitOrder(Order uuid) {
@@ -455,6 +469,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
+        obj.put("readOnly", readOnly);
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
@@ -497,6 +512,14 @@ public class DataStoreEntry extends StorageElement {
     public void setNotes(String newNotes) {
         var changed = !Objects.equals(notes, newNotes);
         this.notes = newNotes;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
+    public void setReadOnly(boolean newValue) {
+        var changed = readOnly != newValue;
+        this.readOnly = newValue;
         if (changed) {
             notifyUpdate(false, true);
         }

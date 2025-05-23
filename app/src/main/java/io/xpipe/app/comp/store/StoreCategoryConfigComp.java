@@ -56,6 +56,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
+        var readOnly = new SimpleObjectProperty<>(c.getReadOnly());
         var ref = new SimpleObjectProperty<>(
                 c.getDefaultIdentityStore() != null
                         ? DataStorage.get()
@@ -75,6 +76,8 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 //                .nameAndDescription("categoryConfirmAllModifications")
                 //                .addYesNoToggle(confirm)
                 //                .hide(!connectionsCategory)
+                .nameAndDescription("categoryReadOnly")
+                .addYesNoToggle(readOnly)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
                         StoreChoiceComp.other(
@@ -93,6 +96,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
                                     scripts.get(),
                                     confirm.get(),
                                     sync.get(),
+                                    readOnly.get(),
                                     ref.get() != null ? ref.get().get().getUuid() : null);
                         },
                         config)

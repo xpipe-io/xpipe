@@ -13,10 +13,13 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.process.ShellScript;
 
+import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -284,7 +287,7 @@ public class AppPrefs {
 
     private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
             AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
-    private final Map<Mapping, Comp<?>> customEntries = new LinkedHashMap<>();
+    private final Map<Mapping, OptionsBuilder> customEntries = new LinkedHashMap<>();
 
     @Getter
     private final Property<AppPrefsCategory> selectedCategory;
@@ -564,7 +567,7 @@ public class AppPrefs {
         }
     }
 
-    public Comp<?> getCustomComp(String id) {
+    public OptionsBuilder getCustomOptions(String id) {
         return customEntries.entrySet().stream()
                 .filter(e -> e.getKey().getKey().equals(id))
                 .findFirst()
@@ -717,9 +720,9 @@ public class AppPrefs {
 
         @Override
         public <T> void addSetting(
-                String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log) {
+                String id, JavaType t, Property<T> property, OptionsBuilder builder, boolean requiresRestart, boolean log) {
             var m = new Mapping(id, property, t, false, requiresRestart, log);
-            customEntries.put(m, comp);
+            customEntries.put(m, builder);
             mapping.add(m);
         }
     }

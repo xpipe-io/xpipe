@@ -190,12 +190,6 @@ public class StoreCreationModel {
             return;
         }
 
-        // We didn't change anything
-        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
-            commit(false);
-            return;
-        }
-
         if (!validator.getValue().validate()) {
             var msg = validator
                     .getValue()
@@ -205,6 +199,12 @@ public class StoreCreationModel {
                     .getText();
             ErrorEvent.fromMessage(msg).expected().handle();
             changedSinceError.setValue(false);
+            return;
+        }
+
+        // We didn't change anything
+        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
+            commit(false);
             return;
         }
 

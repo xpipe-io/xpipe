@@ -427,6 +427,18 @@ public abstract class StoreEntryComp extends SimpleComp {
             contextMenu.getItems().add(order);
         }
 
+        var readOnly = new MenuItem();
+        readOnly.graphicProperty().bind(Bindings.createObjectBinding(() -> {
+            var is = getWrapper().getReadOnly().get();
+            return is ? new FontIcon("mdi2l-lock-open-variant-outline") : new FontIcon("mdi2l-lock-open-outline");
+        }, getWrapper().getReadOnly()));
+        readOnly.textProperty().bind(Bindings.createStringBinding(() -> {
+            var is = getWrapper().getReadOnly().get();
+            return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
+        }, AppI18n.activeLanguage(), getWrapper().getReadOnly()));
+        readOnly.setOnAction(event -> getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
+        contextMenu.getItems().add(readOnly);
+
         contextMenu.getItems().add(new SeparatorMenuItem());
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
