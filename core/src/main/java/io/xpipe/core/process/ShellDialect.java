@@ -79,7 +79,7 @@ public interface ShellDialect {
 
     String assembleCommand(String command, Map<String, String> variables);
 
-    Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
+    Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String path, boolean sub) throws Exception;
 
     Stream<String> listRoots(ShellControl control) throws Exception;
 

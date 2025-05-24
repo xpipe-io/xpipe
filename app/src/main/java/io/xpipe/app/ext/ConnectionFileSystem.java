@@ -171,8 +171,16 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public Optional<FileEntry> getFileInfo(FilePath file) throws Exception {
+        try (var stream = shellControl.getShellDialect().listFiles(this, shellControl, file.toString(), false)) {
+            var l = stream.toList();
+            return l.stream().findFirst();
+        }
+    }
+
+    @Override
     public Stream<FileEntry> listFiles(FilePath file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString());
+        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString(), true);
     }
 
     @Override

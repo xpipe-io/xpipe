@@ -40,6 +40,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     void directoryAccessible(FilePath file) throws Exception;
 
+    Optional<FileEntry> getFileInfo(FilePath file) throws Exception;
+
     Stream<FileEntry> listFiles(FilePath file) throws Exception;
 
     default List<FileEntry> listFilesRecursively(FilePath file) throws Exception {

@@ -187,6 +187,25 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         cdSyncWithoutCheck(currentPath.get());
     }
 
+    public void refreshEntriesSync(List<BrowserEntry> entries) throws Exception {
+        if (fileList.getAll().getValue().size() < 10) {
+            refreshSync();
+            return;
+        }
+
+        if (entries.size() > 10 && fileList.getAll().getValue().size() < 100) {
+            refreshSync();
+            return;
+        }
+
+        for (BrowserEntry browserEntry : entries) {
+            var refresh = fileSystem.getFileInfo(browserEntry.getRawFileEntry().getPath());
+            fileList.updateEntry(browserEntry, refresh.orElse(null));
+        }
+
+        cdSyncWithoutCheck(currentPath.get());
+    }
+
     public FileEntry getCurrentParentDirectory() {
         var current = getCurrentDirectory();
         if (current == null) {
