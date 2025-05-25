@@ -113,11 +113,14 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
+                var systemWide =
+                        !Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                var propertiesArguments = systemWide ? ", --install-arguments=`\"'ALLUSERS=1'`\"" : "";
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
                     var pkg = "xpipe";
                     return ShellScript.lines(
                             "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
-                                    + "\"",
+                                    + ", -y" + propertiesArguments + "\"",
                             AppRestart.getTerminalRestartCommand());
                 });
             });
