@@ -2,6 +2,7 @@ package io.xpipe.app.password;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
@@ -22,6 +23,16 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public String retrievePassword(String key) {
+        try {
+            CommandSupport.isInLocalPathOrThrow("1Password CLI", "op");
+        } catch (Exception e) {
+            ErrorEvent.fromThrowable(e)
+                    .expected()
+                    .link("https://developer.1password.com/docs/cli/get-started/")
+                    .handle();
+            return null;
+        }
+
         try {
             var r = getOrStartShell()
                     .command(CommandBuilder.of()
