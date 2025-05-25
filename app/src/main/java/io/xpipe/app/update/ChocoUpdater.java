@@ -10,6 +10,8 @@ import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -115,12 +117,15 @@ public class ChocoUpdater extends UpdateHandler {
             OperationMode.executeAfterShutdown(() -> {
                 var systemWide =
                         Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
-                var propertiesArguments = systemWide ? ", --install-arguments=`\"'ALLUSERS=1'`\"" : "";
+                var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
                     var pkg = "xpipe";
+                    var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
+                            + ", -y" + propertiesArguments;
+                    var powershell = ShellDialects.isPowershell(sc);
+                    var powershellCommand = powershell ? "powershell -Command " + sc.getShellDialect().quoteArgument(commandToRun) : "powershell -Command " + commandToRun;
                     return ShellScript.lines(
-                            "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
-                                    + ", -y" + propertiesArguments + "\"",
+                            powershellCommand,
                             AppRestart.getTerminalRestartCommand());
                 });
             });
