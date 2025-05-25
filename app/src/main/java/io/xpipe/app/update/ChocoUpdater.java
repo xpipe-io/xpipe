@@ -114,7 +114,7 @@ public class ChocoUpdater extends UpdateHandler {
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
                 var systemWide =
-                        !Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                        Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=`\"'ALLUSERS=1'`\"" : "";
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
                     var pkg = "xpipe";
