@@ -76,9 +76,13 @@ public class AppShellCheck {
 
                         @Override
                         protected boolean fallBackInstantly() {
-                            var complex = ShellDialects.CMD.requiresScript(System.getenv("USERPROFILE")) ||
-                                    ShellDialects.CMD.requiresScript(System.getenv("TEMP"));
-                            return complex;
+                            // In theory, this prevents cmd issues with unsupported characters
+                            // However, due to workarounds, this should still work
+                            // Falling back to powershell would make it slower and introduce other potential issues
+//                            var complex = ShellDialects.CMD.requiresScript(System.getenv("USERPROFILE")) ||
+//                                    ShellDialects.CMD.requiresScript(System.getenv("TEMP"));
+//                            return complex;
+                            return false;
                         }
                     };
                 };
