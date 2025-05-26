@@ -7,7 +7,6 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
 
-import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.ArrayList;
@@ -84,4 +83,5 @@ public final class ExclusiveValidator<T> implements Validator {
                 },
                 observables);
     }
+
 }

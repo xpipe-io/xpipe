@@ -10,7 +10,6 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
-import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.function.Predicate;
@@ -123,4 +122,5 @@ public interface Validator {
      * @param separator The string to separate consecutive validation messages with
      */
     StringBinding createStringBinding(String prefix, String separator);
+
 }

@@ -285,6 +285,11 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             struc.get().prefHeightProperty().bind(comboRegion.prefHeightProperty());
             AnchorPane.setLeftAnchor(comboRegion, 0.0);
             AnchorPane.setRightAnchor(comboRegion, 0.0);
+            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    struc.get().getChildren().getFirst().requestFocus();
+                }
+            });
         });
 
         return stack;
