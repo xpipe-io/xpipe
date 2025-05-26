@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    FileSystem createTransferOptimizedFileSystem() throws Exception;
+
     long getFileSize(FilePath file) throws Exception;
 
     Optional<ShellControl> getShell();

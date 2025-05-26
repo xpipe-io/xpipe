@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -287,46 +288,63 @@ public class BrowserFileTransferOperation {
             totalSize.addAndGet(source.getFileSizeLong().orElse(0));
         }
 
-        var start = Instant.now();
-        AtomicLong transferred = new AtomicLong();
-        for (var e : flatFiles.entrySet()) {
-            if (cancelled()) {
-                return;
-            }
+        var optimizedSourceFs = canUseOptimizedFileSystem(flatFiles) ?
+                flatFiles.keySet().iterator().next().getFileSystem().createTransferOptimizedFileSystem() : null;
+        var targetFs = target.getFileSystem().createTransferOptimizedFileSystem();
 
-            var sourceFile = e.getKey();
-            var fixedRelPath = FilePath.of(e.getValue())
-                    .fileSystemCompatible(
-                            target.getFileSystem().getShell().orElseThrow().getOsType());
-            var targetFile = target.getPath().join(fixedRelPath.toString());
-            if (sourceFile.getFileSystem().equals(target.getFileSystem())) {
-                throw new IllegalStateException();
-            }
-
-            if (sourceFile.getKind() == FileKind.DIRECTORY) {
-                target.getFileSystem().mkdirs(targetFile);
-            } else if (sourceFile.getKind() == FileKind.FILE) {
-                if (checkConflicts) {
-                    var fileConflictChoice =
-                            handleChoice(target.getFileSystem(), targetFile, files.size() > 1 || flatFiles.size() > 1);
-                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
-                            || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
-                        continue;
-                    }
-
-                    if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
-                        targetFile = renameFileLoop(target.getFileSystem(), targetFile, false);
-                    }
+        try {
+            var start = Instant.now();
+            AtomicLong transferred = new AtomicLong();
+            for (var e : flatFiles.entrySet()) {
+                if (cancelled()) {
+                    return;
                 }
 
-                transfer(sourceFile, targetFile, transferred, totalSize, start);
+                var sourceFile = e.getKey();
+                var fixedRelPath = FilePath.of(e.getValue()).fileSystemCompatible(targetFs.getShell().orElseThrow().getOsType());
+                var targetFile = target.getPath().join(fixedRelPath.toString());
+                if (sourceFile.getFileSystem().equals(targetFs)) {
+                    throw new IllegalStateException();
+                }
+
+                if (sourceFile.getKind() == FileKind.DIRECTORY) {
+                    targetFs.mkdirs(targetFile);
+                } else if (sourceFile.getKind() == FileKind.FILE) {
+                    if (checkConflicts) {
+                        var fileConflictChoice = handleChoice(targetFs, targetFile, files.size() > 1 || flatFiles.size() > 1);
+                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP ||
+                                fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                            continue;
+                        }
+
+                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+                            targetFile = renameFileLoop(targetFs, targetFile, false);
+                        }
+                    }
+
+                    var sourceFs = optimizedSourceFs != null ? optimizedSourceFs : sourceFile.getFileSystem();
+                    transfer(sourceFile.getPath(), sourceFs, targetFile, targetFs, transferred, totalSize, start);
+                }
+            }
+            updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
+        } finally {
+            if (optimizedSourceFs != null && optimizedSourceFs != flatFiles.keySet().iterator().next().getFileSystem()) {
+                optimizedSourceFs.close();
+            }
+            if (target.getFileSystem() != targetFs) {
+                targetFs.close();
             }
         }
-        updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
+    }
+
+    private boolean canUseOptimizedFileSystem(Map<FileEntry, String> source) {
+        var first = source.keySet().iterator().next();
+        var fs = first.getFileSystem();
+        return source.keySet().stream().allMatch(fileEntry -> fileEntry.getFileSystem().equals(fs));
     }
 
     private void transfer(
-            FileEntry sourceFile, FilePath targetFile, AtomicLong transferred, AtomicLong totalSize, Instant start)
+            FilePath sourceFile, FileSystem sourceFs, FilePath targetFile, FileSystem targetFs, AtomicLong transferred, AtomicLong totalSize, Instant start)
             throws Exception {
         if (cancelled()) {
             return;
@@ -335,11 +353,11 @@ public class BrowserFileTransferOperation {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
-            var fileSize = sourceFile.getFileSystem().getFileSize(sourceFile.getPath());
+            var fileSize = sourceFs.getFileSize(sourceFile);
 
             // Read the first few bytes to figure out possible command failure early
             // before creating the output stream
-            inputStream = new BufferedInputStream(sourceFile.getFileSystem().openInput(sourceFile.getPath()), 1024);
+            inputStream = new BufferedInputStream(sourceFs.openInput(sourceFile), 1024);
             inputStream.mark(1024);
             var streamStart = new byte[1024];
             var streamStartLength = inputStream.read(streamStart, 0, 1024);
@@ -350,13 +368,13 @@ public class BrowserFileTransferOperation {
                 inputStream.reset();
             }
 
-            outputStream = target.getFileSystem().openOutput(targetFile, fileSize);
+            outputStream = targetFs.openOutput(targetFile, fileSize);
             transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start, fileSize);
             outputStream.flush();
             inputStream.transferTo(OutputStream.nullOutputStream());
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
-            updateProgress(BrowserTransferProgress.finished(sourceFile.getName(), transferred.get()));
+            updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
 
             if (inputStream != null) {
                 try {
@@ -406,7 +424,7 @@ public class BrowserFileTransferOperation {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     private void transferFile(
-            FileEntry sourceFile,
+            FilePath sourceFile,
             InputStream inputStream,
             OutputStream outputStream,
             AtomicLong transferred,
@@ -415,7 +433,7 @@ public class BrowserFileTransferOperation {
             long expectedFileSize)
             throws Exception {
         // Initialize progress immediately prior to reading anything
-        updateProgress(new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get(), start));
 
         var killStreams = new AtomicBoolean(false);
         var exception = new AtomicReference<Exception>();
@@ -440,12 +458,12 @@ public class BrowserFileTransferOperation {
                     transferred.addAndGet(read);
                     readCount += read;
                     updateProgress(
-                            new BrowserTransferProgress(sourceFile.getName(), transferred.get(), total.get(), start));
+                            new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get(), start));
                 }
 
                 var incomplete = readCount < expectedFileSize;
                 if (incomplete) {
-                    throw new IOException("Source file " + sourceFile.getPath() + " input did end prematurely");
+                    throw new IOException("Source file " + sourceFile + " input did end prematurely");
                 }
             } catch (Exception ex) {
                 exception.set(ex);

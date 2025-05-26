@@ -4,6 +4,8 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialect;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
@@ -26,6 +28,23 @@ public class ConnectionFileSystem implements FileSystem {
 
     public ConnectionFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
+    }
+
+    @Override
+    public FileSystem createTransferOptimizedFileSystem() throws Exception {
+        if (shellControl.getShellDialect() == ShellDialects.CMD) {
+            var pwsh = shellControl.view().findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName()).isPresent();
+            if (pwsh) {
+                return new ConnectionFileSystem(shellControl.subShell(ShellDialects.POWERSHELL_CORE).start());
+            }
+
+            var powershell = shellControl.view().findProgram(ShellDialects.POWERSHELL.getExecutableName()).isPresent();
+            if (powershell) {
+                return new ConnectionFileSystem(shellControl.subShell(ShellDialects.POWERSHELL).start());
+            }
+        }
+
+        return this;
     }
 
     @Override
