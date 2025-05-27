@@ -23,6 +23,7 @@ public interface PasswordManager {
             l.add(EnpassPasswordManager.class);
         }
         l.add(KeeperPasswordManager.class);
+        l.add(PsonoPasswordManager.class);
         if (OsType.getLocal() == OsType.WINDOWS) {
             l.add(WindowsCredentialManager.class);
         }

@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
@@ -16,6 +18,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
+import javafx.scene.layout.VBox;
+import net.synedra.validatorfx.Check;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -35,6 +39,7 @@ public class OptionsBuilder {
     private final List<Check> allChecks = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
+    private final List<Augment<CompStructure<VBox>>> augments = new ArrayList<>();
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
@@ -51,6 +56,11 @@ public class OptionsBuilder {
     public OptionsBuilder(Validator validator) {
         this.ownValidator = validator;
         this.allValidators.add(ownValidator);
+    }
+
+    public OptionsBuilder augment(Augment<CompStructure<VBox>> augment) {
+        this.augments.add(augment);
+        return this;
     }
 
     public Validator buildEffectiveValidator() {
@@ -459,7 +469,11 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        return new OptionsComp(allChecks, entries);
+        var comp = new OptionsComp(allChecks, entries);
+        for (Augment<CompStructure<VBox>> augment : augments) {
+            comp.apply(augment);
+        }
+        return comp;
     }
 
     public Region build() {
