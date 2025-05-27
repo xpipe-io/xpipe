@@ -83,7 +83,7 @@ public class PsonoPasswordManager implements PasswordManager {
         }
 
         try {
-            var r = getOrStartShell()
+            var cmd = getOrStartShell()
                     .command(CommandBuilder.of()
                             .add("psonoci", "--api-key-id")
                             .addLiteral(apiKey.getSecretValue())
@@ -93,8 +93,9 @@ public class PsonoPasswordManager implements PasswordManager {
                             .addLiteral(serverUrl)
                             .add("secret", "get")
                             .addLiteral(key)
-                            .add("password"))
-                    .readStdoutOrThrow();
+                            .add("password"));
+            cmd.setSensitive();;
+            var r = cmd.readStdoutOrThrow();
             return r;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
