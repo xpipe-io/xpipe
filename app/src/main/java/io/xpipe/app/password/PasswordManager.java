@@ -1,6 +1,7 @@
 package io.xpipe.app.password;
 
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,6 +28,12 @@ public interface PasswordManager {
         }
         l.add(PasswordManagerCommand.class);
         return l;
+    }
+
+    static class CredentialResult {
+
+        String username;
+        SecretValue password;
     }
 
     default void checkComplete() throws ValidationException {}

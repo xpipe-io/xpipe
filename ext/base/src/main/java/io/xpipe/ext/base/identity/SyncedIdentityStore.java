@@ -20,6 +20,7 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class SyncedIdentityStore extends IdentityStore implements UserScopeStore {
 
+    String username;
     // We can encrypt it with only the vault key as
     // per user stores are additionally encrypted on the entry level
     EncryptedValue.VaultKey<SecretRetrievalStrategy> password;
@@ -46,12 +47,10 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
         }
     }
 
-    @Override
     EncryptedValue.VaultKey<SecretRetrievalStrategy> getEncryptedPassword() {
         return password;
     }
 
-    @Override
     EncryptedValue.VaultKey<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
     }

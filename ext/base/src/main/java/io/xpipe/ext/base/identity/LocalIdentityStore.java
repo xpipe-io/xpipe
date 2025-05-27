@@ -18,6 +18,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 public class LocalIdentityStore extends IdentityStore {
 
+    String username;
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
 
@@ -31,12 +32,10 @@ public class LocalIdentityStore extends IdentityStore {
         return sshIdentity != null ? sshIdentity.getValue() : null;
     }
 
-    @Override
     EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword() {
         return password;
     }
 
-    @Override
     EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
     }
