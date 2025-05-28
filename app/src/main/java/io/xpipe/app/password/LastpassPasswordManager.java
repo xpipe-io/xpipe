@@ -39,8 +39,8 @@ public class LastpassPasswordManager implements PasswordManager {
         try {
             var sc = getOrStartShell();
             var loggedIn =
-                    sc.command(CommandBuilder.of().add("lpass", "status")).executeAndCheck();
-            if (!loggedIn) {
+                    sc.command(CommandBuilder.of().add("lpass", "status")).readStdoutIfPossible();
+            if (loggedIn.isEmpty() || loggedIn.get().contains("Logged in as (null)")) {
                 var email = AsktextAlert.query("Enter LastPass account email address to log in");
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your LastPass account from the CLI:", false),
