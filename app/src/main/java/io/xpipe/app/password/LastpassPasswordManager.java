@@ -38,10 +38,11 @@ public class LastpassPasswordManager implements PasswordManager {
                     sc.command(CommandBuilder.of().add("lpass", "status")).executeAndCheck();
             if (!loggedIn) {
                 var email = AsktextAlert.query("Enter LastPass account email address to log in");
-                var script = ShellScript.lines(
-                        sc.getShellDialect().getEchoCommand("Log in into your LastPass account from the CLI:", false),
-                        "lpass login --trust \"" + email + "\"");
-                TerminalLauncher.openDirect("LastPass login", script);
+                if (email.isPresent()) {
+                    var script = ShellScript.lines(sc.getShellDialect().getEchoCommand("Log in into your LastPass account from the CLI:", false),
+                            "lpass login --trust \"" + email.get() + "\"");
+                    TerminalLauncher.openDirect("LastPass login", script);
+                }
                 return null;
             }
 
