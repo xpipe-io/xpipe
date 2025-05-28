@@ -9,6 +9,8 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.JacksonMapper;
 
 @JsonTypeName("dashlane")
 public class DashlanePasswordManager implements PasswordManager {
@@ -45,10 +47,13 @@ public class DashlanePasswordManager implements PasswordManager {
             }
 
             var out = sc.command(CommandBuilder.of()
-                            .add("dcli", "password", "--output", "console")
+                            .add("dcli", "password", "--output", "console", "-o", "json")
                             .addLiteral(key))
                     .readStdoutOrThrow();
-            return null;
+            var tree = JacksonMapper.getDefault().readTree(out);
+            var login = tree.get("login");
+            var password = tree.get("password");
+            return new CredentialResult(login != null ? login.asText() : null, password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

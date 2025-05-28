@@ -84,20 +84,21 @@ public class PsonoPasswordManager implements PasswordManager {
         }
 
         try {
+            getOrStartShell().view().setSensitiveEnvironmentVariable("PSONO_CI_API_KEY_ID", apiKey.getSecretValue());
+            getOrStartShell().view().setSensitiveEnvironmentVariable("PSONO_CI_API_SECRET_KEY_HEX", apiSecretKey.getSecretValue());
             var cmd = getOrStartShell()
                     .command(CommandBuilder.of()
-                            .add("psonoci", "--api-key-id")
-                            .addLiteral(apiKey.getSecretValue())
-                            .add("--api-secret-key-hex")
-                            .addLiteral(apiSecretKey.getSecretValue())
+                            .add("psonoci")
                             .add("--server-url")
                             .addLiteral(serverUrl)
                             .add("secret", "get")
                             .addLiteral(key)
                             .add("json"));
-            cmd.setSensitive();;
+            cmd.setSensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
-            return null;
+            var username = r.required("username");
+            var password = r.required("password");
+            return new CredentialResult(username.isNull() ? null : username.asText(), password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;

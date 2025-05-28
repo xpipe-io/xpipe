@@ -7,6 +7,10 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.JacksonMapper;
+
+import java.util.ArrayList;
 
 @JsonTypeName("lastpass")
 public class LastpassPasswordManager implements PasswordManager {
@@ -47,10 +51,25 @@ public class LastpassPasswordManager implements PasswordManager {
 
             var out = sc.command(CommandBuilder.of()
                             .add("lpass", "show")
-                            .add("--fixed-strings", "--password")
+                            .add("--fixed-strings", "--json")
                             .addLiteral(key))
                     .readStdoutOrThrow();
-            return null;
+            var tree = JacksonMapper.getDefault().readTree(out);
+
+            if (tree.size() > 1) {
+                var matches = new ArrayList<String>();
+                tree.iterator().forEachRemaining(item -> {
+                    var title = item.get("name");
+                    if (title != null) {
+                        matches.add(title.asText());
+                    }
+                });
+                throw ErrorEvent.expected(new IllegalArgumentException("Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
+            }
+
+            var username = tree.get(0).required("username").asText();
+            var password = tree.get(0).required("password").asText();
+            return new CredentialResult(!username.isEmpty() ? username : null, !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

@@ -15,7 +15,7 @@ import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.password.KeePassXcManager;
+import io.xpipe.app.password.KeePassXcPasswordManager;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.*;
 import io.xpipe.app.storage.DataStorage;
@@ -180,7 +180,7 @@ public class BaseMode extends OperationMode {
         ProcessControlProvider.get().reset();
         AppPrefs.reset();
         AppBeaconServer.reset();
-        KeePassXcManager.reset();
+        KeePassXcPasswordManager.reset();
         StoreViewState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();

@@ -28,13 +28,13 @@ import java.util.regex.Pattern;
 @ToString
 @Jacksonized
 @JsonTypeName("keePassXc")
-public class KeePassXcManager implements PasswordManager {
+public class KeePassXcPasswordManager implements PasswordManager {
 
     private static KeePassXcProxyClient client;
 
     private final KeePassXcAssociationKey associationKey;
 
-    public static OptionsBuilder createOptions(Property<KeePassXcManager> p) {
+    public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var prop = new SimpleObjectProperty<KeePassXcAssociationKey>();
         p.subscribe(keePassXcManager -> {
             prop.set(keePassXcManager != null ? keePassXcManager.getAssociationKey() : null);
@@ -63,7 +63,7 @@ public class KeePassXcManager implements PasswordManager {
                 .addProperty(prop)
                 .bind(
                         () -> {
-                            return new KeePassXcManager(prop.getValue());
+                            return new KeePassXcPasswordManager(prop.getValue());
                         },
                         p);
     }
@@ -114,7 +114,7 @@ public class KeePassXcManager implements PasswordManager {
             c.exchangeKeys();
             var pref = AppPrefs.get().passwordManager();
             KeePassXcAssociationKey cached =
-                    pref.getValue() instanceof KeePassXcManager kpm ? kpm.getAssociationKey() : null;
+                    pref.getValue() instanceof KeePassXcPasswordManager kpm ? kpm.getAssociationKey() : null;
             if (cached != null) {
                 c.useExistingAssociationKey(cached);
                 try {
@@ -128,7 +128,7 @@ public class KeePassXcManager implements PasswordManager {
             if (cached == null) {
                 c.associate();
                 c.testAssociation();
-                if (pref.getValue() instanceof KeePassXcManager kpm
+                if (pref.getValue() instanceof KeePassXcPasswordManager kpm
                         && !c.getAssociationKey().equals(kpm.getAssociationKey())) {
                     AppPrefs.get()
                             .setFromExternal(
@@ -192,7 +192,7 @@ public class KeePassXcManager implements PasswordManager {
     @Override
     public CredentialResult retrieveCredentials(String key) {
         try {
-            return KeePassXcManager.receive(key);
+            return KeePassXcPasswordManager.receive(key);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;

@@ -1,5 +1,6 @@
 package io.xpipe.app.password;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
@@ -9,6 +10,8 @@ import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.process.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.JacksonMapper;
 
 import java.util.UUID;
 
@@ -67,10 +70,35 @@ public class KeeperPasswordManager implements PasswordManager {
             var out = sc.command(CommandBuilder.of()
                             .add(getExecutable(sc), "get")
                             .addLiteral(key)
-                            .add("--format", "password", "--unmask", "--password")
+                            .add("--format", "json", "--unmask")
+                            .add("--password")
                             .addLiteral(r.getSecretValue()))
                     .readStdoutOrThrow();
-            return null;
+            var tree = JacksonMapper.getDefault().readTree(out);
+            var fields = tree.required("fields");
+            if (!fields.isArray()) {
+                return null;
+            }
+
+            String login = null;
+            String password = null;
+            for (JsonNode field : fields) {
+                var type = field.required("type").asText();
+                if (type.equals("login")) {
+                    var v = field.required("value");
+                    if (v.size() > 0) {
+                        login = v.get(0).asText();
+                    }
+                }
+                if (type.equals("password")) {
+                    var v = field.required("value");
+                    if (v.size() > 0) {
+                        password = v.get(0).asText();
+                    }
+                }
+            }
+
+            return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

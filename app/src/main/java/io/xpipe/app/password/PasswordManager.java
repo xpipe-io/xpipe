@@ -2,7 +2,6 @@ package io.xpipe.app.password;
 
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Value;
@@ -16,7 +15,7 @@ public interface PasswordManager {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(OnePasswordManager.class);
-        l.add(KeePassXcManager.class);
+        l.add(KeePassXcPasswordManager.class);
         l.add(BitwardenPasswordManager.class);
         l.add(DashlanePasswordManager.class);
         if (OsType.getLocal() != OsType.WINDOWS) {

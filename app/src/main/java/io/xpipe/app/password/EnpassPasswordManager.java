@@ -13,6 +13,7 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FilePath;
+import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -135,8 +136,9 @@ public class EnpassPasswordManager implements PasswordManager {
                     throw ErrorEvent.expected(new IllegalArgumentException("Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
-                var secret = json.get(0).get("password").asText();
-                return null;
+                var login = json.get(0).required("login").asText();
+                var secret = json.get(0).required("password").asText();
+                return new CredentialResult(!login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
             }
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

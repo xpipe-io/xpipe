@@ -77,8 +77,6 @@ public interface CommandControl extends ProcessControl {
 
     String readStdoutOrThrow() throws Exception;
 
-    SecretValue readStdoutSecretOrThrow() throws Exception;
-
     Optional<String> readStdoutIfPossible() throws Exception;
 
     default boolean discardAndCheckExit() throws ProcessOutputException {
