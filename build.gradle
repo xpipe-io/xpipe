@@ -14,7 +14,7 @@ buildscript {
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id 'org.gradlex.extra-java-module-info' version '1.12' apply false
-    id("com.diffplug.spotless") version "7.0.2" apply false
+    id("com.diffplug.spotless") version "7.0.4" apply false
 }
 
 allprojects { subproject ->
