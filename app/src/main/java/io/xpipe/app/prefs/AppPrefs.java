@@ -5,6 +5,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.password.PasswordManager;
 import io.xpipe.app.password.PasswordManagerCommand;
@@ -83,7 +84,7 @@ public class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
-            .property(new SimpleObjectProperty<>(new ArrayList<>()))
+            .property(new SimpleObjectProperty<>(new ArrayList<>(SystemIconManager.getIcons())))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .build());

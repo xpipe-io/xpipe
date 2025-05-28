@@ -2,6 +2,9 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
@@ -14,12 +17,14 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class IconsCategory extends AppPrefsCategory {
 
@@ -41,7 +46,7 @@ public class IconsCategory extends AppPrefsCategory {
     private Comp<?> createOverview() {
         var sources = FXCollections.<SystemIconSource>observableArrayList();
         AppPrefs.get().getIconSources().subscribe((newValue) -> {
-            sources.setAll(SystemIconManager.getEffectiveSources());
+            sources.setAll(SystemIconManager.getAllSources());
         });
         var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s, sources), true);
 
@@ -159,11 +164,36 @@ public class IconsCategory extends AppPrefsCategory {
             AppPrefs.get().iconSources.setValue(nl);
             sources.remove(source);
         });
-        var buttons = new HorizontalComp(List.of(delete));
-        buttons.spacing(5);
         if (!AppPrefs.get().getIconSources().getValue().contains(source)) {
-            buttons.disable(new SimpleBooleanProperty(true));
+            delete.disable(new SimpleBooleanProperty(true));
         }
+
+        var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
+        var enabled = Comp.of(() -> {
+            var cb = new CheckBox();
+            cb.setSelected(!disabled.contains(source.getId()));
+            cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                var set = new LinkedHashSet<>(AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of()));
+                if (newValue) {
+                    set.remove(source.getId());
+                } else {
+                    set.add(source.getId());
+                }
+                AppCache.update("disabledIconSources", set);
+            });
+            cb.setAlignment(Pos.BOTTOM_CENTER);
+            cb.setPadding(new Insets(0, 0, 1, 0));
+            AppFontSizes.sm(cb);
+            cb.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+                cb.setSelected(!cb.isSelected());
+                e.consume();
+            });
+            return cb;
+        });
+
+        var buttons = new HorizontalComp(List.of(enabled, delete));
+        buttons.apply(struc -> struc.get().setFillHeight(true));
+        buttons.spacing(15);
 
         var tile = new TileButtonComp(
                 new SimpleStringProperty(
