@@ -22,7 +22,7 @@ public class LastpassPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class LastpassPasswordManager implements PasswordManager {
                             .add("--fixed-strings", "--password")
                             .addLiteral(key))
                     .readStdoutOrThrow();
-            return out;
+            return null;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

@@ -78,7 +78,7 @@ public class EnpassPasswordManager implements PasswordManager {
     private final FilePath vaultPath;
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Enpass CLI", "enpass-cli");
         } catch (Exception e) {
@@ -136,7 +136,7 @@ public class EnpassPasswordManager implements PasswordManager {
                 }
 
                 var secret = json.get(0).get("password").asText();
-                return secret;
+                return null;
             }
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

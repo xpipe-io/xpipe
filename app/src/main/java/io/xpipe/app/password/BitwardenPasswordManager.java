@@ -9,6 +9,8 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.JacksonMapper;
 
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
@@ -24,7 +26,7 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
@@ -59,11 +61,15 @@ public class BitwardenPasswordManager implements PasswordManager {
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
-            var b = CommandBuilder.of()
-                    .add("bw", "get", "password")
+            var cmd = CommandBuilder.of()
+                    .add("bw", "get", "item")
                     .addLiteral(key)
-                    .add("--nointeraction", "--raw");
-            return sc.command(b).readStdoutOrThrow();
+                    .add("--nointeraction");
+            var json = JacksonMapper.getDefault().readTree(sc.command(cmd).readStdoutOrThrow());
+            var login = json.required("login");
+            var user = login.required("username");
+            var password = login.required("password");
+            return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

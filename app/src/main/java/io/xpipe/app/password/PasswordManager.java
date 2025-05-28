@@ -5,6 +5,7 @@ import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +32,21 @@ public interface PasswordManager {
         return l;
     }
 
+    @Value
     static class CredentialResult {
 
         String username;
         SecretValue password;
     }
 
-    default void checkComplete() throws ValidationException {}
+    default CredentialResult retrieveCredentials(String key) {
+        throw new UnsupportedOperationException();
+    }
 
-    String retrievePassword(String key);
+    default SecretValue retrievePassword(String key) {
+        var result = retrieveCredentials(key);
+        return result == null ? null : result.getPassword();
+    }
 
     String getKeyPlaceholder();
 }

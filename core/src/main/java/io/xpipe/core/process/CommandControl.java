@@ -1,6 +1,7 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.store.FilePath;
+import io.xpipe.core.util.SecretValue;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,6 +76,8 @@ public interface CommandControl extends ProcessControl {
     byte[] readRawBytesOrThrow() throws Exception;
 
     String readStdoutOrThrow() throws Exception;
+
+    SecretValue readStdoutSecretOrThrow() throws Exception;
 
     Optional<String> readStdoutIfPossible() throws Exception;
 

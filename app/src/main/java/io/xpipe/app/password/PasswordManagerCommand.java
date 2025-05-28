@@ -11,6 +11,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.SecretValue;
 import io.xpipe.core.util.ValidationException;
 
 import javafx.beans.property.Property;
@@ -64,12 +66,6 @@ public class PasswordManagerCommand implements PasswordManager {
                 .bind(() -> new PasswordManagerCommand(script.get()), property);
     }
 
-    @Override
-    public void checkComplete() throws ValidationException {
-        Validators.nonNull(script);
-        Validators.notEmpty(script.getValue());
-    }
-
     private static ShellControl SHELL;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -80,7 +76,7 @@ public class PasswordManagerCommand implements PasswordManager {
         return SHELL;
     }
 
-    public static String retrieveWithCommand(String cmd) {
+    public static SecretValue retrieveWithCommand(String cmd) {
         try (var cc = getOrStartShell().command(cmd).start()) {
             var out = cc.readStdoutOrThrow();
 
@@ -89,10 +85,10 @@ public class PasswordManagerCommand implements PasswordManager {
                 out = out.lines()
                         .findFirst()
                         .map(s -> s.strip().replaceAll("\\s+$", ""))
-                        .orElse(null);
+                        .orElse("");
             }
 
-            return out;
+            return InPlaceSecretValue.of(out);
         } catch (Exception ex) {
             ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                     .expected()
@@ -104,7 +100,7 @@ public class PasswordManagerCommand implements PasswordManager {
     ShellScript script;
 
     @Override
-    public String retrievePassword(String key) {
+    public SecretValue retrievePassword(String key) {
         if (script == null) {
             return null;
         }

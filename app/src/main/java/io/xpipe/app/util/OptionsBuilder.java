@@ -13,13 +13,11 @@ import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
 import javafx.scene.layout.VBox;
-import net.synedra.validatorfx.Check;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;

@@ -13,6 +13,7 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -71,7 +72,7 @@ public class PsonoPasswordManager implements PasswordManager {
     }
 
     @Override
-    public String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Psono CLI", "psonoci");
         } catch (Exception e) {
@@ -93,10 +94,10 @@ public class PsonoPasswordManager implements PasswordManager {
                             .addLiteral(serverUrl)
                             .add("secret", "get")
                             .addLiteral(key)
-                            .add("password"));
+                            .add("json"));
             cmd.setSensitive();;
-            var r = cmd.readStdoutOrThrow();
-            return r;
+            var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
+            return null;
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;

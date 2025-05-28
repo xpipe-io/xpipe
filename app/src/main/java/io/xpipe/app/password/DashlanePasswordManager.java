@@ -24,7 +24,7 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class DashlanePasswordManager implements PasswordManager {
                             .add("dcli", "password", "--output", "console")
                             .addLiteral(key))
                     .readStdoutOrThrow();
-            return out;
+            return null;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;

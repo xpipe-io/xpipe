@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.util.InPlaceSecretValue;
 import lombok.Value;
 
 @JsonTypeName("windowsCredentialManager")
@@ -13,7 +14,7 @@ public class WindowsCredentialManager implements PasswordManager {
     private static boolean loaded = false;
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             if (!loaded) {
                 loaded = true;
@@ -46,6 +47,20 @@ public class WindowsCredentialManager implements PasswordManager {
                               [DllImport("advapi32.dll", EntryPoint = "CredReadW", CharSet = CharSet.Unicode, SetLastError = true)]
                               private static extern bool CredRead(string target, int type, int reservedFlag, out IntPtr credentialPtr);
 
+                              public static string GetUserName(string target)
+                              {
+                                CredentialMem credMem;
+                                IntPtr credPtr;
+
+                                if (CredRead(target, 1, 0, out credPtr))
+                                {
+                                  credMem = Marshal.PtrToStructure<CredentialMem>(credPtr);
+                                  return credMem.userName;
+                                } else {
+                                  throw new Exception("No credentials found for target: " + target);
+                                }
+                              }
+
                               public static string GetUserPassword(string target)
                               {
                                 CredentialMem credMem;
@@ -54,6 +69,10 @@ public class WindowsCredentialManager implements PasswordManager {
                                 if (CredRead(target, 1, 0, out credPtr))
                                 {
                                   credMem = Marshal.PtrToStructure<CredentialMem>(credPtr);
+                                  if (credMem.credentialBlobSize == 0)
+                                  {
+                                    return "";
+                                  }
                                   byte[] passwordBytes = new byte[credMem.credentialBlobSize];
                                   Marshal.Copy(credMem.credentialBlob, passwordBytes, 0, credMem.credentialBlobSize);
                                   return Encoding.Unicode.GetString(passwordBytes);
@@ -69,9 +88,13 @@ public class WindowsCredentialManager implements PasswordManager {
                 LocalShell.getLocalPowershell().command(cmd).execute();
             }
 
-            return LocalShell.getLocalPowershell()
+            var username =LocalShell.getLocalPowershell()
+                    .command("[CredManager.Credential]::GetUserName(\"" + key.replaceAll("\"", "`\"") + "\")")
+                    .readStdoutOrThrow();
+            var password = LocalShell.getLocalPowershell()
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .readStdoutOrThrow();
+            return new CredentialResult(username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).expected().handle();
             return null;

@@ -86,13 +86,13 @@ public class KeePassXcManager implements PasswordManager {
         }
     }
 
-    private static String receive(String key) throws Exception {
+    private static CredentialResult receive(String key) throws Exception {
         var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
         var fixedKey = hasScheme ? key : "https://" + key;
         var client = getOrCreate();
         var response = client.getLoginsMessage(fixedKey);
-        var password = client.getPassword(response);
-        return password;
+        var credentials = client.getCredentials(response);
+        return credentials;
     }
 
     public static void reset() {
@@ -190,7 +190,7 @@ public class KeePassXcManager implements PasswordManager {
     }
 
     @Override
-    public String retrievePassword(String key) {
+    public CredentialResult retrieveCredentials(String key) {
         try {
             return KeePassXcManager.receive(key);
         } catch (Exception e) {

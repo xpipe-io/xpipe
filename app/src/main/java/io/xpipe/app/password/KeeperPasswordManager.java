@@ -33,7 +33,7 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized String retrievePassword(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class KeeperPasswordManager implements PasswordManager {
                             .add("--format", "password", "--unmask", "--password")
                             .addLiteral(r.getSecretValue()))
                     .readStdoutOrThrow();
-            return out;
+            return null;
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();
             return null;
