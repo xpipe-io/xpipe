@@ -73,6 +73,7 @@ public class KeeperPasswordManager implements PasswordManager {
                             .add("--format", "json", "--unmask")
                             .add("--password")
                             .addLiteral(r.getSecretValue()))
+                    .sensitive()
                     .readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
             var fields = tree.required("fields");

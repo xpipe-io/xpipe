@@ -42,6 +42,7 @@ public class OnePasswordManager implements PasswordManager {
                             .add("op", "item", "get")
                             .addLiteral(key)
                             .add("--format", "json", "--fields", "username,password"))
+                    .sensitive()
                     .readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(r);
             if (!tree.isArray() || tree.size() != 2) {

@@ -108,7 +108,7 @@ public class EnpassPasswordManager implements PasswordManager {
 
         try {
             var sc = getOrStartShell();
-            try (var command = sc.command(CommandBuilder.of().add("enpass-cli", "-json", "-vault").addFile(vaultDir).add("show").addQuoted(key)).start()) {
+            try (var command = sc.command(CommandBuilder.of().add("enpass-cli", "-json", "-vault").addFile(vaultDir).add("show").addQuoted(key)).sensitive().start()) {
                 ThreadHelper.sleep(50);
                 sc.writeLine(pass.getSecretValue());
                 var out = command.readStdoutIfPossible();

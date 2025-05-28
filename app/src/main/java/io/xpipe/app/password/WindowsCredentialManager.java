@@ -90,9 +90,11 @@ public class WindowsCredentialManager implements PasswordManager {
 
             var username =LocalShell.getLocalPowershell()
                     .command("[CredManager.Credential]::GetUserName(\"" + key.replaceAll("\"", "`\"") + "\")")
+                    .sensitive()
                     .readStdoutOrThrow();
             var password = LocalShell.getLocalPowershell()
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
+                    .sensitive()
                     .readStdoutOrThrow();
             return new CredentialResult(username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
         } catch (Exception ex) {

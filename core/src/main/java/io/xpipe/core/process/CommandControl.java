@@ -1,7 +1,6 @@
 package io.xpipe.core.process;
 
 import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.SecretValue;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,7 +19,7 @@ public interface CommandControl extends ProcessControl {
     int INTERNAL_ERROR_EXIT_CODE = 163;
     int ELEVATION_FAILED_EXIT_CODE = 164;
 
-    void setSensitive();
+    CommandControl sensitive();
 
     CommandControl withExceptionConverter(ExceptionConverter converter);
 

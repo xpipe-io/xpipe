@@ -53,6 +53,7 @@ public class LastpassPasswordManager implements PasswordManager {
                             .add("lpass", "show")
                             .add("--fixed-strings", "--json")
                             .addLiteral(key))
+                    .sensitive()
                     .readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
 

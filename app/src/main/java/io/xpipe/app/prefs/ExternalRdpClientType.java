@@ -75,7 +75,7 @@ public interface ExternalRdpClientType extends PrefsChoiceValue {
         private String encrypt(SecretValue password) throws Exception {
             var ps = LocalShell.getLocalPowershell();
             var cmd = ps.command(CommandBuilder.of().add(sc -> "(" + sc.getShellDialect().literalArgument(password.getSecretValue()) + " | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString"));
-            cmd.setSensitive();
+            cmd.sensitive();
             return cmd.readStdoutOrThrow();
         }
     };

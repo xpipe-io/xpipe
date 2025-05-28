@@ -56,7 +56,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 var cmd = sc.command(CommandBuilder.of()
                         .add("bw", "unlock", "--raw", "--passwordenv", "BW_PASSWORD")
                         .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
-                cmd.setSensitive();
+                cmd.sensitive();
                 var out = cmd.readStdoutOrThrow();
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
@@ -65,7 +65,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                     .add("bw", "get", "item")
                     .addLiteral(key)
                     .add("--nointeraction");
-            var json = JacksonMapper.getDefault().readTree(sc.command(cmd).readStdoutOrThrow());
+            var json = JacksonMapper.getDefault().readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.required("login");
             var user = login.required("username");
             var password = login.required("password");

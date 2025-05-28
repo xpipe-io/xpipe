@@ -46,10 +46,10 @@ public class DashlanePasswordManager implements PasswordManager {
                 return null;
             }
 
-            var out = sc.command(CommandBuilder.of()
-                            .add("dcli", "password", "--output", "console", "-o", "json")
-                            .addLiteral(key))
-                    .readStdoutOrThrow();
+            var cmd = sc.command(CommandBuilder.of()
+                    .add("dcli", "password", "--output", "console", "-o", "json")
+                    .addLiteral(key));
+            var out = cmd.sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
             var login = tree.get("login");
             var password = tree.get("password");

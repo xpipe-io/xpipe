@@ -1,20 +1,16 @@
 package io.xpipe.app.password;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,13 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Getter
 @Builder
@@ -93,8 +82,8 @@ public class PsonoPasswordManager implements PasswordManager {
                             .addLiteral(serverUrl)
                             .add("secret", "get")
                             .addLiteral(key)
-                            .add("json"));
-            cmd.setSensitive();
+                            .add("json"))
+                    .sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username");
             var password = r.required("password");

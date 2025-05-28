@@ -153,7 +153,7 @@ public class ShellView {
     public void setSensitiveEnvironmentVariable(String name, String value) throws Exception {
         var command =
                 shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
-        command.setSensitive();
+        command.sensitive();
         command.execute();
     }
 }
