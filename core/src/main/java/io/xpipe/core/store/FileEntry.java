@@ -3,6 +3,7 @@ package io.xpipe.core.store;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;
+import lombok.With;
 import lombok.experimental.NonFinal;
 
 import java.time.Instant;
@@ -13,6 +14,9 @@ import java.util.OptionalLong;
 public class FileEntry {
     FileSystem fileSystem;
     Instant date;
+
+    @NonFinal
+    @Setter
     String size;
 
     FileInfo info;

@@ -39,6 +39,8 @@ public interface ShellDialect {
 
     CommandControl queryFileSize(ShellControl shellControl, String file);
 
+    long queryDirectorySize(ShellControl shellControl, String file) throws Exception;
+
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
     FilePath getInitFileName(ShellControl sc, int hash) throws Exception;

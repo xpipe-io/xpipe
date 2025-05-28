@@ -594,16 +594,15 @@ public final class BrowserFileListComp extends SimpleComp {
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
             } else {
-                var path = getTableRow().getItem();
-                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText(null);
-                } else if (fileSize != null) {
+                if (fileSize != null) {
                     try {
                         var l = Long.parseLong(fileSize);
                         setText(byteCount(l));
                     } catch (NumberFormatException e) {
                         setText(fileSize);
                     }
+                } else {
+                    setText(null);
                 }
             }
         }

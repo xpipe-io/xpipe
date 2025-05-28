@@ -56,6 +56,13 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public long getDirectorySize(FilePath file) throws Exception {
+        return shellControl
+                .getShellDialect()
+                .queryDirectorySize(shellControl, file.toString());
+    }
+
+    @Override
     public Optional<ShellControl> getShell() {
         return Optional.of(shellControl);
     }

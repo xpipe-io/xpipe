@@ -51,6 +51,7 @@ open module io.xpipe.ext.base {
             BrowseInNativeManagerAction,
             EditFileAction,
             RunAction,
+            ComputeDirectorySizesAction,
             ChmodAction,
             ChownAction,
             ChgrpAction,

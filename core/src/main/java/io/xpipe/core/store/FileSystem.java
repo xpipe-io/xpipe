@@ -16,6 +16,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     long getFileSize(FilePath file) throws Exception;
 
+    long getDirectorySize(FilePath file) throws Exception;
+
     Optional<ShellControl> getShell();
 
     FileSystem open() throws Exception;

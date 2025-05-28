@@ -62,7 +62,7 @@ public final class BrowserFileListModel {
             return;
         }
 
-        var l = all.getValue();
+        var l = new ArrayList<>(all.getValue());
         if (n != null) {
             l.set(index, new BrowserEntry(n, this));
         } else {
