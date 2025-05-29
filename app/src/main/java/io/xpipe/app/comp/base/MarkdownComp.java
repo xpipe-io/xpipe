@@ -12,10 +12,12 @@ import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ShellTemp;
 
+import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -31,6 +33,8 @@ import java.nio.file.Path;
 import java.util.function.UnaryOperator;
 
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
+
+    private static Boolean WEB_VIEW_SUPPORTED;
 
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
@@ -138,7 +142,30 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     @Override
     public CompStructure<StackPane> createBase() {
         var sp = new StackPane(createWebView());
-        sp.setPadding(Insets.EMPTY);
+
+        if (WEB_VIEW_SUPPORTED == null || WEB_VIEW_SUPPORTED) {
+            try {
+                var wv = createWebView();
+                WEB_VIEW_SUPPORTED = true;
+                sp.getChildren().addAll(wv);
+            } catch (Throwable t) {
+                var expected = OsType.getLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64");
+                ErrorEvent.fromThrowable(t).omit().reportable(!expected).handle();
+                WEB_VIEW_SUPPORTED = false;
+            }
+        }
+
+        if (!WEB_VIEW_SUPPORTED) {
+            var text = new TextArea();
+            text.setEditable(false);
+            markdown.subscribe(s -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    text.setText(s);
+                });
+            });
+            sp.getChildren().add(text);
+        }
+
         return new SimpleCompStructure<>(sp);
     }
 }
