@@ -144,7 +144,8 @@ Uninstall
 
 #region Setup
 
-$Arch = [System.Runtime.InteropServices.RuntimeInformation,mscorlib]::OSArchitecture.ToString().ToLower();
+$RawArch = [System.Runtime.InteropServices.RuntimeInformation,mscorlib]::OSArchitecture.ToString().ToLower();
+$Arch = If ($RawArch -eq "x64") {"x86_64"} Else {"arm64"}
 $XPipeDownloadUrl = "$XPipeDownloadUrl/xpipe-installer-windows-$($Arch).msi"
 
 if (-not $env:TEMP) {
