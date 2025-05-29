@@ -40,7 +40,7 @@ dependencies {
             implementation files(it)
         }
     }
-    if (!useBundledJavaFx) {
+    if (!useBundledJna) {
         configurations.jna.getAsFileTree().getFiles().forEach {
             implementation files(it)
         }
@@ -68,7 +68,7 @@ jlink {
         options.addAll('--strip-native-debug-symbols', 'exclude-debuginfo-files')
     }
 
-    if (useBundledJavaFx) {
+    if (useBundledJavaFx && !bundledJdkJavaFx) {
         addExtraModulePath(layout.projectDirectory.dir("javafx/${platformName}/${arch}").toString())
     }
     if (useBundledJna) {
