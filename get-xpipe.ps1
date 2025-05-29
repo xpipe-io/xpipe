@@ -144,7 +144,8 @@ Uninstall
 
 #region Setup
 
-$XPipeDownloadUrl = "$XPipeDownloadUrl/xpipe-installer-windows-x86_64.msi"
+$Arch = [System.Runtime.InteropServices.RuntimeInformation,mscorlib]::OSArchitecture.ToString().ToLower();
+$XPipeDownloadUrl = "$XPipeDownloadUrl/xpipe-installer-windows-$($Arch).msi"
 
 if (-not $env:TEMP) {
     $env:TEMP = Join-Path $env:SystemDrive -ChildPath 'temp'
