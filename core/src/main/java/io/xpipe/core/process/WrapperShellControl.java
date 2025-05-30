@@ -261,6 +261,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void killExternal() {
+        parent.killExternal();
+    }
+
+    @Override
     public ShellControl start() throws Exception {
         return parent.start();
     }

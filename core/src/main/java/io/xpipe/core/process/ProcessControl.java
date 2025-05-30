@@ -34,6 +34,8 @@ public interface ProcessControl extends AutoCloseable {
 
     void kill();
 
+    void killExternal();
+
     ProcessControl start() throws Exception;
 
     InputStream getStdout();
