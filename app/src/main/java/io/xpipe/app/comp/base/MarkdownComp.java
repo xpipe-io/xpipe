@@ -141,7 +141,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     @Override
     public CompStructure<StackPane> createBase() {
-        var sp = new StackPane(createWebView());
+        var sp = new StackPane();
 
         if (WEB_VIEW_SUPPORTED == null || WEB_VIEW_SUPPORTED) {
             try {
