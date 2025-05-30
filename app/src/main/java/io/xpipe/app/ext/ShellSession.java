@@ -1,8 +1,7 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.Session;
-import io.xpipe.core.store.SessionListener;
 import io.xpipe.core.util.FailableSupplier;
 
 import lombok.Getter;
@@ -13,8 +12,7 @@ public class ShellSession extends Session {
     private final FailableSupplier<ShellControl> supplier;
     private final ShellControl shellControl;
 
-    public ShellSession(SessionListener listener, FailableSupplier<ShellControl> supplier) throws Exception {
-        super(listener);
+    public ShellSession(FailableSupplier<ShellControl> supplier) throws Exception {
         this.supplier = supplier;
         this.shellControl = createControl();
     }
@@ -28,6 +26,7 @@ public class ShellSession extends Session {
 
         try {
             shellControl.start();
+            startAliveListener();
         } catch (Exception ex) {
             try {
                 stop();
@@ -56,6 +55,9 @@ public class ShellSession extends Session {
                 listener.onStateChange(false);
             });
         });
+        pc.onExit(shellControl -> {
+            listener.onStateChange(false);
+        });
         return pc;
     }
 
@@ -65,5 +67,10 @@ public class ShellSession extends Session {
 
     public void stop() throws Exception {
         shellControl.shutdown();
+    }
+
+    @Override
+    public boolean checkAlive() throws Exception {
+        return shellControl.command(CommandBuilder.of().add("echo", "xpipetest")).executeAndCheck();
     }
 }

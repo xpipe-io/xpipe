@@ -1,4 +1,7 @@
-package io.xpipe.core.store;
+package io.xpipe.app.ext;
+
+import io.xpipe.core.store.ExpandedLifecycleStore;
+import io.xpipe.core.store.InternalCacheDataStore;
 
 public interface SingletonSessionStore<T extends Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore, SessionListener {
@@ -51,6 +54,9 @@ public interface SingletonSessionStore<T extends Session>
                 setSessionEnabled(true);
                 s = newSession();
                 if (s != null) {
+                    s.addListener(running -> {
+                        onStateChange(running);
+                    });
                     s.start();
                     setCache("session", s);
                     onStateChange(true);

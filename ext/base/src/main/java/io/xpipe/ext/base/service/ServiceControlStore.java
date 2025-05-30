@@ -5,7 +5,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.SingletonSessionStore;
+import io.xpipe.app.ext.SingletonSessionStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
@@ -34,7 +34,7 @@ public class ServiceControlStore implements SingletonSessionStore<ServiceControl
 
     @Override
     public ServiceControlSession newSession() {
-        return new ServiceControlSession(running -> {}, this);
+        return new ServiceControlSession(this);
     }
 
     @Override

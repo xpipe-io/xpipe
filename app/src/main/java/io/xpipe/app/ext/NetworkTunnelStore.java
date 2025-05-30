@@ -1,4 +1,6 @@
-package io.xpipe.core.store;
+package io.xpipe.app.ext;
+
+import io.xpipe.core.store.DataStore;
 
 public interface NetworkTunnelStore extends DataStore {
 

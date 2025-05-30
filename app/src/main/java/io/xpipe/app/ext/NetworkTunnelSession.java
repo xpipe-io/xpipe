@@ -1,12 +1,8 @@
-package io.xpipe.core.store;
+package io.xpipe.app.ext;
 
 import io.xpipe.core.process.ShellControl;
 
 public abstract class NetworkTunnelSession extends Session {
-
-    protected NetworkTunnelSession(SessionListener listener) {
-        super(listener);
-    }
 
     public abstract int getLocalPort();
 
