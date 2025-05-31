@@ -38,6 +38,9 @@ public class BrowserClipboard {
                     @Override
                     @SuppressWarnings("unchecked")
                     public void run() {
+                        // Fix clipboard open issues: https://stackoverflow.com/a/51797746
+                        ThreadHelper.sleep(20);
+
                         Clipboard clipboard = (Clipboard) e.getSource();
                         try {
                             if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
