@@ -135,6 +135,13 @@ project.ext {
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
 
+    // Virtual threads cause crashes on Windows ARM
+    if (os.isWindows() && arch == "arm64") {
+        jvmRunArgs += [
+                "-Dio.xpipe.app.useVirtualThreads=false"
+        ]
+    }
+
     // Disable JDK24 warnings
     jvmRunArgs += [
             "--enable-native-access=com.sun.jna",
