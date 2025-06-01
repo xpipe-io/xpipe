@@ -111,7 +111,6 @@ public abstract class OperationMode {
             TrackEvent.info("Initial setup");
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
-            GlobalClipboard.init();
             AppProperties.init(args);
             NodeCallback.init();
             AppLogs.init();
