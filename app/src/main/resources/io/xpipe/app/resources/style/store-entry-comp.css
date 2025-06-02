@@ -6,6 +6,19 @@
 
 .store-entry-list-status-bar .button {
 -fx-padding: 4 8;
+    -fx-background-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+}
+
+.root.nord .store-entry-list-status-bar .button {
+    -fx-border-radius: 0;
+}
+
+.store-entry-list-status-bar .button:hover {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
 }
 
 .store-list-comp.scroll-pane * {
