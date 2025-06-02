@@ -1,4 +1,4 @@
-package io.xpipe.app.password;
+package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;

@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 
@@ -8,11 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
-
-    public MobaXTermTerminalType() {
-        super("app.mobaXterm", "MobaXterm");
-    }
+public class MobaXTermTerminalType implements ExternalApplicationType.WindowsType, ExternalTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -20,7 +17,12 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    protected Optional<Path> determineInstallation() {
+    public String getExecutable() {
+        return "MobaXterm";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
         try {
             var r = WindowsRegistry.local()
                     .readStringValueIfPresent(
@@ -43,12 +45,7 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://mobaxterm.mobatek.net/";
-    }
-
-    @Override
-    protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
@@ -70,10 +67,20 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
             Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
             var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
             sc.command(CommandBuilder.of()
-                            .addFile(file.toString())
+                            .addFile(findExecutable())
                             .add("-newtab")
                             .add(fixedFile))
                     .execute();
         }
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://mobaxterm.mobatek.net/";
+    }
+
+    @Override
+    public String getId() {
+        return "app.mobaXterm";
     }
 }

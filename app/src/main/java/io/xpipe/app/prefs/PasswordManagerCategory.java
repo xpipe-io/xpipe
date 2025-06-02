@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.password.PasswordManager;
+import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
 import javafx.application.Platform;

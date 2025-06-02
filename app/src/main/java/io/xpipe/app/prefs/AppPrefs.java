@@ -1,14 +1,14 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
-import io.xpipe.app.password.PasswordManager;
-import io.xpipe.app.password.PasswordManagerCommand;
+import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.pwman.PasswordManagerCommand;
+import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
@@ -17,10 +17,8 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.process.ShellScript;
 
-import io.xpipe.core.util.SecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -74,8 +72,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
     final ObjectProperty<ExternalTerminalType> terminalType =
             mapLocal(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class, false);
-    final ObjectProperty<ExternalRdpClientType> rdpClientType =
-            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClientType.class, false);
+    final ObjectProperty<ExternalRdpClient> rdpClientType =
+            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClient.class, false);
     final DoubleProperty windowOpacity = mapLocal(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class, false);
     final StringProperty customRdpClientCommand =
             mapLocal(new SimpleStringProperty(null), "customRdpClientCommand", String.class, false);
@@ -485,7 +483,7 @@ public class AppPrefs {
         return terminalType;
     }
 
-    public ObservableValue<ExternalRdpClientType> rdpClientType() {
+    public ObservableValue<ExternalRdpClient> rdpClientType() {
         return rdpClientType;
     }
 
@@ -558,7 +556,7 @@ public class AppPrefs {
     public void initDefaultValues() {
         externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-        rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
+        rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
             if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 performanceMode.setValue(true);

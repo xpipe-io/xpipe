@@ -1,4 +1,4 @@
-package io.xpipe.app.password;
+package io.xpipe.app.pwman;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.KeyGenerationParameters;

@@ -1,17 +1,13 @@
-package io.xpipe.app.password;
+package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;

@@ -1,12 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.core.process.CommandBuilder;
 
-public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
-
-    public PtyxisTerminalType() {
-        super("app.ptyxis", "ptyxis", true);
-    }
+public class PtyxisTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -29,12 +26,26 @@ public class PtyxisTerminalType extends ExternalTerminalType.SimplePathType impl
     }
 
     @Override
-    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .addIf(!configuration.isPreferTabs(), "--new-window")
                 .add("--")
                 .add(configuration.getDialectLaunchCommand());
-        return toExecute;
+        launch(toExecute);
+    }
+    @Override
+    public String getExecutable() {
+        return "ptyxis";
+    }
+
+    @Override
+    public boolean isExplicitlyAsync() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.ptyxis";
     }
 }

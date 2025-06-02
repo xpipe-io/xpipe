@@ -9,11 +9,7 @@ import io.xpipe.core.process.OsType;
 
 import java.util.Locale;
 
-public class CustomTerminalType extends ExternalApplicationType implements ExternalTerminalType {
-
-    public CustomTerminalType() {
-        super("app.custom");
-    }
+public class CustomTerminalType implements ExternalApplicationType, ExternalTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -54,5 +50,10 @@ public class CustomTerminalType extends ExternalApplicationType implements Exter
     @Override
     public boolean isAvailable() {
         return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.custom";
     }
 }

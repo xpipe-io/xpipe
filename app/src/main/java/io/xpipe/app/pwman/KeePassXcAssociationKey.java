@@ -1,4 +1,4 @@
-package io.xpipe.app.password;
+package io.xpipe.app.pwman;
 
 import io.xpipe.core.util.InPlaceSecretValue;
 

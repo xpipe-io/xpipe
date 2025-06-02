@@ -1,4 +1,4 @@
-package io.xpipe.app.password;
+package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
@@ -13,7 +13,6 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.SecretValue;
-import io.xpipe.core.util.ValidationException;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

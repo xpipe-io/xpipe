@@ -1,14 +1,14 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.prefs.ExternalEditorType;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
-public class CmdTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
+import java.nio.file.Path;
 
-    public CmdTerminalType() {
-        super("app.cmd", "cmd.exe", true);
-    }
+public class CmdTerminalType implements ExternalApplicationType.PathApplication, ExternalTerminalType, TrackableTerminalType {
 
     @Override
     public boolean supportsEscapes() {
@@ -36,12 +36,32 @@ public class CmdTerminalType extends ExternalTerminalType.SimplePathType impleme
         return false;
     }
 
-    @Override
-    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+    private CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
             return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
         }
 
         return CommandBuilder.of().add("/c").add(configuration.getDialectLaunchCommand());
+    }
+
+    @Override
+    public String getExecutable() {
+        return "cmd.exe";
+    }
+
+    @Override
+    public boolean isExplicitlyAsync() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.cmd";
+    }
+
+    @Override
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        var args = toCommand(configuration);
+        launch(args);
     }
 }

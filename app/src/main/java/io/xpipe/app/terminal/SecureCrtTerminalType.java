@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.core.process.CommandBuilder;
@@ -9,11 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
-
-    public SecureCrtTerminalType() {
-        super("app.secureCrt", "SecureCRT");
-    }
+public class SecureCrtTerminalType implements ExternalApplicationType.WindowsType, ExternalTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -21,7 +18,12 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    protected Optional<Path> determineInstallation() {
+    public String getExecutable() {
+        return "SecureCRT";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
         try (var sc = LocalShell.getShell().start()) {
             var env = sc.executeSimpleStringCommand(
                     sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
@@ -48,17 +50,12 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://www.vandyke.com/products/securecrt/";
-    }
-
-    @Override
-    protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
             var command = CommandBuilder.of()
-                    .addFile(file.toString())
+                    .addFile(findExecutable())
                     .add("/T")
                     .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
                     .addFile(b.getIdentityKey().toString())
@@ -68,5 +65,15 @@ public class SecureCrtTerminalType extends ExternalTerminalType.WindowsType {
                     .add("localhost");
             sc.executeSimpleCommand(command);
         }
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.vandyke.com/products/securecrt/";
+    }
+
+    @Override
+    public String getId() {
+        return "app.secureCrt";
     }
 }
