@@ -33,7 +33,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             var info = getWrapper().getShownInformation();
             information
                     .textProperty()
-                    .bind(PlatformThread.sync(Bindings.createStringBinding(
+                    .bind(Bindings.createStringBinding(
                             () -> {
                                 var val = summary.getValue();
                                 var p = getWrapper().getEntry().getProvider();
@@ -47,7 +47,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                             },
                             grid.hoverProperty(),
                             info,
-                            summary)));
+                            summary));
         }
 
         return information;

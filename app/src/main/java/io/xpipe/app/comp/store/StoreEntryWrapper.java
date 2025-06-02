@@ -9,6 +9,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -55,7 +56,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty perUser = new SimpleBooleanProperty();
     private final ObservableValue<String> shownName;
     private final ObservableValue<String> shownSummary;
-    private final ObservableValue<String> shownInformation;
+    private final Property<String> shownInformation;
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
 
     private boolean effectiveBusyProviderBound = false;
@@ -79,13 +80,7 @@ public class StoreEntryWrapper {
                 },
                 AppPrefs.get().censorMode(),
                 summary);
-        this.shownInformation = Bindings.createStringBinding(
-                () -> {
-                    var n = information.getValue();
-                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
-                },
-                AppPrefs.get().censorMode(),
-                information);
+        this.shownInformation = new SimpleObjectProperty<>();
         ActionProvider.ALL_STANDALONE.stream()
                 .filter(dataStoreActionProvider -> {
                     return !entry.isDisabled()
@@ -181,20 +176,11 @@ public class StoreEntryWrapper {
         expanded.setValue(entry.isExpanded());
         persistentState.setValue(entry.getStorePersistentState());
 
-        // The property values are only registered as changed once they are queried
-        // If we use information bindings that depend on some of these properties
-        // but use the store methods to retrieve data instead of the wrapper properties,
-        // the bindings do not get updated as the change events are not fired.
-        // We can also fire them manually with this
-        persistentState.getValue();
-
         // Use map copy to recognize update
         // This is a synchronized map, so we synchronize the access
         synchronized (entry.getStoreCache()) {
             if (!entry.getStoreCache().equals(cache.getValue())) {
                 cache.setValue(new HashMap<>(entry.getStoreCache()));
-                // Same here
-                cache.getValue();
             }
         }
         color.setValue(entry.getColor());
@@ -224,9 +210,17 @@ public class StoreEntryWrapper {
                 var section = StoreViewState.get().getSectionForWrapper(this);
                 if (section.isPresent()) {
                     information.unbind();
+                    shownInformation.unbind();
                     try {
                         var is = entry.getProvider().informationString(section.get());
                         information.bind(is);
+                        shownInformation.bind(Bindings.createStringBinding(
+                                () -> {
+                                    var n = information.getValue();
+                                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                                },
+                                AppPrefs.get().censorMode(),
+                                information));
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).handle();
                         information.bind(new SimpleStringProperty());
@@ -287,6 +281,15 @@ public class StoreEntryWrapper {
         if (!this.effectiveBusy.isBound() && !getValidity().getValue().isUsable()) {
             this.effectiveBusy.bind(busy);
         }
+
+        // The property values are only registered as changed once they are queried
+        // If we use information bindings that depend on some of these properties
+        // but use the store methods to retrieve data instead of the wrapper properties,
+        // the bindings do not get updated as the change events are not fired.
+        // We can also fire them manually with this
+        persistentState.getValue();
+        store.getValue();
+        cache.getValue();
     }
 
     public boolean showActionProvider(ActionProvider p) {
