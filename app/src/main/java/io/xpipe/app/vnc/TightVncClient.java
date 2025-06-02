@@ -22,6 +22,11 @@ public class TightVncClient implements ExternalApplicationType.WindowsType, Exte
     }
 
     @Override
+    public String getId() {
+        return null;
+    }
+
+    @Override
     public String getExecutable() {
         return "tvnviewer.exe";
     }
@@ -36,12 +41,7 @@ public class TightVncClient implements ExternalApplicationType.WindowsType, Exte
 
     @Override
     public void launch(LaunchConfiguration configuration) throws Exception {
-        var command = CommandBuilder.of().addFile(findExecutable()).add("-host").addLiteral(configuration.getHost()).add("-port").add("" + configuration.getPort());
+        var command = CommandBuilder.of().addFile(findExecutable()).addQuoted(configuration.getHost() + "::" + configuration.getPort());
         LocalShell.getShell().command(command).execute();
-    }
-
-    @Override
-    public String getId() {
-        return "";
     }
 }

@@ -17,6 +17,9 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.app.vnc.InternalVncClient;
+import io.xpipe.app.vnc.VncCategory;
 import io.xpipe.core.process.ShellScript;
 
 import javafx.beans.property.*;
@@ -101,6 +104,11 @@ public class AppPrefs {
             mapVaultShared(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
+    public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(InternalVncClient.builder().build()))
+            .key("vncClient")
+            .valueClass(ExternalVncClient.class)
+            .build());
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new SimpleObjectProperty<>())
             .key("passwordManager")
@@ -141,8 +149,6 @@ public class AppPrefs {
         return terminalAlwaysPauseOnExit;
     }
 
-    public final StringProperty passwordManagerCommand =
-            mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
     public final BooleanProperty enableGitStorage =
@@ -305,6 +311,7 @@ public class AppPrefs {
                         new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
+                        new VncCategory(),
                         new SshCategory(),
                         new ConnectionHubCategory(),
                         new FileBrowserCategory(),
@@ -588,15 +595,6 @@ public class AppPrefs {
         if (AppProperties.get().isInitialLaunch()) {
             var f = PlatformState.determineDefaultScalingFactor();
             uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
-        }
-
-        // Migrate legacy password manager
-        if (passwordManagerCommand.get() != null
-                && !passwordManagerCommand.get().isBlank()
-                && passwordManager.getValue() == null) {
-            passwordManager.setValue(PasswordManagerCommand.builder()
-                    .script(new ShellScript(passwordManagerCommand.get()))
-                    .build());
         }
     }
 
