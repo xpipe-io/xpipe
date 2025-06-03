@@ -1,9 +1,11 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.terminal.TerminalLaunchConfiguration;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -13,14 +15,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public interface ExternalApplicationType extends PrefsChoiceValue {
+public interface ExternalApplicationType extends PrefsValue {
 
     public abstract boolean isAvailable();
 
-    @Override
-    public String getId();
-
     public interface MacApplication extends ExternalApplicationType {
+
+        default void launch(CommandBuilder builder) throws Exception {
+            builder.addQuoted(getApplicationName());
+            builder.add(0, "open", "-a");
+            LocalShell.getShell().executeSimpleCommand(builder);
+        }
 
         @Override
         default boolean isAvailable() {
@@ -78,7 +83,7 @@ public interface ExternalApplicationType extends PrefsChoiceValue {
 
         String getExecutable();
 
-        boolean isExplicitlyAsync();
+        boolean detach();
 
         default boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
@@ -99,7 +104,7 @@ public interface ExternalApplicationType extends PrefsChoiceValue {
                 }
 
                 args.add(0, getExecutable());
-                if (isExplicitlyAsync()) {
+                if (detach()) {
                     ExternalApplicationHelper.startAsync(args);
                 } else {
                     pc.executeSimpleCommand(args);
@@ -108,7 +113,7 @@ public interface ExternalApplicationType extends PrefsChoiceValue {
         }
     }
 
-    public interface WindowsType extends ExternalApplicationType {
+    public interface InstallLocationType extends ExternalApplicationType {
 
         String getExecutable();
 
@@ -132,8 +137,9 @@ public interface ExternalApplicationType extends PrefsChoiceValue {
             if (location.isEmpty()) {
                 location = determineInstallation();
                 if (location.isEmpty()) {
+                    var name = this instanceof Translatable t ? t.toTranslatedString().getValue() : getExecutable();
                     throw ErrorEvent.expected(new UnsupportedOperationException("Unable to find installation of "
-                            + toTranslatedString().getValue()));
+                            + name));
                 }
             }
             return location.get();
@@ -148,6 +154,21 @@ public interface ExternalApplicationType extends PrefsChoiceValue {
 
             var installation = determineInstallation();
             return installation.isPresent() && Files.exists(installation.get());
+        }
+    }
+
+    public interface WindowsType extends InstallLocationType {
+
+        boolean detach();
+
+        default void launch(CommandBuilder builder) throws Exception {
+            var location = findExecutable();
+            builder.add(0, sc -> sc.getShellDialect().fileArgument(location.toString()));
+            if (detach()) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
         }
 
         @Override

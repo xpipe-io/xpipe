@@ -68,7 +68,7 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

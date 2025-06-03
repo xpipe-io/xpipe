@@ -23,6 +23,11 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
     }
 
     @Override
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
     public String getExecutable() {
         return "Xshell";
     }
@@ -67,11 +72,10 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
             var b = SshLocalBridge.get();
             var keyName = b.getIdentityKey().getFileName().toString();
             var command = CommandBuilder.of()
-                    .addFile(findExecutable())
                     .add("-url")
                     .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
                     .add("-i", keyName);
-            sc.executeSimpleCommand(command);
+            launch(command);
         }
     }
 

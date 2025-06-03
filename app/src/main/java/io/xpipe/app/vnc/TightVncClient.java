@@ -14,16 +14,11 @@ import java.util.Optional;
 @Builder
 @Jacksonized
 @JsonTypeName("tightVnc")
-public class TightVncClient implements ExternalApplicationType.WindowsType, ExternalVncClient {
+public class TightVncClient implements ExternalApplicationType.InstallLocationType, ExternalVncClient {
 
     @Override
-    public boolean isAvailable() {
+    public boolean supportsPasswords() {
         return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
     }
 
     @Override
@@ -41,7 +36,15 @@ public class TightVncClient implements ExternalApplicationType.WindowsType, Exte
 
     @Override
     public void launch(LaunchConfiguration configuration) throws Exception {
-        var command = CommandBuilder.of().addFile(findExecutable()).addQuoted(configuration.getHost() + "::" + configuration.getPort());
-        LocalShell.getShell().command(command).execute();
+        var builder = CommandBuilder.of().addFile(findExecutable())
+                .addQuotedKeyValue("-host", configuration.getHost())
+                .addQuotedKeyValue("-port", "" + configuration.getPort());
+        var pw = configuration.retrievePassword();
+        pw.ifPresent(secretValue -> builder.addQuotedKeyValue("-password", secretValue.getSecretValue()));
+        var command = LocalShell.getShell().command(builder);
+        if (pw.isPresent()) {
+            command.sensitive();
+        }
+        command.execute();
     }
 }

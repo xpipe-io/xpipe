@@ -27,7 +27,7 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

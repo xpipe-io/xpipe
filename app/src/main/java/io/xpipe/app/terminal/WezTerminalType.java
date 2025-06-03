@@ -42,11 +42,14 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(findExecutable())
+            launch(CommandBuilder.of()
                             .add("start")
                             .add(configuration.getDialectLaunchCommand()));
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
         }
 
         @Override

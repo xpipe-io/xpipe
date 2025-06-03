@@ -29,7 +29,7 @@ public class VncCategory extends AppPrefsCategory {
                 .transformer(entryComboBox -> {
                     var docsLinkButton = new ButtonComp(
                             AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-                                Hyperlinks.open(DocumentationLink.PASSWORD_MANAGER.getLink());
+                                Hyperlinks.open(DocumentationLink.VNC_CLIENTS.getLink());
                             });
                     docsLinkButton.minWidth(Region.USE_PREF_SIZE);
 
@@ -40,9 +40,6 @@ public class VncCategory extends AppPrefsCategory {
                     return hbox;
                 })
                 .build();
-        prefs.vncClient.addListener((observable, oldValue, newValue) -> {
-            int a = 0;
-        });
         var choice = choiceBuilder.build().buildComp();
         return new OptionsBuilder()
                 .addTitle("vncClient")

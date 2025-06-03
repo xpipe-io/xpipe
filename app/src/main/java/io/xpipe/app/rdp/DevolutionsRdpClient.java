@@ -2,7 +2,6 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
@@ -12,6 +11,11 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType, ExternalRdpClient {
+
+    @Override
+    public boolean detach() {
+        return true;
+    }
 
     @Override
     public String getExecutable() {
@@ -31,9 +35,8 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var location = findExecutable();
         var config = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of().addFile(location).addFile(config).discardAllOutput());
+        launch(CommandBuilder.of().addFile(config));
         ThreadHelper.runFailableAsync(() -> {
             // Startup is slow
             ThreadHelper.sleep(10000);

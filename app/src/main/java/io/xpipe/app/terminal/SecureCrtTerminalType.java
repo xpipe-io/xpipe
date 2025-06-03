@@ -18,6 +18,11 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
     public String getExecutable() {
         return "SecureCRT";
     }
@@ -55,7 +60,6 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
             var command = CommandBuilder.of()
-                    .addFile(findExecutable())
                     .add("/T")
                     .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
                     .addFile(b.getIdentityKey().toString())
@@ -63,7 +67,7 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
                     .add("/L")
                     .addQuoted(b.getUser())
                     .add("localhost");
-            sc.executeSimpleCommand(command);
+            launch(command);
         }
     }
 

@@ -11,7 +11,6 @@ import io.xpipe.core.process.ShellScript;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -507,7 +506,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of().addFile(getExecutable()).addFile(file.toString());
-            if (isExplicitlyAsync()) {
+            if (detach()) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);
@@ -520,7 +519,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean isExplicitlyAsync() {
+        public boolean detach() {
             return async;
         }
 
@@ -543,8 +542,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     }
 
     interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
-
-        boolean detach();
 
         @Override
         default void launch(Path file) throws Exception {

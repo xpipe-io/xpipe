@@ -52,7 +52,7 @@ public class GnomeTerminalType implements ExternalApplicationType.PathApplicatio
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

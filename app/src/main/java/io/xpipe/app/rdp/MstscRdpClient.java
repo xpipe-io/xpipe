@@ -64,7 +64,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return false;
     }
 

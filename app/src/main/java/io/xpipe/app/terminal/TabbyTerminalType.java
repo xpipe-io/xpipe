@@ -68,24 +68,25 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
-                LocalShell.getShell()
-                        .executeSimpleCommand(CommandBuilder.of()
-                                .addFile(findExecutable())
+                launch(CommandBuilder.of()
                                 .add("run")
                                 .addFile(configuration.getScriptFile())
                                 .discardAllOutput());
             } else {
                 // This is probably not going to work as it does not launch a bat file
-                LocalShell.getShell()
-                        .executeSimpleCommand(CommandBuilder.of()
-                                .addFile(findExecutable())
+                launch(CommandBuilder.of()
                                 .add("run")
                                 .add(sc -> configuration
                                         .getDialectLaunchCommand()
                                         .buildFull(sc)
                                         .replaceFirst("\\.exe", ""))
-                                .discardAllOutput());
+                        .discardAllOutput());
             }
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
         }
 
         @Override

@@ -50,7 +50,7 @@ public class CmdTerminalType implements ExternalApplicationType.PathApplication,
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

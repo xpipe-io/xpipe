@@ -730,7 +730,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean isExplicitlyAsync() {
+        public boolean detach() {
             return async;
         }
 

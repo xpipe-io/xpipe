@@ -17,6 +17,11 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
     public String getExecutable() {
         return "MobaXterm";
     }
@@ -66,11 +71,9 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
             var script = ShellTemp.getLocalTempDataDirectory("mobaxpipe.sh");
             Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
             var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
-            sc.command(CommandBuilder.of()
-                            .addFile(findExecutable())
-                            .add("-newtab")
-                            .add(fixedFile))
-                    .execute();
+            launch(CommandBuilder.of()
+                    .add("-newtab")
+                    .add(fixedFile));
         }
     }
 

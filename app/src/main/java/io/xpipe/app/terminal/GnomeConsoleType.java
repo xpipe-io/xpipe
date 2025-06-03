@@ -40,7 +40,7 @@ public class GnomeConsoleType implements ExternalApplicationType.PathApplication
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

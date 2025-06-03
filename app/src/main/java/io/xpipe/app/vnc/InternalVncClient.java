@@ -17,11 +17,12 @@ import java.util.Optional;
 
 @Builder
 @Jacksonized
-@JsonTypeName("xpipe")
+@JsonTypeName("integratedXPipeVncClient")
 public class InternalVncClient implements ExternalVncClient {
 
+
     @Override
-    public boolean isAvailable() {
+    public boolean supportsPasswords() {
         return true;
     }
 

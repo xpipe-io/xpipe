@@ -58,7 +58,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
 
         @Override
-        public boolean isExplicitlyAsync() {
+        public boolean detach() {
             return true;
         }
 
@@ -76,7 +76,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
 
         @Override
-        public boolean isExplicitlyAsync() {
+        public boolean detach() {
             return true;
         }
 

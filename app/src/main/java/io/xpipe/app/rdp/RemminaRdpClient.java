@@ -102,7 +102,7 @@ public class RemminaRdpClient implements ExternalApplicationType.PathApplication
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 

@@ -40,7 +40,7 @@ public class PtyxisTerminalType implements ExternalApplicationType.PathApplicati
     }
 
     @Override
-    public boolean isExplicitlyAsync() {
+    public boolean detach() {
         return true;
     }
 
