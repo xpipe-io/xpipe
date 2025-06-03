@@ -71,6 +71,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var builder = createBuilder(configuration);
+            builder.add(0, "vncviewer");
             if (configuration.hasFixedPassword()) {
                 var pw = configuration.retrievePassword();
                 if (pw.isPresent()) {

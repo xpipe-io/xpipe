@@ -36,7 +36,6 @@ public interface ExternalVncClient {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(InternalVncClient.class);
-        l.add(TightVncClient.class);
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
                 l.add(RealVncClient.Linux.class);
@@ -47,6 +46,7 @@ public interface ExternalVncClient {
                 l.add(TigerVncClient.MacOs.class);
             }
             case OsType.Windows windows -> {
+                l.add(TightVncClient.class);
                 l.add(RealVncClient.Windows.class);
                 l.add(TigerVncClient.Windows.class);
             }

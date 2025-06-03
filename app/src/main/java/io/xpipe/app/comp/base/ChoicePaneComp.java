@@ -48,7 +48,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
             @Override
             public String toString(Entry object) {
                 if (object == null || object.name() == null) {
-                    return AppI18n.get("none");
+                    return "";
                 }
 
                 return object.name().getValue();

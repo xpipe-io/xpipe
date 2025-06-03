@@ -42,7 +42,7 @@ public class CustomVncClient implements ExternalVncClient {
                 .nameAndDescription("customVncCommand")
                 .addComp(new TextFieldComp(command, false)
                         .apply(struc -> struc.get().setPromptText("myvncclient $ADDRESS"))
-                        .maxWidth(600))
+                        .maxWidth(600), command)
                 .bind(() -> CustomVncClient.builder().command(command.get()).build(), property);
     }
 
