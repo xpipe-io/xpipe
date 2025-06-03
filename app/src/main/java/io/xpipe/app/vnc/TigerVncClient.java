@@ -6,6 +6,7 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.OsType;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -17,8 +18,10 @@ public abstract class TigerVncClient implements ExternalVncClient {
 
     protected CommandBuilder createBuilder(LaunchConfiguration configuration) throws Exception {
         var builder = CommandBuilder.of()
-                .addQuoted(configuration.getHost() + ":" + configuration.getPort())
-                .addQuotedKeyValue("-ReconnectOnError", "off");
+                .addQuoted(configuration.getHost() + ":" + configuration.getPort());
+        if (OsType.getLocal() == OsType.WINDOWS) {
+                builder.addQuotedKeyValue("-ReconnectOnError", "off");
+        }
         return builder;
     }
 
@@ -66,19 +69,18 @@ public abstract class TigerVncClient implements ExternalVncClient {
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")
-    public static class Linux extends TigerVncClient {
+    public static class Linux extends TigerVncClient implements ExternalApplicationType.PathApplication {
 
         @Override
         public void launch(LaunchConfiguration configuration) throws Exception {
             var builder = createBuilder(configuration);
-            builder.add(0, "vncviewer");
             if (configuration.hasFixedPassword()) {
                 var pw = configuration.retrievePassword();
                 if (pw.isPresent()) {
                     builder.add(sc -> "<(echo " + sc.getShellDialect().literalArgument(pw.get().getSecretValue()) + " | vncpasswd -f)");
                 }
             }
-            LocalShell.getShell().command(builder).execute();
+            launch(builder);
         }
 
         @Override
@@ -89,6 +91,16 @@ public abstract class TigerVncClient implements ExternalVncClient {
                 ErrorEvent.fromThrowable(e).handle();
                 return false;
             }
+        }
+
+        @Override
+        public String getExecutable() {
+            return "xtigervncviewer";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
         }
     }
 
