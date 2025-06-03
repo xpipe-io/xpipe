@@ -48,7 +48,8 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             struc.get().setAlignment(Pos.CENTER);
         });
         var busy = new SimpleBooleanProperty();
-        var actions = new ToolbarComp(createActions(busy));
+        var actions = new HorizontalComp(createActions(busy));
+        actions.spacing(2);
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
         });

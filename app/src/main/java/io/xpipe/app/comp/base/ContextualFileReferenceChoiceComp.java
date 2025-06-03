@@ -122,7 +122,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 var pubSource = Path.of(source + ".pub");
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    DataStorageSyncHandler.getInstance()
+                    handler
                             .addDataFile(
                                     pubSource, pubTarget, sync.getPerUser().test(pubSource));
                 }

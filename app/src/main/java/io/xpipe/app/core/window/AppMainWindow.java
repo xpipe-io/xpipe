@@ -165,7 +165,15 @@ public class AppMainWindow {
     }
 
     public void focus() {
+        if (AppPrefs.get() != null && !AppPrefs.get().focusWindowOnNotifications().get()) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
+            if (!stage.isShowing()) {
+                return;
+            }
+
             stage.setIconified(false);
             stage.requestFocus();
         });

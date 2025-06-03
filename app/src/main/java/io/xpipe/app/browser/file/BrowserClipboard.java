@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.util.GlobalClipboard;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.util.FailableRunnable;
@@ -23,6 +24,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class BrowserClipboard {
@@ -32,41 +34,33 @@ public class BrowserClipboard {
     private static final DataFormat DATA_FORMAT = new DataFormat("application/xpipe-file-list");
 
     static {
-        Toolkit.getDefaultToolkit()
-                .getSystemClipboard()
-                .addFlavorListener(e -> ThreadHelper.runFailableAsync(new FailableRunnable<>() {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public void run() {
-                        Clipboard clipboard = (Clipboard) e.getSource();
-                        try {
-                            if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
-                                return;
-                            }
-
-                            List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
-                            // Sometimes file data can contain invalid chars. Why?
-                            var files = data.stream()
-                                    .filter(file ->
-                                            file.toString().chars().noneMatch(value -> Character.isISOControl(value)))
-                                    .map(f -> f.toPath())
-                                    .toList();
-                            if (files.size() == 0) {
-                                return;
-                            }
-
-                            var entries = new ArrayList<BrowserEntry>();
-                            for (Path file : files) {
-                                entries.add(BrowserLocalFileSystem.getLocalBrowserEntry(file));
-                            }
-
-                            currentCopyClipboard.setValue(
-                                    new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
-                        } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).expected().omit().handle();
-                        }
+        GlobalClipboard.addListener(new Consumer<>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void accept(Clipboard clipboard) {
+                try {
+                    if (!clipboard.isDataFlavorAvailable(DataFlavor.javaFileListFlavor)) {
+                        return;
                     }
-                }));
+
+                    List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
+                    // Sometimes file data can contain invalid chars. Why?
+                    var files = data.stream().filter(file -> file.toString().chars().noneMatch(value -> Character.isISOControl(value))).map(f -> f.toPath()).toList();
+                    if (files.size() == 0) {
+                        return;
+                    }
+
+                    var entries = new ArrayList<BrowserEntry>();
+                    for (Path file : files) {
+                        entries.add(BrowserLocalFileSystem.getLocalBrowserEntry(file));
+                    }
+
+                    currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
+                } catch (Exception e) {
+                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                }
+            }
+        });
     }
 
     @SneakyThrows

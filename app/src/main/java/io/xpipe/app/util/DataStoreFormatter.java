@@ -52,6 +52,10 @@ public class DataStoreFormatter {
     }
 
     public static String formatHostName(String input, int length) {
+        if (input == null) {
+            return null;
+        }
+
         // Remove port
         if (input.contains(":")) {
             input = input.split(":")[0];

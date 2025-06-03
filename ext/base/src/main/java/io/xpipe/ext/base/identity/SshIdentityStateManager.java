@@ -99,9 +99,6 @@ public class SshIdentityStateManager {
                         + r[1]
                         + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
                 var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
-                if (OsType.getLocal() != OsType.WINDOWS) {
-                    eventBuilder.documentationLink(DocumentationLink.SSH_AGENT);
-                }
                 ErrorEvent.preconfigure(eventBuilder);
                 throw ex;
             }

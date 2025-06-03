@@ -102,6 +102,8 @@ public class AppPrefs {
             new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultShared(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
+    public final BooleanProperty focusWindowOnNotifications =
+            mapLocal(new SimpleBooleanProperty(true), "focusWindowOnNotifications", Boolean.class, false);
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
@@ -239,6 +241,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue disableSshPinCaching() {
         return disableSshPinCaching;
+    }
+
+    public ObservableBooleanValue focusWindowOnNotifications() {
+        return focusWindowOnNotifications;
     }
 
     @Getter

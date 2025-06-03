@@ -84,6 +84,7 @@ public class PlatformInit {
             });
             AppI18n.init();
             AppDesktopIntegration.init();
+            GlobalClipboard.init();
 
             // Must not be called on platform thread
             // This will not finish until the platform exits, so we use a platform thread to not lose a virtual one
