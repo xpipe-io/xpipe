@@ -17,7 +17,7 @@ public abstract class RealVncClient implements ExternalVncClient {
         return false;
     }
 
-    protected CommandBuilder createBuilder(LaunchConfiguration configuration) throws Exception {
+    protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
         var builder = CommandBuilder.of()
                 .addQuoted(configuration.getHost() + ":" + configuration.getPort())
                 .addQuotedKeyValue("-ColorLevel", "full")
@@ -58,7 +58,7 @@ public abstract class RealVncClient implements ExternalVncClient {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }
@@ -80,7 +80,7 @@ public abstract class RealVncClient implements ExternalVncClient {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }
@@ -93,7 +93,7 @@ public abstract class RealVncClient implements ExternalVncClient {
     public static class MacOs extends RealVncClient implements ExternalApplicationType.MacApplication {
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }

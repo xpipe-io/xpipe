@@ -5,15 +5,8 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 
 @Builder
 @Jacksonized
@@ -27,7 +20,7 @@ public class InternalVncClient implements ExternalVncClient {
     }
 
     @Override
-    public void launch(LaunchConfiguration configuration) throws Exception {
+    public void launch(VncLaunchConfig configuration) throws Exception {
         var open = BrowserFullSessionModel.DEFAULT.getSessionEntriesSnapshot().stream()
                 .filter(browserSessionTab -> browserSessionTab instanceof BrowserStoreSessionTab<?> st
                         && st.getEntry().get().equals(configuration.getEntry().get()))

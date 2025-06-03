@@ -35,7 +35,7 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
     }
 
     @Override
-    public void launch(LaunchConfiguration configuration) throws Exception {
+    public void launch(VncLaunchConfig configuration) throws Exception {
         var builder = CommandBuilder.of().addFile(findExecutable())
                 .addQuotedKeyValue("-host", configuration.getHost())
                 .addQuotedKeyValue("-port", "" + configuration.getPort());

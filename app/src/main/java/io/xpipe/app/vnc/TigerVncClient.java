@@ -3,10 +3,8 @@ package io.xpipe.app.vnc;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -16,12 +14,10 @@ import java.util.Optional;
 
 public abstract class TigerVncClient implements ExternalVncClient {
 
-    protected CommandBuilder createBuilder(LaunchConfiguration configuration) throws Exception {
+    protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
         var builder = CommandBuilder.of()
                 .addQuoted(configuration.getHost() + ":" + configuration.getPort());
-        if (OsType.getLocal() == OsType.WINDOWS) {
-                builder.addQuotedKeyValue("-ReconnectOnError", "off");
-        }
+        builder.addQuotedKeyValue("-ReconnectOnError", "off");
         return builder;
     }
 
@@ -60,7 +56,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }
@@ -72,7 +68,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
     public static class Linux extends TigerVncClient implements ExternalApplicationType.PathApplication {
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             if (configuration.hasFixedPassword()) {
                 var pw = configuration.retrievePassword();
@@ -111,7 +107,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
     public static class MacOs extends TigerVncClient implements ExternalApplicationType.MacApplication {
 
         @Override
-        public void launch(LaunchConfiguration configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }

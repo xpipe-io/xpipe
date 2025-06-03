@@ -32,7 +32,7 @@ public class ShellTemp {
             }
         }
 
-        return temp.resolve(sub);
+        return sub != null ? temp.resolve(sub) : temp;
     }
 
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
