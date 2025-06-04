@@ -26,7 +26,7 @@ public interface ExternalApplicationType extends PrefsValue {
             if (args) {
                 builder.add(0, "--args");
             }
-            builder.addQuoted(getApplicationName());
+            builder.addQuoted(0, getApplicationName());
             builder.add(0, "open", "-a");
             return LocalShell.getShell().command(builder);
         }

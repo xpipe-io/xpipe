@@ -38,6 +38,7 @@ public interface ExternalVncClient {
                 l.add(TigerVncClient.Linux.class);
             }
             case OsType.MacOs macOs -> {
+                l.add(ScreenSharingVncClient.class);
                 l.add(RealVncClient.MacOs.class);
                 l.add(TigerVncClient.MacOs.class);
             }
