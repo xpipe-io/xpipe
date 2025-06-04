@@ -14,6 +14,29 @@ import java.util.stream.Stream;
 
 public class ClipboardHelper {
 
+    private static void apply(Map<DataFormat, Object> map) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        Map<DataFormat, Object> contents = Stream.of(
+                        DataFormat.PLAIN_TEXT,
+                        DataFormat.URL,
+                        DataFormat.RTF,
+                        DataFormat.HTML,
+                        DataFormat.IMAGE,
+                        DataFormat.FILES)
+                .map(dataFormat -> {
+                    try {
+                        // This can fail if the clipboard data is invalid
+                        return new AbstractMap.SimpleEntry<>(dataFormat, clipboard.getContent(dataFormat));
+                    } catch (Exception e) {
+                        return new AbstractMap.SimpleEntry<>(dataFormat, null);
+                    }
+                })
+                .filter(o -> o.getValue() != null)
+                .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
+        contents.putAll(map);
+        clipboard.setContent(contents);
+    }
+
     public static void copyPassword(SecretValue pass) {
         if (pass == null) {
             return;
@@ -21,27 +44,15 @@ public class ClipboardHelper {
 
         PlatformThread.runLaterIfNeeded(() -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();
-            Map<DataFormat, Object> previous = Stream.of(
-                            DataFormat.PLAIN_TEXT,
-                            DataFormat.URL,
-                            DataFormat.RTF,
-                            DataFormat.HTML,
-                            DataFormat.IMAGE,
-                            DataFormat.FILES)
-                    .map(dataFormat -> new AbstractMap.SimpleEntry<>(dataFormat, clipboard.getContent(dataFormat)))
-                    .filter(o -> o.getValue() != null)
-                    .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
+            var text = clipboard.getString();
 
-            var withPassword = new HashMap<>(previous);
-            withPassword.put(DataFormat.PLAIN_TEXT, pass.getSecretValue());
-            clipboard.setContent(withPassword);
+            apply(Map.of(DataFormat.PLAIN_TEXT, pass.getSecretValue()));
 
             var transition = new PauseTransition(Duration.millis(15000));
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {
-                    previous.putIfAbsent(DataFormat.PLAIN_TEXT, "");
-                    clipboard.setContent(previous);
+                    apply(Map.of(DataFormat.PLAIN_TEXT, text));
                 }
             });
             transition.play();
@@ -50,15 +61,13 @@ public class ClipboardHelper {
 
     public static void copyText(String s) {
         PlatformThread.runLaterIfNeeded(() -> {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(Map.of(DataFormat.PLAIN_TEXT, s));
+            apply(Map.of(DataFormat.PLAIN_TEXT, s));
         });
     }
 
     public static void copyUrl(String s) {
         PlatformThread.runLaterIfNeeded(() -> {
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(Map.of(DataFormat.PLAIN_TEXT, s, DataFormat.URL, s));
+            apply(Map.of(DataFormat.URL, s, DataFormat.PLAIN_TEXT, s));
         });
     }
 }
