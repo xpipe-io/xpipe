@@ -34,18 +34,18 @@ public interface ExternalVncClient {
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
                 l.add(RemminaVncClient.class);
-                l.add(RealVncClient.Linux.class);
                 l.add(TigerVncClient.Linux.class);
+                l.add(RealVncClient.Linux.class);
             }
             case OsType.MacOs macOs -> {
                 l.add(ScreenSharingVncClient.class);
-                l.add(RealVncClient.MacOs.class);
                 l.add(TigerVncClient.MacOs.class);
+                l.add(RealVncClient.MacOs.class);
             }
             case OsType.Windows windows -> {
-                l.add(TightVncClient.class);
-                l.add(RealVncClient.Windows.class);
                 l.add(TigerVncClient.Windows.class);
+                l.add(RealVncClient.Windows.class);
+                l.add(TightVncClient.class);
             }
         }
         l.add(CustomVncClient.class);

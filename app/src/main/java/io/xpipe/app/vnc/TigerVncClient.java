@@ -130,7 +130,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         public Optional<Path> determineInstallation() {
             try (var appsStream = Files.list(Path.of("/Applications"))) {
                 var dirs = appsStream.toList();
-                return dirs.stream().filter(path -> path.toString().startsWith("TigerVNC")).findFirst();
+                return dirs.stream().filter(path -> path.toString().contains("TigerVNC viewer")).findFirst();
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).handle();
                 return Optional.empty();
