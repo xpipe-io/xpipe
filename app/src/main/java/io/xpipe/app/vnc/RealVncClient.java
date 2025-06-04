@@ -95,12 +95,12 @@ public abstract class RealVncClient implements ExternalVncClient {
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
-            launch(builder);
+            launchCommand(builder, true).execute();
         }
 
         @Override
         public String getApplicationName() {
-            return "RealVNC.app";
+            return "VNC Viewer";
         }
     }
 }

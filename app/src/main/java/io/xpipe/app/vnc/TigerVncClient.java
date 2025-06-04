@@ -8,6 +8,7 @@ import io.xpipe.core.process.CommandBuilder;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -104,12 +105,15 @@ public abstract class TigerVncClient implements ExternalVncClient {
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")
-    public static class MacOs extends TigerVncClient implements ExternalApplicationType.MacApplication {
+    public static class MacOs extends TigerVncClient implements ExternalApplicationType.InstallLocationType {
 
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
+            var loc = findExecutable();
             var builder = createBuilder(configuration);
-            launch(builder);
+            var open = CommandBuilder.of().add("open", "-a").addFile(loc).add("--args");
+            builder.add(0, open);
+            LocalShell.getShell().command(builder).execute();
         }
 
         @Override
@@ -118,8 +122,19 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public String getApplicationName() {
-            return "TigerVNC.app";
+        public String getExecutable() {
+            return "VNCViewer";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            try (var appsStream = Files.list(Path.of("/Applications"))) {
+                var dirs = appsStream.toList();
+                return dirs.stream().filter(path -> path.toString().startsWith("TigerVNC")).findFirst();
+            } catch (IOException e) {
+                ErrorEvent.fromThrowable(e).handle();
+                return Optional.empty();
+            }
         }
     }
 }

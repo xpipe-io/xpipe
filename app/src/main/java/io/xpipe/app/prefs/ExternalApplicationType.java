@@ -7,6 +7,7 @@ import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.CommandControl;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 
@@ -21,10 +22,13 @@ public interface ExternalApplicationType extends PrefsValue {
 
     public interface MacApplication extends ExternalApplicationType {
 
-        default void launch(CommandBuilder builder) throws Exception {
+        default CommandControl launchCommand(CommandBuilder builder, boolean args) throws Exception {
+            if (args) {
+                builder.add(0, "--args");
+            }
             builder.addQuoted(getApplicationName());
             builder.add(0, "open", "-a");
-            LocalShell.getShell().executeSimpleCommand(builder);
+            return LocalShell.getShell().command(builder);
         }
 
         @Override
