@@ -33,7 +33,7 @@ public interface ExternalVncClient {
         l.add(InternalVncClient.class);
         switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
-                l.add(RealVncClient.class);
+                l.add(RemminaVncClient.class);
                 l.add(RealVncClient.Linux.class);
                 l.add(TigerVncClient.Linux.class);
             }
