@@ -47,7 +47,7 @@
     -fx-padding: 0 0 0 0;
 }
 
-.root:seamless-frame.nord .layout > .background {
+.root:seamless-frame:nord .layout > .background {
     -fx-background-radius: 0 0 0 0;
     -fx-border-radius: 0 0 0 0;
     -fx-border-width: 1 1 0 0;
@@ -62,7 +62,7 @@
     -fx-border-color: -color-border-default;
 }
 
-.root:dark:seamless-frame.primer .layout > .background, .root:dark:seamless-frame.mocha .layout > .background {
+.root:dark:seamless-frame:primer .layout > .background, .root:dark:seamless-frame:mocha .layout > .background {
     -fx-border-color: #444;
 }
 
@@ -76,7 +76,7 @@
     -fx-border-radius: 0 6 0 0;
 }
 
-.root:seamless-frame.nord .layout > .background > * {
+.root:seamless-frame:nord .layout > .background > * {
     -fx-background-radius: 0 0 0 0;
     -fx-border-radius: 0 0 0 0;
 }

@@ -56,7 +56,7 @@ public class AppTheme {
                     PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
-                root.getStyleClass().add(def.getCssId());
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass(def.getCssId()), true);
                 root.pseudoClassStateChanged(LIGHT, true);
                 root.pseudoClassStateChanged(DARK, false);
                 root.pseudoClassStateChanged(PRETTY, true);
@@ -65,12 +65,13 @@ public class AppTheme {
             }
 
             AppPrefs.get().theme().subscribe(t -> {
-                Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(theme -> {
+                    root.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.equals(t));
+                });
                 if (t == null) {
                     return;
                 }
 
-                root.getStyleClass().add(t.getCssId());
                 root.pseudoClassStateChanged(LIGHT, !t.isDark());
                 root.pseudoClassStateChanged(DARK, t.isDark());
             });

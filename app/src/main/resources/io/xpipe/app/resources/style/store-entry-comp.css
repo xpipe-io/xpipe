@@ -12,7 +12,7 @@
     -fx-border-radius: 4;
 }
 
-.root.nord .store-entry-list-status-bar .button {
+.root:nord .store-entry-list-status-bar .button {
     -fx-border-radius: 0;
 }
 
@@ -74,7 +74,7 @@
     -fx-background-radius: 5px;
 }
 
-.root.nord .store-entry-grid .icon {
+.root:nord .store-entry-grid .icon {
     -fx-background-radius: 3;
 }
 
@@ -94,7 +94,7 @@
     -fx-background-radius: 4px;
 }
 
-.root.nord .store-entry-comp {
+.root:nord .store-entry-comp {
     -fx-background-radius: 0;
 }
 
@@ -181,7 +181,7 @@
     -fx-padding: 0;
 }
 
-.root.nord .store-entry-section-comp {
+.root:nord .store-entry-section-comp {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }

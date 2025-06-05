@@ -125,7 +125,7 @@
     -fx-border-color: -color-fg-subtle;
 }
 
-.root.nord .icon-button-comp.batch-mode-button {
+.root:nord .icon-button-comp.batch-mode-button {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }

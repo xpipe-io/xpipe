@@ -57,7 +57,7 @@
     -fx-border-color: -color-border-default;
 }
 
-.root.nord .context-menu {
+.root:nord .context-menu {
     -fx-padding: 0;
     -fx-background-radius:0;
     -fx-border-radius: 0;

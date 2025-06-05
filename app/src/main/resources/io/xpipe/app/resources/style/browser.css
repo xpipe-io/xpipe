@@ -37,7 +37,7 @@
     -fx-padding: 0.1em 0.2em;
 }
 
-.root.nord .transfer > * {
+.root:nord .transfer > * {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -89,7 +89,7 @@
     -fx-background-radius: 4;
 }
 
-.root.nord .browser .terminal-dock-comp:empty {
+.root:nord .browser .terminal-dock-comp:empty {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
@@ -267,7 +267,7 @@
     -fx-padding: 0 4 4 0;
 }
 
-.root.nord .browser .browser-content {
+.root:nord .browser .browser-content {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
@@ -328,11 +328,11 @@
     -fx-background-color: -color-warning-subtle;
 }
 
-.root:dark.nord .browser .table-row-cell:selected, .root:dark.nord .browser .table-row-cell:hover:selected {
+.root:dark:nord .browser .table-row-cell:selected, .root:dark:nord .browser .table-row-cell:hover:selected {
     -fx-background-color: -color-success-7;
 }
 
-.root:light.nord .browser .table-row-cell:selected, .root:light.nord .browser .table-row-cell:hover:selected {
+.root:light:nord .browser .table-row-cell:selected, .root:light:nord .browser .table-row-cell:hover:selected {
     -fx-background-color: -color-success-1;
 }
 
@@ -361,7 +361,7 @@
     -fx-opacity: 1.0;
 }
 
-.root.nord .browser .tab-container {
+.root:nord .browser .tab-container {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
