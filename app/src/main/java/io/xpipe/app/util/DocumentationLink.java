@@ -41,6 +41,7 @@ public enum DocumentationLink {
     TUNNELS("guide/ssh-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
+    SSH_JUMP_SERVERS("guide/ssh#jump-servers"),
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager"),
     VNC_CLIENTS("guide/vnc#external-clients"),;

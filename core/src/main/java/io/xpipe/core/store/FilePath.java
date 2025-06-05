@@ -6,10 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public final class FilePath {
@@ -156,13 +153,13 @@ public final class FilePath {
         return FilePath.of(value.substring(0, split));
     }
 
-    public String getExtension() {
-        var name = FileNames.getFileName(value);
+    public Optional<String> getExtension() {
+        var name = getFileName();
         var split = name.split("\\.");
-        if (split.length == 0) {
-            return null;
+        if (split.length < 2) {
+            return Optional.empty();
         }
-        return split[split.length - 1];
+        return Optional.of(split[split.length - 1]);
     }
 
     public FilePath join(String... parts) {

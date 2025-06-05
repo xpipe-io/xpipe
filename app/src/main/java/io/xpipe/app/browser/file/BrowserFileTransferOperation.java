@@ -235,8 +235,8 @@ public class BrowserFileTransferOperation {
             }
         }
 
-        var noExt = target.getFileName().equals(target.getExtension());
-        return FilePath.of(target.getBaseName() + " (" + 1 + ")" + (noExt ? "" : "." + target.getExtension()));
+        var ext = target.getExtension();
+        return FilePath.of(target.getBaseName() + " (" + 1 + ")" + (ext.isPresent() ? "." + ext.get() : ""));
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
