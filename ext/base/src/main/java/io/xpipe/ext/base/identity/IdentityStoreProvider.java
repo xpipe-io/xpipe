@@ -27,7 +27,8 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
     @Override
     public List<String> getSearchableTerms(DataStore store) {
         IdentityStore s = store.asNeeded();
-        return s.getUsername() != null ? List.of(s.getUsername()) : List.of();
+        var name = s.getUsername().getFixedUsername();
+        return name.isPresent() ? List.of(name.get()) : List.of();
     }
 
     @Override

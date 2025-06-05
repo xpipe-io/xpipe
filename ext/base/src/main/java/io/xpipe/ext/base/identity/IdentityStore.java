@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public abstract class IdentityStore implements SelfReferentialStore, DataStore {
 
-    public abstract String getUsername();
+    public abstract UsernameStrategy getUsername();
 
     public abstract SecretRetrievalStrategy getPassword();
 

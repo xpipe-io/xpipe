@@ -27,6 +27,10 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     EncryptedValue.VaultKey<SshIdentityStrategy> sshIdentity;
     boolean perUser;
 
+    public UsernameStrategy.Fixed getUsername() {
+        return new UsernameStrategy.Fixed(username);
+    }
+
     @Override
     public SecretRetrievalStrategy getPassword() {
         return password != null ? password.getValue() : null;

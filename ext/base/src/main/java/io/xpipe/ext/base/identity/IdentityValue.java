@@ -72,7 +72,7 @@ public interface IdentityValue {
     boolean isPerUser();
 
     default void checkCompleteUser() throws ValidationException {
-        Validators.nonNull(unwrap().getUsername(), "Identity username");
+        Validators.nonNull(unwrap().getUsername().hasUser() ? new Object() : null, "Identity username");
     }
 
     default void checkCompletePassword() throws ValidationException {
@@ -125,7 +125,7 @@ public interface IdentityValue {
 
         @Override
         public IdentityStore unwrap() {
-            return ref != null ? ref.getStore() : LocalIdentityStore.builder().build();
+            return ref != null && ref.getStore() != null ? ref.getStore() : LocalIdentityStore.builder().build();
         }
 
         @Override

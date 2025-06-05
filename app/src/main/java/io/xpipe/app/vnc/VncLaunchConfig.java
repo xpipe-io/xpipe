@@ -15,8 +15,8 @@ public class VncLaunchConfig {
     DataStoreEntryRef<VncBaseStore> entry;
     ShellControl shellControl;
 
-    public Optional<String> retrieveUsername() {
-        return Optional.ofNullable(entry.getStore().getUser());
+    public Optional<String> retrieveUsername() throws Exception{
+        return Optional.ofNullable(entry.getStore().retrieveUser());
     }
 
     public boolean hasFixedPassword() {

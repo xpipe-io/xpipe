@@ -59,7 +59,7 @@ public class LocalIdentityConvertAction implements ActionProvider {
         public void execute() {
             var st = ref.getStore();
             var synced = SyncedIdentityStore.builder()
-                    .username(st.getUsername())
+                    .username(st.getUsername().get())
                     .password(EncryptedValue.VaultKey.of(st.getPassword()))
                     .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
                     .perUser(false)

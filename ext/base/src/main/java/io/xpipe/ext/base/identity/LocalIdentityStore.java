@@ -22,6 +22,10 @@ public class LocalIdentityStore extends IdentityStore {
     EncryptedValue<SecretRetrievalStrategy> password;
     EncryptedValue<SshIdentityStrategy> sshIdentity;
 
+    public UsernameStrategy.Fixed getUsername() {
+        return new UsernameStrategy.Fixed(username);
+    }
+
     @Override
     public SecretRetrievalStrategy getPassword() {
         return password != null ? password.getValue() : null;

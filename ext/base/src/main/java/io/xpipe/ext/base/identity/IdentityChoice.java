@@ -46,7 +46,7 @@ public class IdentityChoice {
         var existing = identity.getValue();
         var user = new SimpleStringProperty(
                 existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null
-                        ? inPlace.unwrap().getUsername()
+                        ? inPlace.unwrap().getUsername().get()
                         : null);
         var pass = new SimpleObjectProperty<>(
                 existing instanceof IdentityValue.InPlace inPlace && inPlace.unwrap() != null

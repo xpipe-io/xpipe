@@ -38,7 +38,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         SyncedIdentityStore st = (SyncedIdentityStore) store.getValue();
 
-        var user = new SimpleStringProperty(st.getUsername());
+        var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());

@@ -32,7 +32,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         LocalIdentityStore st = (LocalIdentityStore) store.getValue();
 
-        var user = new SimpleStringProperty(st.getUsername());
+        var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
 

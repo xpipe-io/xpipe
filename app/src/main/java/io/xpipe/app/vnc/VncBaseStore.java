@@ -12,7 +12,7 @@ public interface VncBaseStore extends DataStore {
 
     int getEffectivePort();
 
-    String getUser();
+    String retrieveUser() throws Exception;
 
     SecretRetrievalStrategy getPassword();
 }

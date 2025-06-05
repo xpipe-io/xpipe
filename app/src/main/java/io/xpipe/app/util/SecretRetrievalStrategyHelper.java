@@ -75,6 +75,7 @@ public class SecretRetrievalStrategyHelper {
                     }
                 }));
         return new OptionsBuilder()
+                .nameAndDescription("passwordManagerKey")
                 .addComp(content, keyProperty)
                 .nonNull()
                 .bind(

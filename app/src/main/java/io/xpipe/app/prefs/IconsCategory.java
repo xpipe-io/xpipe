@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.FilePath;
@@ -120,8 +121,8 @@ public class IconsCategory extends AppPrefsCategory {
 
                         var path = dir.get().asLocalPath();
                         if (Files.isRegularFile(path)) {
-                            throw new IllegalArgumentException(
-                                    "A custom icon directory requires to be a directory of .svg files, not a single file");
+                            throw ErrorEvent.expected(new IllegalArgumentException(
+                                    "A custom icon source must be a directory containing .svg files, not a single file"));
                         }
 
                         var source = SystemIconSource.Directory.builder()
