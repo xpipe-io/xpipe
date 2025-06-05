@@ -17,8 +17,6 @@ public interface ShellDialect {
 
     String unsetEnvironmentVariableCommand(String var);
 
-    ShellCapabilities determineCapabilities();
-
     CommandBuilder launchAsnyc(CommandBuilder cmd);
 
     default String getLicenseFeatureId() {
@@ -87,7 +85,7 @@ public interface ShellDialect {
 
     String getPauseCommand();
 
-    String prepareScriptContent(String content);
+    String prepareScriptContent(ShellControl sc, String content);
 
     default String getPassthroughExitCommand() {
         return "exit";

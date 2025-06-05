@@ -82,7 +82,7 @@ public class TerminalLauncher {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        content = t.prepareScriptContent(content);
+        content = t.prepareScriptContent(processControl, content);
         return content;
     }
 

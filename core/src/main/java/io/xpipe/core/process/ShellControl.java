@@ -41,8 +41,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellView view();
 
-    ShellCapabilities getCapabilities();
-
     Optional<ShellControl> getParentControl();
 
     ShellTtyState getTtyState();

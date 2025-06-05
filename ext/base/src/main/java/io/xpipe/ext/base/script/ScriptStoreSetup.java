@@ -132,7 +132,7 @@ public class ScriptStoreSetup {
         proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
-            var content = d.prepareScriptContent(scriptStore.getStore().getCommands());
+            var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
             var fileName = proc.getOsType()
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
