@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.core.util.SecretValue;
 
 import javafx.animation.PauseTransition;
@@ -13,6 +15,12 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class ClipboardHelper {
+
+    private static final AppLayoutModel.QueueEntry COPY_QUEUE_ENTRY = new AppLayoutModel.QueueEntry(
+            AppI18n.observable("passwordCopied"),
+            new LabelGraphic.IconGraphic("mdi2c-clipboard-check-outline"),
+            () -> {}
+    );
 
     private static void apply(Map<DataFormat, Object> map) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -35,6 +43,7 @@ public class ClipboardHelper {
                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
         contents.putAll(map);
         clipboard.setContent(contents);
+        AppLayoutModel.get().showQueueEntry(COPY_QUEUE_ENTRY, java.time.Duration.ofSeconds(10), true);
     }
 
     public static void copyPassword(SecretValue pass) {
