@@ -4,6 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FileNames;
 
+import io.xpipe.core.store.FilePath;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
@@ -14,6 +15,7 @@ import javafx.util.Callback;
 import atlantafx.base.controls.Breadcrumbs;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BrowserBreadcrumbBar extends SimpleComp {
 
@@ -64,7 +66,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                 });
             }
 
-            var elements = val.splitHierarchy();
+            var elements = createBreadcumbHierarchy(val);
             var modifiedElements = new ArrayList<>(elements);
             if (val.toString().startsWith("/")) {
                 modifiedElements.addFirst("/");
@@ -86,5 +88,22 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         });
 
         return breadcrumbs;
+    }
+
+
+    private List<String> createBreadcumbHierarchy(FilePath filePath) {
+        var f = filePath.toString() + "/";
+        var list = new ArrayList<String>();
+        int lastElementStart = 0;
+        for (int i = 0; i < f.length(); i++) {
+            if (f.charAt(i) == '\\' || f.charAt(i) == '/') {
+                if (i - lastElementStart > 0) {
+                    list.add(f.substring(0, i));
+                }
+
+                lastElementStart = i + 1;
+            }
+        }
+        return list;
     }
 }

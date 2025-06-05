@@ -5,6 +5,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
@@ -109,8 +110,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
 
                 var target = sync.getTargetLocation().apply(source);
-                var shouldCopy = AppWindowHelper.showConfirmationAlert(
-                        "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
+                var shouldCopy = AppDialog.confirm("confirmGitShare");
                 if (!shouldCopy) {
                     return;
                 }

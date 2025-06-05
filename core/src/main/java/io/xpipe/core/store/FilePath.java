@@ -31,6 +31,7 @@ public final class FilePath {
     private final String value;
 
     private FilePath normalized;
+    private List<String> split;
 
     private FilePath(@NonNull String value) {
         this.value = value;
@@ -117,32 +118,16 @@ public final class FilePath {
     }
 
     public String getFileName() {
-        var split = value.split("[\\\\/]");
-        if (split.length == 0) {
+        var split = split();
+        if (split.size() == 0) {
             return "";
         }
-        var components = Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+        var components = split.stream().filter(s -> !s.isEmpty()).toList();
         if (components.size() == 0) {
             return "";
         }
 
         return components.getLast();
-    }
-
-    public List<String> splitHierarchy() {
-        var f = value + "/";
-        var list = new ArrayList<String>();
-        int lastElementStart = 0;
-        for (int i = 0; i < f.length(); i++) {
-            if (f.charAt(i) == '\\' || f.charAt(i) == '/') {
-                if (i - lastElementStart > 0) {
-                    list.add(f.substring(0, i));
-                }
-
-                lastElementStart = i + 1;
-            }
-        }
-        return list;
     }
 
     public FilePath getBaseName() {
@@ -180,11 +165,12 @@ public final class FilePath {
     }
 
     public FilePath getParent() {
-        if (split().size() == 0) {
+        var split = split();
+        if (split.size() == 0) {
             return this;
         }
 
-        if (split().size() == 1) {
+        if (split.size() == 1) {
             return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : this;
         }
 
@@ -220,9 +206,15 @@ public final class FilePath {
         return value.startsWith("~") ? FilePath.of(value.replace("~", dir)) : this;
     }
 
-    private List<String> split() {
-        var split = value.split("[\\\\/]");
-        return Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+    public List<String> split() {
+        if (split != null) {
+            return split;
+        }
+
+        var ar = value.split("[\\\\/]");
+        var l =  Arrays.stream(ar).filter(s -> !s.isEmpty()).toList();
+        split = l;
+        return l;
     }
 
     public FilePath toUnix() {
