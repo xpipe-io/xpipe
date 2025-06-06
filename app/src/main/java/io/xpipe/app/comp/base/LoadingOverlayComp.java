@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -37,9 +38,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         var compStruc = comp.createStructure();
         var r = compStruc.get();
 
-        var loading = new RingProgressIndicator(0, false);
-        loading.progressProperty().bind(progress);
-        loading.visibleProperty().bind(Bindings.not(AppPrefs.get().performanceMode()));
+        var loading = new LoadingIconComp(showLoading, AppFontSizes::xxxl).createRegion();
 
         var loadingOverlay = new StackPane(loading);
         loadingOverlay.getStyleClass().add("loading-comp");

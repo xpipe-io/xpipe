@@ -2,8 +2,10 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
@@ -417,26 +419,15 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
 
         if (tabModel.getIcon() != null) {
-            var ring = new RingProgressIndicator(0, false);
-            ring.setMinSize(16, 16);
-            ring.setPrefSize(16, 16);
-            ring.setMaxSize(16, 16);
-            ring.progressProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> tabModel.getBusy().get()
-                                            && !AppPrefs.get().performanceMode().get()
-                                    ? -1d
-                                    : 0,
-                            PlatformThread.sync(tabModel.getBusy()),
-                            AppPrefs.get().performanceMode()));
-
+            var loading = new LoadingIconComp(tabModel.getBusy(), AppFontSizes::base).createRegion();
+            loading.setPrefWidth(16);
+            loading.setPrefHeight(16);
             var image = tabModel.getIcon();
             var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
-
             tab.graphicProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> {
-                                return tabModel.getBusy().get() ? ring : logo;
+                                return tabModel.getBusy().get() ? loading : logo;
                             },
                             PlatformThread.sync(tabModel.getBusy())));
         }
@@ -496,6 +487,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             if (newValue != null) {
                 Platform.runLater(() -> {
                     Label l = (Label) tabs.lookup("#" + id + " .tab-label");
+                    l.setGraphicTextGap(7);
                     var w = l.maxWidthProperty();
                     l.minWidthProperty().bind(w);
                     l.prefWidthProperty().bind(w);
