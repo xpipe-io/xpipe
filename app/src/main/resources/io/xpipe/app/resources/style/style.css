@@ -64,11 +64,11 @@
 }
 
 .root:light .loading-comp {
-    -fx-background-color: rgba(100, 100, 100, 0.5);
+    -fx-background-color: rgba(100, 100, 100, 0.3);
 }
 
 .root:dark .loading-comp {
-    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-background-color: rgba(0, 0, 0, 0.4);
 }
 
 .icon-browser {

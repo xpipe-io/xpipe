@@ -144,7 +144,7 @@ public class ScanDialogBase {
         onUpdate();
         entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
 
-        var comp = LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy).vgrow();
+        var comp = new LoadingOverlayComp(Comp.of(() -> stackPane), busy, true).vgrow();
         return comp;
     }
 }

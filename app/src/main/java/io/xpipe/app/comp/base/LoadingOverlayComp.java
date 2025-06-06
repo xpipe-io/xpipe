@@ -4,8 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -15,22 +13,16 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
 
-import atlantafx.base.controls.RingProgressIndicator;
-
 public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
 
     private final Comp<?> comp;
-    private final ObservableValue<Boolean> showLoading;
-    private final ObservableValue<Number> progress;
+    private final ObservableValue<Boolean> loading;
+    private final boolean showIcon;
 
-    public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading, ObservableValue<Number> progress) {
+    public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading, boolean showIcon) {
         this.comp = comp;
-        this.showLoading = PlatformThread.sync(loading);
-        this.progress = PlatformThread.sync(progress);
-    }
-
-    public static LoadingOverlayComp noProgress(Comp<?> comp, ObservableValue<Boolean> loading) {
-        return new LoadingOverlayComp(comp, loading, new SimpleDoubleProperty(-1));
+        this.loading = loading;
+        this.showIcon = showIcon;
     }
 
     @Override
@@ -38,11 +30,22 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         var compStruc = comp.createStructure();
         var r = compStruc.get();
 
-        var loading = new LoadingIconComp(showLoading, AppFontSizes::xxxl).createRegion();
-
-        var loadingOverlay = new StackPane(loading);
+        var loadingOverlay = new StackPane();
+        if (showIcon) {
+            var loading = new LoadingIconComp(this.loading, AppFontSizes::title).createRegion();
+            loading.prefWidthProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                return Math.min(r.getHeight() - 20, 50);
+                            },
+                            r.heightProperty()));
+            loading.prefHeightProperty().bind(loading.prefWidthProperty());
+            loading.managedProperty().bind(loading.visibleProperty());
+            loadingOverlay.getChildren().add(loading);
+        }
         loadingOverlay.getStyleClass().add("loading-comp");
-        loadingOverlay.setVisible(showLoading.getValue());
+        loadingOverlay.setVisible(showIcon && this.loading.getValue());
+        loadingOverlay.setManaged(showIcon && this.loading.getValue());
 
         var listener = new ChangeListener<Boolean>() {
             @Override
@@ -55,7 +58,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         } catch (InterruptedException ignored) {
                         }
 
-                        if (!showLoading.getValue()) {
+                        if (!LoadingOverlayComp.this.loading.getValue()) {
                             Platform.runLater(() -> {
                                 loadingOverlay.setVisible(false);
                                 loadingOverlay.setManaged(false);
@@ -69,7 +72,7 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                         } catch (InterruptedException ignored) {
                         }
 
-                        if (showLoading.getValue()) {
+                        if (LoadingOverlayComp.this.loading.getValue()) {
                             Platform.runLater(() -> {
                                 loadingOverlay.setVisible(true);
                                 loadingOverlay.setManaged(true);
@@ -79,17 +82,9 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
                 }
             }
         };
-        showLoading.addListener(listener);
+        this.loading.addListener(listener);
 
         var stack = new StackPane(r, loadingOverlay);
-
-        loading.prefWidthProperty()
-                .bind(Bindings.createDoubleBinding(
-                        () -> {
-                            return Math.min(r.getHeight() - 20, 50);
-                        },
-                        r.heightProperty()));
-        loading.prefHeightProperty().bind(loading.prefWidthProperty());
 
         stack.prefWidthProperty().bind(r.prefWidthProperty());
         stack.prefHeightProperty().bind(r.prefHeightProperty());

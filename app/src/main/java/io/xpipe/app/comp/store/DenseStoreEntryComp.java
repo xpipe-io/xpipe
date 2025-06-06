@@ -2,6 +2,7 @@ package io.xpipe.app.comp.store;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
@@ -88,7 +89,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             }
         });
 
-        var storeIcon = createIcon(28, 24);
+        var storeIcon = createIcon(28, 24, AppFontSizes::xxxl);
         GridPane.setHalignment(storeIcon, HPos.CENTER);
         grid.add(storeIcon, 1, 0);
         grid.getColumnConstraints().add(new ColumnConstraints(34));

@@ -43,6 +43,9 @@ public class LoadingIconComp extends SimpleComp {
         label.setText(Character.toString(chars[0]));
         label.getStyleClass().add("loading-icon-comp");
 
+        label.setPrefWidth(16);
+        label.setPrefHeight(16);
+
         var timer = new AnimationTimer() {
 
             long init = 0;
@@ -55,7 +58,7 @@ public class LoadingIconComp extends SimpleComp {
                 }
 
                 var nowMs = now;
-                if ((nowMs - init) > 300 * 1_000_000L) {
+                if ((nowMs - init) > 250 * 1_000_000L) {
                     label.setText(Character.toString(chars[index]));
                     init = nowMs;
                     index = (index + 1) % chars.length;
@@ -64,11 +67,14 @@ public class LoadingIconComp extends SimpleComp {
         };
 
         show.subscribe(val -> {
-            if (val) {
-                timer.start();
-            } else {
-                timer.stop();
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                label.setVisible(val);
+                if (val) {
+                    timer.start();
+                } else {
+                    timer.stop();
+                }
+            });
         });
 
         return label;

@@ -54,7 +54,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
             }
         });
 
-        var storeIcon = createIcon(46, 40);
+        var storeIcon = createIcon(46, 40, AppFontSizes::title);
         grid.add(storeIcon, 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 

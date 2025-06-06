@@ -5,9 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.augment.GrowAugment;
-import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.comp.base.LoadingOverlayComp;
+import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
 import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
@@ -20,6 +18,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -37,6 +36,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
@@ -154,8 +155,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         () -> this.createContextMenu())
                 .augment(button);
 
-        var loading = LoadingOverlayComp.noProgress(
-                Comp.of(() -> button), getWrapper().getEffectiveBusy());
+        var loading = new LoadingOverlayComp(
+                Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
         if (OsType.getLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
         } else if (OsType.getLocal() == OsType.LINUX) {
@@ -212,8 +213,18 @@ public abstract class StoreEntryComp extends SimpleComp {
         return button;
     }
 
-    protected Node createIcon(int w, int h) {
-        return new StoreIconComp(getWrapper(), w, h).createRegion();
+    protected Node createIcon(int w, int h, Consumer<Node> fontSize) {
+        var icon = new StoreIconComp(getWrapper(), w, h);
+        icon.apply(struc -> {
+            struc.get().opacityProperty().bind(Bindings.createDoubleBinding(() -> {
+                return !getWrapper().getEffectiveBusy().get() ? 1.0 : 0.15;
+            }, getWrapper().getEffectiveBusy()));
+        });
+        var loading = new LoadingIconComp(getWrapper().getEffectiveBusy(), fontSize);
+        loading.prefWidth(w);
+        loading.prefHeight(h);
+        var stack = new StackComp(List.of(icon, loading));
+        return stack.createRegion();
     }
 
     protected Region createButtonBar() {

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -419,17 +420,20 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
 
         if (tabModel.getIcon() != null) {
-            var loading = new LoadingIconComp(tabModel.getBusy(), AppFontSizes::base).createRegion();
-            loading.setPrefWidth(16);
-            loading.setPrefHeight(16);
+            var loading = new LoadingIconComp(tabModel.getBusy(), AppFontSizes::base);
+            loading.prefWidth(16);
+            loading.prefHeight(16);
+
             var image = tabModel.getIcon();
-            var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
-            tab.graphicProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                return tabModel.getBusy().get() ? loading : logo;
-                            },
-                            PlatformThread.sync(tabModel.getBusy())));
+            var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16);
+            logo.apply(struc -> {
+                struc.get().opacityProperty().bind(PlatformThread.sync(Bindings.createDoubleBinding(() -> {
+                    return !tabModel.getBusy().get() ? 1.0 : 0.15;
+                }, tabModel.getBusy())));
+            });
+
+            var stack = new StackComp(List.of(logo, loading));
+            tab.setGraphic(stack.createRegion());
         }
 
         if (tabModel.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {

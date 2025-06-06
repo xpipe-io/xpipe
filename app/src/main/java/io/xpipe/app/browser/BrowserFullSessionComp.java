@@ -8,6 +8,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
@@ -61,9 +62,9 @@ public class BrowserFullSessionComp extends SimpleComp {
                     .bind(Bindings.createObjectBinding(
                             () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
-        var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
+        var loadingIndicator = new LoadingIconComp(model.getBusy(), AppFontSizes::xxxl)
                 .apply(struc -> {
-                    AnchorPane.setTopAnchor(struc.get(), 3.0);
+                    AnchorPane.setTopAnchor(struc.get(), 0.0);
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");
