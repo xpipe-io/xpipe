@@ -351,11 +351,6 @@ public class RunScriptActionMenu implements ActionProvider {
                 }
 
                 @Override
-                public Action createAction(DataStoreEntryRef<ShellStore> store) {
-                    return null;
-                }
-
-                @Override
                 public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
                     if (hierarchy.isLeaf()) {
                         return List.of(

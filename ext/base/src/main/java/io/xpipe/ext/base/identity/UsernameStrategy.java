@@ -25,7 +25,7 @@ public interface UsernameStrategy {
         }
 
         @Override
-        public String retrieveUsername() throws Exception {
+        public String retrieveUsername() {
             return null;
         }
     }
@@ -51,7 +51,7 @@ public interface UsernameStrategy {
         }
 
         @Override
-        public String retrieveUsername() throws Exception {
+        public String retrieveUsername() {
             return getFixedUsername().orElseThrow();
         }
     }

@@ -103,40 +103,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
 
-    ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
-
-        @Override
-        public String getWebsite() {
-            return "https://konsole.kde.org/download.html";
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            // Tabs are only supported when single process option is enabled in konsole
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            // Note for later: When debugging konsole launches, it will always open as a child process of
-            // IntelliJ/XPipe even though we try to detach it.
-            // This is not the case for production where it works as expected
-            return CommandBuilder.of()
-                    .addIf(configuration.isPreferTabs(), "--new-tab")
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
-        }
-    };
+    ExternalTerminalType KONSOLE = new KonsoleTerminalType();
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
         public String getWebsite() {
@@ -458,11 +425,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public boolean supportsUnicode() {
             return true;
         }
 

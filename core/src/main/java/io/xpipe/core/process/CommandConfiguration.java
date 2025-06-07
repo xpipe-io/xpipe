@@ -4,7 +4,7 @@ public interface CommandConfiguration {
 
     String rawCommand();
 
-    String fullCommand(ShellControl shellControl) throws Exception;
+    String fullCommand(ShellControl shellControl);
 
     CommandConfiguration withRawCommand(String newCommand);
 }

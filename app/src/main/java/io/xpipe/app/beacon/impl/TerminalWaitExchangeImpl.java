@@ -10,7 +10,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class TerminalWaitExchangeImpl extends TerminalWaitExchange {
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException, BeaconServerException {
+    public Object handle(HttpExchange exchange, Request msg) throws BeaconServerException {
         TerminalLauncherManager.waitExchange(msg.getRequest());
         return Response.builder().build();
     }

@@ -49,7 +49,7 @@ public class ServiceControlSession extends Session {
     }
 
     @Override
-    public boolean checkAlive() throws Exception {
+    public boolean checkAlive() {
         return true;
     }
 }

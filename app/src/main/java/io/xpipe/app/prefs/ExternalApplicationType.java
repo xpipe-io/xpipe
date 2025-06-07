@@ -22,7 +22,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
     public interface MacApplication extends ExternalApplicationType {
 
-        default CommandControl launchCommand(CommandBuilder builder, boolean args) throws Exception {
+        default CommandControl launchCommand(CommandBuilder builder, boolean args) {
             if (args) {
                 builder.add(0, "--args");
             }

@@ -49,7 +49,7 @@ public class ScriptStoreSetup {
             initFlattened.forEach(s -> {
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
                     @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                    public Optional<String> terminalContent(ShellControl shellControl) {
                         return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
                     }
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 
 public abstract class TigerVncClient implements ExternalVncClient {
 
-    protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
+    protected CommandBuilder createBuilder(VncLaunchConfig configuration) {
         var builder = CommandBuilder.of()
                 .addQuoted(configuration.getHost() + ":" + configuration.getPort());
         builder.addQuotedKeyValue("-ReconnectOnError", "off");

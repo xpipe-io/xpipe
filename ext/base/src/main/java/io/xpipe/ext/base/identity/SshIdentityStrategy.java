@@ -59,7 +59,7 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             // Don't use any agent keys to prevent too many authentication failures
             return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"), new KeyValue("IdentityFile", "none"),
                     new KeyValue("PKCS11Provider", "none"));
@@ -107,7 +107,7 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -150,7 +150,7 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
         }
 
@@ -203,7 +203,7 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -239,7 +239,7 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -453,7 +453,7 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("PKCS11Provider", file), new KeyValue("IdentityFile", "none"), new KeyValue("IdentityAgent", "none"));
         }
     }
@@ -473,7 +473,7 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+        public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
         }
     }

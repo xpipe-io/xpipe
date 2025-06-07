@@ -8,6 +8,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.WrapperFileSystem;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -47,6 +48,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
+    @NonNull
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
@@ -94,6 +96,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             var fs = entry.getStore().createFileSystem();
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+                var originalFs = fs;
+                fs = new WrapperFileSystem(originalFs, () -> originalFs.getShell().get().isRunning(true));
             }
             fs.open();
             // Listen to kill after init as the shell might get killed during init for certain reasons
