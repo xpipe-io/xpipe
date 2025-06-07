@@ -14,10 +14,10 @@ public interface ShellDialectAskpass {
             UUID requestId,
             ElevationHandler handler,
             CountDown countDown,
-            String message,
-            CommandConfiguration command)
+            String message, String user, CommandConfiguration command
+    )
             throws Exception;
 
     String elevateTerminalCommandWithPreparedAskpass(
-            ShellControl shellControl, ElevationHandler handler, String command, String prefix) throws Exception;
+            ShellControl shellControl, ElevationHandler handler, String command, String prefix, String user) throws Exception;
 }

@@ -18,6 +18,18 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void setUser(String user);
+
+    Boolean getCachedSourceRunningState();
+
+   ShellDialect getCachedSourceDialect();
+
+   OsType getCachedSourceOsType();
+
+   String getCachedSourceOsName();
+
+   ShellTtyState getCachedSourceTtyState();
+
     boolean isInitializing();
 
     void setDumbOpen(ShellOpenFunction openFunction);
