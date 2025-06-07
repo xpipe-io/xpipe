@@ -216,31 +216,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public Boolean getCachedSourceRunningState() {
-        return  parent.getCachedSourceRunningState();
-    }
-
-    @Override
-    public ShellDialect getCachedSourceDialect() {
-        return parent.getCachedSourceDialect();
-    }
-
-    @Override
-    public OsType getCachedSourceOsType() {
-        return parent.getCachedSourceOsType();
-    }
-
-    @Override
-    public String getCachedSourceOsName() {
-        return parent.getCachedSourceOsName();
-    }
-
-    @Override
-    public ShellTtyState getCachedSourceTtyState() {
-        return parent.getCachedSourceTtyState();
-    }
-
-    @Override
     public boolean isInitializing() {
         return parent.isInitializing();
     }
