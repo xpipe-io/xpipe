@@ -135,7 +135,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             } catch (IOException e) {
                 ErrorEvent.fromThrowable(e).handle();
             }
-            fileSystem = null;
         });
     }
 

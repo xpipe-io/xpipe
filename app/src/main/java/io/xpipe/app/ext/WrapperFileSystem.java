@@ -173,12 +173,12 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public Stream<FileEntry> listFiles(FilePath file) {
+    public Stream<FileEntry> listFiles(FilePath file) throws Exception {
         if (!check.get()) {
             return Stream.empty();
         }
 
-        return listFiles(file);
+        return fs.listFiles(file);
     }
 
     @Override
