@@ -210,13 +210,11 @@ public class KeePassXcProxyClient {
             String responseNonce = (String) responseMap.get("nonce");
 
             String decryptedResponse = decrypt(encryptedResponse, responseNonce);
-            if (decryptedResponse != null) {
-                Map<String, Object> parsedResponse = jsonToMap(decryptedResponse);
-                boolean success = parsedResponse.containsKey("success")
-                        && "true".equals(parsedResponse.get("success").toString());
-                if (!success) {
-                    throw new IllegalStateException("KeePassXC association failed");
-                }
+            Map<String, Object> parsedResponse = jsonToMap(decryptedResponse);
+            boolean success = parsedResponse.containsKey("success")
+                    && "true".equals(parsedResponse.get("success").toString());
+            if (!success) {
+                throw new IllegalStateException("KeePassXC association failed");
             }
         }
     }

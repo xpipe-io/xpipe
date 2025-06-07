@@ -81,9 +81,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     @Override
     public boolean canImmediatelyClose() {
-        if (fileSystem == null
-                || fileSystem.getShell().isEmpty()
-                || !fileSystem.getShell().get().getLock().isLocked()) {
+        if (fileSystem.getShell().isEmpty() || !fileSystem.getShell().get().getLock().isLocked()) {
             return true;
         }
 
@@ -119,9 +117,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void close() {
         BooleanScope.executeExclusive(busy, () -> {
-            if (fileSystem == null) {
-                return;
-            }
 
             var current = getCurrentDirectory();
             // We might close this after storage shutdown
@@ -145,9 +140,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private void startIfNeeded() throws Exception {
-        if (fileSystem == null) {
-            return;
-        }
 
         var s = fileSystem.getShell();
         if (s.isPresent()) {
@@ -156,18 +148,12 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void killTransfer() {
-        if (fileSystem == null) {
-            return;
-        }
 
         transferCancelled.set(true);
     }
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
-            if (fileSystem == null) {
-                return;
-            }
 
             BooleanScope.executeExclusive(busy, () -> {
                 if (entry.getStore() instanceof ShellStore s) {
@@ -229,10 +215,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return null;
         }
 
-        if (fileSystem == null) {
-            return null;
-        }
-
         return new FileEntry(fileSystem, currentPath.get(), null, null, null, FileKind.DIRECTORY);
     }
 
@@ -289,10 +271,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
         var cps = currentPath.get() != null ? currentPath.get().toString() : null;
         if (Objects.equals(path, cps)) {
-            return Optional.empty();
-        }
-
-        if (fileSystem == null) {
             return Optional.empty();
         }
 
@@ -388,11 +366,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private void cdSyncWithoutCheck(FilePath path) throws Exception {
-        if (fileSystem == null) {
-            var fs = entry.getStore().createFileSystem();
-            fs.open();
-            this.fileSystem = fs;
-        }
 
         // Assume that the path is normalized to improve performance!
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
@@ -409,9 +382,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             if (dir != null) {
                 startIfNeeded();
                 var fs = getFileSystem();
-                if (fs == null) {
-                    return;
-                }
 
                 var stream = fs.listFiles(dir);
                 consumer.accept(stream);
@@ -425,7 +395,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         try {
             startIfNeeded();
             var fs = getFileSystem();
-            if (dir != null && fs != null) {
+            if (dir != null) {
                 var stream = fs.listFiles(dir);
                 fileList.setAll(stream);
             } else {
@@ -442,9 +412,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void dropLocalFilesIntoAsync(FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
@@ -463,9 +430,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 startIfNeeded();
                 var op = new BrowserFileTransferOperation(
@@ -487,9 +451,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 startIfNeeded();
                 var abs = getCurrentDirectory().getPath().join(name);
@@ -511,9 +472,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 if (getCurrentDirectory() == null) {
                     return;
@@ -530,9 +488,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void runCommandAsync(CommandBuilder command, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 if (getCurrentDirectory() == null) {
                     return;
@@ -554,9 +509,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 if (getCurrentDirectory() == null) {
                     return;
@@ -577,9 +529,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem == null) {
-                    return;
-                }
 
                 if (getCurrentDirectory() == null) {
                     return;
@@ -593,7 +542,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public boolean isClosed() {
-        return fileSystem == null;
+        return false;
     }
 
     public void initWithGivenDirectory(FilePath dir) {
@@ -608,9 +557,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void openTerminalAsync(
             String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible) {
         ThreadHelper.runFailableAsync(() -> {
-            if (fileSystem == null) {
-                return;
-            }
 
             BooleanScope.executeExclusive(busy, () -> {
                 if (fileSystem.getShell().isPresent()) {

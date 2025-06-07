@@ -27,9 +27,6 @@ public interface BrowserLeafAction extends BrowserAction {
         b.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
-                    if (model.getFileSystem() == null) {
-                        return;
-                    }
 
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();
@@ -79,9 +76,6 @@ public interface BrowserLeafAction extends BrowserAction {
         mi.setOnAction(event -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(model.getBusy(), () -> {
-                    if (model.getFileSystem() == null) {
-                        return;
-                    }
 
                     // Start shell in case we exited
                     model.getFileSystem().getShell().orElseThrow().start();

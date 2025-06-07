@@ -506,21 +506,16 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                if (fileList.getFileSystemModel().getFileSystem() != null) {
-                    var shell = fileList.getFileSystemModel()
-                            .getFileSystem()
-                            .getShell()
-                            .orElseThrow();
-                    if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
-                        modeCol.setVisible(false);
+                var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
+                    modeCol.setVisible(false);
+                    ownerCol.setVisible(false);
+                } else {
+                    modeCol.setVisible(true);
+                    if (table.getWidth() > 1000) {
+                        ownerCol.setVisible(hasOwner);
+                    } else if (!hasOwner) {
                         ownerCol.setVisible(false);
-                    } else {
-                        modeCol.setVisible(true);
-                        if (table.getWidth() > 1000) {
-                            ownerCol.setVisible(hasOwner);
-                        } else if (!hasOwner) {
-                            ownerCol.setVisible(false);
-                        }
                     }
                 }
 
