@@ -115,8 +115,8 @@ public class AppDialog {
         return Comp.of(() -> {
                     var text = new Text(s);
                     text.getStyleClass().add("dialog-text");
-                    text.setWrappingWidth(450);
                     var sp = new StackPane(text);
+                    text.wrappingWidthProperty().bind(sp.prefWidthProperty());
                     return sp;
                 })
                 .prefWidth(450);
@@ -127,8 +127,8 @@ public class AppDialog {
                     var text = new Text();
                     text.getStyleClass().add("dialog-text");
                     text.textProperty().bind(s);
-                    text.setWrappingWidth(450);
                     var sp = new StackPane(text);
+                    text.wrappingWidthProperty().bind(sp.prefWidthProperty());
                     return sp;
                 })
                 .prefWidth(450);

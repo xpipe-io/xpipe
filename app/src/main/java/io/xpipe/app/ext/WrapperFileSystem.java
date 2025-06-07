@@ -33,7 +33,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public FileSystem createTransferOptimizedFileSystem() {
-        return fs;
+        return this;
     }
 
     @Override

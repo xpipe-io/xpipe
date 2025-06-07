@@ -1,12 +1,16 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -18,44 +22,25 @@ import java.util.stream.Collectors;
 public class BrowserAlerts {
 
     public static FileConflictChoice showFileConflictAlert(FilePath file, boolean multiple) {
-        var map = new LinkedHashMap<ButtonType, FileConflictChoice>();
-        map.put(new ButtonType(AppI18n.get("cancel"), ButtonBar.ButtonData.CANCEL_CLOSE), FileConflictChoice.CANCEL);
-        if (multiple) {
-            map.put(new ButtonType(AppI18n.get("skip"), ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP);
-            map.put(new ButtonType(AppI18n.get("skipAll"), ButtonBar.ButtonData.OTHER), FileConflictChoice.SKIP_ALL);
-        }
-        map.put(new ButtonType(AppI18n.get("replace"), ButtonBar.ButtonData.OTHER), FileConflictChoice.REPLACE);
-        if (multiple) {
-            map.put(
-                    new ButtonType(AppI18n.get("replaceAll"), ButtonBar.ButtonData.OTHER),
-                    FileConflictChoice.REPLACE_ALL);
-        }
-        map.put(new ButtonType(AppI18n.get("rename"), ButtonBar.ButtonData.OTHER), FileConflictChoice.RENAME);
-        if (multiple) {
-            map.put(
-                    new ButtonType(AppI18n.get("renameAll"), ButtonBar.ButtonData.OTHER),
-                    FileConflictChoice.RENAME_ALL);
-        }
+        var choice = new SimpleObjectProperty<FileConflictChoice>();
+        var key = multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent";
         var w = multiple ? 700 : 400;
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("fileConflictAlertTitle"));
-                    alert.setHeaderText(AppI18n.get("fileConflictAlertHeader"));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                    alert.getButtonTypes().clear();
-                    alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(
-                                    AppI18n.get(
-                                            multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent",
-                                            file),
-                                    w - 50));
-                    alert.getDialogPane().setMinWidth(w);
-                    alert.getDialogPane().setPrefWidth(w);
-                    alert.getDialogPane().setMaxWidth(w);
-                    map.sequencedKeySet()
-                            .forEach(buttonType -> alert.getButtonTypes().add(buttonType));
-                })
-                .map(map::get)
-                .orElse(FileConflictChoice.CANCEL);
+        var modal = ModalOverlay.of("fileConflictAlertTitle", AppDialog.dialogText(AppI18n.observable(key, file)).prefWidth(w));
+        modal.addButton(new ModalButton("cancel", () -> choice.set(FileConflictChoice.CANCEL), true, false));
+        if (multiple) {
+            modal.addButton(new ModalButton("skip", () -> choice.set(FileConflictChoice.SKIP), true, false));
+            modal.addButton(new ModalButton("skipAll", () -> choice.set(FileConflictChoice.SKIP_ALL), true, false));
+        }
+        modal.addButton(new ModalButton("replace", () -> choice.set(FileConflictChoice.REPLACE), true, false));
+        if (multiple) {
+            modal.addButton(new ModalButton("replaceAll", () -> choice.set(FileConflictChoice.REPLACE_ALL), true, false));
+        }
+        modal.addButton(new ModalButton("rename", () -> choice.set(FileConflictChoice.RENAME), true, false));
+        if (multiple) {
+            modal.addButton(new ModalButton("renameAll", () -> choice.set(FileConflictChoice.RENAME_ALL), true, false));
+        }
+        modal.showAndWait();
+        return choice.get() != null ? choice.get() : FileConflictChoice.CANCEL;
     }
 
     public static boolean showMoveAlert(List<FileEntry> source, FileEntry target) {
