@@ -561,7 +561,7 @@ public abstract class DataStorage {
 
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())
                     .merge(pair.getValue().getStore().asNeeded());
-            if (merged != pair.getKey().getStore()) {
+            if (merged != null && !merged.equals(pair.getKey().getStore())) {
                 pair.getKey().setStoreInternal(merged, false);
             }
 

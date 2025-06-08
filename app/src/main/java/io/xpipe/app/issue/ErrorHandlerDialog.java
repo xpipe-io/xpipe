@@ -20,25 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ErrorHandlerDialog {
 
     public static void showAndWait(ErrorEvent event) {
-        if (PlatformState.getCurrent() == PlatformState.EXITED || event.isOmitted()) {
-            ErrorAction.ignore().handle(event);
-            return;
-        }
-
         // There might be unfortunate freezes when there are errors on the platform
         // thread on startup
         if (Platform.isFxApplicationThread() && OperationMode.isInStartup()) {
             ErrorAction.ignore().handle(event);
-        }
-
-        try {
-            PlatformInit.init(true);
-            AppMainWindow.init(true);
-        } catch (Throwable t) {
-            var platformEvent = ErrorEvent.fromThrowable(t).build();
-            ErrorAction.ignore().handle(platformEvent);
-            ErrorAction.ignore().handle(event);
-            return;
         }
 
         try {

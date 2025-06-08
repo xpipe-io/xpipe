@@ -1,8 +1,13 @@
 package io.xpipe.app.issue;
 
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
+import io.xpipe.app.util.ThreadHelper;
 
+import java.time.Duration;
 import java.util.stream.Stream;
 
 public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {
@@ -13,16 +18,21 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (event.isOmitted()) {
-            ErrorAction.ignore().handle(event);
-            return;
-        }
-
         if (!startupGui(throwable -> {
             var second = ErrorEvent.fromThrowable(throwable).build();
             log.handle(second);
             ErrorAction.ignore().handle(second);
         })) {
+            return;
+        }
+
+        if (event.isOmitted()) {
+            ErrorAction.ignore().handle(event);
+            AppLayoutModel.get().showQueueEntry(new AppLayoutModel.QueueEntry(AppI18n.observable("errorOccurred"), new LabelGraphic.IconGraphic("mdoal-error_outline"), () -> {
+                ThreadHelper.runAsync(() -> {
+                    handleGui(event);
+                });
+            }), Duration.ofSeconds(10), true);
             return;
         }
 
