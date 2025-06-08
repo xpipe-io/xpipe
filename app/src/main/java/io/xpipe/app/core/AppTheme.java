@@ -5,7 +5,6 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.ColorHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;

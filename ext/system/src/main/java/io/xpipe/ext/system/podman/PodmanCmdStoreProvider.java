@@ -1,11 +1,11 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.StoreEntryComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreToggleComp;
-import io.xpipe.app.comp.store.SystemStateComp;
+import io.xpipe.app.hub.comp.StoreEntryComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.StoreToggleComp;
+import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.storage.DataStoreEntry;

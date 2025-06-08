@@ -1,6 +1,6 @@
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.action.EditStoreActionProvider;
-import io.xpipe.app.action.LaunchStoreActionProvider;
+import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
+import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.*;
@@ -30,7 +30,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.comp.base;
     exports io.xpipe.app.core.mode;
     exports io.xpipe.app.prefs;
-    exports io.xpipe.app.comp.store;
+    exports io.xpipe.app.hub.comp;
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.ext;
@@ -43,7 +43,6 @@ open module io.xpipe.app {
     exports io.xpipe.app.terminal;
     exports io.xpipe.app.browser.file;
     exports io.xpipe.app.core.window;
-    exports io.xpipe.app.resources;
     exports io.xpipe.app.comp;
     exports io.xpipe.app.icon;
     exports io.xpipe.app.pwman;
@@ -54,6 +53,8 @@ open module io.xpipe.app {
     exports io.xpipe.app.browser.menu.impl;
     exports io.xpipe.app.browser.action.impl;
     exports io.xpipe.app.browser.menu.impl.compress;
+    exports io.xpipe.app.hub.action;
+    exports io.xpipe.app.hub.action.impl;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

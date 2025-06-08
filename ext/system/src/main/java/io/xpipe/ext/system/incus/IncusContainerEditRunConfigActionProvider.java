@@ -1,22 +1,19 @@
 package io.xpipe.ext.system.incus;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.action.StoreAction;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.value.ObservableValue;
 
-import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

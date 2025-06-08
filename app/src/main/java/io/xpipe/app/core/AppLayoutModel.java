@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.StoreLayoutComp;
+import io.xpipe.app.hub.comp.StoreLayoutComp;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;

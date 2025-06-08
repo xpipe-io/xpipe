@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.menu;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.BrowserAction;
-import io.xpipe.app.action.StoreAction;
+import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.file.BrowserEntry;

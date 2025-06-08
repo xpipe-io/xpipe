@@ -4,14 +4,12 @@ import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
-import lombok.Value;
 
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
@@ -19,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 

@@ -152,7 +152,7 @@ public abstract class AbstractAction {
         return getDisplayName();
     }
 
-    protected abstract void executeImpl() throws Exception;
+    public abstract void executeImpl() throws Exception;
 
     protected boolean beforeExecute() throws Exception {
         return true;

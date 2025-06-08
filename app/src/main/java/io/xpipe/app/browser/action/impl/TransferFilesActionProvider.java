@@ -4,12 +4,9 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.StoreContextAction;
 import io.xpipe.app.browser.file.BrowserFileTransferOperation;
-import io.xpipe.app.comp.store.StoreCreationDialog;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.FileSystemStore;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
@@ -18,7 +15,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TransferFilesActionProvider implements ActionProvider {

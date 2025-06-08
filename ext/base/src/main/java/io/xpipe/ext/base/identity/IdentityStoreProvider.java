@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.store.DataStore;
 

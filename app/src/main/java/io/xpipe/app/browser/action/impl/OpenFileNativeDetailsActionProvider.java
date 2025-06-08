@@ -1,9 +1,8 @@
 package io.xpipe.app.browser.action.impl;
 
-import io.xpipe.app.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;

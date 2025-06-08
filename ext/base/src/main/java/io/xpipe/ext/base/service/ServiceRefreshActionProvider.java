@@ -1,18 +1,15 @@
 package io.xpipe.ext.base.service;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchStoreActionProvider;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.action.StoreAction;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
-import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

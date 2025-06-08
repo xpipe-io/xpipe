@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.util.ValidationException;
 

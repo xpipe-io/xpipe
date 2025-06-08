@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

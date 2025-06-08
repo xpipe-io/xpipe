@@ -1,9 +1,8 @@
 package io.xpipe.ext.base.identity;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.action.StoreAction;
-import io.xpipe.app.comp.store.StoreCreationDialog;
+import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.ext.DataStoreCreationCategory;
@@ -14,7 +13,6 @@ import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
-import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

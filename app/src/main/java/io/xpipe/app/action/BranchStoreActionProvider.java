@@ -1,5 +1,6 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 

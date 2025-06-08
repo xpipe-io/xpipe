@@ -1,10 +1,7 @@
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.browser.action.impl.*;
-import io.xpipe.app.browser.menu.impl.*;
-import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.ext.base.action.*;
+import io.xpipe.app.hub.action.impl.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
@@ -16,7 +13,6 @@ import io.xpipe.ext.base.store.StoreStopActionProvider;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
-    exports io.xpipe.ext.base.action;
     exports io.xpipe.ext.base.script;
     exports io.xpipe.ext.base.store;
     exports io.xpipe.ext.base.desktop;
@@ -35,10 +31,9 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
 
-    provides ActionProvider with ScanStoreActionProvider, ScanBatchStoreActionProvider, LocalIdentityConvertActionProvider,
+    provides ActionProvider with LocalIdentityConvertActionProvider,
             SimpleScriptQuickEditActionProvider, StoreStartActionProvider, StoreStopActionProvider, StorePauseActionProvider,
-            StoreRestartActionProvider, ServiceCopyAddressActionProvider, CloneStoreActionProvider, RefreshChildrenStoreActionProvider,
-            RunScriptActionProviderMenu, XPipeUrlActionProvider, BrowseStoreActionProvider, ChangeStoreIconActionProvider,
+            StoreRestartActionProvider, ServiceCopyAddressActionProvider, RunScriptActionProviderMenu,
             ServiceRefreshActionProvider, RunFileScriptMenuProvider;
     provides DataStoreProvider with FixedServiceGroupStoreProvider, CustomServiceGroupStoreProvider, CustomServiceStoreProvider,
             MappedServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopApplicationStoreProvider,

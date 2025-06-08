@@ -2,10 +2,10 @@ package io.xpipe.ext.base.store;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.OsLogoComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.SystemStateComp;
+import io.xpipe.app.hub.comp.OsLogoComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

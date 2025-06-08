@@ -2,8 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.core.process.OsType;
 
 import java.awt.*;

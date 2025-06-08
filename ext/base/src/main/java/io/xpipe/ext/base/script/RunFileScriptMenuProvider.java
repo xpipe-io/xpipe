@@ -8,7 +8,7 @@ import io.xpipe.app.browser.menu.MultiExecuteSelectionMenuProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.storage.DataStorage;

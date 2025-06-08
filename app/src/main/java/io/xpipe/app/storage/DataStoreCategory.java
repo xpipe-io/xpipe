@@ -1,6 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
+import io.xpipe.app.hub.comp.StoreSortMode;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
