@@ -29,6 +29,10 @@ public class ImpersistentStorage extends DataStorage {
             storeCategories.add(cat);
         }
         {
+            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
+            storeCategories.add(cat);
+        }
+        {
             var cat = new DataStoreCategory(
                     null,
                     DEFAULT_CATEGORY_UUID,

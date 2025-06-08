@@ -506,6 +506,14 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+    public StoreCategoryWrapper getAllMacrosCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_MACROS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
     public StoreEntryWrapper getEntryWrapper(DataStoreEntry entry) {
         return allEntries.getList().stream()
                 .filter(storeCategoryWrapper -> storeCategoryWrapper.getEntry().equals(entry))

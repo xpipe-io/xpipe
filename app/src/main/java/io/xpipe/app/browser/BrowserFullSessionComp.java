@@ -14,8 +14,8 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.ThreadHelper;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -118,21 +118,21 @@ public class BrowserFullSessionComp extends SimpleComp {
                 return true;
             }
 
-            return storeEntryWrapper.getEntry().getProvider().browserAction(model, storeEntryWrapper.getEntry(), null)
+            return storeEntryWrapper.getEntry().getProvider().launchBrowser(model, storeEntryWrapper.getEntry(), null)
                     != null;
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
-            ThreadHelper.runFailableAsync(() -> {
-                var entry = w.getEntry();
-                if (!entry.getValidity().isUsable()) {
-                    return;
-                }
+            var entry = w.getEntry();
+            if (!entry.getValidity().isUsable()) {
+                return;
+            }
 
-                var a = entry.getProvider().browserAction(model, entry, busy);
-                if (a != null) {
-                    a.execute();
-                }
-            });
+            var a = entry.getProvider().launchBrowser(model, entry, busy);
+            if (a != null) {
+                ThreadHelper.runFailableAsync(() -> {
+                    a.run();
+                });
+            }
         };
 
         var category = new SimpleObjectProperty<>(

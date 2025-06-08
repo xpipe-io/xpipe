@@ -2,17 +2,17 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
-import javafx.animation.Animation;
+import javafx.animation.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -23,6 +23,9 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import atlantafx.base.util.Animations;
+import javafx.util.Duration;
+
+import java.util.List;
 
 public class AppMainWindowContentComp extends SimpleComp {
 
@@ -35,7 +38,7 @@ public class AppMainWindowContentComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var overlay = AppDialog.getModalOverlays();
-        var loaded = AppMainWindow.getLoadedContent();
+        var loaded = AppMainWindow.getInstance().getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(64);
@@ -61,7 +64,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                 struc.get().setOpacity(0.6);
             });
 
-            var text = new LabelComp(AppMainWindow.getLoadingText());
+            var text = new LabelComp(AppMainWindow.getInstance().getLoadingText());
             text.apply(struc -> {
                 struc.get().setOpacity(0.8);
             });
@@ -109,8 +112,48 @@ public class AppMainWindowContentComp extends SimpleComp {
                 }
             });
 
+            var pickerText = new LabelComp(AppI18n.observable("actionPickerDescription"));
+            var pickerPane = new StackComp(List.of(pickerText)).styleClass("action-picker").createRegion();
+            var transition = new Timeline(
+                    new KeyFrame(
+                            Duration.millis(0),
+                            new KeyValue(pickerPane.opacityProperty(), 0.3, Interpolator.EASE_IN)),
+                    new KeyFrame(
+                            Duration.millis(400),
+                            new KeyValue(pickerPane.opacityProperty(), 1, Interpolator.EASE_BOTH)),
+                    new KeyFrame(
+                            Duration.millis(2000),
+                            new KeyValue(pickerPane.opacityProperty(), 1, Interpolator.EASE_BOTH)),
+                    new KeyFrame(
+                            Duration.millis(1300),
+                            new KeyValue(pickerPane.opacityProperty(), 0, Interpolator.EASE_OUT)));
+            var qe = new AppLayoutModel.QueueEntry(AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdi2f-format-color-marker-cancel"), () -> {
+                AppMainWindow.getInstance().getActionPickerMode().setValue(false);
+            });
+            AppMainWindow.getInstance().getActionPickerMode().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    var animate = AppCache.getBoolean("showPickScreen", true);
+                    if (animate) {
+                        pane.getChildren().add(pickerPane);
+                        transition.setOnFinished(e -> {
+                            pane.getChildren().remove(pickerPane);
+                        });
+                        transition.play();
+                    }
+                    AppCache.update("showPickScreen", false);
+                    AppLayoutModel.get().getQueueEntries().add(qe);
+                } else {
+                    AppLayoutModel.get().getQueueEntries().remove(qe);
+                    transition.stop();
+                    pane.getChildren().remove(pickerPane);
+                }
+            });
+
             return pane;
         });
+
+
+
         var modal = new ModalOverlayStackComp(bg, overlay);
         return modal.createRegion();
     }

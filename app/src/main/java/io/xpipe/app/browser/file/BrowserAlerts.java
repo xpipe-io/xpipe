@@ -59,25 +59,6 @@ public class BrowserAlerts {
                 .orElse(false);
     }
 
-    public static boolean showDeleteAlert(BrowserFileSystemTabModel model, List<FileEntry> source) {
-        var config =
-                DataStorage.get().getEffectiveCategoryConfig(model.getEntry().get());
-        if (!Boolean.TRUE.equals(config.getConfirmAllModifications())
-                && source.stream().noneMatch(entry -> entry.getKind() == FileKind.DIRECTORY)) {
-            return true;
-        }
-
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.setTitle(AppI18n.get("deleteAlertTitle"));
-                    alert.setHeaderText(AppI18n.get("deleteAlertHeader", source.size()));
-                    alert.getDialogPane()
-                            .setContent(AppWindowHelper.alertContentText(getSelectedElementsString(source)));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
-    }
-
     private static String getSelectedElementsString(List<FileEntry> source) {
         var namesHeader = AppI18n.get("selectedElements");
         var names = namesHeader + "\n"

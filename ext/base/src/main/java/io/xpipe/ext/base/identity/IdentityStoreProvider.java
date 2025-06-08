@@ -49,8 +49,4 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
         return new SimpleStringProperty(s);
     }
 
-    @Override
-    public boolean editByDefault() {
-        return true;
-    }
 }

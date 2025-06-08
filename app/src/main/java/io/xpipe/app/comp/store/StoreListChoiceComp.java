@@ -13,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -22,6 +23,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
     private final Class<T> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
+    private boolean editable;
 
     public StoreListChoiceComp(
             ListProperty<DataStoreEntryRef<T>> selectedList,
@@ -34,9 +36,14 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
         this.initialCategory = initialCategory;
     }
 
+    public StoreListChoiceComp<T> setEditable(boolean editable) {
+        this.editable = editable;
+        return this;
+    }
+
     @Override
     protected Region createSimple() {
-        var list = new ListBoxViewComp<>(
+        var listBox = new ListBoxViewComp<>(
                         selectedList,
                         selectedList,
                         t -> {
@@ -48,10 +55,28 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                                     .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
                                                     t.get().getEffectiveIconFile(), 16)
                                             .createRegion()));
+                            var up = new IconButtonComp("mdi2a-arrow-up", () -> {
+                                var index = selectedList.get().indexOf(t);
+                                if (index != -1) {
+                                    var prior = Math.max(index - 1, 0);
+                                    selectedList.get().remove(index);
+                                    selectedList.get().add(prior, t);
+                                }
+                            });
+                            var down = new IconButtonComp("mdi2a-arrow-down", () -> {
+                                var index = selectedList.get().indexOf(t);
+                                if (index != -1) {
+                                    var next = Math.min(index + 1, selectedList.size() - 1);
+                                    selectedList.get().remove(index);
+                                    selectedList.get().add(next, t);
+                                }
+                            });
                             var delete = new IconButtonComp("mdal-delete_outline", () -> {
                                 selectedList.remove(t);
                             });
-                            return new HorizontalComp(List.of(label, Comp.hspacer(), delete)).styleClass("entry");
+                            var row = editable ? new HorizontalComp(List.of(label, Comp.hspacer(), up, down, delete)).spacing(5) :
+                                    new HorizontalComp(List.of(label,  Comp.hspacer()));
+                            return row.styleClass("entry");
                         },
                         false)
                 .padding(new Insets(0))
@@ -68,7 +93,13 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                 selected.setValue(null);
             }
         });
-        var vbox = new VerticalComp(List.of(list, Comp.vspacer(5).hide(Bindings.isEmpty(selectedList)), add))
+        var list = new ArrayList<Comp<?>>();
+        list.add(listBox);
+        if (editable) {
+            list.add(Comp.vspacer(5).hide(Bindings.isEmpty(selectedList)));
+            list.add(add);
+        }
+        var vbox = new VerticalComp(list)
                 .apply(struc -> struc.get().setFillWidth(true));
         return vbox.styleClass("data-store-list-choice-comp").createRegion();
     }

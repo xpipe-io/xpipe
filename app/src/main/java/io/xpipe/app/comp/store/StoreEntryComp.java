@@ -1,5 +1,8 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.action.BranchStoreActionProvider;
+import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.action.StoreActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -7,13 +10,11 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.resources.AppResources;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
@@ -228,10 +229,10 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Region createButtonBar() {
-        var list = DerivedObservableList.wrap(getWrapper().getActionProviders(), false);
+        var list = DerivedObservableList.wrap(getWrapper().getMajorActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
-                    return button != null ? button.createRegion() : null;
+                    return button.createRegion();
                 })
                 .filtered(region -> region != null)
                 .getList();
@@ -252,26 +253,15 @@ public abstract class StoreEntryComp extends SimpleComp {
         return ig;
     }
 
-    private Comp<?> buildButton(ActionProvider p) {
-        var leaf = p.getLeafDataStoreCallSite();
-        var branch = p.getBranchDataStoreCallSite();
-        var cs = leaf != null ? leaf : branch;
-
-        if (cs == null || !cs.isMajor(getWrapper().getEntry().ref())) {
-            return null;
-        }
-
+    private Comp<?> buildButton(StoreActionProvider<?> p) {
+        var leaf = p instanceof LeafStoreActionProvider<?> l ? l : null;
+        var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
         var button = new IconButtonComp(
-                cs.getIcon(getWrapper().getEntry().ref()),
+                p.getIcon(getWrapper().getEntry().ref()),
                 leaf != null
                         ? () -> {
-                            ThreadHelper.runFailableAsync(() -> {
-                                getWrapper()
-                                        .runAction(
-                                                leaf.createAction(
-                                                        getWrapper().getEntry().ref()),
-                                                leaf.showBusy());
-                            });
+                             leaf.createAction(
+                            getWrapper().getEntry().ref()).executeAsync();
                         }
                         : null);
         if (branch != null) {
@@ -279,7 +269,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
                         branch.getChildren(getWrapper().getEntry().ref()).stream()
-                                .filter(actionProvider -> getWrapper().showActionProvider(actionProvider))
+                                .filter(actionProvider -> getWrapper().showActionProvider(actionProvider, false))
                                 .forEach(childProvider -> {
                                     var menu = buildMenuItemForAction(childProvider);
                                     if (menu != null) {
@@ -289,8 +279,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return cm;
                     }));
         }
-        button.accessibleText(cs.getName(getWrapper().getEntry().ref()).getValue());
-        button.tooltip(cs.getName(getWrapper().getEntry().ref()));
+        button.accessibleText(p.getName(getWrapper().getEntry().ref()).getValue());
+        button.tooltip(p.getName(getWrapper().getEntry().ref()));
         return button;
     }
 
@@ -316,14 +306,14 @@ public abstract class StoreEntryComp extends SimpleComp {
         var contextMenu = ContextMenuHelper.create();
 
         var hasSep = false;
-        for (var p : getWrapper().getActionProviders()) {
+        for (var p : getWrapper().getMinorActionProviders()) {
             var item = buildMenuItemForAction(p);
             if (item == null) {
                 continue;
             }
 
-            if (p.getLeafDataStoreCallSite() != null
-                    && p.getLeafDataStoreCallSite().isSystemAction()
+            if (p instanceof LeafStoreActionProvider<?> l
+                    && l.isSystemAction()
                     && !hasSep) {
                 if (contextMenu.getItems().size() > 0) {
                     contextMenu.getItems().add(new SeparatorMenuItem());
@@ -466,26 +456,26 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     private MenuItem buildMenuItemForAction(ActionProvider p) {
-        var leaf = p.getLeafDataStoreCallSite();
-        var branch = p.getBranchDataStoreCallSite();
+        var leaf = p instanceof LeafStoreActionProvider<?> l ? l : null;
+        var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null || cs.isMajor(getWrapper().getEntry().ref())) {
+        if (cs == null || cs.isMajor(getWrapper().getEntry().ref()) || (leaf != null && leaf.isDefault(getWrapper().getEntry().ref()))) {
             return null;
         }
 
         var name = cs.getName(getWrapper().getEntry().ref());
         var icon = cs.getIcon(getWrapper().getEntry().ref());
-        var item = (leaf != null && leaf.canLinkTo()) || branch != null
+        var item = branch != null
                 ? new Menu(null, icon.createGraphicNode())
                 : new MenuItem(null, icon.createGraphicNode());
 
-        var proRequired = p.getProFeatureId() != null
-                && !LicenseProvider.get().getFeature(p.getProFeatureId()).isSupported();
+        var proRequired = p.getLicensedFeatureId() != null
+                && !LicenseProvider.get().getFeature(p.getLicensedFeatureId()).isSupported();
         if (proRequired) {
             item.setDisable(true);
             item.textProperty()
-                    .bind(LicenseProvider.get().getFeature(p.getProFeatureId()).suffixObservable(name.getValue()));
+                    .bind(LicenseProvider.get().getFeature(p.getLicensedFeatureId()).suffixObservable(name.getValue()));
         } else {
             item.textProperty().bind(name);
         }
@@ -493,68 +483,15 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         if (branch != null) {
             var items = branch.getChildren(getWrapper().getEntry().ref()).stream()
-                    .filter(actionProvider -> getWrapper().showActionProvider(actionProvider))
+                    .filter(actionProvider -> getWrapper().showActionProvider(actionProvider, false))
                     .map(c -> buildMenuItemForAction(c))
                     .toList();
             menu.getItems().addAll(items);
             return menu;
-        } else if (leaf.canLinkTo()) {
-            var run = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-            run.textProperty().bind(AppI18n.observable("base.execute"));
-            run.setOnAction(event -> {
-                ThreadHelper.runFailableAsync(() -> {
-                    getWrapper()
-                            .runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
-                });
-                event.consume();
-            });
-            menu.getItems().add(run);
-
-            var sc = new MenuItem(null, new FontIcon("mdi2c-code-greater-than"));
-            var url = "xpipe://action/" + p.getId() + "/"
-                    + getWrapper().getEntry().getUuid();
-            sc.textProperty().bind(AppI18n.observable("base.createShortcut"));
-            sc.setOnAction(event -> {
-                ThreadHelper.runFailableAsync(() -> {
-                    DesktopShortcuts.createCliOpen(
-                            url,
-                            DataStorage.get()
-                                            .getStoreEntryDisplayName(
-                                                    getWrapper().getEntry()) + " ("
-                                    + p.getLeafDataStoreCallSite()
-                                            .getName(getWrapper().getEntry().ref())
-                                            .getValue() + ")");
-                });
-                event.consume();
-            });
-            menu.getItems().add(sc);
-
-            if (AppDistributionType.get().isSupportsUrls()) {
-                var l = new MenuItem(null, new FontIcon("mdi2c-clipboard-list-outline"));
-                l.textProperty().bind(AppI18n.observable("base.copyShareLink"));
-                l.setOnAction(event -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        AppActionLinkDetector.setLastDetectedAction(url);
-                        ClipboardHelper.copyUrl(url);
-                    });
-                    event.consume();
-                });
-                menu.getItems().add(l);
-            }
         }
 
         item.setOnAction(event -> {
-            if (menu != null && !event.getTarget().equals(menu)) {
-                return;
-            }
-
-            if (menu != null && menu.isDisable()) {
-                return;
-            }
-
-            ThreadHelper.runFailableAsync(() -> {
-                getWrapper().runAction(leaf.createAction(getWrapper().getEntry().ref()), leaf.showBusy());
-            });
+            leaf.createAction(getWrapper().getEntry().ref()).executeAsync();
             event.consume();
             if (event.getTarget() instanceof Menu m) {
                 m.getParentPopup().hide();

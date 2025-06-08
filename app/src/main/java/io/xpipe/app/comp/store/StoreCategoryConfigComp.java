@@ -73,11 +73,11 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 .nameAndDescription("categoryDontAllowScripts")
                 .addYesNoToggle(scripts)
                 .hide(!connectionsCategory)
-                //                .nameAndDescription("categoryConfirmAllModifications")
-                //                .addYesNoToggle(confirm)
-                //                .hide(!connectionsCategory)
                 .nameAndDescription("categoryReadOnly")
                 .addYesNoToggle(readOnly)
+                                .nameAndDescription("categoryConfirmAllModifications")
+                                .addYesNoToggle(confirm)
+                                .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
                         StoreChoiceComp.other(

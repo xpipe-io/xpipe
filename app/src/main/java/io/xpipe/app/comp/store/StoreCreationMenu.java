@@ -1,7 +1,13 @@
 package io.xpipe.app.comp.store;
 
+import atlantafx.base.layout.ModalBox;
+import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.ActionPickComp;
+import io.xpipe.app.action.ActionShortcutComp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.util.ScanDialog;
@@ -74,6 +80,22 @@ public class StoreCreationMenu {
                         DataStoreCreationCategory.IDENTITY,
                         "localIdentity"));
 
+        var macroMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, "actionMacro");
+        var item = new MenuItem();
+        item.textProperty().bind(AppI18n.observable("actionShortcut"));
+        item.setOnAction(event -> {
+            AppMainWindow.getInstance().getActionPickerMode().setValue(false);
+            AppMainWindow.getInstance().getActionPickerMode().setValue(true);
+            AbstractAction.expectPick(abstractAction -> {
+                var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(abstractAction).prefWidth(600));
+                modal.show();
+            });
+            event.consume();
+        });
+        macroMenu.getItems().addFirst(item);
+
+        menu.getItems().add(macroMenu);
+
         // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE,
         // null));
     }
@@ -97,6 +119,15 @@ public class StoreCreationMenu {
             });
             return item;
         }
+
+        return categoryMenu(name, graphic, category, defaultProvider);
+    }
+
+    private static Menu categoryMenu(
+            String name, String graphic, DataStoreCreationCategory category, String defaultProvider) {
+        var sub = DataStoreProviders.getAll().stream()
+                .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
+                .toList();
 
         var menu = new Menu();
         menu.setGraphic(new FontIcon(graphic));

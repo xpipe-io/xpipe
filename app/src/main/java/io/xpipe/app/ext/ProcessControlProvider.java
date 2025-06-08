@@ -16,7 +16,7 @@ public abstract class ProcessControlProvider {
 
     public static void init(ModuleLayer layer) {
         INSTANCE = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
-                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get())
+                .map(p -> p.get())
                 .findFirst()
                 .orElseThrow();
     }

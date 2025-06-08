@@ -1,0 +1,36 @@
+package io.xpipe.app.browser.file;
+
+import io.xpipe.app.storage.DataStoreEntry;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Optional;
+
+public interface BrowserFileOutput {
+
+    public static BrowserFileOutput none() {
+        return new BrowserFileOutput() {
+
+            @Override
+            public Optional<DataStoreEntry> target() {
+                return Optional.empty();
+            }
+
+            @Override
+            public boolean hasOutput() {
+                return false;
+            }
+
+            @Override
+            public OutputStream open() throws IOException {
+                return null;
+            }
+        };
+    }
+
+    Optional<DataStoreEntry> target();
+
+    boolean hasOutput();
+
+    OutputStream open() throws Exception;
+}

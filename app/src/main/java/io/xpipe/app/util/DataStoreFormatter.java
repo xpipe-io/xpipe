@@ -2,9 +2,28 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.storage.DataStoreEntry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 public class DataStoreFormatter {
+
+    public static String camelCaseToName(String camelCase) {
+        var id = camelCase;
+        var matcher = Pattern.compile("[A-Z][a-z]+").matcher(id);
+        var name = new ArrayList<String>();
+        while (matcher.find()) {
+            name.add(matcher.group());
+        }
+
+        var firstMatcher = Pattern.compile("^[a-z]+").matcher(id);
+        if (firstMatcher.find()) {
+            var s = firstMatcher.group();
+            name.addFirst(s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase());
+        }
+
+        return String.join(" ", name);
+    }
 
     public static String join(String... elements) {
         return String.join(" ", Arrays.stream(elements).filter(s -> s != null).toList());

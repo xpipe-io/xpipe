@@ -37,6 +37,7 @@ public abstract class DataStorage {
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
+    public static final UUID ALL_MACROS_CATEGORY_UUID = UUID.fromString("f65b769a-cec9-4f30-ad58-95fe68d79c2c");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
 
@@ -128,6 +129,10 @@ public abstract class DataStorage {
         return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
     }
 
+    public DataStoreCategory getAllMacrosCategory() {
+        return getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID).orElseThrow();
+    }
+
     public void forceRewrite() {
         TrackEvent.info("Starting forced storage rewrite");
         getStoreEntries().forEach(dataStoreEntry -> {
@@ -200,6 +205,15 @@ public abstract class DataStorage {
             storeCategories.add(cat);
         } else {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
+        }
+
+        var allMacros = getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID);
+        if (allMacros.isEmpty()) {
+            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
+            cat.setDirectory(categoriesDir.resolve(ALL_MACROS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        } else {
+            allMacros.get().setParentCategory(null);
         }
 
         if (supportsSync()) {

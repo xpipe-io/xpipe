@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.store;
 
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.action.*;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
@@ -24,9 +24,8 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public class StoreEntryWrapper {
@@ -37,7 +36,9 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final ListProperty<ActionProvider> actionProviders =
+    private final ListProperty<StoreActionProvider<?>> majorActionProviders =
+            new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final ListProperty<StoreActionProvider<?>> minorActionProviders =
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final Property<ActionProvider> defaultActionProvider = new SimpleObjectProperty<>();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
@@ -82,21 +83,8 @@ public class StoreEntryWrapper {
                 AppPrefs.get().censorMode(),
                 summary);
         this.shownInformation = new SimpleObjectProperty<>();
-        ActionProvider.ALL_STANDALONE.stream()
-                .filter(dataStoreActionProvider -> {
-                    return !entry.isDisabled()
-                            && dataStoreActionProvider.getLeafDataStoreCallSite() != null
-                            && dataStoreActionProvider
-                                    .getLeafDataStoreCallSite()
-                                    .getApplicableClass()
-                                    .isAssignableFrom(entry.getStore().getClass());
-                })
-                .sorted(Comparator.comparing(actionProvider ->
-                        actionProvider.getLeafDataStoreCallSite().isSystemAction()))
-                .forEach(dataStoreActionProvider -> {
-                    actionProviders.add(dataStoreActionProvider);
-                });
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
+
         setupListeners();
     }
 
@@ -244,30 +232,48 @@ public class StoreEntryWrapper {
         }
 
         if (!isInStorage()) {
-            actionProviders.clear();
+            majorActionProviders.clear();
             defaultActionProvider.setValue(null);
         } else {
             try {
-                var defaultProvider = ActionProvider.ALL_STANDALONE.stream()
+                var defaultProvider = ActionProvider.ALL.stream()
                         .filter(e -> entry.getStore() != null
-                                && e.getDefaultDataStoreCallSite() != null
-                                && e.getDefaultDataStoreCallSite()
-                                        .getApplicableClass()
+                                && e instanceof LeafStoreActionProvider<?> def
+                                && (entry.getValidity().isUsable() || (!def.requiresValidStore() && entry.getProvider() != null))
+                                && def.getApplicableClass()
                                         .isAssignableFrom(entry.getStore().getClass())
-                                && e.getDefaultDataStoreCallSite().isApplicable(entry.ref()))
+                                && def.isApplicable(entry.ref())
+                                && def.isDefault(entry.ref()))
                         .findFirst()
-                        .orElse(null);
+                        .orElse(new EditStoreActionProvider());
                 this.defaultActionProvider.setValue(defaultProvider);
 
-                var newProviders = ActionProvider.ALL_STANDALONE.stream()
+                var newMajorProviders = ActionProvider.ALL.stream()
+                        .map(actionProvider -> actionProvider instanceof StoreActionProvider<?> sa ? sa : null)
+                        .filter(Objects::nonNull)
                         .filter(dataStoreActionProvider -> {
-                            return showActionProvider(dataStoreActionProvider);
+                            return showActionProvider(dataStoreActionProvider, true);
                         })
-                        .sorted(Comparator.comparing(actionProvider -> actionProvider.getLeafDataStoreCallSite() != null
-                                && actionProvider.getLeafDataStoreCallSite().isSystemAction()))
                         .toList();
-                if (!actionProviders.equals(newProviders)) {
-                    actionProviders.setAll(newProviders);
+                if (!majorActionProviders.equals(newMajorProviders)) {
+                    majorActionProviders.setAll(newMajorProviders);
+                }
+
+                var newMinorProviders = ActionProvider.ALL.stream()
+                        .map(actionProvider -> actionProvider instanceof StoreActionProvider<?> sa ? sa : null)
+                        .filter(Objects::nonNull)
+                        .filter(dataStoreActionProvider -> {
+                            return showActionProvider(dataStoreActionProvider, false);
+                        })
+                        .collect(Collectors.toCollection(ArrayList::new));
+                newMinorProviders.removeIf(storeActionProvider -> {
+                    return newMajorProviders.stream().anyMatch(mj -> {
+                        return mj instanceof BranchStoreActionProvider<?> branch && branch.getChildren(entry.ref()).stream()
+                                .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
+                    });
+                });
+                if (!minorActionProviders.equals(newMinorProviders)) {
+                    minorActionProviders.setAll(newMinorProviders);
                 }
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable(ex).handle();
@@ -294,22 +300,22 @@ public class StoreEntryWrapper {
         cache.getValue();
     }
 
-    public boolean showActionProvider(ActionProvider p) {
-        var leaf = p.getLeafDataStoreCallSite();
-        if (leaf != null) {
+    public boolean showActionProvider(ActionProvider p, boolean major) {
+        if (p instanceof LeafStoreActionProvider<?> leaf) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
-                    && leaf.isApplicable(entry.ref());
+                    && leaf.isApplicable(entry.ref())
+                    && (!major || leaf.isMajor(entry.ref()));
         }
 
-        var branch = p.getBranchDataStoreCallSite();
-        if (branch != null
+        if (p instanceof BranchStoreActionProvider<?> branch
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
-                && branch.isApplicable(entry.ref())) {
+                && branch.isApplicable(entry.ref())
+                && (!major || branch.isMajor(entry.ref()))) {
             return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
-                return showActionProvider(child);
+                return showActionProvider(child, false);
             });
         }
 
@@ -336,23 +342,12 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            var act = found.getDefaultDataStoreCallSite().createAction(entry.ref());
-            runAction(act, found.getDefaultDataStoreCallSite().showBusy());
+            if (found instanceof LeafStoreActionProvider<?> def) {
+                var act = def.createAction(entry.ref());
+                act.executeAsync();
+            }
         } else {
             entry.setExpanded(!entry.isExpanded());
-        }
-    }
-
-    public void runAction(ActionProvider.Action action, boolean showBusy) throws Exception {
-        try {
-            if (showBusy) {
-                getEntry().incrementBusyCounter();
-            }
-            action.execute();
-        } finally {
-            if (showBusy) {
-                getEntry().decrementBusyCounter();
-            }
         }
     }
 

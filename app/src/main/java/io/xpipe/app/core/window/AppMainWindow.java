@@ -52,10 +52,13 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+    private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
-    private static final Property<String> loadingText = new SimpleObjectProperty<>();
+    private BooleanProperty actionPickerMode = new SimpleBooleanProperty(false);
+
+    @Getter
+    private final Property<String> loadingText = new SimpleObjectProperty<>();
 
     private boolean shown = false;
 
@@ -129,7 +132,10 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        var w = getInstance();
+        if (w != null) {
+            w.loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        }
     }
 
     public ObservableDoubleValue displayScale() {
@@ -140,7 +146,7 @@ public class AppMainWindow {
         return getStage().outputScaleXProperty();
     }
 
-    public static synchronized void initContent() {
+    public void initContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             try {
                 TrackEvent.info("Window content node creation started");

@@ -1,18 +1,18 @@
-import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.browser.action.impl.*;
+import io.xpipe.app.browser.menu.impl.*;
+import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.action.*;
-import io.xpipe.ext.base.browser.*;
-import io.xpipe.ext.base.browser.compress.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
-import io.xpipe.ext.base.store.StorePauseAction;
-import io.xpipe.ext.base.store.StoreRestartAction;
-import io.xpipe.ext.base.store.StoreStartAction;
-import io.xpipe.ext.base.store.StoreStopAction;
+import io.xpipe.ext.base.store.StorePauseActionProvider;
+import io.xpipe.ext.base.store.StoreRestartActionProvider;
+import io.xpipe.ext.base.store.StoreStartActionProvider;
+import io.xpipe.ext.base.store.StoreStopActionProvider;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base;
@@ -35,76 +35,13 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
 
-    provides BrowserAction with
-            DownloadAction,
-            RunScriptAction,
-            FollowLinkAction,
-            BackAction,
-            ForwardAction,
-            RefreshDirectoryAction,
-            OpenFileDefaultAction,
-            OpenFileWithAction,
-            OpenDirectoryAction,
-            OpenDirectoryInNewTabAction,
-            OpenTerminalAction,
-            OpenNativeFileDetailsAction,
-            BrowseInNativeManagerAction,
-            EditFileAction,
-            RunAction,
-            ComputeDirectorySizesAction,
-            ChmodAction,
-            ChownAction,
-            ChgrpAction,
-            CopyAction,
-            CopyPathAction,
-            PasteAction,
-            NewItemAction,
-            FileCompressAction,
-            DirectoryCompressAction,
-            RenameAction,
-            DeleteAction,
-            DeleteLinkAction,
-            UnzipHereUnixAction,
-            UnzipDirectoryUnixAction,
-            UnzipHereWindowsAction,
-            UnzipDirectoryWindowsAction,
-            UntarHereAction,
-            UntarGzHereAction,
-            UntarDirectoryAction,
-            UntarGzDirectoryAction,
-            JavapAction,
-            JarAction;
-    provides ActionProvider with
-            ScanStoreAction,
-            LocalIdentityConvertAction,
-            SimpleScriptQuickEditAction,
-            StoreStartAction,
-            StoreStopAction,
-            StorePauseAction,
-            StoreRestartAction,
-            ServiceCopyAddressAction,
-            CloneStoreAction,
-            RefreshChildrenStoreAction,
-            RunScriptActionMenu,
-            LaunchStoreAction,
-            XPipeUrlAction,
-            EditStoreAction,
-            EditScriptStoreAction,
-            BrowseStoreAction,
-            ChangeStoreIconAction,
-            ServiceRefreshAction;
-    provides DataStoreProvider with
-            FixedServiceGroupStoreProvider,
-            CustomServiceGroupStoreProvider,
-            CustomServiceStoreProvider,
-            MappedServiceStoreProvider,
-            FixedServiceStoreProvider,
-            SimpleScriptStoreProvider,
-            DesktopApplicationStoreProvider,
-            LocalIdentityStoreProvider,
-            SyncedIdentityStoreProvider,
-            PasswordManagerIdentityStoreProvider,
-            ScriptGroupStoreProvider;
-    provides DataStorageExtensionProvider with
-            ScriptDataStorageProvider;
+    provides ActionProvider with ScanStoreActionProvider, ScanBatchStoreActionProvider, LocalIdentityConvertActionProvider,
+            SimpleScriptQuickEditActionProvider, StoreStartActionProvider, StoreStopActionProvider, StorePauseActionProvider,
+            StoreRestartActionProvider, ServiceCopyAddressActionProvider, CloneStoreActionProvider, RefreshChildrenStoreActionProvider,
+            RunScriptActionProviderMenu, XPipeUrlActionProvider, BrowseStoreActionProvider, ChangeStoreIconActionProvider,
+            ServiceRefreshActionProvider, RunFileScriptMenuProvider;
+    provides DataStoreProvider with FixedServiceGroupStoreProvider, CustomServiceGroupStoreProvider, CustomServiceStoreProvider,
+            MappedServiceStoreProvider, FixedServiceStoreProvider, SimpleScriptStoreProvider, DesktopApplicationStoreProvider,
+            LocalIdentityStoreProvider, SyncedIdentityStoreProvider, ScriptGroupStoreProvider;
+    provides DataStorageExtensionProvider with ScriptDataStorageProvider;
 }

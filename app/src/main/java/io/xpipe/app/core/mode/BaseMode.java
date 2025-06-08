@@ -1,5 +1,6 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.BrowserFullSessionModel;
@@ -10,7 +11,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconManager;
@@ -121,7 +122,7 @@ public class BaseMode extends OperationMode {
                     iconsLoaded.await();
                     localPrefsLoaded.await();
                     AppMainWindow.loadingText("loadingUserInterface");
-                    AppMainWindow.initContent();
+                    AppMainWindow.getInstance().initContent();
                     TrackEvent.info("Window content initialization thread completed");
                 },
                 () -> {
@@ -170,7 +171,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void finalTeardown() throws Exception {
         TrackEvent.withInfo("Base mode shutdown started").build();
-        // In order of importance for shutdown signals that might kill us before we finish
+        AbstractAction.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();

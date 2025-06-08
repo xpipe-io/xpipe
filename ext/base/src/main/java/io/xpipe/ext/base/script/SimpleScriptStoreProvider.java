@@ -52,11 +52,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public boolean editByDefault() {
-        return true;
-    }
-
-    @Override
     public boolean shouldShowScan() {
         return false;
     }

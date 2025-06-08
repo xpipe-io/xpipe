@@ -1,5 +1,13 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.deser.DefaultDeserializationContext;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.TokenBuffer;
+import io.xpipe.app.action.*;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.storage.*;
@@ -7,6 +15,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -23,6 +32,8 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class AppJacksonModule extends SimpleModule {
@@ -224,10 +235,7 @@ public class AppJacksonModule extends SimpleModule {
                 return;
             }
 
-            jgen.writeStartObject();
-            jgen.writeFieldName("storeId");
             jgen.writeString(value.get().getUuid().toString());
-            jgen.writeEndObject();
         }
     }
 
@@ -235,14 +243,23 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var obj = (ObjectNode) p.getCodec().readTree(p);
-            if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
-                return null;
-            }
+            JsonNode tree = p.getCodec().readTree(p);
+            String text;
+            if (tree.isObject()) {
+                var obj = (ObjectNode) tree;
+                if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
+                    return null;
+                }
 
-            var text = obj.required("storeId").asText();
-            if (text.isBlank()) {
-                return null;
+                text = obj.required("storeId").asText();
+                if (text.isBlank()) {
+                    return null;
+                }
+            } else {
+                if (!tree.isTextual()) {
+                    return null;
+                }
+                text = tree.asText();
             }
 
             var id = UUID.fromString(text);

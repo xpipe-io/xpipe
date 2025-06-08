@@ -6,6 +6,7 @@ import io.xpipe.core.store.*;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
+import lombok.Getter;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,7 +24,9 @@ import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
 
+    @Getter
     private final FileEntry target;
+    @Getter
     private final List<FileEntry> files;
     private final BrowserFileTransferMode transferMode;
     private final boolean checkConflicts;

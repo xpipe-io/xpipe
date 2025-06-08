@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserActionProviders;
+import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
@@ -336,7 +337,7 @@ public final class BrowserFileListComp extends SimpleComp {
             }
 
             var selected = fileList.getSelection();
-            var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
+            var action = BrowserMenuProviders.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
                             && browserAction.isActive(fileList.getFileSystemModel(), selected))
                     .filter(browserAction -> browserAction.getShortcut() != null)
@@ -345,9 +346,11 @@ public final class BrowserFileListComp extends SimpleComp {
             action.ifPresent(browserAction -> {
                 // Prevent concurrent modification by creating copy on platform thread
                 var selectionCopy = new ArrayList<>(selected);
-                ThreadHelper.runFailableAsync(() -> {
+                try {
                     browserAction.execute(fileList.getFileSystemModel(), selectionCopy);
-                });
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 event.consume();
             });
             if (action.isPresent()) {

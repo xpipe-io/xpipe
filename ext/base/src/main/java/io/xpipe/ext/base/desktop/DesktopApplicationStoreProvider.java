@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.desktop;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.store.StoreChoiceComp;
 import io.xpipe.app.comp.store.StoreEntryWrapper;
@@ -12,6 +13,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 
+import io.xpipe.core.util.FailableRunnable;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,25 +34,21 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public ActionProvider.Action browserAction(
+    public FailableRunnable<Exception> launchBrowser(
             BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
-        return launchAction(store);
+        return launch(store);
     }
 
     @Override
-    public ActionProvider.Action launchAction(DataStoreEntry store) {
-        return new ActionProvider.Action() {
-
-            @Override
-            public void execute() throws Exception {
-                DesktopApplicationStore s = store.getStore().asNeeded();
-                var baseEntry = s.getDesktop().get();
-                var baseActivate = baseEntry.getProvider().activateAction(baseEntry);
-                if (baseActivate != null) {
-                    baseActivate.execute();
-                }
-                s.getDesktop().getStore().runDesktopApplication(store.getName(), s);
+    public FailableRunnable<Exception> launch(DataStoreEntry store) {
+        return () -> {
+            DesktopApplicationStore s = store.getStore().asNeeded();
+            var baseEntry = s.getDesktop().get();
+            var baseActivate = baseEntry.getProvider().activateAction(baseEntry);
+            if (baseActivate != null) {
+                baseActivate.run();
             }
+            s.getDesktop().getStore().runDesktopApplication(store.getName(), s);
         };
     }
 

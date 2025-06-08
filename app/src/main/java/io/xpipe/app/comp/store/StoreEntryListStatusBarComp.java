@@ -1,18 +1,17 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.action.BatchStoreActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -47,8 +46,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         l.apply(struc -> {
             struc.get().setAlignment(Pos.CENTER);
         });
-        var busy = new SimpleBooleanProperty();
-        var actions = new HorizontalComp(createActions(busy));
+        var actions = new HorizontalComp(createActions());
         actions.spacing(2);
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
@@ -69,11 +67,10 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         bar.prefHeight(40);
         bar.styleClass("bar");
         bar.styleClass("store-entry-list-status-bar");
-        bar.disable(busy);
         return bar.createRegion();
     }
 
-    private ObservableList<Comp<?>> createActions(BooleanProperty busy) {
+    private ObservableList<Comp<?>> createActions() {
         var l = DerivedObservableList.<ActionProvider>arrayList(true);
         StoreViewState.get().getEffectiveBatchModeSelection().getList().addListener((ListChangeListener<
                         ? super StoreEntryWrapper>)
@@ -81,7 +78,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
                     l.setContent(getCompatibleActionProviders());
                 });
         return l.<Comp<?>>mapped(actionProvider -> {
-                    return buildButton(actionProvider, busy);
+                    return buildButton(actionProvider);
                 })
                 .getList();
     }
@@ -96,7 +93,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         for (StoreEntryWrapper w : l) {
             var actions = ActionProvider.ALL.stream()
                     .filter(actionProvider -> {
-                        var s = actionProvider.getBatchDataStoreCallSite();
+                        var s = actionProvider instanceof BatchStoreActionProvider<?> b ? b : null;
                         if (s == null) {
                             return false;
                         }
@@ -119,9 +116,8 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> Comp<?> buildButton(ActionProvider p, BooleanProperty busy) {
-        ActionProvider.BatchDataStoreCallSite<T> s =
-                (ActionProvider.BatchDataStoreCallSite<T>) p.getBatchDataStoreCallSite();
+    private <T extends DataStore> Comp<?> buildButton(ActionProvider p) {
+        BatchStoreActionProvider<T> s = (BatchStoreActionProvider<T>) p;
         if (s == null) {
             return Comp.empty();
         }
@@ -135,14 +131,14 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
                 return;
             }
 
-            runActions(s, busy);
+            runActions(s);
         });
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
                         s.getChildren(childrenRefs.getList()).forEach(childProvider -> {
-                            var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider, busy);
+                            var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider);
                             cm.getItems().add(menu);
                         });
                         return cm;
@@ -153,9 +149,8 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
     @SuppressWarnings("unchecked")
     private <T extends DataStore> MenuItem buildMenuItemForAction(
-            List<DataStoreEntryRef<T>> batch, ActionProvider a, BooleanProperty busy) {
-        ActionProvider.BatchDataStoreCallSite<T> s =
-                (ActionProvider.BatchDataStoreCallSite<T>) a.getBatchDataStoreCallSite();
+            List<DataStoreEntryRef<T>> batch, ActionProvider a) {
+        BatchStoreActionProvider<T> s = (BatchStoreActionProvider<T>) a;
         var name = s.getName();
         var icon = s.getIcon();
         var children = s.getChildren(batch);
@@ -164,8 +159,8 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             menu.textProperty().bind(name);
             menu.setGraphic(icon.createGraphicNode());
             var items = children.stream()
-                    .filter(actionProvider -> actionProvider.getBatchDataStoreCallSite() != null)
-                    .map(c -> buildMenuItemForAction(batch, c, busy))
+                    .filter(actionProvider -> actionProvider instanceof BatchStoreActionProvider<?>)
+                    .map(c -> buildMenuItemForAction(batch, c))
                     .toList();
             menu.getItems().addAll(items);
             return menu;
@@ -174,7 +169,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             item.textProperty().bind(name);
             item.setGraphic(icon.createGraphicNode());
             item.setOnAction(event -> {
-                runActions(s, busy);
+                runActions(s);
                 event.consume();
                 if (event.getTarget() instanceof Menu m) {
                     m.getParentPopup().hide();
@@ -185,17 +180,13 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> void runActions(ActionProvider.BatchDataStoreCallSite<?> s, BooleanProperty busy) {
-        ThreadHelper.runFailableAsync(() -> {
-            var l = new ArrayList<>(
-                    StoreViewState.get().getEffectiveBatchModeSelection().getList());
-            var mapped = l.stream().map(w -> w.getEntry().<T>ref()).toList();
-            var action = ((ActionProvider.BatchDataStoreCallSite<T>) s).createAction(mapped);
-            if (action != null) {
-                BooleanScope.executeExclusive(busy, () -> {
-                    action.execute();
-                });
-            }
-        });
+    private <T extends DataStore> void runActions(BatchStoreActionProvider<?> s) {
+        var l = new ArrayList<>(
+                StoreViewState.get().getEffectiveBatchModeSelection().getList());
+        var mapped = l.stream().map(w -> w.getEntry().<T>ref()).toList();
+        var action = ((BatchStoreActionProvider<T>) s).createBatchAction(mapped);
+        if (action != null) {
+            action.executeAsync();
+        }
     }
 }

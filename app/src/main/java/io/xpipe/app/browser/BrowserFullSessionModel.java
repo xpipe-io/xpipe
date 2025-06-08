@@ -232,7 +232,12 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             }
         }
         if (path != null) {
-            model.initWithGivenDirectory(path.apply(model).toDirectory());
+            var applied = path.apply(model);
+            if (applied != null) {
+                model.initWithGivenDirectory(applied.toDirectory());
+            } else {
+                model.initWithDefaultDirectory();
+            }
         } else {
             model.initWithDefaultDirectory();
         }

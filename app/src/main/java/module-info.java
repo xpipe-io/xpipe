@@ -1,5 +1,11 @@
+import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.action.EditStoreActionProvider;
+import io.xpipe.app.action.LaunchStoreActionProvider;
 import io.xpipe.app.beacon.impl.*;
-import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserActionProvider;
+import io.xpipe.app.browser.action.impl.*;
+import io.xpipe.app.browser.menu.impl.*;
+import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.EventHandler;
@@ -43,6 +49,11 @@ open module io.xpipe.app {
     exports io.xpipe.app.pwman;
     exports io.xpipe.app.rdp;
     exports io.xpipe.app.vnc;
+    exports io.xpipe.app.action;
+    exports io.xpipe.app.browser.menu;
+    exports io.xpipe.app.browser.menu.impl;
+    exports io.xpipe.app.browser.action.impl;
+    exports io.xpipe.app.browser.menu.impl.compress;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -96,18 +107,28 @@ open module io.xpipe.app {
     requires org.jetbrains.annotations;
 
     uses TerminalLauncher;
-    uses io.xpipe.app.ext.ActionProvider;
+    uses ActionProvider;
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
     uses ModuleLayerLoader;
     uses ScanProvider;
-    uses BrowserAction;
+    uses BrowserActionProvider;
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
     uses io.xpipe.beacon.BeaconInterface;
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
+
+    provides ActionProvider with LaunchStoreActionProvider, EditStoreActionProvider, DownloadMenuProvider, RunCommandInBrowserActionProvider, RunCommandInBackgroundActionProvider, RunCommandInTerminalActionProvider, FollowLinkMenuProvider, BackMenuProvider, ForwardMenuProvider
+            , RefreshDirectoryMenuProvider, OpenFileDefaultMenuProvider, OpenFileWithMenuProvider, OpenDirectoryMenuProvider,
+            OpenDirectoryInNewTabMenuProvider, OpenTerminalMenuProvider, OpenNativeFileDetailsMenuProvider, BrowseInNativeManagerActionProvider,
+            ApplyFileEditActionProvider, TransferFilesActionProvider,
+            EditFileMenuProvider, RunFileMenuProvider, ChmodMenuProvider, ChownMenuProvider, ChgrpActionProvider, ChgrpMenuProvider,
+            CopyMenuProvider, CopyPathMenuProvider, PasteMenuProvider, NewItemMenuProvider, FileCompressActionProvider, DirectoryCompressActionProvider, RenameMenuProvider, DeleteActionProvider, DeleteMenuProvider, ChownActionProvider, ChmodActionProvider
+            , UnzipHereUnixMenuProvider, UnzipDirectoryUnixMenuProvider, UnzipHereWindowsActionProvider, UnzipDirectoryWindowsActionProvider,
+            UntarHereMenuProvider, UntarGzHereMenuProvider, UntarDirectoryMenuProvider, UntarGzDirectoryMenuProvider, JavapMenuProvider,
+            JarMenuProvider, NewFileActionProvider, NewDirectoryActionProvider, NewLinkActionProvider, OpenDirectoryActionProvider, OpenFileDefaultActionProvider, OpenFileNativeDetailsActionProvider, OpenFileWithActionProvider, OpenTerminalActionProvider;
 
     provides Module with
             AppJacksonModule;
@@ -116,7 +137,6 @@ open module io.xpipe.app {
             DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
-            BrowserAction.Loader,
             LicenseProvider.Loader,
             ScanProvider.Loader;
     provides DataStateProvider with

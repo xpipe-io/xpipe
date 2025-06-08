@@ -1,9 +1,11 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
-import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -107,8 +109,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             this.fileSystem = fs;
 
             this.cache = new BrowserFileSystemCache(this);
-            for (BrowserAction b : BrowserAction.ALL) {
-                b.init(this);
+            for (var a : ActionProvider.ALL) {
+                if (a instanceof BrowserMenuItemProvider ba) {
+                    ba.init(this);
+                }
             }
         });
         this.savedState = BrowserFileSystemSavedState.loadForStore(this);
@@ -415,7 +419,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
                         entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
-                op.execute();
+                var action = TransferFilesActionProvider.Action.builder().operation(op).target(this.entry.asNeeded()).build();
+                action.executeSync();
                 refreshSync();
             });
         });
@@ -433,52 +438,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 startIfNeeded();
                 var op = new BrowserFileTransferOperation(
                         target, files, mode, true, progress::setValue, transferCancelled);
-                op.execute();
-                refreshSync();
-            });
-        });
-    }
-
-    public void createDirectoryAsync(String name) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
-        if (getCurrentDirectory() == null) {
-            return;
-        }
-
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-
-                startIfNeeded();
-                var abs = getCurrentDirectory().getPath().join(name);
-                if (fileSystem.directoryExists(abs)) {
-                    throw ErrorEvent.expected(
-                            new IllegalStateException(String.format("Directory %s already exists", abs)));
-                }
-
-                fileSystem.mkdirs(abs);
-                refreshSync();
-            });
-        });
-    }
-
-    public void createLinkAsync(String linkName, FilePath targetFile) {
-        if (linkName == null || linkName.isBlank() || targetFile == null) {
-            return;
-        }
-
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-
-                if (getCurrentDirectory() == null) {
-                    return;
-                }
-
-                startIfNeeded();
-                var abs = getCurrentDirectory().getPath().join(linkName);
-                fileSystem.symbolicLink(abs, targetFile);
+                var action = TransferFilesActionProvider.Action.builder().operation(op).target(entry.asNeeded()).build();
+                action.executeSync();
                 refreshSync();
             });
         });
@@ -521,25 +482,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void createFileAsync(String name) {
-        if (name == null || name.isBlank()) {
-            return;
-        }
-
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-
-                if (getCurrentDirectory() == null) {
-                    return;
-                }
-
-                var abs = getCurrentDirectory().getPath().join(name);
-                fileSystem.touch(abs);
-                refreshSync();
-            });
-        });
-    }
-
     public boolean isClosed() {
         return false;
     }
@@ -558,23 +500,26 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         ThreadHelper.runFailableAsync(() -> {
 
             BooleanScope.executeExclusive(busy, () -> {
-                if (fileSystem.getShell().isPresent()) {
-                    var dock = shouldLaunchSplitTerminal() && dockIfPossible;
-                    var uuid = UUID.randomUUID();
-                    terminalRequests.add(uuid);
-                    if (dock
-                            && browserModel instanceof BrowserFullSessionModel fullSessionModel
-                            && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
-                        fullSessionModel.splitTab(
-                                this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
-                    }
-                    TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
-
-                    // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
-                    startIfNeeded();
-                }
+                openTerminalSync(name, directory, processControl, dockIfPossible);
             });
         });
+    }
+
+    public void openTerminalSync(
+            String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible) throws Exception {
+        var dock = shouldLaunchSplitTerminal() && dockIfPossible;
+        var uuid = UUID.randomUUID();
+        terminalRequests.add(uuid);
+        if (dock
+                && browserModel instanceof BrowserFullSessionModel fullSessionModel
+                && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
+            fullSessionModel.splitTab(
+                    this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
+        }
+        TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
+
+        // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
+        startIfNeeded();
     }
 
     public void backSync(int i) {

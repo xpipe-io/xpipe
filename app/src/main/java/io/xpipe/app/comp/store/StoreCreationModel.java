@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.store;
 
+import io.xpipe.app.action.LaunchStoreActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
@@ -166,10 +167,8 @@ public class StoreCreationModel {
 
     void connect() {
         var temp = DataStoreEntry.createTempWrapper(store.getValue());
-        var action = provider.getValue().launchAction(temp);
-        ThreadHelper.runFailableAsync(() -> {
-            action.execute();
-        });
+        var action = LaunchStoreActionProvider.Action.builder().ref(temp.ref()).build();
+        action.executeAsync();
     }
 
     boolean hasBeenModified() {
@@ -288,7 +287,7 @@ public class StoreCreationModel {
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
                         ? (p.getId().equals("scriptGroup") ? "scriptGroup" : "script")
-                        : "identity";
+                        : p.getCreationCategory().getCategory().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID) ? "identity" : "macro";
         return nameKey;
     }
 }

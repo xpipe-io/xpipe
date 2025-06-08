@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.StoreStateFormat;
+import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;
@@ -20,32 +21,22 @@ import javafx.beans.value.ObservableValue;
 public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
-    default ActionProvider.Action launchAction(DataStoreEntry entry) {
-        return new ActionProvider.Action() {
-            @Override
-            public void execute() throws Exception {
-                var replacement = ProcessControlProvider.get().replace(entry.ref());
-                ShellStore store = replacement.getStore().asNeeded();
-                var control = store.standaloneControl();
-                ScriptStoreSetup.controlWithDefaultScripts(control);
-                TerminalPromptManager.configurePromptScript(control);
-                TerminalLauncher.open(
-                        replacement.get(),
-                        DataStorage.get().getStoreEntryDisplayName(replacement.get()),
-                        null,
-                        control);
-            }
+    default FailableRunnable<Exception> launch(DataStoreEntry entry) {
+        return () -> {
+            var replacement = ProcessControlProvider.get().replace(entry.ref());
+            ShellStore store = replacement.getStore().asNeeded();
+            var control = store.standaloneControl();
+            ScriptStoreSetup.controlWithDefaultScripts(control);
+            TerminalPromptManager.configurePromptScript(control);
+            TerminalLauncher.open(replacement.get(), DataStorage.get().getStoreEntryDisplayName(replacement.get()), null, control);
         };
     }
 
     @Override
-    default ActionProvider.Action browserAction(
+    default FailableRunnable<Exception> launchBrowser(
             BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
-        return new ActionProvider.Action() {
-            @Override
-            public void execute() {
-                sessionModel.openFileSystemAsync(store.ref(), null, busy);
-            }
+        return () -> {
+            sessionModel.openFileSystemAsync(store.ref(), null, busy);
         };
     }
 

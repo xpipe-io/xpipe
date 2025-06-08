@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
+import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
@@ -152,7 +154,7 @@ public class FileBridge {
             Object key,
             BooleanScope scope,
             FailableSupplier<InputStream> input,
-            FailableFunction<Long, OutputStream, Exception> output,
+            FailableFunction<Long, BrowserFileOutput, Exception> output,
             Consumer<String> consumer) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
@@ -186,20 +188,17 @@ public class FileBridge {
 
         var entry = new Entry(file, key, keyName, scope, (in, size) -> {
             if (output != null) {
-                if (scope != null) {
-                    try (var ignored = scope.start()) {
-                        try (var out = output.apply(size)) {
-                            in.transferTo(out);
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).handle();
-                        }
+                var effectiveScope = scope != null ? scope : BooleanScope.noop();
+                try (var ignored = effectiveScope.start()) {
+                    var outSupplier = output.apply(size);
+                    if (!outSupplier.hasOutput()) {
+                        return;
                     }
-                } else {
-                    try (var out = output.apply(size)) {
-                        in.transferTo(out);
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                    }
+
+                    var action = ApplyFileEditActionProvider.Action.builder().input(in).output(outSupplier).target(file.getFileName().toString()).build();
+                    action.executeSync();
+                } catch (Exception ex) {
+                    ErrorEvent.fromThrowable(ex).handle();
                 }
             }
         });
