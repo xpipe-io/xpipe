@@ -156,7 +156,8 @@ public class StoreViewState {
                     filter,
                     activeCategory,
                     entriesListVisibilityObservable,
-                    entriesListUpdateObservable);
+                    entriesListUpdateObservable,
+                    new ReadOnlyBooleanWrapper(true));
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), 0);

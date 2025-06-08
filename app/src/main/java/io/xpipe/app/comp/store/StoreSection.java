@@ -8,6 +8,7 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
@@ -107,12 +108,19 @@ public class StoreSection {
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
-            ObservableIntegerValue updateObservable) {
+            ObservableIntegerValue updateObservable,
+            ObservableValue<Boolean> enabled
+            ) {
         var topLevel = all.filtered(
                 section -> {
+                    if (!enabled.getValue()) {
+                        return false;
+                    }
+
                     return DataStorage.get()
                             .isRootEntry(section.getEntry(), category.getValue().getCategory());
                 },
+                enabled,
                 category,
                 updateObservable);
         var cached = topLevel.mapped(storeEntryWrapper -> create(
@@ -125,10 +133,15 @@ public class StoreSection {
                 filterString,
                 category,
                 visibilityObservable,
-                updateObservable));
+                updateObservable,
+                enabled));
         var ordered = sorted(cached, category, updateObservable);
         var shown = ordered.filtered(
                 section -> {
+                    if (!enabled.getValue()) {
+                        return false;
+                    }
+
                     // matches filter
                     return (filterString == null || section.matchesFilter(filterString.getValue()))
                             &&
@@ -138,6 +151,7 @@ public class StoreSection {
                             // same category
                             (showInCategory(category.getValue(), section.getWrapper()));
                 },
+                enabled,
                 category,
                 filterString,
                 updateObservable);
@@ -154,7 +168,8 @@ public class StoreSection {
             ObservableValue<String> filterString,
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
-            ObservableIntegerValue updateObservable) {
+            ObservableIntegerValue updateObservable,
+            ObservableValue<Boolean> enabled) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
                     e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
@@ -162,6 +177,10 @@ public class StoreSection {
 
         var allChildren = all.filtered(
                 other -> {
+                    if (!enabled.getValue()) {
+                        return false;
+                    }
+
                     // Legacy implementation that does not use children caches. Use for testing
                     //                                if (true) return DataStorage.get()
                     //                                        .getDefaultDisplayParent(other.getEntry())
@@ -176,6 +195,7 @@ public class StoreSection {
 
                     return true;
                 },
+                enabled,
                 e.getPersistentState(),
                 e.getCache(),
                 visibilityObservable,
@@ -192,10 +212,15 @@ public class StoreSection {
                 filterString,
                 category,
                 visibilityObservable,
-                updateObservable));
+                updateObservable,
+                enabled));
         var ordered = sorted(cached, category, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
+                    if (!enabled.getValue()) {
+                        return false;
+                    }
+
                     var isBatchSelected = selected.contains(section.getWrapper());
 
                     var matchesFilter = filterString == null
@@ -246,6 +271,7 @@ public class StoreSection {
 
                     return true;
                 },
+                enabled,
                 category,
                 filterString,
                 e.getPersistentState(),

@@ -73,7 +73,8 @@ public final class BrowserConnectionListComp extends SimpleComp {
                         filter,
                         category,
                         StoreViewState.get().getEntriesListVisibilityObservable(),
-                        StoreViewState.get().getEntriesListUpdateObservable()),
+                        StoreViewState.get().getEntriesListUpdateObservable(),
+                        new ReadOnlyBooleanWrapper(true)),
                 augment,
                 selectedAction -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);

@@ -17,10 +17,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -116,7 +113,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             filterText,
                             selectedCategory,
                             StoreViewState.get().getEntriesListVisibilityObservable(),
-                            StoreViewState.get().getEntriesListUpdateObservable()),
+                            StoreViewState.get().getEntriesListUpdateObservable(),
+                            popover.showingProperty()),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));
