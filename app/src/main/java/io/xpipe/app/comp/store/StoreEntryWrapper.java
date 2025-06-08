@@ -208,11 +208,11 @@ public class StoreEntryWrapper {
         var storeChanged = store.getValue() != entry.getStore();
         store.setValue(entry.getStore());
         if (storeChanged || !information.isBound()) {
-            if (entry.getProvider() != null) {
+            information.unbind();
+            shownInformation.unbind();
+            if (entry.getValidity().isUsable()) {
                 var section = StoreViewState.get().getSectionForWrapper(this);
                 if (section.isPresent()) {
-                    information.unbind();
-                    shownInformation.unbind();
                     try {
                         var is = entry.getProvider().informationString(section.get());
                         information.bind(is);
