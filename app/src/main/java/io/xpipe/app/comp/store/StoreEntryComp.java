@@ -176,7 +176,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected abstract Region createContent();
 
     protected void applyState(Node node) {
-        PlatformThread.sync(getWrapper().getValidity()).subscribe(val -> {
+        getWrapper().getValidity().subscribe(val -> {
             switch (val) {
                 case LOAD_FAILED -> {
                     node.pseudoClassStateChanged(FAILED, true);
