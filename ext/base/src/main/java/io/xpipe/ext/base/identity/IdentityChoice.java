@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
@@ -18,11 +19,11 @@ import lombok.Value;
 public class IdentityChoice {
 
     public static OptionsBuilder ssh(
-            Property<DataStoreEntryRef<ShellStore>> gateway,
+            Property<DataStoreEntryRef<ShellStore>> host,
             ObjectProperty<IdentityValue> identity,
             boolean requireUser) {
         var i = new IdentityChoice(
-                gateway, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+                host, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
@@ -32,7 +33,7 @@ public class IdentityChoice {
         return i.build();
     }
 
-    Property<DataStoreEntryRef<ShellStore>> gateway;
+    Property<DataStoreEntryRef<ShellStore>> host;
     ObjectProperty<IdentityValue> identity;
     boolean allowCustomUserInput;
     boolean requireUserInput;
@@ -75,7 +76,7 @@ public class IdentityChoice {
                     .longDescription("base:sshKey")
                     .sub(
                             SshIdentityStrategyHelper.identity(
-                                    gateway != null ? gateway : new SimpleObjectProperty<>(),
+                                    host != null ? host : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                                     identityStrategy,
                                     path -> false,
                                     true,

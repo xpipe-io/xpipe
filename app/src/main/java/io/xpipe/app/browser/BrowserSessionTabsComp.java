@@ -209,7 +209,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         r.setMinHeight(Region.USE_PREF_SIZE);
                     });
                     tabs.lookupAll(".headers-region").forEach(node -> {
-                        node.setClip(null);
                         node.setPickOnBounds(false);
 
                         var r = (Region) node;
