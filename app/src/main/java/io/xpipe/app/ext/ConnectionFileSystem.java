@@ -14,6 +14,7 @@ import lombok.Getter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public FileSystem createTransferOptimizedFileSystem() throws Exception {
-        if (shellControl.getShellDialect() == ShellDialects.CMD) {
+        // For local, we have our optimized streams regardless
+        if (!shellControl.isLocal() && shellControl.getShellDialect() == ShellDialects.CMD) {
             var pwsh = shellControl
                     .view()
                     .findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName())
@@ -101,6 +103,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public InputStream openInput(FilePath file) throws Exception {
+        if (shellControl.isLocal()) {
+            return Files.newInputStream(file.asLocalPath());
+        }
+
         return shellControl
                 .getShellDialect()
                 .getFileReadCommand(shellControl, file.toString())
@@ -109,6 +115,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
+        if (shellControl.isLocal()) {
+            return Files.newOutputStream(file.asLocalPath());
+        }
+
         var cmd =
                 shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
