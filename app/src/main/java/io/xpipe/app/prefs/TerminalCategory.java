@@ -2,12 +2,12 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -64,8 +64,10 @@ public class TerminalCategory extends AppPrefsCategory {
                 // .sub(terminalInitScript())
                 .sub(
                         new OptionsBuilder()
-                                .pref(prefs.terminalAlwaysPauseOnExit).addToggle(prefs.terminalAlwaysPauseOnExit)
-                                .pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
+                                .pref(prefs.terminalAlwaysPauseOnExit)
+                                .addToggle(prefs.terminalAlwaysPauseOnExit)
+                                .pref(prefs.clearTerminalOnInit)
+                                .addToggle(prefs.clearTerminalOnInit)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )

@@ -125,7 +125,7 @@ public class ScanDialogBase {
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
             var n = AppI18n.get(s.getNameKey());
-            if (s.getLicensedFeatureId() == null) {
+            if (s.getLicensedFeatureId() == null || s.isDisabled()) {
                 return n;
             }
 
@@ -144,7 +144,7 @@ public class ScanDialogBase {
         onUpdate();
         entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
 
-        var comp = LoadingOverlayComp.noProgress(Comp.of(() -> stackPane), busy).vgrow();
+        var comp = new LoadingOverlayComp(Comp.of(() -> stackPane), busy, true).vgrow();
         return comp;
     }
 }

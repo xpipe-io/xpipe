@@ -1,6 +1,6 @@
 
 
-.root.nord .bookmarks-header .filter-comp {
+.root:nord .bookmarks-header .filter-comp {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }

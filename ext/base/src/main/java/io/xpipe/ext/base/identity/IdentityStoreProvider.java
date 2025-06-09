@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.store.DataStore;
 
@@ -27,7 +29,8 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
     @Override
     public List<String> getSearchableTerms(DataStore store) {
         IdentityStore s = store.asNeeded();
-        return s.getUsername() != null ? List.of(s.getUsername()) : List.of();
+        var name = s.getUsername().getFixedUsername();
+        return name.isPresent() ? List.of(name.get()) : List.of();
     }
 
     @Override
@@ -46,10 +49,5 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
                         ? ""
                         : " + Key");
         return new SimpleStringProperty(s);
-    }
-
-    @Override
-    public boolean editByDefault() {
-        return true;
     }
 }

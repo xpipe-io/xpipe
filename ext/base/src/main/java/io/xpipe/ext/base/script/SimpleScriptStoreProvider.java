@@ -3,13 +3,13 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -49,11 +49,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public boolean canMoveCategories() {
         return false;
-    }
-
-    @Override
-    public boolean editByDefault() {
-        return true;
     }
 
     @Override
@@ -224,7 +219,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             return OsType.LINUX.makeFileSystemCompatible(name) + ".sh";
         }
 
-        var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect()) ? OsType.WINDOWS : OsType.LINUX;
+        var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect())
+                ? OsType.WINDOWS
+                : OsType.LINUX;
         return os.makeFileSystemCompatible(name) + "." + st.getMinimumDialect().getScriptFileEnding();
     }
 

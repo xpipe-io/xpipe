@@ -250,7 +250,7 @@ public class ModalOverlayComp extends SimpleComp {
         if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
             var busy = mocc.busy();
             if (busy != null) {
-                var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+                var loading = new LoadingOverlayComp(Comp.of(() -> modalBox), busy, true);
                 return loading.createRegion();
             }
         }

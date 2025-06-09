@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
@@ -13,9 +15,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
-import net.synedra.validatorfx.Check;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -32,8 +34,10 @@ public class OptionsBuilder {
 
     private final Validator ownValidator;
     private final List<Validator> allValidators = new ArrayList<>();
+    private final List<Check> allChecks = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
+    private final List<Augment<CompStructure<VBox>>> augments = new ArrayList<>();
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
@@ -50,6 +54,11 @@ public class OptionsBuilder {
     public OptionsBuilder(Validator validator) {
         this.ownValidator = validator;
         this.allValidators.add(ownValidator);
+    }
+
+    public OptionsBuilder augment(Augment<CompStructure<VBox>> augment) {
+        this.augments.add(augment);
+        return this;
     }
 
     public Validator buildEffectiveValidator() {
@@ -140,6 +149,7 @@ public class OptionsBuilder {
     public OptionsBuilder sub(OptionsBuilder builder, Property<?> prop) {
         props.addAll(builder.props);
         allValidators.add(builder.buildEffectiveValidator());
+        allChecks.addAll(builder.allChecks);
         if (prop != null) {
             props.add(prop);
         }
@@ -196,12 +206,17 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder check(Function<Validator, Check> c) {
-        lastCompHeadReference.apply(s -> c.apply(ownValidator).decorates(s.get()));
+        lastCompHeadReference.apply(s -> {
+            var check = c.apply(ownValidator);
+            check.decorates(s.get());
+            allChecks.add(check);
+        });
         return this;
     }
 
     public OptionsBuilder check(Check c) {
         lastCompHeadReference.apply(s -> c.decorates(s.get()));
+        allChecks.add(c);
         return this;
     }
 
@@ -452,7 +467,11 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        return new OptionsComp(entries);
+        var comp = new OptionsComp(allChecks, entries);
+        for (Augment<CompStructure<VBox>> augment : augments) {
+            comp.apply(augment);
+        }
+        return comp;
     }
 
     public Region build() {

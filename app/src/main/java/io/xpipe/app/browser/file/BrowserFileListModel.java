@@ -56,6 +56,22 @@ public final class BrowserFileListModel {
         }
     }
 
+    public void updateEntry(BrowserEntry old, FileEntry n) {
+        var index = all.getValue().indexOf(old);
+        if (index == -1) {
+            return;
+        }
+
+        var l = new ArrayList<>(all.getValue());
+        if (n != null) {
+            l.set(index, new BrowserEntry(n, this));
+        } else {
+            l.remove(index);
+        }
+        all.setValue(l);
+        refreshShown();
+    }
+
     public void setComparator(Comparator<BrowserEntry> comparator) {
         comparatorProperty.setValue(comparator);
         refreshShown();

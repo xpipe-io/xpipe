@@ -13,6 +13,9 @@ import java.util.OptionalLong;
 public class FileEntry {
     FileSystem fileSystem;
     Instant date;
+
+    @NonFinal
+    @Setter
     String size;
 
     FileInfo info;

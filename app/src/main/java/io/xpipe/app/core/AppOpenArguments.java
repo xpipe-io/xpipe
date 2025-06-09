@@ -1,14 +1,14 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.action.LauncherActionProvider;
+import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FilePath;
-
-import lombok.Value;
 
 import java.net.URI;
 import java.nio.file.Files;
@@ -48,7 +48,7 @@ public class AppOpenArguments {
 
         TrackEvent.withDebug("Handling arguments").elements(arguments).handle();
 
-        var all = new ArrayList<ActionProvider.Action>();
+        var all = new ArrayList<AbstractAction>();
         arguments.forEach(s -> {
             try {
                 all.addAll(parseActions(s));
@@ -64,15 +64,11 @@ public class AppOpenArguments {
         //        var hasGui = OperationMode.get() == OperationMode.GUI;
 
         all.forEach(launcherInput -> {
-            try {
-                launcherInput.execute();
-            } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
-            }
+            launcherInput.executeAsync();
         });
     }
 
-    public static List<ActionProvider.Action> parseActions(String input) {
+    public static List<? extends AbstractAction> parseActions(String input) {
         if (input.startsWith("\"") && input.endsWith("\"")) {
             input = input.substring(1, input.length() - 1);
         }
@@ -81,20 +77,15 @@ public class AppOpenArguments {
             var uri = URI.create(input);
             var scheme = uri.getScheme();
             if (scheme != null) {
-                if (scheme.equalsIgnoreCase("file")) {
-                    var path = Path.of(uri);
-                    return List.of(new BrowseFileAction(path));
-                }
-
                 var action = uri.getScheme();
                 var found = ActionProvider.ALL.stream()
-                        .filter(actionProvider -> actionProvider.getLauncherCallSite() != null
-                                && actionProvider.getLauncherCallSite().getId().equalsIgnoreCase(action))
+                        .filter(actionProvider -> actionProvider instanceof LauncherActionProvider lcs
+                                && lcs.getScheme().equalsIgnoreCase(action))
                         .findFirst();
                 if (found.isPresent()) {
-                    ActionProvider.Action a;
+                    AbstractAction a;
                     try {
-                        a = found.get().getLauncherCallSite().createAction(uri);
+                        a = ((LauncherActionProvider) found.get()).createAction(uri);
                     } catch (Exception e) {
                         ErrorEvent.fromThrowable(e).omit().expected().handle();
                         return List.of();
@@ -107,34 +98,19 @@ public class AppOpenArguments {
 
         try {
             var path = Path.of(input);
+            if (Files.isRegularFile(path)) {
+                path = path.getParent();
+            }
+
             if (Files.exists(path)) {
-                return List.of(new BrowseFileAction(path));
+                return List.of(OpenDirectoryActionProvider.Action.builder()
+                        .ref(DataStorage.get().local().ref())
+                        .files(List.of(FilePath.of(path)))
+                        .build());
             }
         } catch (InvalidPathException ignored) {
         }
 
         return List.of();
-    }
-
-    @Value
-    public static class BrowseFileAction implements ActionProvider.Action {
-
-        Path file;
-
-        @Override
-        public void execute() {
-            if (!Files.exists(file)) {
-                return;
-            }
-
-            if (!file.isAbsolute()) {
-                return;
-            }
-
-            var dir = Files.isDirectory(file) ? file : file.getParent();
-            AppLayoutModel.get().selectBrowser();
-            BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
-                    DataStorage.get().local().ref(), model -> FilePath.of(dir.toString()), null);
-        }
     }
 }

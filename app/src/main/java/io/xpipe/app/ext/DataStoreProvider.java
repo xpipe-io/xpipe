@@ -1,16 +1,18 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.StoreEntryComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.resources.AppImages;
+import io.xpipe.app.core.AppImages;
+import io.xpipe.app.hub.comp.StoreEntryComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -56,10 +58,6 @@ public interface DataStoreProvider {
         return new SimpleBooleanProperty(false);
     }
 
-    default boolean editByDefault() {
-        return false;
-    }
-
     default boolean alwaysShowSummary() {
         return false;
     }
@@ -70,15 +68,15 @@ public interface DataStoreProvider {
         }
     }
 
-    default ActionProvider.Action activateAction(DataStoreEntry store) {
+    default FailableRunnable<Exception> activateAction(DataStoreEntry store) {
         return null;
     }
 
-    default ActionProvider.Action launchAction(DataStoreEntry store) {
+    default FailableRunnable<Exception> launch(DataStoreEntry store) {
         return null;
     }
 
-    default ActionProvider.Action browserAction(
+    default FailableRunnable<Exception> launchBrowser(
             BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return null;
     }

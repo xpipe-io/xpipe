@@ -7,11 +7,11 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabComp;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.FileReference;
@@ -43,7 +43,10 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
     }
 
     public static void openSingleFile(
-            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store, Supplier<FilePath> initialPath, Consumer<FileReference> file, boolean save) {
+            Supplier<DataStoreEntryRef<? extends FileSystemStore>> store,
+            Supplier<FilePath> initialPath,
+            Consumer<FileReference> file,
+            boolean save) {
         var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);

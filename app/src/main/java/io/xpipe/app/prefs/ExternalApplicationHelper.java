@@ -25,7 +25,7 @@ public class ExternalApplicationHelper {
             return;
         }
 
-        raw = raw.trim();
+        raw = raw.strip();
         var split = Arrays.asList(raw.split("\\s+"));
         if (split.size() == 0) {
             return;
@@ -40,7 +40,7 @@ public class ExternalApplicationHelper {
             }
             end++;
             exec = raw.substring(1, end);
-            args = raw.substring(end + 1).trim();
+            args = raw.substring(end + 1).strip();
         } else {
             exec = split.getFirst();
             args = split.stream().skip(1).collect(Collectors.joining(" "));

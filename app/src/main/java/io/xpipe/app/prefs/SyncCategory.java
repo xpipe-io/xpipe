@@ -5,10 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -71,7 +68,15 @@ public class SyncCategory extends AppPrefsCategory {
                         .addComp(remoteRow, prefs.storageGitRemote)
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
+                        .addComp(prefs.getCustomOptions("gitUsername")
+                                .buildComp()
+                                .maxWidth(600))
+                        .addComp(prefs.getCustomOptions("gitPassword")
+                                .buildComp()
+                                .maxWidth(600))
+                        .addComp(prefs.getCustomOptions("gitVaultIdentityStrategy")
+                                .buildComp()
+                                .maxWidth(600))
                         .nameAndDescription("browseVault")
                         .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
                             DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());

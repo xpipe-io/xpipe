@@ -33,11 +33,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         return true;
     }
 
-    class Windows extends WindowsType implements WezTerminalType {
-
-        public Windows() {
-            super("app.wezterm", "wezterm-gui");
-        }
+    class Windows implements ExternalApplicationType.WindowsType, ExternalTerminalType, WezTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
@@ -45,16 +41,22 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         @Override
-        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("start")
-                            .add(configuration.getDialectLaunchCommand()));
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            launch(CommandBuilder.of().add("start").add(configuration.getDialectLaunchCommand()));
         }
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "wezterm-gui";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             try {
                 var foundKey = WindowsRegistry.local()
                         .findKeyForEqualValueMatchRecursive(
@@ -83,13 +85,14 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             return Optional.empty();
         }
+
+        @Override
+        public String getId() {
+            return "app.wezterm";
+        }
     }
 
-    class Linux extends ExternalApplicationType implements WezTerminalType {
-
-        public Linux() {
-            super("app.wezterm");
-        }
+    class Linux implements ExternalApplicationType, WezTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
@@ -107,6 +110,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         @Override
+        public String getId() {
+            return "app.wezterm";
+        }
+
+        @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var spawn = LocalShell.getShell()
                     .command(CommandBuilder.of()
@@ -121,11 +129,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
     }
 
-    class MacOs extends MacOsType implements WezTerminalType {
-
-        public MacOs() {
-            super("app.wezterm", "WezTerm");
-        }
+    class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
@@ -137,7 +141,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
             try (var sc = LocalShell.getShell()) {
                 var pathOut = sc.command(String.format(
                                 "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                                applicationName))
+                                getApplicationName()))
                         .readStdoutOrThrow();
                 var path = Path.of(pathOut);
                 var spawn = sc.command(CommandBuilder.of()
@@ -158,6 +162,16 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                             .addFile(configuration.getScriptFile()));
                 }
             }
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "WezTerm";
+        }
+
+        @Override
+        public String getId() {
+            return "app.wezterm";
         }
     }
 }

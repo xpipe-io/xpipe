@@ -1,13 +1,15 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -151,7 +153,11 @@ public class BrowserTransferModel {
                         itemModel.getProgress().setValue(progress);
                     },
                     itemModel.getTransferCancelled());
-            op.execute();
+            var action = TransferFilesActionProvider.Action.builder()
+                    .operation(op)
+                    .target(DataStorage.get().local().ref())
+                    .build();
+            action.executeSync();
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();
             synchronized (items) {

@@ -1,6 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.StubShellControl;
@@ -66,7 +65,9 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
         var c = func.control();
-        return new ShellSession(this, () -> c);
+        var session = new ShellSession(() -> c);
+        session.addListener(this);
+        return session;
     }
 
     @Override

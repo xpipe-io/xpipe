@@ -32,9 +32,6 @@ public class BrowserOverviewComp extends SimpleComp {
     @SneakyThrows
     protected Region createSimple() {
         // The open file system might have already been closed
-        if (model.getFileSystem() == null) {
-            return new Region();
-        }
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
@@ -44,9 +41,6 @@ public class BrowserOverviewComp extends SimpleComp {
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         var fs = model.getFileSystem();
-                        if (fs == null) {
-                            return false;
-                        }
 
                         try {
                             return fs.directoryExists(entry.getPath());

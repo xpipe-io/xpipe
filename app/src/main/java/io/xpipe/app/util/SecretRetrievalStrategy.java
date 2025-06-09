@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.CharBuffer;
 import java.time.Duration;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -151,15 +152,18 @@ public interface SecretRetrievalStrategy {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
-                    if (r.lines().count() > 1 || r.isBlank()) {
-                        throw ErrorEvent.expected(
-                                new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
-                                        + "XPipe requires your password manager command to output only the raw password."
-                                        + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
-                                        + " you will have to change the command and/or password key."));
-                    }
-
-                    return new SecretQueryResult(InPlaceSecretValue.of(r), SecretQueryState.NORMAL);
+                    r.withSecretValue(chars -> {
+                        var seq = CharBuffer.wrap(chars);
+                        var newline = seq.chars().anyMatch(value -> value == 10);
+                        if (seq.length() == 0 || newline) {
+                            throw ErrorEvent.expected(
+                                    new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
+                                            + "XPipe requires your password manager command to output only the raw password."
+                                            + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
+                                            + " you will have to change the command and/or password key."));
+                        }
+                    });
+                    return new SecretQueryResult(r, SecretQueryState.NORMAL);
                 }
 
                 @Override

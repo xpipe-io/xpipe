@@ -21,7 +21,8 @@ public class ShellView {
 
     public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
         var hash = Math.abs(text.hashCode());
-        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + "." + base.getExtension());
+        var ext = base.getExtension();
+        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + (ext.isPresent() ? "." + ext.get() : ""));
         if (fileExists(target)) {
             return target;
         }
@@ -153,7 +154,7 @@ public class ShellView {
     public void setSensitiveEnvironmentVariable(String name, String value) throws Exception {
         var command =
                 shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
-        command.setSensitive();
+        command.sensitive();
         command.execute();
     }
 }

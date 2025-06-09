@@ -6,6 +6,19 @@
 
 .store-entry-list-status-bar .button {
 -fx-padding: 4 8;
+    -fx-background-color: transparent;
+    -fx-border-width: 1;
+    -fx-border-color: transparent;
+    -fx-border-radius: 4;
+}
+
+.root:nord .store-entry-list-status-bar .button {
+    -fx-border-radius: 0;
+}
+
+.store-entry-list-status-bar .button:hover {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
 }
 
 .store-list-comp.scroll-pane * {
@@ -29,6 +42,14 @@
 }
 
 /* Grid */
+
+.store-entry-grid .name .text-field {
+    -fx-padding: 0;
+}
+
+.store-entry-grid .text-field {
+    -fx-background-color: transparent;
+}
 
 .store-entry-grid .date, .store-entry-grid .summary {
     -fx-text-fill: -color-fg-muted;
@@ -61,7 +82,7 @@
     -fx-background-radius: 5px;
 }
 
-.root.nord .store-entry-grid .icon {
+.root:nord .store-entry-grid .icon {
     -fx-background-radius: 3;
 }
 
@@ -81,7 +102,7 @@
     -fx-background-radius: 4px;
 }
 
-.root.nord .store-entry-comp {
+.root:nord .store-entry-comp {
     -fx-background-radius: 0;
 }
 
@@ -168,7 +189,7 @@
     -fx-padding: 0;
 }
 
-.root.nord .store-entry-section-comp {
+.root:nord .store-entry-section-comp {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }

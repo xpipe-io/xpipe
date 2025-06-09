@@ -1,10 +1,9 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

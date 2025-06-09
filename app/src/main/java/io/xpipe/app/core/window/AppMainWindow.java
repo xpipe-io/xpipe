@@ -3,12 +3,12 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
@@ -52,10 +52,10 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+    private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
-    private static final Property<String> loadingText = new SimpleObjectProperty<>();
+    private final Property<String> loadingText = new SimpleObjectProperty<>();
 
     private boolean shown = false;
 
@@ -129,7 +129,10 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        var w = getInstance();
+        if (w != null) {
+            w.loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        }
     }
 
     public ObservableDoubleValue displayScale() {
@@ -140,7 +143,7 @@ public class AppMainWindow {
         return getStage().outputScaleXProperty();
     }
 
-    public static synchronized void initContent() {
+    public void initContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             try {
                 TrackEvent.info("Window content node creation started");
@@ -165,7 +168,16 @@ public class AppMainWindow {
     }
 
     public void focus() {
+        if (AppPrefs.get() != null
+                && !AppPrefs.get().focusWindowOnNotifications().get()) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
+            if (!stage.isShowing()) {
+                return;
+            }
+
             stage.setIconified(false);
             stage.requestFocus();
         });

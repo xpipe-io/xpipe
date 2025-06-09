@@ -49,7 +49,7 @@ public class OptionsChoiceBuilder {
             cd.setAccessible(true);
             var defValue = cd.invoke(null);
             return defValue;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         try {
@@ -60,7 +60,7 @@ public class OptionsChoiceBuilder {
             m.setAccessible(true);
             var defValue = c.cast(m.invoke(b));
             return defValue;
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         try {

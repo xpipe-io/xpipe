@@ -67,6 +67,7 @@ public class AppCache {
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
                         .omit()
+                        .expected()
                         .handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
@@ -89,6 +90,7 @@ public class AppCache {
             } catch (Exception ex) {
                 ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
                         .omit()
+                        .expected()
                         .handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
@@ -105,6 +107,7 @@ public class AppCache {
         } catch (Exception e) {
             ErrorEvent.fromThrowable("Could not write cache data for key " + key, e)
                     .omitted(true)
+                    .expected()
                     .build()
                     .handle();
         }
@@ -119,6 +122,7 @@ public class AppCache {
             } catch (Exception e) {
                 ErrorEvent.fromThrowable("Could not get modified date for " + key, e)
                         .omitted(true)
+                        .expected()
                         .build()
                         .handle();
                 return Optional.empty();

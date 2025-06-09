@@ -1,9 +1,12 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;

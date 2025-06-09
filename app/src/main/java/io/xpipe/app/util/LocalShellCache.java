@@ -28,7 +28,9 @@ public class LocalShellCache extends ShellControlCache {
                                         .map(s -> s.asLocalPath());
                             }
                             case OsType.Windows windows -> {
-                                yield ExternalEditorType.VSCODE_WINDOWS.findExecutable();
+                                yield ExternalEditorType.VSCODE_WINDOWS
+                                        .determineFromPath()
+                                        .or(() -> ExternalEditorType.VSCODE_WINDOWS.determineInstallation());
                             }
                         };
                 set("codePath", app.orElse(null));

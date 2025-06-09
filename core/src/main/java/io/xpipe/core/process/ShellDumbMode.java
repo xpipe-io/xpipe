@@ -26,5 +26,4 @@ public interface ShellDumbMode {
     default void prepareDumbExit(ShellControl shellControl) throws IOException {
         shellControl.writeLine(" exit");
     }
-
 }

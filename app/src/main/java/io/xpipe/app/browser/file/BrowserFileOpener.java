@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
@@ -20,58 +21,98 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BrowserFileOpener {
 
-    private static OutputStream openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
+    private static BrowserFileOutput openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
             throws Exception {
         var fileSystem = model.getFileSystem();
         if (model.isClosed() || fileSystem.getShell().isEmpty()) {
-            return OutputStream.nullOutputStream();
+            return BrowserFileOutput.none();
         }
 
         if (totalBytes == 0) {
             var existingSize = model.getFileSystem().getFileSize(file.getPath());
             if (existingSize != 0) {
-                var blank = AppDialog.confirm("fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
+                var blank = AppDialog.confirm(
+                        "fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
                 if (!blank) {
-                    return OutputStream.nullOutputStream();
+                    return BrowserFileOutput.none();
                 }
             }
         }
 
+        var defOutput = new BrowserFileOutput() {
+
+            @Override
+            public Optional<DataStoreEntry> target() {
+                return Optional.of(model.getEntry().get());
+            }
+
+            @Override
+            public boolean hasOutput() {
+                return true;
+            }
+
+            @Override
+            public OutputStream open() throws Exception {
+                return fileSystem.openOutput(file.getPath(), totalBytes);
+            }
+        };
+
         var sc = fileSystem.getShell().get();
         if (sc.getOsType() == OsType.WINDOWS) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
+            return defOutput;
         }
 
         var info = (FileInfo.Unix) file.getInfo();
         var requiresSudo = requiresSudo(model, info, file.getPath());
         if (!requiresSudo) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
+            return defOutput;
         }
 
         var elevate = AppDialog.confirm("fileWriteSudo");
         if (!elevate) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
+            return defOutput;
         }
 
         var rootSc = sc.identicalDialectSubShell()
                 .elevated(ElevationFunction.elevated(null))
                 .start();
         var rootFs = new ConnectionFileSystem(rootSc);
-        try {
-            return new FilterOutputStream(rootFs.openOutput(file.getPath(), totalBytes)) {
-                @Override
-                public void close() throws IOException {
-                    super.close();
+        var rootOutput = new BrowserFileOutput() {
+
+            @Override
+            public Optional<DataStoreEntry> target() {
+                return Optional.of(model.getEntry().get());
+            }
+
+            @Override
+            public boolean hasOutput() {
+                return true;
+            }
+
+            @Override
+            public OutputStream open() throws Exception {
+                try {
+                    return new FilterOutputStream(rootFs.openOutput(file.getPath(), totalBytes)) {
+                        @Override
+                        public void close() throws IOException {
+                            try {
+                                super.close();
+                            } finally {
+                                rootFs.close();
+                            }
+                        }
+                    };
+                } catch (Exception ex) {
                     rootFs.close();
+                    throw ex;
                 }
-            };
-        } catch (Exception ex) {
-            rootFs.close();
-            throw ex;
-        }
+            }
+        };
+        return rootOutput;
     }
 
     private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
@@ -128,10 +169,25 @@ public class BrowserFileOpener {
                         },
                         (size) -> {
                             if (model.isClosed()) {
-                                return OutputStream.nullOutputStream();
+                                return BrowserFileOutput.none();
                             }
 
-                            return entry.getFileSystem().openOutput(file, size);
+                            return new BrowserFileOutput() {
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
+                                }
+
+                                @Override
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
+                            };
                         },
                         s -> FileOpener.openWithAnyApplication(s));
     }
@@ -154,10 +210,25 @@ public class BrowserFileOpener {
                         },
                         (size) -> {
                             if (model.isClosed()) {
-                                return OutputStream.nullOutputStream();
+                                return BrowserFileOutput.none();
                             }
 
-                            return entry.getFileSystem().openOutput(file, size);
+                            return new BrowserFileOutput() {
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
+                                }
+
+                                @Override
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
+                            };
                         },
                         s -> FileOpener.openInDefaultApplication(s));
     }

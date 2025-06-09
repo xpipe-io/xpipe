@@ -10,6 +10,7 @@ import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -61,19 +62,24 @@ public class ChocoUpdater extends UpdateHandler {
         }
 
         var pkg = "xpipe";
-        var out = LocalShell.getShell().command(CommandBuilder.of().add("choco", "outdated")).readStdoutIfPossible();
+        var out = LocalShell.getShell()
+                .command(CommandBuilder.of().add("choco", "outdated"))
+                .readStdoutIfPossible();
         if (out.isEmpty()) {
             return Optional.empty();
         }
 
-        var line = out.get().lines().filter(s -> {
-            var split = s.split("\\|");
-            if (split.length != 4) {
-                return false;
-            } else {
-                return split[0].equals(pkg);
-            }
-        }).findFirst();
+        var line = out.get()
+                .lines()
+                .filter(s -> {
+                    var split = s.split("\\|");
+                    if (split.length != 4) {
+                        return false;
+                    } else {
+                        return split[0].equals(pkg);
+                    }
+                })
+                .findFirst();
         if (line.isEmpty()) {
             return Optional.empty();
         }
@@ -88,7 +94,7 @@ public class ChocoUpdater extends UpdateHandler {
 
         var chocoRelease = getOutdatedPackageUpdateVersion();
         // Use current release if the update is not available for choco yet
-        if (chocoRelease.isPresent() && !chocoRelease.get().equals(rel.getTag())) {
+        if (chocoRelease.isEmpty() || !chocoRelease.get().equals(rel.getTag())) {
             rel = AppRelease.of(AppProperties.get().getVersion());
         }
 
@@ -113,12 +119,18 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
+                var systemWide = Files.exists(
+                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
                     var pkg = "xpipe";
-                    return ShellScript.lines(
-                            "powershell -Command \"Start-Process -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
-                                    + "\"",
-                            AppRestart.getTerminalRestartCommand());
+                    var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
+                            + ", -y" + propertiesArguments;
+                    var powershell = ShellDialects.isPowershell(sc);
+                    var powershellCommand = powershell
+                            ? "powershell -Command " + sc.getShellDialect().quoteArgument(commandToRun)
+                            : "powershell -Command " + commandToRun;
+                    return ShellScript.lines(powershellCommand, AppRestart.getTerminalRestartCommand());
                 });
             });
         } catch (Throwable t) {

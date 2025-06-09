@@ -17,8 +17,6 @@ public interface ShellDialect {
 
     String unsetEnvironmentVariableCommand(String var);
 
-    ShellCapabilities determineCapabilities();
-
     CommandBuilder launchAsnyc(CommandBuilder cmd);
 
     default String getLicenseFeatureId() {
@@ -38,6 +36,8 @@ public interface ShellDialect {
     String queryVersion(ShellControl shellControl) throws Exception;
 
     CommandControl queryFileSize(ShellControl shellControl, String file);
+
+    long queryDirectorySize(ShellControl shellControl, String file) throws Exception;
 
     CommandControl prepareUserTempDirectory(ShellControl shellControl, String directory);
 
@@ -79,13 +79,13 @@ public interface ShellDialect {
 
     String assembleCommand(String command, Map<String, String> variables);
 
-    Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String dir) throws Exception;
+    Stream<FileEntry> listFiles(FileSystem fs, ShellControl control, String path, boolean sub) throws Exception;
 
     Stream<String> listRoots(ShellControl control) throws Exception;
 
     String getPauseCommand();
 
-    String prepareScriptContent(String content);
+    String prepareScriptContent(ShellControl sc, String content);
 
     default String getPassthroughExitCommand() {
         return "exit";

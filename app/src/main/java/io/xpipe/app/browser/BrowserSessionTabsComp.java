@@ -2,8 +2,11 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.App;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
@@ -27,8 +30,8 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.theme.Styles;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 
 import java.util.*;
@@ -206,7 +209,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
                         r.setMinHeight(Region.USE_PREF_SIZE);
                     });
                     tabs.lookupAll(".headers-region").forEach(node -> {
-                        node.setClip(null);
                         node.setPickOnBounds(false);
 
                         var r = (Region) node;
@@ -417,28 +419,24 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
 
         if (tabModel.getIcon() != null) {
-            var ring = new RingProgressIndicator(0, false);
-            ring.setMinSize(16, 16);
-            ring.setPrefSize(16, 16);
-            ring.setMaxSize(16, 16);
-            ring.progressProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> tabModel.getBusy().get()
-                                            && !AppPrefs.get().performanceMode().get()
-                                    ? -1d
-                                    : 0,
-                            PlatformThread.sync(tabModel.getBusy()),
-                            AppPrefs.get().performanceMode()));
+            var loading = new LoadingIconComp(tabModel.getBusy(), AppFontSizes::base);
+            loading.prefWidth(16);
+            loading.prefHeight(16);
 
             var image = tabModel.getIcon();
-            var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16).createRegion();
+            var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16);
+            logo.apply(struc -> {
+                struc.get()
+                        .opacityProperty()
+                        .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                                () -> {
+                                    return !tabModel.getBusy().get() ? 1.0 : 0.15;
+                                },
+                                tabModel.getBusy())));
+            });
 
-            tab.graphicProperty()
-                    .bind(Bindings.createObjectBinding(
-                            () -> {
-                                return tabModel.getBusy().get() ? ring : logo;
-                            },
-                            PlatformThread.sync(tabModel.getBusy())));
+            var stack = new StackComp(List.of(logo, loading));
+            tab.setGraphic(stack.createRegion());
         }
 
         if (tabModel.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
@@ -460,13 +458,15 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         Comp<?> comp = tabModel.comp();
         var compRegion = comp.createRegion();
+
         var empty = new StackPane();
-        empty.setMinWidth(450);
+        empty.setMinWidth(0);
         empty.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (tabModel.isCloseable() && tabs.getSelectionModel().getSelectedItem() == tab) {
                 rightPadding.setValue(newValue.doubleValue());
             }
         });
+
         var split = new SplitPane(compRegion);
         if (tabModel.isCloseable()) {
             split.getItems().add(empty);
@@ -496,6 +496,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             if (newValue != null) {
                 Platform.runLater(() -> {
                     Label l = (Label) tabs.lookup("#" + id + " .tab-label");
+                    l.setGraphicTextGap(7);
                     var w = l.maxWidthProperty();
                     l.minWidthProperty().bind(w);
                     l.prefWidthProperty().bind(w);
@@ -512,10 +513,11 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    c.addEventHandler(
-                            DragEvent.DRAG_ENTERED,
-                            mouseEvent -> Platform.runLater(
-                                    () -> tabs.getSelectionModel().select(tab)));
+                    c.addEventHandler(DragEvent.DRAG_ENTERED, mouseEvent -> {
+                        if (tabModel.isCloseable()) {
+                            Platform.runLater(() -> tabs.getSelectionModel().select(tab));
+                        }
+                    });
                 });
             }
         });

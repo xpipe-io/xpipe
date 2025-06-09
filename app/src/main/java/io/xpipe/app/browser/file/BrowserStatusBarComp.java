@@ -64,8 +64,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         var cancel = PlatformThread.sync(model.getTransferCancelled());
         var hide = Bindings.createBooleanBinding(
                 () -> {
-                    if (model.getProgress().getValue() == null
-                            || model.getProgress().getValue().done()) {
+                    if (model.getProgress().getValue() == null) {
                         return true;
                     }
 

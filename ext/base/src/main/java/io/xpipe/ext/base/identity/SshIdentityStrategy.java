@@ -7,6 +7,8 @@ import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
+import io.xpipe.core.util.KeyValue;
 import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -18,6 +20,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
+import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -32,11 +35,14 @@ import java.io.IOException;
     @JsonSubTypes.Type(value = SshIdentityStrategy.OtherExternal.class)
 })
 public interface SshIdentityStrategy {
+
     default void checkComplete() throws ValidationException {}
 
     void prepareParent(ShellControl parent) throws Exception;
 
     void buildCommand(CommandBuilder builder);
+
+    List<KeyValue> configOptions(ShellControl parent) throws Exception;
 
     default SecretRetrievalStrategy getAskpassStrategy() {
         return new SecretRetrievalStrategy.None();
@@ -50,9 +56,16 @@ public interface SshIdentityStrategy {
         public void prepareParent(ShellControl parent) {}
 
         @Override
-        public void buildCommand(CommandBuilder builder) {
+        public void buildCommand(CommandBuilder builder) {}
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
             // Don't use any agent keys to prevent too many authentication failures
-            builder.add("-oIdentitiesOnly=yes").add("-oIdentityAgent=none").add("-oIdentityFile=none");
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "yes"),
+                    new KeyValue("IdentityAgent", "none"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -94,12 +107,15 @@ public interface SshIdentityStrategy {
                 var pidEnvVariable = System.getenv("SSH_AGENT_PID");
                 return pidEnvVariable;
             });
+        }
 
-            builder.add("-oIdentitiesOnly=no");
-            builder.add("-oIdentityFile=none");
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -131,8 +147,6 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
-            builder.add("-oIdentitiesOnly=no");
-            builder.add("-oIdentityFile=none");
             builder.environment("SSH_AUTH_SOCK", parent -> {
                 if (parent.getOsType().equals(OsType.WINDOWS)) {
                     return getPageantWindowsPipe(parent);
@@ -140,9 +154,15 @@ public interface SshIdentityStrategy {
 
                 return null;
             });
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
+        }
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
 
         private String getPageantWindowsPipe(ShellControl parent) throws Exception {
@@ -191,12 +211,15 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public void buildCommand(CommandBuilder builder) {
-            builder.add("-oIdentitiesOnly=no");
-            builder.add("-oIdentityFile=none");
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
+        public void buildCommand(CommandBuilder builder) {}
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -220,8 +243,6 @@ public interface SshIdentityStrategy {
 
         @Override
         public void buildCommand(CommandBuilder builder) {
-            builder.add("-oIdentitiesOnly=no");
-            builder.add("-oIdentityFile=none");
             builder.environment("SSH_AUTH_SOCK", sc -> {
                 if (sc.getOsType() == OsType.WINDOWS) {
                     return null;
@@ -230,9 +251,15 @@ public interface SshIdentityStrategy {
                 var r = sc.executeSimpleStringCommand("gpgconf --list-dirs agent-ssh-socket");
                 return r;
             });
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
+        }
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -304,29 +331,26 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public void buildCommand(CommandBuilder builder) {
-            if (file == null) {
-                return;
+        public void buildCommand(CommandBuilder builder) {}
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "yes"),
+                    new KeyValue("IdentityAgent", "none"),
+                    new KeyValue("IdentityFile", resolveFilePath(parent).toString()),
+                    new KeyValue("PKCS11Provider", "none"));
+        }
+
+        private FilePath resolveFilePath(ShellControl sc) throws Exception {
+            var s = file.toAbsoluteFilePath(sc);
+            // The ~ is supported on all platforms, so manually replace it here for Windows
+            if (s.startsWith("~")) {
+                s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
             }
-
-            builder.add("-i")
-                    .add(sc -> {
-                        if (sc == null) {
-                            return "\"" + file.toAbsoluteFilePath(null) + "\"";
-                        }
-
-                        var s = file.toAbsoluteFilePath(sc);
-                        // The ~ is supported on all platforms, so manually replace it here for Windows
-                        if (s.startsWith("~")) {
-                            s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
-                        }
-                        var resolved = sc.getShellDialect()
-                                .evaluateExpression(sc, s.toString())
-                                .readStdoutOrThrow();
-                        return sc.getShellDialect().fileArgument(resolved);
-                    })
-                    .add("-oIdentitiesOnly=yes")
-                    .add("-oIdentityAgent=none");
+            var resolved =
+                    sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
+            return FilePath.of(resolved);
         }
 
         @Override
@@ -397,25 +421,25 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
-                        var file = getFile(sc);
-                        var dir = FileNames.getParent(file);
-                        if (sc.getOsType() == OsType.WINDOWS) {
-                            var path = sc.view().getPath();
-                            builder.fixedEnvironment("PATH", dir + ";" + path);
-                        } else {
-                            var path = sc.view().getLibraryPath();
-                            builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
-                        }
-                    })
-                    .add("-oIdentityFile=none")
-                    .add("-I")
-                    .add(sc -> {
-                        if (sc == null) {
-                            return "<ykcs path>";
-                        }
+                var file = getFile(sc);
+                var dir = FileNames.getParent(file);
+                if (sc.getOsType() == OsType.WINDOWS) {
+                    var path = sc.view().getPath();
+                    builder.fixedEnvironment("PATH", dir + ";" + path);
+                } else {
+                    var path = sc.view().getLibraryPath();
+                    builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
+                }
+            });
+        }
 
-                        return sc.getShellDialect().fileArgument(getFile(sc));
-                    });
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("PKCS11Provider", getFile(parent)),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityAgent", "none"));
         }
     }
 
@@ -450,8 +474,15 @@ public interface SshIdentityStrategy {
                     builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
                 }
             });
-            builder.add("-oIdentityFile=none");
-            builder.add("-I").addFile(file);
+        }
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("PKCS11Provider", file),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityAgent", "none"));
         }
     }
 
@@ -467,12 +498,15 @@ public interface SshIdentityStrategy {
         public void prepareParent(ShellControl parent) {}
 
         @Override
-        public void buildCommand(CommandBuilder builder) {
-            if (forwardAgent) {
-                builder.add(1, "-A");
-            }
-            builder.add("-oIdentityFile=none");
-            builder.add("-oIdentitiesOnly=no");
+        public void buildCommand(CommandBuilder builder) {}
+
+        @Override
+        public List<KeyValue> configOptions(ShellControl parent) {
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 }

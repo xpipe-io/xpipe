@@ -82,7 +82,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                                     .getDeclaredFields()[0]
                                     .getType()
                                     .equals(byte[].class);
-                    if (!new String(read, StandardCharsets.US_ASCII).trim().startsWith("{") && rawDataRequestClass) {
+                    if (!new String(read, StandardCharsets.US_ASCII).strip().startsWith("{") && rawDataRequestClass) {
                         object = createRawDataRequest(beaconInterface, read);
                     } else {
                         var tree = JacksonMapper.getDefault().readTree(read);
@@ -128,7 +128,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                         .replace("Exchange$Request", "Request")
                         .replace("at [Source: UNKNOWN; byte offset: #UNKNOWN]", "")
                         .replaceAll("(\\w+) is marked non-null but is null", "field $1 is missing from object")
-                        .trim();
+                        .strip();
                 writeError(exchange, new BeaconClientErrorResponse(message), 400);
             }
             return;

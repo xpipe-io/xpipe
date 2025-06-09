@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;

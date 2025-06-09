@@ -18,5 +18,7 @@ public enum DataStoreUsageCategory {
     @JsonProperty("serial")
     SERIAL,
     @JsonProperty("identity")
-    IDENTITY
+    IDENTITY,
+    @JsonProperty("macro")
+    MACRO
 }

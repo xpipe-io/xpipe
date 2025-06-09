@@ -3,8 +3,6 @@ package io.xpipe.app.ext;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellStoreState;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.NetworkTunnelSession;
-import io.xpipe.core.store.NetworkTunnelStore;
 import io.xpipe.core.store.StatefulDataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

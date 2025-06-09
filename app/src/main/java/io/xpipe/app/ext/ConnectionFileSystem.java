@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
+import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
@@ -13,6 +14,7 @@ import lombok.Getter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -29,11 +31,42 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public FileSystem createTransferOptimizedFileSystem() throws Exception {
+        // For local, we have our optimized streams regardless
+        if (!shellControl.isLocal() && shellControl.getShellDialect() == ShellDialects.CMD) {
+            var pwsh = shellControl
+                    .view()
+                    .findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName())
+                    .isPresent();
+            if (pwsh) {
+                return new ConnectionFileSystem(
+                        shellControl.subShell(ShellDialects.POWERSHELL_CORE).start());
+            }
+
+            var powershell = shellControl
+                    .view()
+                    .findProgram(ShellDialects.POWERSHELL.getExecutableName())
+                    .isPresent();
+            if (powershell) {
+                return new ConnectionFileSystem(
+                        shellControl.subShell(ShellDialects.POWERSHELL).start());
+            }
+        }
+
+        return this;
+    }
+
+    @Override
     public long getFileSize(FilePath file) throws Exception {
         return Long.parseLong(shellControl
                 .getShellDialect()
                 .queryFileSize(shellControl, file.toString())
                 .readStdoutOrThrow());
+    }
+
+    @Override
+    public long getDirectorySize(FilePath file) throws Exception {
+        return shellControl.getShellDialect().queryDirectorySize(shellControl, file.toString());
     }
 
     @Override
@@ -70,6 +103,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public InputStream openInput(FilePath file) throws Exception {
+        if (shellControl.isLocal()) {
+            return Files.newInputStream(file.asLocalPath());
+        }
+
         return shellControl
                 .getShellDialect()
                 .getFileReadCommand(shellControl, file.toString())
@@ -78,6 +115,10 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
+        if (shellControl.isLocal()) {
+            return Files.newOutputStream(file.asLocalPath());
+        }
+
         var cmd =
                 shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
         cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
@@ -171,8 +212,16 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public Optional<FileEntry> getFileInfo(FilePath file) throws Exception {
+        try (var stream = shellControl.getShellDialect().listFiles(this, shellControl, file.toString(), false)) {
+            var l = stream.toList();
+            return l.stream().findFirst();
+        }
+    }
+
+    @Override
     public Stream<FileEntry> listFiles(FilePath file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString());
+        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString(), true);
     }
 
     @Override

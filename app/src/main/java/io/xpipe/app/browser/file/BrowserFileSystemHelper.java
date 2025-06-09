@@ -14,7 +14,7 @@ public class BrowserFileSystemHelper {
             return null;
         }
 
-        path = path.trim();
+        path = path.strip();
         if (path.isBlank()) {
             return null;
         }
@@ -26,9 +26,6 @@ public class BrowserFileSystemHelper {
         }
 
         // Handle special case when file system creation has failed
-        if (model.getFileSystem() == null) {
-            return path;
-        }
 
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty()) {
@@ -45,10 +42,6 @@ public class BrowserFileSystemHelper {
     public static String evaluatePath(BrowserFileSystemTabModel model, String path) throws Exception {
         if (path == null) {
             return null;
-        }
-
-        if (model.getFileSystem() == null) {
-            return path;
         }
 
         var shell = model.getFileSystem().getShell();
@@ -72,10 +65,6 @@ public class BrowserFileSystemHelper {
             throws Exception {
         if (path == null) {
             return null;
-        }
-
-        if (model.getFileSystem() == null) {
-            return path;
         }
 
         var shell = model.getFileSystem().getShell();
@@ -102,10 +91,6 @@ public class BrowserFileSystemHelper {
     public static void validateDirectoryPath(BrowserFileSystemTabModel model, FilePath path, boolean verifyExists)
             throws Exception {
         if (path == null) {
-            return;
-        }
-
-        if (model.getFileSystem() == null) {
             return;
         }
 

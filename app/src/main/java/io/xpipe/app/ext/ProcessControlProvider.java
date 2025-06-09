@@ -1,6 +1,9 @@
 package io.xpipe.app.ext;
 
+import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.DataStore;
 
@@ -12,10 +15,13 @@ public abstract class ProcessControlProvider {
 
     public static void init(ModuleLayer layer) {
         INSTANCE = ServiceLoader.load(layer, ProcessControlProvider.class).stream()
-                .map(localProcessControlProviderProvider -> localProcessControlProviderProvider.get())
+                .map(p -> p.get())
                 .findFirst()
                 .orElseThrow();
     }
+
+    public abstract BrowserStoreSessionTab<?> createVncSession(
+            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
 
     public static ProcessControlProvider get() {
         return INSTANCE;

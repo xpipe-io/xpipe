@@ -15,12 +15,12 @@
     -fx-spacing: 0.45em;
 }
 
-.root.nord .store-header-bar {
+.root:nord .store-header-bar {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
 
-.root.nord .bar {
+.root:nord .bar {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -38,7 +38,7 @@
     -fx-border-color: transparent;
 }
 
-.root.nord .store-header-bar .menu-button {
+.root:nord .store-header-bar .menu-button {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -51,7 +51,7 @@
     -fx-padding: -5 -2 -5 -2;
 }
 
-.root.primer:macos .store-header-bar .menu-button, .root.nord:macos .store-header-bar .menu-button, .root.dracula:macos .store-header-bar .menu-button, .root.mocha:macos .store-header-bar .menu-button {
+.root:primer:macos .store-header-bar .menu-button, .root:nord:macos .store-header-bar .menu-button, .root:dracula:macos .store-header-bar .menu-button, .root:mocha:macos .store-header-bar .menu-button {
     -fx-padding: -5 -2 -5 -2;
 }
 
@@ -94,7 +94,7 @@
     -fx-spacing: 0.2em;
 }
 
-.root.nord .store-creation-bar, .root.nord .store-sort-bar, .root.nord .store-category-bar {
+.root:nord .store-creation-bar, .root:nord .store-sort-bar, .root:nord .store-category-bar {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }
@@ -155,7 +155,7 @@
     -fx-border-radius: 3px;
 }
 
-.root.nord .store-header-bar .filter-bar {
+.root:nord .store-header-bar .filter-bar {
     -fx-background-radius: 0;
     -fx-border-radius: 0;
 }

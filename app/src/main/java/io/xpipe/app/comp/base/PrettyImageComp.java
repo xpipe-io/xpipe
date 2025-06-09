@@ -1,9 +1,9 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FileNames;
 

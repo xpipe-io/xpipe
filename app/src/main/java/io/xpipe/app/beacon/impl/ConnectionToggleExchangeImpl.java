@@ -1,9 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
+import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionToggleExchange;
-import io.xpipe.core.store.SingletonSessionStore;
 
 import com.sun.net.httpserver.HttpExchange;
 

@@ -6,11 +6,12 @@ import io.xpipe.app.browser.file.BrowserTransferComp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
@@ -61,9 +62,9 @@ public class BrowserFullSessionComp extends SimpleComp {
                     .bind(Bindings.createObjectBinding(
                             () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
-        var loadingIndicator = LoadingOverlayComp.noProgress(Comp.empty(), model.getBusy())
+        var loadingIndicator = new LoadingIconComp(model.getBusy(), AppFontSizes::xxxl)
                 .apply(struc -> {
-                    AnchorPane.setTopAnchor(struc.get(), 3.0);
+                    AnchorPane.setTopAnchor(struc.get(), 0.0);
                     AnchorPane.setRightAnchor(struc.get(), 0.0);
                 })
                 .styleClass("tab-loading-indicator");
@@ -117,21 +118,21 @@ public class BrowserFullSessionComp extends SimpleComp {
                 return true;
             }
 
-            return storeEntryWrapper.getEntry().getProvider().browserAction(model, storeEntryWrapper.getEntry(), null)
+            return storeEntryWrapper.getEntry().getProvider().launchBrowser(model, storeEntryWrapper.getEntry(), null)
                     != null;
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
-            ThreadHelper.runFailableAsync(() -> {
-                var entry = w.getEntry();
-                if (!entry.getValidity().isUsable()) {
-                    return;
-                }
+            var entry = w.getEntry();
+            if (!entry.getValidity().isUsable()) {
+                return;
+            }
 
-                var a = entry.getProvider().browserAction(model, entry, busy);
-                if (a != null) {
-                    a.execute();
-                }
-            });
+            var a = entry.getProvider().launchBrowser(model, entry, busy);
+            if (a != null) {
+                ThreadHelper.runFailableAsync(() -> {
+                    a.run();
+                });
+            }
         };
 
         var category = new SimpleObjectProperty<>(
@@ -211,6 +212,11 @@ public class BrowserFullSessionComp extends SimpleComp {
                 struc.get().setPrefWidth(newValue.doubleValue());
                 struc.get().setMaxWidth(newValue.doubleValue());
             });
+            
+            var clip = new Rectangle();
+            clip.widthProperty().bind(struc.get().widthProperty());
+            clip.heightProperty().bind(struc.get().heightProperty());
+            struc.get().setClip(clip);
 
             AnchorPane.setBottomAnchor(struc.get(), 0.0);
             AnchorPane.setRightAnchor(struc.get(), 0.0);

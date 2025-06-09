@@ -10,7 +10,6 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 
-import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.function.Predicate;

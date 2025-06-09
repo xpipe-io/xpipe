@@ -18,6 +18,8 @@ import java.util.function.Function;
 
 public interface ShellControl extends ProcessControl {
 
+    void setUser(String user);
+
     boolean isInitializing();
 
     void setDumbOpen(ShellOpenFunction openFunction);
@@ -40,8 +42,6 @@ public interface ShellControl extends ProcessControl {
     LocalProcessInputStream getStderr();
 
     ShellView view();
-
-    ShellCapabilities getCapabilities();
 
     Optional<ShellControl> getParentControl();
 

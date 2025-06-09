@@ -4,8 +4,8 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.util.DerivedObservableList;
 
 import javafx.animation.AnimationTimer;

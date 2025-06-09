@@ -42,7 +42,7 @@ public class AppFontSizes {
     }
 
     public static void xxxl(Node node) {
-        apply(node, AppFontSizes::getXxl);
+        apply(node, AppFontSizes::getXxxl);
     }
 
     public static void title(Node node) {

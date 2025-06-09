@@ -5,7 +5,6 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.ColorHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
@@ -56,7 +55,7 @@ public class AppTheme {
                     PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
-                root.getStyleClass().add(def.getCssId());
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass(def.getCssId()), true);
                 root.pseudoClassStateChanged(LIGHT, true);
                 root.pseudoClassStateChanged(DARK, false);
                 root.pseudoClassStateChanged(PRETTY, true);
@@ -65,12 +64,13 @@ public class AppTheme {
             }
 
             AppPrefs.get().theme().subscribe(t -> {
-                Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(theme -> {
+                    root.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.equals(t));
+                });
                 if (t == null) {
                     return;
                 }
 
-                root.getStyleClass().add(t.getCssId());
                 root.pseudoClassStateChanged(LIGHT, !t.isDark());
                 root.pseudoClassStateChanged(DARK, t.isDark());
             });
@@ -265,8 +265,9 @@ public class AppTheme {
                 Color baseColor,
                 Color borderColor,
                 Supplier<Color> contextMenuColor,
+                int displayBorderRadius,
                 int skipLines) {
-            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor);
+            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor, displayBorderRadius);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -316,7 +317,8 @@ public class AppTheme {
                                 .darker()
                                 .desaturate()
                                 .brighter(),
-                        0.3));
+                        0.3),
+                4);
         public static final Theme PRIMER_DARK = new Theme(
                 "dark",
                 "primer",
@@ -330,7 +332,8 @@ public class AppTheme {
                                 .desaturate()
                                 .desaturate()
                                 .darker(),
-                        0.2));
+                        0.2),
+                4);
         public static final Theme NORD_LIGHT = new Theme(
                 "nordLight",
                 "nord",
@@ -344,7 +347,8 @@ public class AppTheme {
                                 .darker()
                                 .desaturate()
                                 .brighter(),
-                        0.3));
+                        0.3),
+                0);
         public static final Theme NORD_DARK = new Theme(
                 "nordDark",
                 "nord",
@@ -358,7 +362,8 @@ public class AppTheme {
                                 .desaturate()
                                 .desaturate()
                                 .darker(),
-                        0.2));
+                        0.2),
+                0);
         public static final Theme CUPERTINO_LIGHT = new Theme(
                 "cupertinoLight",
                 "cupertino",
@@ -372,7 +377,8 @@ public class AppTheme {
                                 .darker()
                                 .desaturate()
                                 .brighter(),
-                        0.3));
+                        0.3),
+                4);
         public static final Theme CUPERTINO_DARK = new Theme(
                 "cupertinoDark",
                 "cupertino",
@@ -386,7 +392,8 @@ public class AppTheme {
                                 .desaturate()
                                 .desaturate()
                                 .darker(),
-                        0.2));
+                        0.2),
+                4);
         public static final Theme DRACULA = new Theme(
                 "dracula",
                 "dracula",
@@ -400,7 +407,8 @@ public class AppTheme {
                                 .desaturate()
                                 .desaturate()
                                 .darker(),
-                        0.2));
+                        0.2),
+                6);
         public static final Theme MOCHA = new DerivedTheme(
                 "mocha",
                 "mocha",
@@ -416,6 +424,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                4,
                 91);
 
         // Adjust this to create your own theme
@@ -429,6 +438,7 @@ public class AppTheme {
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
+                4,
                 91);
 
         // Also include your custom theme here
@@ -452,6 +462,9 @@ public class AppTheme {
 
         @Getter
         protected final Supplier<Color> contextMenuColor;
+
+        @Getter
+        protected final int displayBorderRadius;
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {

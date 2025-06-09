@@ -6,14 +6,13 @@ public enum DocumentationLink {
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("troubleshoot/windows-ssh"),
     MACOS_SETUP("guide/installation#macos"),
-    SSH_AGENT("troubleshoot/ssh-agent-socket"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
     SYNC("guide/sync"),
-    GETTING_STARTED("guide/getting-started"),
+    FIRST_STEPS("guide/first-steps"),
     DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
@@ -32,14 +31,21 @@ public enum DocumentationLink {
     KVM("guide/kvm"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
+    REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
     PSSESSION("guide/pssession"),
+    RDP_ADDITIONAL_OPTIONS("guide/rdp#additional-rdp-options"),
+    RDP_ALLOW_LIST("guide/desktop-applications#allow-lists"),
+    RDP_TUNNEL_HOST("guide/rdp#rdp-tunnels"),
     RDP("guide/rdp"),
     TUNNELS("guide/ssh-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
+    SSH_JUMP_SERVERS("guide/ssh#jump-servers"),
     KEEPASSXC("guide/password-manager#keepassxc"),
-    PASSWORD_MANAGER("guide/password-manager");
+    PASSWORD_MANAGER("guide/password-manager"),
+    VNC_CLIENTS("guide/vnc#external-clients"),
+    ;
 
     private final String page;
 

@@ -30,11 +30,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellCapabilities getCapabilities() {
-        return parent.getCapabilities();
-    }
-
-    @Override
     public Optional<ShellControl> getParentControl() {
         return parent.getParentControl();
     }
@@ -216,6 +211,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void setUser(String user) {
+        parent.setUser(user);
+    }
+
+    @Override
     public boolean isInitializing() {
         return parent.isInitializing();
     }
@@ -258,6 +258,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public void kill() {
         parent.kill();
+    }
+
+    @Override
+    public void killExternal() {
+        parent.killExternal();
     }
 
     @Override

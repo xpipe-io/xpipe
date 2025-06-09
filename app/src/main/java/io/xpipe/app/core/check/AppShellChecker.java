@@ -14,11 +14,16 @@ import java.util.Optional;
 public abstract class AppShellChecker {
 
     public void check() throws Exception {
-        var err = selfTestErrorCheck();
-
         var canFallback = !ProcessControlProvider.get()
                 .getEffectiveLocalDialect()
                 .equals(ProcessControlProvider.get().getFallbackDialect());
+
+        if (canFallback && fallBackInstantly()) {
+            toggleFallback();
+            canFallback = false;
+        }
+
+        var err = selfTestErrorCheck();
         if (err.isPresent()
                 && canFallback
                 && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
@@ -76,6 +81,8 @@ public abstract class AppShellChecker {
     }
 
     protected abstract String listReasons();
+
+    protected abstract boolean fallBackInstantly();
 
     private void toggleFallback() throws Exception {
         LocalShell.reset(true);

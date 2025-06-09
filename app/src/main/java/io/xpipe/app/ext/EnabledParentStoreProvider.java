@@ -1,9 +1,9 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.store.StoreEntryComp;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreToggleComp;
-import io.xpipe.app.comp.store.StoreViewState;
+import io.xpipe.app.hub.comp.StoreEntryComp;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.StoreToggleComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;

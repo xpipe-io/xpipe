@@ -1,20 +1,24 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
-import io.xpipe.app.password.PasswordManager;
-import io.xpipe.app.password.PasswordManagerCommand;
+import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.app.vnc.InternalVncClient;
+import io.xpipe.app.vnc.VncCategory;
 import io.xpipe.core.process.ShellScript;
 
 import javafx.beans.property.*;
@@ -70,8 +74,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
     final ObjectProperty<ExternalTerminalType> terminalType =
             mapLocal(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class, false);
-    final ObjectProperty<ExternalRdpClientType> rdpClientType =
-            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClientType.class, false);
+    final ObjectProperty<ExternalRdpClient> rdpClientType =
+            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClient.class, false);
     final DoubleProperty windowOpacity = mapLocal(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class, false);
     final StringProperty customRdpClientCommand =
             mapLocal(new SimpleStringProperty(null), "customRdpClientCommand", String.class, false);
@@ -80,7 +84,7 @@ public class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new SimpleBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
-            .property(new SimpleObjectProperty<>(new ArrayList<>()))
+            .property(new SimpleObjectProperty<>(new ArrayList<>(SystemIconManager.getIcons())))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .build());
@@ -97,8 +101,15 @@ public class AppPrefs {
             new SimpleBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultShared(new SimpleObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
+    public final BooleanProperty focusWindowOnNotifications =
+            mapLocal(new SimpleBooleanProperty(true), "focusWindowOnNotifications", Boolean.class, false);
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new SimpleBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
+    public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>(InternalVncClient.builder().build()))
+            .key("vncClient")
+            .valueClass(ExternalVncClient.class)
+            .build());
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new SimpleObjectProperty<>())
             .key("passwordManager")
@@ -139,8 +150,6 @@ public class AppPrefs {
         return terminalAlwaysPauseOnExit;
     }
 
-    public final StringProperty passwordManagerCommand =
-            mapLocal(new SimpleStringProperty(null), "passwordManagerCommand", String.class, false);
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
     public final BooleanProperty enableGitStorage =
@@ -233,6 +242,10 @@ public class AppPrefs {
         return disableSshPinCaching;
     }
 
+    public ObservableBooleanValue focusWindowOnNotifications() {
+        return focusWindowOnNotifications;
+    }
+
     @Getter
     private final StringProperty lockCrypt =
             mapVaultShared(new SimpleStringProperty(), "workspaceLock", String.class, true);
@@ -284,7 +297,7 @@ public class AppPrefs {
 
     private final AppPrefsStorageHandler globalStorageHandler = new AppPrefsStorageHandler(
             AppProperties.get().getDataDir().resolve("settings").resolve("preferences.json"));
-    private final Map<Mapping, Comp<?>> customEntries = new LinkedHashMap<>();
+    private final Map<Mapping, OptionsBuilder> customEntries = new LinkedHashMap<>();
 
     @Getter
     private final Property<AppPrefsCategory> selectedCategory;
@@ -303,6 +316,7 @@ public class AppPrefs {
                         new LoggingCategory(),
                         new EditorCategory(),
                         new RdpCategory(),
+                        new VncCategory(),
                         new SshCategory(),
                         new ConnectionHubCategory(),
                         new FileBrowserCategory(),
@@ -481,7 +495,7 @@ public class AppPrefs {
         return terminalType;
     }
 
-    public ObservableValue<ExternalRdpClientType> rdpClientType() {
+    public ObservableValue<ExternalRdpClient> rdpClientType() {
         return rdpClientType;
     }
 
@@ -554,7 +568,7 @@ public class AppPrefs {
     public void initDefaultValues() {
         externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-        rdpClientType.setValue(ExternalRdpClientType.determineDefault(rdpClientType.get()));
+        rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         if (AppProperties.get().isInitialLaunch()) {
             if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 performanceMode.setValue(true);
@@ -564,7 +578,7 @@ public class AppPrefs {
         }
     }
 
-    public Comp<?> getCustomComp(String id) {
+    public OptionsBuilder getCustomOptions(String id) {
         return customEntries.entrySet().stream()
                 .filter(e -> e.getKey().getKey().equals(id))
                 .findFirst()
@@ -586,15 +600,6 @@ public class AppPrefs {
         if (AppProperties.get().isInitialLaunch()) {
             var f = PlatformState.determineDefaultScalingFactor();
             uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
-        }
-
-        // Migrate legacy password manager
-        if (passwordManagerCommand.get() != null
-                && !passwordManagerCommand.get().isBlank()
-                && passwordManager.getValue() == null) {
-            passwordManager.setValue(PasswordManagerCommand.builder()
-                    .script(new ShellScript(passwordManagerCommand.get()))
-                    .build());
         }
     }
 
@@ -717,9 +722,14 @@ public class AppPrefs {
 
         @Override
         public <T> void addSetting(
-                String id, JavaType t, Property<T> property, Comp<?> comp, boolean requiresRestart, boolean log) {
+                String id,
+                JavaType t,
+                Property<T> property,
+                OptionsBuilder builder,
+                boolean requiresRestart,
+                boolean log) {
             var m = new Mapping(id, property, t, false, requiresRestart, log);
-            customEntries.put(m, comp);
+            customEntries.put(m, builder);
             mapping.add(m);
         }
     }

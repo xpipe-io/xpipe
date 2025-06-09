@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.Check;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
@@ -31,9 +32,11 @@ import java.util.List;
 @Getter
 public class OptionsComp extends Comp<CompStructure<VBox>> {
 
+    private final List<Check> checks;
     private final List<Entry> entries;
 
-    public OptionsComp(List<Entry> entries) {
+    public OptionsComp(List<Check> checks, List<Entry> entries) {
+        this.checks = checks;
         this.entries = entries;
     }
 
@@ -201,11 +204,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
             }
         }
 
-        if (entries.size() == 1 && firstComp != null) {
-            pane.visibleProperty().bind(PlatformThread.sync(firstComp.visibleProperty()));
-            pane.managedProperty().bind(PlatformThread.sync(firstComp.managedProperty()));
-        }
-
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
             var nameWidthBinding = Bindings.createDoubleBinding(
                     () -> {
@@ -221,8 +219,23 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
         Region finalFirstComp = firstComp;
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (finalFirstComp != null && newValue) {
-                finalFirstComp.requestFocus();
+            if (!newValue) {
+                return;
+            }
+
+            var failed = checks.stream()
+                    .filter(check -> check.getValidationResult().getMessages().size() > 0)
+                    .findFirst();
+            if (failed.isPresent()) {
+                var targets = failed.get().getTargets();
+                if (targets.size() > 0) {
+                    var r = targets.getFirst();
+                    r.requestFocus();
+                }
+            } else {
+                if (finalFirstComp != null) {
+                    finalFirstComp.requestFocus();
+                }
             }
         });
 

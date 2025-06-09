@@ -511,7 +511,7 @@ public abstract class Dialog {
         @Override
         protected DialogElement next(String answer) {
             if (element.requiresExplicitUserInput()
-                    && (answer == null || answer.trim().length() == 0)) {
+                    && (answer == null || answer.strip().length() == 0)) {
                 return element;
             }
 

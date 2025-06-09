@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
@@ -91,11 +92,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         }
     }
 
-    class MacOs extends MacOsType implements WarpTerminalType {
-
-        public MacOs() {
-            super("app.warp", "Warp");
-        }
+    class MacOs implements ExternalApplicationType.MacApplication, WarpTerminalType {
 
         @Override
         public int getProcessHierarchyOffset() {
@@ -114,6 +111,16 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "Warp";
+        }
+
+        @Override
+        public String getId() {
+            return "app.warp";
         }
     }
 

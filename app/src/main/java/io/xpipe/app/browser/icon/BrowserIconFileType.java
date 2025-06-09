@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.core.AppResources;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 
@@ -31,10 +31,10 @@ public abstract class BrowserIconFileType {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
-                    var id = split[0].trim();
+                    var id = split[0].strip();
                     var filter = Arrays.stream(split[1].split(","))
                             .map(s -> {
-                                var r = s.trim();
+                                var r = s.strip();
                                 if (r.startsWith(".")) {
                                     return r;
                                 }
@@ -46,8 +46,8 @@ public abstract class BrowserIconFileType {
                                 return "." + r;
                             })
                             .collect(Collectors.toSet());
-                    var darkIcon = "browser/" + split[2].trim();
-                    var lightIcon = (split.length > 3 ? "browser/" + split[3].trim() : darkIcon);
+                    var darkIcon = "browser/" + split[2].strip();
+                    var lightIcon = (split.length > 3 ? "browser/" + split[3].strip() : darkIcon);
                     ALL.add(new BrowserIconFileType.Simple(id, lightIcon, darkIcon, filter));
                 }
             }
@@ -85,7 +85,8 @@ public abstract class BrowserIconFileType {
 
             var name = entry.getPath().getFileName();
             var ext = entry.getPath().getExtension();
-            return (ext != null && endings.contains("." + ext.toLowerCase(Locale.ROOT))) || endings.contains(name);
+            return (ext.isPresent() && endings.contains("." + ext.get().toLowerCase(Locale.ROOT)))
+                    || endings.contains(name);
         }
 
         @Override

@@ -48,7 +48,7 @@ public class StorePath {
             throw new IllegalArgumentException("Separator character " + SEPARATOR + " is not allowed in the names");
         }
 
-        if (Arrays.stream(names).anyMatch(s -> s.trim().length() == 0)) {
+        if (Arrays.stream(names).anyMatch(s -> s.strip().length() == 0)) {
             throw new IllegalArgumentException("Trimmed entry name is empty");
         }
 

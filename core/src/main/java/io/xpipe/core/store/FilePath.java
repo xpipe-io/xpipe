@@ -2,14 +2,10 @@ package io.xpipe.core.store;
 
 import io.xpipe.core.process.OsType;
 
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public final class FilePath {
@@ -34,13 +30,14 @@ public final class FilePath {
     private final String value;
 
     private FilePath normalized;
+    private List<String> split;
 
     private FilePath(@NonNull String value) {
         this.value = value;
         if (value.isBlank()) {
             throw new IllegalArgumentException();
         }
-        if (!value.equals(value.trim())) {
+        if (!value.equals(value.strip())) {
             throw new IllegalArgumentException();
         }
     }
@@ -120,32 +117,16 @@ public final class FilePath {
     }
 
     public String getFileName() {
-        var split = value.split("[\\\\/]");
-        if (split.length == 0) {
+        var split = split();
+        if (split.size() == 0) {
             return "";
         }
-        var components = Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+        var components = split.stream().filter(s -> !s.isEmpty()).toList();
         if (components.size() == 0) {
             return "";
         }
 
         return components.getLast();
-    }
-
-    public List<String> splitHierarchy() {
-        var f = value + "/";
-        var list = new ArrayList<String>();
-        int lastElementStart = 0;
-        for (int i = 0; i < f.length(); i++) {
-            if (f.charAt(i) == '\\' || f.charAt(i) == '/') {
-                if (i - lastElementStart > 0) {
-                    list.add(f.substring(0, i));
-                }
-
-                lastElementStart = i + 1;
-            }
-        }
-        return list;
     }
 
     public FilePath getBaseName() {
@@ -156,13 +137,13 @@ public final class FilePath {
         return FilePath.of(value.substring(0, split));
     }
 
-    public String getExtension() {
-        var name = FileNames.getFileName(value);
+    public Optional<String> getExtension() {
+        var name = getFileName();
         var split = name.split("\\.");
-        if (split.length == 0) {
-            return null;
+        if (split.length < 2) {
+            return Optional.empty();
         }
-        return split[split.length - 1];
+        return Optional.of(split[split.length - 1]);
     }
 
     public FilePath join(String... parts) {
@@ -183,11 +164,12 @@ public final class FilePath {
     }
 
     public FilePath getParent() {
-        if (split().size() == 0) {
+        var split = split();
+        if (split.size() == 0) {
             return this;
         }
 
-        if (split().size() == 1) {
+        if (split.size() == 1) {
             return value.startsWith("/") && !value.equals("/") ? FilePath.of("/") : this;
         }
 
@@ -223,9 +205,15 @@ public final class FilePath {
         return value.startsWith("~") ? FilePath.of(value.replace("~", dir)) : this;
     }
 
-    private List<String> split() {
-        var split = value.split("[\\\\/]");
-        return Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
+    public List<String> split() {
+        if (split != null) {
+            return split;
+        }
+
+        var ar = value.split("[\\\\/]");
+        var l = Arrays.stream(ar).filter(s -> !s.isEmpty()).toList();
+        split = l;
+        return l;
     }
 
     public FilePath toUnix() {

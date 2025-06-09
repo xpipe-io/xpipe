@@ -1,19 +1,24 @@
 package io.xpipe.app.util;
 
-import com.sun.jna.platform.win32.Shell32;
-import com.sun.jna.platform.win32.ShellAPI;
-import com.sun.jna.platform.win32.User32;
+import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 
+import com.sun.jna.platform.win32.Shell32;
+import com.sun.jna.platform.win32.ShellAPI;
+import com.sun.jna.platform.win32.User32;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -114,12 +119,29 @@ public class FileOpener {
                         key,
                         null,
                         () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                        (size) -> new ByteArrayOutputStream(s.length()) {
-                            @Override
-                            public void close() throws IOException {
-                                super.close();
-                                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                            }
+                        (size) -> {
+                            return new BrowserFileOutput() {
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.empty();
+                                }
+
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public OutputStream open() throws Exception {
+                                    return new ByteArrayOutputStream(s.length()) {
+                                        @Override
+                                        public void close() throws IOException {
+                                            super.close();
+                                            output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                                        }
+                                    };
+                                }
+                            };
                         },
                         file -> openInTextEditor(file));
     }

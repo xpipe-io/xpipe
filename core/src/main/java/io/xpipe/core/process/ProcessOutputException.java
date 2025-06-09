@@ -38,20 +38,18 @@ public class ProcessOutputException extends Exception {
     public static ProcessOutputException of(long exitCode, String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())
-                .map(s -> s.trim())
+                .map(s -> s.strip())
                 .collect(Collectors.joining("\n\n"))
                 .replaceAll("\r\n", "\n");
         var hasMessage = !combinedError.isBlank();
         var errorSuffix = hasMessage ? ":\n" + combinedError : "";
         var message =
                 switch ((int) exitCode) {
-                    case CommandControl
-                            .START_FAILED_EXIT_CODE -> "Process did not start up properly and had to be killed"
-                            + errorSuffix;
+                    case CommandControl.START_FAILED_EXIT_CODE ->
+                        "Process did not start up properly and had to be killed" + errorSuffix;
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for process exit timed out" + errorSuffix;
-                    case CommandControl
-                            .UNASSIGNED_EXIT_CODE -> "Process exited with unknown state. Did an external process interfere?"
-                            + errorSuffix;
+                    case CommandControl.UNASSIGNED_EXIT_CODE ->
+                        "Process exited with unknown state. Did an external process interfere?" + errorSuffix;
                     case CommandControl.INTERNAL_ERROR_EXIT_CODE -> "Process execution failed" + errorSuffix;
                     case CommandControl.ELEVATION_FAILED_EXIT_CODE -> "Process elevation failed" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;

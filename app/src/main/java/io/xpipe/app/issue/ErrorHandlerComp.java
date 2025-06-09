@@ -79,7 +79,7 @@ public class ErrorHandlerComp extends SimpleComp {
         if (desc == null) {
             desc = AppI18n.get("errorNoDetail");
         }
-        desc = desc.trim();
+        desc = desc.strip();
 
         if (event.isTerminal()) {
             desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");

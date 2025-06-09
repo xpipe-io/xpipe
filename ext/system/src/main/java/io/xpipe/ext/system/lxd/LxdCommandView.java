@@ -141,7 +141,10 @@ public class LxdCommandView extends CommandViewBase {
             var output = c.readStdoutOrThrow();
             return output.lines()
                     .collect(Collectors.toMap(
-                            s -> s.trim().split(",")[0], s -> s.trim().split(",")[1], (x, y) -> y, LinkedHashMap::new));
+                            s -> s.strip().split(",")[0],
+                            s -> s.strip().split(",")[1],
+                            (x, y) -> y,
+                            LinkedHashMap::new));
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
                 throw ErrorEvent.expected(ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));

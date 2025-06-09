@@ -19,6 +19,7 @@ public enum DataStoreCreationCategory {
     CLUSTER(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID),
     DESKTOP(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID),
     SERIAL(DataStorage.ALL_CONNECTIONS_CATEGORY_UUID),
+    MACRO(DataStorage.ALL_MACROS_CATEGORY_UUID),
     IDENTITY(DataStorage.ALL_IDENTITIES_CATEGORY_UUID);
 
     private final UUID category;

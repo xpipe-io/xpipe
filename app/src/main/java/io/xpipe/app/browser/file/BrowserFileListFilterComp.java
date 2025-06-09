@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -62,19 +63,23 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
             }
         });
         filterString.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null && !text.isFocused()) {
-                expanded.set(false);
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (newValue == null && !text.isFocused()) {
+                    expanded.set(false);
+                }
+            });
         });
         text.setMinWidth(0);
         Styles.toggleStyleClass(text, Styles.LEFT_PILL);
 
         filterString.subscribe(val -> {
-            if (val == null) {
-                text.getStyleClass().remove(Styles.SUCCESS);
-            } else {
-                text.getStyleClass().add(Styles.SUCCESS);
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (val == null) {
+                    text.getStyleClass().remove(Styles.SUCCESS);
+                } else {
+                    text.getStyleClass().add(Styles.SUCCESS);
+                }
+            });
         });
 
         var fi = new FontIcon("mdi2m-magnify");

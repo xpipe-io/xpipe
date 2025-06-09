@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;

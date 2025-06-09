@@ -2,17 +2,16 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppImages;
+import io.xpipe.app.core.AppResources;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
-import javafx.animation.Animation;
+import javafx.animation.*;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
@@ -35,7 +34,7 @@ public class AppMainWindowContentComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var overlay = AppDialog.getModalOverlays();
-        var loaded = AppMainWindow.getLoadedContent();
+        var loaded = AppMainWindow.getInstance().getLoadedContent();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(64);
@@ -61,7 +60,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                 struc.get().setOpacity(0.6);
             });
 
-            var text = new LabelComp(AppMainWindow.getLoadingText());
+            var text = new LabelComp(AppMainWindow.getInstance().getLoadingText());
             text.apply(struc -> {
                 struc.get().setOpacity(0.8);
             });
@@ -97,7 +96,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             overlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 if (c.next() && c.wasAdded()) {
-                    stage.requestFocus();
+                    AppMainWindow.getInstance().focus();
 
                     // Close blocking modal windows
                     var childWindows = Window.getWindows().stream()
@@ -111,6 +110,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             return pane;
         });
+
         var modal = new ModalOverlayStackComp(bg, overlay);
         return modal.createRegion();
     }
