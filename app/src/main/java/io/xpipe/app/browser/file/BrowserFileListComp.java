@@ -76,7 +76,6 @@ public final class BrowserFileListComp extends SimpleComp {
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setCellFactory(col -> new FileSizeCell());
         sizeCol.setResizable(false);
-        sizeCol.setPrefWidth(120);
         sizeCol.setReorderable(false);
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>();
@@ -124,13 +123,14 @@ public final class BrowserFileListComp extends SimpleComp {
         });
         table.setFixedCellSize(30.0);
 
-        prepareColumnVisibility(table, ownerCol, filenameCol);
+        prepareColumnVisibility(table, filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         prepareTableScrollFix(table);
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);
         prepareTableChanges(table, filenameCol, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
+        table.setMinWidth(0);
         return table;
     }
 
@@ -148,8 +148,11 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareColumnVisibility(
             TableView<BrowserEntry> table,
+            TableColumn<BrowserEntry, String> filenameCol,
+            TableColumn<BrowserEntry, Instant> mtimeCol,
+            TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol,
-            TableColumn<BrowserEntry, String> filenameCol) {
+            TableColumn<BrowserEntry, String> sizeCol) {
         var os = fileList.getFileSystemModel()
                 .getFileSystem()
                 .getShell()
@@ -159,6 +162,15 @@ public final class BrowserFileListComp extends SimpleComp {
             if (os != OsType.WINDOWS && os != OsType.MACOS) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
+
+            var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+            if (!OsType.WINDOWS.equals(shell.getOsType()) && !OsType.MACOS.equals(shell.getOsType())) {
+                modeCol.setVisible(newValue.doubleValue() > 600);
+            }
+
+            mtimeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 150 : 100);
+            sizeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 120 : 90);
+
             var width = getFilenameWidth(table);
             filenameCol.setPrefWidth(width);
         });
@@ -171,7 +183,7 @@ public final class BrowserFileListComp extends SimpleComp {
                         .mapToDouble(value -> value.getPrefWidth())
                         .sum()
                 + 7;
-        return tableView.getWidth() - sum;
+        return Math.max(200, tableView.getWidth() - sum);
     }
 
     private String formatOwner(BrowserEntry param) {
@@ -514,7 +526,7 @@ public final class BrowserFileListComp extends SimpleComp {
                     modeCol.setVisible(false);
                     ownerCol.setVisible(false);
                 } else {
-                    modeCol.setVisible(true);
+                    modeCol.setVisible(table.getWidth() > 600);
                     if (table.getWidth() > 1000) {
                         ownerCol.setVisible(hasOwner);
                     } else if (!hasOwner) {

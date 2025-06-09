@@ -31,6 +31,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 
 import java.util.*;
@@ -457,13 +458,15 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         Comp<?> comp = tabModel.comp();
         var compRegion = comp.createRegion();
+
         var empty = new StackPane();
-        empty.setMinWidth(450);
+        empty.setMinWidth(0);
         empty.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (tabModel.isCloseable() && tabs.getSelectionModel().getSelectedItem() == tab) {
                 rightPadding.setValue(newValue.doubleValue());
             }
         });
+
         var split = new SplitPane(compRegion);
         if (tabModel.isCloseable()) {
             split.getItems().add(empty);
