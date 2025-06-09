@@ -78,24 +78,21 @@ public class StoreCreationMenu {
                         DataStoreCreationCategory.IDENTITY,
                         "localIdentity"));
 
-        var macroMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, "actionMacro");
+        var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, null);
         var item = new MenuItem();
+        item.setGraphic(PrettyImageHelper.ofFixedSize("app:shortcut/actionShortcut_icon.svg", 16, 16).createRegion());
         item.textProperty().bind(AppI18n.observable("actionShortcut"));
         item.setOnAction(event -> {
-            AppMainWindow.getInstance().getActionPickerMode().setValue(false);
-            AppMainWindow.getInstance().getActionPickerMode().setValue(true);
-            AbstractAction.expectPick(abstractAction -> {
-                var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(abstractAction).prefWidth(600));
-                modal.show();
+            Platform.runLater(() -> {
+                AbstractAction.expectPick();
             });
-            event.consume();
+
+            // Fix weird JavaFX NPE
+            actionMenu.getParentPopup().hide();
         });
-        macroMenu.getItems().addFirst(item);
+        actionMenu.getItems().addFirst(item);
 
-        menu.getItems().add(macroMenu);
-
-        // menu.getItems().add(category("addDatabase", "mdi2d-database-plus", DataStoreCreationCategory.DATABASE,
-        // null));
+        menu.getItems().add(actionMenu);
     }
 
     private static MenuItem category(
@@ -150,6 +147,10 @@ public class StoreCreationMenu {
         var providers = sub.stream()
                 .sorted(Comparator.comparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
+        if (providers.isEmpty()) {
+            return menu;
+        }
+
         int lastOrder = providers.getFirst().getOrderPriority();
         for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {
             if (dataStoreProvider.getOrderPriority() != lastOrder) {

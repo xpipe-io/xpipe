@@ -509,8 +509,12 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     }
                     c.addEventHandler(
                             DragEvent.DRAG_ENTERED,
-                            mouseEvent -> Platform.runLater(
-                                    () -> tabs.getSelectionModel().select(tab)));
+                            mouseEvent -> {
+                                if (tabModel.isCloseable()) {
+                                    Platform.runLater(
+                                            () -> tabs.getSelectionModel().select(tab));
+                                }
+                            });
                 });
             }
         });

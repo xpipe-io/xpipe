@@ -68,20 +68,33 @@ public class ActionUrls {
         return encodedURL;
     }
 
-    public static List<AbstractAction> parse(String queryString) throws Exception {
+    public static Optional<AbstractAction> parse(String queryString) throws Exception {
         var query = splitQuery(queryString);
 
         var id = query.get("id");
-        if (id == null || id.isEmpty()) {
-            return List.of();
+        if (id == null || id.size() != 1) {
+            return Optional.empty();
         }
 
-        var stores = query.get("store");
+        var provider = ActionProvider.ALL.stream().filter(actionProvider -> id.getFirst().equals(actionProvider.getId())).findFirst();
+        if (provider.isEmpty()) {
+            return Optional.empty();
+        }
+
+        var clazz = provider.get().getActionClass();
+        if (clazz.isEmpty()) {
+            return Optional.empty();
+        }
+
+        if (!SerializableAction.class.isAssignableFrom(clazz.get())) {
+            return Optional.empty();
+        }
+
+        var stores = query.get("ref");
         if (stores == null || stores.isEmpty()) {
-            return List.of();
+            return Optional.empty();
         }
 
-        List<DataStoreEntry> entries = new ArrayList<>();
         for (String store : stores) {
             var uuid = UuidHelper.parse(store);
             if (uuid.isEmpty()) {
@@ -97,27 +110,14 @@ public class ActionUrls {
             if (!entry.get().getValidity().isUsable()) {
                 throw new IllegalArgumentException("Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
             }
-
-            entries.add(entry.get());
         }
 
-        query.remove("id");
-        query.remove("store");
-        var json = (ObjectNode) JacksonMapper.getDefault().valueToTree(query);
-
-        TrackEvent.withDebug("Parsed action")
-                .tag("id", id)
-                .tag("entries", entries)
-                .tag("data", json.toPrettyString())
-                .handle();
-
-        var list = new ArrayList<AbstractAction>();
-        for (String storeId : stores) {
-            json.put("ref", storeId);
-            AbstractAction instance = JacksonMapper.getDefault().treeToValue(json, AbstractAction.class);
-            list.add(instance);
-        }
-        return list;
+        var fixedMap = query.entrySet().stream().collect(Collectors.toMap(
+                entry -> entry.getKey(),
+                entry -> entry.getValue().size() == 1 ? entry.getValue().getFirst() : entry.getValue()));
+        var json = (ObjectNode) JacksonMapper.getDefault().valueToTree(fixedMap);
+        var instance = ActionJacksonMapper.parse(json);
+        return Optional.ofNullable(instance);
     }
 
     private static Map<String, List<String>> splitQuery(String query) {

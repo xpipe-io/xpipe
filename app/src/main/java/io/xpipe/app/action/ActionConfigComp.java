@@ -61,11 +61,16 @@ public class ActionConfigComp extends SimpleComp {
     @SuppressWarnings("unchecked")
     private Comp<?> createChooser() {
         var singleProp = new SimpleObjectProperty<DataStoreEntryRef<DataStore>>();
-        var s = action instanceof StoreAction<?> sa ? sa.getRef() : null;
+        var s = action.getValue() instanceof StoreAction<?> sa ? sa.getRef() : null;
         singleProp.set((DataStoreEntryRef<DataStore>) s);
 
-        var choice = new StoreChoiceComp<>(StoreChoiceComp.Mode.OTHER, null, singleProp, singleProp.get() != null ?
-                (Class<DataStore>) singleProp.getValue().getStore().getClass() : DataStore.class, ref -> true,
+        singleProp.addListener((obs, o, n) -> {
+            if (action.getValue() instanceof StoreAction<?> sa) {
+                action.setValue(sa.withRef(n.asNeeded()));
+            }
+        });
+
+        var choice = new StoreChoiceComp<>(StoreChoiceComp.Mode.OTHER, null, singleProp, DataStore.class, ref -> true,
                 StoreViewState.get().getAllConnectionsCategory());
         choice.hide(singleProp.isNull());
         return choice;

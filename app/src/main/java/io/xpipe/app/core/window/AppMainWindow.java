@@ -55,9 +55,6 @@ public class AppMainWindow {
     private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
-    private BooleanProperty actionPickerMode = new SimpleBooleanProperty(false);
-
-    @Getter
     private final Property<String> loadingText = new SimpleObjectProperty<>();
 
     private boolean shown = false;

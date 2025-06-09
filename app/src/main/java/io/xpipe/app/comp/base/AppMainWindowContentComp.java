@@ -1,5 +1,6 @@
 package io.xpipe.app.comp.base;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.*;
@@ -109,43 +110,6 @@ public class AppMainWindowContentComp extends SimpleComp {
                     childWindows.forEach(window -> {
                         ((Stage) window).close();
                     });
-                }
-            });
-
-            var pickerText = new LabelComp(AppI18n.observable("actionPickerDescription"));
-            var pickerPane = new StackComp(List.of(pickerText)).styleClass("action-picker").createRegion();
-            var transition = new Timeline(
-                    new KeyFrame(
-                            Duration.millis(0),
-                            new KeyValue(pickerPane.opacityProperty(), 0.3, Interpolator.EASE_IN)),
-                    new KeyFrame(
-                            Duration.millis(400),
-                            new KeyValue(pickerPane.opacityProperty(), 1, Interpolator.EASE_BOTH)),
-                    new KeyFrame(
-                            Duration.millis(2000),
-                            new KeyValue(pickerPane.opacityProperty(), 1, Interpolator.EASE_BOTH)),
-                    new KeyFrame(
-                            Duration.millis(1300),
-                            new KeyValue(pickerPane.opacityProperty(), 0, Interpolator.EASE_OUT)));
-            var qe = new AppLayoutModel.QueueEntry(AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdi2f-format-color-marker-cancel"), () -> {
-                AppMainWindow.getInstance().getActionPickerMode().setValue(false);
-            });
-            AppMainWindow.getInstance().getActionPickerMode().addListener((observable, oldValue, newValue) -> {
-                if (newValue) {
-                    var animate = AppCache.getBoolean("showPickScreen", true);
-                    if (animate) {
-                        pane.getChildren().add(pickerPane);
-                        transition.setOnFinished(e -> {
-                            pane.getChildren().remove(pickerPane);
-                        });
-                        transition.play();
-                    }
-                    AppCache.update("showPickScreen", false);
-                    AppLayoutModel.get().getQueueEntries().add(qe);
-                } else {
-                    AppLayoutModel.get().getQueueEntries().remove(qe);
-                    transition.stop();
-                    pane.getChildren().remove(pickerPane);
                 }
             });
 

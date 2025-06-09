@@ -15,11 +15,6 @@ public class ActionPickComp extends ModalOverlayContentComp {
     }
 
     @Override
-    protected void onClose() {
-        AppMainWindow.getInstance().getActionPickerMode().setValue(false);
-    }
-
-    @Override
     protected Region createSimple() {
         var prop = new SimpleObjectProperty<>(action);
         var top = new ActionConfigComp(prop);

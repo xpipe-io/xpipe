@@ -19,7 +19,7 @@ public class XPipeUrlActionProvider implements LauncherActionProvider {
         }
 
         var query = uri.getQuery();
-        var actions = ActionUrls.parse(query);
-        return actions.size() == 1 ? actions.getFirst() : null;
+        var action = ActionUrls.parse(query);
+        return action.orElse(null);
     }
 }

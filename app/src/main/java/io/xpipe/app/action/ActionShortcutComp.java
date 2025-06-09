@@ -30,8 +30,8 @@ public class ActionShortcutComp extends SimpleComp {
                 .addComp(createDesktopComp());
         options.nameAndDescription("actionUrlShortcut")
                 .addComp(createUrlComp());
-        options.nameAndDescription("actionMacro")
-                .addComp(createMacroComp());
+//        options.nameAndDescription("actionMacro")
+//                .addComp(createMacroComp());
         return options.build();
     }
 

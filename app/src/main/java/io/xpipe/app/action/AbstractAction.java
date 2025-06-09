@@ -1,8 +1,16 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.comp.base.ModalButton;
+import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
@@ -18,11 +26,33 @@ public abstract class AbstractAction {
     private static boolean closed;
     private static Consumer<AbstractAction> pick;
 
-    public static synchronized void expectPick(Consumer<AbstractAction> c) {
-        pick = c;
+    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
+        cancelPick();
+    });
+
+    public static synchronized void expectPick() {
+        if (pick != null) {
+            return;
+        }
+
+        var show = !AppCache.getBoolean("pickIntroductionShown", false);
+        if (show) {
+            var modal = ModalOverlay.of("actionPickerTitle", AppDialog.dialogTextKey("actionPickerDescription"));
+            modal.addButton(ModalButton.ok());
+            modal.showAndWait();
+            AppCache.update("pickIntroductionShown", true);
+        }
+
+        AppLayoutModel.get().getQueueEntries().add(queueEntry);
+        pick = action -> {
+            cancelPick();
+            var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(action).prefWidth(600));
+            modal.show();
+        };
     }
 
     public static synchronized void cancelPick() {
+        AppLayoutModel.get().getQueueEntries().remove(queueEntry);
         pick = null;
     }
 
