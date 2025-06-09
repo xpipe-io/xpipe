@@ -65,7 +65,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
             b.tooltipKey("updateAvailableTooltip").accessibleTextKey("updateAvailableTooltip");
             var stack = createStyle(null, b);
-            stack.hide(PlatformThread.sync(Bindings.createBooleanBinding(
+            stack.hide(Bindings.createBooleanBinding(
                     () -> {
                         return AppDistributionType.get()
                                         .getUpdateHandler()
@@ -73,7 +73,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                         .getValue()
                                 == null;
                     },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
             vbox.getChildren().add(stack.createRegion());
         }
 

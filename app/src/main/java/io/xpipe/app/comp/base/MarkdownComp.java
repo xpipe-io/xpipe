@@ -106,11 +106,13 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         PlatformThread.sync(markdown).subscribe(val -> {
-            var file = getHtmlFile(val);
-            if (file != null) {
-                var contentUrl = file.toUri();
-                wv.getEngine().load(contentUrl.toString());
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                var file = getHtmlFile(val);
+                if (file != null) {
+                    var contentUrl = file.toUri();
+                    wv.getEngine().load(contentUrl.toString());
+                }
+            });
         });
 
         // Fix initial scrollbar size

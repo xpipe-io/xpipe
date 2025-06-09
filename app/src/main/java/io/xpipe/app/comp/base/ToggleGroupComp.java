@@ -30,36 +30,38 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
         var box = new HBox();
         box.getStyleClass().add("toggle-group-comp");
         ToggleGroup group = new ToggleGroup();
-        PlatformThread.sync(range).subscribe(val -> {
-            if (!val.containsKey(value.getValue())) {
-                this.value.setValue(null);
-            }
+        range.subscribe(val -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (!val.containsKey(value.getValue())) {
+                    this.value.setValue(null);
+                }
 
-            box.getChildren().clear();
-            for (var entry : val.entrySet()) {
-                var b = new ToggleButton(entry.getValue().getValue());
-                b.setOnAction(e -> {
+                box.getChildren().clear();
+                for (var entry : val.entrySet()) {
+                    var b = new ToggleButton(entry.getValue().getValue());
+                    b.setOnAction(e -> {
+                        if (entry.getKey().equals(value.getValue())) {
+                            value.setValue(null);
+                        } else {
+                            value.setValue(entry.getKey());
+                        }
+                        e.consume();
+                    });
+                    group.getToggles().add(b);
+                    box.getChildren().add(b);
                     if (entry.getKey().equals(value.getValue())) {
-                        value.setValue(null);
-                    } else {
-                        value.setValue(entry.getKey());
+                        b.setSelected(true);
                     }
-                    e.consume();
-                });
-                group.getToggles().add(b);
-                box.getChildren().add(b);
-                if (entry.getKey().equals(value.getValue())) {
-                    b.setSelected(true);
                 }
-            }
 
-            if (box.getChildren().size() > 0) {
-                box.getChildren().getFirst().getStyleClass().add(Styles.LEFT_PILL);
-                for (int i = 1; i < box.getChildren().size() - 1; i++) {
-                    box.getChildren().get(i).getStyleClass().add(Styles.CENTER_PILL);
+                if (box.getChildren().size() > 0) {
+                    box.getChildren().getFirst().getStyleClass().add(Styles.LEFT_PILL);
+                    for (int i = 1; i < box.getChildren().size() - 1; i++) {
+                        box.getChildren().get(i).getStyleClass().add(Styles.CENTER_PILL);
+                    }
+                    box.getChildren().getLast().getStyleClass().add(Styles.RIGHT_PILL);
                 }
-                box.getChildren().getLast().getStyleClass().add(Styles.RIGHT_PILL);
-            }
+            });
         });
 
         return new SimpleCompStructure<>(box);

@@ -43,37 +43,39 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
         var breadcrumbs = new Breadcrumbs<String>();
         breadcrumbs.setMinWidth(0);
-        PlatformThread.sync(model.getCurrentPath()).subscribe(val -> {
-            if (val == null) {
-                breadcrumbs.setSelectedCrumb(null);
-                return;
-            }
+        model.getCurrentPath().subscribe(val -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                if (val == null) {
+                    breadcrumbs.setSelectedCrumb(null);
+                    return;
+                }
 
-            var sc = model.getFileSystem().getShell();
-            if (sc.isEmpty()) {
-                breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
-            } else {
-                breadcrumbs.setDividerFactory(item -> {
-                    if (item == null) {
-                        return null;
-                    }
+                var sc = model.getFileSystem().getShell();
+                if (sc.isEmpty()) {
+                    breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
+                } else {
+                    breadcrumbs.setDividerFactory(item -> {
+                        if (item == null) {
+                            return null;
+                        }
 
-                    if (item.isFirst() && item.getValue().equals("/")) {
-                        return new Label("");
-                    }
+                        if (item.isFirst() && item.getValue().equals("/")) {
+                            return new Label("");
+                        }
 
-                    return new Label(sc.get().getOsType().getFileSystemSeparator());
-                });
-            }
+                        return new Label(sc.get().getOsType().getFileSystemSeparator());
+                    });
+                }
 
-            var elements = createBreadcumbHierarchy(val);
-            var modifiedElements = new ArrayList<>(elements);
-            if (val.toString().startsWith("/")) {
-                modifiedElements.addFirst("/");
-            }
-            Breadcrumbs.BreadCrumbItem<String> items =
-                    Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
-            breadcrumbs.setSelectedCrumb(items);
+                var elements = createBreadcumbHierarchy(val);
+                var modifiedElements = new ArrayList<>(elements);
+                if (val.toString().startsWith("/")) {
+                    modifiedElements.addFirst("/");
+                }
+                Breadcrumbs.BreadCrumbItem<String> items =
+                        Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
+                breadcrumbs.setSelectedCrumb(items);
+            });
         });
 
         if (crumbFactory != null) {

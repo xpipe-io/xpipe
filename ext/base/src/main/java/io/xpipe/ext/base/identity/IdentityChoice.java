@@ -65,7 +65,6 @@ public class IdentityChoice {
                 .nameAndDescription(passwordChoiceTranslationKey)
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
-                .disable(refSelected)
                 .hide(refSelected)
                 .addProperty(ref);
         if (keyInput) {

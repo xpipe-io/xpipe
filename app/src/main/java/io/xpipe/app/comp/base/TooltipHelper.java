@@ -27,9 +27,9 @@ public class TooltipHelper {
                     },
                     text,
                     s);
-            tt.textProperty().bind(PlatformThread.sync(binding));
+            tt.textProperty().bind(binding);
         } else {
-            tt.textProperty().bind(PlatformThread.sync(text));
+            tt.textProperty().bind(text);
         }
         AppFontSizes.base(tt.getStyleableNode());
         tt.setWrapText(true);

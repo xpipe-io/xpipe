@@ -68,15 +68,9 @@ public class SyncCategory extends AppPrefsCategory {
                         .addComp(remoteRow, prefs.storageGitRemote)
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomOptions("gitUsername")
-                                .buildComp()
-                                .maxWidth(600))
-                        .addComp(prefs.getCustomOptions("gitPassword")
-                                .buildComp()
-                                .maxWidth(600))
-                        .addComp(prefs.getCustomOptions("gitVaultIdentityStrategy")
-                                .buildComp()
-                                .maxWidth(600))
+                        .sub(prefs.getCustomOptions("gitUsername"))
+                        .sub(prefs.getCustomOptions("gitPassword"))
+                        .sub(prefs.getCustomOptions("gitVaultIdentityStrategy"))
                         .nameAndDescription("browseVault")
                         .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
                             DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());

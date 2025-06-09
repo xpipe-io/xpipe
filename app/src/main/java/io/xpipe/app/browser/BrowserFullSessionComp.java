@@ -161,7 +161,7 @@ public class BrowserFullSessionComp extends SimpleComp {
                 })
                 .vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
-                .hide(PlatformThread.sync(Bindings.createBooleanBinding(
+                .hide(Bindings.createBooleanBinding(
                         () -> {
                             if (model.getSessionEntries().size() == 0) {
                                 return true;
@@ -170,7 +170,7 @@ public class BrowserFullSessionComp extends SimpleComp {
                             return false;
                         },
                         model.getSessionEntries(),
-                        model.getSelectedEntry())));
+                        model.getSelectedEntry()));
         localDownloadStage.prefHeight(200);
         localDownloadStage.maxHeight(200);
         var vertical =
