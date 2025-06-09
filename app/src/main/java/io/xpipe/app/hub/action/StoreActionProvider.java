@@ -9,6 +9,10 @@ import javafx.beans.value.ObservableValue;
 
 public interface StoreActionProvider<T extends DataStore> extends ActionProvider {
 
+    default StoreActionCategory getCategory() {
+        return null;
+    }
+
     default boolean isMajor(DataStoreEntryRef<T> o) {
         return false;
     }

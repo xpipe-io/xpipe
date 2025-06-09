@@ -1,9 +1,10 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -15,6 +16,11 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class RefreshChildrenStoreActionProvider implements LeafStoreActionProvider<FixedHierarchyStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.OPEN;
+    }
 
     @Override
     public boolean isDefault(DataStoreEntryRef<FixedHierarchyStore> o) {

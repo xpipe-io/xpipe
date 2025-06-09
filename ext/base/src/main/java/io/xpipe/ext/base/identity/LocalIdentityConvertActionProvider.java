@@ -1,10 +1,11 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -17,6 +18,11 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class LocalIdentityConvertActionProvider implements LeafStoreActionProvider<LocalIdentityStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CUSTOM;
+    }
 
     @Override
     public AbstractAction createAction(DataStoreEntryRef<LocalIdentityStore> ref) {

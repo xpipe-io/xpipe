@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.action.BranchStoreActionProvider;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.BranchStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -10,11 +10,11 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
@@ -288,14 +290,30 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
-                        branch.getChildren(getWrapper().getEntry().ref()).stream()
-                                .filter(actionProvider -> getWrapper().showActionProvider(actionProvider, false))
-                                .forEach(childProvider -> {
-                                    var menu = buildMenuItemForAction(childProvider);
-                                    if (menu != null) {
-                                        cm.getItems().add(menu);
-                                    }
-                                });
+                        var children = branch.getChildren(getWrapper().getEntry().ref());
+                        var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
+                        cats.addFirst(null);
+                        for (var cat : cats) {
+                            var catChildren = children.stream()
+                                    .filter(actionProvider -> actionProvider.getCategory() == cat)
+                                    .toList();
+                            if (catChildren.isEmpty()) {
+                                continue;
+                            }
+
+                            catChildren.forEach(childProvider -> {
+                                var menu = buildMenuItemForAction(childProvider);
+                                if (menu != null) {
+                                    cm.getItems().add(menu);
+                                }
+                            });
+                            cm.getItems().add(new SeparatorMenuItem());
+                        }
+
+                        if (cm.getItems().getLast() instanceof SeparatorMenuItem) {
+                            cm.getItems().removeLast();
+                        }
+
                         return cm;
                     }));
         }
@@ -325,167 +343,163 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected ContextMenu createContextMenu(Region name) {
         var contextMenu = ContextMenuHelper.create();
 
-        var hasSep = false;
-        for (var p : getWrapper().getMinorActionProviders()) {
-            var item = buildMenuItemForAction(p);
-            if (item == null) {
+        var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
+        cats.addFirst(null);
+        for (var cat : cats) {
+            var items = new ArrayList<MenuItem>();
+            for (var p : getWrapper().getMinorActionProviders()) {
+                var item = buildMenuItemForAction(p);
+                if (item == null || p.getCategory() != cat) {
+                    continue;
+                }
+
+                items.add(item);
+            }
+
+            if (cat == StoreActionCategory.CONFIGURATION) {
+                var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+                rename.setOnAction(event -> {
+                    name.requestFocus();
+                });
+                items.add(rename);
+
+                var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
+                notes.setOnAction(event -> {
+                    getWrapper().getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
+                    event.consume();
+                });
+                notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
+                items.add(notes);
+
+                var readOnly = new MenuItem();
+                readOnly.graphicProperty()
+                        .bind(Bindings.createObjectBinding(
+                                () -> {
+                                    var is = getWrapper().getReadOnly().get();
+                                    return is
+                                            ? new FontIcon("mdi2l-lock-open-variant-outline")
+                                            : new FontIcon("mdi2l-lock-open-outline");
+                                },
+                                getWrapper().getReadOnly()));
+                readOnly.textProperty()
+                        .bind(Bindings.createStringBinding(
+                                () -> {
+                                    var is = getWrapper().getReadOnly().get();
+                                    return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
+                                },
+                                AppI18n.activeLanguage(),
+                                getWrapper().getReadOnly()));
+                readOnly.setOnAction(event ->
+                        getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
+                items.add(readOnly);
+            }
+
+            if (cat == StoreActionCategory.DEVELOPER) {
+                if (AppPrefs.get().developerMode().getValue()) {
+                    var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
+                    browse.setOnAction(event -> DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
+                    items.add(browse);
+                }
+
+                if (AppPrefs.get().enableHttpApi().get()) {
+                    var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
+                    copyId.setOnAction(event -> ClipboardHelper.copyText(getWrapper().getEntry().getUuid().toString()));
+                    items.add(copyId);
+                }
+            }
+
+            if (cat == StoreActionCategory.APPEARANCE) {
+                if (section.getDepth() == 1) {
+                    var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
+                    var none = new MenuItem();
+                    none.textProperty().bind(AppI18n.observable("none"));
+                    none.setOnAction(event -> {
+                        getWrapper().getEntry().setColor(null);
+                        event.consume();
+                    });
+                    color.getItems().add(none);
+                    Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
+                        MenuItem m = new MenuItem();
+                        m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
+                        m.setOnAction(event -> {
+                            getWrapper().getEntry().setColor(dataStoreColor);
+                            event.consume();
+                        });
+                        color.getItems().add(m);
+                    });
+                    items.add(color);
+                }
+
+                if (getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().canMoveCategories()) {
+                    var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+                    StoreViewState.get().getSortedCategories(getWrapper().getCategory().getValue().getRoot()).getList().forEach(
+                            storeCategoryWrapper -> {
+                                MenuItem m = new MenuItem();
+                                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                                m.setOnAction(event -> {
+                                    getWrapper().moveTo(storeCategoryWrapper.getCategory());
+                                    event.consume();
+                                });
+                                if (storeCategoryWrapper.getParent() == null) {
+                                    m.setDisable(true);
+                                }
+
+                                move.getItems().add(m);
+                            });
+                    items.add(move);
+                }
+                {
+                    var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
+                    var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
+                    noOrder.setOnAction(event -> {
+                        getWrapper().setOrder(null);
+                        event.consume();
+                    });
+                    if (getWrapper().getEntry().getExplicitOrder() == null) {
+                        noOrder.setDisable(true);
+                    }
+                    order.getItems().add(noOrder);
+                    order.getItems().add(new SeparatorMenuItem());
+
+                    var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
+                    top.setOnAction(event -> {
+                        getWrapper().setOrder(DataStoreEntry.Order.TOP);
+                        event.consume();
+                    });
+                    if (DataStoreEntry.Order.TOP.equals(getWrapper().getEntry().getExplicitOrder())) {
+                        top.setDisable(true);
+                    }
+                    order.getItems().add(top);
+
+                    var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
+                    bottom.setOnAction(event -> {
+                        getWrapper().setOrder(DataStoreEntry.Order.BOTTOM);
+                        event.consume();
+                    });
+                    if (DataStoreEntry.Order.BOTTOM.equals(getWrapper().getEntry().getExplicitOrder())) {
+                        bottom.setDisable(true);
+                    }
+                    order.getItems().add(bottom);
+                    items.add(order);
+                }
+            }
+
+            if (cat == StoreActionCategory.DELETION) {
+                var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
+                del.disableProperty().bind(Bindings.createBooleanBinding(() -> {
+                    return !getWrapper().getDeletable().get();
+                }, getWrapper().getDeletable()));
+                del.setOnAction(event -> getWrapper().delete());
+                contextMenu.getItems().add(del);
+            }
+
+            if (items.isEmpty()) {
                 continue;
             }
 
-            if (p instanceof LeafStoreActionProvider<?> l && l.isSystemAction() && !hasSep) {
-                if (contextMenu.getItems().size() > 0) {
-                    contextMenu.getItems().add(new SeparatorMenuItem());
-                }
-                hasSep = true;
-            }
-
-            contextMenu.getItems().add(item);
-        }
-        if (contextMenu.getItems().size() > 0 && !hasSep) {
+            contextMenu.getItems().addAll(items);
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
-
-        var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
-        rename.setOnAction(event -> {
-            name.requestFocus();
-        });
-        contextMenu.getItems().add(rename);
-
-
-        var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
-        notes.setOnAction(event -> {
-            getWrapper().getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
-            event.consume();
-        });
-        notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
-        contextMenu.getItems().add(notes);
-
-        if (AppPrefs.get().developerMode().getValue()) {
-            var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-            browse.setOnAction(event ->
-                    DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
-            contextMenu.getItems().add(browse);
-        }
-
-        if (AppPrefs.get().enableHttpApi().get()) {
-            var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
-            copyId.setOnAction(event ->
-                    ClipboardHelper.copyText(getWrapper().getEntry().getUuid().toString()));
-            contextMenu.getItems().add(copyId);
-        }
-
-        if (section.getDepth() == 1) {
-            var color = new Menu(AppI18n.get("color"), new FontIcon("mdi2f-format-color-fill"));
-            var none = new MenuItem();
-            none.textProperty().bind(AppI18n.observable("none"));
-            none.setOnAction(event -> {
-                getWrapper().getEntry().setColor(null);
-                event.consume();
-            });
-            color.getItems().add(none);
-            Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
-                MenuItem m = new MenuItem();
-                m.textProperty().bind(AppI18n.observable(dataStoreColor.getId()));
-                m.setOnAction(event -> {
-                    getWrapper().getEntry().setColor(dataStoreColor);
-                    event.consume();
-                });
-                color.getItems().add(m);
-            });
-            contextMenu.getItems().add(color);
-        }
-
-        if (getWrapper().getEntry().getProvider() != null
-                && getWrapper().getEntry().getProvider().canMoveCategories()) {
-            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get()
-                    .getSortedCategories(getWrapper().getCategory().getValue().getRoot())
-                    .getList()
-                    .forEach(storeCategoryWrapper -> {
-                        MenuItem m = new MenuItem();
-                        m.textProperty()
-                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                        + storeCategoryWrapper.getName().getValue());
-                        m.setOnAction(event -> {
-                            getWrapper().moveTo(storeCategoryWrapper.getCategory());
-                            event.consume();
-                        });
-                        if (storeCategoryWrapper.getParent() == null) {
-                            m.setDisable(true);
-                        }
-
-                        move.getItems().add(m);
-                    });
-            contextMenu.getItems().add(move);
-        }
-        {
-            var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
-            var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
-            noOrder.setOnAction(event -> {
-                getWrapper().setOrder(null);
-                event.consume();
-            });
-            if (getWrapper().getEntry().getExplicitOrder() == null) {
-                noOrder.setDisable(true);
-            }
-            order.getItems().add(noOrder);
-            order.getItems().add(new SeparatorMenuItem());
-
-            var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
-            top.setOnAction(event -> {
-                getWrapper().setOrder(DataStoreEntry.Order.TOP);
-                event.consume();
-            });
-            if (DataStoreEntry.Order.TOP.equals(getWrapper().getEntry().getExplicitOrder())) {
-                top.setDisable(true);
-            }
-            order.getItems().add(top);
-
-            var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
-            bottom.setOnAction(event -> {
-                getWrapper().setOrder(DataStoreEntry.Order.BOTTOM);
-                event.consume();
-            });
-            if (DataStoreEntry.Order.BOTTOM.equals(getWrapper().getEntry().getExplicitOrder())) {
-                bottom.setDisable(true);
-            }
-            order.getItems().add(bottom);
-            contextMenu.getItems().add(order);
-        }
-
-        var readOnly = new MenuItem();
-        readOnly.graphicProperty()
-                .bind(Bindings.createObjectBinding(
-                        () -> {
-                            var is = getWrapper().getReadOnly().get();
-                            return is
-                                    ? new FontIcon("mdi2l-lock-open-variant-outline")
-                                    : new FontIcon("mdi2l-lock-open-outline");
-                        },
-                        getWrapper().getReadOnly()));
-        readOnly.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            var is = getWrapper().getReadOnly().get();
-                            return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
-                        },
-                        AppI18n.activeLanguage(),
-                        getWrapper().getReadOnly()));
-        readOnly.setOnAction(event ->
-                getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
-        contextMenu.getItems().add(readOnly);
-
-        contextMenu.getItems().add(new SeparatorMenuItem());
-
-        var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
-        del.disableProperty()
-                .bind(Bindings.createBooleanBinding(
-                        () -> {
-                            return !getWrapper().getDeletable().get();
-                        },
-                        getWrapper().getDeletable()));
-        del.setOnAction(event -> getWrapper().delete());
-        contextMenu.getItems().add(del);
 
         return contextMenu;
     }

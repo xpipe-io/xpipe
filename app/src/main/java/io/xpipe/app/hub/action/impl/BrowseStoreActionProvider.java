@@ -1,11 +1,12 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FilePath;
@@ -27,6 +28,11 @@ public class BrowseStoreActionProvider implements LeafStoreActionProvider<FileSy
     @Override
     public Class<FileSystemStore> getApplicableClass() {
         return FileSystemStore.class;
+    }
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.OPEN;
     }
 
     @Override

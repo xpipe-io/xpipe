@@ -4,8 +4,7 @@ import io.xpipe.app.action.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.*;
 import io.xpipe.app.hub.action.impl.CategoryConfigActionProvider;
 import io.xpipe.app.hub.action.impl.CategorySelectActionProvider;
 import io.xpipe.app.hub.action.impl.RefreshStoreActionProvider;
@@ -22,9 +21,15 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RunScriptActionProviderMenu
         implements BranchStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CUSTOM;
+    }
 
     @Value
     private static class TerminalRunActionProvider
@@ -239,7 +244,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+        public List<StoreActionProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
             if (hierarchy.isLeaf()) {
                 return List.of(
                         new TerminalRunActionProvider(hierarchy),
@@ -249,7 +254,7 @@ public class RunScriptActionProviderMenu
 
             return hierarchy.getChildren().stream()
                     .map(c -> new ScriptActionProvider(c))
-                    .toList();
+                    .collect(Collectors.toList());
         }
     }
 
@@ -419,7 +424,7 @@ public class RunScriptActionProviderMenu
     }
 
     @Override
-    public List<? extends ActionProvider> getChildren(DataStoreEntryRef<ShellStore> store) {
+    public List<StoreActionProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
         if (Boolean.TRUE.equals(
                 DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts())) {
             return List.of(new ScriptsDisabledActionProvider());
@@ -442,9 +447,9 @@ public class RunScriptActionProviderMenu
 
             return true;
         });
-        var list = hierarchy.getChildren().stream()
+        List<StoreActionProvider<?>> list = hierarchy.getChildren().stream()
                 .map(c -> new ScriptActionProvider(c))
-                .toList();
+                .collect(Collectors.toList());
         if (list.isEmpty()) {
             return List.of(new NoScriptsActionProvider());
         } else {

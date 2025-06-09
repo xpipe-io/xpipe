@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;

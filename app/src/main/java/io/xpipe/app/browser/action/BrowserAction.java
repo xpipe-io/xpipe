@@ -53,10 +53,6 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
             }
         }
 
-        if (model.getFileSystem() == null) {
-            return false;
-        }
-
         model.getBusy().set(true);
 
         // Start shell in case we exited

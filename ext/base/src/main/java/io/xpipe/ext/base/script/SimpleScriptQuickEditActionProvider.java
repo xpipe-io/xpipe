@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -19,6 +20,11 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.Arrays;
 
 public class SimpleScriptQuickEditActionProvider implements LeafStoreActionProvider<SimpleScriptStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CUSTOM;
+    }
 
     @Override
     public boolean isDefault(DataStoreEntryRef<SimpleScriptStore> o) {

@@ -1,9 +1,10 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandControl;
@@ -21,6 +22,11 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 
 public class SampleStoreActionProvider implements LeafStoreActionProvider<ShellStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.OPEN;
+    }
 
     @Override
     public Action createAction(DataStoreEntryRef<ShellStore> ref) {

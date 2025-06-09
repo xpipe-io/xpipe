@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchStoreActionProvider;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
@@ -15,6 +16,11 @@ import lombok.extern.jackson.Jacksonized;
 
 public class StoreRestartActionProvider
         implements LeafStoreActionProvider<DataStore>, BatchStoreActionProvider<DataStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CUSTOM;
+    }
 
     @Override
     public boolean isMutation() {

@@ -1,6 +1,6 @@
-package io.xpipe.app.action;
+package io.xpipe.app.hub.action;
 
-import io.xpipe.app.hub.action.StoreActionProvider;
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
 
@@ -14,9 +14,5 @@ public interface LeafStoreActionProvider<T extends DataStore> extends StoreActio
 
     default boolean requiresValidStore() {
         return true;
-    }
-
-    default boolean isSystemAction() {
-        return false;
     }
 }

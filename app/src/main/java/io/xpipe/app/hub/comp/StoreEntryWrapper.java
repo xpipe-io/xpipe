@@ -4,6 +4,8 @@ import io.xpipe.app.action.*;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.hub.action.BranchStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
 import io.xpipe.app.issue.ErrorEvent;

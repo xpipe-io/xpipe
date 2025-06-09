@@ -1,10 +1,11 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
@@ -17,6 +18,11 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class ScanStoreActionProvider implements LeafStoreActionProvider<ShellStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.OPEN;
+    }
 
     @Override
     public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {

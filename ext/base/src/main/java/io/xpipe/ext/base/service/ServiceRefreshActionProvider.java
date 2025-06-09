@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchStoreActionProvider;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
@@ -16,6 +17,11 @@ import lombok.extern.jackson.Jacksonized;
 public class ServiceRefreshActionProvider
         implements LeafStoreActionProvider<FixedServiceCreatorStore>,
                 BatchStoreActionProvider<FixedServiceCreatorStore> {
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CUSTOM;
+    }
 
     @Override
     public boolean isMajor(DataStoreEntryRef<FixedServiceCreatorStore> o) {

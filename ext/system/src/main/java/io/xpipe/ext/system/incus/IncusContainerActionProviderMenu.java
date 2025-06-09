@@ -1,8 +1,9 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.action.BranchStoreActionProvider;
+import io.xpipe.app.hub.action.BranchStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.ext.base.store.StorePauseActionProvider;
@@ -37,7 +38,7 @@ public class IncusContainerActionProviderMenu implements BranchStoreActionProvid
     }
 
     @Override
-    public List<ActionProvider> getChildren(DataStoreEntryRef<IncusContainerStore> store) {
+    public List<StoreActionProvider<?>> getChildren(DataStoreEntryRef<IncusContainerStore> store) {
         return List.of(
                 new StoreStartActionProvider(),
                 new StoreStopActionProvider(),

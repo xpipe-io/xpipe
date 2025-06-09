@@ -207,14 +207,14 @@ public abstract class DataStorage {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
         }
 
-        var allMacros = getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID);
-        if (allMacros.isEmpty()) {
-            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
-            cat.setDirectory(categoriesDir.resolve(ALL_MACROS_CATEGORY_UUID.toString()));
-            storeCategories.add(cat);
-        } else {
-            allMacros.get().setParentCategory(null);
-        }
+//        var allMacros = getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID);
+//        if (allMacros.isEmpty()) {
+//            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
+//            cat.setDirectory(categoriesDir.resolve(ALL_MACROS_CATEGORY_UUID.toString()));
+//            storeCategories.add(cat);
+//        } else {
+//            allMacros.get().setParentCategory(null);
+//        }
 
         if (supportsSync()) {
             var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
