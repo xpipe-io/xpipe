@@ -2,9 +2,9 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.util.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.core.util.InPlaceSecretValue;
 import lombok.Value;
 
 @JsonTypeName("windowsCredentialManager")
@@ -88,7 +88,7 @@ public class WindowsCredentialManager implements PasswordManager {
                 LocalShell.getLocalPowershell().command(cmd).execute();
             }
 
-            var username =LocalShell.getLocalPowershell()
+            var username = LocalShell.getLocalPowershell()
                     .command("[CredManager.Credential]::GetUserName(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();

@@ -2,9 +2,9 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.comp.StoreIconChoiceDialog;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
@@ -34,15 +34,16 @@ public class ChangeStoreIconActionProvider implements LeafStoreActionProvider<Da
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-                return new LabelGraphic.IconGraphic("mdi2t-tooltip-image-outline");
-            }
+        return new LabelGraphic.IconGraphic("mdi2t-tooltip-image-outline");
+    }
 
-        @Override
+    @Override
     public String getId() {
         return "changeStoreIcon";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<DataStore> {
 
         @Override

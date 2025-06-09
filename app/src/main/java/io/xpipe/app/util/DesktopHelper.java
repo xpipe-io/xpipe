@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;

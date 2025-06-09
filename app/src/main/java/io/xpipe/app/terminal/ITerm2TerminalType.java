@@ -33,10 +33,11 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
-                .add("open", "-a")
-                .addQuoted("iTerm.app")
-                .addFile(configuration.getScriptFile()));
+        LocalShell.getShell()
+                .executeSimpleCommand(CommandBuilder.of()
+                        .add("open", "-a")
+                        .addQuoted("iTerm.app")
+                        .addFile(configuration.getScriptFile()));
     }
 
     @Override

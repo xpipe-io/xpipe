@@ -30,7 +30,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-import atlantafx.base.controls.RingProgressIndicator;
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
 
@@ -426,9 +425,13 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var image = tabModel.getIcon();
             var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16);
             logo.apply(struc -> {
-                struc.get().opacityProperty().bind(PlatformThread.sync(Bindings.createDoubleBinding(() -> {
-                    return !tabModel.getBusy().get() ? 1.0 : 0.15;
-                }, tabModel.getBusy())));
+                struc.get()
+                        .opacityProperty()
+                        .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                                () -> {
+                                    return !tabModel.getBusy().get() ? 1.0 : 0.15;
+                                },
+                                tabModel.getBusy())));
             });
 
             var stack = new StackComp(List.of(logo, loading));
@@ -507,14 +510,11 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    c.addEventHandler(
-                            DragEvent.DRAG_ENTERED,
-                            mouseEvent -> {
-                                if (tabModel.isCloseable()) {
-                                    Platform.runLater(
-                                            () -> tabs.getSelectionModel().select(tab));
-                                }
-                            });
+                    c.addEventHandler(DragEvent.DRAG_ENTERED, mouseEvent -> {
+                        if (tabModel.isCloseable()) {
+                            Platform.runLater(() -> tabs.getSelectionModel().select(tab));
+                        }
+                    });
                 });
             }
         });

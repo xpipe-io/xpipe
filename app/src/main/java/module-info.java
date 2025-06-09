@@ -1,6 +1,4 @@
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
-import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.*;
@@ -8,6 +6,8 @@ import io.xpipe.app.browser.menu.impl.*;
 import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
+import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
 import io.xpipe.app.hub.action.impl.XPipeUrlActionProvider;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
@@ -122,16 +122,62 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
 
-    provides ActionProvider with XPipeUrlActionProvider, LaunchStoreActionProvider, EditStoreActionProvider, DownloadMenuProvider, RunCommandInBrowserActionProvider, RunCommandInBackgroundActionProvider, RunCommandInTerminalActionProvider, FollowLinkMenuProvider, BackMenuProvider, ForwardMenuProvider
-            , RefreshDirectoryMenuProvider, OpenFileDefaultMenuProvider, OpenFileWithMenuProvider, OpenDirectoryMenuProvider,
-            OpenDirectoryInNewTabMenuProvider, OpenTerminalMenuProvider, OpenNativeFileDetailsMenuProvider, BrowseInNativeManagerActionProvider,
-            ApplyFileEditActionProvider, TransferFilesActionProvider,
-            EditFileMenuProvider, RunFileMenuProvider, ChmodMenuProvider, ChownMenuProvider, ChgrpActionProvider, ChgrpMenuProvider,
-            CopyMenuProvider, CopyPathMenuProvider, PasteMenuProvider, NewItemMenuProvider, FileCompressActionProvider, DirectoryCompressActionProvider, RenameMenuProvider, DeleteActionProvider, DeleteMenuProvider, ChownActionProvider, ChmodActionProvider
-            , UnzipHereUnixMenuProvider, UnzipDirectoryUnixMenuProvider, UnzipHereWindowsActionProvider, UnzipDirectoryWindowsActionProvider,
-            UntarHereMenuProvider, UntarGzHereMenuProvider, UntarDirectoryMenuProvider, UntarGzDirectoryMenuProvider, JavapMenuProvider,
-            JarMenuProvider, NewFileActionProvider, NewDirectoryActionProvider, NewLinkActionProvider, OpenDirectoryActionProvider, OpenFileDefaultActionProvider, OpenFileNativeDetailsActionProvider, OpenFileWithActionProvider, OpenTerminalActionProvider;
-
+    provides ActionProvider with
+            XPipeUrlActionProvider,
+            LaunchStoreActionProvider,
+            EditStoreActionProvider,
+            DownloadMenuProvider,
+            RunCommandInBrowserActionProvider,
+            RunCommandInBackgroundActionProvider,
+            RunCommandInTerminalActionProvider,
+            FollowLinkMenuProvider,
+            BackMenuProvider,
+            ForwardMenuProvider,
+            RefreshDirectoryMenuProvider,
+            OpenFileDefaultMenuProvider,
+            OpenFileWithMenuProvider,
+            OpenDirectoryMenuProvider,
+            OpenDirectoryInNewTabMenuProvider,
+            OpenTerminalMenuProvider,
+            OpenNativeFileDetailsMenuProvider,
+            BrowseInNativeManagerActionProvider,
+            ApplyFileEditActionProvider,
+            TransferFilesActionProvider,
+            EditFileMenuProvider,
+            RunFileMenuProvider,
+            ChmodMenuProvider,
+            ChownMenuProvider,
+            ChgrpActionProvider,
+            ChgrpMenuProvider,
+            CopyMenuProvider,
+            CopyPathMenuProvider,
+            PasteMenuProvider,
+            NewItemMenuProvider,
+            FileCompressActionProvider,
+            DirectoryCompressActionProvider,
+            RenameMenuProvider,
+            DeleteActionProvider,
+            DeleteMenuProvider,
+            ChownActionProvider,
+            ChmodActionProvider,
+            UnzipHereUnixMenuProvider,
+            UnzipDirectoryUnixMenuProvider,
+            UnzipHereWindowsActionProvider,
+            UnzipDirectoryWindowsActionProvider,
+            UntarHereMenuProvider,
+            UntarGzHereMenuProvider,
+            UntarDirectoryMenuProvider,
+            UntarGzDirectoryMenuProvider,
+            JavapMenuProvider,
+            JarMenuProvider,
+            NewFileActionProvider,
+            NewDirectoryActionProvider,
+            NewLinkActionProvider,
+            OpenDirectoryActionProvider,
+            OpenFileDefaultActionProvider,
+            OpenFileNativeDetailsActionProvider,
+            OpenFileWithActionProvider,
+            OpenTerminalActionProvider;
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with

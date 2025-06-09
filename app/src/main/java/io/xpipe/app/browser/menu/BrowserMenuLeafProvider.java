@@ -2,12 +2,12 @@ package io.xpipe.app.browser.menu;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LicenseProvider;
@@ -45,7 +45,9 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
     @SneakyThrows
     default AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var c = getDelegateActionClass() != null ? getDelegateActionClass() : getActionClass().orElseThrow();
+        var c = getDelegateActionClass() != null
+                ? getDelegateActionClass()
+                : getActionClass().orElseThrow();
         var bm = c.getDeclaredMethod("builder");
         bm.setAccessible(true);
         var b = bm.invoke(null);
@@ -63,7 +65,11 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
             var entriesMethod = b.getClass().getMethod("files", List.class);
             entriesMethod.setAccessible(true);
-            entriesMethod.invoke(b, entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getPath()).toList());
+            entriesMethod.invoke(
+                    b,
+                    entries.stream()
+                            .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
+                            .toList());
         }
 
         var m = b.getClass().getDeclaredMethod("build");

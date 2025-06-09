@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
-import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
@@ -12,6 +12,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.value.ObservableValue;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -25,9 +26,9 @@ public class SimpleScriptQuickEditActionProvider implements LeafStoreActionProvi
     }
 
     @Override
-            public AbstractAction createAction(DataStoreEntryRef<SimpleScriptStore> store) {
-                return Action.builder().ref(store).build();
-            }
+    public AbstractAction createAction(DataStoreEntryRef<SimpleScriptStore> store) {
+        return Action.builder().ref(store).build();
+    }
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<SimpleScriptStore> store) {
@@ -39,18 +40,18 @@ public class SimpleScriptQuickEditActionProvider implements LeafStoreActionProvi
         return new LabelGraphic.IconGraphic("mdal-edit");
     }
 
+    @Override
+    public Class<SimpleScriptStore> getApplicableClass() {
+        return SimpleScriptStore.class;
+    }
 
     @Override
-            public Class<SimpleScriptStore> getApplicableClass() {
-                return SimpleScriptStore.class;
-            }
-
-        @Override
     public String getId() {
         return "editScriptInEditor";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<SimpleScriptStore> {
 
         @Override

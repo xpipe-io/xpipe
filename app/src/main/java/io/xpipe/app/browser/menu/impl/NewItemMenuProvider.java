@@ -3,11 +3,11 @@ package io.xpipe.app.browser.menu.impl;
 import io.xpipe.app.browser.action.impl.NewDirectoryActionProvider;
 import io.xpipe.app.browser.action.impl.NewFileActionProvider;
 import io.xpipe.app.browser.action.impl.NewLinkActionProvider;
-import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
@@ -52,7 +52,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<BrowserMenuLeafProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new BrowserMenuLeafProvider() {
                     @Override
@@ -141,7 +142,10 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                         .buildComp()
                                         .prefWidth(350));
                         modal.withDefaultButtons(() -> {
-                            if (linkName.getValue() == null || linkName.getValue().isEmpty() || target.getValue() == null || target.getValue().isEmpty()) {
+                            if (linkName.getValue() == null
+                                    || linkName.getValue().isEmpty()
+                                    || target.getValue() == null
+                                    || target.getValue().isEmpty()) {
                                 return;
                             }
 

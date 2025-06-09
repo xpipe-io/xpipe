@@ -16,8 +16,7 @@ public class SshCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder().addTitle("sshConfiguration");
         if (OsType.getLocal() == OsType.WINDOWS) {
-            options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp()
-                    .maxWidth(600));
+            options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp().maxWidth(600));
         }
         return options.buildComp();
     }

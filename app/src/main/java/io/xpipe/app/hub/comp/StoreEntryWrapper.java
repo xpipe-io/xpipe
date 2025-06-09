@@ -3,8 +3,9 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.action.*;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
+import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.hub.action.StoreActionProvider;
+import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -14,7 +15,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.app.ext.SingletonSessionStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -179,7 +179,8 @@ public class StoreEntryWrapper {
         readOnly.setValue(entry.isReadOnly());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
-        deletable.setValue(!(entry.getStore() instanceof LocalStore) && !DataStorage.get().getEffectiveReadOnlyState(entry));
+        deletable.setValue(
+                !(entry.getStore() instanceof LocalStore) && !DataStorage.get().getEffectiveReadOnlyState(entry));
         sessionActive.setValue(entry.getStore() instanceof SingletonSessionStore<?> ss
                 && entry.getStore() instanceof ShellStore
                 && ss.isSessionRunning());
@@ -208,7 +209,12 @@ public class StoreEntryWrapper {
                         shownInformation.bind(Bindings.createStringBinding(
                                 () -> {
                                     var n = information.getValue();
-                                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                                    return n != null
+                                                    && AppPrefs.get()
+                                                            .censorMode()
+                                                            .get()
+                                            ? "*".repeat(n.length())
+                                            : n;
                                 },
                                 AppPrefs.get().censorMode(),
                                 information));
@@ -240,7 +246,8 @@ public class StoreEntryWrapper {
                 var defaultProvider = ActionProvider.ALL.stream()
                         .filter(e -> entry.getStore() != null
                                 && e instanceof LeafStoreActionProvider<?> def
-                                && (entry.getValidity().isUsable() || (!def.requiresValidStore() && entry.getProvider() != null))
+                                && (entry.getValidity().isUsable()
+                                        || (!def.requiresValidStore() && entry.getProvider() != null))
                                 && def.getApplicableClass()
                                         .isAssignableFrom(entry.getStore().getClass())
                                 && def.isApplicable(entry.ref())
@@ -269,8 +276,9 @@ public class StoreEntryWrapper {
                         .collect(Collectors.toCollection(ArrayList::new));
                 newMinorProviders.removeIf(storeActionProvider -> {
                     return newMajorProviders.stream().anyMatch(mj -> {
-                        return mj instanceof BranchStoreActionProvider<?> branch && branch.getChildren(entry.ref()).stream()
-                                .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
+                        return mj instanceof BranchStoreActionProvider<?> branch
+                                && branch.getChildren(entry.ref()).stream()
+                                        .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
                     });
                 });
                 if (!minorActionProviders.equals(newMinorProviders)) {

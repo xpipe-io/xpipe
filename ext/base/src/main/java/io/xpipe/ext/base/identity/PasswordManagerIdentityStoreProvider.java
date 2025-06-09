@@ -1,15 +1,16 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -55,9 +56,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
 
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
-        return PasswordManagerIdentityStore.builder()
-                .key(null)
-                .build();
+        return PasswordManagerIdentityStore.builder().key(null).build();
     }
 
     @Override

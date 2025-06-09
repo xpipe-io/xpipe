@@ -1,6 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -20,7 +19,9 @@ public abstract class ProcessControlProvider {
                 .findFirst()
                 .orElseThrow();
     }
-    public abstract BrowserStoreSessionTab<?> createVncSession(BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
+
+    public abstract BrowserStoreSessionTab<?> createVncSession(
+            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
 
     public static ProcessControlProvider get() {
         return INSTANCE;

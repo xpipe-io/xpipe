@@ -1,14 +1,11 @@
 package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.browser.action.impl.OpenFileDefaultActionProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;

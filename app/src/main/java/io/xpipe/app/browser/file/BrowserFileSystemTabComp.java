@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
@@ -70,7 +69,8 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var forthBtn = BrowserMenuProviders.byId("forward", model, List.of()).toButton(root, model, List.of());
         var refreshBtn = BrowserMenuProviders.byId("refresh", model, List.of()).toButton(root, model, List.of());
         // Don't handle key events for this button, we also have that available as a menu item
-        var terminalBtn = BrowserMenuProviders.byId("openTerminal", model, List.of()).toButton(new Region(), model, List.of());
+        var terminalBtn =
+                BrowserMenuProviders.byId("openTerminal", model, List.of()).toButton(new Region(), model, List.of());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(

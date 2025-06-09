@@ -1,14 +1,15 @@
 package io.xpipe.app.action;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 
@@ -25,7 +26,9 @@ public class ActionJacksonMapper {
             return null;
         }
 
-        var provider = ActionProvider.ALL.stream().filter(actionProvider -> id.textValue().equals(actionProvider.getId())).findFirst();
+        var provider = ActionProvider.ALL.stream()
+                .filter(actionProvider -> id.textValue().equals(actionProvider.getId()))
+                .findFirst();
         if (provider.isEmpty()) {
             return null;
         }
@@ -73,11 +76,14 @@ public class ActionJacksonMapper {
     public static ObjectNode write(AbstractAction value) {
         if (value instanceof BatchStoreAction<?> b) {
             var arrayNode = JsonNodeFactory.instance.arrayNode();
-            b.getActions().stream().map(a -> {
-                var tree = (ObjectNode) JacksonMapper.getDefault().valueToTree(a);
-                return tree.get("ref");
-            }).forEach(n -> arrayNode.add(n));
-            var tree = (ObjectNode) JacksonMapper.getDefault().valueToTree(b.getActions().getFirst());
+            b.getActions().stream()
+                    .map(a -> {
+                        var tree = (ObjectNode) JacksonMapper.getDefault().valueToTree(a);
+                        return tree.get("ref");
+                    })
+                    .forEach(n -> arrayNode.add(n));
+            var tree = (ObjectNode)
+                    JacksonMapper.getDefault().valueToTree(b.getActions().getFirst());
             tree.set("ref", arrayNode);
             tree.put("id", b.getActions().getFirst().getId());
             return tree;

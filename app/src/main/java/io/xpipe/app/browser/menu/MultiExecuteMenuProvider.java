@@ -18,7 +18,8 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
             ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<BrowserMenuLeafProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new BrowserMenuLeafProvider() {
 

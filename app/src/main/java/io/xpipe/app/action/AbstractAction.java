@@ -6,17 +6,15 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
-import lombok.SneakyThrows;
+
 import lombok.experimental.SuperBuilder;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 @SuperBuilder
@@ -26,9 +24,10 @@ public abstract class AbstractAction {
     private static boolean closed;
     private static Consumer<AbstractAction> pick;
 
-    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
-        cancelPick();
-    });
+    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
+            AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
+                cancelPick();
+            });
 
     public static synchronized void expectPick() {
         if (pick != null) {
@@ -77,16 +76,14 @@ public abstract class AbstractAction {
         }
     }
 
-    public void executeSync()  {
+    public void executeSync() {
         if (closed) {
             return;
         }
 
         synchronized (AbstractAction.class) {
             if (pick != null) {
-                TrackEvent.withTrace("Picked action")
-                        .tags(toDisplayMap())
-                        .handle();
+                TrackEvent.withTrace("Picked action").tags(toDisplayMap()).handle();
                 pick.accept(this);
                 pick = null;
                 return;
@@ -96,16 +93,14 @@ public abstract class AbstractAction {
         executeSyncImpl();
     }
 
-    public void executeAsync()  {
+    public void executeAsync() {
         if (closed) {
             return;
         }
 
         synchronized (AbstractAction.class) {
             if (pick != null) {
-                TrackEvent.withTrace("Picked action")
-                        .tags(toDisplayMap())
-                        .handle();
+                TrackEvent.withTrace("Picked action").tags(toDisplayMap()).handle();
                 pick.accept(this);
                 pick = null;
                 return;
@@ -117,46 +112,42 @@ public abstract class AbstractAction {
         });
     }
 
-    private void executeSyncImpl()  {
-            if (!ActionConfirmation.confirmAction(this)) {
+    private void executeSyncImpl() {
+        if (!ActionConfirmation.confirmAction(this)) {
+            return;
+        }
+
+        if (closed) {
+            return;
+        }
+
+        synchronized (active) {
+            active.add(this);
+        }
+
+        TrackEvent.withTrace("Starting action execution").tags(toDisplayMap()).handle();
+
+        try {
+            if (!beforeExecute()) {
                 return;
             }
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
+            return;
+        }
 
-            if (closed) {
-                return;
-            }
-
+        try {
+            executeImpl();
+        } catch (Throwable t) {
+            ErrorEvent.fromThrowable(t).handle();
+        } finally {
+            afterExecute();
             synchronized (active) {
-                active.add(this);
+                active.remove(this);
             }
 
-            TrackEvent.withTrace("Starting action execution")
-                    .tags(toDisplayMap())
-                    .handle();
-
-            try {
-                if (!beforeExecute()) {
-                    return;
-                }
-            } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
-                return;
-            }
-
-            try {
-                executeImpl();
-            } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
-            } finally {
-                afterExecute();
-                synchronized (active) {
-                    active.remove(this);
-                }
-
-                TrackEvent.withTrace("Finished action execution")
-                        .tag("id", getId())
-                        .handle();
-            }
+            TrackEvent.withTrace("Finished action execution").tag("id", getId()).handle();
+        }
     }
 
     public String getId() {
@@ -174,8 +165,10 @@ public abstract class AbstractAction {
         if (enc == null) {
             throw new IllegalStateException("No enclosing instance of " + clazz);
         }
-        return ActionProvider.ALL.stream().filter(actionProvider -> actionProvider.getClass().equals(enc))
-                .findFirst().orElseThrow(IllegalStateException::new);
+        return ActionProvider.ALL.stream()
+                .filter(actionProvider -> actionProvider.getClass().equals(enc))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
     }
 
     public String getShortcutName() {

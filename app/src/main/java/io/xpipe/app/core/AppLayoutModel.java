@@ -58,9 +58,11 @@ public class AppLayoutModel {
 
         queueEntries.add(entry);
         if (duration != null) {
-            GlobalTimer.delay(() -> {
-                queueEntries.remove(entry);
-            }, duration);
+            GlobalTimer.delay(
+                    () -> {
+                        queueEntries.remove(entry);
+                    },
+                    duration);
         }
     }
 

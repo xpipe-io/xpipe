@@ -42,7 +42,10 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 .addString(model.getName(), false)
                 .nonNull(propVal)
                 .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
-                    var same = s != null && model.getExistingEntry() != null && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry()) && s.equals(model.getExistingEntry().getName());
+                    var same = s != null
+                            && model.getExistingEntry() != null
+                            && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
+                            && s.equals(model.getExistingEntry().getName());
                     return !same;
                 }))
                 .buildComp()

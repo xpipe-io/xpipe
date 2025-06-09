@@ -1,10 +1,10 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.LauncherActionProvider;
 import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -103,12 +103,14 @@ public class AppOpenArguments {
             }
 
             if (Files.exists(path)) {
-                return List.of(OpenDirectoryActionProvider.Action.builder().ref(DataStorage.get().local().ref()).files(List.of(FilePath.of(path))).build());
+                return List.of(OpenDirectoryActionProvider.Action.builder()
+                        .ref(DataStorage.get().local().ref())
+                        .files(List.of(FilePath.of(path)))
+                        .build());
             }
         } catch (InvalidPathException ignored) {
         }
 
         return List.of();
     }
-
 }

@@ -5,6 +5,7 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
+
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
@@ -25,7 +26,9 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
     @Override
     public Optional<Path> determineInstallation() {
         try {
-            var r = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
+            var r = WindowsRegistry.local()
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).omit().handle();

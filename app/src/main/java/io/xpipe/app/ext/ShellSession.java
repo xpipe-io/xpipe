@@ -72,6 +72,9 @@ public class ShellSession extends Session {
     @Override
     public boolean checkAlive() throws Exception {
         // Don't print it constantly
-        return shellControl.command(CommandBuilder.of().add("echo", "xpipetest")).sensitive().executeAndCheck();
+        return shellControl
+                .command(CommandBuilder.of().add("echo", "xpipetest"))
+                .sensitive()
+                .executeAndCheck();
     }
 }

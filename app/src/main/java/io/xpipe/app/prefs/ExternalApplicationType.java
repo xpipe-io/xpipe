@@ -2,7 +2,6 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.terminal.TerminalLaunchConfiguration;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
@@ -53,7 +52,8 @@ public interface ExternalApplicationType extends PrefsValue {
             if (Files.exists(systemApplicationsDef)) {
                 return Optional.of(systemApplicationsDef);
             }
-            var userApplicationsDef = Path.of(System.getProperty("user.home") + "/Applications/" + getApplicationName() + ".app");
+            var userApplicationsDef =
+                    Path.of(System.getProperty("user.home") + "/Applications/" + getApplicationName() + ".app");
             if (Files.exists(userApplicationsDef)) {
                 return Optional.of(userApplicationsDef);
             }
@@ -71,7 +71,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void focus() {
             try (ShellControl pc = LocalShell.getShell().start()) {
-                pc.command(String.format("open -a \"%s.app\"", getApplicationName())).execute();
+                pc.command(String.format("open -a \"%s.app\"", getApplicationName()))
+                        .execute();
             } catch (Exception e) {
                 ErrorEvent.fromThrowable(e).handle();
             }
@@ -141,9 +142,11 @@ public interface ExternalApplicationType extends PrefsValue {
             if (location.isEmpty()) {
                 location = determineInstallation();
                 if (location.isEmpty()) {
-                    var name = this instanceof Translatable t ? t.toTranslatedString().getValue() : getExecutable();
-                    throw ErrorEvent.expected(new UnsupportedOperationException("Unable to find installation of "
-                            + name));
+                    var name = this instanceof Translatable t
+                            ? t.toTranslatedString().getValue()
+                            : getExecutable();
+                    throw ErrorEvent.expected(
+                            new UnsupportedOperationException("Unable to find installation of " + name));
                 }
             }
             return location.get();

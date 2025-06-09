@@ -108,8 +108,7 @@ public class StoreSection {
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable,
-            ObservableValue<Boolean> enabled
-            ) {
+            ObservableValue<Boolean> enabled) {
         var topLevel = all.filtered(
                 section -> {
                     if (!enabled.getValue()) {

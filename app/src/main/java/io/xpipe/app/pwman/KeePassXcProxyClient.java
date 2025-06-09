@@ -287,7 +287,9 @@ public class KeePassXcProxyClient {
         var object = (ObjectNode) tree.required("entries").get(0);
         var usernameField = object.required("login").asText();
         var passwordField = object.required("password").asText();
-        return new PasswordManager.CredentialResult(usernameField.isEmpty() ? null : usernameField, passwordField.isEmpty() ? null : InPlaceSecretValue.of(passwordField));
+        return new PasswordManager.CredentialResult(
+                usernameField.isEmpty() ? null : usernameField,
+                passwordField.isEmpty() ? null : InPlaceSecretValue.of(passwordField));
     }
 
     /**

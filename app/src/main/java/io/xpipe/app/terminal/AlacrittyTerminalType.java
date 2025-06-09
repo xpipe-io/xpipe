@@ -45,10 +45,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
-            b.add("-t")
-                    .addQuoted(configuration.getCleanTitle())
-                    .add("-e")
-                    .add(configuration.getDialectLaunchCommand());
+            b.add("-t").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.getDialectLaunchCommand());
             launch(b);
         }
 
@@ -68,7 +65,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         }
     }
 
-    class Linux implements  ExternalApplicationType.PathApplication, AlacrittyTerminalType {
+    class Linux implements ExternalApplicationType.PathApplication, AlacrittyTerminalType {
 
         @Override
         public String getExecutable() {
@@ -91,12 +88,13 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());;
+                    .addFile(configuration.getScriptFile());
+            ;
             launch(b);
         }
     }
 
-    class MacOs implements ExternalApplicationType.MacApplication, ExternalTerminalType, TrackableTerminalType  {
+    class MacOs implements ExternalApplicationType.MacApplication, ExternalTerminalType, TrackableTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {

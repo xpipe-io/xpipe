@@ -3,6 +3,7 @@ package io.xpipe.app.browser.action.impl;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserFileOutput;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -29,8 +30,10 @@ public class ApplyFileEditActionProvider implements ActionProvider {
 
         @NonNull
         String target;
+
         @NonNull
         InputStream input;
+
         @NonNull
         BrowserFileOutput output;
 

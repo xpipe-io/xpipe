@@ -32,7 +32,8 @@ public class GnomeTerminalType implements ExternalApplicationType.PathApplicatio
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (ShellControl pc = LocalShell.getShell()) {
-            CommandSupport.isInPathOrThrow(pc, getExecutable(), toTranslatedString().getValue(), null);
+            CommandSupport.isInPathOrThrow(
+                    pc, getExecutable(), toTranslatedString().getValue(), null);
 
             var toExecute = CommandBuilder.of()
                     .add(getExecutable(), "-v", "--title")

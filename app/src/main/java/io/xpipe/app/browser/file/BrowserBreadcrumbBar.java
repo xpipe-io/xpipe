@@ -3,8 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.store.FileNames;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
@@ -89,7 +89,6 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
         return breadcrumbs;
     }
-
 
     private List<String> createBreadcumbHierarchy(FilePath filePath) {
         var f = filePath.toString() + "/";

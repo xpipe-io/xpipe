@@ -9,10 +9,11 @@ public class RemoteDesktopAppRdpClient implements ExternalApplicationType.MacApp
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
-                .add("open", "-a")
-                .addQuoted("Microsoft Remote Desktop.app")
-                .addFile(file.toString()));
+        LocalShell.getShell()
+                .executeSimpleCommand(CommandBuilder.of()
+                        .add("open", "-a")
+                        .addQuoted("Microsoft Remote Desktop.app")
+                        .addFile(file.toString()));
     }
 
     @Override

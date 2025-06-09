@@ -5,10 +5,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.PlatformState;
 
 import javafx.application.Platform;
 import javafx.scene.paint.Color;

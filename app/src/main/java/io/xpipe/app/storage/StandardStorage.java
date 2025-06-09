@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
@@ -503,7 +502,8 @@ public class StandardStorage extends DataStorage {
                 vaultKey = EncryptionKey.getVaultSecretKey(id);
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault key file " + file + " to decrypt vault contents. Is it corrupted?", e)
+            ErrorEvent.fromThrowable(
+                            "Unable to load vault key file " + file + " to decrypt vault contents. Is it corrupted?", e)
                     .terminal(true)
                     .build()
                     .handle();

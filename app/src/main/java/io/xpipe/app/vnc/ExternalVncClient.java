@@ -1,10 +1,10 @@
 package io.xpipe.app.vnc;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.app.util.RemminaHelper;
 import io.xpipe.core.process.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

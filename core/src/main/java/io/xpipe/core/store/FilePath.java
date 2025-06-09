@@ -2,7 +2,6 @@ package io.xpipe.core.store;
 
 import io.xpipe.core.process.OsType;
 
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.nio.file.Path;
@@ -212,7 +211,7 @@ public final class FilePath {
         }
 
         var ar = value.split("[\\\\/]");
-        var l =  Arrays.stream(ar).filter(s -> !s.isEmpty()).toList();
+        var l = Arrays.stream(ar).filter(s -> !s.isEmpty()).toList();
         split = l;
         return l;
     }

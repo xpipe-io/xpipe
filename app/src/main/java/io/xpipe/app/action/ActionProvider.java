@@ -39,7 +39,9 @@ public interface ActionProvider {
 
     @SuppressWarnings("unchecked")
     default Optional<Class<? extends AbstractAction>> getActionClass() {
-        var child = Arrays.stream(getClass().getDeclaredClasses()).filter(aClass -> aClass.getSimpleName().equals("Action")).findFirst()
+        var child = Arrays.stream(getClass().getDeclaredClasses())
+                .filter(aClass -> aClass.getSimpleName().equals("Action"))
+                .findFirst()
                 .map(aClass -> (Class<? extends AbstractAction>) aClass);
         return Optional.of(child.get());
     }

@@ -21,7 +21,8 @@ public class LocalShell {
         // Ensure that electron applications on Linux use wayland features if possible
         // https://github.com/microsoft/vscode/issues/207033#issuecomment-2167500295
         if (OsType.getLocal() == OsType.LINUX) {
-            local.writeLine(local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
+            local.writeLine(
+                    local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
         }
 
         localCache = new LocalShellCache(local);

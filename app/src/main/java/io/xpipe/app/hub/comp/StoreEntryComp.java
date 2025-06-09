@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.comp;
 
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.BranchStoreActionProvider;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -10,9 +10,9 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
-import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.hub.action.StoreActionProvider;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -155,8 +155,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         () -> this.createContextMenu())
                 .augment(button);
 
-        var loading = new LoadingOverlayComp(
-                Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
+        var loading = new LoadingOverlayComp(Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
         if (OsType.getLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
         } else if (OsType.getLocal() == OsType.LINUX) {
@@ -216,9 +215,13 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Node createIcon(int w, int h, Consumer<Node> fontSize) {
         var icon = new StoreIconComp(getWrapper(), w, h);
         icon.apply(struc -> {
-            struc.get().opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-                return !getWrapper().getEffectiveBusy().get() ? 1.0 : 0.15;
-            }, getWrapper().getEffectiveBusy()));
+            struc.get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                return !getWrapper().getEffectiveBusy().get() ? 1.0 : 0.15;
+                            },
+                            getWrapper().getEffectiveBusy()));
         });
         var loading = new LoadingIconComp(getWrapper().getEffectiveBusy(), fontSize);
         loading.prefWidth(w);
@@ -259,8 +262,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 p.getIcon(getWrapper().getEntry().ref()),
                 leaf != null
                         ? () -> {
-                             leaf.createAction(
-                            getWrapper().getEntry().ref()).executeAsync();
+                            leaf.createAction(getWrapper().getEntry().ref()).executeAsync();
                         }
                         : null);
         if (branch != null) {
@@ -311,9 +313,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 continue;
             }
 
-            if (p instanceof LeafStoreActionProvider<?> l
-                    && l.isSystemAction()
-                    && !hasSep) {
+            if (p instanceof LeafStoreActionProvider<?> l && l.isSystemAction() && !hasSep) {
                 if (contextMenu.getItems().size() > 0) {
                     contextMenu.getItems().add(new SeparatorMenuItem());
                 }
@@ -428,15 +428,25 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         var readOnly = new MenuItem();
-        readOnly.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-            var is = getWrapper().getReadOnly().get();
-            return is ? new FontIcon("mdi2l-lock-open-variant-outline") : new FontIcon("mdi2l-lock-open-outline");
-        }, getWrapper().getReadOnly()));
-        readOnly.textProperty().bind(Bindings.createStringBinding(() -> {
-            var is = getWrapper().getReadOnly().get();
-            return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
-        }, AppI18n.activeLanguage(), getWrapper().getReadOnly()));
-        readOnly.setOnAction(event -> getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
+        readOnly.graphicProperty()
+                .bind(Bindings.createObjectBinding(
+                        () -> {
+                            var is = getWrapper().getReadOnly().get();
+                            return is
+                                    ? new FontIcon("mdi2l-lock-open-variant-outline")
+                                    : new FontIcon("mdi2l-lock-open-outline");
+                        },
+                        getWrapper().getReadOnly()));
+        readOnly.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            var is = getWrapper().getReadOnly().get();
+                            return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
+                        },
+                        AppI18n.activeLanguage(),
+                        getWrapper().getReadOnly()));
+        readOnly.setOnAction(event ->
+                getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
         contextMenu.getItems().add(readOnly);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
@@ -459,7 +469,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null || cs.isMajor(getWrapper().getEntry().ref()) || (leaf != null && leaf.isDefault(getWrapper().getEntry().ref()))) {
+        if (cs == null
+                || cs.isMajor(getWrapper().getEntry().ref())
+                || (leaf != null && leaf.isDefault(getWrapper().getEntry().ref()))) {
             return null;
         }
 
@@ -474,7 +486,9 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (proRequired) {
             item.setDisable(true);
             item.textProperty()
-                    .bind(LicenseProvider.get().getFeature(p.getLicensedFeatureId()).suffixObservable(name.getValue()));
+                    .bind(LicenseProvider.get()
+                            .getFeature(p.getLicensedFeatureId())
+                            .suffixObservable(name.getValue()));
         } else {
             item.textProperty().bind(name);
         }

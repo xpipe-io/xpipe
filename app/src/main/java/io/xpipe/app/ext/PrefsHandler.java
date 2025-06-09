@@ -1,8 +1,7 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.Comp;
-
 import io.xpipe.app.util.OptionsBuilder;
+
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.databind.JavaType;

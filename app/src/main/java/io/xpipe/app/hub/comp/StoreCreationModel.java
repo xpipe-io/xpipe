@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -89,7 +89,9 @@ public class StoreCreationModel {
         });
         this.entry = Bindings.createObjectBinding(
                 () -> {
-                    if (name.getValue() == null || store.getValue() == null || name.getValue().isBlank()) {
+                    if (name.getValue() == null
+                            || store.getValue() == null
+                            || name.getValue().isBlank()) {
                         return null;
                     }
 
@@ -108,7 +110,9 @@ public class StoreCreationModel {
 
         skippable.bind(Bindings.createBooleanBinding(
                 () -> {
-                    if (entry.getValue() != null && store.get().isComplete() && store.get() instanceof ValidatableStore) {
+                    if (entry.getValue() != null
+                            && store.get().isComplete()
+                            && store.get() instanceof ValidatableStore) {
                         return true;
                     } else {
                         return false;
@@ -287,7 +291,9 @@ public class StoreCreationModel {
                 ? "connection"
                 : p.getCreationCategory().getCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)
                         ? (p.getId().equals("scriptGroup") ? "scriptGroup" : "script")
-                        : p.getCreationCategory().getCategory().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID) ? "identity" : "macro";
+                        : p.getCreationCategory().getCategory().equals(DataStorage.ALL_IDENTITIES_CATEGORY_UUID)
+                                ? "identity"
+                                : "macro";
         return nameKey;
     }
 }

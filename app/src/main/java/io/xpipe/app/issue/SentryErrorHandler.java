@@ -1,17 +1,17 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.LicenseRequiredException;
 
 import io.sentry.*;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
-import io.xpipe.app.util.LicenseRequiredException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
@@ -99,7 +99,9 @@ public class SentryErrorHandler implements ErrorHandler {
             suppressedField.setAccessible(true);
             var suppressed = throwable.getSuppressed();
             if (suppressed.length > 0) {
-                suppressedField.set(copy, Arrays.stream(suppressed).map(s -> adjustCopy(s, true)).toList());
+                suppressedField.set(
+                        copy,
+                        Arrays.stream(suppressed).map(s -> adjustCopy(s, true)).toList());
             }
 
             return copy;

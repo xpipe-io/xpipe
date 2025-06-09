@@ -4,6 +4,7 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.value.ObservableValue;
 
 public interface StoreActionProvider<T extends DataStore> extends ActionProvider {

@@ -3,16 +3,9 @@ package io.xpipe.app.rdp;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.SecretValue;
+
 import org.apache.commons.io.FileUtils;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 public class RemminaRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {

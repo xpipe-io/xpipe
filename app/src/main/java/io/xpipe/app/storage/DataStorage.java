@@ -1,9 +1,9 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.hub.comp.StoreSortMode;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
+import io.xpipe.app.hub.comp.StoreSortMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;

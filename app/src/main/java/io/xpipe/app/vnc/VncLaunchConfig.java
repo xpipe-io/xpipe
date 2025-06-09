@@ -3,6 +3,7 @@ package io.xpipe.app.vnc;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.SecretValue;
+
 import lombok.Value;
 
 import java.util.Optional;
@@ -15,14 +16,14 @@ public class VncLaunchConfig {
     DataStoreEntryRef<VncBaseStore> entry;
     ShellControl shellControl;
 
-    public Optional<String> retrieveUsername() throws Exception{
+    public Optional<String> retrieveUsername() throws Exception {
         return Optional.ofNullable(entry.getStore().retrieveUser());
     }
 
     public boolean hasFixedPassword() {
-        return entry.getStore().getPassword() != null &&
-                entry.getStore().getPassword().expectsQuery() &&
-                !entry.getStore().getPassword().query().requiresUserInteraction();
+        return entry.getStore().getPassword() != null
+                && entry.getStore().getPassword().expectsQuery()
+                && !entry.getStore().getPassword().query().requiresUserInteraction();
     }
 
     public boolean isTunneled() {

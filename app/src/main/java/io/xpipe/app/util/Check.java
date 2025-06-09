@@ -1,23 +1,24 @@
 package io.xpipe.app.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+
 import lombok.Getter;
 import net.synedra.validatorfx.Decoration;
 import net.synedra.validatorfx.DefaultDecoration;
 import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.ValidationResult;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** A check represents a check for validity in a form.
  * @author r.lichtenberger@synedra.com
@@ -28,15 +29,17 @@ public class Check {
     private Consumer<Context> checkMethod;
     private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
     private ValidationResult nextValidationResult = new ValidationResult();
+
     @Getter
     private List<Node> targets = new ArrayList<>(1);
+
     private List<Decoration> decorations = new ArrayList<>();
     private Function<ValidationMessage, Decoration> decorationFactory;
     private ChangeListener<? super Object> dependencyListener;
 
     public class Context {
 
-        private Context() { }
+        private Context() {}
 
         /** Get the current value of a dependency.
          * @param <T> The type the value should be casted into
@@ -100,7 +103,7 @@ public class Check {
         for (ObservableValue<? extends Object> dependency : dependencies.values()) {
             dependency.addListener(dependencyListener);
         }
-        Platform.runLater(this::recheck);	// to circumvent problems with decoration pane vs. dialog
+        Platform.runLater(this::recheck); // to circumvent problems with decoration pane vs. dialog
         return this;
     }
 
@@ -139,5 +142,4 @@ public class Check {
     public ReadOnlyObjectProperty<ValidationResult> validationResultProperty() {
         return validationResultProperty.getReadOnlyProperty();
     }
-
 }

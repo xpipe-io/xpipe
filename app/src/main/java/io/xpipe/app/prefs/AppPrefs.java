@@ -7,7 +7,6 @@ import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.pwman.PasswordManager;
-import io.xpipe.app.pwman.PasswordManagerCommand;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -723,7 +722,12 @@ public class AppPrefs {
 
         @Override
         public <T> void addSetting(
-                String id, JavaType t, Property<T> property, OptionsBuilder builder, boolean requiresRestart, boolean log) {
+                String id,
+                JavaType t,
+                Property<T> property,
+                OptionsBuilder builder,
+                boolean requiresRestart,
+                boolean log) {
             var m = new Mapping(id, property, t, false, requiresRestart, log);
             customEntries.put(m, builder);
             mapping.add(m);

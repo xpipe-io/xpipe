@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
@@ -509,7 +508,8 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                var shell =
+                        fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
                 if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
                     modeCol.setVisible(false);
                     ownerCol.setVisible(false);

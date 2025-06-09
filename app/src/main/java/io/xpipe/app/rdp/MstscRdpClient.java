@@ -6,17 +6,19 @@ import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.util.SecretValue;
+
 import org.apache.commons.io.FileUtils;
 
 import java.util.Map;
 
-public class MstscRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient{
+public class MstscRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var adaptedRdpConfig = getAdaptedConfig(configuration);
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of().add(getExecutable()).addFile(file.toString()));
+        LocalShell.getShell()
+                .executeSimpleCommand(CommandBuilder.of().add(getExecutable()).addFile(file.toString()));
         ThreadHelper.runFailableAsync(() -> {
             ThreadHelper.sleep(1000);
             FileUtils.deleteQuietly(file.toFile());
@@ -43,17 +45,19 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             return input;
         }
 
-        var adapted = input.overlay(
-                Map.of("password 51", new RdpConfig.TypedValue("b", encrypt(pass)), "prompt for credentials", new RdpConfig.TypedValue("i", "0")));
+        var adapted = input.overlay(Map.of(
+                "password 51",
+                new RdpConfig.TypedValue("b", encrypt(pass)),
+                "prompt for credentials",
+                new RdpConfig.TypedValue("i", "0")));
         return adapted;
     }
 
     private String encrypt(SecretValue password) throws Exception {
         var ps = LocalShell.getLocalPowershell();
         var cmd = ps.command(CommandBuilder.of()
-                .add(sc -> "(" +
-                        sc.getShellDialect().literalArgument(password.getSecretValue()) +
-                        " | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString"));
+                .add(sc -> "(" + sc.getShellDialect().literalArgument(password.getSecretValue())
+                        + " | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString"));
         cmd.sensitive();
         return cmd.readStdoutOrThrow();
     }

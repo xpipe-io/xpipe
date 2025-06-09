@@ -35,7 +35,8 @@ public class BrowserFileOpener {
         if (totalBytes == 0) {
             var existingSize = model.getFileSystem().getFileSize(file.getPath());
             if (existingSize != 0) {
-                var blank = AppDialog.confirm("fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
+                var blank = AppDialog.confirm(
+                        "fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
                 if (!blank) {
                     return BrowserFileOutput.none();
                 }

@@ -42,9 +42,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            launch(CommandBuilder.of()
-                            .add("start")
-                            .add(configuration.getDialectLaunchCommand()));
+            launch(CommandBuilder.of().add("start").add(configuration.getDialectLaunchCommand()));
         }
 
         @Override
@@ -131,7 +129,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
     }
 
-    class MacOs implements ExternalApplicationType.MacApplication,  WezTerminalType {
+    class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {

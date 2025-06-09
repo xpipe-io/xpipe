@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.icon.SystemIconManager;
@@ -121,8 +120,9 @@ public class IconsCategory extends AppPrefsCategory {
 
                         var path = dir.get().asLocalPath();
                         if (Files.isRegularFile(path)) {
-                            throw ErrorEvent.expected(new IllegalArgumentException(
-                                    "A custom icon source must be a directory containing .svg files, not a single file"));
+                            throw ErrorEvent.expected(
+                                    new IllegalArgumentException(
+                                            "A custom icon source must be a directory containing .svg files, not a single file"));
                         }
 
                         var source = SystemIconSource.Directory.builder()
@@ -174,7 +174,8 @@ public class IconsCategory extends AppPrefsCategory {
             var cb = new CheckBox();
             cb.setSelected(!disabled.contains(source.getId()));
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
-                var set = new LinkedHashSet<>(AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of()));
+                var set = new LinkedHashSet<>(
+                        AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of()));
                 if (newValue) {
                     set.remove(source.getId());
                 } else {

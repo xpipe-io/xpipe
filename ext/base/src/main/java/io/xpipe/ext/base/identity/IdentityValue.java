@@ -100,7 +100,9 @@ public interface IdentityValue {
 
         @Override
         public LocalIdentityStore unwrap() {
-        return identityStore != null ? identityStore : LocalIdentityStore.builder().build();
+            return identityStore != null
+                    ? identityStore
+                    : LocalIdentityStore.builder().build();
         }
 
         @Override
@@ -125,7 +127,9 @@ public interface IdentityValue {
 
         @Override
         public IdentityStore unwrap() {
-            return ref != null && ref.getStore() != null ? ref.getStore() : LocalIdentityStore.builder().build();
+            return ref != null && ref.getStore() != null
+                    ? ref.getStore()
+                    : LocalIdentityStore.builder().build();
         }
 
         @Override

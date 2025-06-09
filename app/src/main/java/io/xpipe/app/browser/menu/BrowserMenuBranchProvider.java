@@ -37,5 +37,6 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
         return m;
     }
 
-    List<? extends BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries);
+    List<? extends BrowserMenuItemProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries);
 }

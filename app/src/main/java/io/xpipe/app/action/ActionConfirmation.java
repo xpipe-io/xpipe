@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.List;

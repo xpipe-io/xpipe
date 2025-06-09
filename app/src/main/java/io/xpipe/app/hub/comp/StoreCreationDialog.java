@@ -33,7 +33,8 @@ public class StoreCreationDialog {
     public static void showEdit(DataStoreEntry e, Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
-                if (!DataStorage.get().getStoreEntries().contains(e) || DataStorage.get().getEffectiveReadOnlyState(e)) {
+                if (!DataStorage.get().getStoreEntries().contains(e)
+                        || DataStorage.get().getEffectiveReadOnlyState(e)) {
                     DataStorage.get().addStoreEntryIfNotPresent(newE);
                 } else {
                     // We didn't change anything

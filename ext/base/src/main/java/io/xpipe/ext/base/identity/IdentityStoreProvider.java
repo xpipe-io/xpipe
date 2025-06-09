@@ -50,5 +50,4 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
                         : " + Key");
         return new SimpleStringProperty(s);
     }
-
 }

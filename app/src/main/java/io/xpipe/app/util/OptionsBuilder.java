@@ -15,9 +15,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
-import javafx.scene.layout.VBox;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;

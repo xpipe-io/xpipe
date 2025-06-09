@@ -35,8 +35,12 @@ public class AppDownloads {
 
             var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
             Files.write(downloadFile, response.body());
-            TrackEvent.withInfo("Downloaded asset").tag("version", version).tag("url", release.getUrl()).tag("size",
-                    FileUtils.byteCountToDisplaySize(response.body().length)).tag("target", downloadFile).handle();
+            TrackEvent.withInfo("Downloaded asset")
+                    .tag("version", version)
+                    .tag("url", release.getUrl())
+                    .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
+                    .tag("target", downloadFile)
+                    .handle();
 
             return downloadFile;
         } catch (IOException ex) {
@@ -115,5 +119,4 @@ public class AppDownloads {
             throw ErrorEvent.expected(e);
         }
     }
-
 }

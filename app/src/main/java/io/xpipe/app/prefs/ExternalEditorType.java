@@ -8,6 +8,7 @@ import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -64,10 +65,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("VSCodium")
-                    .resolve("bin")
-                    .resolve("codium.cmd"))
+                            .resolve("Programs")
+                            .resolve("VSCodium")
+                            .resolve("bin")
+                            .resolve("codium.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -92,9 +93,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("cursor")
-                    .resolve("Cursor.exe"))
+                            .resolve("Programs")
+                            .resolve("cursor")
+                            .resolve("Cursor.exe"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -145,10 +146,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Windsurf")
-                    .resolve("bin")
-                    .resolve("windsurf.cmd"))
+                            .resolve("Programs")
+                            .resolve("Windsurf")
+                            .resolve("bin")
+                            .resolve("windsurf.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -174,9 +175,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("TheiaIDE")
-                    .resolve("TheiaIDE.exe"))
+                            .resolve("Programs")
+                            .resolve("TheiaIDE")
+                            .resolve("TheiaIDE.exe"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -201,10 +202,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Trae")
-                    .resolve("bin")
-                    .resolve("trae.cmd"))
+                            .resolve("Programs")
+                            .resolve("Trae")
+                            .resolve("bin")
+                            .resolve("trae.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -229,10 +230,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Microsoft VS Code")
-                    .resolve("bin")
-                    .resolve("code.cmd"))
+                            .resolve("Programs")
+                            .resolve("Microsoft VS Code")
+                            .resolve("bin")
+                            .resolve("code.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -257,10 +258,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Microsoft VS Code Insiders")
-                    .resolve("bin")
-                    .resolve("code-insiders.cmd"))
+                            .resolve("Programs")
+                            .resolve("Microsoft VS Code Insiders")
+                            .resolve("bin")
+                            .resolve("code-insiders.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
@@ -341,7 +342,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public ObservableValue<String> toTranslatedString() {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
-            if (customCommand == null || customCommand.isBlank() || customCommand.replace("$FILE", "").strip().contains(" ")) {
+            if (customCommand == null
+                    || customCommand.isBlank()
+                    || customCommand.replace("$FILE", "").strip().contains(" ")) {
                 return ExternalEditorType.super.toTranslatedString();
             }
 

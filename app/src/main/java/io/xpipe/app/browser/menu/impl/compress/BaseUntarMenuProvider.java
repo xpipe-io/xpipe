@@ -1,11 +1,11 @@
 package io.xpipe.app.browser.menu.impl.compress;
 
-import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;

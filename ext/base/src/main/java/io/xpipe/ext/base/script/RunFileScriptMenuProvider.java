@@ -1,16 +1,16 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.menu.MultiExecuteSelectionMenuProvider;
-import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
@@ -108,7 +108,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new BrowserMenuBranchProvider() {
             @Override
             public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16).createRegion();
+                return PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16)
+                        .createRegion();
             }
 
             @Override
@@ -131,7 +132,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
             @Override
             public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16).createRegion();
+                return PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16)
+                        .createRegion();
             }
 
             @Override

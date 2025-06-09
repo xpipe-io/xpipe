@@ -1,12 +1,12 @@
 package io.xpipe.ext.base.identity;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.InternalCacheDataStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

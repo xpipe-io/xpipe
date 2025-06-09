@@ -109,8 +109,7 @@ public class AppExtensionManager {
 
     public Set<Module> getContentModules() {
         return Stream.concat(
-                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
-                        loadedModules.stream())
+                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()), loadedModules.stream())
                 .collect(Collectors.toSet());
     }
 
@@ -134,11 +133,11 @@ public class AppExtensionManager {
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
                     extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
-            ModuleAccess.exportAndOpen(ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
+            ModuleAccess.exportAndOpen(
+                    ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
                     extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
         }
-
     }
 
     private Optional<Module> findAndParseExtension(String name, ModuleLayer parent) {

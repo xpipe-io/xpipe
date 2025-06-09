@@ -61,7 +61,10 @@ public interface SshIdentityStrategy {
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
             // Don't use any agent keys to prevent too many authentication failures
-            return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"), new KeyValue("IdentityFile", "none"),
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "yes"),
+                    new KeyValue("IdentityAgent", "none"),
+                    new KeyValue("IdentityFile", "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -108,7 +111,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -151,7 +158,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
 
         private String getPageantWindowsPipe(ShellControl parent) throws Exception {
@@ -204,7 +215,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -240,7 +255,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 
@@ -316,8 +335,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) throws Exception {
-            return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"),
-                    new KeyValue("IdentityFile", resolveFilePath(parent).toString()), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "yes"),
+                    new KeyValue("IdentityAgent", "none"),
+                    new KeyValue("IdentityFile", resolveFilePath(parent).toString()),
+                    new KeyValue("PKCS11Provider", "none"));
         }
 
         private FilePath resolveFilePath(ShellControl sc) throws Exception {
@@ -326,9 +348,8 @@ public interface SshIdentityStrategy {
             if (s.startsWith("~")) {
                 s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
             }
-            var resolved = sc.getShellDialect()
-                    .evaluateExpression(sc, s.toString())
-                    .readStdoutOrThrow();
+            var resolved =
+                    sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
             return FilePath.of(resolved);
         }
 
@@ -400,22 +421,25 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
-                        var file = getFile(sc);
-                        var dir = FileNames.getParent(file);
-                        if (sc.getOsType() == OsType.WINDOWS) {
-                            var path = sc.view().getPath();
-                            builder.fixedEnvironment("PATH", dir + ";" + path);
-                        } else {
-                            var path = sc.view().getLibraryPath();
-                            builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
-                        }
-                    });
+                var file = getFile(sc);
+                var dir = FileNames.getParent(file);
+                if (sc.getOsType() == OsType.WINDOWS) {
+                    var path = sc.view().getPath();
+                    builder.fixedEnvironment("PATH", dir + ";" + path);
+                } else {
+                    var path = sc.view().getLibraryPath();
+                    builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
+                }
+            });
         }
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) throws Exception {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("PKCS11Provider", getFile(parent)),
-                    new KeyValue("IdentityFile", "none"), new KeyValue("IdentityAgent", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("PKCS11Provider", getFile(parent)),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityAgent", "none"));
         }
     }
 
@@ -454,7 +478,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("PKCS11Provider", file), new KeyValue("IdentityFile", "none"), new KeyValue("IdentityAgent", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("PKCS11Provider", file),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityAgent", "none"));
         }
     }
 
@@ -474,7 +502,11 @@ public interface SshIdentityStrategy {
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) {
-            return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"), new KeyValue("IdentityFile", "none"), new KeyValue("PKCS11Provider", "none"));
+            return List.of(
+                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("PKCS11Provider", "none"));
         }
     }
 }

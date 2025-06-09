@@ -24,7 +24,8 @@ public abstract class MultiExecuteSelectionMenuProvider implements BrowserMenuBr
     protected abstract String getTerminalTitle();
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<BrowserMenuLeafProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new BrowserMenuLeafProvider() {
 

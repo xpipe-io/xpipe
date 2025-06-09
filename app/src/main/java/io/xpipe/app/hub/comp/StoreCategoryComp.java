@@ -72,7 +72,8 @@ public class StoreCategoryComp extends SimpleComp {
                     }
 
                     var exp = category.getExpanded().get();
-                    return new LabelGraphic.IconGraphic(exp ? "mdal-keyboard_arrow_down" : "mdi2c-chevron-double-right");
+                    return new LabelGraphic.IconGraphic(
+                            exp ? "mdal-keyboard_arrow_down" : "mdi2c-chevron-double-right");
                 },
                 category.getExpanded(),
                 category.getChildren().getList());

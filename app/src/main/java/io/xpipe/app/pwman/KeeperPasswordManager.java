@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.terminal.TerminalLauncher;
@@ -8,10 +7,11 @@ import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.process.*;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.UUID;
 

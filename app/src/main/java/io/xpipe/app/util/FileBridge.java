@@ -195,7 +195,11 @@ public class FileBridge {
                         return;
                     }
 
-                    var action = ApplyFileEditActionProvider.Action.builder().input(in).output(outSupplier).target(file.getFileName().toString()).build();
+                    var action = ApplyFileEditActionProvider.Action.builder()
+                            .input(in)
+                            .output(outSupplier)
+                            .target(file.getFileName().toString())
+                            .build();
                     action.executeSync();
                 } catch (Exception ex) {
                     ErrorEvent.fromThrowable(ex).handle();

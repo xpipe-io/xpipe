@@ -8,8 +8,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -153,7 +153,10 @@ public class BrowserTransferModel {
                         itemModel.getProgress().setValue(progress);
                     },
                     itemModel.getTransferCancelled());
-            var action = TransferFilesActionProvider.Action.builder().operation(op).target(DataStorage.get().local().ref()).build();
+            var action = TransferFilesActionProvider.Action.builder()
+                    .operation(op)
+                    .target(DataStorage.get().local().ref())
+                    .build();
             action.executeSync();
         } catch (Throwable t) {
             ErrorEvent.fromThrowable(t).handle();

@@ -28,10 +28,11 @@ public class MacOsTerminalType implements ExternalApplicationType.MacApplication
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        LocalShell.getShell().executeSimpleCommand(CommandBuilder.of()
-                .add("open", "-a")
-                .addQuoted("Terminal.app")
-                .addFile(configuration.getScriptFile()));
+        LocalShell.getShell()
+                .executeSimpleCommand(CommandBuilder.of()
+                        .add("open", "-a")
+                        .addQuoted("Terminal.app")
+                        .addFile(configuration.getScriptFile()));
     }
 
     @Override

@@ -3,10 +3,10 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
-import io.xpipe.app.core.AppImages;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
@@ -122,7 +122,8 @@ public class StoreIconChoiceComp extends SimpleComp {
         var data = partitionList(filtered, columns);
         table.getItems().setAll(data);
 
-        var selectMatch = filtered.size() == 1 || filtered.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
+        var selectMatch = filtered.size() == 1
+                || filtered.stream().anyMatch(systemIcon -> systemIcon.getId().equals(filterString));
         // Table updates seem to not always be instant, sometimes the column is not there yet
         if (selectMatch && table.getColumns().size() > 0) {
             table.getSelectionModel().select(0, table.getColumns().getFirst());

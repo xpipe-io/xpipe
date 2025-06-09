@@ -7,10 +7,10 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellScript;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
@@ -61,11 +61,10 @@ public class BitwardenPasswordManager implements PasswordManager {
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
-            var cmd = CommandBuilder.of()
-                    .add("bw", "get", "item")
-                    .addLiteral(key)
-                    .add("--nointeraction");
-            var json = JacksonMapper.getDefault().readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
+            var cmd =
+                    CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
+            var json = JacksonMapper.getDefault()
+                    .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.required("login");
             var user = login.required("username");
             var password = login.required("password");

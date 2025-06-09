@@ -2,8 +2,8 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -41,20 +41,22 @@ public class CloneStoreActionProvider implements LeafStoreActionProvider<DataSto
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2c-content-copy");
-        }
+        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
+    }
 
-        @Override
+    @Override
     public String getId() {
         return "cloneStore";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<DataStore> {
 
         @Override
         public void executeImpl() {
-            var entry = DataStoreEntry.createNew(ref.get().getName() + " (" + AppI18n.get("connectionCopy") + ")", ref.getStore());
+            var entry = DataStoreEntry.createNew(
+                    ref.get().getName() + " (" + AppI18n.get("connectionCopy") + ")", ref.getStore());
             var instant = ref.get().getLastAccess().plus(Duration.ofSeconds(1));
             entry.setLastModified(instant);
             entry.setLastUsed(instant);

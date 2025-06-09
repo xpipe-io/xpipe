@@ -5,6 +5,7 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -22,9 +23,12 @@ public interface BatchStoreActionProvider<T extends DataStore> extends ActionPro
     }
 
     default AbstractAction createBatchAction(List<DataStoreEntryRef<T>> stores) {
-        var individual = stores.stream().map(ref -> {
-            return createAction(ref);
-        }).filter(action -> action != null).toList();
+        var individual = stores.stream()
+                .map(ref -> {
+                    return createAction(ref);
+                })
+                .filter(action -> action != null)
+                .toList();
         return BatchStoreAction.<T>builder().actions(individual).build();
     }
 

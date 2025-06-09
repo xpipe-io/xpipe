@@ -1,11 +1,11 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
-import io.xpipe.app.browser.menu.FileTypeMenuProvider;
-import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
+import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
+import io.xpipe.app.browser.menu.FileTypeMenuProvider;
+import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
@@ -14,9 +14,8 @@ import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
-public class JarMenuProvider extends MultiExecuteMenuProvider implements BrowserApplicationPathMenuProvider, FileTypeMenuProvider {
-
-
+public class JarMenuProvider extends MultiExecuteMenuProvider
+        implements BrowserApplicationPathMenuProvider, FileTypeMenuProvider {
 
     @Override
     public boolean isMutation() {

@@ -61,20 +61,25 @@ public class WingetUpdater extends UpdateHandler {
         }
 
         var pkgId = "xpipe-io.xpipe";
-        var out = LocalShell.getShell().command(CommandBuilder.of().add("winget", "list", "--upgrade-available", "--source=winget", "--id", pkgId))
+        var out = LocalShell.getShell()
+                .command(CommandBuilder.of()
+                        .add("winget", "list", "--upgrade-available", "--source=winget", "--id", pkgId))
                 .readStdoutIfPossible();
         if (out.isEmpty()) {
             return Optional.empty();
         }
 
-        var line = out.get().lines().filter(s -> {
-            var split = s.split("\\s+");
-            if (split.length != 4) {
-                return false;
-            } else {
-                return split[1].equals(pkgId);
-            }
-        }).findFirst();
+        var line = out.get()
+                .lines()
+                .filter(s -> {
+                    var split = s.split("\\s+");
+                    if (split.length != 4) {
+                        return false;
+                    } else {
+                        return split[1].equals(pkgId);
+                    }
+                })
+                .findFirst();
         if (line.isEmpty()) {
             return Optional.empty();
         }
@@ -115,15 +120,17 @@ public class WingetUpdater extends UpdateHandler {
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
-                    var systemWide = Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                    var systemWide = Files.exists(
+                            XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
                     var pkgId = "xpipe-io.xpipe";
                     if (systemWide) {
                         return ShellScript.lines(
-                                "powershell -Command \"Start-Process -Verb runAs -FilePath winget -ArgumentList upgrade, --id, " + pkgId
-                                        + "\"",
+                                "powershell -Command \"Start-Process -Verb runAs -FilePath winget -ArgumentList upgrade, --id, "
+                                        + pkgId + "\"",
                                 AppRestart.getTerminalRestartCommand());
                     } else {
-                        return ShellScript.lines("winget upgrade --id " + pkgId, AppRestart.getTerminalRestartCommand());
+                        return ShellScript.lines(
+                                "winget upgrade --id " + pkgId, AppRestart.getTerminalRestartCommand());
                     }
                 });
             });

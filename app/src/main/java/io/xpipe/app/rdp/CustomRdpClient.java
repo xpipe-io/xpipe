@@ -17,10 +17,14 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
             throw ErrorEvent.expected(new IllegalStateException("No custom RDP command specified"));
         }
 
-        var format = customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+        var format =
+                customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
         ExternalApplicationHelper.startAsync(CommandBuilder.of()
-                .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE",
-                        writeRdpConfigFile(configuration.getTitle(), configuration.getConfig()).toString())));
+                .add(ExternalApplicationHelper.replaceVariableArgument(
+                        format,
+                        "FILE",
+                        writeRdpConfigFile(configuration.getTitle(), configuration.getConfig())
+                                .toString())));
     }
 
     @Override

@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.store.FileKind;
@@ -35,7 +35,8 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<BrowserMenuLeafProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new BrowserMenuLeafProvider() {
                     @Override
@@ -245,7 +246,7 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                     }
                 });
     }
-    
+
     private static String centerEllipsis(String input, int length) {
         if (input == null) {
             return "";

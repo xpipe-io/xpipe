@@ -8,7 +8,6 @@ import io.xpipe.app.util.Check;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
-import io.xpipe.app.util.Validator;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -224,7 +223,9 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 return;
             }
 
-            var failed = checks.stream().filter(check -> check.getValidationResult().getMessages().size() > 0).findFirst();
+            var failed = checks.stream()
+                    .filter(check -> check.getValidationResult().getMessages().size() > 0)
+                    .findFirst();
             if (failed.isPresent()) {
                 var targets = failed.get().getTargets();
                 if (targets.size() > 0) {

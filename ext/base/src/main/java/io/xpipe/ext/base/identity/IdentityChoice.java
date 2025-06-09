@@ -19,9 +19,7 @@ import lombok.Value;
 public class IdentityChoice {
 
     public static OptionsBuilder ssh(
-            Property<DataStoreEntryRef<ShellStore>> host,
-            ObjectProperty<IdentityValue> identity,
-            boolean requireUser) {
+            Property<DataStoreEntryRef<ShellStore>> host, ObjectProperty<IdentityValue> identity, boolean requireUser) {
         var i = new IdentityChoice(
                 host, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
@@ -76,7 +74,10 @@ public class IdentityChoice {
                     .longDescription("base:sshKey")
                     .sub(
                             SshIdentityStrategyHelper.identity(
-                                    host != null ? host : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
+                                    host != null
+                                            ? host
+                                            : new ReadOnlyObjectWrapper<>(
+                                                    DataStorage.get().local().ref()),
                                     identityStrategy,
                                     path -> false,
                                     true,

@@ -1,11 +1,8 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.ActionPickComp;
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.util.ScanDialog;
@@ -44,10 +41,10 @@ public class StoreCreationMenu {
                                 .toList();
                         return 1 == connections.size()
                                 && StoreViewState.get()
-                                .getActiveCategory()
-                                .getValue()
-                                .getRoot()
-                                .equals(allCat);
+                                        .getActiveCategory()
+                                        .getValue()
+                                        .getRoot()
+                                        .equals(allCat);
                     },
                     StoreViewState.get().getAllEntries().getList());
             automatically.disableProperty().bind(disableSearch);
@@ -80,7 +77,8 @@ public class StoreCreationMenu {
 
         var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, null);
         var item = new MenuItem();
-        item.setGraphic(PrettyImageHelper.ofFixedSize("app:shortcut/actionShortcut_icon.svg", 16, 16).createRegion());
+        item.setGraphic(PrettyImageHelper.ofFixedSize("app:shortcut/actionShortcut_icon.svg", 16, 16)
+                .createRegion());
         item.textProperty().bind(AppI18n.observable("actionShortcut"));
         item.setOnAction(event -> {
             Platform.runLater(() -> {

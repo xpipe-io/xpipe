@@ -74,8 +74,9 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                             var delete = new IconButtonComp("mdal-delete_outline", () -> {
                                 selectedList.remove(t);
                             });
-                            var row = editable ? new HorizontalComp(List.of(label, Comp.hspacer(), up, down, delete)).spacing(5) :
-                                    new HorizontalComp(List.of(label,  Comp.hspacer()));
+                            var row = editable
+                                    ? new HorizontalComp(List.of(label, Comp.hspacer(), up, down, delete)).spacing(5)
+                                    : new HorizontalComp(List.of(label, Comp.hspacer()));
                             return row.styleClass("entry");
                         },
                         false)
@@ -99,8 +100,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
             list.add(Comp.vspacer(5).hide(Bindings.isEmpty(selectedList)));
             list.add(add);
         }
-        var vbox = new VerticalComp(list)
-                .apply(struc -> struc.get().setFillWidth(true));
+        var vbox = new VerticalComp(list).apply(struc -> struc.get().setFillWidth(true));
         return vbox.styleClass("data-store-list-choice-comp").createRegion();
     }
 }

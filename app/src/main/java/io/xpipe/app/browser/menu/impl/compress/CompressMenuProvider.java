@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.menu.impl.compress;
 
-import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
@@ -95,7 +95,8 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
     }
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public List<BrowserMenuLeafProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
                 new Windows7ZActionProvider(),
                 new WindowsZipActionProvider(),

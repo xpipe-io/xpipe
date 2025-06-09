@@ -89,5 +89,4 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
         Files.writeString(file, string);
         return file;
     }
-
 }

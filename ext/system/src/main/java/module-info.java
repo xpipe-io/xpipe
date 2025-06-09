@@ -35,5 +35,8 @@ open module io.xpipe.ext.system {
             IncusContainerStoreProvider,
             PodmanContainerStoreProvider,
             PodmanCmdStoreProvider;
-    provides ActionProvider with IncusContainerActionProviderMenu, LxdContainerActionProviderMenu, PodmanContainerActionProviderMenu;
+    provides ActionProvider with
+            IncusContainerActionProviderMenu,
+            LxdContainerActionProviderMenu,
+            PodmanContainerActionProviderMenu;
 }

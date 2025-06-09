@@ -75,9 +75,9 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryReadOnly")
                 .addYesNoToggle(readOnly)
-                                .nameAndDescription("categoryConfirmAllModifications")
-                                .addYesNoToggle(confirm)
-                                .hide(!connectionsCategory)
+                .nameAndDescription("categoryConfirmAllModifications")
+                .addYesNoToggle(confirm)
+                .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
                         StoreChoiceComp.other(

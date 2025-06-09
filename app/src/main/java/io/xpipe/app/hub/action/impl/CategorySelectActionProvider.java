@@ -5,17 +5,19 @@ import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.DataStore;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class CategorySelectActionProvider implements ActionProvider {
 
-        @Override
+    @Override
     public String getId() {
         return "selectCategory";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     public static class Action extends StoreAction<DataStore> {
 
         @Override

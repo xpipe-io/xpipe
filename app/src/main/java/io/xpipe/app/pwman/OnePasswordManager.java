@@ -6,10 +6,10 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 @JsonTypeName("onePassword")
 public class OnePasswordManager implements PasswordManager {
@@ -51,7 +51,9 @@ public class OnePasswordManager implements PasswordManager {
 
             var username = tree.get(0).get("value");
             var password = tree.get(1).get("value");
-            return new CredentialResult(username != null ? username.asText() : null, password != null ? InPlaceSecretValue.of(password.asText()) : null);
+            return new CredentialResult(
+                    username != null ? username.asText() : null,
+                    password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;

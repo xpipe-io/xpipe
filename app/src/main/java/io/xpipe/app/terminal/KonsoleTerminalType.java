@@ -11,7 +11,9 @@ import java.nio.file.Path;
 
 public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
 
-    public KonsoleTerminalType() {super("app.konsole", "konsole", true);}
+    public KonsoleTerminalType() {
+        super("app.konsole", "konsole", true);
+    }
 
     @Override
     public String getWebsite() {
@@ -45,7 +47,10 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
         // Note for later: When debugging konsole launches, it will always open as a child process of
         // IntelliJ/XPipe even though we try to detach it.
         // This is not the case for production where it works as expected
-        return CommandBuilder.of().addIf(configuration.isPreferTabs(), "--new-tab").add("-e").addFile(configuration.getScriptFile());
+        return CommandBuilder.of()
+                .addIf(configuration.isPreferTabs(), "--new-tab")
+                .add("-e")
+                .addFile(configuration.getScriptFile());
     }
 
     private synchronized void configureSingleInstanceMode() {
@@ -64,9 +69,9 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
             var contains = content.contains("UseSingleInstance=true");
             if (!contains) {
                 var index = content.indexOf("[KonsoleWindow]");
-                var augmented = index != -1 ?
-                        content.replace("[KonsoleWindow]", "[KonsoleWindow]\nUseSingleInstance=true") :
-                        content + "\n\n[KonsoleWindow]\nUseSingleInstance=true\n";
+                var augmented = index != -1
+                        ? content.replace("[KonsoleWindow]", "[KonsoleWindow]\nUseSingleInstance=true")
+                        : content + "\n\n[KonsoleWindow]\nUseSingleInstance=true\n";
                 Files.writeString(config, augmented);
             }
 

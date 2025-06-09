@@ -51,7 +51,8 @@ public class SystemIconSourceData {
                 var hasLightModeVariant = Files.exists(lightModeFile);
 
                 if (hasBaseVariant) {
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
                 }
                 if (hasLightModeVariant) {
                     sourceFiles.add(new SystemIconSourceFile(

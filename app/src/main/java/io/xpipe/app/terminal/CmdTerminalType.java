@@ -2,13 +2,11 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.prefs.ExternalEditorType;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
-import java.nio.file.Path;
-
-public class CmdTerminalType implements ExternalApplicationType.PathApplication, ExternalTerminalType, TrackableTerminalType {
+public class CmdTerminalType
+        implements ExternalApplicationType.PathApplication, ExternalTerminalType, TrackableTerminalType {
 
     @Override
     public boolean supportsEscapes() {

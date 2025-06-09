@@ -1,20 +1,15 @@
 package io.xpipe.app.ext;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystem;
+
 import lombok.Getter;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;

@@ -2,11 +2,11 @@ package io.xpipe.ext.base.store;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.OsLogoComp;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
-import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLauncher;
@@ -28,7 +28,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
             var control = store.standaloneControl();
             ScriptStoreSetup.controlWithDefaultScripts(control);
             TerminalPromptManager.configurePromptScript(control);
-            TerminalLauncher.open(replacement.get(), DataStorage.get().getStoreEntryDisplayName(replacement.get()), null, control);
+            TerminalLauncher.open(
+                    replacement.get(), DataStorage.get().getStoreEntryDisplayName(replacement.get()), null, control);
         };
     }
 

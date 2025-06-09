@@ -50,8 +50,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
+
     @NonNull
     private FileSystem fileSystem;
+
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
 
@@ -83,7 +85,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     @Override
     public boolean canImmediatelyClose() {
-        if (fileSystem.getShell().isEmpty() || !fileSystem.getShell().get().getLock().isLocked()) {
+        if (fileSystem.getShell().isEmpty()
+                || !fileSystem.getShell().get().getLock().isLocked()) {
             return true;
         }
 
@@ -97,7 +100,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
                 var originalFs = fs;
-                fs = new WrapperFileSystem(originalFs, () -> originalFs.getShell().get().isRunning(true));
+                fs = new WrapperFileSystem(
+                        originalFs, () -> originalFs.getShell().get().isRunning(true));
             }
             fs.open();
             // Listen to kill after init as the shell might get killed during init for certain reasons
@@ -121,7 +125,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void close() {
         BooleanScope.executeExclusive(busy, () -> {
-
             var current = getCurrentDirectory();
             // We might close this after storage shutdown
             // If this entry does not exist, it's not that bad if we save it anyway
@@ -157,7 +160,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
-
             BooleanScope.executeExclusive(busy, () -> {
                 if (entry.getStore() instanceof ShellStore s) {
                     c.accept(fileSystem.getShell().orElseThrow());
@@ -415,11 +417,13 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void dropLocalFilesIntoAsync(FileEntry entry, List<Path> files) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
                         entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
-                var action = TransferFilesActionProvider.Action.builder().operation(op).target(this.entry.asNeeded()).build();
+                var action = TransferFilesActionProvider.Action.builder()
+                        .operation(op)
+                        .target(this.entry.asNeeded())
+                        .build();
                 action.executeSync();
                 refreshSync();
             });
@@ -434,11 +438,13 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-
                 startIfNeeded();
                 var op = new BrowserFileTransferOperation(
                         target, files, mode, true, progress::setValue, transferCancelled);
-                var action = TransferFilesActionProvider.Action.builder().operation(op).target(entry.asNeeded()).build();
+                var action = TransferFilesActionProvider.Action.builder()
+                        .operation(op)
+                        .target(entry.asNeeded())
+                        .build();
                 action.executeSync();
                 refreshSync();
             });
@@ -448,7 +454,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void runCommandAsync(CommandBuilder command, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-
                 if (getCurrentDirectory() == null) {
                     return;
                 }
@@ -469,7 +474,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
-
                 if (getCurrentDirectory() == null) {
                     return;
                 }
@@ -498,23 +502,21 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void openTerminalAsync(
             String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible) {
         ThreadHelper.runFailableAsync(() -> {
-
             BooleanScope.executeExclusive(busy, () -> {
                 openTerminalSync(name, directory, processControl, dockIfPossible);
             });
         });
     }
 
-    public void openTerminalSync(
-            String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible) throws Exception {
+    public void openTerminalSync(String name, FilePath directory, ProcessControl processControl, boolean dockIfPossible)
+            throws Exception {
         var dock = shouldLaunchSplitTerminal() && dockIfPossible;
         var uuid = UUID.randomUUID();
         terminalRequests.add(uuid);
         if (dock
                 && browserModel instanceof BrowserFullSessionModel fullSessionModel
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
-            fullSessionModel.splitTab(
-                    this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
+            fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
         TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
 

@@ -1,8 +1,5 @@
 package io.xpipe.app.util;
 
-import com.sun.jna.platform.win32.Shell32;
-import com.sun.jna.platform.win32.ShellAPI;
-import com.sun.jna.platform.win32.User32;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -10,6 +7,10 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
+
+import com.sun.jna.platform.win32.Shell32;
+import com.sun.jna.platform.win32.ShellAPI;
+import com.sun.jna.platform.win32.User32;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -133,12 +134,12 @@ public class FileOpener {
                                 @Override
                                 public OutputStream open() throws Exception {
                                     return new ByteArrayOutputStream(s.length()) {
-                                                @Override
-                                                public void close() throws IOException {
-                                                    super.close();
-                                                    output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                                                }
-                                            };
+                                        @Override
+                                        public void close() throws IOException {
+                                            super.close();
+                                            output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                                        }
+                                    };
                                 }
                             };
                         },

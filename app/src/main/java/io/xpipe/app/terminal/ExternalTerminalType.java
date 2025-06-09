@@ -1,10 +1,10 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.process.*;
 
 import lombok.Getter;
@@ -681,8 +681,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Getter
         private final String id;
+
         @Getter
         private final String executable;
+
         private final boolean async;
 
         public SimplePathType(String id, String executable, boolean async) {
@@ -704,5 +706,4 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);
     }
-
 }

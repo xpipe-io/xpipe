@@ -34,7 +34,9 @@ public interface UsernameStrategy {
 
         private final String username;
 
-        public Fixed(String username) {this.username = username;}
+        public Fixed(String username) {
+            this.username = username;
+        }
 
         public String get() {
             return username;
@@ -60,7 +62,9 @@ public interface UsernameStrategy {
 
         private final FailableSupplier<String> username;
 
-        public Dynamic(FailableSupplier<String> username) {this.username = username;}
+        public Dynamic(FailableSupplier<String> username) {
+            this.username = username;
+        }
 
         @Override
         public boolean hasUser() {

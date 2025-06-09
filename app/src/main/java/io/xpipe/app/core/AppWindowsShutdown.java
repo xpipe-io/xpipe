@@ -68,7 +68,8 @@ public class AppWindowsShutdown {
                 if (hookProcStruct.message.longValue() == WM_QUERYENDSESSION) {
                     TrackEvent.info("Received window shutdown callback WM_QUERYENDSESSION");
 
-                    // We don't always receive an exit signal with a queryendsession, e.g. in case an .msi wants to shut it down
+                    // We don't always receive an exit signal with a queryendsession, e.g. in case an .msi wants to shut
+                    // it down
                     // Guarantee that the shutdown is run regardless
                     ThreadHelper.runAsync(() -> {
                         OperationMode.externalShutdown();

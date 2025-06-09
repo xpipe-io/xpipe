@@ -5,11 +5,10 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -23,7 +22,8 @@ public class ComputeDirectorySizesAction implements BrowserMenuLeafProvider {
                 continue;
             }
 
-            var size = model.getFileSystem().getDirectorySize(be.getRawFileEntry().getPath());
+            var size =
+                    model.getFileSystem().getDirectorySize(be.getRawFileEntry().getPath());
             var fileEntry = be.getRawFileEntry();
             fileEntry.setSize("" + size);
             model.getFileList().updateEntry(be, fileEntry);

@@ -1,18 +1,15 @@
 package io.xpipe.app.vnc;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.RemminaHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.util.SecretValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 
 @Builder

@@ -12,8 +12,8 @@ import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
-
 import io.xpipe.core.util.FailableRunnable;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -118,7 +118,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public ObservableValue<String> informationString(StoreSection section) {
         return Bindings.createStringBinding(
                 () -> {
-                    AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
+                    AbstractServiceStore s =
+                            section.getWrapper().getEntry().getStore().asNeeded();
                     var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
                                     && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)

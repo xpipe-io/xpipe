@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class ScriptHelper {
 

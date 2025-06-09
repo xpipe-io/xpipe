@@ -1,13 +1,13 @@
 package io.xpipe.ext.system.incus;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FilePath;
@@ -24,37 +24,38 @@ public class IncusContainerEditRunConfigActionProvider implements LeafStoreActio
         return true;
     }
 
-            @Override
-            public AbstractAction createAction(DataStoreEntryRef<IncusContainerStore> ref) {
-                return Action.builder().ref(ref).build();
-            }
+    @Override
+    public AbstractAction createAction(DataStoreEntryRef<IncusContainerStore> ref) {
+        return Action.builder().ref(ref).build();
+    }
 
-            @Override
-            public Class<IncusContainerStore> getApplicableClass() {
-                return IncusContainerStore.class;
-            }
+    @Override
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
+    }
 
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<IncusContainerStore> store) {
-                return AppI18n.observable("editRunConfiguration");
-            }
+    @Override
+    public ObservableValue<String> getName(DataStoreEntryRef<IncusContainerStore> store) {
+        return AppI18n.observable("editRunConfiguration");
+    }
 
-            @Override
-            public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
-                return new LabelGraphic.IconGraphic("mdi2m-movie-edit");
-            }
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2m-movie-edit");
+    }
 
-            @Override
-            public boolean requiresValidStore() {
-                return false;
-            }
+    @Override
+    public boolean requiresValidStore() {
+        return false;
+    }
 
-        @Override
+    @Override
     public String getId() {
         return "editIncusContainerRunConfig";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<IncusContainerStore> {
 
         @Override

@@ -219,7 +219,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             return OsType.LINUX.makeFileSystemCompatible(name) + ".sh";
         }
 
-        var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect()) ? OsType.WINDOWS : OsType.LINUX;
+        var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect())
+                ? OsType.WINDOWS
+                : OsType.LINUX;
         return os.makeFileSystemCompatible(name) + "." + st.getMinimumDialect().getScriptFileEnding();
     }
 

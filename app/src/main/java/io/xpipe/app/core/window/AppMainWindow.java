@@ -3,12 +3,12 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
-import io.xpipe.app.core.AppImages;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
@@ -168,7 +168,8 @@ public class AppMainWindow {
     }
 
     public void focus() {
-        if (AppPrefs.get() != null && !AppPrefs.get().focusWindowOnNotifications().get()) {
+        if (AppPrefs.get() != null
+                && !AppPrefs.get().focusWindowOnNotifications().get()) {
             return;
         }
 

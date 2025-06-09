@@ -4,15 +4,15 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ShellTemp;
-
 import io.xpipe.core.process.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -130,7 +130,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         engine.getLoadWorker()
                 .stateProperty()
                 .addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
-                    String toBeopen = engine.getLoadWorker().getMessage().strip().replace("Loading ", "");
+                    String toBeopen =
+                            engine.getLoadWorker().getMessage().strip().replace("Loading ", "");
                     if (toBeopen.contains("http://") || toBeopen.contains("https://") || toBeopen.contains("mailto:")) {
                         engine.getLoadWorker().cancel();
                         Hyperlinks.open(toBeopen);

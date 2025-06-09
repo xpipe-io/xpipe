@@ -1,11 +1,11 @@
 package io.xpipe.app.browser.menu.impl.compress;
 
-import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
@@ -43,11 +43,15 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
         for (BrowserEntry entry : entries) {
-            var command = CommandBuilder.of().add("unzip", "-o").addFile(entry.getRawFileEntry().getPath());
+            var command = CommandBuilder.of()
+                    .add("unzip", "-o")
+                    .addFile(entry.getRawFileEntry().getPath());
             if (toDirectory) {
                 command.add("-d").addFile(getTarget(entry.getRawFileEntry().getPath()));
             }
-            try (var cc = sc.command(command).withWorkingDirectory(model.getCurrentDirectory().getPath()).start()) {
+            try (var cc = sc.command(command)
+                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
+                    .start()) {
                 cc.discardOrThrow();
             }
         }

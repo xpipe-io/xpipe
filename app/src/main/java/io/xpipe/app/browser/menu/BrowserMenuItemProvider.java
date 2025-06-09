@@ -3,6 +3,7 @@ package io.xpipe.app.browser.menu;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
@@ -23,9 +24,9 @@ public interface BrowserMenuItemProvider extends ActionProvider {
     default List<BrowserEntry> resolveFilesIfNeeded(List<BrowserEntry> selected) {
         return automaticallyResolveLinks()
                 ? selected.stream()
-                .map(browserEntry ->
-                        new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
-                .toList()
+                        .map(browserEntry ->
+                                new BrowserEntry(browserEntry.getRawFileEntry().resolved(), browserEntry.getModel()))
+                        .toList()
                 : selected;
     }
 

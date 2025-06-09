@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
 
 public class SystemCategory extends AppPrefsCategory {
 

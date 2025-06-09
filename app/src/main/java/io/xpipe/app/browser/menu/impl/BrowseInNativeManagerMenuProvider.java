@@ -2,11 +2,12 @@ package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.BrowseInNativeManagerActionProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
+
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

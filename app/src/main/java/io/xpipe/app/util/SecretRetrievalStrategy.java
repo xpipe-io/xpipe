@@ -15,8 +15,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.nio.CharBuffer;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -164,7 +162,6 @@ public interface SecretRetrievalStrategy {
                                             + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
                                             + " you will have to change the command and/or password key."));
                         }
-
                     });
                     return new SecretQueryResult(r, SecretQueryState.NORMAL);
                 }

@@ -1,9 +1,9 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandControl;
@@ -22,42 +22,42 @@ import java.io.StringReader;
 
 public class SampleStoreActionProvider implements LeafStoreActionProvider<ShellStore> {
 
-            @Override
-            public Action createAction(DataStoreEntryRef<ShellStore> ref) {
-                return Action.builder().ref(ref).build();
-            }
+    @Override
+    public Action createAction(DataStoreEntryRef<ShellStore> ref) {
+        return Action.builder().ref(ref).build();
+    }
 
-            @Override
-            public Class<ShellStore> getApplicableClass() {
-                // For which general type of connection store to make this action available.
-                return ShellStore.class;
-            }
+    @Override
+    public Class<ShellStore> getApplicableClass() {
+        // For which general type of connection store to make this action available.
+        return ShellStore.class;
+    }
 
-            @Override
-            public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-                // Allows you to individually check whether this action should be available for the specific store.
-                return true;
-            }
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+        // Allows you to individually check whether this action should be available for the specific store.
+        return true;
+    }
 
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-                // The displayed name of the action, allows you to use translation keys.
-                return AppI18n.observable("installConnector");
-            }
+    @Override
+    public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+        // The displayed name of the action, allows you to use translation keys.
+        return AppI18n.observable("installConnector");
+    }
 
-            @Override
-            public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-                // The ikonli icon of the button.
-                return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
-            }
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+        // The ikonli icon of the button.
+        return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
+    }
 
-
-        @Override
+    @Override
     public String getId() {
         return "sample";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<ShellStore> {
 
         @Override

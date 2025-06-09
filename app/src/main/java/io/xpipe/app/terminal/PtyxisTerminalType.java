@@ -34,6 +34,7 @@ public class PtyxisTerminalType implements ExternalApplicationType.PathApplicati
                 .add(configuration.getDialectLaunchCommand());
         launch(toExecute);
     }
+
     @Override
     public String getExecutable() {
         return "ptyxis";

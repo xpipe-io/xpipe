@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.LeafStoreActionProvider;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LabelGraphic;
@@ -15,32 +15,33 @@ import lombok.extern.jackson.Jacksonized;
 
 public class PodmanContainerLogsActionProvider implements LeafStoreActionProvider<PodmanContainerStore> {
 
-            @Override
-            public AbstractAction createAction(DataStoreEntryRef<PodmanContainerStore> ref) {
-                return Action.builder().ref(ref).build();
-            }
+    @Override
+    public AbstractAction createAction(DataStoreEntryRef<PodmanContainerStore> ref) {
+        return Action.builder().ref(ref).build();
+    }
 
-            @Override
-            public Class<PodmanContainerStore> getApplicableClass() {
-                return PodmanContainerStore.class;
-            }
+    @Override
+    public Class<PodmanContainerStore> getApplicableClass() {
+        return PodmanContainerStore.class;
+    }
 
-            @Override
-            public ObservableValue<String> getName(DataStoreEntryRef<PodmanContainerStore> store) {
-                return AppI18n.observable("containerLogs");
-            }
+    @Override
+    public ObservableValue<String> getName(DataStoreEntryRef<PodmanContainerStore> store) {
+        return AppI18n.observable("containerLogs");
+    }
 
-            @Override
-            public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
-                return new LabelGraphic.IconGraphic("mdi2v-view-list-outline");
-            }
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2v-view-list-outline");
+    }
 
-        @Override
+    @Override
     public String getId() {
         return "openPodmanContainerLogs";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     static class Action extends StoreAction<PodmanContainerStore> {
 
         @Override

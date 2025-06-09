@@ -1,18 +1,15 @@
 package io.xpipe.app.action;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vladsch.flexmark.ast.Link;
-import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.UuidHelper;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +49,8 @@ public class ActionUrls {
         }
 
         var json = sa.toNode();
-        var parsed = JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
+        var parsed =
+                JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
 
         Map<String, List<String>> requestParams = new LinkedHashMap<>();
         for (Map.Entry<String, JsonNode> e : parsed.entrySet()) {
@@ -60,11 +58,12 @@ public class ActionUrls {
             requestParams.put(e.getKey(), value);
         }
 
-        String encodedURL = requestParams.keySet().stream().map(key -> {
-            var vals = requestParams.get(key);
-            return vals.stream().map(s -> key + "=" + s).collect(Collectors.joining("&"));
-        }).collect(
-                Collectors.joining("&", "xpipe://action?", ""));
+        String encodedURL = requestParams.keySet().stream()
+                .map(key -> {
+                    var vals = requestParams.get(key);
+                    return vals.stream().map(s -> key + "=" + s).collect(Collectors.joining("&"));
+                })
+                .collect(Collectors.joining("&", "xpipe://action?", ""));
         return encodedURL;
     }
 
@@ -76,7 +75,9 @@ public class ActionUrls {
             return Optional.empty();
         }
 
-        var provider = ActionProvider.ALL.stream().filter(actionProvider -> id.getFirst().equals(actionProvider.getId())).findFirst();
+        var provider = ActionProvider.ALL.stream()
+                .filter(actionProvider -> id.getFirst().equals(actionProvider.getId()))
+                .findFirst();
         if (provider.isEmpty()) {
             return Optional.empty();
         }
@@ -101,20 +102,21 @@ public class ActionUrls {
                 throw new IllegalArgumentException("Invalid store id: " + store);
             }
 
-            var entry = DataStorage.get()
-                    .getStoreEntryIfPresent(uuid.get());
+            var entry = DataStorage.get().getStoreEntryIfPresent(uuid.get());
             if (entry.isEmpty()) {
                 throw new IllegalArgumentException("Store not found for id: " + store);
             }
 
             if (!entry.get().getValidity().isUsable()) {
-                throw new IllegalArgumentException("Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
+                throw new IllegalArgumentException(
+                        "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
             }
         }
 
-        var fixedMap = query.entrySet().stream().collect(Collectors.toMap(
-                entry -> entry.getKey(),
-                entry -> entry.getValue().size() == 1 ? entry.getValue().getFirst() : entry.getValue()));
+        var fixedMap = query.entrySet().stream()
+                .collect(Collectors.toMap(
+                        entry -> entry.getKey(),
+                        entry -> entry.getValue().size() == 1 ? entry.getValue().getFirst() : entry.getValue()));
         var json = (ObjectNode) JacksonMapper.getDefault().valueToTree(fixedMap);
         var instance = ActionJacksonMapper.parse(json);
         return Optional.ofNullable(instance);
@@ -127,7 +129,10 @@ public class ActionUrls {
 
         return Arrays.stream(query.split("&"))
                 .map(ActionUrls::splitQueryParameter)
-                .collect(Collectors.groupingBy(AbstractMap.SimpleImmutableEntry::getKey, LinkedHashMap::new, Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
+                .collect(Collectors.groupingBy(
+                        AbstractMap.SimpleImmutableEntry::getKey,
+                        LinkedHashMap::new,
+                        Collectors.mapping(Map.Entry::getValue, Collectors.toList())));
     }
 
     private static AbstractMap.SimpleImmutableEntry<String, String> splitQueryParameter(String it) {
@@ -136,7 +141,6 @@ public class ActionUrls {
         final String value = idx > 0 && it.length() > idx + 1 ? it.substring(idx + 1) : null;
         return new AbstractMap.SimpleImmutableEntry<>(
                 URLDecoder.decode(key, StandardCharsets.UTF_8),
-                value != null ? URLDecoder.decode(value, StandardCharsets.UTF_8) : null
-        );
+                value != null ? URLDecoder.decode(value, StandardCharsets.UTF_8) : null);
     }
 }

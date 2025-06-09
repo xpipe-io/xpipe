@@ -5,11 +5,12 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsCategory;
-import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
+
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 public class VncCategory extends AppPrefsCategory {
@@ -43,10 +44,7 @@ public class VncCategory extends AppPrefsCategory {
         var choice = choiceBuilder.build().buildComp();
         return new OptionsBuilder()
                 .addTitle("vncClient")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.vncClient)
-                        .addComp(choice)
-                )
+                .sub(new OptionsBuilder().pref(prefs.vncClient).addComp(choice))
                 .buildComp();
     }
 }

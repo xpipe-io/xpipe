@@ -1,8 +1,9 @@
 package io.xpipe.app.vnc;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.core.process.CommandBuilder;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -85,7 +86,6 @@ public abstract class RealVncClient implements ExternalVncClient {
             launch(builder);
         }
     }
-
 
     @Builder
     @Jacksonized

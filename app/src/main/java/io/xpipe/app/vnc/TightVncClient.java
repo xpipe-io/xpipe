@@ -1,9 +1,10 @@
 package io.xpipe.app.vnc;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -36,7 +37,8 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
 
     @Override
     public void launch(VncLaunchConfig configuration) throws Exception {
-        var builder = CommandBuilder.of().addFile(findExecutable())
+        var builder = CommandBuilder.of()
+                .addFile(findExecutable())
                 .addQuotedKeyValue("-host", configuration.getHost())
                 .addQuotedKeyValue("-port", "" + configuration.getPort());
         var pw = configuration.retrievePassword();

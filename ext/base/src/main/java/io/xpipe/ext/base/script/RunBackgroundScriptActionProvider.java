@@ -1,21 +1,22 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-
 public class RunBackgroundScriptActionProvider implements ActionProvider {
 
-        @Override
+    @Override
     public String getId() {
         return "runBackgroundScript";
     }
-@Jacksonized
-@SuperBuilder
+
+    @Jacksonized
+    @SuperBuilder
     public static class Action extends StoreAction<ShellStore> {
 
         private final DataStoreEntryRef<SimpleScriptStore> scriptStore;

@@ -2,8 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.PlatformThread;

@@ -5,15 +5,15 @@ import io.xpipe.app.vnc.VncLaunchConfig;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.SecretValue;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 
 public class RemminaHelper {
 
@@ -23,7 +23,8 @@ public class RemminaHelper {
         }
 
         try (var sc = LocalShell.getShell().start()) {
-            var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref").readStdoutIfPossible();
+            var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
+                    .readStdoutIfPossible();
             if (prefSecretBase64.isEmpty()) {
                 return Optional.empty();
             }
@@ -47,7 +48,8 @@ public class RemminaHelper {
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
         var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
-        var string = """
+        var string =
+                """
                      [remmina]
                      protocol=RDP
                      name=%s
@@ -55,8 +57,20 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      cert_ignore=1
-                     """.formatted(configuration.getTitle(), configuration.getConfig().get("username").orElseThrow().getValue(),
-                configuration.getConfig().get("full address").orElseThrow().getValue(), password != null ? password : "");
+                     """
+                        .formatted(
+                                configuration.getTitle(),
+                                configuration
+                                        .getConfig()
+                                        .get("username")
+                                        .orElseThrow()
+                                        .getValue(),
+                                configuration
+                                        .getConfig()
+                                        .get("full address")
+                                        .orElseThrow()
+                                        .getValue(),
+                                password != null ? password : "");
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
@@ -65,7 +79,8 @@ public class RemminaHelper {
     public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
         var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
-        var string = """
+        var string =
+                """
                      [remmina]
                      protocol=VNC
                      name=%s
@@ -73,8 +88,12 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      colordepth=32
-                     """.formatted(configuration.getTitle(), configuration.retrieveUsername().orElse(""),
-                configuration.getHost() + ":" + configuration.getPort(), password != null ? password : "");
+                     """
+                        .formatted(
+                                configuration.getTitle(),
+                                configuration.retrieveUsername().orElse(""),
+                                configuration.getHost() + ":" + configuration.getPort(),
+                                password != null ? password : "");
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

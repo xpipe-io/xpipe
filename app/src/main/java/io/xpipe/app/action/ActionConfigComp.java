@@ -12,6 +12,7 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Region;
@@ -20,7 +21,9 @@ public class ActionConfigComp extends SimpleComp {
 
     private final Property<AbstractAction> action;
 
-    public ActionConfigComp(Property<AbstractAction> action) {this.action = action;}
+    public ActionConfigComp(Property<AbstractAction> action) {
+        this.action = action;
+    }
 
     @Override
     protected Region createSimple() {
@@ -29,8 +32,7 @@ public class ActionConfigComp extends SimpleComp {
                 .addComp(createChooser())
                 .nameAndDescription("actionStores")
                 .addComp(createMultiChooser());
-        options.nameAndDescription("actionConfiguration")
-                .addComp(createTextArea());
+        options.nameAndDescription("actionConfiguration").addComp(createTextArea());
         return options.build();
     }
 
@@ -53,7 +55,8 @@ public class ActionConfigComp extends SimpleComp {
             }
         });
 
-        var choice = new StoreListChoiceComp<>(listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+        var choice = new StoreListChoiceComp<>(
+                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
         choice.hide(listProp.emptyProperty());
         return choice;
     }
@@ -70,7 +73,12 @@ public class ActionConfigComp extends SimpleComp {
             }
         });
 
-        var choice = new StoreChoiceComp<>(StoreChoiceComp.Mode.OTHER, null, singleProp, DataStore.class, ref -> true,
+        var choice = new StoreChoiceComp<>(
+                StoreChoiceComp.Mode.OTHER,
+                null,
+                singleProp,
+                DataStore.class,
+                ref -> true,
                 StoreViewState.get().getAllConnectionsCategory());
         choice.hide(singleProp.isNull());
         return choice;

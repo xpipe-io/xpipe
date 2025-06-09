@@ -44,7 +44,8 @@ public class DataStoreCategoryConfig {
                 readOnly = config.readOnly;
             }
         }
-        return new DataStoreCategoryConfig(color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore);
+        return new DataStoreCategoryConfig(
+                color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore);
     }
 
     @With

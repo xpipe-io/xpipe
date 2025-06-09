@@ -6,6 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -36,6 +37,7 @@ public class ChownActionProvider implements BrowserActionProvider {
 
         @NonNull
         private final String owner;
+
         private final boolean recursive;
 
         @Override

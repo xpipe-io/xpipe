@@ -6,6 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ProcessOutputException;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -41,9 +42,11 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
             AtomicReference<String> out = new AtomicReference<>();
             AtomicReference<String> err = new AtomicReference<>();
             long exitCode;
-            try (var command = model.getFileSystem().getShell().orElseThrow().command(cmd)
-                    .withWorkingDirectory(
-                            model.getCurrentDirectory().getPath())
+            try (var command = model.getFileSystem()
+                    .getShell()
+                    .orElseThrow()
+                    .command(cmd)
+                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
                     .start()) {
                 var r = command.readStdoutAndStderr();
                 out.set(r[0]);
@@ -53,8 +56,7 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
 
             // Only throw actual error output
             if (exitCode != 0) {
-                throw ErrorEvent.expected(
-                        ProcessOutputException.of(exitCode, out.get(), err.get()));
+                throw ErrorEvent.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
             }
         }
     }

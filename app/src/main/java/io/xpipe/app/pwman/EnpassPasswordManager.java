@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEvent;
@@ -11,10 +10,13 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
+
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.TextField;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -47,8 +49,7 @@ public class EnpassPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<EnpassPasswordManager> p) {
         var prop = new SimpleObjectProperty<>(p.getValue().getVaultPath());
         var comp = new ContextualFileReferenceChoiceComp(
-                new SimpleObjectProperty<>(DataStorage.get().local().ref()),
-                prop,null, List.of());
+                new SimpleObjectProperty<>(DataStorage.get().local().ref()), prop, null, List.of());
         comp.apply(struc -> {
             var text = (TextField) struc.get().getChildren().getFirst();
             text.requestFocus();
@@ -67,7 +68,9 @@ public class EnpassPasswordManager implements PasswordManager {
                 .addComp(comp, prop)
                 .bind(
                         () -> {
-                            return EnpassPasswordManager.builder().vaultPath(prop.getValue()).build();
+                            return EnpassPasswordManager.builder()
+                                    .vaultPath(prop.getValue())
+                                    .build();
                         },
                         p);
     }
@@ -97,14 +100,25 @@ public class EnpassPasswordManager implements PasswordManager {
             vaultDir = vaultDir.getParent();
         }
 
-        var pass = SecretManager.retrieve(new SecretRetrievalStrategy.Prompt(), "Enter Enpass vault master password", MASTER_PASSWORD_UUID, 0, true);
+        var pass = SecretManager.retrieve(
+                new SecretRetrievalStrategy.Prompt(),
+                "Enter Enpass vault master password",
+                MASTER_PASSWORD_UUID,
+                0,
+                true);
         if (pass == null) {
             return null;
         }
 
         try {
             var sc = getOrStartShell();
-            try (var command = sc.command(CommandBuilder.of().add("enpass-cli", "-json", "-vault").addFile(vaultDir).add("show").addQuoted(key)).sensitive().start()) {
+            try (var command = sc.command(CommandBuilder.of()
+                            .add("enpass-cli", "-json", "-vault")
+                            .addFile(vaultDir)
+                            .add("show")
+                            .addQuoted(key))
+                    .sensitive()
+                    .start()) {
                 ThreadHelper.sleep(50);
                 sc.writeLine(pass.getSecretValue());
                 var out = command.readStdoutIfPossible();
@@ -112,13 +126,15 @@ public class EnpassPasswordManager implements PasswordManager {
                     return null;
                 }
 
-                var json = JacksonMapper.getDefault().readTree(out.get().lines().skip(1).collect(Collectors.joining("\n")));
+                var json = JacksonMapper.getDefault()
+                        .readTree(out.get().lines().skip(1).collect(Collectors.joining("\n")));
                 if (!json.isArray()) {
                     return null;
                 }
 
                 if (json.size() == 0) {
-                    throw ErrorEvent.expected(new IllegalArgumentException("No items were found matching the title " + key));
+                    throw ErrorEvent.expected(
+                            new IllegalArgumentException("No items were found matching the title " + key));
                 }
 
                 if (json.size() > 1) {
@@ -129,12 +145,14 @@ public class EnpassPasswordManager implements PasswordManager {
                             matches.add(title.asText());
                         }
                     });
-                    throw ErrorEvent.expected(new IllegalArgumentException("Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
+                    throw ErrorEvent.expected(new IllegalArgumentException(
+                            "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
                 var login = json.get(0).required("login").asText();
                 var secret = json.get(0).required("password").asText();
-                return new CredentialResult(!login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
+                return new CredentialResult(
+                        !login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
             }
         } catch (Exception ex) {
             ErrorEvent.fromThrowable(ex).handle();

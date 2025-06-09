@@ -4,7 +4,6 @@ import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
@@ -33,14 +32,22 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public FileSystem createTransferOptimizedFileSystem() throws Exception {
         if (shellControl.getShellDialect() == ShellDialects.CMD) {
-            var pwsh = shellControl.view().findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName()).isPresent();
+            var pwsh = shellControl
+                    .view()
+                    .findProgram(ShellDialects.POWERSHELL_CORE.getExecutableName())
+                    .isPresent();
             if (pwsh) {
-                return new ConnectionFileSystem(shellControl.subShell(ShellDialects.POWERSHELL_CORE).start());
+                return new ConnectionFileSystem(
+                        shellControl.subShell(ShellDialects.POWERSHELL_CORE).start());
             }
 
-            var powershell = shellControl.view().findProgram(ShellDialects.POWERSHELL.getExecutableName()).isPresent();
+            var powershell = shellControl
+                    .view()
+                    .findProgram(ShellDialects.POWERSHELL.getExecutableName())
+                    .isPresent();
             if (powershell) {
-                return new ConnectionFileSystem(shellControl.subShell(ShellDialects.POWERSHELL).start());
+                return new ConnectionFileSystem(
+                        shellControl.subShell(ShellDialects.POWERSHELL).start());
             }
         }
 
@@ -57,9 +64,7 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public long getDirectorySize(FilePath file) throws Exception {
-        return shellControl
-                .getShellDialect()
-                .queryDirectorySize(shellControl, file.toString());
+        return shellControl.getShellDialect().queryDirectorySize(shellControl, file.toString());
     }
 
     @Override

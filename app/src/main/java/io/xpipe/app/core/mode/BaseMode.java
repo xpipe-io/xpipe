@@ -1,23 +1,23 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserLocalFileSystem;
 import io.xpipe.app.browser.icon.BrowserIconManager;
-import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;

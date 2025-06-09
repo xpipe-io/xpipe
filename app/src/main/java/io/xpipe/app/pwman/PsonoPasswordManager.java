@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -11,9 +10,12 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -36,16 +38,24 @@ public class PsonoPasswordManager implements PasswordManager {
         var serverUrl = new SimpleStringProperty(p.getValue().getServerUrl());
         return new OptionsBuilder()
                 .nameAndDescription("psonoServerUrl")
-                .addComp(new TextFieldComp(serverUrl).apply(struc -> {
-                    struc.get().setPromptText("https://www.psono.pw/server");
-                }).maxWidth(600), serverUrl)
+                .addComp(
+                        new TextFieldComp(serverUrl)
+                                .apply(struc -> {
+                                    struc.get().setPromptText("https://www.psono.pw/server");
+                                })
+                                .maxWidth(600),
+                        serverUrl)
                 .nameAndDescription("psonoApiKey")
                 .addComp(new SecretFieldComp(apiKey, false).maxWidth(600), apiKey)
                 .nameAndDescription("psonoApiSecretKey")
                 .addComp(new SecretFieldComp(apiSecretKey, false).maxWidth(600), apiSecretKey)
                 .bind(
                         () -> {
-                            return PsonoPasswordManager.builder().apiKey(apiKey.get()).apiSecretKey(apiSecretKey.get()).serverUrl(serverUrl.get()).build();
+                            return PsonoPasswordManager.builder()
+                                    .apiKey(apiKey.get())
+                                    .apiSecretKey(apiSecretKey.get())
+                                    .serverUrl(serverUrl.get())
+                                    .build();
                         },
                         p);
     }
@@ -74,7 +84,9 @@ public class PsonoPasswordManager implements PasswordManager {
 
         try {
             getOrStartShell().view().setSensitiveEnvironmentVariable("PSONO_CI_API_KEY_ID", apiKey.getSecretValue());
-            getOrStartShell().view().setSensitiveEnvironmentVariable("PSONO_CI_API_SECRET_KEY_HEX", apiSecretKey.getSecretValue());
+            getOrStartShell()
+                    .view()
+                    .setSensitiveEnvironmentVariable("PSONO_CI_API_SECRET_KEY_HEX", apiSecretKey.getSecretValue());
             var cmd = getOrStartShell()
                     .command(CommandBuilder.of()
                             .add("psonoci")
@@ -87,7 +99,9 @@ public class PsonoPasswordManager implements PasswordManager {
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username");
             var password = r.required("password");
-            return new CredentialResult(username.isNull() ? null : username.asText(), password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
+            return new CredentialResult(
+                    username.isNull() ? null : username.asText(),
+                    password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
         } catch (Exception e) {
             ErrorEvent.fromThrowable(e).handle();
             return null;

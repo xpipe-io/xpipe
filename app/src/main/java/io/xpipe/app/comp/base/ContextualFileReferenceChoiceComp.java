@@ -6,9 +6,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -74,7 +72,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
                     BrowserFileChooserSessionComp.openSingleFile(
                             () -> replacement,
-                            () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
+                            () -> filePath.getValue() != null
+                                    ? filePath.getValue().getParent()
+                                    : null,
                             fileStore -> {
                                 if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());
@@ -105,7 +105,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             try {
                 var source = currentPath.asLocalPath();
                 if (!Files.exists(source)) {
-                    ErrorEvent.fromMessage("Unable to resolve local file path " + source).expected().handle();
+                    ErrorEvent.fromMessage("Unable to resolve local file path " + source)
+                            .expected()
+                            .handle();
                     return;
                 }
 
@@ -116,15 +118,13 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
 
                 var handler = DataStorageSyncHandler.getInstance();
-                var syncedTarget = handler.addDataFile(
-                        source, target, sync.getPerUser().test(source));
+                var syncedTarget =
+                        handler.addDataFile(source, target, sync.getPerUser().test(source));
 
                 var pubSource = Path.of(source + ".pub");
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    handler
-                            .addDataFile(
-                                    pubSource, pubTarget, sync.getPerUser().test(pubSource));
+                    handler.addDataFile(pubSource, pubTarget, sync.getPerUser().test(pubSource));
                 }
 
                 Platform.runLater(() -> {

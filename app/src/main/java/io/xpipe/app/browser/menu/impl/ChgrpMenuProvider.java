@@ -1,17 +1,17 @@
 package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.action.impl.ChgrpActionProvider;
-import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
-import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
+import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
-
 import io.xpipe.core.store.FileKind;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -46,8 +46,10 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public List<BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (entries.stream().anyMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY)) {
+    public List<BrowserMenuItemProvider> getBranchingActions(
+            BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (entries.stream()
+                .anyMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY)) {
             return List.of(new FlatProvider(), new RecursiveProvider());
         } else {
             return getLeafActions(model, false);
@@ -67,7 +69,8 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public List<BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public List<BrowserMenuItemProvider> getBranchingActions(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return getLeafActions(model, false);
         }
     }
@@ -85,7 +88,8 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public List<BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public List<BrowserMenuItemProvider> getBranchingActions(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return getLeafActions(model, true);
         }
     }
@@ -134,7 +138,9 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
 
         private final boolean recursive;
 
-        private CustomProvider(boolean recursive) {this.recursive = recursive;}
+        private CustomProvider(boolean recursive) {
+            this.recursive = recursive;
+        }
 
         @Override
         public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -144,11 +150,14 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
             var group = new SimpleStringProperty();
-            var modal = ModalOverlay.of("groupName", Comp.of(() -> {
-                var creationName = new TextField();
-                creationName.textProperty().bindBidirectional(group);
-                return creationName;
-            }).prefWidth(350));
+            var modal = ModalOverlay.of(
+                    "groupName",
+                    Comp.of(() -> {
+                                var creationName = new TextField();
+                                creationName.textProperty().bindBidirectional(group);
+                                return creationName;
+                            })
+                            .prefWidth(350));
             modal.withDefaultButtons(() -> {
                 if (group.getValue() == null) {
                     return;

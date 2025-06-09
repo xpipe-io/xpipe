@@ -69,17 +69,17 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
                 launch(CommandBuilder.of()
-                                .add("run")
-                                .addFile(configuration.getScriptFile())
-                                .discardAllOutput());
+                        .add("run")
+                        .addFile(configuration.getScriptFile())
+                        .discardAllOutput());
             } else {
                 // This is probably not going to work as it does not launch a bat file
                 launch(CommandBuilder.of()
-                                .add("run")
-                                .add(sc -> configuration
-                                        .getDialectLaunchCommand()
-                                        .buildFull(sc)
-                                        .replaceFirst("\\.exe", ""))
+                        .add("run")
+                        .add(sc -> configuration
+                                .getDialectLaunchCommand()
+                                .buildFull(sc)
+                                .replaceFirst("\\.exe", ""))
                         .discardAllOutput());
             }
         }

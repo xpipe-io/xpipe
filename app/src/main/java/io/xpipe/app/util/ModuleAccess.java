@@ -1,8 +1,5 @@
 package io.xpipe.app.util;
 
-import lombok.SneakyThrows;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ModuleAccess {

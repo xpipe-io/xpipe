@@ -3,7 +3,6 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.FilePath;
@@ -86,7 +85,8 @@ public class SshIdentityStateManager {
     public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
         var found = sc.view().findProgram("ssh-add");
         if (found.isEmpty()) {
-            throw ErrorEvent.expected(new IllegalStateException("SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
+            throw ErrorEvent.expected(new IllegalStateException(
+                    "SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
         }
 
         try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock))
@@ -104,7 +104,9 @@ public class SshIdentityStateManager {
             }
         } catch (ProcessOutputException ex) {
             if (sc.getOsType() == OsType.WINDOWS && ex.getOutput().contains("No such file or directory")) {
-                throw ProcessOutputException.withPrefix("Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?", ex);
+                throw ProcessOutputException.withPrefix(
+                        "Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?",
+                        ex);
             } else {
                 throw ex;
             }

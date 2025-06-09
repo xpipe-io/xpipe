@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.core.process.CommandBuilder;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -37,10 +38,10 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
                 cmd.addFile(entry.getRawFileEntry().getPath());
             }
 
-            model.openTerminalSync(title,
+            model.openTerminalSync(
+                    title,
                     model.getCurrentDirectory() != null
-                            ? model.getCurrentDirectory()
-                            .getPath()
+                            ? model.getCurrentDirectory().getPath()
                             : null,
                     model.getFileSystem().getShell().orElseThrow().command(cmd),
                     true);

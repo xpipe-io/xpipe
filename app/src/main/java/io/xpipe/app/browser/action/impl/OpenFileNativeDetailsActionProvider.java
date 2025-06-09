@@ -9,6 +9,7 @@ import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FileKind;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -32,13 +33,14 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // If we execute this on a drive root there will be no parent, so we have to check for that!
                         var content = parent != null
                                 ? String.format(
-                                "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
-                                parent, localFile.getFileName())
+                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').ParseName('%s').InvokeVerb('Properties')",
+                                        parent, localFile.getFileName())
                                 : String.format(
-                                "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
-                                localFile);
+                                        "$shell = New-Object -ComObject Shell.Application; $shell.NameSpace('%s').Self.InvokeVerb('Properties')",
+                                        localFile);
 
-                        // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window as
+                        // The Windows shell invoke verb functionality behaves kinda weirdly and only shows the window
+                        // as
                         // long as the parent process is running.
                         // So let's keep one process running
                         LocalShell.getLocalPowershell()

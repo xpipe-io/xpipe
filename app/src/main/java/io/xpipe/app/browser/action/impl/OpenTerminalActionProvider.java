@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -24,14 +25,15 @@ public class OpenTerminalActionProvider implements BrowserActionProvider {
             var entries = getEntries();
             var dirs = entries.size() > 0
                     ? entries.stream()
-                    .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
-                    .toList()
+                            .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
+                            .toList()
                     : model.getCurrentDirectory() != null
-                    ? List.of(model.getCurrentDirectory().getPath())
-                    : Collections.singletonList((FilePath) null);
+                            ? List.of(model.getCurrentDirectory().getPath())
+                            : Collections.singletonList((FilePath) null);
             for (var dir : dirs) {
                 var name = (dir != null ? dir + " - " : "") + model.getName().getValue();
-                model.openTerminalSync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
+                model.openTerminalSync(
+                        name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
             }
         }
     }

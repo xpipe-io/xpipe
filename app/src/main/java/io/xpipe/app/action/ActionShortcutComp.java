@@ -7,9 +7,11 @@ import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -19,19 +21,18 @@ public class ActionShortcutComp extends SimpleComp {
     private final Property<AbstractAction> action;
     private final Runnable onCreateMacro;
 
-    public ActionShortcutComp(Property<AbstractAction> action, Runnable onCreateMacro) {this.action = action;
+    public ActionShortcutComp(Property<AbstractAction> action, Runnable onCreateMacro) {
+        this.action = action;
         this.onCreateMacro = onCreateMacro;
     }
 
     @Override
     protected Region createSimple() {
         var options = new OptionsBuilder();
-        options.nameAndDescription("actionDesktopShortcut")
-                .addComp(createDesktopComp());
-        options.nameAndDescription("actionUrlShortcut")
-                .addComp(createUrlComp());
-//        options.nameAndDescription("actionMacro")
-//                .addComp(createMacroComp());
+        options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
+        options.nameAndDescription("actionUrlShortcut").addComp(createUrlComp());
+        //        options.nameAndDescription("actionMacro")
+        //                .addComp(createMacroComp());
         return options.build();
     }
 
@@ -45,8 +46,8 @@ public class ActionShortcutComp extends SimpleComp {
         });
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            ClipboardHelper.copyUrl(url.getValue());
-        })
+                    ClipboardHelper.copyUrl(url.getValue());
+                })
                 .grow(false, true)
                 .tooltipKey("createShortcut");
         var field = new TextFieldComp(url);
@@ -66,13 +67,11 @@ public class ActionShortcutComp extends SimpleComp {
             });
         });
         var copyButton = new ButtonComp(null, new FontIcon("mdi2f-file-move-outline"), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                var file = DesktopShortcuts.createCliOpen(
-                        url.getValue(),
-                        name.getValue());
-                DesktopHelper.browseFileInDirectory(file);
-            });
-        })
+                    ThreadHelper.runFailableAsync(() -> {
+                        var file = DesktopShortcuts.createCliOpen(url.getValue(), name.getValue());
+                        DesktopHelper.browseFileInDirectory(file);
+                    });
+                })
                 .grow(false, true)
                 .tooltipKey("createShortcut");
         var field = new TextFieldComp(name);
@@ -82,9 +81,10 @@ public class ActionShortcutComp extends SimpleComp {
     }
 
     private Comp<?> createMacroComp() {
-        var button = new ButtonComp(AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            onCreateMacro.run();
-        });
+        var button = new ButtonComp(
+                AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
+                    onCreateMacro.run();
+                });
         return button;
     }
 }

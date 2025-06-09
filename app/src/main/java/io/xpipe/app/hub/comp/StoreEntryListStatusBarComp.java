@@ -1,12 +1,12 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.hub.action.BatchStoreActionProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
@@ -148,8 +148,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> MenuItem buildMenuItemForAction(
-            List<DataStoreEntryRef<T>> batch, ActionProvider a) {
+    private <T extends DataStore> MenuItem buildMenuItemForAction(List<DataStoreEntryRef<T>> batch, ActionProvider a) {
         BatchStoreActionProvider<T> s = (BatchStoreActionProvider<T>) a;
         var name = s.getName();
         var icon = s.getIcon();

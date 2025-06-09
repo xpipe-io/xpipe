@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 

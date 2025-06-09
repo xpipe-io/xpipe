@@ -1,6 +1,5 @@
 package io.xpipe.app.action;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.hub.action.BatchStoreAction;
@@ -11,11 +10,14 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
+
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+
+import atlantafx.base.theme.Styles;
 
 import java.util.List;
 import java.util.Map;
@@ -24,15 +26,15 @@ public class ActionConfirmComp extends SimpleComp {
 
     private final AbstractAction action;
 
-    public ActionConfirmComp(AbstractAction action) {this.action = action;}
+    public ActionConfirmComp(AbstractAction action) {
+        this.action = action;
+    }
 
     @Override
     protected Region createSimple() {
         var options = new OptionsBuilder();
-        options.nameAndDescription("actionConnections")
-                .addComp(createList());
-        options.nameAndDescription("actionConfiguration")
-                .addComp(createTable());
+        options.nameAndDescription("actionConnections").addComp(createList());
+        options.nameAndDescription("actionConfiguration").addComp(createTable());
         return options.build();
     }
 
@@ -43,11 +45,12 @@ public class ActionConfirmComp extends SimpleComp {
             listProp.setAll(((BatchStoreAction<DataStore>) ba).getRefs());
         } else if (action instanceof MultiStoreAction<?> ma) {
             listProp.setAll(((MultiStoreAction<DataStore>) ma).getRefs());
-        } else if (action instanceof StoreAction<?> sa){
+        } else if (action instanceof StoreAction<?> sa) {
             listProp.setAll(List.of(sa.getRef().asNeeded()));
         }
 
-        var choice = new StoreListChoiceComp<>(listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+        var choice = new StoreListChoiceComp<>(
+                listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
         choice.setEditable(false);
         choice.hide(listProp.emptyProperty());
         return choice;
