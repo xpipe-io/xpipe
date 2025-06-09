@@ -9,6 +9,10 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.comp.base.LabelComp;
+import io.xpipe.app.comp.base.LazyTextFieldComp;
+import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.hub.action.StoreActionProvider;
@@ -19,6 +23,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
@@ -103,6 +108,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     @Override
     protected final Region createSimple() {
         var r = createContent();
+        var name = (Region) r.lookup(".name");
         var buttonBar = r.lookup(".button-bar");
         var iconChooser = r.lookup(".icon");
         var batchMode = r.lookup(".batch-mode-selector");
@@ -116,6 +122,10 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setFocusTraversable(true);
         button.accessibleTextProperty().bind(getWrapper().getShownName());
         button.setOnAction(event -> {
+            if (getWrapper().getRenaming().get()) {
+                return;
+            }
+
             event.consume();
             ThreadHelper.runFailableAsync(() -> {
                 getWrapper().executeDefaultAction();
@@ -152,7 +162,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                         null,
-                        () -> this.createContextMenu())
+                        () -> this.createContextMenu(name))
                 .augment(button);
 
         var loading = new LoadingOverlayComp(Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
@@ -194,9 +204,18 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createName() {
-        LabelComp name = new LabelComp(getWrapper().getShownName());
-        name.apply(struc -> struc.get().setTextOverrun(OverrunStyle.CENTER_ELLIPSIS));
+        var prop = new SimpleStringProperty();
+        getWrapper().getShownName().subscribe(prop::setValue);
+        prop.addListener((observable, oldValue, newValue) -> {
+            if (!AppPrefs.get().censorMode().get()) {
+                getWrapper().getName().setValue(newValue);
+            }
+        });
+        var name = new LazyTextFieldComp(prop);
         name.styleClass("name");
+        name.apply(struc -> {
+            getWrapper().getRenaming().bind(struc.getTextField().focusedProperty());
+        });
         return name;
     }
 
@@ -230,7 +249,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return stack.createRegion();
     }
 
-    protected Region createButtonBar() {
+    protected Region createButtonBar(Region name) {
         var list = DerivedObservableList.wrap(getWrapper().getMajorActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
@@ -242,7 +261,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var ig = new InputGroup();
         Runnable update = () -> {
             var l = new ArrayList<Node>(buttons);
-            var settingsButton = createSettingsButton().createRegion();
+            var settingsButton = createSettingsButton(name).createRegion();
             l.add(settingsButton);
             l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
             ig.getChildren().setAll(l);
@@ -285,14 +304,14 @@ public abstract class StoreEntryComp extends SimpleComp {
         return button;
     }
 
-    protected Comp<?> createSettingsButton() {
+    protected Comp<?> createSettingsButton(Region name) {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.styleClass("settings");
         settingsButton.accessibleText("More");
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY,
                 null,
-                () -> StoreEntryComp.this.createContextMenu()));
+                () -> StoreEntryComp.this.createContextMenu(name)));
         settingsButton.tooltipKey("more");
         return settingsButton;
     }
@@ -303,7 +322,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return c;
     }
 
-    protected ContextMenu createContextMenu() {
+    protected ContextMenu createContextMenu(Region name) {
         var contextMenu = ContextMenuHelper.create();
 
         var hasSep = false;
@@ -325,6 +344,13 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (contextMenu.getItems().size() > 0 && !hasSep) {
             contextMenu.getItems().add(new SeparatorMenuItem());
         }
+
+        var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
+        rename.setOnAction(event -> {
+            name.requestFocus();
+        });
+        contextMenu.getItems().add(rename);
+
 
         var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
         notes.setOnAction(event -> {

@@ -30,6 +30,10 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         entryButton.hgrow();
         entryButton.apply(struc -> {
             struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (section.getWrapper().getRenaming().get()) {
+                    return;
+                }
+
                 if (event.getCode() == KeyCode.SPACE) {
                     section.getWrapper().toggleExpanded();
                     event.consume();

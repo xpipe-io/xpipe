@@ -43,6 +43,14 @@
 
 /* Grid */
 
+.store-entry-grid .name .text-field {
+    -fx-padding: 0;
+}
+
+.store-entry-grid .text-field {
+    -fx-background-color: transparent;
+}
+
 .store-entry-grid .date, .store-entry-grid .summary {
     -fx-text-fill: -color-fg-muted;
 }

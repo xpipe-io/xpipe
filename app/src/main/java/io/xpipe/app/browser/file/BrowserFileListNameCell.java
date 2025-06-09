@@ -58,7 +58,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         var textField = new LazyTextFieldComp(text)
                 .minWidth(USE_PREF_SIZE)
                 .createStructure()
-                .get();
+                .getTextField();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
         setupRename(fileList, textField, editing);

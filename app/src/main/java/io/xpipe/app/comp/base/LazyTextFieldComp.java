@@ -9,6 +9,8 @@ import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
@@ -18,7 +20,7 @@ import lombok.Value;
 
 import java.util.Objects;
 
-public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
+public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
 
     private final Property<String> currentValue;
     private final Property<String> appliedValue;
@@ -29,7 +31,7 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
     }
 
     @Override
-    public CompStructure<TextField> createBase() {
+    public Structure createBase() {
         var r = new TextField();
 
         r.setOnKeyPressed(ke -> {
@@ -83,7 +85,27 @@ public class LazyTextFieldComp extends Comp<CompStructure<TextField>> {
         });
 
         r.getStyleClass().add("lazy-text-field-comp");
-        return new SimpleCompStructure<>(r);
+
+        var sizeLabel = new Label();
+        sizeLabel.maxWidthProperty().bind(sizeLabel.prefWidthProperty());
+        sizeLabel.textProperty().bind(currentValue);
+        sizeLabel.setVisible(false);
+        sizeLabel.paddingProperty().bind(r.paddingProperty());
+
+        var stack = new StackPane();
+        stack.getChildren().addAll(sizeLabel, r);
+        stack.setAlignment(Pos.CENTER_LEFT);
+        stack.prefWidthProperty().bind(sizeLabel.prefWidthProperty());
+        stack.prefHeightProperty().bind(r.heightProperty());
+
+        stack.focusedProperty().addListener((observable, oldValue, n) -> {
+            if (n) {
+                r.setDisable(false);
+                r.requestFocus();
+            }
+        });
+
+        return new Structure(stack, r);
     }
 
     @Value

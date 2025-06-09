@@ -93,7 +93,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
         var cr = content != null ? content.createRegion() : new Region();
-        var bb = createButtonBar();
+        var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);
         controls.setFillHeight(true);
         HBox.setHgrow(cr, Priority.ALWAYS);

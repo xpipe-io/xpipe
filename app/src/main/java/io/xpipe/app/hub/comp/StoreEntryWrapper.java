@@ -61,6 +61,7 @@ public class StoreEntryWrapper {
     private final Property<String> shownInformation;
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
+    private final BooleanProperty renaming = new SimpleBooleanProperty();
 
     private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
