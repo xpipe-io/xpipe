@@ -47,9 +47,13 @@ public class AppPrefsStorageHandler {
         if (content == null) {
             if (Files.exists(file)) {
                 try {
-                    ObjectMapper o = JacksonMapper.getDefault();
-                    var read = o.readTree(Files.readAllBytes(file));
-                    content = read.isObject() ? (ObjectNode) read : null;
+                    var s = Files.readString(file);
+                    if (!s.isEmpty()) {
+                        var read = JacksonMapper.getDefault().readTree(s);
+                        if (read.isObject()) {
+                            content = (ObjectNode) read;
+                        }
+                    }
                 } catch (IOException e) {
                     ErrorEvent.fromThrowable(e).handle();
                 }
