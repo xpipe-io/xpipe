@@ -167,7 +167,16 @@ project.ext {
     jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
 
     // GC config
-    jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];
+    jvmRunArgs += [
+            '-XX:+UseG1GC',
+            '-Xms300m',
+            '-Xmx4G',
+            '-XX:GCTimeRatio=9',
+            '-XX:+UseStringDeduplication',
+            // This is very important for older Windows systems
+            // The default of 2m makes GC pauses 100x times longer for some reason
+            '-XX:G1HeapRegionSize=4m'
+    ];
 
     // Fix platform theme detection on macOS
     if (os.isMacOsX()) {
