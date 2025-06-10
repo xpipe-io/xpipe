@@ -14,8 +14,8 @@ public class BrowserIcons {
         return PrettyImageHelper.ofFixedSizeSquare("browser/default_folder.svg", 24);
     }
 
-    public static Comp<?> createIcon(BrowserIconFileType type) {
-        return PrettyImageHelper.ofFixedSizeSquare(type.getIcon(), 24);
+    public static Comp<?> createContextMenuIcon(BrowserIconFileType type) {
+        return PrettyImageHelper.ofFixedSizeSquare(type.getIcon(), 16);
     }
 
     public static Comp<?> createIcon(FileEntry entry) {

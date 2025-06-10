@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.OpenFileNativeDetailsActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 
@@ -27,8 +28,8 @@ public class OpenNativeFileDetailsMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public Category getCategory() {
-        return Category.NATIVE;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.OPEN;
     }
 
     @Override

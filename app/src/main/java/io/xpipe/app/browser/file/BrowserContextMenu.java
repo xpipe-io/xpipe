@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 
@@ -46,7 +46,7 @@ public final class BrowserContextMenu extends ContextMenu {
             return;
         }
 
-        for (var cat : BrowserMenuLeafProvider.Category.values()) {
+        for (var cat : BrowserMenuCategory.values()) {
             var all = ActionProvider.ALL.stream()
                     .map(actionProvider -> actionProvider instanceof BrowserMenuItemProvider ba ? ba : null)
                     .filter(browserActionProvider -> browserActionProvider != null)

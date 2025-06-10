@@ -4,6 +4,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
@@ -32,7 +33,7 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
 
     @Override
     public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return BrowserIcons.createIcon(BrowserIconFileType.byId("zip")).createRegion();
+        return BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")).createRegion();
     }
 
     @Override
@@ -68,8 +69,8 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
     }
 
     @Override
-    public Category getCategory() {
-        return Category.CUSTOM;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.CUSTOM;
     }
 
     @Override

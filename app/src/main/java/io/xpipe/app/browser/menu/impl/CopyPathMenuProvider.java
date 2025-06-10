@@ -3,6 +3,7 @@ package io.xpipe.app.browser.menu.impl;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.ClipboardHelper;
@@ -20,8 +21,8 @@ import java.util.stream.Collectors;
 public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public Category getCategory() {
-        return Category.COPY_PASTE;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.COPY_PASTE;
     }
 
     @Override

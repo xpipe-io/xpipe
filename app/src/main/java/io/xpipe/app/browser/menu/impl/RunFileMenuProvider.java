@@ -2,6 +2,7 @@ package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.CommandBuilder;
@@ -65,8 +66,8 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.CUSTOM;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.CUSTOM;
     }
 
     @Override

@@ -4,6 +4,7 @@ import io.xpipe.app.browser.file.BrowserClipboard;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserFileTransferMode;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
@@ -54,8 +55,8 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.COPY_PASTE;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.COPY_PASTE;
     }
 
     @Override

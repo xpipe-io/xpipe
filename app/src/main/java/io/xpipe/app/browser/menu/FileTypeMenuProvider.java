@@ -13,7 +13,7 @@ public interface FileTypeMenuProvider extends BrowserMenuItemProvider {
 
     @Override
     default Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return BrowserIcons.createIcon(getType()).createRegion();
+        return BrowserIcons.createContextMenuIcon(getType()).createRegion();
     }
 
     @Override

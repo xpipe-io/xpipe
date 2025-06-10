@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -37,8 +38,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.MUTATION;
     }
 
     @Override

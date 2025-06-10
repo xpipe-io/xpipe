@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.impl.ChgrpActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
@@ -30,8 +31,8 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.MUTATION;
     }
 
     @Override

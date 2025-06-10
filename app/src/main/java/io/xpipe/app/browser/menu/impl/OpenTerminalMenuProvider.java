@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.OpenTerminalActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
@@ -53,8 +54,8 @@ public class OpenTerminalMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.OPEN;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.OPEN;
     }
 
     @Override

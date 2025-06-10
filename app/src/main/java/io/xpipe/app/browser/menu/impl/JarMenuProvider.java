@@ -4,6 +4,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.FileTypeMenuProvider;
 import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.core.process.CommandBuilder;
@@ -23,8 +24,8 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
     }
 
     @Override
-    public Category getCategory() {
-        return Category.CUSTOM;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.CUSTOM;
     }
 
     @Override

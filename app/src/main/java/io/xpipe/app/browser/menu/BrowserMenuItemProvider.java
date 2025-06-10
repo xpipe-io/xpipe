@@ -34,7 +34,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
         return null;
     }
 
-    default Category getCategory() {
+    default BrowserMenuCategory getCategory() {
         return null;
     }
 
@@ -56,11 +56,4 @@ public interface BrowserMenuItemProvider extends ActionProvider {
         return true;
     }
 
-    enum Category {
-        CUSTOM,
-        OPEN,
-        NATIVE,
-        COPY_PASTE,
-        MUTATION
-    }
 }

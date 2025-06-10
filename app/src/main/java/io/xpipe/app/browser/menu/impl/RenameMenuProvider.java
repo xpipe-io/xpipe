@@ -2,6 +2,7 @@ package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.store.FileKind;
@@ -34,8 +35,8 @@ public class RenameMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public Category getCategory() {
-        return Category.MUTATION;
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.MUTATION;
     }
 
     @Override
