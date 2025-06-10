@@ -81,7 +81,7 @@ public interface ShellControl extends ProcessControl {
         return true;
     }
 
-    ShellControl getMachineRootSession();
+    ShellControl getMachineRootSession() throws Exception;
 
     String getOsName();
 

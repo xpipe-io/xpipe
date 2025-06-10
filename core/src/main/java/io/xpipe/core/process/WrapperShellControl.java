@@ -115,7 +115,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl getMachineRootSession() {
+    public ShellControl getMachineRootSession() throws Exception {
         return parent.getMachineRootSession();
     }
 
