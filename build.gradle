@@ -169,14 +169,15 @@ project.ext {
     // GC config
     jvmRunArgs += [
             '-XX:+UseG1GC',
-            '-Xms300m',
+            // Resizing heap on older Windows systems is very costly for some reason
+            // Make sure that heap is not resized on startup at least
+            os.isWindows() ? '-Xms500m' : '-Xms300m',
             '-Xmx4G',
             '-XX:GCTimeRatio=9',
             '-XX:+UseStringDeduplication',
-            // These are very important for some (mostly slower) systems
+            // This is very important for some (mostly slower) systems
             // The default makes GC pauses 100x times longer for some reason
-            '-XX:G1HeapRegionSize=4m',
-            '-XX:MaxGCPauseMillis=20000'
+            '-XX:G1HeapRegionSize=4m'
     ];
 
     // Fix platform theme detection on macOS
