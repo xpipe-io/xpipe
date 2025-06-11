@@ -176,7 +176,7 @@ project.ext {
             // These are very important for some (mostly slower) systems
             // The default makes GC pauses 100x times longer for some reason
             '-XX:G1HeapRegionSize=4m',
-            '-XX:MaxGCPauseMillis=2000'
+            '-XX:MaxGCPauseMillis=20000'
     ];
 
     // Fix platform theme detection on macOS
