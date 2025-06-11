@@ -168,16 +168,14 @@ project.ext {
 
     // GC config
     jvmRunArgs += [
-            '-Xlog:gc',
             '-XX:+UseG1GC',
             '-Xms300m',
             '-Xmx4G',
             '-XX:GCTimeRatio=9',
             '-XX:+UseStringDeduplication',
-            '-XX:+PrintGCDetails',
             // These are very important for some (mostly slower) systems
             // The default makes GC pauses 100x times longer for some reason
-            '-XX:G1HeapRegionSize=1m',
+            '-XX:G1HeapRegionSize=4m',
             '-XX:MaxGCPauseMillis=2000'
     ];
 
