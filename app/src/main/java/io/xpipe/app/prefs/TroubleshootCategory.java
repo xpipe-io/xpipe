@@ -11,10 +11,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FileNames;
@@ -33,6 +30,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "troubleshoot";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2i-infinity");
     }
 
     @Override

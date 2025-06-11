@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class LinksCategory extends AppPrefsCategory {
@@ -65,6 +66,11 @@ public class LinksCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "links";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2l-link-box-outline");
     }
 
     @Override

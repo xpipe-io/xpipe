@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -21,6 +22,11 @@ public class VaultCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "vault";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdsal-lock");
     }
 
     @SneakyThrows

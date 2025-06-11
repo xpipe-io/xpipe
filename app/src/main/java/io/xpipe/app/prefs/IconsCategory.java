@@ -34,6 +34,11 @@ public class IconsCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2b-brush-variant");
+    }
+
+    @Override
     protected Comp<?> create() {
         return new OptionsBuilder()
                 .addTitle("customIcons")

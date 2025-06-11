@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 
@@ -22,6 +23,11 @@ public class AboutCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "about";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2i-information-outline");
     }
 
     @Override

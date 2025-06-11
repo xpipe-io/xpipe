@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.rdp.ExternalRdpClient;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class RdpCategory extends AppPrefsCategory {
@@ -12,6 +13,11 @@ public class RdpCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "rdp";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2r-remote-desktop");
     }
 
     @Override

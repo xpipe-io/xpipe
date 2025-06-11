@@ -26,6 +26,11 @@ public class SyncCategory extends AppPrefsCategory {
         return "vaultSync";
     }
 
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdrmz-vpn_lock");
+    }
+
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         AtomicReference<Region> button = new AtomicReference<>();

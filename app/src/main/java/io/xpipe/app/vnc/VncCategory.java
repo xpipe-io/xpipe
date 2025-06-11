@@ -21,6 +21,11 @@ public class VncCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdral-desktop_windows");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()

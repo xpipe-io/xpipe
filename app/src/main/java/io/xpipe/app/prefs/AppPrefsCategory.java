@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.LabelGraphic;
 
 public abstract class AppPrefsCategory {
 
@@ -13,6 +14,8 @@ public abstract class AppPrefsCategory {
     }
 
     protected abstract String getId();
+
+    protected abstract LabelGraphic getIcon();
 
     protected abstract Comp<?> create();
 }

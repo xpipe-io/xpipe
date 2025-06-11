@@ -18,6 +18,11 @@ public class LoggingCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2i-invoice-text-multiple-outline");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()

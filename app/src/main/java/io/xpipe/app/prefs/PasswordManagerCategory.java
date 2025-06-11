@@ -21,6 +21,11 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdomz-vpn_key");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();

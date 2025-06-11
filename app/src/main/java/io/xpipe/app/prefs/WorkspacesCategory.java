@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -11,6 +12,11 @@ public class WorkspacesCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "workspaces";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdal-corporate_fare");
     }
 
     @Override

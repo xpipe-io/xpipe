@@ -39,6 +39,11 @@ public class TerminalCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-console");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
