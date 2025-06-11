@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.core.store.FilePath;
 import lombok.NonNull;
 
 import java.util.*;
@@ -71,6 +72,12 @@ public class LxdCommandView extends CommandViewBase {
     }
 
     public boolean isSupported() throws Exception {
+        // Ubuntu always has the lxc command installed as a stub to install LXD
+        // We don't want to call it as this would automatically install LXD and take a while
+        if (shellControl.getOsName().toLowerCase().contains("ubuntu")) {
+            return shellControl.view().fileExists(FilePath.of("/snap/bin/lxc"));
+        }
+
         return shellControl
                 .command("lxc --help")
                 .withErrorFormatter(LxdCommandView::formatErrorMessage)
