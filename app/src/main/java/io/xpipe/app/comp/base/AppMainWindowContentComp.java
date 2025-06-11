@@ -13,6 +13,7 @@ import io.xpipe.core.process.OsType;
 
 import javafx.animation.*;
 import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
@@ -112,6 +113,16 @@ public class AppMainWindowContentComp extends SimpleComp {
         });
 
         var modal = new ModalOverlayStackComp(bg, overlay);
-        return modal.createRegion();
+        var r =  modal.createRegion();
+        var p = r.lookupAll(".modal-overlay-stack-element");
+        loaded.subscribe(v -> {
+           if (v != null) {
+               p.forEach(node -> {
+                   node.pseudoClassStateChanged(PseudoClass.getPseudoClass("loaded"), true);
+               });
+           }
+        });
+
+        return r;
     }
 }

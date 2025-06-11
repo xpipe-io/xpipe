@@ -50,6 +50,7 @@ public class ModalOverlayStackComp extends SimpleComp {
             }
         });
         var comp = new ModalOverlayComp(current, prop);
+        comp.styleClass("modal-overlay-stack-element");
         return comp;
     }
 }

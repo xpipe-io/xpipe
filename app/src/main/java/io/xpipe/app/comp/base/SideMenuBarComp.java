@@ -6,6 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
@@ -117,6 +118,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         vbox.getChildren().add(queueButtons);
         vbox.setMinHeight(0);
         vbox.setPrefHeight(0);
+
+        vbox.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
+            var modals = !AppDialog.getModalOverlays().isEmpty();
+            return modals ? 0.5 : 1.0;
+        }, AppDialog.getModalOverlays()));
 
         return new SimpleCompStructure<>(vbox);
     }
