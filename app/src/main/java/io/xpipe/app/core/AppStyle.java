@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 
@@ -78,7 +78,7 @@ public class AppStyle {
                                 STYLESHEET_CONTENTS.put(file, s);
                             }
                         } catch (IOException ex) {
-                            ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                            ErrorEventFactory.fromThrowable(ex).omitted(true).build().handle();
                         }
                         return FileVisitResult.CONTINUE;
                     }

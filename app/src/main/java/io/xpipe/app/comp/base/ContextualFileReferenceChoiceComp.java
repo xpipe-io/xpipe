@@ -7,7 +7,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
@@ -105,7 +105,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             try {
                 var source = currentPath.asLocalPath();
                 if (!Files.exists(source)) {
-                    ErrorEvent.fromMessage("Unable to resolve local file path " + source)
+                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + source)
                             .expected()
                             .handle();
                     return;
@@ -131,7 +131,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     filePath.setValue(FilePath.of(syncedTarget));
                 });
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         });
         gitShareButton.tooltipKey("gitShareFileTooltip");

@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
@@ -79,7 +79,7 @@ public class BrowserTransferModel {
         try {
             FileUtils.forceDelete(item.getLocalFile().toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -120,7 +120,7 @@ public class BrowserTransferModel {
         try {
             FileUtils.forceMkdir(TEMP.toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return;
         }
 
@@ -159,7 +159,7 @@ public class BrowserTransferModel {
                     .build();
             action.executeSync();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             synchronized (items) {
                 items.remove(item);
             }

@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
@@ -129,12 +129,12 @@ public final class BrowserFileListModel {
                 exists = fileSystemModel.getFileSystem().fileExists(newFullPath)
                         || fileSystemModel.getFileSystem().directoryExists(newFullPath);
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
                 return old;
             }
 
             if (exists) {
-                ErrorEvent.fromMessage("Target " + newFullPath + " does already exist")
+                ErrorEventFactory.fromMessage("Target " + newFullPath + " does already exist")
                         .expected()
                         .handle();
                 fileSystemModel.refresh();
@@ -152,7 +152,7 @@ public final class BrowserFileListModel {
                     .orElse(old);
             return b;
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return old;
         }
     }

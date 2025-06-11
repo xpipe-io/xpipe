@@ -1,7 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
@@ -146,7 +146,7 @@ public enum AppDistributionType implements Translatable {
                     return PORTABLE;
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
                 return PORTABLE;
             }
         } else {

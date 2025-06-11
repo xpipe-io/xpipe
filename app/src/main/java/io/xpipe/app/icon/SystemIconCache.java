@@ -1,7 +1,7 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 
 import com.github.weisj.jsvg.SVGDocument;
@@ -91,7 +91,7 @@ public class SystemIconCache {
                     if (scheme == ImageColorScheme.TRANSPARENT) {
                         var message = "Failed to rasterize icon "
                                 + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
-                        ErrorEvent.fromMessage(message).omit().expected().handle();
+                        ErrorEventFactory.fromMessage(message).omit().expected().handle();
                         continue;
                     }
 
@@ -118,7 +118,7 @@ public class SystemIconCache {
                         if (scheme == ImageColorScheme.TRANSPARENT) {
                             var message = "Failed to rasterize icon "
                                     + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
-                            ErrorEvent.fromMessage(message).omit().expected().handle();
+                            ErrorEventFactory.fromMessage(message).omit().expected().handle();
                         }
 
                         continue;
@@ -136,7 +136,7 @@ public class SystemIconCache {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -175,7 +175,7 @@ public class SystemIconCache {
             return c != null ? c : ImageColorScheme.TRANSPARENT;
         } catch (Exception ex) {
             var message = "Failed to rasterize icon icon " + path.getFileName().toString() + ": " + ex.getMessage();
-            ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).description(message).omit().expected().handle();
             return ImageColorScheme.TRANSPARENT;
         }
     }
@@ -196,7 +196,7 @@ public class SystemIconCache {
                 throw ex;
             }
 
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
     }
 

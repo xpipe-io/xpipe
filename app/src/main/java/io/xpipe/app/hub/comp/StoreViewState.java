@@ -2,7 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.ext.DataStoreUsageCategory;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -161,7 +161,7 @@ public class StoreViewState {
         } catch (Exception exception) {
             currentTopLevelSection = new StoreSection(
                     null, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), 0);
-            ErrorEvent.fromThrowable(exception).handle();
+            ErrorEventFactory.fromThrowable(exception).handle();
         }
     }
 

@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
@@ -41,7 +41,7 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
                             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
             return r.map(Path::of);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return Optional.empty();
         }
     }

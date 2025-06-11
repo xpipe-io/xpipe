@@ -1,6 +1,6 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -14,7 +14,7 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var customCommand = AppPrefs.get().customRdpClientCommand().getValue();
         if (customCommand == null || customCommand.isBlank()) {
-            throw ErrorEvent.expected(new IllegalStateException("No custom RDP command specified"));
+            throw ErrorEventFactory.expected(new IllegalStateException("No custom RDP command specified"));
         }
 
         var format =

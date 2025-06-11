@@ -8,7 +8,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -99,7 +99,7 @@ public class StoreCreationDialog {
                     });
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
             }
         };
         show(

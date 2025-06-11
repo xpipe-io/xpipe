@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.SecretManager;
@@ -40,7 +40,7 @@ public class KeeperPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup")
                     .handle();
             return null;
@@ -101,7 +101,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
             return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
     }

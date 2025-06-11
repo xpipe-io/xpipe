@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.CommandBuilder;
 
@@ -77,7 +77,7 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
 
             AppCache.update("konsoleInstanceOptionSet", true);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 }

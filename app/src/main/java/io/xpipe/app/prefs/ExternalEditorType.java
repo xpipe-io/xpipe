@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
@@ -355,7 +355,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         public void launch(Path file) throws Exception {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
             if (customCommand == null || customCommand.isBlank()) {
-                throw ErrorEvent.expected(new IllegalStateException("No custom editor command specified"));
+                throw ErrorEventFactory.expected(new IllegalStateException("No custom editor command specified"));
             }
 
             var format =

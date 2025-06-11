@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
@@ -35,7 +35,7 @@ public interface ExternalApplicationType extends PrefsValue {
             try {
                 return findApp().isPresent();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
                 return false;
             }
         }
@@ -74,7 +74,7 @@ public interface ExternalApplicationType extends PrefsValue {
                 pc.command(String.format("open -a \"%s.app\"", getApplicationName()))
                         .execute();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
 
@@ -94,7 +94,7 @@ public interface ExternalApplicationType extends PrefsValue {
             try (ShellControl pc = LocalShell.getShell()) {
                 return CommandSupport.findProgram(pc, getExecutable()).isPresent();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
             }
         }
@@ -102,7 +102,7 @@ public interface ExternalApplicationType extends PrefsValue {
         default void launch(CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
                 if (!CommandSupport.isInPath(pc, getExecutable())) {
-                    throw ErrorEvent.expected(
+                    throw ErrorEventFactory.expected(
                             new IOException(
                                     "Executable " + getExecutable()
                                             + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
@@ -132,7 +132,7 @@ public interface ExternalApplicationType extends PrefsValue {
                     return out.map(filePath -> Path.of(filePath.toString()));
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
             return Optional.empty();
         }
@@ -145,7 +145,7 @@ public interface ExternalApplicationType extends PrefsValue {
                     var name = this instanceof Translatable t
                             ? t.toTranslatedString().getValue()
                             : getExecutable();
-                    throw ErrorEvent.expected(
+                    throw ErrorEventFactory.expected(
                             new UnsupportedOperationException("Unable to find installation of " + name));
                 }
             }

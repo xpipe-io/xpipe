@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
@@ -30,7 +30,7 @@ public class BitwardenPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .link("https://bitwarden.com/help/cli/#download-and-install")
                     .handle();
             return null;
@@ -70,7 +70,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             var password = login.required("password");
             return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
     }

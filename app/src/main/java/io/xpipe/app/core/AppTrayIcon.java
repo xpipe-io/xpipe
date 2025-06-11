@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.OsType;
 
 import java.awt.*;
@@ -63,7 +63,7 @@ public class AppTrayIcon {
         try {
             return ImageIO.read(iconImagePath);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return AppImages.toAwtImage(AppImages.DEFAULT_IMAGE);
         }
     }
@@ -89,7 +89,7 @@ public class AppTrayIcon {
                 tray.add(this.trayIcon);
             } catch (Exception e) {
                 // This can sometimes fail on Linux
-                ErrorEvent.fromThrowable("Unable to add TrayIcon", e).expected().handle();
+                ErrorEventFactory.fromThrowable("Unable to add TrayIcon", e).expected().handle();
             }
         });
     }

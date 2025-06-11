@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -31,13 +31,13 @@ public abstract class Session implements AutoCloseable {
                         return;
                     }
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                 }
 
                 try {
                     stop();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                 }
             });
             return false;

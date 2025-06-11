@@ -8,6 +8,7 @@ public enum DocumentationLink {
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
+    TLS_DECRYPTION("troubleshoot/license-activation#tls-decryption"),
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),

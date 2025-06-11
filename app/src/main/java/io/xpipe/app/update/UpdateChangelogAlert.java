@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.Hyperlinks;
 
 public class UpdateChangelogAlert {
@@ -17,7 +18,7 @@ public class UpdateChangelogAlert {
     public static void showIfNeeded() {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
-            ErrorEvent.fromMessage(AppI18n.get("updateFail"))
+            ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
                     .customAction(new ErrorAction() {
                         @Override
                         public String getName() {

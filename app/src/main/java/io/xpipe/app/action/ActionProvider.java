@@ -1,7 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.ModuleLayerLoader;
 
@@ -17,7 +17,7 @@ public interface ActionProvider {
             try {
                 actionProvider.init();
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         }
         TrackEvent.trace("Finished action provider initialization");

@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
@@ -89,7 +89,7 @@ public class PasswordManagerCommand implements PasswordManager {
 
             return InPlaceSecretValue.of(out);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable("Unable to retrieve password with command " + cmd, ex)
+            ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                     .expected()
                     .handle();
             return null;

@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.*;
@@ -27,7 +28,7 @@ public class SshIdentityStateManager {
             var opensshRunning = opensshList.contains("ssh-agent.exe");
 
             if (external && !gpgRunning && !opensshRunning) {
-                throw ErrorEvent.expected(
+                throw ErrorEventFactory.expected(
                         new IllegalStateException(
                                 "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
             }
@@ -41,7 +42,7 @@ public class SshIdentityStateManager {
                 var msg =
                         "The Windows OpenSSH agent is running. This will cause it to interfere with other agents. You have to manually stop the running ssh-agent service to allow other agents to work";
                 var r = new AtomicBoolean();
-                var event = ErrorEvent.fromMessage(msg).expected();
+                var event = ErrorEventFactory.fromMessage(msg).expected();
                 var shutdown = new ErrorAction() {
                     @Override
                     public String getName() {
@@ -85,7 +86,7 @@ public class SshIdentityStateManager {
     public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
         var found = sc.view().findProgram("ssh-add");
         if (found.isEmpty()) {
-            throw ErrorEvent.expected(new IllegalStateException(
+            throw ErrorEventFactory.expected(new IllegalStateException(
                     "SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
         }
 
@@ -98,8 +99,8 @@ public class SshIdentityStateManager {
                         + "\n"
                         + r[1]
                         + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
-                var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
-                ErrorEvent.preconfigure(eventBuilder);
+                var eventBuilder = ErrorEventFactory.fromThrowable(ex).expected();
+                ErrorEventFactory.preconfigure(eventBuilder);
                 throw ex;
             }
         } catch (ProcessOutputException ex) {
@@ -125,7 +126,7 @@ public class SshIdentityStateManager {
                 var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
                 if (!pipeExists) {
                     // No agent is running
-                    throw ErrorEvent.expected(
+                    throw ErrorEventFactory.expected(
                             new IllegalStateException(
                                     "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
                 }

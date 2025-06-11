@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -30,7 +30,7 @@ public class AppWindowsShutdown {
             PROC.hwnd = hwnd;
             PROC.hhook = User32.INSTANCE.SetWindowsHookEx(4, PROC, null, windowThreadID);
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
     }
 

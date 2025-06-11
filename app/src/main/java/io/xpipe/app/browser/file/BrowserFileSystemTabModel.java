@@ -11,7 +11,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.WrapperFileSystem;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -140,7 +140,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             try {
                 fileSystem.close();
             } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         });
     }
@@ -283,7 +283,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             // Start shell in case we exited
             startIfNeeded();
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);
         }
 
@@ -303,7 +303,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         try {
             evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);
         }
 
@@ -351,7 +351,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         try {
             resolvedPath = BrowserFileSystemHelper.resolveDirectoryPath(this, FilePath.of(evaluatedPath), customInput);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);
         }
 
@@ -363,7 +363,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
             cdSyncWithoutCheck(resolvedPath);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);
         }
 
@@ -409,7 +409,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return true;
         } catch (Exception e) {
             fileList.setAll(Stream.of());
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return false;
         }
     }

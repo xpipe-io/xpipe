@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.UserScopeStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionToken;
 import io.xpipe.core.store.DataStore;
@@ -99,7 +99,7 @@ public class DataStorageNode {
             var currentUser = secret.getEncryptedToken().isUser();
             return new DataStorageNode(read, currentUser, true, true);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEventFactory.fromThrowable(e).build().handle();
             return fail();
         }
     }
@@ -114,7 +114,7 @@ public class DataStorageNode {
         try (JsonGenerator g = f.createGenerator(writer).setPrettyPrinter(new DefaultPrettyPrinter())) {
             JacksonMapper.getDefault().writeTree(g, node.getContentNode());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).build().handle();
+            ErrorEventFactory.fromThrowable(e).build().handle();
             return node.getContentNode();
         }
 

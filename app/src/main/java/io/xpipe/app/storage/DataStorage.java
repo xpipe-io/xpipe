@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.hub.comp.StoreSortMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
@@ -452,7 +452,7 @@ public abstract class DataStorage {
             if (throwOnFail) {
                 throw ex;
             } else {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 return false;
             }
         } finally {

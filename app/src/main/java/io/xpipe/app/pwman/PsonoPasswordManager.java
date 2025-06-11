@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
@@ -75,7 +75,7 @@ public class PsonoPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Psono CLI", "psonoci");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .expected()
                     .link("https://doc.psono.com/user/psonoci/install.html")
                     .handle();
@@ -103,7 +103,7 @@ public class PsonoPasswordManager implements PasswordManager {
                     username.isNull() ? null : username.asText(),
                     password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return null;
         }
     }

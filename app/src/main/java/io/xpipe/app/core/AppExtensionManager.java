@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.process.OsType;
@@ -43,7 +43,7 @@ public class AppExtensionManager {
         try {
             ProcessControlProvider.init(INSTANCE.extendedLayer);
             ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             });
         } catch (Throwable t) {
             throw ExtensionException.corrupt("Service provider initialization failed", t);
@@ -186,7 +186,7 @@ public class AppExtensionManager {
                 return Optional.of(mod);
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t)
+            ErrorEventFactory.fromThrowable(t)
                     .description("Unable to load extension from " + dir + ". Is the installation corrupted?")
                     .handle();
         }

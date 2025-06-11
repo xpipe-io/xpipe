@@ -1,6 +1,6 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
@@ -31,7 +31,7 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
                             WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\rdm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return Optional.empty();
         }
     }

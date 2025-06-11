@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -85,7 +85,7 @@ public class ScriptStoreSetup {
                 });
             }
         } catch (StackOverflowError t) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t));
         } catch (Throwable t) {
             throw new RuntimeException("Unable to set up scripts", t);
@@ -122,7 +122,7 @@ public class ScriptStoreSetup {
                     return targetDir;
                 }
             } catch (NumberFormatException e) {
-                ErrorEvent.fromThrowable(e).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             }
         }
 

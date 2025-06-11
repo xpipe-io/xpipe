@@ -2,7 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionKey;
@@ -59,7 +59,7 @@ public class StandardStorage extends DataStorage {
         try {
             FileUtils.forceMkdir(dir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
                     .terminal(true)
                     .build()
                     .handle();
@@ -68,7 +68,7 @@ public class StandardStorage extends DataStorage {
         try {
             initSystemInfo();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to load vault system info", e)
+            ErrorEventFactory.fromThrowable("Unable to load vault system info", e)
                     .build()
                     .handle();
         }
@@ -78,7 +78,7 @@ public class StandardStorage extends DataStorage {
         try {
             dataStorageUserHandler.init();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable("Unable to load vault users", e)
+            ErrorEventFactory.fromThrowable("Unable to load vault users", e)
                     .terminal(true)
                     .build()
                     .handle();
@@ -98,7 +98,7 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(categoriesDir.toFile());
             FileUtils.forceMkdir(dataDir.toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to create vault directory", e)
+            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
                     .terminal(true)
                     .build()
                     .handle();
@@ -123,14 +123,14 @@ public class StandardStorage extends DataStorage {
                         directoriesToKeep.add(path);
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
                     }
                 });
             }
 
             // Show one exception
             if (exception.get() != null) {
-                ErrorEvent.fromThrowable(exception.get()).handle();
+                ErrorEventFactory.fromThrowable(exception.get()).handle();
             }
 
             setupBuiltinCategories();
@@ -169,13 +169,13 @@ public class StandardStorage extends DataStorage {
                             directoriesToKeep.add(path);
                         }
 
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
                     }
                 });
 
                 // Show one exception
                 if (exception.get() != null) {
-                    ErrorEvent.fromThrowable(exception.get()).expected().handle();
+                    ErrorEventFactory.fromThrowable(exception.get()).expected().handle();
                 }
 
                 storeEntriesSet.forEach(e -> {
@@ -190,7 +190,7 @@ public class StandardStorage extends DataStorage {
                 });
             }
         } catch (IOException ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
         }
 
         var hasFixedLocal = storeEntriesSet.stream()
@@ -204,7 +204,7 @@ public class StandardStorage extends DataStorage {
                     local.deleteFromDisk();
                     hasFixedLocal = false;
                 } catch (IOException ex) {
-                    ErrorEvent.fromThrowable(ex)
+                    ErrorEventFactory.fromThrowable(ex)
                             .terminal(true)
                             .expected()
                             .build()
@@ -299,7 +299,7 @@ public class StandardStorage extends DataStorage {
             try {
                 p.storageInit();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         });
     }
@@ -354,7 +354,7 @@ public class StandardStorage extends DataStorage {
             FileUtils.forceMkdir(getStoresDir().toFile());
             FileUtils.forceMkdir(getCategoriesDir().toFile());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .description("Unable to create storage directory " + getStoresDir())
                     .terminal(true)
                     .build()
@@ -374,7 +374,7 @@ public class StandardStorage extends DataStorage {
                 exception.set(ex);
             } catch (Exception ex) {
                 // Data corruption and schema changes are expected
-                ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
             }
         });
 
@@ -389,13 +389,13 @@ public class StandardStorage extends DataStorage {
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         exception.set(ex);
-                        ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
                     }
                 });
 
         // Show one exception
         if (exception.get() != null) {
-            ErrorEvent.fromThrowable(exception.get()).expected().handle();
+            ErrorEventFactory.fromThrowable(exception.get()).expected().handle();
         }
 
         deleteLeftovers();
@@ -447,11 +447,11 @@ public class StandardStorage extends DataStorage {
                         dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
                 }
             });
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
         }
 
         // Delete leftover directories in categories dir
@@ -480,11 +480,11 @@ public class StandardStorage extends DataStorage {
                         dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).expected().omit().build().handle();
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
                 }
             });
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
         }
     }
 
@@ -502,7 +502,7 @@ public class StandardStorage extends DataStorage {
                 vaultKey = EncryptionKey.getVaultSecretKey(id);
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to load vault key file " + file + " to decrypt vault contents. Is it corrupted?", e)
                     .terminal(true)
                     .build()
@@ -515,7 +515,7 @@ public class StandardStorage extends DataStorage {
         if (Files.exists(file)) {
             var read = Files.readString(file);
             if (!OsType.getLocal().getName().equals(read)) {
-                ErrorEvent.fromMessage(
+                ErrorEventFactory.fromMessage(
                                 "This vault was originally created on a different system running " + read
                                         + ". Sharing connection information between systems directly might cause some problems."
                                         + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings.")

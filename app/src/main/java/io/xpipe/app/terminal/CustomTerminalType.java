@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -30,7 +30,7 @@ public class CustomTerminalType implements ExternalApplicationType, ExternalTerm
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var custom = AppPrefs.get().customTerminalCommand().getValue();
         if (custom == null || custom.isBlank()) {
-            throw ErrorEvent.expected(new IllegalStateException("No custom terminal command specified"));
+            throw ErrorEventFactory.expected(new IllegalStateException("No custom terminal command specified"));
         }
 
         var format = custom.toLowerCase(Locale.ROOT).contains("$cmd") ? custom : custom + " $CMD";

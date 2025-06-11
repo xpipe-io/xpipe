@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.util.FailableConsumer;
 import io.xpipe.modulefs.ModuleFileSystem;
 
@@ -62,7 +62,7 @@ public class AppResources {
             var url = f.getWrappedPath().toUri().toURL();
             return Optional.of(url);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(true).build().handle();
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
             return Optional.empty();
         }
     }
@@ -86,7 +86,7 @@ public class AppResources {
             var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
             con.accept(f);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(true).build().handle();
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
         }
     }
 
@@ -97,7 +97,7 @@ public class AppResources {
             var f = fs.getPath(path);
             con.accept(f);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(true).build().handle();
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
         }
     }
 
@@ -125,7 +125,7 @@ public class AppResources {
 
             con.accept(f);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omitted(true).build().handle();
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
         }
         return true;
     }

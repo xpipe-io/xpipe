@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
@@ -53,7 +53,7 @@ public class PasswordManagerIdentityStore extends IdentityStore implements Inter
 
         var r = AppPrefs.get().passwordManager().getValue().retrieveCredentials(key);
         if (r == null) {
-            throw ErrorEvent.expected(new UnsupportedOperationException("Credentials were requested but not supplied"));
+            throw ErrorEventFactory.expected(new UnsupportedOperationException("Credentials were requested but not supplied"));
         }
 
         setCache("lastQueried", Instant.now());

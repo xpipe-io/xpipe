@@ -3,7 +3,7 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.storage.DataStorage;
@@ -41,7 +41,7 @@ public class SystemIconManager {
             try {
                 pref.checkComplete();
             } catch (ValidationException e) {
-                ErrorEvent.fromThrowable(e).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                 continue;
             }
 
@@ -101,7 +101,7 @@ public class SystemIconManager {
                 AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -111,7 +111,7 @@ public class SystemIconManager {
             try {
                 source.refresh();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).expected().handle();
+                ErrorEventFactory.fromThrowable(e).expected().handle();
             }
         }
         reloadSources();

@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
@@ -135,7 +135,7 @@ public class WingetUpdater extends UpdateHandler {
                 });
             });
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             preparedUpdate.setValue(null);
         }
     }

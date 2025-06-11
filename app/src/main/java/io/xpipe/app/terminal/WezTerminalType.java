@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
@@ -72,7 +72,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     }
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
 
             try (ShellControl pc = LocalShell.getShell()) {
@@ -80,7 +80,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     return Optional.of(Path.of("wezterm-gui"));
                 }
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
 
             return Optional.empty();
@@ -104,7 +104,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
                         && pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
             }
         }

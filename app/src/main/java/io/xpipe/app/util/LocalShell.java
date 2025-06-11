@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.*;
 
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class LocalShell {
                 try {
                     local.exitAndWait();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                     local.kill();
                 }
             } else {
@@ -48,7 +48,7 @@ public class LocalShell {
                 try {
                     localPowershell.exitAndWait();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                     local.kill();
                 }
             } else {

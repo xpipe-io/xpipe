@@ -4,7 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
@@ -45,7 +45,7 @@ public class BrowserOverviewComp extends SimpleComp {
                         try {
                             return fs.directoryExists(entry.getPath());
                         } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
+                            ErrorEventFactory.fromThrowable(e).handle();
                             return false;
                         }
                     })

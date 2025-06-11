@@ -5,7 +5,7 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.LauncherActionProvider;
 import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.store.FilePath;
@@ -53,7 +53,7 @@ public class AppOpenArguments {
             try {
                 all.addAll(parseActions(s));
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         });
 
@@ -87,7 +87,7 @@ public class AppOpenArguments {
                     try {
                         a = ((LauncherActionProvider) found.get()).createAction(uri);
                     } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).omit().expected().handle();
+                        ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                         return List.of();
                     }
                     return a != null ? List.of(a) : List.of();

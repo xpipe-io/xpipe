@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.*;
@@ -30,7 +30,7 @@ public class LastpassPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .link("https://github.com/LastPass/lastpass-cli")
                     .handle();
             return null;
@@ -68,7 +68,7 @@ public class LastpassPasswordManager implements PasswordManager {
                         matches.add(title.asText());
                     }
                 });
-                throw ErrorEvent.expected(new IllegalArgumentException(
+                throw ErrorEventFactory.expected(new IllegalArgumentException(
                         "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
             }
 
@@ -78,7 +78,7 @@ public class LastpassPasswordManager implements PasswordManager {
                     !username.isEmpty() ? username : null,
                     !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
     }

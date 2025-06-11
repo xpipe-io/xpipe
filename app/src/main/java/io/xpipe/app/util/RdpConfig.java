@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.StreamCharset;
 
@@ -28,7 +28,7 @@ public class RdpConfig {
             return parseContent(content);
         } catch (NoSuchFileException e) {
             // Users deleting files is expected
-            ErrorEvent.expected(e);
+            ErrorEventFactory.expected(e);
             throw e;
         }
     }

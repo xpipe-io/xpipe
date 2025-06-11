@@ -1,6 +1,6 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.util.InPlaceSecretValue;
 
@@ -98,7 +98,7 @@ public class WindowsCredentialManager implements PasswordManager {
                     .readStdoutOrThrow();
             return new CredentialResult(username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).expected().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;
         }
     }

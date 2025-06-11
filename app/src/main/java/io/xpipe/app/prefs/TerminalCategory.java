@@ -8,7 +8,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -51,7 +51,7 @@ public class TerminalCategory extends AppPrefsCategory {
                     });
                     feature.throwIfUnsupported();
                 } catch (LicenseRequiredException ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
             }
         });

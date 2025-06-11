@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
@@ -42,10 +42,10 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             }
         } catch (Throwable ex) {
             if (ex instanceof ValidationException) {
-                ErrorEvent.expected(ex);
+                ErrorEventFactory.expected(ex);
             } else if (ex instanceof StackOverflowError) {
                 // Cycles in connection graphs can fail hard but are expected
-                ErrorEvent.expected(ex);
+                ErrorEventFactory.expected(ex);
             }
             throw ex;
         } finally {

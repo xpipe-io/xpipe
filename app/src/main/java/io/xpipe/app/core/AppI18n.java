@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
@@ -108,7 +108,7 @@ public class AppI18n {
                                 Locale.setDefault(n != null ? n.getLocale() : Locale.ENGLISH);
                             });
                         } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
+                            ErrorEventFactory.fromThrowable(e).handle();
                         }
                     });
                 });

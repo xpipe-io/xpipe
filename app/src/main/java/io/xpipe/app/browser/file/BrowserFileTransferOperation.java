@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 
@@ -192,7 +192,7 @@ public class BrowserFileTransferOperation {
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalArgumentException("Target directory " + targetFile + " does already exist"));
         }
 
@@ -401,7 +401,7 @@ public class BrowserFileTransferOperation {
                 } catch (Exception om) {
                     // This is expected as the process control has to be killed
                     // When calling close, it will throw an exception when it has to kill
-                    ErrorEvent.fromThrowable(om).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(om).expected().omit().handle();
                 }
             }
             if (outputStream != null) {
@@ -410,7 +410,7 @@ public class BrowserFileTransferOperation {
                 } catch (Exception om) {
                     // This is expected as the process control has to be killed
                     // When calling close, it will throw an exception when it has to kill
-                    ErrorEvent.fromThrowable(om).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(om).expected().omit().handle();
                 }
             }
             throw ex;
@@ -447,8 +447,8 @@ public class BrowserFileTransferOperation {
         cancelled.removeListener(closeCancelListener);
 
         if (exception != null) {
-            ErrorEvent.preconfigure(
-                    ErrorEvent.fromThrowable(exception).reportable(!cancelled()).omitted(cancelled()));
+            ErrorEventFactory.preconfigure(
+                    ErrorEventFactory.fromThrowable(exception).reportable(!cancelled()).omitted(cancelled()));
             throw exception;
         }
     }

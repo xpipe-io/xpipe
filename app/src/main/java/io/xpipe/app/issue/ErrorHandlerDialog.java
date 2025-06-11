@@ -72,7 +72,7 @@ public class ErrorHandlerDialog {
                 comp.getTakenAction().setValue(ErrorAction.ignore());
             }
         } catch (Throwable t) {
-            ErrorAction.ignore().handle(ErrorEvent.fromThrowable(t).build());
+            ErrorAction.ignore().handle(ErrorEventFactory.fromThrowable(t).build());
             ErrorAction.ignore().handle(event);
         }
     }

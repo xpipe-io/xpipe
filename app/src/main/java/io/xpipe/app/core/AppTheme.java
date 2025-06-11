@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ColorHelper;
@@ -124,9 +124,9 @@ public class AppTheme {
             });
         } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
 
         var t = AppPrefs.get().theme().getValue();
@@ -200,7 +200,7 @@ public class AppTheme {
             }
         } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
         } catch (Exception ex) {
             // The color scheme query can fail if the toolkit is not initialized properly
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());

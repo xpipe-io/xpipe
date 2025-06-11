@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.SecretRetrievalStrategy;
@@ -132,14 +132,14 @@ public interface SshIdentityStrategy {
             if (!parent.getOsType().equals(OsType.WINDOWS)) {
                 var out = parent.executeSimpleStringCommand("pageant -l");
                 if (out.isBlank()) {
-                    throw ErrorEvent.expected(new IllegalStateException("Pageant is not running or has no identities"));
+                    throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running or has no identities"));
                 }
 
                 var systemAgent = parent.command(
                                 parent.getShellDialect().getPrintEnvironmentVariableCommand("SSH_AUTH_SOCK"))
                         .readStdoutOrThrow();
                 if (!systemAgent.contains("pageant")) {
-                    throw ErrorEvent.expected(new IllegalStateException(
+                    throw ErrorEventFactory.expected(new IllegalStateException(
                             "Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
                 }
             }
@@ -171,7 +171,7 @@ public interface SshIdentityStrategy {
                         "Get-ChildItem \"\\\\.\\pipe\\\" -recurse | Where-Object {$_.Name -match \"pageant\"} | foreach {echo $_.Name}");
                 var lines = pipe.lines().toList();
                 if (lines.isEmpty()) {
-                    throw ErrorEvent.expected(new IllegalStateException("Pageant is not running"));
+                    throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
                 }
 
                 if (lines.size() > 1) {
@@ -300,20 +300,20 @@ public interface SshIdentityStrategy {
                         .map(e -> DataStorage.get().getStoreEntryDisplayName(e));
                 var msg = "Identity file " + resolved + " does not exist"
                         + (systemName.isPresent() ? " on system " + systemName.get() : "");
-                throw ErrorEvent.expected(new IllegalArgumentException(msg));
+                throw ErrorEventFactory.expected(new IllegalArgumentException(msg));
             }
 
             if (resolved.endsWith(".ppk")) {
                 var ex = new IllegalArgumentException(
                         "Identity file " + resolved
                                 + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY");
-                ErrorEvent.preconfigure(
-                        ErrorEvent.fromThrowable(ex).expected().link("https://www.puttygen.com/convert-pem-to-ppk"));
+                ErrorEventFactory.preconfigure(
+                        ErrorEventFactory.fromThrowable(ex).expected().link("https://www.puttygen.com/convert-pem-to-ppk"));
                 throw ex;
             }
 
             if (resolved.endsWith(".pub")) {
-                throw ErrorEvent.expected(new IllegalArgumentException("Identity file " + resolved
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Identity file " + resolved
                         + " is marked to be a public key file, SSH authentication requires the private key"));
             }
 
@@ -414,7 +414,7 @@ public interface SshIdentityStrategy {
 
             var file = getFile(parent);
             if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
-                throw ErrorEvent.expected(new IOException("Yubikey PKCS11 library at " + file + " not found"));
+                throw ErrorEventFactory.expected(new IOException("Yubikey PKCS11 library at " + file + " not found"));
             }
         }
 
@@ -457,7 +457,7 @@ public interface SshIdentityStrategy {
             parent.requireLicensedFeature("pkcs11Identity");
 
             if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
-                throw ErrorEvent.expected(new IOException("PKCS11 library at " + file + " not found"));
+                throw ErrorEventFactory.expected(new IOException("PKCS11 library at " + file + " not found"));
             }
         }
 

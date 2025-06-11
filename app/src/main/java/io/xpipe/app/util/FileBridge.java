@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
@@ -66,7 +66,7 @@ public class FileBridge {
                 }
             });
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -122,7 +122,7 @@ public class FileBridge {
                 event("File doesn't seem to be changed");
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omit().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().handle();
         }
     }
 
@@ -165,7 +165,7 @@ public class FileBridge {
                     in.transferTo(out);
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 return;
             }
             ext.get().registerChange();
@@ -182,7 +182,7 @@ public class FileBridge {
                 in.transferTo(out);
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return;
         }
 
@@ -202,7 +202,7 @@ public class FileBridge {
                             .build();
                     action.executeSync();
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
             }
         });

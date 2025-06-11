@@ -8,7 +8,7 @@ import io.xpipe.app.hub.action.BranchStoreActionProvider;
 import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.hub.action.StoreActionProvider;
 import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -222,7 +222,7 @@ public class StoreEntryWrapper {
                                 AppPrefs.get().censorMode(),
                                 information));
                     } catch (Exception e) {
-                        ErrorEvent.fromThrowable(e).handle();
+                        ErrorEventFactory.fromThrowable(e).handle();
                         information.bind(new SimpleStringProperty());
                     }
                 }
@@ -237,7 +237,7 @@ public class StoreEntryWrapper {
                         entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
             }
         }
 
@@ -288,7 +288,7 @@ public class StoreEntryWrapper {
                     minorActionProviders.setAll(newMinorProviders);
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
             }
         }
 

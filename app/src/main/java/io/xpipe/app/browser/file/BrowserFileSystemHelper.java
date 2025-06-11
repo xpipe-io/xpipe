@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.*;
 
@@ -56,7 +56,7 @@ public class BrowserFileSystemHelper {
                     .readStdoutOrThrow();
             return !r.isBlank() ? r : null;
         } catch (Exception ex) {
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -100,14 +100,14 @@ public class BrowserFileSystemHelper {
         }
 
         if (verifyExists && !model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.expected(new IllegalArgumentException(
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
                     String.format("Directory %s does not exist or is not accessible", path)));
         }
 
         try {
             model.getFileSystem().directoryAccessible(path);
         } catch (Exception ex) {
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -131,7 +131,7 @@ public class BrowserFileSystemHelper {
             try {
                 file.getFileSystem().delete(file.getPath());
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         }
     }

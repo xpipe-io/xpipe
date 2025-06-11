@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 
 import javafx.scene.image.Image;
@@ -153,7 +153,7 @@ public class AppImages {
         try (var in = Files.newInputStream(p)) {
             return new Image(in, -1, -1, true, true);
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omitted(true).build().handle();
+            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
             return DEFAULT_IMAGE;
         }
     }

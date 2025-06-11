@@ -5,7 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
@@ -83,7 +83,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             return file;
         } catch (IOException e) {
             // Any possible IO errors can occur here
-            ErrorEvent.fromThrowable(e).expected().handle();
+            ErrorEventFactory.fromThrowable(e).expected().handle();
             return null;
         }
     }
@@ -155,7 +155,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                 WEB_VIEW_SUPPORTED = true;
                 sp.getChildren().addAll(wv);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 WEB_VIEW_SUPPORTED = false;
             }
         }

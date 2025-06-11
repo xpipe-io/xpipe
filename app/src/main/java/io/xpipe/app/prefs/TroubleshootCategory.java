@@ -8,7 +8,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.DesktopHelper;
@@ -44,7 +44,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .spacer(19)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
-                                    var event = ErrorEvent.fromMessage("User Report");
+                                    var event = ErrorEventFactory.fromMessage("User Report");
                                     if (AppLogs.get().isWriteToFile()) {
                                         event.attachment(AppLogs.get().getSessionLogsDirectory());
                                     }

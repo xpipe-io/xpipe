@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.GlobalClipboard;
 import io.xpipe.core.store.FileEntry;
 
@@ -14,7 +14,6 @@ import javafx.scene.input.Dragboard;
 import lombok.SneakyThrows;
 import lombok.Value;
 
-import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
@@ -59,7 +58,7 @@ public class BrowserClipboard {
                     currentCopyClipboard.setValue(
                             new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omit().handle();
                 }
             }
         });

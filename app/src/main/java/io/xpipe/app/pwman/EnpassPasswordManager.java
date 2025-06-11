@@ -2,7 +2,7 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
@@ -82,19 +82,19 @@ public class EnpassPasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Enpass CLI", "enpass-cli");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .link("https://github.com/hazcod/enpass-cli")
                     .handle();
             return null;
         }
 
         if (vaultPath == null) {
-            throw ErrorEvent.expected(new IllegalArgumentException("No vault path has been set"));
+            throw ErrorEventFactory.expected(new IllegalArgumentException("No vault path has been set"));
         }
 
         var vaultDir = vaultPath.asLocalPath();
         if (!Files.exists(vaultDir)) {
-            throw ErrorEvent.expected(new IllegalArgumentException("Vault path " + vaultPath + " does not exist"));
+            throw ErrorEventFactory.expected(new IllegalArgumentException("Vault path " + vaultPath + " does not exist"));
         }
         if (Files.isRegularFile(vaultDir)) {
             vaultDir = vaultDir.getParent();
@@ -133,7 +133,7 @@ public class EnpassPasswordManager implements PasswordManager {
                 }
 
                 if (json.size() == 0) {
-                    throw ErrorEvent.expected(
+                    throw ErrorEventFactory.expected(
                             new IllegalArgumentException("No items were found matching the title " + key));
                 }
 
@@ -145,7 +145,7 @@ public class EnpassPasswordManager implements PasswordManager {
                             matches.add(title.asText());
                         }
                     });
-                    throw ErrorEvent.expected(new IllegalArgumentException(
+                    throw ErrorEventFactory.expected(new IllegalArgumentException(
                             "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
@@ -155,7 +155,7 @@ public class EnpassPasswordManager implements PasswordManager {
                         !login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
     }

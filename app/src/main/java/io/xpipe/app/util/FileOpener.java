@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.browser.file.BrowserFileOutput;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.process.CommandBuilder;
@@ -33,7 +33,7 @@ public class FileOpener {
         try {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to launch editor "
                                     + editor.toTranslatedString().getValue()
                                     + ".\nMaybe try to use a different editor in the settings.",
@@ -67,7 +67,7 @@ public class FileOpener {
                 }
             }
         } catch (Throwable e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e).handle();
         }
     }
 
@@ -86,7 +86,7 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e).handle();
         }
     }
 

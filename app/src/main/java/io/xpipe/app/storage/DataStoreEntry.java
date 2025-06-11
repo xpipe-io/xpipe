@@ -4,7 +4,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.ext.UserScopeStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.JacksonMapper;
@@ -299,7 +299,7 @@ public class DataStoreEntry extends StorageElement {
             var fileNode = mapper.readTree(storeFile.toFile());
             node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
         } catch (JacksonException ex) {
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             node = DataStorageNode.fail();
         }
 
@@ -575,7 +575,7 @@ public class DataStoreEntry extends StorageElement {
         try {
             validateOrThrow();
         } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
         }
     }
 
@@ -608,7 +608,7 @@ public class DataStoreEntry extends StorageElement {
             // Check whether we have a provider as well
             DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             newStore = null;
         }
 
@@ -647,7 +647,7 @@ public class DataStoreEntry extends StorageElement {
                 notifyUpdate(false, false);
                 lifecycleStore.initializeStore();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             } finally {
                 decrementBusyCounter();
                 notifyUpdate(false, false);
@@ -662,7 +662,7 @@ public class DataStoreEntry extends StorageElement {
                 notifyUpdate(false, false);
                 lifecycleStore.finalizeStore();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             } finally {
                 decrementBusyCounter();
                 notifyUpdate(false, false);

@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
@@ -50,7 +50,7 @@ public class LxdCommandView extends CommandViewBase {
     }
 
     private static <T extends Throwable> T convertException(T s) {
-        return ErrorEvent.expectedIfContains(s);
+        return ErrorEventFactory.expectedIfContains(s);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class LxdCommandView extends CommandViewBase {
                             LinkedHashMap::new));
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
-                throw ErrorEvent.expected(ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
+                throw ErrorEventFactory.expected(ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
             } else {
                 throw ex;
             }

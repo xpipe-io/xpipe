@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.StubShellControl;
 import io.xpipe.core.store.*;
@@ -23,7 +23,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                     existingSession.getShellControl().command(" echo xpipetest").execute();
                     return new StubShellControl(existingSession.getShellControl());
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();
                 }
             }
@@ -51,11 +51,11 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             session.getShellControl().command(" echo xpipetest").execute();
             return true;
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             try {
                 stopSessionIfNeeded();
             } catch (Exception se) {
-                ErrorEvent.fromThrowable(se).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(se).expected().omit().handle();
             }
             return false;
         }

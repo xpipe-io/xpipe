@@ -2,7 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
@@ -45,7 +45,7 @@ public class AppDownloads {
             return downloadFile;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -116,7 +116,7 @@ public class AppDownloads {
             var ver = queryLatestVersion(first, securityOnly);
             return AppRelease.of(ver);
         } catch (Exception e) {
-            throw ErrorEvent.expected(e);
+            throw ErrorEventFactory.expected(e);
         }
     }
 }

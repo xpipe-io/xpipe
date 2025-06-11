@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.LogErrorHandler;
 import io.xpipe.core.util.XPipeDaemonMode;
 
@@ -62,14 +62,14 @@ public class AppArguments {
         public static LauncherCommand resolveLauncher(String[] args) {
             var cmd = new CommandLine(new LauncherCommand());
             cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-                var event = ErrorEvent.fromThrowable(ex).term().build();
+                var event = ErrorEventFactory.fromThrowable(ex).term().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(event);
                 event.handle();
                 return 1;
             });
             cmd.setParameterExceptionHandler((ex, args1) -> {
-                var event = ErrorEvent.fromThrowable(ex).term().expected().build();
+                var event = ErrorEventFactory.fromThrowable(ex).term().expected().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(event);
                 event.handle();
@@ -89,7 +89,7 @@ public class AppArguments {
                 var converted = t instanceof CommandLine.UnmatchedArgumentException u
                         ? new IllegalArgumentException(u.getMessage())
                         : t;
-                var e = ErrorEvent.fromThrowable(converted).expected().term().build();
+                var e = ErrorEventFactory.fromThrowable(converted).expected().term().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(e);
                 e.handle();

@@ -2,7 +2,7 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
@@ -29,7 +29,7 @@ public class OnePasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("1Password CLI", "op");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e)
+            ErrorEventFactory.fromThrowable(e)
                     .expected()
                     .link("https://developer.1password.com/docs/cli/get-started/")
                     .handle();
@@ -55,7 +55,7 @@ public class OnePasswordManager implements PasswordManager {
                     username != null ? username.asText() : null,
                     password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return null;
         }
     }

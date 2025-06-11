@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
@@ -152,7 +152,7 @@ public class AppMainWindow {
                 TrackEvent.info("Window content node structure created");
                 loadedContent.setValue(s);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).term().handle();
+                ErrorEventFactory.fromThrowable(t).term().handle();
             }
         });
     }
@@ -364,7 +364,7 @@ public class AppMainWindow {
                 try {
                     ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
                 TrackEvent.debug("Screenshot taken");
                 event.consume();

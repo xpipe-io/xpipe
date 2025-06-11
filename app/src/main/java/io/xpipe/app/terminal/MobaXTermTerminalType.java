@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
@@ -34,7 +34,7 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
                             WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return Optional.empty();
         }
     }

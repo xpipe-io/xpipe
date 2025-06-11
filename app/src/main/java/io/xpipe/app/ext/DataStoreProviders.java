@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.util.JacksonMapper;
@@ -22,7 +22,7 @@ public class DataStoreProviders {
             try {
                 dataStoreProvider.init();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         });
     }
@@ -32,7 +32,7 @@ public class DataStoreProviders {
             try {
                 dataStoreProvider.reset();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         });
     }
@@ -74,7 +74,7 @@ public class DataStoreProviders {
                     p.validate();
                     return false;
                 } catch (Throwable e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                     return true;
                 }
             });

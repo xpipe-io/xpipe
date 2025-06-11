@@ -1,6 +1,6 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.util.InPlaceSecretValue;
@@ -154,7 +154,7 @@ public class KeePassXcProxyClient {
 
         var ex = new IllegalStateException(
                 "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?");
-        ErrorEvent.preconfigure(ErrorEvent.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
+        ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
         throw ex;
     }
 
@@ -167,7 +167,7 @@ public class KeePassXcProxyClient {
     public void testAssociation() throws IOException {
         if (associationKey == null) {
             // We need to do an association first
-            throw ErrorEvent.expected(new IllegalStateException("KeePassXC association failed or was cancelled"));
+            throw ErrorEventFactory.expected(new IllegalStateException("KeePassXC association failed or was cancelled"));
         }
 
         // Generate a nonce
@@ -201,7 +201,7 @@ public class KeePassXcProxyClient {
         Map<String, Object> responseMap = jsonToMap(responseJson);
 
         if (responseMap.containsKey("error")) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalStateException(responseMap.get("error").toString()));
         }
 
@@ -259,7 +259,7 @@ public class KeePassXcProxyClient {
 
         Map<String, Object> responseMap = jsonToMap(responseJson);
         if (responseMap.containsKey("error")) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalStateException(responseMap.get("error").toString()));
         }
 
@@ -276,11 +276,11 @@ public class KeePassXcProxyClient {
         var tree = JacksonMapper.getDefault().readTree(message);
         var count = tree.required("count").asInt();
         if (count == 0) {
-            throw ErrorEvent.expected(new IllegalArgumentException("No password was found for specified key"));
+            throw ErrorEventFactory.expected(new IllegalArgumentException("No password was found for specified key"));
         }
 
         if (count > 1) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalArgumentException("Password key is ambiguous and returned multiple results"));
         }
 
@@ -468,7 +468,7 @@ public class KeePassXcProxyClient {
         Map<String, Object> responseMap = jsonToMap(responseJson);
 
         if (responseMap.containsKey("error")) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalStateException(responseMap.get("error").toString()));
         }
 

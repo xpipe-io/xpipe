@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
@@ -39,7 +39,7 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
 
             return Optional.of(file);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return Optional.empty();
         }
     }

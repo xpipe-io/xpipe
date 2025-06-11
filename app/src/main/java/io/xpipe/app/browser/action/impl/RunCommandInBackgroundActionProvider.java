@@ -3,7 +3,7 @@ package io.xpipe.app.browser.action.impl;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ProcessOutputException;
 
@@ -56,7 +56,7 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
 
             // Only throw actual error output
             if (exitCode != 0) {
-                throw ErrorEvent.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
+                throw ErrorEventFactory.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
             }
         }
     }

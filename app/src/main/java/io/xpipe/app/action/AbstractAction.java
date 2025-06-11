@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.LabelGraphic;
@@ -132,14 +132,14 @@ public abstract class AbstractAction {
                 return;
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             return;
         }
 
         try {
             executeImpl();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
         } finally {
             afterExecute();
             synchronized (active) {

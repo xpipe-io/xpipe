@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.process.CommandBuilder;
@@ -30,7 +30,7 @@ public class DashlanePasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).link("https://cli.dashlane.com/install").handle();
+            ErrorEventFactory.fromThrowable(e).link("https://cli.dashlane.com/install").handle();
             return null;
         }
 
@@ -57,7 +57,7 @@ public class DashlanePasswordManager implements PasswordManager {
                     login != null ? login.asText() : null,
                     password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
     }

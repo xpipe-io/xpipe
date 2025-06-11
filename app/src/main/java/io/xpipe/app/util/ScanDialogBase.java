@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -82,7 +82,7 @@ public class ScanDialogBase {
                     try {
                         a.getProvider().scan(entry.get(), sc);
                     } catch (Throwable ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
+                        ErrorEventFactory.fromThrowable(ex).handle();
                     }
                 }
             }

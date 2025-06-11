@@ -3,7 +3,7 @@ package io.xpipe.app.update;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.process.ShellScript;
@@ -60,7 +60,7 @@ public class CommandUpdater extends PortableUpdater {
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> script);
             });
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             preparedUpdate.setValue(null);
         }
     }

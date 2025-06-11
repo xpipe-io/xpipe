@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -108,7 +108,7 @@ public class TerminalLaunchConfiguration {
                     var suffix = sc.getOsType() == OsType.MACOS
                             ? "This command is available in the util-linux package which can be installed via homebrew."
                             : "This command is available in the util-linux package.";
-                    throw ErrorEvent.expected(new IllegalStateException(
+                    throw ErrorEventFactory.expected(new IllegalStateException(
                             "Logging requires the script command to be installed. " + suffix));
                 }
 

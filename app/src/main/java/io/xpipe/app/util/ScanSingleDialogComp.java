@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.property.*;
@@ -47,7 +47,7 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
         try {
             base.finish();
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 

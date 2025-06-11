@@ -2,7 +2,7 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
@@ -71,7 +71,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcAssociationKey associate() throws IOException {
         var found = findKeePassProxy();
         if (found.isEmpty()) {
-            throw ErrorEvent.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
+            throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
         }
 
         var c = new KeePassXcProxyClient(found.get());
@@ -106,7 +106,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         if (client == null) {
             var found = findKeePassProxy();
             if (found.isEmpty()) {
-                throw ErrorEvent.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
+                throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
             }
 
             var c = new KeePassXcProxyClient(found.get());
@@ -120,7 +120,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 try {
                     c.testAssociation();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                     c.useExistingAssociationKey(null);
                     cached = null;
                 }
@@ -152,7 +152,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
             }
 
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
 
         return switch (OsType.getLocal()) {
@@ -182,7 +182,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                         }
                     }
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
                 yield Optional.empty();
             }
@@ -194,7 +194,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         try {
             return KeePassXcPasswordManager.receive(key);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return null;
         }
     }

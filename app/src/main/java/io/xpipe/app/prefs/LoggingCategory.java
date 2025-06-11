@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class LoggingCategory extends AppPrefsCategory {
                                         Files.createDirectories(dir);
                                         DesktopHelper.browsePathLocal(dir);
                                     } catch (IOException e) {
-                                        ErrorEvent.fromThrowable(e).handle();
+                                        ErrorEventFactory.fromThrowable(e).handle();
                                     }
                                 })
                                 .disable(prefs.enableTerminalLogging.not())))

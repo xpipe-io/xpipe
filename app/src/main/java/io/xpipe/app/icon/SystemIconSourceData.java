@@ -1,7 +1,6 @@
 package io.xpipe.app.icon;
 
-import io.xpipe.app.issue.ErrorEvent;
-
+import io.xpipe.app.issue.ErrorEventFactory;
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 
@@ -64,7 +63,7 @@ public class SystemIconSourceData {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 }

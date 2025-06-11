@@ -19,7 +19,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
         log.handle(event);
 
         if (!startupGui(throwable -> {
-            var second = ErrorEvent.fromThrowable(throwable).build();
+            var second = ErrorEventFactory.fromThrowable(throwable).build();
             log.handle(second);
             ErrorAction.ignore().handle(second);
         })) {

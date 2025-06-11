@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
@@ -52,7 +52,7 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     private static <T extends Throwable> T convertException(T s) {
-        return ErrorEvent.expectedIfContains(s);
+        return ErrorEventFactory.expectedIfContains(s);
     }
 
     @Override

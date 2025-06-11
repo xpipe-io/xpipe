@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
@@ -105,7 +105,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             try (ShellControl pc = LocalShell.getShell()) {
                 return CommandSupport.findProgram(pc, "kitty").isPresent();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
             }
         }

@@ -1,6 +1,6 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
@@ -86,7 +86,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
             try {
                 return LocalShell.getShell().view().findProgram("vncpasswd").isPresent();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
                 return false;
             }
         }
@@ -134,7 +134,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
                         .filter(path -> path.toString().contains("TigerVNC viewer"))
                         .findFirst();
             } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
                 return Optional.empty();
             }
         }

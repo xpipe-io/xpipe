@@ -3,7 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -200,7 +200,7 @@ public class StoreCreationModel {
                     .getMessages()
                     .getFirst()
                     .getText();
-            ErrorEvent.fromMessage(msg).expected().handle();
+            ErrorEventFactory.fromMessage(msg).expected().handle();
             changedSinceError.setValue(false);
             return;
         }
@@ -227,15 +227,15 @@ public class StoreCreationModel {
                 commit(true);
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
-                    ErrorEvent.expected(ex);
+                    ErrorEventFactory.expected(ex);
                 } else if (ex instanceof StackOverflowError) {
                     // Cycles in connection graphs can fail hard but are expected
-                    ErrorEvent.expected(ex);
+                    ErrorEventFactory.expected(ex);
                 }
 
                 changedSinceError.setValue(false);
 
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
             } finally {
                 DataStorage.get().removeStoreEntryInProgress(entry.getValue());
             }
