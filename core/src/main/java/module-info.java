@@ -7,7 +7,6 @@ import io.xpipe.core.util.ModuleLayerLoader;
 open module io.xpipe.core {
     exports io.xpipe.core.store;
     exports io.xpipe.core.util;
-    exports io.xpipe.core.dialog;
     exports io.xpipe.core.process;
 
     requires com.fasterxml.jackson.datatype.jsr310;
