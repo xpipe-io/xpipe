@@ -5,6 +5,7 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.ShellStoreState;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
@@ -18,6 +19,10 @@ import org.kordamp.ikonli.javafx.StackedFontIcon;
 public class SystemStateComp extends SimpleComp {
 
     private final ObservableValue<State> state;
+
+    public SystemStateComp(State state) {
+        this.state = new ReadOnlyObjectWrapper<>(state);
+    }
 
     public SystemStateComp(ObservableValue<State> state) {
         this.state = state;
