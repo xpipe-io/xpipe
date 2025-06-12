@@ -35,7 +35,7 @@ public class IconsCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2b-brush-variant");
+        return new LabelGraphic.IconGraphic("mdi2v-view-grid-plus-outline");
     }
 
     @Override

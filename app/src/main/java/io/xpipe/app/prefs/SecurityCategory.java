@@ -13,7 +13,7 @@ public class SecurityCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2i-infinity");
+        return new LabelGraphic.IconGraphic("mdi2s-security-network");
     }
 
     public Comp<?> create() {

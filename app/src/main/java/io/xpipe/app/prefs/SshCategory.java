@@ -14,7 +14,7 @@ public class SshCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2s-ssh");
+        return new LabelGraphic.IconGraphic("mdi2c-console-network-outline");
     }
 
     @Override

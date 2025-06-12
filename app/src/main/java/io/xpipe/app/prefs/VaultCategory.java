@@ -26,7 +26,7 @@ public class VaultCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdsal-lock");
+        return new LabelGraphic.IconGraphic("mdi2d-database-lock-outline");
     }
 
     @SneakyThrows

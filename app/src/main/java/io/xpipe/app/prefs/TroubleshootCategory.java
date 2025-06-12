@@ -34,7 +34,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2i-infinity");
+        return new LabelGraphic.IconGraphic("mdoal-bug_report");
     }
 
     @Override

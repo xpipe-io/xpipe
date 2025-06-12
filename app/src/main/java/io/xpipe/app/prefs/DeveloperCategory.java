@@ -35,7 +35,7 @@ public class DeveloperCategory extends AppPrefsCategory {
 
     @Override
     protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdoal-developer_mode");
+        return new LabelGraphic.IconGraphic("mdi2c-code-tags");
     }
 
     @Override
