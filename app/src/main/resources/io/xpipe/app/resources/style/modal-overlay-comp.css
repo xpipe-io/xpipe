@@ -37,6 +37,6 @@
 }
 
 .root:dark .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
-    -color-modal-pane-overlay: rgba(0, 0, 255, 0.4);
+    -color-modal-pane-overlay: rgba(0, 0, 0, 0.4);
 }
 

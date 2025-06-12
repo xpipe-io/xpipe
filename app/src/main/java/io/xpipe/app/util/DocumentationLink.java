@@ -28,6 +28,7 @@ public enum DocumentationLink {
     TAILSCALE("guide/tailscale"),
     TELEPORT("guide/teleport"),
     LXC("guide/lxc"),
+    APPLE_CONTAINERS("guide/apple-containers"),
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     VMWARE("guide/vmware"),
