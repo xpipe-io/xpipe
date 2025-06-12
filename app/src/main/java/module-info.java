@@ -6,9 +6,7 @@ import io.xpipe.app.browser.menu.impl.*;
 import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
-import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
-import io.xpipe.app.hub.action.impl.XPipeUrlActionProvider;
+import io.xpipe.app.hub.action.impl.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
 import io.xpipe.app.storage.DataStateProviderImpl;
@@ -137,7 +135,7 @@ open module io.xpipe.app {
             OpenFileDefaultMenuProvider,
             OpenFileWithMenuProvider,
             OpenDirectoryMenuProvider,
-            OpenDirectoryInNewTabMenuProvider,
+            OpenDirectoryInNewTabMenuProvider, ScanStoreActionProvider, RefreshStoreActionProvider,
             OpenTerminalMenuProvider,
             OpenNativeFileDetailsMenuProvider,
             BrowseInNativeManagerActionProvider,
