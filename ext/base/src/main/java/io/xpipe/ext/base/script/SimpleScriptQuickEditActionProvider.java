@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -19,7 +19,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.Arrays;
 
-public class SimpleScriptQuickEditActionProvider implements HubMenuLeafProvider<SimpleScriptStore> {
+public class SimpleScriptQuickEditActionProvider implements HubLeafProvider<SimpleScriptStore> {
 
     @Override
     public StoreActionCategory getCategory() {

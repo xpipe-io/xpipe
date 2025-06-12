@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -13,7 +13,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class PodmanContainerLogsActionProvider implements HubMenuLeafProvider<PodmanContainerStore> {
+public class PodmanContainerLogsActionProvider implements HubLeafProvider<PodmanContainerStore> {
 
     @Override
     public AbstractAction createAction(DataStoreEntryRef<PodmanContainerStore> ref) {

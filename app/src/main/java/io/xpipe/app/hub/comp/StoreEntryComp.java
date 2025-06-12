@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.hub.action.BranchStoreActionProvider;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubBranchProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -276,8 +276,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     private Comp<?> buildButton(HubMenuItemProvider<?> p) {
-        var leaf = p instanceof HubMenuLeafProvider<?> l ? l : null;
-        var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
+        var leaf = p instanceof HubLeafProvider<?> l ? l : null;
+        var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var button = new IconButtonComp(
                 p.getIcon(getWrapper().getEntry().ref()),
                 leaf != null
@@ -346,6 +346,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         cats.addFirst(null);
         for (var cat : cats) {
             var items = new ArrayList<MenuItem>();
+
             for (var p : getWrapper().getMinorActionProviders()) {
                 var item = buildMenuItemForAction(p);
                 if (item == null || p.getCategory() != cat) {
@@ -360,7 +361,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 rename.setOnAction(event -> {
                     name.requestFocus();
                 });
-                items.add(rename);
+                items.add(1, rename);
 
                 var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
                 notes.setOnAction(event -> {
@@ -368,7 +369,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     event.consume();
                 });
                 notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
-                items.add(notes);
+                items.add(2, notes);
 
                 var readOnly = new MenuItem();
                 readOnly.graphicProperty()
@@ -390,7 +391,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                                 getWrapper().getReadOnly()));
                 readOnly.setOnAction(event ->
                         getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
-                items.add(readOnly);
+                items.add(3, readOnly);
             }
 
             if (cat == StoreActionCategory.DEVELOPER) {
@@ -504,8 +505,8 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     private MenuItem buildMenuItemForAction(ActionProvider p) {
-        var leaf = p instanceof HubMenuLeafProvider<?> l ? l : null;
-        var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
+        var leaf = p instanceof HubLeafProvider<?> l ? l : null;
+        var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 
         if (cs == null

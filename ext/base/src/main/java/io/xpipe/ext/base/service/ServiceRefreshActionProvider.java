@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class ServiceRefreshActionProvider
-        implements HubMenuLeafProvider<FixedServiceCreatorStore>, BatchHubProvider<FixedServiceCreatorStore> {
+        implements HubLeafProvider<FixedServiceCreatorStore>, BatchHubProvider<FixedServiceCreatorStore> {
 
     @Override
     public StoreActionCategory getCategory() {

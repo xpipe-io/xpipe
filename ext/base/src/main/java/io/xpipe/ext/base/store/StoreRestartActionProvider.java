@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class StoreRestartActionProvider
-        implements HubMenuLeafProvider<DataStore>, BatchHubProvider<DataStore> {
+        implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {

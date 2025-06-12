@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RunScriptActionProviderMenu
-        implements BranchStoreActionProvider<ShellStore>, BatchHubProvider<ShellStore> {
+        implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -33,7 +33,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class TerminalRunActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -87,7 +87,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class HubRunActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -145,7 +145,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class BackgroundRunActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -200,7 +200,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class ScriptActionProvider
-            implements BranchStoreActionProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -259,17 +259,17 @@ public class RunScriptActionProviderMenu
     }
 
     private static class NoScriptsActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
-            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(dataStoreEntryRefs.getFirst().get()));
+            var cat = StoreViewState.get().getAllScriptsCategory();
             cat.select();
         }
 
         @Override
         public void execute(DataStoreEntryRef<ShellStore> ref) {
-            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
+            var cat = StoreViewState.get().getAllScriptsCategory();
             cat.select();
         }
 
@@ -305,8 +305,7 @@ public class RunScriptActionProviderMenu
     }
 
     private static class ScriptsDisabledActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
@@ -352,7 +351,7 @@ public class RunScriptActionProviderMenu
     }
 
     private static class NoStateActionProvider
-            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {

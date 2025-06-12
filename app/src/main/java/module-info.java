@@ -121,7 +121,7 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
 
-    provides ActionProvider with BrowseHubLeafProvider, XPipeUrlProvider, LaunchHubMenuLeafProvider, CloneHubLeafProvider, EditHubLeafProvider,
+    provides ActionProvider with BrowseHubLeafProvider, XPipeUrlProvider, LaunchHubMenuLeafProvider, EditHubLeafProvider, CloneHubLeafProvider,
             DownloadMenuProvider, RefreshChildrenHubLeafProvider,
             ScanHubBatchProvider,
             RunCommandInBrowserActionProvider,

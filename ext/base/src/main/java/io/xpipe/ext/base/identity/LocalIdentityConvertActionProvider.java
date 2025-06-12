@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.action.StoreAction;
@@ -17,7 +17,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LocalIdentityConvertActionProvider implements HubMenuLeafProvider<LocalIdentityStore> {
+public class LocalIdentityConvertActionProvider implements HubLeafProvider<LocalIdentityStore> {
 
     @Override
     public StoreActionCategory getCategory() {

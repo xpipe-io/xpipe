@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
@@ -17,7 +17,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LxdContainerEditRunConfigActionProvider implements HubMenuLeafProvider<LxdContainerStore> {
+public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<LxdContainerStore> {
 
     @Override
     public boolean isMutation() {

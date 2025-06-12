@@ -1,6 +1,6 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.hub.action.BranchStoreActionProvider;
+import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -13,7 +13,7 @@ import javafx.beans.value.ObservableValue;
 
 import java.util.List;
 
-public class PodmanContainerActionProviderMenu implements BranchStoreActionProvider<PodmanContainerStore> {
+public class PodmanContainerActionProviderMenu implements HubBranchProvider<PodmanContainerStore> {
 
     @Override
     public Class<PodmanContainerStore> getApplicableClass() {

@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
@@ -21,7 +21,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-public class SampleHubLeafProvider implements HubMenuLeafProvider<ShellStore> {
+public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
 
     @Override
     public StoreActionCategory getCategory() {

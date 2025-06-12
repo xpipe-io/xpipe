@@ -4,8 +4,8 @@ import io.xpipe.app.action.*;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.SingletonSessionStore;
-import io.xpipe.app.hub.action.BranchStoreActionProvider;
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubBranchProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -248,7 +248,7 @@ public class StoreEntryWrapper {
             try {
                 var defaultProvider = ActionProvider.ALL.stream()
                         .filter(e -> entry.getStore() != null
-                                && e instanceof HubMenuLeafProvider<?> def
+                                && e instanceof HubLeafProvider<?> def
                                 && (entry.getValidity().isUsable()
                                         || (!def.requiresValidStore() && entry.getProvider() != null))
                                 && def.getApplicableClass()
@@ -279,7 +279,7 @@ public class StoreEntryWrapper {
                         .collect(Collectors.toCollection(ArrayList::new));
                 newMinorProviders.removeIf(storeActionProvider -> {
                     return newMajorProviders.stream().anyMatch(mj -> {
-                        return mj instanceof BranchStoreActionProvider<?> branch
+                        return mj instanceof HubBranchProvider<?> branch
                                 && branch.getChildren(entry.ref()).stream()
                                         .anyMatch(c -> c.getClass().equals(storeActionProvider.getClass()));
                     });
@@ -313,7 +313,7 @@ public class StoreEntryWrapper {
     }
 
     public boolean showActionProvider(ActionProvider p, boolean major) {
-        if (p instanceof HubMenuLeafProvider<?> leaf) {
+        if (p instanceof HubLeafProvider<?> leaf) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
@@ -321,7 +321,7 @@ public class StoreEntryWrapper {
                     && (!major || leaf.isMajor(entry.ref()));
         }
 
-        if (p instanceof BranchStoreActionProvider<?> branch
+        if (p instanceof HubBranchProvider<?> branch
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
                 && branch.isApplicable(entry.ref())
@@ -354,7 +354,7 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            if (found instanceof HubMenuLeafProvider<?> def) {
+            if (found instanceof HubLeafProvider<?> def) {
                 def.execute(getEntry().ref());
             }
         } else {

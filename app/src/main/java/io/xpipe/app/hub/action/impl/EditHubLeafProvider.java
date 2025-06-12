@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class EditHubLeafProvider implements HubMenuLeafProvider<DataStore> {
+public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {

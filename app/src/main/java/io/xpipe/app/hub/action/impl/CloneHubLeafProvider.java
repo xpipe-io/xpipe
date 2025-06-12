@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -17,7 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
 
-public class CloneHubLeafProvider implements HubMenuLeafProvider<DataStore> {
+public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {
