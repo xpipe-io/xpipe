@@ -1,14 +1,14 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
-import io.xpipe.app.hub.action.MultiStoreAction;
+import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
-import io.xpipe.app.util.ScanDialogAction;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 
@@ -17,9 +17,22 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.List;
+public class ScanHubLeafProvider implements HubMenuLeafProvider<ShellStore> {
 
-public class ScanBatchStoreActionProvider implements BatchStoreActionProvider<ShellStore> {
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.OPEN;
+    }
+
+    @Override
+    public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+        return Action.builder().ref(ref).build();
+    }
+
+    @Override
+    public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
+        return true;
+    }
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
@@ -34,12 +47,12 @@ public class ScanBatchStoreActionProvider implements BatchStoreActionProvider<Sh
     }
 
     @Override
-    public ObservableValue<String> getName() {
-        return AppI18n.observable("addConnections");
+    public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+        return AppI18n.observable("scanConnections");
     }
 
     @Override
-    public LabelGraphic getIcon() {
+    public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
         return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
     }
 
@@ -49,22 +62,17 @@ public class ScanBatchStoreActionProvider implements BatchStoreActionProvider<Sh
     }
 
     @Override
-    public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> stores) {
-        return Action.builder().refs(stores).build();
-    }
-
-    @Override
     public String getId() {
-        return "scanStoreBatch";
+        return "scanStore";
     }
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends MultiStoreAction<ShellStore> {
+    static class Action extends StoreAction<ShellStore> {
 
         @Override
         public void executeImpl() {
-            ScanDialog.showMulti(refs, ScanDialogAction.shellScanAction());
+            ScanDialog.showSingleAsync(ref.get());
         }
     }
 }

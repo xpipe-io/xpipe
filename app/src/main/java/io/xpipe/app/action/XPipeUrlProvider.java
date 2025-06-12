@@ -1,10 +1,8 @@
-package io.xpipe.app.hub.action.impl;
-
-import io.xpipe.app.action.*;
+package io.xpipe.app.action;
 
 import java.net.URI;
 
-public class XPipeUrlActionProvider implements LauncherActionProvider {
+public class XPipeUrlProvider implements LauncherUrlProvider {
 
     @Override
     public String getScheme() {

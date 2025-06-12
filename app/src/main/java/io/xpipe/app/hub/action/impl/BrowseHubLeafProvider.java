@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -18,7 +18,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class BrowseStoreActionProvider implements LeafStoreActionProvider<FileSystemStore> {
+public class BrowseHubLeafProvider implements HubMenuLeafProvider<FileSystemStore> {
 
     @Override
     public Action createAction(DataStoreEntryRef<FileSystemStore> ref) {

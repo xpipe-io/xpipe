@@ -1,4 +1,5 @@
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.action.XPipeUrlProvider;
 import io.xpipe.app.beacon.impl.*;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.*;
@@ -120,11 +121,9 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
 
-    provides ActionProvider with
-            XPipeUrlActionProvider,
-            LaunchStoreActionProvider,
-            EditStoreActionProvider,
-            DownloadMenuProvider,
+    provides ActionProvider with BrowseHubLeafProvider, XPipeUrlProvider, LaunchHubMenuLeafProvider, CloneHubLeafProvider, EditHubLeafProvider,
+            DownloadMenuProvider, RefreshChildrenHubLeafProvider,
+            ScanHubBatchProvider,
             RunCommandInBrowserActionProvider,
             RunCommandInBackgroundActionProvider,
             RunCommandInTerminalActionProvider,
@@ -135,7 +134,7 @@ open module io.xpipe.app {
             OpenFileDefaultMenuProvider,
             OpenFileWithMenuProvider,
             OpenDirectoryMenuProvider,
-            OpenDirectoryInNewTabMenuProvider, ScanStoreActionProvider, RefreshStoreActionProvider,
+            OpenDirectoryInNewTabMenuProvider, ScanHubLeafProvider, RefreshHubLeafProvider,
             OpenTerminalMenuProvider,
             OpenNativeFileDetailsMenuProvider,
             BrowseInNativeManagerActionProvider,

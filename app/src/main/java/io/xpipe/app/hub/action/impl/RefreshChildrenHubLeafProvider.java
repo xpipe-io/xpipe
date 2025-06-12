@@ -1,7 +1,7 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -15,7 +15,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class RefreshChildrenStoreActionProvider implements LeafStoreActionProvider<FixedHierarchyStore> {
+public class RefreshChildrenHubLeafProvider implements HubMenuLeafProvider<FixedHierarchyStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -45,11 +45,6 @@ public class RefreshChildrenStoreActionProvider implements LeafStoreActionProvid
     @Override
     public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
         return o.getStore().canManuallyRefresh();
-    }
-
-    @Override
-    public AbstractAction createAction(DataStoreEntryRef<FixedHierarchyStore> ref) {
-        return Action.builder().ref(ref).build();
     }
 
     @Override

@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class StoreStopActionProvider
-        implements LeafStoreActionProvider<StoppableStore>, BatchStoreActionProvider<StoppableStore> {
+        implements HubMenuLeafProvider<StoppableStore>, BatchHubProvider<StoppableStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -57,7 +57,7 @@ public class StoreStopActionProvider
     }
 
     @Override
-    public Action createAction(DataStoreEntryRef<StoppableStore> ref) {
+    public Action createBatchAction(DataStoreEntryRef<StoppableStore> ref) {
         return Action.builder().ref(ref).build();
     }
 
@@ -73,7 +73,7 @@ public class StoreStopActionProvider
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<StoppableStore> {
+    public static class Action extends StoreAction<StoppableStore> {
 
         @Override
         public void executeImpl() throws Exception {

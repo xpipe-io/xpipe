@@ -1,31 +1,24 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
-import io.xpipe.app.hub.comp.StoreIconChoiceDialog;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ChangeStoreIconActionProvider implements LeafStoreActionProvider<DataStore> {
+public class EditHubLeafProvider implements HubMenuLeafProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.CONFIGURATION;
-    }
-
-    @Override
-    public AbstractAction createAction(DataStoreEntryRef<DataStore> ref) {
-        return Action.builder().ref(ref).build();
     }
 
     @Override
@@ -35,17 +28,22 @@ public class ChangeStoreIconActionProvider implements LeafStoreActionProvider<Da
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("base.changeIcon");
+        return AppI18n.observable("configure");
     }
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2t-tooltip-image-outline");
+        return new LabelGraphic.IconGraphic("mdi2w-wrench");
+    }
+
+    @Override
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
     public String getId() {
-        return "changeStoreIcon";
+        return "editStore";
     }
 
     @Jacksonized
@@ -54,9 +52,7 @@ public class ChangeStoreIconActionProvider implements LeafStoreActionProvider<Da
 
         @Override
         public void executeImpl() {
-            Platform.runLater(() -> {
-                StoreIconChoiceDialog.show(ref.get());
-            });
+            StoreCreationDialog.showEdit(ref.get());
         }
     }
 }

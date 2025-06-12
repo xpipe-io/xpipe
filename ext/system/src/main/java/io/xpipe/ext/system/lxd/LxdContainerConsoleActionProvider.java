@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LxdContainerConsoleActionProvider implements LeafStoreActionProvider<LxdContainerStore> {
+public class LxdContainerConsoleActionProvider implements HubMenuLeafProvider<LxdContainerStore> {
 
     @Override
     public AbstractAction createAction(DataStoreEntryRef<LxdContainerStore> ref) {

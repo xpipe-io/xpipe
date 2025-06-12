@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStorage;
@@ -15,8 +15,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class ServiceRefreshActionProvider
-        implements LeafStoreActionProvider<FixedServiceCreatorStore>,
-                BatchStoreActionProvider<FixedServiceCreatorStore> {
+        implements HubMenuLeafProvider<FixedServiceCreatorStore>, BatchHubProvider<FixedServiceCreatorStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -59,7 +58,7 @@ public class ServiceRefreshActionProvider
     }
 
     @Override
-    public Action createAction(DataStoreEntryRef<FixedServiceCreatorStore> ref) {
+    public Action createBatchAction(DataStoreEntryRef<FixedServiceCreatorStore> ref) {
         return Action.builder().ref(ref).build();
     }
 

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ServiceCopyAddressActionProvider implements LeafStoreActionProvider<AbstractServiceStore> {
+public class ServiceCopyAddressActionProvider implements HubMenuLeafProvider<AbstractServiceStore> {
 
     @Override
     public StoreActionCategory getCategory() {

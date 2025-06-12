@@ -6,7 +6,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
@@ -93,7 +93,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         for (StoreEntryWrapper w : l) {
             var actions = ActionProvider.ALL.stream()
                     .filter(actionProvider -> {
-                        var s = actionProvider instanceof BatchStoreActionProvider<?> b ? b : null;
+                        var s = actionProvider instanceof BatchHubProvider<?> b ? b : null;
                         if (s == null) {
                             return false;
                         }
@@ -117,7 +117,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
     @SuppressWarnings("unchecked")
     private <T extends DataStore> Comp<?> buildButton(ActionProvider p) {
-        BatchStoreActionProvider<T> s = (BatchStoreActionProvider<T>) p;
+        BatchHubProvider<T> s = (BatchHubProvider<T>) p;
         if (s == null) {
             return Comp.empty();
         }
@@ -149,7 +149,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
     @SuppressWarnings("unchecked")
     private <T extends DataStore> MenuItem buildMenuItemForAction(List<DataStoreEntryRef<T>> batch, ActionProvider a) {
-        BatchStoreActionProvider<T> s = (BatchStoreActionProvider<T>) a;
+        BatchHubProvider<T> s = (BatchHubProvider<T>) a;
         var name = s.getName();
         var icon = s.getIcon();
         var children = s.getChildren(batch);
@@ -158,7 +158,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             menu.textProperty().bind(name);
             menu.setGraphic(icon.createGraphicNode());
             var items = children.stream()
-                    .filter(actionProvider -> actionProvider instanceof BatchStoreActionProvider<?>)
+                    .filter(actionProvider -> actionProvider instanceof BatchHubProvider<?>)
                     .map(c -> buildMenuItemForAction(batch, c))
                     .toList();
             menu.getItems().addAll(items);
@@ -179,11 +179,11 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> void runActions(BatchStoreActionProvider<?> s) {
+    private <T extends DataStore> void runActions(BatchHubProvider<?> s) {
         var l = new ArrayList<>(
                 StoreViewState.get().getEffectiveBatchModeSelection().getList());
         var mapped = l.stream().map(w -> w.getEntry().<T>ref()).toList();
-        var action = ((BatchStoreActionProvider<T>) s).createBatchAction(mapped);
+        var action = ((BatchHubProvider<T>) s).createBatchAction(mapped);
         if (action != null) {
             action.executeAsync();
         }

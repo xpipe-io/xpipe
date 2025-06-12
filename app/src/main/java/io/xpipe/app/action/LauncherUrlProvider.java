@@ -2,7 +2,7 @@ package io.xpipe.app.action;
 
 import java.net.URI;
 
-public interface LauncherActionProvider extends ActionProvider {
+public interface LauncherUrlProvider extends ActionProvider {
 
     String getScheme();
 

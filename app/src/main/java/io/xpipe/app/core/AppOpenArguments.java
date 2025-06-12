@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.action.LauncherActionProvider;
+import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -79,13 +79,13 @@ public class AppOpenArguments {
             if (scheme != null) {
                 var action = uri.getScheme();
                 var found = ActionProvider.ALL.stream()
-                        .filter(actionProvider -> actionProvider instanceof LauncherActionProvider lcs
+                        .filter(actionProvider -> actionProvider instanceof LauncherUrlProvider lcs
                                 && lcs.getScheme().equalsIgnoreCase(action))
                         .findFirst();
                 if (found.isPresent()) {
                     AbstractAction a;
                     try {
-                        a = ((LauncherActionProvider) found.get()).createAction(uri);
+                        a = ((LauncherUrlProvider) found.get()).createAction(uri);
                     } catch (Exception e) {
                         ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                         return List.of();

@@ -7,7 +7,7 @@ import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
 
-public interface StoreActionProvider<T extends DataStore> extends ActionProvider {
+public interface HubMenuItemProvider<T extends DataStore> extends ActionProvider {
 
     default StoreActionCategory getCategory() {
         return null;

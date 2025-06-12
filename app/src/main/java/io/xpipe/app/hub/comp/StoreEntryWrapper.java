@@ -5,9 +5,9 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.hub.action.BranchStoreActionProvider;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
-import io.xpipe.app.hub.action.StoreActionProvider;
-import io.xpipe.app.hub.action.impl.EditStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
+import io.xpipe.app.hub.action.HubMenuItemProvider;
+import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -39,9 +39,9 @@ public class StoreEntryWrapper {
     private final BooleanProperty disabled = new SimpleBooleanProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final Property<DataStoreEntry.Validity> validity = new SimpleObjectProperty<>();
-    private final ListProperty<StoreActionProvider<?>> majorActionProviders =
+    private final ListProperty<HubMenuItemProvider<?>> majorActionProviders =
             new SimpleListProperty<>(FXCollections.observableArrayList());
-    private final ListProperty<StoreActionProvider<?>> minorActionProviders =
+    private final ListProperty<HubMenuItemProvider<?>> minorActionProviders =
             new SimpleListProperty<>(FXCollections.observableArrayList());
     private final Property<ActionProvider> defaultActionProvider = new SimpleObjectProperty<>();
     private final BooleanProperty deletable = new SimpleBooleanProperty();
@@ -248,7 +248,7 @@ public class StoreEntryWrapper {
             try {
                 var defaultProvider = ActionProvider.ALL.stream()
                         .filter(e -> entry.getStore() != null
-                                && e instanceof LeafStoreActionProvider<?> def
+                                && e instanceof HubMenuLeafProvider<?> def
                                 && (entry.getValidity().isUsable()
                                         || (!def.requiresValidStore() && entry.getProvider() != null))
                                 && def.getApplicableClass()
@@ -256,11 +256,11 @@ public class StoreEntryWrapper {
                                 && def.isApplicable(entry.ref())
                                 && def.isDefault(entry.ref()))
                         .findFirst()
-                        .orElse(new EditStoreActionProvider());
+                        .orElse(new EditHubLeafProvider());
                 this.defaultActionProvider.setValue(defaultProvider);
 
                 var newMajorProviders = ActionProvider.ALL.stream()
-                        .map(actionProvider -> actionProvider instanceof StoreActionProvider<?> sa ? sa : null)
+                        .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
                         .filter(Objects::nonNull)
                         .filter(dataStoreActionProvider -> {
                             return showActionProvider(dataStoreActionProvider, true);
@@ -271,7 +271,7 @@ public class StoreEntryWrapper {
                 }
 
                 var newMinorProviders = ActionProvider.ALL.stream()
-                        .map(actionProvider -> actionProvider instanceof StoreActionProvider<?> sa ? sa : null)
+                        .map(actionProvider -> actionProvider instanceof HubMenuItemProvider<?> sa ? sa : null)
                         .filter(Objects::nonNull)
                         .filter(dataStoreActionProvider -> {
                             return showActionProvider(dataStoreActionProvider, false);
@@ -313,7 +313,7 @@ public class StoreEntryWrapper {
     }
 
     public boolean showActionProvider(ActionProvider p, boolean major) {
-        if (p instanceof LeafStoreActionProvider<?> leaf) {
+        if (p instanceof HubMenuLeafProvider<?> leaf) {
             return (entry.getValidity().isUsable() || (!leaf.requiresValidStore() && entry.getProvider() != null))
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
@@ -354,7 +354,7 @@ public class StoreEntryWrapper {
         var found = getDefaultActionProvider().getValue();
         entry.notifyUpdate(true, false);
         if (found != null) {
-            if (found instanceof LeafStoreActionProvider<?> def) {
+            if (found instanceof HubMenuLeafProvider<?> def) {
                 var act = def.createAction(entry.ref());
                 act.executeAsync();
             }

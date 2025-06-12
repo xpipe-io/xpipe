@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,8 +14,8 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LaunchStoreActionProvider
-        implements LeafStoreActionProvider<DataStore>, BatchStoreActionProvider<DataStore> {
+public class LaunchHubMenuLeafProvider
+        implements HubMenuLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -41,11 +41,6 @@ public class LaunchStoreActionProvider
     @Override
     public boolean isDefault(DataStoreEntryRef<DataStore> o) {
         return true;
-    }
-
-    @Override
-    public Action createAction(DataStoreEntryRef<DataStore> ref) {
-        return Action.builder().ref(ref).build();
     }
 
     @Override

@@ -5,9 +5,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.*;
-import io.xpipe.app.hub.action.impl.CategoryConfigActionProvider;
-import io.xpipe.app.hub.action.impl.CategorySelectActionProvider;
-import io.xpipe.app.hub.action.impl.RefreshStoreActionProvider;
+import io.xpipe.app.hub.action.impl.RefreshHubLeafProvider;
+import io.xpipe.app.hub.comp.StoreCategoryConfigComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RunScriptActionProviderMenu
-        implements BranchStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+        implements BranchStoreActionProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -33,7 +33,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class TerminalRunActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -43,7 +43,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public RunTerminalScriptActionProvider.Action createAction(DataStoreEntryRef<ShellStore> ref) {
+        public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
                     .scriptStore(hierarchy.getLeafBase())
@@ -87,7 +87,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class HubRunActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -97,7 +97,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public RunHubScriptActionProvider.Action createAction(DataStoreEntryRef<ShellStore> ref) {
+        public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunHubScriptActionProvider.Action.builder()
                     .ref(ref)
                     .scriptStore(hierarchy.getLeafBase())
@@ -145,7 +145,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class BackgroundRunActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -155,7 +155,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public RunBackgroundScriptActionProvider.Action createAction(DataStoreEntryRef<ShellStore> ref) {
+        public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunBackgroundScriptActionProvider.Action.builder()
                     .ref(ref)
                     .scriptStore(hierarchy.getLeafBase())
@@ -200,7 +200,7 @@ public class RunScriptActionProviderMenu
 
     @Value
     private static class ScriptActionProvider
-            implements BranchStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements BranchStoreActionProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -244,7 +244,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public List<StoreActionProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
+        public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
             if (hierarchy.isLeaf()) {
                 return List.of(
                         new TerminalRunActionProvider(hierarchy),
@@ -259,21 +259,18 @@ public class RunScriptActionProviderMenu
     }
 
     private static class NoScriptsActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
-        public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> stores) {
-            return CategorySelectActionProvider.Action.builder()
-                    .ref(stores.getFirst().asNeeded())
-                    .build();
+        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
+            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(dataStoreEntryRefs.getFirst().get()));
+            cat.select();
         }
 
         @Override
-        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
-            return CategorySelectActionProvider.Action.builder()
-                    .ref(ref.asNeeded())
-                    .build()
-                    .asNeeded();
+        public void execute(DataStoreEntryRef<ShellStore> ref) throws Exception {
+            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
+            cat.select();
         }
 
         @Override
@@ -308,14 +305,19 @@ public class RunScriptActionProviderMenu
     }
 
     private static class ScriptsDisabledActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
 
         @Override
-        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
-            return CategoryConfigActionProvider.Action.builder()
-                    .ref(ref.asNeeded())
-                    .build()
-                    .asNeeded();
+        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
+            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(dataStoreEntryRefs.getFirst().get()));
+            StoreCategoryConfigComp.show(cat);
+        }
+
+        @Override
+        public void execute(DataStoreEntryRef<ShellStore> ref) throws Exception {
+            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
+            StoreCategoryConfigComp.show(cat);
         }
 
         @Override
@@ -350,7 +352,7 @@ public class RunScriptActionProviderMenu
     }
 
     private static class NoStateActionProvider
-            implements LeafStoreActionProvider<ShellStore>, BatchStoreActionProvider<ShellStore> {
+            implements HubMenuLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
@@ -383,8 +385,8 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
-            return RefreshStoreActionProvider.Action.builder()
+        public StoreAction<ShellStore> createBatchAction(DataStoreEntryRef<ShellStore> ref) {
+            return RefreshHubLeafProvider.Action.builder()
                     .ref(ref.asNeeded())
                     .build()
                     .asNeeded();
@@ -424,7 +426,7 @@ public class RunScriptActionProviderMenu
     }
 
     @Override
-    public List<StoreActionProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
+    public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
         if (Boolean.TRUE.equals(
                 DataStorage.get().getEffectiveCategoryConfig(store.get()).getDontAllowScripts())) {
             return List.of(new ScriptsDisabledActionProvider());
@@ -447,7 +449,7 @@ public class RunScriptActionProviderMenu
 
             return true;
         });
-        List<StoreActionProvider<?>> list = hierarchy.getChildren().stream()
+        List<HubMenuItemProvider<?>> list = hierarchy.getChildren().stream()
                 .map(c -> new ScriptActionProvider(c))
                 .collect(Collectors.toList());
         if (list.isEmpty()) {

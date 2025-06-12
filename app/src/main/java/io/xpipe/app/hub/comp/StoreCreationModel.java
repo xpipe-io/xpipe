@@ -2,7 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.action.impl.LaunchStoreActionProvider;
+import io.xpipe.app.hub.action.impl.LaunchHubMenuLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -171,7 +171,7 @@ public class StoreCreationModel {
 
     void connect() {
         var temp = DataStoreEntry.createTempWrapper(store.getValue());
-        var action = LaunchStoreActionProvider.Action.builder().ref(temp.ref()).build();
+        var action = LaunchHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
     }
 

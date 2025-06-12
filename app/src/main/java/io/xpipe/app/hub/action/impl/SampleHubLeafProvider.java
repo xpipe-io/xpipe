@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
@@ -21,16 +21,11 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-public class SampleStoreActionProvider implements LeafStoreActionProvider<ShellStore> {
+public class SampleHubLeafProvider implements HubMenuLeafProvider<ShellStore> {
 
     @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.OPEN;
-    }
-
-    @Override
-    public Action createAction(DataStoreEntryRef<ShellStore> ref) {
-        return Action.builder().ref(ref).build();
     }
 
     @Override
@@ -64,7 +59,7 @@ public class SampleStoreActionProvider implements LeafStoreActionProvider<ShellS
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<ShellStore> {
+    public static class Action extends StoreAction<ShellStore> {
 
         @Override
         public void executeImpl() throws Exception {

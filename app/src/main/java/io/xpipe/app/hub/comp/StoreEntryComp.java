@@ -2,7 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.hub.action.BranchStoreActionProvider;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -15,7 +15,7 @@ import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.hub.action.StoreActionCategory;
-import io.xpipe.app.hub.action.StoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -44,7 +44,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class StoreEntryComp extends SimpleComp {
 
@@ -276,8 +275,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         return ig;
     }
 
-    private Comp<?> buildButton(StoreActionProvider<?> p) {
-        var leaf = p instanceof LeafStoreActionProvider<?> l ? l : null;
+    private Comp<?> buildButton(HubMenuItemProvider<?> p) {
+        var leaf = p instanceof HubMenuLeafProvider<?> l ? l : null;
         var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
         var button = new IconButtonComp(
                 p.getIcon(getWrapper().getEntry().ref()),
@@ -505,7 +504,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     private MenuItem buildMenuItemForAction(ActionProvider p) {
-        var leaf = p instanceof LeafStoreActionProvider<?> l ? l : null;
+        var leaf = p instanceof HubMenuLeafProvider<?> l ? l : null;
         var branch = p instanceof BranchStoreActionProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 

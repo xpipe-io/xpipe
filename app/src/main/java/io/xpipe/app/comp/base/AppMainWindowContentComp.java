@@ -12,6 +12,7 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
 import javafx.animation.*;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -36,6 +37,7 @@ public class AppMainWindowContentComp extends SimpleComp {
     protected Region createSimple() {
         var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getInstance().getLoadedContent();
+        var sidebarPresent = new SimpleBooleanProperty();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(64);
@@ -87,6 +89,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                     anim.stop();
                     struc.prepareAddition();
                     pane.getChildren().add(struc.get());
+                    sidebarPresent.set(true);
                     PlatformThread.runNestedLoopIteration();
                     pane.getStyleClass().remove("background");
                     pane.getChildren().remove(vbox);
@@ -115,8 +118,8 @@ public class AppMainWindowContentComp extends SimpleComp {
         var modal = new ModalOverlayStackComp(bg, overlay);
         var r =  modal.createRegion();
         var p = r.lookupAll(".modal-overlay-stack-element");
-        loaded.subscribe(v -> {
-           if (v != null) {
+        sidebarPresent.subscribe(v -> {
+           if (v) {
                p.forEach(node -> {
                    node.pseudoClassStateChanged(PseudoClass.getPseudoClass("loaded"), true);
                });

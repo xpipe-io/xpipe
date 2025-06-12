@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
+import io.xpipe.app.hub.action.HubMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.hub.action.BatchStoreActionProvider;
+import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 public class StoreStartActionProvider
-        implements LeafStoreActionProvider<StartableStore>, BatchStoreActionProvider<StartableStore> {
+        implements HubMenuLeafProvider<StartableStore>, BatchHubProvider<StartableStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -27,7 +27,7 @@ public class StoreStartActionProvider
     }
 
     @Override
-    public Action createAction(DataStoreEntryRef<StartableStore> ref) {
+    public Action createBatchAction(DataStoreEntryRef<StartableStore> ref) {
         return Action.builder().ref(ref).build();
     }
 
@@ -73,7 +73,7 @@ public class StoreStartActionProvider
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<StartableStore> {
+    public static class Action extends StoreAction<StartableStore> {
 
         @Override
         public void executeImpl() throws Exception {

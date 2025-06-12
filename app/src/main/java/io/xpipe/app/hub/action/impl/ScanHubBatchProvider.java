@@ -1,14 +1,14 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.hub.action.LeafStoreActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.hub.action.BatchHubProvider;
+import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
+import io.xpipe.app.util.ScanDialogAction;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.process.SystemState;
 
@@ -17,22 +17,9 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ScanStoreActionProvider implements LeafStoreActionProvider<ShellStore> {
+import java.util.List;
 
-    @Override
-    public StoreActionCategory getCategory() {
-        return StoreActionCategory.OPEN;
-    }
-
-    @Override
-    public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
-        return Action.builder().ref(ref).build();
-    }
-
-    @Override
-    public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
-        return true;
-    }
+public class ScanHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
@@ -47,12 +34,12 @@ public class ScanStoreActionProvider implements LeafStoreActionProvider<ShellSto
     }
 
     @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-        return AppI18n.observable("scanConnections");
+    public ObservableValue<String> getName() {
+        return AppI18n.observable("addConnections");
     }
 
     @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
     }
 
@@ -63,16 +50,16 @@ public class ScanStoreActionProvider implements LeafStoreActionProvider<ShellSto
 
     @Override
     public String getId() {
-        return "scanStore";
+        return "scanStoreBatch";
     }
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<ShellStore> {
+    public static class Action extends MultiStoreAction<ShellStore> {
 
         @Override
         public void executeImpl() {
-            ScanDialog.showSingleAsync(ref.get());
+            ScanDialog.showMulti(refs, ScanDialogAction.shellScanAction());
         }
     }
 }
