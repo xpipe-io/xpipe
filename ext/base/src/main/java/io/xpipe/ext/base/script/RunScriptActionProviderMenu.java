@@ -268,7 +268,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public void execute(DataStoreEntryRef<ShellStore> ref) throws Exception {
+        public void execute(DataStoreEntryRef<ShellStore> ref) {
             var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
             cat.select();
         }
@@ -315,7 +315,7 @@ public class RunScriptActionProviderMenu
         }
 
         @Override
-        public void execute(DataStoreEntryRef<ShellStore> ref) throws Exception {
+        public void execute(DataStoreEntryRef<ShellStore> ref) {
             var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
             StoreCategoryConfigComp.show(cat);
         }

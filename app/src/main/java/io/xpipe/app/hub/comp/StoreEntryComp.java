@@ -282,7 +282,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 p.getIcon(getWrapper().getEntry().ref()),
                 leaf != null
                         ? () -> {
-                            leaf.createAction(getWrapper().getEntry().ref()).executeAsync();
+                            leaf.execute(getWrapper().getEntry().ref());
                         }
                         : null);
         if (branch != null) {
@@ -543,7 +543,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         }
 
         item.setOnAction(event -> {
-            leaf.createAction(getWrapper().getEntry().ref()).executeAsync();
+            leaf.execute(getWrapper().getEntry().ref());
             event.consume();
             if (event.getTarget() instanceof Menu m) {
                 m.getParentPopup().hide();

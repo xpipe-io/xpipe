@@ -17,7 +17,7 @@ public interface HubMenuLeafProvider<T extends DataStore> extends HubMenuItemPro
         return false;
     }
 
-    default void execute(DataStoreEntryRef<T> ref) throws Exception {
+    default void execute(DataStoreEntryRef<T> ref) {
         createAction(ref).executeAsync();
     }
 

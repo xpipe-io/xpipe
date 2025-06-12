@@ -43,7 +43,7 @@ public interface ActionProvider {
                 .filter(aClass -> aClass.getSimpleName().equals("Action"))
                 .findFirst()
                 .map(aClass -> (Class<? extends AbstractAction>) aClass);
-        return Optional.of(child.get());
+        return child.isPresent() ? Optional.of(child.get()) : Optional.empty();
     }
 
     class Loader implements ModuleLayerLoader {

@@ -355,8 +355,7 @@ public class StoreEntryWrapper {
         entry.notifyUpdate(true, false);
         if (found != null) {
             if (found instanceof HubMenuLeafProvider<?> def) {
-                var act = def.createAction(entry.ref());
-                act.executeAsync();
+                def.execute(getEntry().ref());
             }
         } else {
             entry.setExpanded(!entry.isExpanded());
