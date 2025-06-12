@@ -280,6 +280,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         var icon = new FontIcon("mdal-keyboard_arrow_down");
         icon.setDisable(true);
         icon.setPickOnBounds(false);
+        icon.visibleProperty().bind(r.disabledProperty().not());
         AppFontSizes.xl(icon);
         var pane = new StackPane(r, icon);
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
