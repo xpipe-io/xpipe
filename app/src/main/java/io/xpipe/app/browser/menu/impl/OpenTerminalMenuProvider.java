@@ -25,7 +25,7 @@ import java.util.List;
 public class OpenTerminalMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionClass() {
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
         return OpenTerminalActionProvider.class;
     }
 

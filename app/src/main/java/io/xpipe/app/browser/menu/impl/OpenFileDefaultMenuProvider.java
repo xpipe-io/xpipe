@@ -21,7 +21,7 @@ import java.util.List;
 public class OpenFileDefaultMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionClass() {
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
         return OpenFileDefaultActionProvider.class;
     }
 

@@ -21,7 +21,7 @@ import java.util.List;
 public class OpenDirectoryMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionClass() {
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
         return OpenDirectoryActionProvider.class;
     }
 

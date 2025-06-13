@@ -16,7 +16,7 @@ import java.util.List;
 public class BrowseInNativeManagerMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionClass() {
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
         return BrowseInNativeManagerActionProvider.class;
     }
 
