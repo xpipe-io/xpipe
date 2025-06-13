@@ -166,17 +166,21 @@ project.ext {
     // Use project liliput
     jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
 
+    // Reduce heap usage with deduplication
+    jvmRunArgs += ['-XX:+UseStringDeduplication',]
+
     // GC config
     jvmRunArgs += [
             '-XX:+UseG1GC',
-            // Resizing heap on older Windows systems is very costly for some reason
+            // Resizing heap is costly
             // Make sure that heap is not resized on startup at least
-            os.isWindows() ? '-Xms500m' : '-Xms300m',
+            '-Xms500m',
             '-Xmx4G',
+            '-XX:MinHeapFreeRatio=15',
+            '-XX:MaxHeapFreeRatio=25',
             '-XX:GCTimeRatio=9',
-            '-XX:+UseStringDeduplication',
-            // This is very important for some (mostly slower) systems
-            // The default makes GC pauses 100x times longer for some reason
+            // This is very important for some older Windows systems
+            // The default makes GC pauses longer for some reason
             '-XX:G1HeapRegionSize=4m'
     ];
 
