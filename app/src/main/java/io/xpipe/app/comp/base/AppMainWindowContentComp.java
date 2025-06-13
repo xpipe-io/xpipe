@@ -43,11 +43,11 @@ public class AppMainWindowContentComp extends SimpleComp {
         var sidebarPresent = new SimpleBooleanProperty();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
-            loadingIcon.setFitWidth(128);
-            loadingIcon.setFitHeight(128);
+            loadingIcon.setFitWidth(80);
+            loadingIcon.setFitHeight(80);
 
             var color = AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark() ?
-                    Color.web("#0b898aff") : Color.web("#0b898aff");
+                    Color.web("#0b898aff").darker() : Color.web("#0b898aff");
             DropShadow shadow = new DropShadow();
             shadow.setRadius(10);
             shadow.setColor(color);
