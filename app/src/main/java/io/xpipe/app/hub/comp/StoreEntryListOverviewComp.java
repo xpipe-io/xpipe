@@ -15,9 +15,12 @@ import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -64,10 +67,14 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         var count = new CountComp(allCount, allCount, Function.identity());
 
         var c = count.createRegion();
+        var sep = new Separator(Orientation.VERTICAL);
+        sep.setPadding(new Insets(6, 3, 4, 3));
         var topBar = new HBox(
                 label,
                 c,
                 Comp.hspacer().createRegion(),
+                createIndexSortButton().createRegion(),
+                sep,
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
@@ -137,26 +144,67 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         return b;
     }
 
-    private Comp<?> createAlphabeticalSortButton() {
-        var sortMode = StoreViewState.get().getSortMode();
+    private Comp<?> createIndexSortButton() {
+        var sortMode = StoreViewState.get().getGlobalSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
-                    if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
-                        return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-descending");
+                    if (sortMode.getValue() == StoreSectionSortMode.INDEX_ASC) {
+                        return new LabelGraphic.IconGraphic("mdi2o-order-numeric-ascending");
                     }
-                    if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
-                        return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-ascending");
+                    if (sortMode.getValue() == StoreSectionSortMode.INDEX_DESC) {
+                        return new LabelGraphic.IconGraphic("mdi2o-order-numeric-descending");
                     }
-                    return new LabelGraphic.IconGraphic("mdi2s-sort-alphabetical-descending");
+                    return new LabelGraphic.IconGraphic("mdi2o-order-numeric-ascending");
+                },
+                sortMode);
+        var button = new IconButtonComp(icon, () -> {
+            if (sortMode.getValue() == StoreSectionSortMode.INDEX_ASC) {
+                sortMode.setValue(StoreSectionSortMode.INDEX_DESC);
+            } else if (sortMode.getValue() == StoreSectionSortMode.INDEX_DESC) {
+                sortMode.setValue(null);
+            } else {
+                sortMode.setValue(StoreSectionSortMode.INDEX_ASC);
+            }
+        });
+        button.apply(struc -> {
+            struc
+                    .get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                if (sortMode.getValue() == StoreSectionSortMode.INDEX_ASC
+                                        || sortMode.getValue() == StoreSectionSortMode.INDEX_DESC) {
+                                    return 1.0;
+                                }
+                                return 0.4;
+                            },
+                            sortMode));
+        });
+        button.accessibleTextKey("sortIndexed");
+        button.tooltipKey("sortIndexed");
+        return button;
+    }
+
+    private Comp<?> createAlphabeticalSortButton() {
+        var sortMode = StoreViewState.get().getTieSortMode();
+        var icon = Bindings.createObjectBinding(
+                () -> {
+                    if (sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_ASC) {
+                        return new LabelGraphic.IconGraphic("mdi2o-order-alphabetical-descending");
+                    }
+                    if (sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_DESC) {
+                        return new LabelGraphic.IconGraphic("mdi2o-order-alphabetical-ascending");
+                    }
+                    return new LabelGraphic.IconGraphic("mdi2o-order-alphabetical-descending");
                 },
                 sortMode);
         var alphabetical = new IconButtonComp(icon, () -> {
-            if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC) {
-                sortMode.setValue(StoreSortMode.ALPHABETICAL_DESC);
-            } else if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
-                sortMode.setValue(StoreSortMode.ALPHABETICAL_ASC);
+            if (sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_ASC) {
+                sortMode.setValue(StoreSectionSortMode.ALPHABETICAL_DESC);
+            } else if (sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_DESC) {
+                sortMode.setValue(StoreSectionSortMode.ALPHABETICAL_ASC);
             } else {
-                sortMode.setValue(StoreSortMode.ALPHABETICAL_ASC);
+                sortMode.setValue(StoreSectionSortMode.ALPHABETICAL_ASC);
             }
         });
         alphabetical.apply(alphabeticalR -> {
@@ -165,8 +213,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
-                                if (sortMode.getValue() == StoreSortMode.ALPHABETICAL_ASC
-                                        || sortMode.getValue() == StoreSortMode.ALPHABETICAL_DESC) {
+                                if (sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_ASC
+                                        || sortMode.getValue() == StoreSectionSortMode.ALPHABETICAL_DESC) {
                                     return 1.0;
                                 }
                                 return 0.4;
@@ -179,25 +227,25 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Comp<?> createDateSortButton() {
-        var sortMode = StoreViewState.get().getSortMode();
+        var sortMode = StoreViewState.get().getTieSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
-                    if (sortMode.getValue() == StoreSortMode.DATE_ASC) {
+                    if (sortMode.getValue() == StoreSectionSortMode.DATE_ASC) {
                         return new LabelGraphic.IconGraphic("mdi2s-sort-clock-ascending-outline");
                     }
-                    if (sortMode.getValue() == StoreSortMode.DATE_DESC) {
+                    if (sortMode.getValue() == StoreSectionSortMode.DATE_DESC) {
                         return new LabelGraphic.IconGraphic("mdi2s-sort-clock-descending-outline");
                     }
                     return new LabelGraphic.IconGraphic("mdi2s-sort-clock-ascending-outline");
                 },
                 sortMode);
         var date = new IconButtonComp(icon, () -> {
-            if (sortMode.getValue() == StoreSortMode.DATE_ASC) {
-                sortMode.setValue(StoreSortMode.DATE_DESC);
-            } else if (sortMode.getValue() == StoreSortMode.DATE_DESC) {
-                sortMode.setValue(StoreSortMode.DATE_ASC);
+            if (sortMode.getValue() == StoreSectionSortMode.DATE_ASC) {
+                sortMode.setValue(StoreSectionSortMode.DATE_DESC);
+            } else if (sortMode.getValue() == StoreSectionSortMode.DATE_DESC) {
+                sortMode.setValue(StoreSectionSortMode.DATE_ASC);
             } else {
-                sortMode.setValue(StoreSortMode.DATE_ASC);
+                sortMode.setValue(StoreSectionSortMode.DATE_ASC);
             }
         });
         date.apply(dateR -> {
@@ -205,8 +253,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
-                                if (sortMode.getValue() == StoreSortMode.DATE_ASC
-                                        || sortMode.getValue() == StoreSortMode.DATE_DESC) {
+                                if (sortMode.getValue() == StoreSectionSortMode.DATE_ASC
+                                        || sortMode.getValue() == StoreSectionSortMode.DATE_DESC) {
                                     return 1.0;
                                 }
                                 return 0.4;

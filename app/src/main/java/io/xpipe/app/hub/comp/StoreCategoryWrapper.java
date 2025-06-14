@@ -27,7 +27,6 @@ public class StoreCategoryWrapper {
     private final Property<String> name;
     private final DataStoreCategory category;
     private final Property<Instant> lastAccess;
-    private final Property<StoreSortMode> sortMode;
     private final BooleanProperty sync;
     private final DerivedObservableList<StoreCategoryWrapper> children;
     private final DerivedObservableList<StoreEntryWrapper> directContainedEntries;
@@ -55,7 +54,6 @@ public class StoreCategoryWrapper {
         this.category = category;
         this.name = new SimpleStringProperty(category.getName());
         this.lastAccess = new SimpleObjectProperty<>(category.getLastAccess());
-        this.sortMode = new SimpleObjectProperty<>(category.getSortMode());
         this.sync = new SimpleBooleanProperty(Boolean.TRUE.equals(
                 DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         this.children = DerivedObservableList.arrayList(true);
@@ -141,10 +139,6 @@ public class StoreCategoryWrapper {
         AppI18n.activeLanguage().addListener((observable, oldValue, newValue) -> {
             update();
         });
-
-        sortMode.addListener((observable, oldValue, newValue) -> {
-            category.setSortMode(newValue);
-        });
     }
 
     public void toggleExpanded() {
@@ -164,7 +158,6 @@ public class StoreCategoryWrapper {
         }
 
         lastAccess.setValue(category.getLastAccess().minus(Duration.ofMillis(500)));
-        sortMode.setValue(category.getSortMode());
         sync.setValue(Boolean.TRUE.equals(
                 DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         expanded.setValue(category.isExpanded());

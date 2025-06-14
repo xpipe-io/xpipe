@@ -1,7 +1,6 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.hub.comp.StoreSortMode;
 import io.xpipe.app.util.EncryptionKey;
 
 import java.time.Instant;
@@ -41,7 +40,6 @@ public class ImpersistentStorage extends DataStorage {
                     Instant.now(),
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
-                    StoreSortMode.getDefault(),
                     true,
                     DataStoreCategoryConfig.empty());
             storeCategories.add(cat);

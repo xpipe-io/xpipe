@@ -26,7 +26,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2w-wrench");
+        return new FontIcon("mdi2w-wrench-outline");
     }
 
     @Override

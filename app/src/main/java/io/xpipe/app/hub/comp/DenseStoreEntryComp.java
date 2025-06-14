@@ -67,6 +67,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var grid = new GridPane();
         grid.setHgap(8);
 
+        var index = createOrderIndex().createRegion();
         var name = createName().createRegion();
         name.maxWidthProperty()
                 .bind(Bindings.createDoubleBinding(
@@ -107,7 +108,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, userIcon, notes);
+        var nameBox = new HBox(name, index, userIcon, notes);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);

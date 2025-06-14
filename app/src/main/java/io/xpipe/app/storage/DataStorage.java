@@ -3,7 +3,6 @@ package io.xpipe.app.storage;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
-import io.xpipe.app.hub.comp.StoreSortMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
@@ -238,7 +237,6 @@ public abstract class DataStorage {
                     Instant.now(),
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
-                    StoreSortMode.getDefault(),
                     true,
                     DataStoreCategoryConfig.empty()));
         }
@@ -417,8 +415,8 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void setOrder(DataStoreEntry entry, DataStoreEntry.Order order) {
-        entry.setExplicitOrder(order);
+    public void setOrderIndex(DataStoreEntry entry, int index) {
+        entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
     }
 

@@ -59,44 +59,23 @@ public class StoreSection {
 
     private static DerivedObservableList<StoreSection> sorted(
             DerivedObservableList<StoreSection> list,
-            ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue updateObservable) {
-        var explicitOrderComp = Comparator.<StoreSection>comparingInt(new ToIntFunction<>() {
-            @Override
-            public int applyAsInt(StoreSection value) {
-                if (!value.getWrapper().getEntry().getValidity().isUsable()) {
-                    return 1;
-                }
-
-                var explicit = value.getWrapper().getEntry().getExplicitOrder();
-                if (explicit == null) {
-                    return 0;
-                }
-
-                return switch (explicit) {
-                    case TOP -> -1;
-                    case BOTTOM -> 1;
-                };
-            }
-        });
-        var comp = explicitOrderComp;
-        var mappedSortMode =
-                BindingsHelper.flatMap(category, storeCategoryWrapper -> storeCategoryWrapper.getSortMode());
+        var sortMode = StoreViewState.get().getEffectiveSortMode();
         return list.sorted(
                 (o1, o2) -> {
-                    var r = comp.compare(o1, o2);
+                    var r = sortMode.getValue().compare(o1, o2);
                     if (r != 0) {
                         return r;
                     }
 
-                    var current = mappedSortMode.getValue();
+                    var current = sortMode.getValue();
                     if (current != null) {
-                        return current.comparator().compare(o1, o2);
+                        return current.compare(o1, o2);
                     } else {
                         return 0;
                     }
                 },
-                mappedSortMode,
+                sortMode,
                 updateObservable);
     }
 
@@ -133,7 +112,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, category, updateObservable);
+        var ordered = sorted(cached, updateObservable);
         var shown = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {
@@ -212,7 +191,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, category, updateObservable);
+        var ordered = sorted(cached, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {

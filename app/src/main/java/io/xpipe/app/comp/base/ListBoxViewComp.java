@@ -147,7 +147,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             dirty.set(true);
         });
         if (StoreViewState.get() != null) {
-            StoreViewState.get().getSortMode().addListener((observable, oldValue, newValue) -> {
+            StoreViewState.get().getEffectiveSortMode().addListener((observable, oldValue, newValue) -> {
                 // This is very ugly, but it just takes multiple iterations for the order to apply
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {

@@ -33,7 +33,7 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2w-wrench");
+        return new LabelGraphic.IconGraphic("mdi2w-wrench-outline");
     }
 
     @Override

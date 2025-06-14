@@ -69,9 +69,6 @@ public class DataStoreEntry extends StorageElement {
     String lastWrittenNotes;
 
     @NonFinal
-    Order explicitOrder;
-
-    @NonFinal
     String icon;
 
     @NonFinal
@@ -81,6 +78,10 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     @Getter
     boolean readOnly;
+
+    @Getter
+    @NonFinal
+    int orderIndex;
 
     private DataStoreEntry(
             Path directory,
@@ -97,21 +98,21 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataStoreColor color,
             String notes,
-            Order explicitOrder,
             String icon,
-            boolean readOnly) {
+            boolean readOnly,
+            int orderIndex) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
-        this.explicitOrder = explicitOrder;
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
         this.icon = icon;
         this.readOnly = readOnly;
+        this.orderIndex = orderIndex;
     }
 
     private DataStoreEntry(
@@ -122,13 +123,12 @@ public class DataStoreEntry extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             DataStore store,
-            Order explicitOrder,
             String icon,
-            boolean readOnly) {
+            boolean readOnly,
+            int orderIndex) {
         super(directory, uuid, name, lastUsed, lastModified, false, false);
         this.categoryUuid = categoryUuid;
         this.store = store;
-        this.explicitOrder = explicitOrder;
         this.icon = icon;
         this.storeNode = DataStorageNode.fail();
         this.validity = Validity.INCOMPLETE;
@@ -136,6 +136,7 @@ public class DataStoreEntry extends StorageElement {
         this.provider = null;
         this.storePersistentStateNode = null;
         this.readOnly = readOnly;
+        this.orderIndex = orderIndex;
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -148,8 +149,8 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 store,
                 null,
-                null,
-                false);
+                false,
+                0);
     }
 
     public static DataStoreEntry createNew(@NonNull NameableStore store) {
@@ -186,8 +187,8 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
-                null,
-                false);
+                false,
+                0);
         return entry;
     }
 
@@ -248,6 +249,9 @@ public class DataStoreEntry extends StorageElement {
         }
 
         var persistentState = stateJson.get("persistentState");
+        var orderIndex = Optional.ofNullable(json.get("orderIndex"))
+                .map(jsonNode -> jsonNode.intValue())
+                .orElse(0);
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
@@ -256,15 +260,6 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
-        var order = Optional.ofNullable(stateJson.get("order"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, Order.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
-                })
-                .orElse(null);
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
@@ -319,17 +314,9 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                order,
                 icon,
-                readOnly));
-    }
-
-    public void setExplicitOrder(Order uuid) {
-        var changed = !Objects.equals(explicitOrder, uuid);
-        this.explicitOrder = uuid;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
+                readOnly,
+                orderIndex));
     }
 
     public void setColor(DataStoreColor newColor) {
@@ -435,6 +422,14 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    public void setOrderIndex(int orderIndex) {
+        var changed = this.orderIndex != orderIndex;
+        this.orderIndex = orderIndex;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setCategoryUuid(UUID categoryUuid) {
         var changed = !Objects.equals(this.categoryUuid, categoryUuid);
         this.categoryUuid = categoryUuid;
@@ -470,13 +465,13 @@ public class DataStoreEntry extends StorageElement {
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
         obj.put("readOnly", readOnly);
+        obj.put("orderIndex", orderIndex);
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);
         stateObj.put("expanded", expanded);
-        stateObj.set("order", mapper.valueToTree(explicitOrder));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
@@ -699,13 +694,5 @@ public class DataStoreEntry extends StorageElement {
         Validity(boolean isUsable) {
             this.isUsable = isUsable;
         }
-    }
-
-    @Getter
-    public enum Order {
-        @JsonProperty("top")
-        TOP,
-        @JsonProperty("bottom")
-        BOTTOM
     }
 }

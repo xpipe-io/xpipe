@@ -34,7 +34,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
     @Override
     public Structure createBase() {
         var n = wrapper.getNotes();
-        var button = new IconButtonComp("mdi2n-note-text")
+        var button = new IconButtonComp("mdi2n-note-text-outline")
                 .apply(struc -> AppFontSizes.xs(struc.get()))
                 .focusTraversableForAccessibility()
                 .tooltipKey("notes")

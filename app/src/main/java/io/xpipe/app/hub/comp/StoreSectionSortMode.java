@@ -4,9 +4,35 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
 
-public interface StoreSortMode {
+public interface StoreSectionSortMode {
 
-    StoreSortMode ALPHABETICAL_DESC = new StoreSortMode() {
+    StoreSectionSortMode INDEX_DESC = new StoreSectionSortMode() {
+
+        @Override
+        public String getId() {
+            return "index-desc";
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator() {
+            return Comparator.<StoreSection>comparingInt(
+                            e -> e.getWrapper().getOrderIndex().getValue())
+                    .reversed();
+        }
+    };
+    StoreSectionSortMode INDEX_ASC = new StoreSectionSortMode() {
+        @Override
+        public String getId() {
+            return "index-asc";
+        }
+
+        @Override
+        public Comparator<StoreSection> comparator() {
+            return Comparator.comparingInt(
+                    e -> e.getWrapper().getOrderIndex().getValue());
+        }
+    };
+    StoreSectionSortMode ALPHABETICAL_DESC = new StoreSectionSortMode() {
 
         @Override
         public String getId() {
@@ -19,7 +45,7 @@ public interface StoreSortMode {
                     e -> e.getWrapper().nameProperty().getValue().toLowerCase(Locale.ROOT));
         }
     };
-    StoreSortMode ALPHABETICAL_ASC = new StoreSortMode() {
+    StoreSectionSortMode ALPHABETICAL_ASC = new StoreSectionSortMode() {
         @Override
         public String getId() {
             return "alphabetical-asc";
@@ -32,7 +58,7 @@ public interface StoreSortMode {
                     .reversed();
         }
     };
-    StoreSortMode DATE_DESC = new StoreSortMode.DateSortMode() {
+    StoreSectionSortMode DATE_DESC = new StoreSectionSortMode.DateSortMode() {
 
         protected Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccess().getValue();
@@ -53,7 +79,7 @@ public interface StoreSortMode {
             return "date-desc";
         }
     };
-    StoreSortMode DATE_ASC = new StoreSortMode.DateSortMode() {
+    StoreSectionSortMode DATE_ASC = new StoreSectionSortMode.DateSortMode() {
 
         protected Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccess().getValue();
@@ -75,25 +101,21 @@ public interface StoreSortMode {
         }
     };
 
-    List<StoreSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
+    List<StoreSectionSortMode> ALL = List.of(ALPHABETICAL_DESC, ALPHABETICAL_ASC, DATE_DESC, DATE_ASC);
 
-    static Optional<StoreSortMode> fromId(String id) {
+    static Optional<StoreSectionSortMode> fromId(String id) {
         return ALL.stream()
                 .filter(storeSortMode -> storeSortMode.getId().equals(id))
                 .findFirst();
-    }
-
-    static StoreSortMode getDefault() {
-        return DATE_ASC;
     }
 
     String getId();
 
     Comparator<StoreSection> comparator();
 
-    abstract class DateSortMode implements StoreSortMode {
+    abstract class DateSortMode implements StoreSectionSortMode {
 
-        private int entriesListOberservableIndex = -1;
+        private int entriesListObservableIndex = -1;
         private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
 
         private StoreSection computeRepresentative(StoreSection s) {
@@ -110,9 +132,9 @@ public interface StoreSortMode {
         }
 
         private StoreSection getRepresentative(StoreSection s) {
-            if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListOberservableIndex) {
+            if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListObservableIndex) {
                 cachedRepresentatives.clear();
-                entriesListOberservableIndex =
+                entriesListObservableIndex =
                         StoreViewState.get().getEntriesListUpdateObservable().get();
             }
 

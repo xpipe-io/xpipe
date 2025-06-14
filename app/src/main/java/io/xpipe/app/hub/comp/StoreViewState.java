@@ -12,7 +12,9 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 
@@ -44,7 +46,10 @@ public class StoreViewState {
     private final Property<StoreCategoryWrapper> activeCategory = new SimpleObjectProperty<>();
 
     @Getter
-    private final Property<StoreSortMode> sortMode = new SimpleObjectProperty<>();
+    private final Property<StoreSectionSortMode> globalSortMode = new SimpleObjectProperty<>();
+
+    @Getter
+    private final Property<StoreSectionSortMode> tieSortMode = new SimpleObjectProperty<>();
 
     @Getter
     private final BooleanProperty batchMode = new SimpleBooleanProperty(false);
@@ -75,6 +80,13 @@ public class StoreViewState {
             entriesListUpdateObservable);
 
     @Getter
+    private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(() -> {
+        var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
+        var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
+        return g != null ? g.comparator().thenComparing(t.comparator()) : t.comparator();
+    }, globalSortMode, tieSortMode);
+
+    @Getter
     private StoreSection currentTopLevelSection;
 
     private StoreViewState() {
@@ -88,6 +100,7 @@ public class StoreViewState {
         }
 
         INSTANCE = new StoreViewState();
+        INSTANCE.initSortMode();
         INSTANCE.updateContent();
         INSTANCE.initSections();
         INSTANCE.updateContent();
@@ -104,7 +117,16 @@ public class StoreViewState {
         var active = INSTANCE.activeCategory.getValue().getCategory();
         if (active != null) {
             AppCache.update("selectedCategory", active.getUuid());
-            return;
+        }
+
+        var globalMode = INSTANCE.globalSortMode.getValue();
+        if (globalMode != null) {
+            AppCache.update("globalSortMode", globalMode.getId());
+        }
+
+        var tieMode = INSTANCE.tieSortMode.getValue();
+        if (tieMode != null) {
+            AppCache.update("tieSortMode", tieMode.getId());
         }
 
         INSTANCE = null;
@@ -140,6 +162,16 @@ public class StoreViewState {
                         && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
+    }
+
+    private void initSortMode() {
+        String global = AppCache.getNonNull("globalSortMode", String.class, null);
+        var globalMode = global != null ? StoreSectionSortMode.fromId(global).orElse(null) : null;
+        globalSortMode.setValue(globalMode != null ? globalMode : StoreSectionSortMode.INDEX_ASC);
+
+        String tie = AppCache.getNonNull("tieSortMode", String.class, null);
+        var tieMode = global != null ? StoreSectionSortMode.fromId(tie).orElse(null) : null;
+        tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_DESC);
     }
 
     private void updateContent() {
@@ -218,17 +250,8 @@ public class StoreViewState {
                         .map(StoreCategoryWrapper::new)
                         .toList()));
 
-        sortMode.addListener((observable, oldValue, newValue) -> {
-            var cat = getActiveCategory().getValue();
-            if (cat == null) {
-                return;
-            }
-
-            cat.getSortMode().setValue(newValue);
-        });
         activeCategory.addListener((observable, oldValue, newValue) -> {
             DataStorage.get().setSelectedCategory(newValue.getCategory());
-            sortMode.setValue(newValue.getSortMode().getValue());
         });
         var selected = AppCache.getNonNull("selectedCategory", UUID.class, () -> DataStorage.DEFAULT_CATEGORY_UUID);
         activeCategory.setValue(categories.getList().stream()

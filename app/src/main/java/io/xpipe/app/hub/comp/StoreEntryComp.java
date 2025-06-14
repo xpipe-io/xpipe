@@ -17,6 +17,7 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -220,6 +221,18 @@ public abstract class StoreEntryComp extends SimpleComp {
         return name;
     }
 
+    protected Comp<?> createOrderIndex() {
+        var prop = new SimpleStringProperty();
+        getWrapper().getOrderIndex().subscribe(number -> {
+            var i = number.intValue();
+            var displayed = i == Integer.MIN_VALUE ? "-" : i == Integer.MAX_VALUE ? "+" : i != 0 ? "" + i : null;
+            prop.set(displayed != null ? "[" + displayed + "]" : null);
+        });
+        var comp = new LabelComp(prop);
+        comp.styleClass("orderIndex");
+        return comp;
+    }
+
     protected Comp<?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.styleClass("user-icon");
@@ -363,7 +376,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 });
                 items.add(1, rename);
 
-                var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2n-note-text"));
+                var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2c-comment-text-outline"));
                 notes.setOnAction(event -> {
                     getWrapper().getNotes().setValue(new StoreNotes(null, getDefaultNotes()));
                     event.consume();
@@ -449,36 +462,39 @@ public abstract class StoreEntryComp extends SimpleComp {
                     items.add(move);
                 }
                 {
-                    var order = new Menu(AppI18n.get("order"), new FontIcon("mdal-bookmarks"));
-                    var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
-                    noOrder.setOnAction(event -> {
-                        getWrapper().setOrder(null);
+                    var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2b-bookmark-multiple-outline"));
+
+                    var index = new MenuItem(AppI18n.get("index"), new FontIcon("mdi2o-order-numeric-ascending"));
+                    index.setOnAction(event -> {
+                        StoreOrderIndexDialog.show(getWrapper().getEntry());
                         event.consume();
                     });
-                    if (getWrapper().getEntry().getExplicitOrder() == null) {
-                        noOrder.setDisable(true);
-                    }
-                    order.getItems().add(noOrder);
+                    order.getItems().add(index);
                     order.getItems().add(new SeparatorMenuItem());
+
+                    var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
+                    noOrder.setOnAction(event -> {
+                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), 0);
+                        event.consume();
+                    });
+                    if (getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE && getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE) {
+                        order.getItems().add(noOrder);
+                    }
 
                     var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
                     top.setOnAction(event -> {
-                        getWrapper().setOrder(DataStoreEntry.Order.TOP);
+                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MIN_VALUE);
                         event.consume();
                     });
-                    if (DataStoreEntry.Order.TOP.equals(getWrapper().getEntry().getExplicitOrder())) {
-                        top.setDisable(true);
-                    }
+                    top.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
                     order.getItems().add(top);
 
                     var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
                     bottom.setOnAction(event -> {
-                        getWrapper().setOrder(DataStoreEntry.Order.BOTTOM);
+                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MAX_VALUE);
                         event.consume();
                     });
-                    if (DataStoreEntry.Order.BOTTOM.equals(getWrapper().getEntry().getExplicitOrder())) {
-                        bottom.setDisable(true);
-                    }
+                    bottom.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE);
                     order.getItems().add(bottom);
                     items.add(order);
                 }

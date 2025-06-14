@@ -158,6 +158,7 @@ public class ModalOverlayComp extends SimpleComp {
                 closeButton.setVisible(false);
             }
         }
+        modal.requestFocus();
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {

@@ -224,7 +224,7 @@ public class StoreCategoryComp extends SimpleComp {
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 
-        var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench"));
+        var configure = new MenuItem(AppI18n.get("configure"), new FontIcon("mdi2w-wrench-outline"));
         configure.setOnAction(event -> {
             StoreCategoryConfigComp.show(category);
         });

@@ -64,6 +64,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
+    private final IntegerProperty orderIndex = new SimpleIntegerProperty();
 
     private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
@@ -75,10 +76,19 @@ public class StoreEntryWrapper {
         this.shownName = Bindings.createStringBinding(
                 () -> {
                     var n = name.getValue();
-                    return n != null && AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
+                    if (n == null) {
+                        n = "?";
+                    }
+
+//                    if (orderIndex.getValue() != 0) {
+//                        n = n + " [" + orderIndex.getValue() + "]";
+//                    }
+
+                    return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
                 },
                 AppPrefs.get().censorMode(),
-                name);
+                name,
+                orderIndex);
         this.shownSummary = Bindings.createStringBinding(
                 () -> {
                     var n = summary.getValue();
@@ -95,12 +105,6 @@ public class StoreEntryWrapper {
     public void moveTo(DataStoreCategory category) {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().moveEntryToCategory(entry, category);
-        });
-    }
-
-    public void setOrder(DataStoreEntry.Order order) {
-        ThreadHelper.runAsync(() -> {
-            DataStorage.get().setOrder(getEntry(), order);
         });
     }
 
@@ -176,6 +180,7 @@ public class StoreEntryWrapper {
                 cache.setValue(new HashMap<>(entry.getStoreCache()));
             }
         }
+        orderIndex.setValue(entry.getOrderIndex());
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
