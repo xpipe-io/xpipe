@@ -83,7 +83,14 @@ public class StoreViewState {
     private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(() -> {
         var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
         var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-        return g != null ? g.comparator().thenComparing(t.comparator()) : t.comparator();
+        var incomplete = Comparator.<StoreSection>comparingInt(value -> {
+            if (!value.getWrapper().getValidity().getValue().isUsable()) {
+                return 1;
+            }
+
+            return 0;
+        });
+        return g != null ? incomplete.thenComparing(g.comparator().thenComparing(t.comparator())) : incomplete.thenComparing(t.comparator());
     }, globalSortMode, tieSortMode);
 
     @Getter

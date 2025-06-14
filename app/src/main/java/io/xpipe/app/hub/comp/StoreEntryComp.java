@@ -252,8 +252,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
+                                if (!getWrapper().getValidity().getValue().isUsable()) {
+                                    return 0.5;
+                                }
+
                                 return !getWrapper().getEffectiveBusy().get() ? 1.0 : 0.15;
                             },
+                            getWrapper().getValidity(),
                             getWrapper().getEffectiveBusy()));
         });
         var loading = new LoadingIconComp(getWrapper().getEffectiveBusy(), fontSize);

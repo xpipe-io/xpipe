@@ -21,7 +21,9 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class StoreOrderIndexDialog {
 
     public static void show(DataStoreEntry entry) {
-        var prop = new SimpleObjectProperty<>(entry.getOrderIndex() != 0 ? entry.getOrderIndex() : null);
+        var prop = new SimpleObjectProperty<>(
+                entry.getOrderIndex() != 0 && entry.getOrderIndex() != Integer.MIN_VALUE && entry.getOrderIndex() != Integer.MAX_VALUE ?
+                entry.getOrderIndex() : null);
         var options = new OptionsBuilder()
                 .nameAndDescription("orderIndex")
                 .addComp(new IntFieldComp(prop, 0, Integer.MAX_VALUE))

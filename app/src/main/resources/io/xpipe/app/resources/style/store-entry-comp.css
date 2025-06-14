@@ -55,20 +55,16 @@
     -fx-text-fill: -color-fg-muted;
 }
 
-.root:dark .store-entry-grid:incomplete .name, .root:dark .store-entry-grid:failed .name {
+.root:dark .store-entry-grid:incomplete .name > .text-field, .root:dark .store-entry-grid:failed .name > .text-field {
     -fx-text-fill: #aa473c;
 }
 
-.root:light .store-entry-grid:incomplete .name, .root:light .store-entry-grid:failed .name {
+.root:light .store-entry-grid:incomplete .name > .text-field, .root:light .store-entry-grid:failed .name > .text-field {
     -fx-text-fill: #88352b;
 }
 
 .store-entry-grid .user-icon .ikonli-font-icon {
     -fx-icon-color: #5b2cffff;
-}
-
-.store-entry-grid:incomplete .icon {
-    -fx-opacity: 0.5;
 }
 
 .store-entry-grid .icon > .background {
