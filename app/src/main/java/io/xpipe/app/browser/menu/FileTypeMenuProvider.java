@@ -5,15 +5,15 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
 
-import javafx.scene.Node;
+import io.xpipe.app.util.LabelGraphic;
 
 import java.util.List;
 
 public interface FileTypeMenuProvider extends BrowserMenuItemProvider {
 
     @Override
-    default Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return BrowserIcons.createContextMenuIcon(getType()).createRegion();
+    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(getType()));
     }
 
     @Override

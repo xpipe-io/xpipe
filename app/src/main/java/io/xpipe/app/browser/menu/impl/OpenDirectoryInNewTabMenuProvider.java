@@ -6,10 +6,10 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -29,8 +29,8 @@ public class OpenDirectoryInNewTabMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2f-folder-open-outline");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2f-folder-open-outline");
     }
 
     @Override

@@ -4,8 +4,8 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCombination;
 
@@ -30,7 +30,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
                 : selected;
     }
 
-    default Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return null;
     }
 

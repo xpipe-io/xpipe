@@ -5,6 +5,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
@@ -13,7 +14,6 @@ import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -61,8 +61,8 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
     }
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2p-play");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2p-play");
     }
 
     @Override

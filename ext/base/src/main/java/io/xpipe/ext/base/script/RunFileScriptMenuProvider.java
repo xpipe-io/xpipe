@@ -10,11 +10,11 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScriptHelper;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -23,8 +23,8 @@ import java.util.List;
 public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2c-code-greater-than");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
     }
 
     @Override
@@ -104,9 +104,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
                 .toList();
         return new BrowserMenuBranchProvider() {
             @Override
-            public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16)
-                        .createRegion();
+            public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override
@@ -128,9 +127,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new MultiExecuteSelectionMenuProvider() {
 
             @Override
-            public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16)
-                        .createRegion();
+            public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override

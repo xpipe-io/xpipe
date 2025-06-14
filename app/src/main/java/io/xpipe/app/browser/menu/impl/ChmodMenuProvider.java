@@ -10,12 +10,12 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileKind;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -25,8 +25,8 @@ import java.util.List;
 public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2w-wrench-outline");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2w-wrench-outline");
     }
 
     @Override
@@ -58,8 +58,8 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
     private static class FlatProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return new FontIcon("mdi2f-file-outline");
+        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
         @Override
@@ -77,8 +77,8 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
     private static class RecursiveProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return new FontIcon("mdi2f-file-tree");
+        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 
         @Override

@@ -9,6 +9,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
@@ -17,7 +18,6 @@ import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -64,8 +64,8 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
     }
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2a-archive");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2a-archive");
     }
 
     @Override

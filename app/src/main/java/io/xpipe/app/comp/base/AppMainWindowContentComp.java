@@ -89,7 +89,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                 struc.get().setOpacity(0.65);
             });
 
-            var text = new LabelComp(AppMainWindow.getInstance().getLoadingText());
+            var text = new LabelComp(AppMainWindow.getLoadingText());
             text.apply(struc -> {
                 struc.get().setOpacity(0.8);
             });

@@ -93,7 +93,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         Tooltip.install(b, TooltipHelper.create(name, getShortcut()));
         var graphic = getIcon(model, selected);
         if (graphic != null) {
-            b.setGraphic(graphic);
+            b.setGraphic(graphic.createGraphicNode());
         }
         b.setMnemonicParsing(false);
         b.accessibleTextProperty().bind(name);
@@ -140,7 +140,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         }
         var graphic = getIcon(model, selected);
         if (graphic != null) {
-            mi.setGraphic(graphic);
+            mi.setGraphic(graphic.createGraphicNode());
         }
         mi.setMnemonicParsing(false);
         mi.setDisable(!isActive(model, selected));

@@ -24,7 +24,7 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
         }
         var graphic = getIcon(model, selected);
         if (graphic != null) {
-            m.setGraphic(graphic);
+            m.setGraphic(graphic.createGraphicNode());
         }
         m.setDisable(!isActive(model, selected));
 

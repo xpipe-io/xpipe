@@ -8,12 +8,12 @@ import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
     }
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")).createRegion();
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")));
     }
 
     @Override

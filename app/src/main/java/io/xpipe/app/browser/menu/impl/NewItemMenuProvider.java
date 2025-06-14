@@ -12,13 +12,13 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.control.TextField;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -33,8 +33,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new FontIcon("mdi2p-plus-box-outline");
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2p-plus-box-outline");
     }
 
     @Override
@@ -82,8 +82,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultFileIcon().createRegion();
+                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 
                     @Override
@@ -118,8 +118,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultDirectoryIcon().createRegion();
+                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultDirectoryIcon());
                     }
 
                     @Override
@@ -160,8 +160,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public Node getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return BrowserIcons.createDefaultFileIcon().createRegion();
+                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 
                     @Override

@@ -55,7 +55,7 @@ public class AppMainWindow {
     private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
-    private final Property<String> loadingText = new SimpleObjectProperty<>();
+    private static final Property<String> loadingText = new SimpleObjectProperty<>();
 
     private boolean shown = false;
 
@@ -129,10 +129,7 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        var w = getInstance();
-        if (w != null) {
-            w.loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
-        }
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
     }
 
     public ObservableDoubleValue displayScale() {
