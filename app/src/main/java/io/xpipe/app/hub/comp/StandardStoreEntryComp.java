@@ -2,8 +2,10 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
 
+import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,7 +30,15 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     private Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(getWrapper().getShownSummary());
+        summary.textProperty().bind(Bindings.createStringBinding(() -> {
+            var summaryValue = getWrapper().getShownSummary().getValue();
+            if (summaryValue != null) {
+                return summaryValue;
+            } else {
+                var provider = getWrapper().getEntry().getProvider();
+                return AppI18n.get(provider.getId() + ".displayName");
+            }
+        }));
         summary.getStyleClass().add("summary");
         AppFontSizes.xs(summary);
         return summary;

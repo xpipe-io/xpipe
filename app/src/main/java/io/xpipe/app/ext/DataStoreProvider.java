@@ -58,10 +58,6 @@ public interface DataStoreProvider {
         return new SimpleBooleanProperty(false);
     }
 
-    default boolean alwaysShowSummary() {
-        return false;
-    }
-
     default void validate() {
         if (getUsageCategory() == null) {
             throw ExtensionException.corrupt("Provider %s does not have the usage category".formatted(getId()));

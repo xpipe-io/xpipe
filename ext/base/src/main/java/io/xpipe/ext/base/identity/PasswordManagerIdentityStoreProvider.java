@@ -45,11 +45,6 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        return AppI18n.get("passwordManagerIdentity");
-    }
-
-    @Override
     public String getId() {
         return "passwordManagerIdentity";
     }

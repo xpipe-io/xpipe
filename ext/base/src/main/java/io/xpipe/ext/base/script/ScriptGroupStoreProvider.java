@@ -87,11 +87,6 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        return "Script group";
-    }
-
-    @Override
     public String getDisplayIconFileName(DataStore store) {
         return "proc:shellEnvironment_icon.svg";
     }

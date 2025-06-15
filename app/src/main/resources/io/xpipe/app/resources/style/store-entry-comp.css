@@ -30,6 +30,10 @@
     -fx-padding: 4 0 4 0;
 }
 
+.store-list-comp.scroll-pane:dense > .viewport .list-box-content {
+    -fx-spacing: 2;
+}
+
 .store-list-comp.scroll-pane  {
     -fx-padding: 0 0 0 2;
 }
@@ -178,7 +182,7 @@
 }
 
 .store-entry-section-comp:last:sub {
-    -fx-padding: 0 0 3 0;
+    -fx-padding: 0 0 1 0;
 }
 
 .store-entry-section-comp:last:sub:expanded {

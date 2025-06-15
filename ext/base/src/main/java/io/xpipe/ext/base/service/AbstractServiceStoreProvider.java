@@ -109,12 +109,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        AbstractServiceStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " service";
-    }
-
-    @Override
     public ObservableValue<String> informationString(StoreSection section) {
         return Bindings.createStringBinding(
                 () -> {

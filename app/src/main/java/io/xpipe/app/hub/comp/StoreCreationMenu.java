@@ -50,26 +50,26 @@ public class StoreCreationMenu {
             automatically.disableProperty().bind(disableSearch);
         }
 
-        menu.getItems().add(category("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
+        menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
-        menu.getItems().add(category("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
-
-        menu.getItems()
-                .add(category("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
-
-        menu.getItems().add(category("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
+        menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
         menu.getItems()
-                .add(category("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
+                .add(categoryMenu("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+
+        menu.getItems().add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
-                .add(category(
+                .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
+
+        menu.getItems()
+                .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
 
-        menu.getItems().add(category("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
+        menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
         menu.getItems()
-                .add(category(
+                .add(categoryMenu(
                         "addIdentity",
                         "mdi2a-account-multiple-plus",
                         DataStoreCreationCategory.IDENTITY,
@@ -91,29 +91,6 @@ public class StoreCreationMenu {
         actionMenu.getItems().addFirst(item);
 
         menu.getItems().add(actionMenu);
-    }
-
-    private static MenuItem category(
-            String name, String graphic, DataStoreCreationCategory category, String defaultProvider) {
-        var sub = DataStoreProviders.getAll().stream()
-                .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
-                .toList();
-        if (sub.size() < 2) {
-            var item = new MenuItem();
-            item.setGraphic(new FontIcon(graphic));
-            item.textProperty().bind(AppI18n.observable(name));
-            item.setOnAction(event -> {
-                StoreCreationDialog.showCreation(
-                        defaultProvider != null
-                                ? DataStoreProviders.byId(defaultProvider).orElseThrow()
-                                : null,
-                        category);
-                event.consume();
-            });
-            return item;
-        }
-
-        return categoryMenu(name, graphic, category, defaultProvider);
     }
 
     private static Menu categoryMenu(

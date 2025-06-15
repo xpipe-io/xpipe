@@ -56,11 +56,6 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
         return s.getHost().get();
     }
 
-    public String summaryString(StoreEntryWrapper wrapper) {
-        PodmanCmdStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " containers";
-    }
-
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {

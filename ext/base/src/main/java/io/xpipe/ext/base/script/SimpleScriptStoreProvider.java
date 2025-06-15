@@ -203,11 +203,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     }
 
     @Override
-    public boolean alwaysShowSummary() {
-        return true;
-    }
-
-    @Override
     public String summaryString(StoreEntryWrapper wrapper) {
         SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
         if (!st.isShellScript()) {

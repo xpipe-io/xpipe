@@ -56,11 +56,6 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return s.getHost().get();
     }
 
-    public String summaryString(StoreEntryWrapper wrapper) {
-        LxdCmdStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " containers";
-    }
-
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         return BindingsHelper.map(section.getWrapper().getPersistentState(), o -> {

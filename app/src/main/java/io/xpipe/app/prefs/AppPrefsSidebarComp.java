@@ -36,7 +36,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                 AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
                             })
                             .apply(struc -> {
-                                struc.get().setGraphicTextGap(7);
+                                struc.get().setGraphicTextGap(9);
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {

@@ -3,6 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -35,14 +36,16 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                     .textProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
-                                var val = summary.getValue();
-                                var p = getWrapper().getEntry().getProvider();
-                                if (val != null && grid.isHover() && p.alwaysShowSummary()) {
-                                    return val;
-                                } else if (info.getValue() == null && p.alwaysShowSummary()) {
-                                    return val;
+                                var summaryValue = summary.getValue();
+                                var infoValue = info.getValue();
+                                if (summaryValue != null && infoValue != null && grid.isHover()) {
+                                    return summaryValue;
+                                } else if (infoValue == null && summaryValue != null) {
+                                    return summaryValue;
+                                } else if (summaryValue == null && infoValue != null) {
+                                    return infoValue;
                                 } else {
-                                    return info.getValue();
+                                    return null;
                                 }
                             },
                             grid.hoverProperty(),
@@ -60,7 +63,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
     @Override
     public int getHeight() {
-        return OsType.getLocal() == OsType.WINDOWS ? 38 : 37;
+        return 37;
     }
 
     protected Region createContent() {

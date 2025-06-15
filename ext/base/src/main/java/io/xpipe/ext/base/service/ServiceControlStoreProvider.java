@@ -48,12 +48,6 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        ServiceControlStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " service control";
-    }
-
-    @Override
     public ObservableValue<String> informationString(StoreSection section) {
         ServiceControlStore s = section.getWrapper().getEntry().getStore().asNeeded();
         return Bindings.createStringBinding(

@@ -41,18 +41,6 @@ public class DataStoreFormatter {
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    public static String toApostropheName(DataStoreEntry input) {
-        return toName(input, Integer.MAX_VALUE) + "'s";
-    }
-
-    public static String toName(DataStoreEntry input, int length) {
-        if (input == null) {
-            return "?";
-        }
-
-        return cut(input.getName(), length);
-    }
-
     public static String split(String left, String separator, String right, int length) {
         var half = (length / 2) - separator.length();
         return cut(left, half) + separator + cut(right, length - half);

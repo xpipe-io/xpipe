@@ -8,9 +8,11 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
 
+import io.xpipe.app.prefs.AppPrefs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -52,6 +54,10 @@ public class StoreEntryListComp extends SimpleComp {
             // Reset scroll
             StoreViewState.get().getFilterString().addListener((observable, oldValue, newValue) -> {
                 struc.get().setVvalue(0);
+            });
+
+            AppPrefs.get().condenseConnectionDisplay().subscribe(dense -> {
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("dense"),  dense);
             });
         });
         content.styleClass("store-list-comp");

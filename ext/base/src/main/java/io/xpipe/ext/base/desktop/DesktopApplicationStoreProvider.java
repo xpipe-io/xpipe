@@ -98,11 +98,6 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                 .buildDialog();
     }
 
-    public String summaryString(StoreEntryWrapper wrapper) {
-        DesktopApplicationStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getDesktop().get()) + " config";
-    }
-
     @Override
     public String getDisplayIconFileName(DataStore store) {
         return "base:desktopApplication_icon.svg";

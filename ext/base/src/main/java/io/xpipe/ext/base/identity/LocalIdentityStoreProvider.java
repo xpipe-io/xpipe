@@ -68,12 +68,6 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        var st = (LocalIdentityStore) wrapper.getStore().getValue();
-        return AppI18n.get("localIdentity");
-    }
-
-    @Override
     public String getId() {
         return "localIdentity";
     }

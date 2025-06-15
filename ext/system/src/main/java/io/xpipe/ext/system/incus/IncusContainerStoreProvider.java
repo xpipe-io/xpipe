@@ -91,13 +91,6 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        IncusContainerStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(
-                        s.getInstall().getStore().getHost().get()) + " container";
-    }
-
-    @Override
     public ObservableValue<String> informationString(StoreSection section) {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
