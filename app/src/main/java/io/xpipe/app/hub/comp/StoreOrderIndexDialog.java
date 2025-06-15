@@ -20,7 +20,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreOrderIndexDialog {
 
-    public static void show(DataStoreEntry entry) {
+    public static void show(StoreEntryWrapper wrapper) {
+        var entry = wrapper.getEntry();
         var prop = new SimpleObjectProperty<>(
                 entry.getOrderIndex() != 0 && entry.getOrderIndex() != Integer.MIN_VALUE && entry.getOrderIndex() != Integer.MAX_VALUE ?
                 entry.getOrderIndex() : null);
@@ -37,7 +38,7 @@ public class StoreOrderIndexDialog {
                 return;
             }
 
-            DataStorage.get().setOrderIndex(entry, prop.getValue());
+            wrapper.orderWithIndex(prop.getValue());
         });
         modal.show();
     }

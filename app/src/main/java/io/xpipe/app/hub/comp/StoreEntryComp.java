@@ -448,30 +448,12 @@ public abstract class StoreEntryComp extends SimpleComp {
                     items.add(color);
                 }
 
-                if (getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().canMoveCategories()) {
-                    var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-                    StoreViewState.get().getSortedCategories(getWrapper().getCategory().getValue().getRoot()).getList().forEach(
-                            storeCategoryWrapper -> {
-                                MenuItem m = new MenuItem();
-                                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
-                                m.setOnAction(event -> {
-                                    getWrapper().moveTo(storeCategoryWrapper.getCategory());
-                                    event.consume();
-                                });
-                                if (storeCategoryWrapper.getParent() == null) {
-                                    m.setDisable(true);
-                                }
-
-                                move.getItems().add(m);
-                            });
-                    items.add(move);
-                }
                 {
                     var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2b-bookmark-multiple-outline"));
 
                     var index = new MenuItem(AppI18n.get("index"), new FontIcon("mdi2o-order-numeric-ascending"));
                     index.setOnAction(event -> {
-                        StoreOrderIndexDialog.show(getWrapper().getEntry());
+                        StoreOrderIndexDialog.show(getWrapper());
                         event.consume();
                     });
                     order.getItems().add(index);
@@ -489,25 +471,23 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                     var first = new MenuItem(AppI18n.get("moveToTop"), new FontIcon("mdi2o-order-bool-descending"));
                     first.setOnAction(event -> {
-                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MIN_VALUE);
+                        getWrapper().orderFirst();
                         event.consume();
                     });
-                    first.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
                     order.getItems().add(first);
 
                     var last = new MenuItem(AppI18n.get("moveToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
                     last.setOnAction(event -> {
-                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MAX_VALUE);
+                        getWrapper().orderLast();
                         event.consume();
                     });
-                    last.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE);
                     order.getItems().add(last);
 
                     order.getItems().add(new SeparatorMenuItem());
 
                     var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending-variant"));
                     top.setOnAction(event -> {
-                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MIN_VALUE);
+                        getWrapper().orderStickFirst();
                         event.consume();
                     });
                     top.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
@@ -515,7 +495,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                     var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending-variant"));
                     bottom.setOnAction(event -> {
-                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MAX_VALUE);
+                        getWrapper().orderStickLast();
                         event.consume();
                     });
                     bottom.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE);
@@ -524,6 +504,25 @@ public abstract class StoreEntryComp extends SimpleComp {
                     order.getItems().add(new SeparatorMenuItem());
 
                     items.add(order);
+                }
+
+                if (getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().canMoveCategories()) {
+                    var move = new Menu(AppI18n.get("category"), new FontIcon("mdi2f-folder-move-outline"));
+                    StoreViewState.get().getSortedCategories(getWrapper().getCategory().getValue().getRoot()).getList().forEach(
+                            storeCategoryWrapper -> {
+                                MenuItem m = new MenuItem();
+                                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                                m.setOnAction(event -> {
+                                    getWrapper().moveTo(storeCategoryWrapper.getCategory());
+                                    event.consume();
+                                });
+                                if (storeCategoryWrapper.getParent() == null) {
+                                    m.setDisable(true);
+                                }
+
+                                move.getItems().add(m);
+                            });
+                    items.add(move);
                 }
             }
 

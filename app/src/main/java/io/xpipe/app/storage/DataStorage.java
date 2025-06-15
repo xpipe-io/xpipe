@@ -418,6 +418,9 @@ public abstract class DataStorage {
     public void setOrderIndex(DataStoreEntry entry, int index) {
         entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        var cat = getStoreCategory(entry);
+        cat.notifyUpdate(false, true);
+        saveAsync();
     }
 
     @SneakyThrows

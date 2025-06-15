@@ -80,15 +80,10 @@ public class StoreEntryWrapper {
                         n = "?";
                     }
 
-//                    if (orderIndex.getValue() != 0) {
-//                        n = n + " [" + orderIndex.getValue() + "]";
-//                    }
-
                     return AppPrefs.get().censorMode().get() ? "*".repeat(n.length()) : n;
                 },
                 AppPrefs.get().censorMode(),
-                name,
-                orderIndex);
+                name);
         this.shownSummary = Bindings.createStringBinding(
                 () -> {
                     var n = summary.getValue();
@@ -365,6 +360,54 @@ public class StoreEntryWrapper {
         } else {
             entry.setExpanded(!entry.isExpanded());
         }
+    }
+
+    public void orderWithIndex(int index) {
+        DataStorage.get().setOrderIndex(entry, index);
+    }
+
+    public void orderLast() {
+        var section = StoreViewState.get().getParentSectionForWrapper(this);
+        if (section.isEmpty()) {
+            return;
+        }
+
+        var max = section.get().getAllChildren().getList().stream()
+                .map(sec -> sec.getWrapper().getOrderIndex().getValue())
+                .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
+                .mapToInt(value -> value)
+                .max().orElse(0);
+        if (orderIndex.getValue() != null && max == orderIndex.getValue()) {
+            return;
+        }
+
+        orderWithIndex(max + 1);
+    }
+
+    public void orderFirst() {
+        var section = StoreViewState.get().getParentSectionForWrapper(this);
+        if (section.isEmpty()) {
+            return;
+        }
+
+        var min = section.get().getAllChildren().getList().stream()
+                .map(sec -> sec.getWrapper().getOrderIndex().getValue())
+                .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
+                .mapToInt(value -> value)
+                .min().orElse(0);
+        if (orderIndex.getValue() != null && min == orderIndex.getValue()) {
+            return;
+        }
+
+        orderWithIndex(min - 1);
+    }
+
+    public void orderStickFirst() {
+        orderWithIndex(Integer.MIN_VALUE);
+    }
+
+    public void orderStickLast() {
+        orderWithIndex(Integer.MAX_VALUE);
     }
 
     public void toggleExpanded() {
