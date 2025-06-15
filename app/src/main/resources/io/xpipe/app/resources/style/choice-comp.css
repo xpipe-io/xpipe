@@ -16,6 +16,11 @@
 
 .combo-box-popup .list-cell:hover, .combo-box-popup .list-cell:focused {
     -fx-background-color: -color-context-menu;
+    -fx-text-fill: -color-fg-default;
+}
+
+.combo-box-popup .list-cell:hover .graphic, .combo-box-popup .list-cell .graphic {
+    -fx-icon-color: -color-fg-default;
 }
 
 .choice-comp-content > .top {

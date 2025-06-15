@@ -475,6 +475,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         event.consume();
                     });
                     order.getItems().add(index);
+
                     order.getItems().add(new SeparatorMenuItem());
 
                     var noOrder = new MenuItem(AppI18n.get("none"), new FontIcon("mdi2r-reorder-horizontal"));
@@ -486,7 +487,25 @@ public abstract class StoreEntryComp extends SimpleComp {
                         order.getItems().add(noOrder);
                     }
 
-                    var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending"));
+                    var first = new MenuItem(AppI18n.get("moveToTop"), new FontIcon("mdi2o-order-bool-descending"));
+                    first.setOnAction(event -> {
+                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MIN_VALUE);
+                        event.consume();
+                    });
+                    first.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
+                    order.getItems().add(first);
+
+                    var last = new MenuItem(AppI18n.get("moveToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
+                    last.setOnAction(event -> {
+                        DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MAX_VALUE);
+                        event.consume();
+                    });
+                    last.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE);
+                    order.getItems().add(last);
+
+                    order.getItems().add(new SeparatorMenuItem());
+
+                    var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending-variant"));
                     top.setOnAction(event -> {
                         DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MIN_VALUE);
                         event.consume();
@@ -494,13 +513,16 @@ public abstract class StoreEntryComp extends SimpleComp {
                     top.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
                     order.getItems().add(top);
 
-                    var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
+                    var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending-variant"));
                     bottom.setOnAction(event -> {
                         DataStorage.get().setOrderIndex(getWrapper().getEntry(), Integer.MAX_VALUE);
                         event.consume();
                     });
                     bottom.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE);
                     order.getItems().add(bottom);
+
+                    order.getItems().add(new SeparatorMenuItem());
+
                     items.add(order);
                 }
             }
