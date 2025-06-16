@@ -10,17 +10,12 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
-
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -39,20 +34,7 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
         var foundTar = CommandSupport.findProgram(sc, "tar");
         model.getCache().getInstalledApplications().put("tar", foundTar.isPresent());
 
-        if (sc.getOsType() == OsType.WINDOWS) {
-            var found = CommandSupport.findProgram(sc, "7z");
-            if (found.isPresent()) {
-                model.getCache().getMultiPurposeCache().put("7zExecutable", "7z");
-                return;
-            }
-
-            var pf = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"))
-                    .readStdoutOrThrow();
-            var loc = FilePath.of(pf).join("7-Zip", "7z.exe").toWindows();
-            if (model.getFileSystem().fileExists(loc)) {
-                model.getCache().getMultiPurposeCache().put("7zExecutable", loc);
-            }
-        } else {
+        if (sc.getOsType() != OsType.WINDOWS) {
             var found = CommandSupport.findProgram(sc, "zip");
             model.getCache().getInstalledApplications().put("zip", found.isPresent());
         }
@@ -75,7 +57,7 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var ext = List.of("zip", "tar", "tar.gz", "tgz", "7z", "rar", "xar");
+        var ext = List.of("zip", "tar", "tar.gz", "tgz", "rar", "xar");
         if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
                 .getRawFileEntry()
                 .getPath()
@@ -94,9 +76,7 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
     public List<BrowserMenuLeafProvider> getBranchingActions(
             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return List.of(
-                new Windows7ZActionProvider(),
-                new WindowsZipActionProvider(),
-                new UnixZipActionProvider(),
+                new ZipActionProvider(),
                 new TarBasedActionProvider(false) {
                     @Override
                     protected String getExtension() {
@@ -150,140 +130,20 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
         protected abstract String getExtension();
     }
 
-    private class WindowsZipActionProvider extends LeafProvider {
+    private class ZipActionProvider extends LeafProvider {
 
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = model.getCurrentDirectory().getPath();
-            var target = base.join(fileName);
-            var command = CommandBuilder.of()
-                    .add("Compress-Archive", "-Force", "-DestinationPath")
-                    .addFile(target)
-                    .add("-Path");
-            for (int i = 0; i < entries.size(); i++) {
-                var rel = entries.get(i).getRawFileEntry().getPath().relativize(base);
-                if (directory) {
-                    command.addQuoted(rel.toDirectory().toWindows() + "*");
-                } else {
-                    command.addFile(rel.toWindows());
-                }
-                if (i != entries.size() - 1) {
-                    command.add(",");
-                }
-            }
-
-            model.runAsync(
-                    () -> {
-                        var sc = model.getFileSystem().getShell().orElseThrow();
-                        if (ShellDialects.isPowershell(sc)) {
-                            sc.command(command).withWorkingDirectory(base).execute();
-                        } else {
-                            try (var sub = sc.subShell(ShellDialects.POWERSHELL)) {
-                                sub.command(command).withWorkingDirectory(base).execute();
-                            }
-                        }
-                    },
-                    true);
+            var builder = io.xpipe.app.browser.menu.impl.compress.ZipActionProvider.Action.builder();
+            builder.initEntries(model, entries);
+            builder.target(model.getCurrentDirectory().getPath().join(fileName));
+            builder.directoryContentOnly(directory);
+            builder.build().executeAsync();
         }
 
         @Override
         protected String getExtension() {
             return "zip";
-        }
-
-        @Override
-        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS;
-        }
-    }
-
-    private class UnixZipActionProvider extends LeafProvider {
-
-        @Override
-        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = model.getCurrentDirectory().getPath();
-            var target = base.join(fileName);
-            var command = CommandBuilder.of().add("zip", "-r", "-");
-            for (BrowserEntry entry : entries) {
-                var rel = entry.getRawFileEntry().getPath().relativize(base).toUnix();
-                if (directory) {
-                    command.add(".");
-                } else {
-                    command.addFile(rel);
-                }
-            }
-            command.add(">").addFile(target);
-
-            if (directory) {
-                model.runAsync(
-                        () -> {
-                            var sc = model.getFileSystem().getShell().orElseThrow();
-                            sc.command(command)
-                                    .withWorkingDirectory(
-                                            entries.getFirst().getRawFileEntry().getPath())
-                                    .execute();
-                        },
-                        true);
-            } else {
-                model.runCommandAsync(command, true);
-            }
-        }
-
-        @Override
-        protected String getExtension() {
-            return "zip";
-        }
-
-        @Override
-        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getCache().getInstalledApplications().get("zip");
-        }
-
-        @Override
-        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
-        }
-    }
-
-    private class Windows7ZActionProvider extends LeafProvider {
-
-        @Override
-        protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var base = model.getCurrentDirectory().getPath();
-            var target = base.join(fileName);
-            var command = CommandBuilder.of()
-                    .addFile(model.getCache()
-                            .getMultiPurposeCache()
-                            .get("7zExecutable")
-                            .toString())
-                    .add("a")
-                    .add("-r")
-                    .addFile(target);
-            for (BrowserEntry entry : entries) {
-                var rel = entry.getRawFileEntry().getPath().relativize(base);
-                if (directory) {
-                    command.addQuoted(".\\" + rel.toDirectory().toWindows() + "*");
-                } else {
-                    command.addFile(rel.toWindows());
-                }
-            }
-
-            model.runCommandAsync(command, true);
-        }
-
-        @Override
-        protected String getExtension() {
-            return "7z";
-        }
-
-        @Override
-        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getCache().getMultiPurposeCache().containsKey("7zExecutable");
-        }
-
-        @Override
-        public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS;
         }
     }
 
@@ -297,32 +157,12 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
 
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var tar = CommandBuilder.of()
-                    .add("tar", "-c")
-                    .addIf(gz, "-z")
-                    .add("-f")
-                    .addFile(fileName);
-            var base = model.getCurrentDirectory().getPath();
-
-            if (directory) {
-                var dir = entries.getFirst().getRawFileEntry().getPath();
-                // Fix for bsd find, remove /
-                var command = CommandBuilder.of()
-                        .add("find")
-                        .addFile(dir.removeTrailingSlash().toUnix())
-                        .add("|", "sed")
-                        .addLiteral("s,^" + dir.toDirectory().toUnix() + "*,,")
-                        .add("|");
-                command.add(tar).add("-C").addFile(dir.toDirectory().toUnix()).add("-T", "-");
-                model.runCommandAsync(command, true);
-            } else {
-                var command = CommandBuilder.of().add(tar);
-                for (BrowserEntry entry : entries) {
-                    var rel = entry.getRawFileEntry().getPath().relativize(base);
-                    command.addFile(rel);
-                }
-                model.runCommandAsync(command, true);
-            }
+            var builder = TarActionProvider.Action.builder();
+            builder.initEntries(model, entries);
+            builder.target(model.getCurrentDirectory().getPath().join(fileName));
+            builder.directoryContentOnly(directory);
+            builder.gz(gz);
+            builder.build().executeAsync();
         }
 
         @Override

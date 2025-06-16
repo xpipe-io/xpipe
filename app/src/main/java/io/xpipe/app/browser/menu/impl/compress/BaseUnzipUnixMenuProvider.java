@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.menu.impl.compress;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
@@ -36,23 +37,12 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
         return "unzip";
     }
 
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
-        ShellControl sc = model.getFileSystem().getShell().orElseThrow();
-        for (BrowserEntry entry : entries) {
-            var command = CommandBuilder.of()
-                    .add("unzip", "-o")
-                    .addFile(entry.getRawFileEntry().getPath());
-            if (toDirectory) {
-                command.add("-d").addFile(getTarget(entry.getRawFileEntry().getPath()));
-            }
-            try (var cc = sc.command(command)
-                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
-                    .start()) {
-                cc.discardOrThrow();
-            }
-        }
-
-        model.refreshSync();
+    @Override
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = UnzipActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        builder.toDirectory(toDirectory);
+        return builder.build();
     }
 
     @Override
@@ -65,12 +55,8 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1
                 ? "[...]"
-                : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
+                : UnzipActionProvider.getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
-    }
-
-    private FilePath getTarget(FilePath name) {
-        return FilePath.of(name.toString().replaceAll("\\.zip$", ""));
     }
 
     @Override

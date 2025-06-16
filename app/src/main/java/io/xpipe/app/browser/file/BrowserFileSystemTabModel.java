@@ -451,41 +451,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void runCommandAsync(CommandBuilder command, boolean refresh) {
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-                if (getCurrentDirectory() == null) {
-                    return;
-                }
-
-                fileSystem
-                        .getShell()
-                        .orElseThrow()
-                        .command(command)
-                        .withWorkingDirectory(getCurrentDirectory().getPath())
-                        .execute();
-                if (refresh) {
-                    refreshSync();
-                }
-            });
-        });
-    }
-
-    public void runAsync(FailableRunnable<Exception> r, boolean refresh) {
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-                if (getCurrentDirectory() == null) {
-                    return;
-                }
-
-                r.run();
-                if (refresh) {
-                    refreshSync();
-                }
-            });
-        });
-    }
-
     public boolean isClosed() {
         return false;
     }

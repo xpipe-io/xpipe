@@ -22,6 +22,9 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
     @JsonIgnore
     protected BrowserFileSystemTabModel model;
 
+    @JsonIgnore
+    private List<BrowserEntry> entries;
+
     @Override
     protected boolean beforeExecute() throws Exception {
         AppLayoutModel.get().selectBrowser();
@@ -67,7 +70,11 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
     }
 
     protected List<BrowserEntry> getEntries() {
-        return files.stream()
+        if (entries != null) {
+            return entries;
+        }
+
+        entries = files.stream()
                 .map(filePath -> {
                     var be = model.getFileList().getAll().getValue().stream()
                             .filter(browserEntry ->
@@ -81,6 +88,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                 })
                 .filter(browserEntry -> browserEntry != null)
                 .toList();
+        return entries;
     }
 
     public abstract static class BrowserActionBuilder<C extends BrowserAction, B extends BrowserActionBuilder<C, B>>
@@ -92,6 +100,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
             files(entries.stream()
                     .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
                     .toList());
+            entries(entries);
         }
 
         public void initFiles(BrowserFileSystemTabModel model, List<FilePath> entries) {

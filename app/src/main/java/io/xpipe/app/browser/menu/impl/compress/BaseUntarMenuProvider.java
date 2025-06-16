@@ -1,5 +1,7 @@
 package io.xpipe.app.browser.menu.impl.compress;
 
+import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
@@ -38,28 +40,12 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
     }
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        model.runAsync(
-                () -> {
-                    ShellControl sc = model.getFileSystem().getShell().orElseThrow();
-                    for (BrowserEntry entry : entries) {
-                        var target = getTarget(entry.getRawFileEntry().getPath());
-                        var c = CommandBuilder.of().add("tar");
-                        if (toDirectory) {
-                            c.add("-C").addFile(target);
-                        }
-                        c.add("-x").addIf(gz, "-z").add("-f");
-                        c.addFile(entry.getRawFileEntry().getPath());
-                        if (toDirectory) {
-                            model.getFileSystem().mkdirs(target);
-                        }
-                        sc.command(c)
-                                .withWorkingDirectory(
-                                        model.getCurrentDirectory().getPath())
-                                .execute();
-                    }
-                },
-                true);
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = UntarActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        builder.gz(gz);
+        builder.toDirectory(toDirectory);
+        return builder.build();
     }
 
     @Override
