@@ -20,8 +20,16 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
             if (!sub.isApplicable(model, subselected)) {
                 continue;
             }
-            m.getItems().add(sub.toMenuItem(model, subselected));
+            var item = sub.toMenuItem(model, subselected);
+            if (item != null) {
+                m.getItems().add(item);
+            }
         }
+
+        if (m.getItems().isEmpty()) {
+            return null;
+        }
+
         var graphic = getIcon(model, selected);
         if (graphic != null) {
             m.setGraphic(graphic.createGraphicNode());

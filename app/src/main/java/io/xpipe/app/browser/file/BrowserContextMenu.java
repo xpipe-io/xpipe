@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.InputHelper;
 
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 
 import java.util.ArrayList;
@@ -82,7 +83,10 @@ public final class BrowserContextMenu extends ContextMenu {
                 }
 
                 var used = a.resolveFilesIfNeeded(selected);
-                getItems().add(a.toMenuItem(model, used));
+                var item = a.toMenuItem(model, used);
+                if (item != null) {
+                    getItems().add(item);
+                }
             }
         }
     }
