@@ -167,6 +167,7 @@ open module io.xpipe.app {
             UntarGzDirectoryMenuProvider,
             JavapMenuProvider,
             JarMenuProvider,
+            MoveFileActionProvider,
             NewFileActionProvider,
             NewDirectoryActionProvider,
             NewLinkActionProvider,

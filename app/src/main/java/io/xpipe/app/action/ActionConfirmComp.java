@@ -33,7 +33,8 @@ public class ActionConfirmComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var options = new OptionsBuilder();
-        options.nameAndDescription("actionConnections").addComp(createList());
+        var plural = action instanceof BatchStoreAction<?> || action instanceof MultiStoreAction<?>;
+        options.nameAndDescription(plural ? "actionConnections" : "actionConnection").addComp(createList());
         options.nameAndDescription("actionConfiguration").addComp(createTable());
         return options.build();
     }

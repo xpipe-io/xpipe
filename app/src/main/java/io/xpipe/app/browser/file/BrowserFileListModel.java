@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.action.impl.MoveFileActionProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
@@ -143,8 +144,11 @@ public final class BrowserFileListModel {
         }
 
         try {
-            fileSystemModel.getFileSystem().move(fullPath, newFullPath);
-            fileSystemModel.refresh();
+            var builder = MoveFileActionProvider.Action.builder();
+            builder.initEntries(fileSystemModel, List.of(old));
+            builder.target(newFullPath);
+            builder.build().executeSync();
+
             var b = all.getValue().stream()
                     .filter(browserEntry ->
                             browserEntry.getRawFileEntry().getPath().equals(newFullPath))
