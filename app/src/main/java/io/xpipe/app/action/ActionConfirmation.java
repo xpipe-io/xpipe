@@ -12,7 +12,7 @@ import java.util.List;
 public class ActionConfirmation {
 
     public static boolean confirmAction(AbstractAction action) {
-        if (!action.getProvider().isMutation() || !confirmAllModifications(action)) {
+        if (!action.isMutation() || !confirmAllModifications(action)) {
             return true;
         }
 

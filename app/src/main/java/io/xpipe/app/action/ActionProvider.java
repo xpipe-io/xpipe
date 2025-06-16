@@ -33,10 +33,6 @@ public interface ActionProvider {
         return null;
     }
 
-    default boolean isMutation() {
-        return false;
-    }
-
     @SuppressWarnings("unchecked")
     default Optional<Class<? extends AbstractAction>> getActionClass() {
         var child = Arrays.stream(getClass().getDeclaredClasses())

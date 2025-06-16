@@ -181,6 +181,10 @@ public abstract class AbstractAction {
         return true;
     }
 
+    public boolean isMutation() {
+        return false;
+    }
+
     protected void afterExecute() {}
 
     public abstract Map<String, String> toDisplayMap();

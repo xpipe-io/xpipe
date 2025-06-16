@@ -22,11 +22,6 @@ import java.util.stream.Stream;
 
 public class RunFileMenuProvider extends MultiExecuteMenuProvider {
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     private boolean isExecutable(FileEntry e) {
         if (e.getKind() != FileKind.FILE) {
             return false;

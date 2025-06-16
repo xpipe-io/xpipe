@@ -22,11 +22,6 @@ public class StoreStopActionProvider
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<StoppableStore> store) {
         return AppI18n.observable("stop");
     }
@@ -74,6 +69,11 @@ public class StoreStopActionProvider
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<StoppableStore> {
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

@@ -14,6 +14,11 @@ public class DeleteActionProvider implements BrowserActionProvider {
     public static class Action extends BrowserAction {
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             var toDelete =
                     getEntries().stream().map(entry -> entry.getRawFileEntry()).toList();
@@ -25,10 +30,5 @@ public class DeleteActionProvider implements BrowserActionProvider {
     @Override
     public String getId() {
         return "deleteFile";
-    }
-
-    @Override
-    public boolean isMutation() {
-        return true;
     }
 }

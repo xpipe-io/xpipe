@@ -17,11 +17,6 @@ import lombok.extern.jackson.Jacksonized;
 public class LxdContainerEditConfigActionProvider implements HubLeafProvider<LxdContainerStore> {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public AbstractAction createAction(DataStoreEntryRef<LxdContainerStore> ref) {
         return Action.builder().ref(ref).build();
     }
@@ -54,6 +49,11 @@ public class LxdContainerEditConfigActionProvider implements HubLeafProvider<Lxd
     @Jacksonized
     @SuperBuilder
     static class Action extends StoreAction<LxdContainerStore> {
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

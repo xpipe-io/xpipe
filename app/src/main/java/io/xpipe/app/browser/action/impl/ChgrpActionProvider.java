@@ -26,11 +26,6 @@ public class ChgrpActionProvider implements BrowserActionProvider {
         return "chgrp";
     }
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -39,6 +34,11 @@ public class ChgrpActionProvider implements BrowserActionProvider {
         private final String group;
 
         private final boolean recursive;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

@@ -19,11 +19,6 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
         implements BrowserApplicationPathMenuProvider, FileTypeMenuProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public BrowserMenuCategory getCategory() {
         return BrowserMenuCategory.CUSTOM;
     }

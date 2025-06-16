@@ -25,11 +25,6 @@ public class ChmodActionProvider implements BrowserActionProvider {
         return "chmod";
     }
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -38,6 +33,11 @@ public class ChmodActionProvider implements BrowserActionProvider {
         private final String permissions;
 
         private final boolean recursive;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

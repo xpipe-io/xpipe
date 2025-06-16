@@ -23,6 +23,11 @@ public class NewLinkActionProvider implements BrowserActionProvider {
         FilePath target;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             for (BrowserEntry entry : getEntries()) {
                 if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
@@ -39,10 +44,5 @@ public class NewLinkActionProvider implements BrowserActionProvider {
     @Override
     public String getId() {
         return "newLink";
-    }
-
-    @Override
-    public boolean isMutation() {
-        return true;
     }
 }

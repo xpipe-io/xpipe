@@ -79,6 +79,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {
+                    System.out.println(d);
                     if (d > 0.0) {
                         AppLayoutModel.get().getSavedState().setBrowserConnectionsWidth(d);
                     }

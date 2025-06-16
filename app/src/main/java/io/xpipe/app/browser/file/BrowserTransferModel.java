@@ -156,6 +156,7 @@ public class BrowserTransferModel {
             var action = TransferFilesActionProvider.Action.builder()
                     .operation(op)
                     .target(DataStorage.get().local().ref())
+                    .download(true)
                     .build();
             action.executeSync();
         } catch (Throwable t) {

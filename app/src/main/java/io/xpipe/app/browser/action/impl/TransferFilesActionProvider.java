@@ -25,11 +25,6 @@ public class TransferFilesActionProvider implements ActionProvider {
         return "transferFiles";
     }
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends AbstractAction implements StoreContextAction {
@@ -39,6 +34,13 @@ public class TransferFilesActionProvider implements ActionProvider {
 
         @NonNull
         BrowserFileTransferOperation operation;
+
+        boolean download;
+
+        @Override
+        public boolean isMutation() {
+            return !download;
+        }
 
         @Override
         public void executeImpl() throws Exception {

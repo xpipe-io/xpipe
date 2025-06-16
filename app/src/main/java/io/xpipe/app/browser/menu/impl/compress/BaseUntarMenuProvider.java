@@ -22,11 +22,6 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
     private final boolean gz;
     private final boolean toDirectory;
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     public BaseUntarMenuProvider(boolean gz, boolean toDirectory) {
         this.gz = gz;
         this.toDirectory = toDirectory;

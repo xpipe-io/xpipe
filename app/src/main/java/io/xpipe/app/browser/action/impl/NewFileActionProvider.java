@@ -19,6 +19,11 @@ public class NewFileActionProvider implements BrowserActionProvider {
         String name;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             for (BrowserEntry entry : getEntries()) {
                 if (entry.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
@@ -35,10 +40,5 @@ public class NewFileActionProvider implements BrowserActionProvider {
     @Override
     public String getId() {
         return "newFile";
-    }
-
-    @Override
-    public boolean isMutation() {
-        return true;
     }
 }

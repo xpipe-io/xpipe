@@ -28,11 +28,6 @@ import java.util.List;
 public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2p-plus-box-outline");
     }

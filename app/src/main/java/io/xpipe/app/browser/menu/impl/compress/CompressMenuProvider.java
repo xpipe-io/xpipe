@@ -33,11 +33,6 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public void init(BrowserFileSystemTabModel model) throws Exception {
         var sc = model.getFileSystem().getShell().orElseThrow();
 

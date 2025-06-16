@@ -12,11 +12,6 @@ import lombok.extern.jackson.Jacksonized;
 public class RunTerminalScriptActionProvider implements ActionProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public String getId() {
         return "runTerminalStore";
     }
@@ -26,6 +21,11 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
     public static class Action extends StoreAction<ShellStore> {
 
         DataStoreEntryRef<SimpleScriptStore> scriptStore;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

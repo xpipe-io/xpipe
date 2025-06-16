@@ -22,11 +22,6 @@ import java.util.List;
 public class PasteMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var clipboard = BrowserClipboard.retrieveCopy();
         if (clipboard == null) {

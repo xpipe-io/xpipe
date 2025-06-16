@@ -22,11 +22,6 @@ public class StorePauseActionProvider
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public Class<PauseableStore> getApplicableClass() {
         return PauseableStore.class;
     }
@@ -69,6 +64,11 @@ public class StorePauseActionProvider
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<PauseableStore> {
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

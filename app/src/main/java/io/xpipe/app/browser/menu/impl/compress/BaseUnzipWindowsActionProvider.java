@@ -27,11 +27,6 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")));
     }

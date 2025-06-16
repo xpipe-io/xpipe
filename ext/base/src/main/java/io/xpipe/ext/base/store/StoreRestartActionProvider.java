@@ -23,11 +23,6 @@ public class StoreRestartActionProvider
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
         return AppI18n.observable("restart");
     }
@@ -70,6 +65,11 @@ public class StoreRestartActionProvider
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<DataStore> {
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

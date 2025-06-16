@@ -38,11 +38,6 @@ public class RunScriptActionProviderMenu
         ScriptHierarchy hierarchy;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
@@ -90,11 +85,6 @@ public class RunScriptActionProviderMenu
             implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
@@ -150,11 +140,6 @@ public class RunScriptActionProviderMenu
         ScriptHierarchy hierarchy;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunBackgroundScriptActionProvider.Action.builder()
                     .ref(ref)
@@ -203,11 +188,6 @@ public class RunScriptActionProviderMenu
             implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public ObservableValue<String> getName() {

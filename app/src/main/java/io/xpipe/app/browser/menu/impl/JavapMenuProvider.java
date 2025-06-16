@@ -20,11 +20,6 @@ public class JavapMenuProvider
         implements FileTypeMenuProvider, BrowserApplicationPathMenuProvider, BrowserMenuLeafProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public BrowserMenuCategory getCategory() {
         return BrowserMenuCategory.CUSTOM;
     }

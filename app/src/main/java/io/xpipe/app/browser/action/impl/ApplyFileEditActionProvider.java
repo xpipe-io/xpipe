@@ -19,11 +19,6 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         return "applyFileEdit";
     }
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends AbstractAction {
@@ -36,6 +31,11 @@ public class ApplyFileEditActionProvider implements ActionProvider {
 
         @NonNull
         BrowserFileOutput output;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

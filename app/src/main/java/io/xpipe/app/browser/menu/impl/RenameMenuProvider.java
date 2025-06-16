@@ -20,11 +20,6 @@ import java.util.List;
 public class RenameMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         model.getFileList().getEditing().setValue(entries.getFirst());
     }

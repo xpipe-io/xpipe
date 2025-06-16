@@ -16,11 +16,6 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
         return "runCommandInTerminal";
     }
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -30,6 +25,11 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
 
         @NonNull
         String command;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

@@ -52,12 +52,10 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
-        menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
+        menu.getItems().add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
                 .add(categoryMenu("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
-
-        menu.getItems().add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
                 .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
@@ -66,7 +64,7 @@ public class StoreCreationMenu {
                 .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
 
-        menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
+        menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
         menu.getItems()
                 .add(categoryMenu(
@@ -89,6 +87,8 @@ public class StoreCreationMenu {
             actionMenu.getParentPopup().hide();
         });
         actionMenu.getItems().addFirst(item);
+
+        menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
         menu.getItems().add(actionMenu);
     }

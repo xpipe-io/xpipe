@@ -22,11 +22,6 @@ public class StoreStartActionProvider
     }
 
     @Override
-    public boolean isMutation() {
-        return true;
-    }
-
-    @Override
     public Action createBatchAction(DataStoreEntryRef<StartableStore> ref) {
         return Action.builder().ref(ref).build();
     }
@@ -74,6 +69,11 @@ public class StoreStartActionProvider
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<StartableStore> {
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {

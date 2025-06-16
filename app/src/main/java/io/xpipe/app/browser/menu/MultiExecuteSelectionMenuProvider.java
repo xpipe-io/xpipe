@@ -14,11 +14,6 @@ import java.util.List;
 
 public abstract class MultiExecuteSelectionMenuProvider implements BrowserMenuBranchProvider {
 
-    @Override
-    public boolean isMutation() {
-        return true;
-    }
-
     protected abstract String createCommand(BrowserFileSystemTabModel model);
 
     protected abstract String getTerminalTitle();
