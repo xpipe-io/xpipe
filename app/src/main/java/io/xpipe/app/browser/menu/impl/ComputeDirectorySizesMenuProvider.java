@@ -1,5 +1,8 @@
 package io.xpipe.app.browser.menu.impl;
 
+import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.browser.action.impl.ComputeDirectorySizesActionProvider;
+import io.xpipe.app.browser.action.impl.DeleteActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
@@ -10,25 +13,15 @@ import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 
-public class ComputeDirectorySizesAction implements BrowserMenuLeafProvider {
+public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
-        for (BrowserEntry be : model.getFileList().getAll().getValue()) {
-            if (be.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
-                continue;
-            }
-
-            var size =
-                    model.getFileSystem().getDirectorySize(be.getRawFileEntry().getPath());
-            var fileEntry = be.getRawFileEntry();
-            fileEntry.setSize("" + size);
-            model.getFileList().updateEntry(be, fileEntry);
-        }
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = ComputeDirectorySizesActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        return builder.build();
     }
 
     public String getId() {
@@ -42,12 +35,13 @@ public class ComputeDirectorySizesAction implements BrowserMenuLeafProvider {
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable("computeDirectorySizes");
+        var topLevel = entries.size() == 1 && entries.getFirst().getRawFileEntry().equals(model.getCurrentDirectory());
+        return AppI18n.observable(topLevel ? "computeDirectorySizes" : "computeSize");
     }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.getFirst().getRawFileEntry().equals(model.getCurrentDirectory());
+        return entries.stream().allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

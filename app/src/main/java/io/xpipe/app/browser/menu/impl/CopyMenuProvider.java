@@ -26,7 +26,7 @@ public class CopyMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
+        return new LabelGraphic.IconGraphic("mdoal-file_copy");
     }
 
     @Override

@@ -55,6 +55,7 @@ public class ChgrpActionProvider implements BrowserActionProvider {
                                             .getPath()
                                             .toString())
                                     .toList()));
+            model.refreshEntriesSync(getEntries());
         }
     }
 }

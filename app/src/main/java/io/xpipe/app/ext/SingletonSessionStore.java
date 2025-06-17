@@ -38,16 +38,16 @@ public interface SingletonSessionStore<T extends Session>
         return (T) getCache("session", getSessionClass(), null);
     }
 
-    default void startSessionIfNeeded() throws Exception {
+    default T startSessionIfNeeded() throws Exception {
         synchronized (this) {
             var s = getSession();
             if (s != null) {
                 if (s.isRunning()) {
-                    return;
+                    return s;
                 }
 
                 s.start();
-                return;
+                return s;
             }
 
             try {
@@ -60,8 +60,10 @@ public interface SingletonSessionStore<T extends Session>
                     s.addListener(running -> {
                         onStateChange(running);
                     });
+                    return s;
                 } else {
                     setSessionEnabled(false);
+                    return null;
                 }
             } catch (Exception ex) {
                 setSessionEnabled(false);

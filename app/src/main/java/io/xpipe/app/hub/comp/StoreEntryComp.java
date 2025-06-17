@@ -19,7 +19,6 @@ import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
@@ -389,8 +388,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
                 items.add(2, notes);
 
-                var readOnly = new MenuItem();
-                readOnly.graphicProperty()
+                var freeze = new MenuItem();
+                freeze.graphicProperty()
                         .bind(Bindings.createObjectBinding(
                                 () -> {
                                     var is = getWrapper().getReadOnly().get();
@@ -399,17 +398,17 @@ public abstract class StoreEntryComp extends SimpleComp {
                                             : new FontIcon("mdi2l-lock-open-outline");
                                 },
                                 getWrapper().getReadOnly()));
-                readOnly.textProperty()
+                freeze.textProperty()
                         .bind(Bindings.createStringBinding(
                                 () -> {
                                     var is = getWrapper().getReadOnly().get();
-                                    return is ? AppI18n.get("unsetReadOnly") : AppI18n.get("setReadOnly");
+                                    return is ? AppI18n.get("unfreezeConfiguration") : AppI18n.get("freezeConfiguration");
                                 },
                                 AppI18n.activeLanguage(),
                                 getWrapper().getReadOnly()));
-                readOnly.setOnAction(event ->
-                        getWrapper().getEntry().setReadOnly(!getWrapper().getReadOnly().get()));
-                items.add(3, readOnly);
+                freeze.setOnAction(event ->
+                        getWrapper().getEntry().setFreeze(!getWrapper().getReadOnly().get()));
+                items.add(freeze);
             }
 
             if (cat == StoreActionCategory.DEVELOPER) {

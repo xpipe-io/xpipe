@@ -41,7 +41,7 @@ public class DataStoreCategoryConfig {
                 sync = config.sync;
             }
             if (readOnly == null) {
-                readOnly = config.readOnly;
+                readOnly = config.freezeConfigurations;
             }
         }
         return new DataStoreCategoryConfig(
@@ -58,7 +58,7 @@ public class DataStoreCategoryConfig {
     @With
     Boolean sync;
 
-    Boolean readOnly;
+    Boolean freezeConfigurations;
 
     UUID defaultIdentityStore;
 }

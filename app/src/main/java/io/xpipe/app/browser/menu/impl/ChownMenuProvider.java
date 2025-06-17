@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.action.impl.ChgrpActionProvider;
+import io.xpipe.app.browser.action.impl.ChownActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
@@ -17,8 +18,6 @@ import io.xpipe.core.store.FileKind;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
-
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -110,24 +109,24 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
     private static class FixedProvider implements BrowserMenuLeafProvider {
 
-        private final String group;
+        private final String owner;
         private final boolean recursive;
 
-        private FixedProvider(String group, boolean recursive) {
-            this.group = group;
+        private FixedProvider(String owner, boolean recursive) {
+            this.owner = owner;
             this.recursive = recursive;
         }
 
         @Override
         public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return new SimpleStringProperty(group);
+            return new SimpleStringProperty(owner);
         }
 
         @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            var builder = ChgrpActionProvider.Action.builder();
+            var builder = ChownActionProvider.Action.builder();
             builder.initEntries(model, entries);
-            builder.group(group);
+            builder.owner(owner);
             builder.recursive(recursive);
             var action = builder.build();
             action.executeAsync();
@@ -163,9 +162,9 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
                     return;
                 }
 
-                var builder = ChgrpActionProvider.Action.builder();
+                var builder = ChownActionProvider.Action.builder();
                 builder.initEntries(model, entries);
-                builder.group(user.getValue());
+                builder.owner(user.getValue());
                 builder.recursive(recursive);
                 var action = builder.build();
                 action.executeAsync();

@@ -77,7 +77,7 @@ public class DataStoreEntry extends StorageElement {
 
     @NonFinal
     @Getter
-    boolean readOnly;
+    boolean freeze;
 
     @Getter
     @NonFinal
@@ -99,7 +99,7 @@ public class DataStoreEntry extends StorageElement {
             DataStoreColor color,
             String notes,
             String icon,
-            boolean readOnly,
+            boolean freeze,
             int orderIndex) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
@@ -111,7 +111,7 @@ public class DataStoreEntry extends StorageElement {
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
         this.icon = icon;
-        this.readOnly = readOnly;
+        this.freeze = freeze;
         this.orderIndex = orderIndex;
     }
 
@@ -124,7 +124,7 @@ public class DataStoreEntry extends StorageElement {
             Instant lastModified,
             DataStore store,
             String icon,
-            boolean readOnly,
+            boolean freeze,
             int orderIndex) {
         super(directory, uuid, name, lastUsed, lastModified, false, false);
         this.categoryUuid = categoryUuid;
@@ -135,7 +135,7 @@ public class DataStoreEntry extends StorageElement {
         this.expanded = false;
         this.provider = null;
         this.storePersistentStateNode = null;
-        this.readOnly = readOnly;
+        this.freeze = freeze;
         this.orderIndex = orderIndex;
     }
 
@@ -236,7 +236,7 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
-        var readOnly = Optional.ofNullable(json.get("readOnly"))
+        var freeze = Optional.ofNullable(json.get("freeze"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
 
@@ -315,7 +315,7 @@ public class DataStoreEntry extends StorageElement {
                 color,
                 notes,
                 icon,
-                readOnly,
+                freeze,
                 orderIndex));
     }
 
@@ -464,7 +464,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("categoryUuid", categoryUuid.toString());
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
-        obj.put("readOnly", readOnly);
+        obj.put("freeze", freeze);
         obj.put("orderIndex", orderIndex);
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
@@ -512,9 +512,9 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public void setReadOnly(boolean newValue) {
-        var changed = readOnly != newValue;
-        this.readOnly = newValue;
+    public void setFreeze(boolean newValue) {
+        var changed = freeze != newValue;
+        this.freeze = newValue;
         if (changed) {
             notifyUpdate(false, true);
         }

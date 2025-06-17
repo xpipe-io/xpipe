@@ -7,6 +7,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -57,12 +58,13 @@ public final class BrowserFileListModel {
         }
     }
 
-    public void updateEntry(BrowserEntry old, FileEntry n) {
-        var index = all.getValue().indexOf(old);
-        if (index == -1) {
+    public void updateEntry(FilePath p, FileEntry n) {
+        var found = all.getValue().stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(p)).findFirst();
+        if (found.isEmpty()) {
             return;
         }
 
+        var index = all.getValue().indexOf(found.get());
         var l = new ArrayList<>(all.getValue());
         if (n != null) {
             l.set(index, new BrowserEntry(n, this));
@@ -78,7 +80,7 @@ public final class BrowserFileListModel {
         refreshShown();
     }
 
-    private void refreshShown() {
+     void refreshShown() {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
@@ -107,7 +109,7 @@ public final class BrowserFileListModel {
         return us;
     }
 
-    public BrowserEntry rename(BrowserEntry old, String newName) {
+    public BrowserEntry rename(BrowserEntry old, String newName) throws Exception {
         if (old == null
                 || newName == null
                 || fileSystemModel == null
@@ -116,7 +118,6 @@ public final class BrowserFileListModel {
             return old;
         }
 
-        var fullPath = fileSystemModel.getCurrentPath().get().join(old.getFileName());
         var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file
@@ -138,7 +139,7 @@ public final class BrowserFileListModel {
                 ErrorEventFactory.fromMessage("Target " + newFullPath + " does already exist")
                         .expected()
                         .handle();
-                fileSystemModel.refresh();
+                fileSystemModel.refreshSync();
                 return old;
             }
         }

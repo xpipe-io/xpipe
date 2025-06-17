@@ -34,7 +34,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.MUTATION;
+        return BrowserMenuCategory.ACTION;
     }
 
     @Override

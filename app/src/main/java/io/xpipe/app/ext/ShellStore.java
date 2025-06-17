@@ -29,14 +29,11 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             }
         }
 
-        startSessionIfNeeded();
+        var session = startSessionIfNeeded();
 
-        var session = getSession();
         // This might be null if this store has been removed from this storage since the session was started
         // Then, the cache returns null
-        if (session == null) {
-            return standaloneControl().start();
-        }
+        // getSession()
 
         return new StubShellControl(session.getShellControl());
     }

@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
@@ -493,8 +494,25 @@ public final class BrowserFileListComp extends SimpleComp {
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol) {
         var lastDir = new SimpleObjectProperty<FileEntry>();
-        Runnable updateHandler = () -> {
+        BiConsumer<List<BrowserEntry>, List<BrowserEntry>> updateHandler = (o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
+                // Optimization for single entry updates
+                if (o != null && n != null && o.size() == n.size()) {
+                    var left = new HashSet<>(n);
+                    o.forEach(left::remove);
+                    if (left.size() == 1) {
+                        var updatedEntry = left.iterator().next();
+                        var found = o.stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath()
+                                .equals(updatedEntry.getRawFileEntry().getPath())).findFirst();
+                        if (found.isPresent()) {
+                            table.refresh();
+                            table.getItems().set(table.getItems().indexOf(found.get()), updatedEntry);
+                            return;
+                        }
+                    }
+                }
+
+                table.setDisable(true);
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
                 table.getItems().clear();
 
@@ -551,17 +569,20 @@ public final class BrowserFileListComp extends SimpleComp {
                     }
                 }
                 lastDir.setValue(currentDirectory);
+                table.setDisable(false);
             });
         };
 
-        updateHandler.run();
+        updateHandler.accept(null, null);
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
             // Delay to prevent internal tableview exceptions when sorting
-            Platform.runLater(updateHandler);
+            Platform.runLater(() -> {
+                updateHandler.accept(oldValue, newValue);
+            });
         });
         fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
             if (oldValue == null) {
-                updateHandler.run();
+                updateHandler.accept(null, null);
             }
         });
     }

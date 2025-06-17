@@ -55,6 +55,7 @@ public class ChownActionProvider implements BrowserActionProvider {
                                             .getPath()
                                             .toString())
                                     .toList()));
+            model.refreshSync();
         }
     }
 }

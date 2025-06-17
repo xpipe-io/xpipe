@@ -179,7 +179,7 @@ public class StoreEntryWrapper {
         color.setValue(entry.getColor());
         notes.setValue(new StoreNotes(entry.getNotes(), entry.getNotes()));
         customIcon.setValue(entry.getIcon());
-        readOnly.setValue(entry.isReadOnly());
+        readOnly.setValue(entry.isFreeze());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);
         deletable.setValue(

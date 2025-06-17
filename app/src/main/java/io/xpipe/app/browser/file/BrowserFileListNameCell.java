@@ -144,7 +144,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             getTableRow().requestFocus();
             var it = getTableRow().getItem();
             editing.setValue(null);
-            ThreadHelper.runAsync(() -> {
+            ThreadHelper.runFailableAsync(() -> {
                 if (it == null) {
                     return;
                 }

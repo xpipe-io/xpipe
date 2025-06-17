@@ -171,13 +171,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    @SneakyThrows
-    public void refresh() {
-        BooleanScope.executeExclusive(busy, () -> {
-            cdSyncWithoutCheck(currentPath.get());
-        });
-    }
-
     public void refreshSync() throws Exception {
         cdSyncWithoutCheck(currentPath.get());
     }
@@ -195,10 +188,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         for (BrowserEntry browserEntry : entries) {
             var refresh = fileSystem.getFileInfo(browserEntry.getRawFileEntry().getPath());
-            fileList.updateEntry(browserEntry, refresh.orElse(null));
+            fileList.updateEntry(browserEntry.getRawFileEntry().getPath(), refresh.orElse(null));
         }
-
-        cdSyncWithoutCheck(currentPath.get());
     }
 
     public FileEntry getCurrentParentDirectory() {
@@ -248,7 +239,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return false;
         }
 
-        if (AppMainWindow.getInstance().getStage().getWidth() <= 1280) {
+        if (AppMainWindow.getInstance().getStage().getWidth() <= 1380) {
             return false;
         }
 
