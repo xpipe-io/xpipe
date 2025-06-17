@@ -29,7 +29,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.MUTATION;
+        return BrowserMenuCategory.ACTION;
     }
 
     @Override

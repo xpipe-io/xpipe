@@ -54,7 +54,6 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
             }
 
             if (onDividerChange != null) {
-                System.out.println("a: " + newValue.doubleValue());
                 onDividerChange.accept(newValue.doubleValue() * r.getWidth());
             }
 

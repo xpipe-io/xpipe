@@ -2,9 +2,7 @@ package io.xpipe.app.browser.menu.impl.compress;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
-import io.xpipe.app.browser.menu.BrowserMenuCategory;
-import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
+import io.xpipe.app.browser.menu.*;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
@@ -19,13 +17,7 @@ import javafx.scene.control.TextField;
 
 import java.util.List;
 
-public abstract class CompressMenuProvider implements BrowserMenuBranchProvider {
-
-    private final boolean directory;
-
-    public CompressMenuProvider(boolean directory) {
-        this.directory = directory;
-    }
+public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public void init(BrowserFileSystemTabModel model) throws Exception {
@@ -47,12 +39,12 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
 
     @Override
     public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.MUTATION;
+        return BrowserMenuCategory.ACTION;
     }
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable(directory ? "compressContents" : "compress");
+        return AppI18n.observable("compress");
     }
 
     @Override
@@ -67,23 +59,26 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
             return false;
         }
 
-        return directory
-                ? entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY
-                : entries.size() >= 1;
+        return true;
     }
 
     @Override
-    public List<BrowserMenuLeafProvider> getBranchingActions(
+    public List<BrowserMenuItemProvider> getBranchingActions(
             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var contentsOptions = entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY;
+        if (contentsOptions) {
+            return List.of(new BranchProvider(false), new BranchProvider(true));
+        }
+
         return List.of(
-                new ZipActionProvider(),
-                new TarBasedActionProvider(false) {
+                new ZipActionProvider(false),
+                new TarBasedActionProvider(false, false) {
                     @Override
                     protected String getExtension() {
                         return "tar";
                     }
                 },
-                new TarBasedActionProvider(true) {
+                new TarBasedActionProvider(false, true) {
 
                     @Override
                     protected String getExtension() {
@@ -92,9 +87,50 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
                 });
     }
 
-    private abstract class LeafProvider implements BrowserMenuLeafProvider {
+    private class BranchProvider implements BrowserMenuBranchProvider {
+
+        private final boolean directory;
+
+        private BranchProvider(boolean directory) {this.directory = directory;}
 
         @Override
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return AppI18n.observable(directory ? "excludeRoot" : "includeRoot");
+        }
+
+        @Override
+        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return directory ? new LabelGraphic.IconGraphic("mdi2f-file-tree"):
+             new LabelGraphic.IconGraphic("mdi2f-file-outline");
+        }
+
+        @Override
+        public List<? extends BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return List.of(
+                    new ZipActionProvider(directory),
+                    new TarBasedActionProvider(directory, false) {
+                        @Override
+                        protected String getExtension() {
+                            return "tar";
+                        }
+                    },
+                    new TarBasedActionProvider(directory, true) {
+
+                        @Override
+                        protected String getExtension() {
+                            return "tar.gz";
+                        }
+                    });
+        }
+    }
+
+        private abstract static class LeafProvider implements BrowserMenuLeafProvider {
+
+            protected final boolean directory;
+
+            private LeafProvider(boolean directory) {this.directory = directory;}
+
+            @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(
@@ -132,6 +168,10 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
 
     private class ZipActionProvider extends LeafProvider {
 
+        private ZipActionProvider(boolean directory) {
+            super(directory);
+        }
+
         @Override
         protected void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var builder = io.xpipe.app.browser.menu.impl.compress.ZipActionProvider.Action.builder();
@@ -151,7 +191,8 @@ public abstract class CompressMenuProvider implements BrowserMenuBranchProvider 
 
         private final boolean gz;
 
-        private TarBasedActionProvider(boolean gz) {
+        private TarBasedActionProvider(boolean directory, boolean gz) {
+            super(directory);
             this.gz = gz;
         }
 

@@ -57,6 +57,6 @@ public class ComputeDirectorySizesAction implements BrowserMenuLeafProvider {
 
     @Override
     public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.MUTATION;
+        return BrowserMenuCategory.ACTION;
     }
 }

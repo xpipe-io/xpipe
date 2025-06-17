@@ -40,7 +40,7 @@ public class DownloadMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.MUTATION;
+        return BrowserMenuCategory.ACTION;
     }
 
     @Override
