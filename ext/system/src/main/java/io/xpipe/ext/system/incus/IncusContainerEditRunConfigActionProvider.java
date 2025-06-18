@@ -51,7 +51,7 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<IncusContainerStore> {
+    public static class Action extends StoreAction<IncusContainerStore> {
 
         @Override
         public boolean isMutation() {

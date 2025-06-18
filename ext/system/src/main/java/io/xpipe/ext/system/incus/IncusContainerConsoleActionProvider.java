@@ -47,7 +47,7 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<IncusContainerStore> {
+    public static class Action extends StoreAction<IncusContainerStore> {
 
         @Override
         public void executeImpl() throws Exception {

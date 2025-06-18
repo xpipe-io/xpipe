@@ -53,7 +53,7 @@ public class ServiceCopyAddressActionProvider implements HubLeafProvider<Abstrac
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<AbstractServiceStore> {
+    public static class Action extends StoreAction<AbstractServiceStore> {
 
         @Override
         public void executeImpl() throws Exception {

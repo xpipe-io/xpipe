@@ -42,7 +42,7 @@ public class PodmanContainerLogsActionProvider implements HubLeafProvider<Podman
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<PodmanContainerStore> {
+    public static class Action extends StoreAction<PodmanContainerStore> {
 
         @Override
         public void executeImpl() throws Exception {

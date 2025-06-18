@@ -19,8 +19,13 @@ public class ModuleAccess {
                 break;
             }
         }
-        modifiers.setAccessible(true);
 
+        // Maybe an unknown JDK version?
+        if (modifiers == null) {
+            return;
+        }
+
+        modifiers.setAccessible(true);
         modifiers.invoke(source, pkg, target, false, true);
         modifiers.invoke(source, pkg, target, true, true);
     }

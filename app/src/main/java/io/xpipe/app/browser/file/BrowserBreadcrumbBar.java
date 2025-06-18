@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FileNames;
 import io.xpipe.core.store.FilePath;
 
 import javafx.scene.Node;
@@ -28,7 +27,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
     @Override
     protected Region createSimple() {
         Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
-            var name = crumb.getValue().equals("/") ? "/" : FileNames.getFileName(crumb.getValue());
+            var name = crumb.getValue().equals("/") ? "/" : FilePath.of(crumb.getValue()).getFileName();
             var btn = new Button(name, null);
             btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);

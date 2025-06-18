@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.JacksonMapper;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -38,8 +38,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         // A weird behavior in Windows Terminal causes the trailing
         // backslash of a filepath to escape the closing quote in the title argument
         // So just remove that slash
-        var fixedName = FileNames.removeTrailingSlash(configuration.getColoredTitle());
-        cmd.add("--title").addQuoted(fixedName);
+        var fixedName = FilePath.of(configuration.getColoredTitle()).removeTrailingSlash();
+        cmd.add("--title").addQuoted(fixedName.toString());
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
         cmd.add(configuration.getDialectLaunchCommand());
         return cmd;

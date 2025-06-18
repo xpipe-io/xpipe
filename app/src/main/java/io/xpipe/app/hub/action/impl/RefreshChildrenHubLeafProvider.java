@@ -58,7 +58,7 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<FixedHierarchyStore> {
+    public static class Action extends StoreAction<FixedHierarchyStore> {
 
         @Override
         public void executeImpl() {

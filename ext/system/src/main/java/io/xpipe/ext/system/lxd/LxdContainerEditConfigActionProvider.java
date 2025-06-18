@@ -48,7 +48,7 @@ public class LxdContainerEditConfigActionProvider implements HubLeafProvider<Lxd
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<LxdContainerStore> {
+    public static class Action extends StoreAction<LxdContainerStore> {
 
         @Override
         public boolean isMutation() {

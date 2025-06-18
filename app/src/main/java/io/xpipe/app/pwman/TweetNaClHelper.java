@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import lombok.Getter;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.KeyGenerationParameters;
 import org.bouncycastle.crypto.agreement.X25519Agreement;
@@ -26,6 +27,7 @@ public class TweetNaClHelper {
     // Sigma constant ("expand 32-byte k")
     private static final byte[] SIGMA = {101, 120, 112, 97, 110, 100, 32, 51, 50, 45, 98, 121, 116, 101, 32, 107};
 
+    @Getter
     public static class KeyPair {
         private final byte[] publicKey;
         private final byte[] secretKey;
@@ -33,14 +35,6 @@ public class TweetNaClHelper {
         public KeyPair(byte[] publicKey, byte[] secretKey) {
             this.publicKey = publicKey;
             this.secretKey = secretKey;
-        }
-
-        public byte[] getPublicKey() {
-            return publicKey;
-        }
-
-        public byte[] getSecretKey() {
-            return secretKey;
         }
     }
 

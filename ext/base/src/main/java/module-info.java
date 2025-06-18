@@ -1,7 +1,6 @@
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.hub.action.impl.*;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;

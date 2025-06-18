@@ -48,7 +48,7 @@ public class LxdContainerConsoleActionProvider implements HubLeafProvider<LxdCon
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<LxdContainerStore> {
+    public static class Action extends StoreAction<LxdContainerStore> {
 
         @Override
         public void executeImpl() throws Exception {

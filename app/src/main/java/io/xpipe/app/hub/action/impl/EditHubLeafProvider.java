@@ -48,7 +48,7 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<DataStore> {
+    public static class Action extends StoreAction<DataStore> {
 
         @Override
         public void executeImpl() {

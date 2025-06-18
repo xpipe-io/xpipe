@@ -69,7 +69,7 @@ public class ServiceRefreshActionProvider
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<FixedServiceCreatorStore> {
+    public static class Action extends StoreAction<FixedServiceCreatorStore> {
 
         @Override
         public void executeImpl() {

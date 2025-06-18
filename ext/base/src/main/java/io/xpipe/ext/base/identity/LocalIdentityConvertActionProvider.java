@@ -61,7 +61,7 @@ public class LocalIdentityConvertActionProvider implements HubLeafProvider<Local
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<LocalIdentityStore> {
+    public static class Action extends StoreAction<LocalIdentityStore> {
 
         @Override
         public void executeImpl() {

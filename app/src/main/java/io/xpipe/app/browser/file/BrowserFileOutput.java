@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.storage.DataStoreEntry;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Optional;
 

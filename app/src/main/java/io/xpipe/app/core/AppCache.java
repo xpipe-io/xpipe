@@ -5,7 +5,6 @@ import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 

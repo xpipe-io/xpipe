@@ -58,7 +58,7 @@ public class SimpleScriptQuickEditActionProvider implements HubLeafProvider<Simp
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<SimpleScriptStore> {
+    public static class Action extends StoreAction<SimpleScriptStore> {
 
         @Override
         public void executeImpl() {

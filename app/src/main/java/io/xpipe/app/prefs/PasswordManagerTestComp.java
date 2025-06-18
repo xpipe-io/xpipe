@@ -66,7 +66,7 @@ public class PasswordManagerTestComp extends SimpleComp {
                 .tooltip(AppI18n.observable("test"))
                 .styleClass(Styles.RIGHT_PILL);
 
-        var testInput = new HorizontalComp(List.<Comp<?>>of(field, button));
+        var testInput = new HorizontalComp(List.of(field, button));
         testInput.apply(struc -> {
             struc.get().setFillHeight(true);
             var first = ((Region) struc.get().getChildren().get(0));

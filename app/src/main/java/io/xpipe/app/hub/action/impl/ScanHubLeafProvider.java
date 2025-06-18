@@ -68,7 +68,7 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
 
     @Jacksonized
     @SuperBuilder
-    static class Action extends StoreAction<ShellStore> {
+    public static class Action extends StoreAction<ShellStore> {
 
         @Override
         public void executeImpl() {

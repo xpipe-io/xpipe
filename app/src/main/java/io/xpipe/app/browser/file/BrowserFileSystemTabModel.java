@@ -166,7 +166,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    public void refreshSync() throws Exception {
+    public void refreshSync() {
         cdSyncWithoutCheck(currentPath.get());
     }
 
@@ -188,9 +188,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public FileEntry getCurrentParentDirectory() {
-        var current = getCurrentDirectory();
-        if (current == null) {
-            return null;
+        if (currentPath.get() == null) {
+            return FileEntry.ofDirectory(fileSystem, FilePath.of("?"));
         }
 
         var parent = currentPath.get().getParent();
@@ -202,8 +201,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public FileEntry getCurrentDirectory() {
+        // This should never happen, this should not be called in a context
+        // where the current path is null
         if (currentPath.get() == null) {
-            return null;
+            return FileEntry.ofDirectory(fileSystem, FilePath.of("?"));
         }
 
         return new FileEntry(fileSystem, currentPath.get(), null, null, null, FileKind.DIRECTORY);
