@@ -196,12 +196,7 @@ public class SshIdentityStateManager {
     }
 
     public static synchronized void prepareRemoteOpenSshAgent(ShellControl sc) throws Exception {
-        if (sc.getOsType() == OsType.WINDOWS) {
-            checkAgentIdentities(sc, null);
-        } else {
-            var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
-            checkLocalAgentIdentities(socketEnvVariable);
-        }
+        checkAgentIdentities(sc, null);
     }
 
     public static synchronized void prepareLocalOpenSshAgent(ShellControl sc) throws Exception {
@@ -214,7 +209,15 @@ public class SshIdentityStateManager {
             stopWindowsAgents(false, true, true);
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
+        } else if (sc.getOsType() == OsType.MACOS) {
+            // On macOS, we prefer the shell variable compared to any global env variable
+            // as that one is set by default and might not be the right one
+            // This happens for example with homebrew ssh
+            var shellVariable = sc.view().getEnvironmentVariable("SSH_AUTH_SOCK");
+            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
+            checkLocalAgentIdentities(socketEnvVariable);
         } else {
+            // On Linux, there is no automatically set env variable, so we can always prefer the env variable
             var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
             checkLocalAgentIdentities(socketEnvVariable);
         }
