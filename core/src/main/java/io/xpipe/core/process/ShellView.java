@@ -133,6 +133,10 @@ public class ShellView {
                 shellControl.getShellDialect().getWhichCommand(executable));
     }
 
+    public void cd(FilePath directory) throws Exception {
+        cd(directory.toString());
+    }
+
     public void cd(String directory) throws Exception {
         var d = shellControl.getShellDialect();
         var cmd = shellControl.command(d.getCdCommand(directory));
