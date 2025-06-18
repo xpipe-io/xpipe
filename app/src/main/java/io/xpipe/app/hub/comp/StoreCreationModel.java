@@ -226,11 +226,6 @@ public class StoreCreationModel {
                 validate();
                 commit(true);
             } catch (Throwable ex) {
-                var changedStore = !store.getValue().equals(entry.getValue().getStore());
-                if (changedStore) {
-                    int a = 0;
-                }
-
                 if (ex instanceof ValidationException) {
                     ErrorEventFactory.expected(ex);
                 } else if (ex instanceof StackOverflowError) {
@@ -263,6 +258,8 @@ public class StoreCreationModel {
             if (unsupported) {
                 ss.stopSessionIfNeeded();
             }
+        } else if (s instanceof ValidatableStore vs) {
+            vs.validate();
         }
     }
 

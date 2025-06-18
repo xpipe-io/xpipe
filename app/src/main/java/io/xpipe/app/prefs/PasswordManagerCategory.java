@@ -50,7 +50,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
 
-        var testInput = new PasswordManagerTestComp(testPasswordManagerValue);
+        var testInput = new PasswordManagerTestComp(testPasswordManagerValue, true);
         testInput.maxWidth(getCompWidth());
         testInput.hgrow();
 

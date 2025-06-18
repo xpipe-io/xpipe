@@ -29,7 +29,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
 
         var key = new SimpleStringProperty(st.getKey());
 
-        var comp = new PasswordManagerTestComp(key);
+        var comp = new PasswordManagerTestComp(key, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
                 .addComp(comp.hgrow(), key)

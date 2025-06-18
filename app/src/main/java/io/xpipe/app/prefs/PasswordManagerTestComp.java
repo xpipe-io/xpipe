@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -15,6 +16,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 
@@ -27,9 +29,11 @@ import java.util.List;
 public class PasswordManagerTestComp extends SimpleComp {
 
     private final StringProperty value;
+    private final boolean handleEnter;
 
-    public PasswordManagerTestComp(StringProperty value) {
+    public PasswordManagerTestComp(StringProperty value, boolean handleEnter) {
         this.value = value;
+        this.handleEnter = handleEnter;
     }
 
     @Override
@@ -37,32 +41,34 @@ public class PasswordManagerTestComp extends SimpleComp {
         var prefs = AppPrefs.get();
         var testPasswordManagerResult = new SimpleStringProperty();
 
-        var testInput = new HorizontalComp(List.<Comp<?>>of(
-                new TextFieldComp(value)
-                        .apply(struc -> struc.get()
-                                .promptTextProperty()
-                                .bind(Bindings.createStringBinding(
-                                        () -> {
-                                            return prefs.passwordManager.getValue() != null
-                                                    ? prefs.passwordManager
-                                                            .getValue()
-                                                            .getKeyPlaceholder()
-                                                    : "?";
-                                        },
-                                        prefs.passwordManager)))
-                        .styleClass(Styles.LEFT_PILL)
-                        .hgrow()
-                        .apply(struc -> struc.get().setOnKeyPressed(event -> {
-                            if (event.getCode() == KeyCode.ENTER) {
-                                testPasswordManager(value.get(), testPasswordManagerResult);
-                                event.consume();
-                            }
-                        })),
-                new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
-                            testPasswordManager(value.get(), testPasswordManagerResult);
-                        })
-                        .tooltip(AppI18n.observable("test"))
-                        .styleClass(Styles.RIGHT_PILL)));
+        var field = new TextFieldComp(value)
+                .apply(struc -> struc.get()
+                        .promptTextProperty()
+                        .bind(Bindings.createStringBinding(
+                                () -> {
+                                    return prefs.passwordManager.getValue() != null
+                                            ? prefs.passwordManager
+                                            .getValue()
+                                            .getKeyPlaceholder()
+                                            : "?";
+                                },
+                                prefs.passwordManager)))
+                .styleClass(Styles.LEFT_PILL)
+                .hgrow();
+        if (handleEnter) {
+            field.apply(struc -> struc.get().setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    testPasswordManager(value.get(), testPasswordManagerResult);
+                    event.consume();
+                }
+            }));
+        }
+
+        var button = new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
+            testPasswordManager(value.get(), testPasswordManagerResult);
+        }).tooltip(AppI18n.observable("test")).styleClass(Styles.RIGHT_PILL);
+
+        var testInput = new HorizontalComp(List.<Comp<?>>of(field, button));
         testInput.apply(struc -> {
             struc.get().setFillHeight(true);
             var first = ((Region) struc.get().getChildren().get(0));

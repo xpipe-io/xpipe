@@ -41,7 +41,8 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         var st = (IdentityStore) section.getWrapper().getStore().getValue();
-        var s = (st.getUsername() != null ? "User " + st.getUsername() : "Anonymous user")
+        var user = st.getUsername().hasUser() ? st.getUsername().getFixedUsername().map(s -> "User " + s).orElse("User") : "Anonymous User";
+        var s = user
                 + (st.getPassword() == null || st.getPassword() instanceof SecretRetrievalStrategy.None
                         ? ""
                         : " + Password")

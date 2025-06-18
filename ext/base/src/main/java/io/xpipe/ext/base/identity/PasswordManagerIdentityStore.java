@@ -7,6 +7,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.store.InternalCacheDataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.store.ValidatableStore;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -22,7 +23,7 @@ import java.time.Instant;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PasswordManagerIdentityStore extends IdentityStore implements InternalCacheDataStore {
+public class PasswordManagerIdentityStore extends IdentityStore implements InternalCacheDataStore, ValidatableStore {
 
     String key;
 
@@ -54,6 +55,14 @@ public class PasswordManagerIdentityStore extends IdentityStore implements Inter
         var r = AppPrefs.get().passwordManager().getValue().retrieveCredentials(key);
         if (r == null) {
             throw ErrorEventFactory.expected(new UnsupportedOperationException("Credentials were requested but not supplied"));
+        }
+
+        if (r.getUsername() == null) {
+            throw ErrorEventFactory.expected(new UnsupportedOperationException("Identity " + key + " does not include username"));
+        }
+
+        if (r.getPassword() == null) {
+            throw ErrorEventFactory.expected(new UnsupportedOperationException("Identity " + key + " does not include a password"));
         }
 
         setCache("lastQueried", Instant.now());
@@ -104,5 +113,10 @@ public class PasswordManagerIdentityStore extends IdentityStore implements Inter
     @Override
     public SshIdentityStrategy getSshIdentity() {
         return new SshIdentityStrategy.None();
+    }
+
+    @Override
+    public void validate() throws Exception {
+        retrieveCredentials();
     }
 }
