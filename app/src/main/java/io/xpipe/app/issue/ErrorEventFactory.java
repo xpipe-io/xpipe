@@ -4,11 +4,11 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ProcessOutputException;
 
-import javax.net.ssl.SSLHandshakeException;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Locale;
 import java.util.Map;
+import javax.net.ssl.SSLHandshakeException;
 
 public class ErrorEventFactory {
 
@@ -21,7 +21,8 @@ public class ErrorEventFactory {
 
     public static ErrorEvent.ErrorEventBuilder fromThrowable(String msg, Throwable t) {
         var b = retrieveBuilder(t);
-        return b.description(msg + (t.getMessage() != null ? "\n\n" + t.getMessage().strip() : ""));
+        return b.description(
+                msg + (t.getMessage() != null ? "\n\n" + t.getMessage().strip() : ""));
     }
 
     public static ErrorEvent.ErrorEventBuilder fromMessage(String msg) {
@@ -64,7 +65,9 @@ public class ErrorEventFactory {
         }
 
         // Indicates that the session is scheduled to end and new processes won't be started
-        if (OsType.getLocal() == OsType.WINDOWS && t instanceof ProcessOutputException pex && pex.getExitCode() == -1073741205) {
+        if (OsType.getLocal() == OsType.WINDOWS
+                && t instanceof ProcessOutputException pex
+                && pex.getExitCode() == -1073741205) {
             b.expected();
         }
 

@@ -7,8 +7,8 @@ import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppLayoutModel;
-
 import io.xpipe.app.prefs.AppPrefs;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
@@ -57,7 +57,7 @@ public class StoreEntryListComp extends SimpleComp {
             });
 
             AppPrefs.get().condenseConnectionDisplay().subscribe(dense -> {
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("dense"),  dense);
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("dense"), dense);
             });
         });
         content.styleClass("store-list-comp");

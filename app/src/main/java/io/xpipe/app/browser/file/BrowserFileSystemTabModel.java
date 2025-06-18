@@ -20,7 +20,6 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.*;
 import io.xpipe.core.store.*;
 import io.xpipe.core.util.FailableConsumer;
-import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -29,7 +28,6 @@ import javafx.collections.ObservableList;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;

@@ -121,12 +121,19 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
 
-    provides ActionProvider with BrowseHubLeafProvider, XPipeUrlProvider, LaunchHubMenuLeafProvider, EditHubLeafProvider, CloneHubLeafProvider,
-            DownloadMenuProvider, RefreshChildrenHubLeafProvider,
+    provides ActionProvider with
+            BrowseHubLeafProvider,
+            XPipeUrlProvider,
+            LaunchHubMenuLeafProvider,
+            EditHubLeafProvider,
+            CloneHubLeafProvider,
+            DownloadMenuProvider,
+            RefreshChildrenHubLeafProvider,
             ScanHubBatchProvider,
             RunCommandInBrowserActionProvider,
             RunCommandInBackgroundActionProvider,
-            RunCommandInTerminalActionProvider, ComputeDirectorySizesMenuProvider,
+            RunCommandInTerminalActionProvider,
+            ComputeDirectorySizesMenuProvider,
             FollowLinkMenuProvider,
             BackMenuProvider,
             ForwardMenuProvider,
@@ -134,7 +141,9 @@ open module io.xpipe.app {
             OpenFileDefaultMenuProvider,
             OpenFileWithMenuProvider,
             OpenDirectoryMenuProvider,
-            OpenDirectoryInNewTabMenuProvider, ScanHubLeafProvider, RefreshHubLeafProvider,
+            OpenDirectoryInNewTabMenuProvider,
+            ScanHubLeafProvider,
+            RefreshHubLeafProvider,
             OpenTerminalMenuProvider,
             OpenNativeFileDetailsMenuProvider,
             BrowseInNativeManagerActionProvider,

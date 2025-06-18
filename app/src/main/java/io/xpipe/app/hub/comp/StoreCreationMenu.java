@@ -52,10 +52,12 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
-        menu.getItems().add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
+        menu.getItems()
+                .add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
 
         menu.getItems()
-                .add(categoryMenu("addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+                .add(categoryMenu(
+                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
 
         menu.getItems()
                 .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));

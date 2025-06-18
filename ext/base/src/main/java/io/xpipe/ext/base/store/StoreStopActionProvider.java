@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.store;
 
-import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchHubProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -13,8 +13,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class StoreStopActionProvider
-        implements HubLeafProvider<StoppableStore>, BatchHubProvider<StoppableStore> {
+public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>, BatchHubProvider<StoppableStore> {
 
     @Override
     public StoreActionCategory getCategory() {

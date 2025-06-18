@@ -67,7 +67,8 @@ public class FileOpener {
                 }
             }
         } catch (Throwable e) {
-            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)
+                    .handle();
         }
     }
 
@@ -86,7 +87,8 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
             }
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)
+                    .handle();
         }
     }
 

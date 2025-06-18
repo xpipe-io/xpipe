@@ -1,6 +1,7 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
 

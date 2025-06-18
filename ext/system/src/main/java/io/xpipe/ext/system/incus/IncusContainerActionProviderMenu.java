@@ -1,7 +1,7 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;

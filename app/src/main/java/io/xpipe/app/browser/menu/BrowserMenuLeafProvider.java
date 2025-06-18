@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.menu;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.BrowserActionProviders;
@@ -47,7 +46,9 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
     @SneakyThrows
     default AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var c = getDelegateActionProvider() != null
-                ? BrowserActionProviders.forClass(getDelegateActionProvider()).getActionClass().orElseThrow()
+                ? BrowserActionProviders.forClass(getDelegateActionProvider())
+                        .getActionClass()
+                        .orElseThrow()
                 : getActionClass().orElseThrow();
         var bm = c.getDeclaredMethod("builder");
         bm.setAccessible(true);

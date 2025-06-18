@@ -1,8 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.hub.action.HubBranchProvider;
-import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
@@ -14,8 +12,10 @@ import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.hub.action.HubBranchProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
+import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -306,8 +306,10 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = ContextMenuHelper.create();
-                        var children = branch.getChildren(getWrapper().getEntry().ref());
-                        var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
+                        var children =
+                                branch.getChildren(getWrapper().getEntry().ref());
+                        var cats = Arrays.stream(StoreActionCategory.values())
+                                .collect(Collectors.toCollection(ArrayList::new));
                         cats.addFirst(null);
                         for (var cat : cats) {
                             var catChildren = children.stream()
@@ -402,25 +404,31 @@ public abstract class StoreEntryComp extends SimpleComp {
                         .bind(Bindings.createStringBinding(
                                 () -> {
                                     var is = getWrapper().getReadOnly().get();
-                                    return is ? AppI18n.get("unfreezeConfiguration") : AppI18n.get("freezeConfiguration");
+                                    return is
+                                            ? AppI18n.get("unfreezeConfiguration")
+                                            : AppI18n.get("freezeConfiguration");
                                 },
                                 AppI18n.activeLanguage(),
                                 getWrapper().getReadOnly()));
-                freeze.setOnAction(event ->
-                        getWrapper().getEntry().setFreeze(!getWrapper().getReadOnly().get()));
+                freeze.setOnAction(event -> getWrapper()
+                        .getEntry()
+                        .setFreeze(!getWrapper().getReadOnly().get()));
                 items.add(freeze);
             }
 
             if (cat == StoreActionCategory.DEVELOPER) {
                 if (AppPrefs.get().developerMode().getValue()) {
-                    var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-                    browse.setOnAction(event -> DesktopHelper.browsePathLocal(getWrapper().getEntry().getDirectory()));
+                    var browse = new MenuItem(
+                            AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
+                    browse.setOnAction(event -> DesktopHelper.browsePathLocal(
+                            getWrapper().getEntry().getDirectory()));
                     items.add(browse);
                 }
 
                 if (AppPrefs.get().enableHttpApi().get()) {
                     var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));
-                    copyId.setOnAction(event -> ClipboardHelper.copyText(getWrapper().getEntry().getUuid().toString()));
+                    copyId.setOnAction(event -> ClipboardHelper.copyText(
+                            getWrapper().getEntry().getUuid().toString()));
                     items.add(copyId);
                 }
             }
@@ -464,7 +472,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         DataStorage.get().setOrderIndex(getWrapper().getEntry(), 0);
                         event.consume();
                     });
-                    if (getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE && getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE) {
+                    if (getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE
+                            && getWrapper().getEntry().getOrderIndex() == Integer.MAX_VALUE) {
                         order.getItems().add(noOrder);
                     }
 
@@ -484,7 +493,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                     order.getItems().add(new SeparatorMenuItem());
 
-                    var top = new MenuItem(AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending-variant"));
+                    var top = new MenuItem(
+                            AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending-variant"));
                     top.setOnAction(event -> {
                         getWrapper().orderStickFirst();
                         event.consume();
@@ -492,7 +502,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                     top.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
                     order.getItems().add(top);
 
-                    var bottom = new MenuItem(AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending-variant"));
+                    var bottom = new MenuItem(
+                            AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending-variant"));
                     bottom.setOnAction(event -> {
                         getWrapper().orderStickLast();
                         event.consume();
@@ -505,12 +516,18 @@ public abstract class StoreEntryComp extends SimpleComp {
                     items.add(order);
                 }
 
-                if (getWrapper().getEntry().getProvider() != null && getWrapper().getEntry().getProvider().canMoveCategories()) {
+                if (getWrapper().getEntry().getProvider() != null
+                        && getWrapper().getEntry().getProvider().canMoveCategories()) {
                     var move = new Menu(AppI18n.get("category"), new FontIcon("mdi2f-folder-move-outline"));
-                    StoreViewState.get().getSortedCategories(getWrapper().getCategory().getValue().getRoot()).getList().forEach(
-                            storeCategoryWrapper -> {
+                    StoreViewState.get()
+                            .getSortedCategories(
+                                    getWrapper().getCategory().getValue().getRoot())
+                            .getList()
+                            .forEach(storeCategoryWrapper -> {
                                 MenuItem m = new MenuItem();
-                                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                                m.textProperty()
+                                        .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                                + storeCategoryWrapper.getName().getValue());
                                 m.setOnAction(event -> {
                                     getWrapper().moveTo(storeCategoryWrapper.getCategory());
                                     event.consume();
@@ -527,9 +544,12 @@ public abstract class StoreEntryComp extends SimpleComp {
 
             if (cat == StoreActionCategory.DELETION) {
                 var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
-                del.disableProperty().bind(Bindings.createBooleanBinding(() -> {
-                    return !getWrapper().getDeletable().get();
-                }, getWrapper().getDeletable()));
+                del.disableProperty()
+                        .bind(Bindings.createBooleanBinding(
+                                () -> {
+                                    return !getWrapper().getDeletable().get();
+                                },
+                                getWrapper().getDeletable()));
                 del.setOnAction(event -> getWrapper().delete());
                 contextMenu.getItems().add(del);
             }

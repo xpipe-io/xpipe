@@ -65,7 +65,8 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
     @Override
     public List<BrowserMenuItemProvider> getBranchingActions(
             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var contentsOptions = entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY;
+        var contentsOptions =
+                entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() == FileKind.DIRECTORY;
         if (contentsOptions) {
             return List.of(new BranchProvider(false), new BranchProvider(true));
         }
@@ -91,7 +92,9 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         private final boolean directory;
 
-        private BranchProvider(boolean directory) {this.directory = directory;}
+        private BranchProvider(boolean directory) {
+            this.directory = directory;
+        }
 
         @Override
         public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -100,12 +103,14 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return directory ? new LabelGraphic.IconGraphic("mdi2f-file-tree"):
-             new LabelGraphic.IconGraphic("mdi2f-file-outline");
+            return directory
+                    ? new LabelGraphic.IconGraphic("mdi2f-file-tree")
+                    : new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
         @Override
-        public List<? extends BrowserMenuItemProvider> getBranchingActions(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public List<? extends BrowserMenuItemProvider> getBranchingActions(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return List.of(
                     new ZipActionProvider(directory),
                     new TarBasedActionProvider(directory, false) {
@@ -124,13 +129,15 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
     }
 
-        private abstract static class LeafProvider implements BrowserMenuLeafProvider {
+    private abstract static class LeafProvider implements BrowserMenuLeafProvider {
 
-            protected final boolean directory;
+        protected final boolean directory;
 
-            private LeafProvider(boolean directory) {this.directory = directory;}
+        private LeafProvider(boolean directory) {
+            this.directory = directory;
+        }
 
-            @Override
+        @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(

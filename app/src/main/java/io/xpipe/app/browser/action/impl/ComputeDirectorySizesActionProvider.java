@@ -3,8 +3,8 @@ package io.xpipe.app.browser.action.impl;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.browser.file.BrowserFileSystemHelper;
 import io.xpipe.core.store.FileKind;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -26,7 +26,8 @@ public class ComputeDirectorySizesActionProvider implements BrowserActionProvide
                     continue;
                 }
 
-                var size = model.getFileSystem().getDirectorySize(be.getRawFileEntry().resolved().getPath());
+                var size = model.getFileSystem()
+                        .getDirectorySize(be.getRawFileEntry().resolved().getPath());
                 var fileEntry = be.getRawFileEntry();
                 fileEntry.resolved().setSize("" + size);
                 model.getFileList().updateEntry(be.getRawFileEntry().getPath(), fileEntry);

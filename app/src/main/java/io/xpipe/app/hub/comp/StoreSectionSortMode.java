@@ -28,8 +28,7 @@ public interface StoreSectionSortMode {
 
         @Override
         public Comparator<StoreSection> comparator() {
-            return Comparator.comparingInt(
-                    e -> e.getWrapper().getOrderIndex().getValue());
+            return Comparator.comparingInt(e -> e.getWrapper().getOrderIndex().getValue());
         }
     };
     StoreSectionSortMode ALPHABETICAL_DESC = new StoreSectionSortMode() {

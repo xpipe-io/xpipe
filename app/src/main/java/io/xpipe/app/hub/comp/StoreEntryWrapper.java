@@ -233,7 +233,8 @@ public class StoreEntryWrapper {
             summary.setValue(null);
         } else {
             try {
-                summary.setValue(entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
+                summary.setValue(
+                        entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
                 ErrorEventFactory.fromThrowable(ex).handle();
@@ -375,7 +376,8 @@ public class StoreEntryWrapper {
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
                 .mapToInt(value -> value)
-                .max().orElse(0);
+                .max()
+                .orElse(0);
         if (orderIndex.getValue() != null && max == orderIndex.getValue()) {
             return;
         }
@@ -393,7 +395,8 @@ public class StoreEntryWrapper {
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
                 .mapToInt(value -> value)
-                .min().orElse(0);
+                .min()
+                .orElse(0);
         if (orderIndex.getValue() != null && min == orderIndex.getValue()) {
             return;
         }

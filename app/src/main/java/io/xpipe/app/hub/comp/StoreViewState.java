@@ -80,18 +80,23 @@ public class StoreViewState {
             entriesListUpdateObservable);
 
     @Getter
-    private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(() -> {
-        var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
-        var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-        var incomplete = Comparator.<StoreSection>comparingInt(value -> {
-            if (!value.getWrapper().getValidity().getValue().isUsable()) {
-                return 1;
-            }
+    private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(
+            () -> {
+                var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
+                var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
+                var incomplete = Comparator.<StoreSection>comparingInt(value -> {
+                    if (!value.getWrapper().getValidity().getValue().isUsable()) {
+                        return 1;
+                    }
 
-            return 0;
-        });
-        return g != null ? incomplete.thenComparing(g.comparator().thenComparing(t.comparator())) : incomplete.thenComparing(t.comparator());
-    }, globalSortMode, tieSortMode);
+                    return 0;
+                });
+                return g != null
+                        ? incomplete.thenComparing(g.comparator().thenComparing(t.comparator()))
+                        : incomplete.thenComparing(t.comparator());
+            },
+            globalSortMode,
+            tieSortMode);
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -457,12 +462,16 @@ public class StoreViewState {
     public Optional<StoreSection> getParentSectionForWrapper(StoreEntryWrapper wrapper) {
         StoreSection current = getCurrentTopLevelSection();
         while (true) {
-            var child = current.getAllChildren().getList().stream().filter(section -> section.getWrapper().equals(wrapper)).findFirst();
+            var child = current.getAllChildren().getList().stream()
+                    .filter(section -> section.getWrapper().equals(wrapper))
+                    .findFirst();
             if (child.isPresent()) {
                 return Optional.of(current);
             }
 
-            var traverse = current.getAllChildren().getList().stream().filter(section -> section.anyMatches(w -> w.equals(wrapper))).findFirst();
+            var traverse = current.getAllChildren().getList().stream()
+                    .filter(section -> section.anyMatches(w -> w.equals(wrapper)))
+                    .findFirst();
             if (traverse.isPresent()) {
                 current = traverse.get();
             } else {

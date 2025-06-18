@@ -447,8 +447,9 @@ public class BrowserFileTransferOperation {
         cancelled.removeListener(closeCancelListener);
 
         if (exception != null) {
-            ErrorEventFactory.preconfigure(
-                    ErrorEventFactory.fromThrowable(exception).reportable(!cancelled()).omitted(cancelled()));
+            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(exception)
+                    .reportable(!cancelled())
+                    .omitted(cancelled()));
             throw exception;
         }
     }

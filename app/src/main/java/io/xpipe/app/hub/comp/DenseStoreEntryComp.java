@@ -3,8 +3,6 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.HPos;

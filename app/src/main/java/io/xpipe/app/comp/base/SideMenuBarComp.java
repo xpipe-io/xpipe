@@ -119,10 +119,13 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         vbox.setMinHeight(0);
         vbox.setPrefHeight(0);
 
-        vbox.opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-            var modals = !AppDialog.getModalOverlays().isEmpty();
-            return modals ? 0.5 : 1.0;
-        }, AppDialog.getModalOverlays()));
+        vbox.opacityProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            var modals = !AppDialog.getModalOverlays().isEmpty();
+                            return modals ? 0.5 : 1.0;
+                        },
+                        AppDialog.getModalOverlays()));
 
         return new SimpleCompStructure<>(vbox);
     }

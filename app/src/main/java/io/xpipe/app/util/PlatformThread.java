@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.mode.OperationMode;
-
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.value.ChangeListener;

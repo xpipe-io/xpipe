@@ -78,7 +78,10 @@ public class AppStyle {
                                 STYLESHEET_CONTENTS.put(file, s);
                             }
                         } catch (IOException ex) {
-                            ErrorEventFactory.fromThrowable(ex).omitted(true).build().handle();
+                            ErrorEventFactory.fromThrowable(ex)
+                                    .omitted(true)
+                                    .build()
+                                    .handle();
                         }
                         return FileVisitResult.CONTINUE;
                     }

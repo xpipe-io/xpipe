@@ -123,7 +123,11 @@ public class StandardStorage extends DataStorage {
                         directoriesToKeep.add(path);
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
-                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .expected()
+                                .omit()
+                                .build()
+                                .handle();
                     }
                 });
             }
@@ -169,7 +173,11 @@ public class StandardStorage extends DataStorage {
                             directoriesToKeep.add(path);
                         }
 
-                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .expected()
+                                .omit()
+                                .build()
+                                .handle();
                     }
                 });
 
@@ -389,7 +397,11 @@ public class StandardStorage extends DataStorage {
                     } catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         exception.set(ex);
-                        ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .expected()
+                                .omit()
+                                .build()
+                                .handle();
                     }
                 });
 
@@ -447,7 +459,11 @@ public class StandardStorage extends DataStorage {
                         dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                    ErrorEventFactory.fromThrowable(ex)
+                            .expected()
+                            .omit()
+                            .build()
+                            .handle();
                 }
             });
         } catch (Exception ex) {
@@ -480,7 +496,11 @@ public class StandardStorage extends DataStorage {
                         dataStorageSyncHandler.handleDeletion(file, uuid.toString());
                     }
                 } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                    ErrorEventFactory.fromThrowable(ex)
+                            .expected()
+                            .omit()
+                            .build()
+                            .handle();
                 }
             });
         } catch (Exception ex) {

@@ -502,8 +502,12 @@ public final class BrowserFileListComp extends SimpleComp {
                     o.forEach(left::remove);
                     if (left.size() == 1) {
                         var updatedEntry = left.iterator().next();
-                        var found = o.stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath()
-                                .equals(updatedEntry.getRawFileEntry().getPath())).findFirst();
+                        var found = o.stream()
+                                .filter(browserEntry -> browserEntry
+                                        .getRawFileEntry()
+                                        .getPath()
+                                        .equals(updatedEntry.getRawFileEntry().getPath()))
+                                .findFirst();
                         if (found.isPresent()) {
                             table.refresh();
                             table.getItems().set(table.getItems().indexOf(found.get()), updatedEntry);

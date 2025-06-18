@@ -30,7 +30,9 @@ public class DashlanePasswordManager implements PasswordManager {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).link("https://cli.dashlane.com/install").handle();
+            ErrorEventFactory.fromThrowable(e)
+                    .link("https://cli.dashlane.com/install")
+                    .handle();
             return null;
         }
 

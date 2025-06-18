@@ -16,8 +16,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 
 public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {

@@ -69,7 +69,8 @@ public class AppArguments {
                 return 1;
             });
             cmd.setParameterExceptionHandler((ex, args1) -> {
-                var event = ErrorEventFactory.fromThrowable(ex).term().expected().build();
+                var event =
+                        ErrorEventFactory.fromThrowable(ex).term().expected().build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(event);
                 event.handle();
@@ -89,7 +90,10 @@ public class AppArguments {
                 var converted = t instanceof CommandLine.UnmatchedArgumentException u
                         ? new IllegalArgumentException(u.getMessage())
                         : t;
-                var e = ErrorEventFactory.fromThrowable(converted).expected().term().build();
+                var e = ErrorEventFactory.fromThrowable(converted)
+                        .expected()
+                        .term()
+                        .build();
                 // Print error in case we launched from the command-line
                 new LogErrorHandler().handle(e);
                 e.handle();

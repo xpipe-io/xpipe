@@ -32,9 +32,12 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .toList();
         var buttons = effectiveCategories.stream()
                 .<Comp<?>>map(appPrefsCategory -> {
-                    return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), new ReadOnlyObjectWrapper<>(appPrefsCategory.getIcon()), () -> {
-                                AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
-                            })
+                    return new ButtonComp(
+                                    AppI18n.observable(appPrefsCategory.getId()),
+                                    new ReadOnlyObjectWrapper<>(appPrefsCategory.getIcon()),
+                                    () -> {
+                                        AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
+                                    })
                             .apply(struc -> {
                                 struc.get().setGraphicTextGap(9);
                                 struc.get().setTextAlignment(TextAlignment.LEFT);

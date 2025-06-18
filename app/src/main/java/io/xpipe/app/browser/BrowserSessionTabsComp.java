@@ -31,7 +31,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
-import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 
 import java.util.*;

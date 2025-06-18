@@ -10,7 +10,6 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
 
 import javafx.animation.*;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -25,8 +24,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-
-import atlantafx.base.util.Animations;
 
 public class AppMainWindowContentComp extends SimpleComp {
 
@@ -46,8 +43,10 @@ public class AppMainWindowContentComp extends SimpleComp {
             loadingIcon.setFitWidth(80);
             loadingIcon.setFitHeight(80);
 
-            var color = AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark() ?
-                    Color.web("#0b898aff").darker() : Color.web("#0b898aff");
+            var color =
+                    AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark()
+                            ? Color.web("#0b898aff").darker()
+                            : Color.web("#0b898aff");
             DropShadow shadow = new DropShadow();
             shadow.setRadius(10);
             shadow.setColor(color);
@@ -77,8 +76,10 @@ public class AppMainWindowContentComp extends SimpleComp {
             // This allows for assigning logos even if AppImages has not been initialized yet
             var dir = "img/logo/";
             AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
-                var image = AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark() ?
-                        path.resolve("loading-dark.png") : path.resolve("loading.png");
+                var image = AppPrefs.get() != null
+                                && AppPrefs.get().theme().getValue().isDark()
+                        ? path.resolve("loading-dark.png")
+                        : path.resolve("loading.png");
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
@@ -142,14 +143,14 @@ public class AppMainWindowContentComp extends SimpleComp {
         });
 
         var modal = new ModalOverlayStackComp(bg, overlay);
-        var r =  modal.createRegion();
+        var r = modal.createRegion();
         var p = r.lookupAll(".modal-overlay-stack-element");
         sidebarPresent.subscribe(v -> {
-           if (v) {
-               p.forEach(node -> {
-                   node.pseudoClassStateChanged(PseudoClass.getPseudoClass("loaded"), true);
-               });
-           }
+            if (v) {
+                p.forEach(node -> {
+                    node.pseudoClassStateChanged(PseudoClass.getPseudoClass("loaded"), true);
+                });
+            }
         });
 
         return r;

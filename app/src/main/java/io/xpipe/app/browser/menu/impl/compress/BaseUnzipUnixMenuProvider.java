@@ -10,10 +10,7 @@ import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
 
 import javafx.beans.value.ObservableValue;
 
@@ -55,7 +52,10 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1
                 ? "[...]"
-                : UnzipActionProvider.getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
+                : UnzipActionProvider.getTarget(
+                                        entries.getFirst().getRawFileEntry().getPath())
+                                .getFileName()
+                        + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
     }
 

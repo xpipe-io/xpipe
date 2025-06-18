@@ -6,8 +6,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileKind;
-
 import io.xpipe.core.store.FilePath;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -59,7 +59,9 @@ public final class BrowserFileListModel {
     }
 
     public void updateEntry(FilePath p, FileEntry n) {
-        var found = all.getValue().stream().filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(p)).findFirst();
+        var found = all.getValue().stream()
+                .filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(p))
+                .findFirst();
         if (found.isEmpty()) {
             return;
         }
@@ -80,7 +82,7 @@ public final class BrowserFileListModel {
         refreshShown();
     }
 
-     void refreshShown() {
+    void refreshShown() {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {

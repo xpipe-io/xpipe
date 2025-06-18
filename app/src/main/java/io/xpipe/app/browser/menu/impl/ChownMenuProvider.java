@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.browser.action.impl.ChgrpActionProvider;
 import io.xpipe.app.browser.action.impl.ChownActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
@@ -60,7 +59,7 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-outline");
+            return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
         @Override
@@ -79,7 +78,7 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-tree");
+            return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 
         @Override

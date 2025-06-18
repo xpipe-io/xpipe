@@ -8,6 +8,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -70,10 +71,10 @@ public class ZipActionProvider implements BrowserActionProvider {
                 command.add(">").addFile(target);
 
                 if (directoryContentOnly) {
-                        sc.command(command)
-                                .withWorkingDirectory(
-                                        getEntries().getFirst().getRawFileEntry().getPath())
-                                .execute();
+                    sc.command(command)
+                            .withWorkingDirectory(
+                                    getEntries().getFirst().getRawFileEntry().getPath())
+                            .execute();
                 } else {
                     sc.command(command).execute();
                 }

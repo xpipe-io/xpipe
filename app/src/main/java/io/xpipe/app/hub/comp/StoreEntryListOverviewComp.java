@@ -171,8 +171,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         button.apply(struc -> {
-            struc
-                    .get()
+            struc.get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {

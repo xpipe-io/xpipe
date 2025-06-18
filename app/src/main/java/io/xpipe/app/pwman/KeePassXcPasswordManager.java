@@ -106,7 +106,8 @@ public class KeePassXcPasswordManager implements PasswordManager {
         if (client == null) {
             var found = findKeePassProxy();
             if (found.isEmpty()) {
-                throw ErrorEventFactory.expected(new UnsupportedOperationException("No KeePassXC installation was found"));
+                throw ErrorEventFactory.expected(
+                        new UnsupportedOperationException("No KeePassXC installation was found"));
             }
 
             var c = new KeePassXcProxyClient(found.get());

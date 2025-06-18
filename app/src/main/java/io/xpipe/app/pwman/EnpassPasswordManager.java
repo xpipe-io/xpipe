@@ -94,7 +94,8 @@ public class EnpassPasswordManager implements PasswordManager {
 
         var vaultDir = vaultPath.asLocalPath();
         if (!Files.exists(vaultDir)) {
-            throw ErrorEventFactory.expected(new IllegalArgumentException("Vault path " + vaultPath + " does not exist"));
+            throw ErrorEventFactory.expected(
+                    new IllegalArgumentException("Vault path " + vaultPath + " does not exist"));
         }
         if (Files.isRegularFile(vaultDir)) {
             vaultDir = vaultDir.getParent();

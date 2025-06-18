@@ -212,7 +212,7 @@ public class BrowserFullSessionComp extends SimpleComp {
                 struc.get().setPrefWidth(newValue.doubleValue());
                 struc.get().setMaxWidth(newValue.doubleValue());
             });
-            
+
             var clip = new Rectangle();
             clip.widthProperty().bind(struc.get().widthProperty());
             clip.heightProperty().bind(struc.get().heightProperty());

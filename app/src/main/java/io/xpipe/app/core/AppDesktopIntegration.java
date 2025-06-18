@@ -79,7 +79,10 @@ public class AppDesktopIntegration {
                             Taskbar.getTaskbar().setIconImage(awtIcon);
                         }
                     } catch (Exception ex) {
-                        ErrorEventFactory.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                 }
             }

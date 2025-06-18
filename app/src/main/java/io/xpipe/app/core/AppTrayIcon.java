@@ -89,7 +89,9 @@ public class AppTrayIcon {
                 tray.add(this.trayIcon);
             } catch (Exception e) {
                 // This can sometimes fail on Linux
-                ErrorEventFactory.fromThrowable("Unable to add TrayIcon", e).expected().handle();
+                ErrorEventFactory.fromThrowable("Unable to add TrayIcon", e)
+                        .expected()
+                        .handle();
             }
         });
     }

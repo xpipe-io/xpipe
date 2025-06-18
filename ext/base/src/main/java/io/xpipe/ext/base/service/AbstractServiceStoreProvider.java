@@ -8,7 +8,6 @@ import io.xpipe.app.ext.SingletonSessionStoreProvider;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;

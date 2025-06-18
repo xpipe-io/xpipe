@@ -10,7 +10,6 @@ import io.xpipe.app.hub.comp.StoreToggleComp;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 

@@ -5,9 +5,8 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
-import lombok.NonNull;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -40,8 +39,7 @@ public class UntarActionProvider implements BrowserActionProvider {
                     model.getFileSystem().mkdirs(target);
                 }
                 sc.command(c)
-                        .withWorkingDirectory(
-                                model.getCurrentDirectory().getPath())
+                        .withWorkingDirectory(model.getCurrentDirectory().getPath())
                         .execute();
             }
         }

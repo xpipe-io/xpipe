@@ -7,8 +7,6 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Function;
 

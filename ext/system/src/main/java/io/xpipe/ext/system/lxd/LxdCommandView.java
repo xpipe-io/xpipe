@@ -147,7 +147,8 @@ public class LxdCommandView extends CommandViewBase {
                             LinkedHashMap::new));
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
-                throw ErrorEventFactory.expected(ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
+                throw ErrorEventFactory.expected(
+                        ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
             } else {
                 throw ex;
             }

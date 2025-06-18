@@ -92,7 +92,8 @@ public class ConnectionFileSystem implements FileSystem {
                 || !shellControl.getTtyState().isSupportsInput()) {
             var ex = new UnsupportedOperationException(
                     "Shell has a PTY allocated and as a result does not support file system operations.");
-            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex).documentationLink(DocumentationLink.TTY));
+            ErrorEventFactory.preconfigure(
+                    ErrorEventFactory.fromThrowable(ex).documentationLink(DocumentationLink.TTY));
             throw ex;
         }
 

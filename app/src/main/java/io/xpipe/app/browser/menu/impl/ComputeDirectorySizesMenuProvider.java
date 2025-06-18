@@ -2,7 +2,6 @@ package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.action.impl.ComputeDirectorySizesActionProvider;
-import io.xpipe.app.browser.action.impl.DeleteActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
@@ -35,13 +34,15 @@ public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvide
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var topLevel = entries.size() == 1 && entries.getFirst().getRawFileEntry().equals(model.getCurrentDirectory());
+        var topLevel =
+                entries.size() == 1 && entries.getFirst().getRawFileEntry().equals(model.getCurrentDirectory());
         return AppI18n.observable(topLevel ? "computeDirectorySizes" : "computeSize");
     }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+        return entries.stream()
+                .allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

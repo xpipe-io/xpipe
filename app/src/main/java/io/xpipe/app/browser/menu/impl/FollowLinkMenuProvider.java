@@ -10,8 +10,6 @@ import io.xpipe.core.store.FileKind;
 
 import javafx.beans.value.ObservableValue;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 
 public class FollowLinkMenuProvider implements BrowserMenuLeafProvider {

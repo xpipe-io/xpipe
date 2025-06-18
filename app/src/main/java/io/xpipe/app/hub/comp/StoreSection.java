@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DerivedObservableList;
 
 import javafx.beans.binding.Bindings;
@@ -16,11 +15,9 @@ import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 
 @Getter
 public class StoreSection {
@@ -58,8 +55,7 @@ public class StoreSection {
     }
 
     private static DerivedObservableList<StoreSection> sorted(
-            DerivedObservableList<StoreSection> list,
-            ObservableIntegerValue updateObservable) {
+            DerivedObservableList<StoreSection> list, ObservableIntegerValue updateObservable) {
         var sortMode = StoreViewState.get().getEffectiveSortMode();
         return list.sorted(
                 (o1, o2) -> {

@@ -18,8 +18,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -61,7 +59,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-outline");
+            return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
         @Override
@@ -80,7 +78,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
 
         @Override
         public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-tree");
+            return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 
         @Override

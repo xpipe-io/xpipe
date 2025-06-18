@@ -16,8 +16,6 @@ import io.xpipe.app.util.ScriptHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 
 public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
@@ -105,7 +103,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new BrowserMenuBranchProvider() {
             @Override
             public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16));
+                return new LabelGraphic.CompGraphic(
+                        PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override
@@ -128,7 +127,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
             @Override
             public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16));
+                return new LabelGraphic.CompGraphic(
+                        PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override

@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
@@ -16,8 +15,6 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.List;
 
 public class ScanHubBatchProvider implements BatchHubProvider<ShellStore> {
 

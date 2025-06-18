@@ -65,9 +65,11 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                                     selectedList.get().add(prior, t);
                                 }
                             });
-                            up.disable(Bindings.createBooleanBinding(() -> {
-                                return selectedList.get().indexOf(t) == 0;
-                            }, selectedList));
+                            up.disable(Bindings.createBooleanBinding(
+                                    () -> {
+                                        return selectedList.get().indexOf(t) == 0;
+                                    },
+                                    selectedList));
 
                             var down = new IconButtonComp("mdi2a-arrow-down", () -> {
                                 var index = selectedList.get().indexOf(t);
@@ -77,9 +79,11 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                                     selectedList.get().add(next, t);
                                 }
                             });
-                            down.disable(Bindings.createBooleanBinding(() -> {
-                                return selectedList.get().indexOf(t) == selectedList.size() - 1;
-                            }, selectedList));
+                            down.disable(Bindings.createBooleanBinding(
+                                    () -> {
+                                        return selectedList.get().indexOf(t) == selectedList.size() - 1;
+                                    },
+                                    selectedList));
 
                             var delete = new IconButtonComp("mdal-delete_outline", () -> {
                                 selectedList.remove(t);

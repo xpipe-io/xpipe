@@ -129,8 +129,8 @@ public class DataStoreCategory extends StorageElement {
             config = config.withColor(color);
         }
 
-        return Optional.of(new DataStoreCategory(
-                dir, uuid, name, lastUsed, lastModified, false, parentUuid,  expanded, config));
+        return Optional.of(
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {

@@ -7,6 +7,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
+
 import lombok.SneakyThrows;
 
 import java.util.List;

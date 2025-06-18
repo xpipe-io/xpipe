@@ -1,8 +1,8 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchHubProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -14,8 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LaunchHubMenuLeafProvider
-        implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
+public class LaunchHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {

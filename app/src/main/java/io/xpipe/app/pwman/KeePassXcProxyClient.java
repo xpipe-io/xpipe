@@ -154,7 +154,8 @@ public class KeePassXcProxyClient {
 
         var ex = new IllegalStateException(
                 "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?");
-        ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
+        ErrorEventFactory.preconfigure(
+                ErrorEventFactory.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
         throw ex;
     }
 
@@ -167,7 +168,8 @@ public class KeePassXcProxyClient {
     public void testAssociation() throws IOException {
         if (associationKey == null) {
             // We need to do an association first
-            throw ErrorEventFactory.expected(new IllegalStateException("KeePassXC association failed or was cancelled"));
+            throw ErrorEventFactory.expected(
+                    new IllegalStateException("KeePassXC association failed or was cancelled"));
         }
 
         // Generate a nonce

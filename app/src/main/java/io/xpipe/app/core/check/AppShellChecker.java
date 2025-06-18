@@ -28,7 +28,9 @@ public abstract class AppShellChecker {
                 && canFallback
                 && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
             var msg = formatMessage(err.get().getMessage());
-            ErrorEventFactory.fromThrowable(new IllegalStateException(msg)).expected().handle();
+            ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
+                    .expected()
+                    .handle();
             toggleFallback();
             var fallbackErr = selfTestErrorCheck();
             if (fallbackErr.isPresent()) {

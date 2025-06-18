@@ -132,7 +132,8 @@ public interface SshIdentityStrategy {
             if (!parent.getOsType().equals(OsType.WINDOWS)) {
                 var out = parent.executeSimpleStringCommand("pageant -l");
                 if (out.isBlank()) {
-                    throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running or has no identities"));
+                    throw ErrorEventFactory.expected(
+                            new IllegalStateException("Pageant is not running or has no identities"));
                 }
 
                 var systemAgent = parent.command(
@@ -307,8 +308,9 @@ public interface SshIdentityStrategy {
                 var ex = new IllegalArgumentException(
                         "Identity file " + resolved
                                 + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY");
-                ErrorEventFactory.preconfigure(
-                        ErrorEventFactory.fromThrowable(ex).expected().link("https://www.puttygen.com/convert-pem-to-ppk"));
+                ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex)
+                        .expected()
+                        .link("https://www.puttygen.com/convert-pem-to-ppk"));
                 throw ex;
             }
 

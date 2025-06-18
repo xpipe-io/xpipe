@@ -38,7 +38,10 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
         var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
         var dir = entries.size() > 1
                 ? "[...]"
-                : UnzipActionProvider.getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
+                : UnzipActionProvider.getTarget(
+                                        entries.getFirst().getRawFileEntry().getPath())
+                                .getFileName()
+                        + sep;
         return toDirectory ? AppI18n.observable("unzipDirectory", dir) : AppI18n.observable("unzipHere");
     }
 

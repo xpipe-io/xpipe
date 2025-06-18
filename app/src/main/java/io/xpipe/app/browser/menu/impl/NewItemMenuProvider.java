@@ -21,8 +21,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.List;
 
 public class NewItemMenuProvider implements BrowserMenuBranchProvider {

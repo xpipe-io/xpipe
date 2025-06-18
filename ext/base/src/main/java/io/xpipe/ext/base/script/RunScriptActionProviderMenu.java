@@ -23,8 +23,7 @@ import lombok.Value;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RunScriptActionProviderMenu
-        implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
+public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -81,8 +80,7 @@ public class RunScriptActionProviderMenu
     }
 
     @Value
-    private static class HubRunActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+    private static class HubRunActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -184,8 +182,7 @@ public class RunScriptActionProviderMenu
     }
 
     @Value
-    private static class ScriptActionProvider
-            implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
+    private static class ScriptActionProvider implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
 
@@ -238,8 +235,7 @@ public class RunScriptActionProviderMenu
         }
     }
 
-    private static class NoScriptsActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+    private static class NoScriptsActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
@@ -289,7 +285,9 @@ public class RunScriptActionProviderMenu
 
         @Override
         public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) throws Exception {
-            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(dataStoreEntryRefs.getFirst().get()));
+            var cat = StoreViewState.get()
+                    .getCategoryWrapper(DataStorage.get()
+                            .getStoreCategory(dataStoreEntryRefs.getFirst().get()));
             StoreCategoryConfigComp.show(cat);
         }
 
@@ -330,8 +328,7 @@ public class RunScriptActionProviderMenu
         }
     }
 
-    private static class NoStateActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+    private static class NoStateActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
         public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {

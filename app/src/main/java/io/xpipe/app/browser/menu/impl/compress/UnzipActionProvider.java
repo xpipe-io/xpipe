@@ -9,6 +9,7 @@ import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.store.FilePath;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -50,7 +51,8 @@ public class UnzipActionProvider implements BrowserActionProvider {
                             .add("unzip", "-o")
                             .addFile(entry.getRawFileEntry().getPath());
                     if (toDirectory) {
-                        command.add("-d").addFile(getTarget(entry.getRawFileEntry().getPath()));
+                        command.add("-d")
+                                .addFile(getTarget(entry.getRawFileEntry().getPath()));
                     }
                     try (var cc = sc.command(command)
                             .withWorkingDirectory(model.getCurrentDirectory().getPath())
@@ -62,7 +64,8 @@ public class UnzipActionProvider implements BrowserActionProvider {
             model.refreshSync();
         }
 
-        private void runPowershellCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) throws Exception {
+        private void runPowershellCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry)
+                throws Exception {
             var command = CommandBuilder.of().add("Expand-Archive", "-Force");
             if (toDirectory) {
                 var target = getTarget(entry.getRawFileEntry().getPath());

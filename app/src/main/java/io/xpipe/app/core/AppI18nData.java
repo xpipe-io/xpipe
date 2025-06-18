@@ -82,7 +82,10 @@ public class AppI18nData {
                             lineCounter.incrementAndGet();
                         });
                     } catch (IOException ex) {
-                        ErrorEventFactory.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -109,7 +112,10 @@ public class AppI18nData {
                     try (var in = Files.newInputStream(file)) {
                         markdownDocumentations.put(name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
                     } catch (IOException ex) {
-                        ErrorEventFactory.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                     return FileVisitResult.CONTINUE;
                 }

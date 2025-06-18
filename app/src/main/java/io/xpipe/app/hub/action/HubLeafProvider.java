@@ -3,6 +3,7 @@ package io.xpipe.app.hub.action;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
+
 import lombok.SneakyThrows;
 
 public interface HubLeafProvider<T extends DataStore> extends HubMenuItemProvider<T> {

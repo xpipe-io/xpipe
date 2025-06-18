@@ -3,8 +3,8 @@ package io.xpipe.app.browser.menu;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-
 import io.xpipe.app.util.LabelGraphic;
+
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCombination;
@@ -55,5 +55,4 @@ public interface BrowserMenuItemProvider extends ActionProvider {
     default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return true;
     }
-
 }

@@ -81,16 +81,20 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         menuButton.disableProperty().bind(model.getInOverview());
         menuButton.setAccessibleText("Directory options");
 
-        var smallWidth = Bindings.createBooleanBinding(() -> {
-            return root.getWidth() < 450;
-        }, root.widthProperty());
+        var smallWidth = Bindings.createBooleanBinding(
+                () -> {
+                    return root.getWidth() < 450;
+                },
+                root.widthProperty());
 
         refreshBtn.managedProperty().bind(smallWidth.not());
         refreshBtn.visibleProperty().bind(refreshBtn.managedProperty());
         terminalBtn.managedProperty().bind(smallWidth.not());
         terminalBtn.visibleProperty().bind(terminalBtn.managedProperty());
 
-        var filter = new BrowserFileListFilterComp(model, model.getFilter()).hide(smallWidth).createStructure();
+        var filter = new BrowserFileListFilterComp(model, model.getFilter())
+                .hide(smallWidth)
+                .createStructure();
 
         var topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
