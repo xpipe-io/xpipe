@@ -146,7 +146,7 @@ public class AppProperties {
         // We require the user dir from here
         AppUserDirectoryCheck.check(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
-        UUID id = AppCache.getNonNull("uuid", UUID.class, null);
+        UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
         if (id == null) {
             uuid = UUID.randomUUID();
             AppCache.update("uuid", uuid);

@@ -146,7 +146,7 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+        public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var user = new SimpleStringProperty();
             var modal = ModalOverlay.of(
                     "userName",

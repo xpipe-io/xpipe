@@ -13,7 +13,7 @@ import java.util.Base64;
 
 /**
  * Cryptographic helper for KeePassXC communication.
- *
+ * <p>
  * This implementation properly mimics TweetNaCl.js behavior using BouncyCastle,
  * implementing X25519 key exchange and XSalsa20-Poly1305 authenticated encryption
  * which is what KeePassXC expects.
@@ -69,7 +69,7 @@ public class TweetNaClHelper {
 
     /**
      * Encrypt a message using NaCl box.
-     *
+     * <p>
      * This uses X25519 for key exchange and XSalsa20-Poly1305 for authenticated encryption.
      * Follows the TweetNaCl.js implementation exactly.
      */

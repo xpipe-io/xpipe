@@ -1,8 +1,6 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformInit;

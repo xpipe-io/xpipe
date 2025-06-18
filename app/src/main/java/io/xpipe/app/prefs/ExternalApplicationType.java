@@ -17,9 +17,9 @@ import java.util.Optional;
 
 public interface ExternalApplicationType extends PrefsValue {
 
-    public abstract boolean isAvailable();
+    boolean isAvailable();
 
-    public interface MacApplication extends ExternalApplicationType {
+    interface MacApplication extends ExternalApplicationType {
 
         default CommandControl launchCommand(CommandBuilder builder, boolean args) {
             if (args) {
@@ -84,7 +84,7 @@ public interface ExternalApplicationType extends PrefsValue {
         }
     }
 
-    public interface PathApplication extends ExternalApplicationType {
+    interface PathApplication extends ExternalApplicationType {
 
         String getExecutable();
 
@@ -118,11 +118,11 @@ public interface ExternalApplicationType extends PrefsValue {
         }
     }
 
-    public interface InstallLocationType extends ExternalApplicationType {
+    interface InstallLocationType extends ExternalApplicationType {
 
         String getExecutable();
 
-        public abstract Optional<Path> determineInstallation();
+        Optional<Path> determineInstallation();
 
         default Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
@@ -164,7 +164,7 @@ public interface ExternalApplicationType extends PrefsValue {
         }
     }
 
-    public interface WindowsType extends InstallLocationType {
+    interface WindowsType extends InstallLocationType {
 
         boolean detach();
 

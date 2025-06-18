@@ -134,7 +134,7 @@ public class FileOpener {
                                 }
 
                                 @Override
-                                public OutputStream open() throws Exception {
+                                public OutputStream open() {
                                     return new ByteArrayOutputStream(s.length()) {
                                         @Override
                                         public void close() throws IOException {

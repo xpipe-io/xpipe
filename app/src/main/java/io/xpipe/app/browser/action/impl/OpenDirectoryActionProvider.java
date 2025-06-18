@@ -18,7 +18,7 @@ public class OpenDirectoryActionProvider implements BrowserActionProvider {
     public static class Action extends BrowserAction {
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             var first = getEntries().getFirst();
             model.cdSync(first.getRawFileEntry().getPath().toString());
         }

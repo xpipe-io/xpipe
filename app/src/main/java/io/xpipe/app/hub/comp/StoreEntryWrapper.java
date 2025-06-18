@@ -341,7 +341,7 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void executeDefaultAction() throws Exception {
+    public void executeDefaultAction() {
         if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return;
         }

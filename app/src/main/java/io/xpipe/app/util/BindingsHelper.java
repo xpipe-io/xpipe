@@ -10,7 +10,6 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 import java.util.function.Function;
 
-@SuppressWarnings("InfiniteLoopStatement")
 public class BindingsHelper {
 
     private static final WeakHashMap<Object, Object> REFERENCES = new WeakHashMap<>();

@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
-import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

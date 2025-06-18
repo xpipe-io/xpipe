@@ -7,10 +7,10 @@ import java.nio.file.Path;
 @Value
 public class SystemIconSourceFile {
 
-    public static enum ColorSchemeData {
+    public enum ColorSchemeData {
         LIGHT,
         DARK,
-        DEFAULT;
+        DEFAULT
     }
 
     SystemIconSource source;

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Getter
 public final class BatchStoreAction<T extends DataStore> extends SerializableAction implements StoreContextAction {
 
-    protected final List<StoreAction<T>> actions;
+    private final List<StoreAction<T>> actions;
 
     @Override
     public void executeImpl() throws Exception {

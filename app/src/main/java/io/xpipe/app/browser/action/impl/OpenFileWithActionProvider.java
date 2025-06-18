@@ -20,7 +20,7 @@ public class OpenFileWithActionProvider implements BrowserActionProvider {
     public static class Action extends BrowserAction {
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             for (var entry : getEntries()) {
                 BrowserFileOpener.openWithAnyApplication(model, entry.getRawFileEntry());
             }

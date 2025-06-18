@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface BrowserFileOutput {
 
-    public static BrowserFileOutput none() {
+    static BrowserFileOutput none() {
         return new BrowserFileOutput() {
 
             @Override
@@ -22,7 +22,7 @@ public interface BrowserFileOutput {
             }
 
             @Override
-            public OutputStream open() throws IOException {
+            public OutputStream open() {
                 return null;
             }
         };

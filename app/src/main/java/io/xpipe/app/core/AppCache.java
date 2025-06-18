@@ -5,6 +5,7 @@ import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 
@@ -72,7 +73,7 @@ public class AppCache {
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
-        return notPresent != null ? notPresent.get() : null;
+        return notPresent.get();
     }
 
     public static boolean getBoolean(String key, boolean notPresent) {

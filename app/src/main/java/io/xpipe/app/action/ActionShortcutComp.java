@@ -82,9 +82,7 @@ public class ActionShortcutComp extends SimpleComp {
 
     private Comp<?> createMacroComp() {
         var button = new ButtonComp(
-                AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-                    onCreateMacro.run();
-                });
+                AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), onCreateMacro);
         return button;
     }
 }

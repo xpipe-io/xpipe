@@ -3,7 +3,6 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.AppResources;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

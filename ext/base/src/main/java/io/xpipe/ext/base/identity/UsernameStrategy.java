@@ -12,7 +12,7 @@ public interface UsernameStrategy {
 
     String retrieveUsername() throws Exception;
 
-    static class None implements UsernameStrategy {
+    class None implements UsernameStrategy {
 
         @Override
         public boolean hasUser() {
@@ -30,7 +30,7 @@ public interface UsernameStrategy {
         }
     }
 
-    static class Fixed implements UsernameStrategy {
+    class Fixed implements UsernameStrategy {
 
         private final String username;
 

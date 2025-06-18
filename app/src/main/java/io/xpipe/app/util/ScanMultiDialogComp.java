@@ -58,7 +58,6 @@ class ScanMultiDialogComp extends ModalOverlayContentComp {
                 .apply(struc -> {
                     VBox.setVgrow(struc.get().getChildren().getFirst(), ALWAYS);
                 });
-        ;
         return b.createRegion();
     }
 }

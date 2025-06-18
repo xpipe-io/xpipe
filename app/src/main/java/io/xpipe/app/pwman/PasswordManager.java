@@ -32,7 +32,7 @@ public interface PasswordManager {
     }
 
     @Value
-    static class CredentialResult {
+    class CredentialResult {
 
         String username;
         SecretValue password;

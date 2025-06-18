@@ -89,7 +89,6 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
                     .addFile(configuration.getScriptFile());
-            ;
             launch(b);
         }
     }

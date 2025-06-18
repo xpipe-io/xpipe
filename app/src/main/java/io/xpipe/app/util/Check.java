@@ -25,17 +25,17 @@ import java.util.function.Function;
  */
 public class Check {
 
-    private Map<String, ObservableValue<? extends Object>> dependencies = new HashMap<>(1);
+    private final Map<String, ObservableValue<?>> dependencies = new HashMap<>(1);
     private Consumer<Context> checkMethod;
-    private ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<ValidationResult> validationResultProperty = new ReadOnlyObjectWrapper<>();
     private ValidationResult nextValidationResult = new ValidationResult();
 
     @Getter
-    private List<Node> targets = new ArrayList<>(1);
+    private final List<Node> targets = new ArrayList<>(1);
 
-    private List<Decoration> decorations = new ArrayList<>();
+    private final List<Decoration> decorations = new ArrayList<>();
     private Function<ValidationMessage, Decoration> decorationFactory;
-    private ChangeListener<? super Object> dependencyListener;
+    private final ChangeListener<? super Object> dependencyListener;
 
     public class Context {
 
@@ -81,7 +81,7 @@ public class Check {
         return this;
     }
 
-    public Check dependsOn(String key, ObservableValue<? extends Object> dependency) {
+    public Check dependsOn(String key, ObservableValue<?> dependency) {
         dependencies.put(key, dependency);
         return this;
     }
@@ -100,7 +100,7 @@ public class Check {
      * This method must be called last.
      */
     public Check immediate() {
-        for (ObservableValue<? extends Object> dependency : dependencies.values()) {
+        for (ObservableValue<?> dependency : dependencies.values()) {
             dependency.addListener(dependencyListener);
         }
         Platform.runLater(this::recheck); // to circumvent problems with decoration pane vs. dialog

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * Client for communicating with KeePassXC using the native messaging protocol.
  * This implementation communicates with the actual running KeePassXC-proxy process
  * via stdin and stdout.
- *
+ * <p>
  * Native messaging uses length-prefixed JSON messages over stdin/stdout.
  */
 public class KeePassXcProxyClient {
@@ -75,7 +75,6 @@ public class KeePassXcProxyClient {
      * Connects to KeePassXC via the provided input and output streams.
      * In a real application, these would be the streams connecting to KeePassXC.
      *
-     * @return True if connection was successful, false otherwise
      * @throws IOException If there's an error connecting to KeePassXC
      */
     public void connect() throws IOException {
@@ -92,7 +91,6 @@ public class KeePassXcProxyClient {
     /**
      * Performs a key exchange with KeePassXC.
      *
-     * @return True if the key exchange was successful, false otherwise
      * @throws IOException If there's an error communicating with KeePassXC
      */
     public void exchangeKeys() throws IOException {
@@ -162,7 +160,6 @@ public class KeePassXcProxyClient {
     /**
      * Tests the association with KeePassXC.
      *
-     * @return True if associated, false otherwise
      * @throws IOException If there's an error communicating with KeePassXC
      */
     public void testAssociation() throws IOException {
@@ -437,7 +434,6 @@ public class KeePassXcProxyClient {
     /**
      * Associate with KeePassXC.
      *
-     * @return True if successful, false otherwise
      * @throws IOException If there's an error communicating with KeePassXC
      */
     public void associate() throws IOException {

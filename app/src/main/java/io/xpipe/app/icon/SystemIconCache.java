@@ -23,7 +23,7 @@ import javax.imageio.ImageIO;
 
 public class SystemIconCache {
 
-    private static enum ImageColorScheme {
+    private enum ImageColorScheme {
         TRANSPARENT,
         MIXED,
         LIGHT,

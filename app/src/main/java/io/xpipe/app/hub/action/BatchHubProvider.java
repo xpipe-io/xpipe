@@ -24,7 +24,7 @@ public interface BatchHubProvider<T extends DataStore> extends ActionProvider {
         return true;
     }
 
-    default void execute(List<DataStoreEntryRef<T>> refs) throws Exception {
+    default void execute(List<DataStoreEntryRef<T>> refs) {
         createBatchAction(refs).executeAsync();
     }
 

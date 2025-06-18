@@ -19,7 +19,7 @@ public class OpenFileDefaultActionProvider implements BrowserActionProvider {
     public static class Action extends BrowserAction {
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             for (var entry : getEntries()) {
                 BrowserFileOpener.openInDefaultApplication(model, entry.getRawFileEntry());
             }

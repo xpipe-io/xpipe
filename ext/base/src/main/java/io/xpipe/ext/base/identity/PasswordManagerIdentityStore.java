@@ -119,7 +119,7 @@ public class PasswordManagerIdentityStore extends IdentityStore implements Inter
     }
 
     @Override
-    public void validate() throws Exception {
+    public void validate() {
         retrieveCredentials();
     }
 }

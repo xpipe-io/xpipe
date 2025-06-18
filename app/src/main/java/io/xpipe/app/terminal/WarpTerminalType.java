@@ -11,9 +11,9 @@ import java.nio.file.Path;
 
 public interface WarpTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
-    static WarpTerminalType WINDOWS = new Windows();
-    static WarpTerminalType LINUX = new Linux();
-    static WarpTerminalType MACOS = new MacOs();
+    WarpTerminalType WINDOWS = new Windows();
+    WarpTerminalType LINUX = new Linux();
+    WarpTerminalType MACOS = new MacOs();
 
     class Windows implements WarpTerminalType {
 

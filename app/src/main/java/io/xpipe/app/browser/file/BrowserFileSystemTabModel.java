@@ -49,7 +49,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
 
-    @NonNull
     private FileSystem fileSystem;
 
     private BrowserFileSystemSavedState savedState;
@@ -144,7 +143,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private void startIfNeeded() throws Exception {
-
         var s = fileSystem.getShell();
         if (s.isPresent()) {
             s.get().start();
@@ -152,7 +150,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void killTransfer() {
-
         transferCancelled.set(true);
     }
 
@@ -345,7 +342,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         if (!Objects.equals(path, resolvedPath.toString())) {
-            return Optional.ofNullable(resolvedPath.toString());
+            return Optional.of(resolvedPath.toString());
         }
 
         try {
@@ -359,7 +356,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         return Optional.empty();
     }
 
-    private void cdSyncWithoutCheck(FilePath path) throws Exception {
+    private void cdSyncWithoutCheck(FilePath path) {
 
         // Assume that the path is normalized to improve performance!
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
