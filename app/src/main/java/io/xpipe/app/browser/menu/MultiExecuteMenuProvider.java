@@ -24,27 +24,24 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                 new BrowserMenuLeafProvider() {
 
                     @Override
-                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        model.withShell(
-                                pc -> {
-                                    for (BrowserEntry entry : entries) {
-                                        var c = createCommand(pc, model, entry);
-                                        if (c == null) {
-                                            continue;
-                                        }
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+                        var sc = model.getFileSystem().getShell().orElseThrow();
+                        for (BrowserEntry entry : entries) {
+                            var c = createCommand(sc, model, entry);
+                            if (c == null) {
+                                continue;
+                            }
 
-                                        var cmd = pc.command(c);
-                                        model.openTerminalAsync(
-                                                entry.getRawFileEntry().getName(),
-                                                model.getCurrentDirectory() != null
-                                                        ? model.getCurrentDirectory()
-                                                                .getPath()
-                                                        : null,
-                                                cmd,
-                                                entries.size() == 1);
-                                    }
-                                },
-                                false);
+                            var cmd = sc.command(c);
+                            model.openTerminalSync(
+                                    entry.getRawFileEntry().getName(),
+                                    model.getCurrentDirectory() != null
+                                            ? model.getCurrentDirectory()
+                                                    .getPath()
+                                            : null,
+                                    cmd,
+                                    entries.size() == 1);
+                        }
                     }
 
                     @Override
@@ -64,20 +61,18 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                 new BrowserMenuLeafProvider() {
 
                     @Override
-                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        model.withShell(
-                                pc -> {
-                                    for (BrowserEntry entry : entries) {
-                                        var c = createCommand(pc, model, entry);
-                                        if (c == null) {
-                                            return;
-                                        }
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+                        var sc = model.getFileSystem().getShell().orElseThrow();
+                        for (BrowserEntry entry : entries) {
+                            var c = createCommand(sc, model, entry);
+                            if (c == null) {
+                                return;
+                            }
 
-                                        var cmd = pc.command(c);
-                                        CommandDialog.runAsyncAndShow(cmd);
-                                    }
-                                },
-                                true);
+                            var cmd = sc.command(c);
+                            CommandDialog.runAndShow(cmd);
+                        }
+                        model.refreshBrowserEntriesSync(entries);
                     }
 
                     @Override
@@ -89,22 +84,20 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                 new BrowserMenuLeafProvider() {
 
                     @Override
-                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        model.withShell(
-                                pc -> {
-                                    for (BrowserEntry entry : entries) {
-                                        var cmd = createCommand(pc, model, entry);
-                                        if (cmd == null) {
-                                            continue;
-                                        }
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+                        var sc = model.getFileSystem().getShell().orElseThrow();
+                        for (BrowserEntry entry : entries) {
+                            var cmd = createCommand(sc, model, entry);
+                            if (cmd == null) {
+                                continue;
+                            }
 
-                                        pc.command(cmd)
-                                                .withWorkingDirectory(model.getCurrentDirectory()
-                                                        .getPath())
-                                                .execute();
-                                    }
-                                },
-                                false);
+                            sc.command(cmd)
+                                    .withWorkingDirectory(model.getCurrentDirectory()
+                                            .getPath())
+                                    .execute();
+                        }
+                        model.refreshBrowserEntriesSync(entries);
                     }
 
                     @Override

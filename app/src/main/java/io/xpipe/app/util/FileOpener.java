@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -143,6 +144,9 @@ public class FileOpener {
                                         }
                                     };
                                 }
+
+                                @Override
+                                public void onFinish() throws Exception {}
                             };
                         },
                         file -> openInTextEditor(file));

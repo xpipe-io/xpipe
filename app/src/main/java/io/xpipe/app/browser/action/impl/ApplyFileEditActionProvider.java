@@ -42,6 +42,7 @@ public class ApplyFileEditActionProvider implements ActionProvider {
             try (var out = output.open()) {
                 input.transferTo(out);
             }
+            output.onFinish();
         }
 
         @Override

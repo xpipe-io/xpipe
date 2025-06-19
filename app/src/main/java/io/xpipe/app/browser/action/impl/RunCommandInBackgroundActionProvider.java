@@ -54,6 +54,8 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
                 exitCode = command.getExitCode();
             }
 
+            model.refreshBrowserEntriesSync(getEntries());
+
             // Only throw actual error output
             if (exitCode != 0) {
                 throw ErrorEventFactory.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));

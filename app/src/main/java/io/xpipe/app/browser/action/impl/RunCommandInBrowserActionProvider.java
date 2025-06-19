@@ -30,14 +30,15 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
         }
 
         @Override
-        public void executeImpl() {
+        public void executeImpl() throws Exception {
             var builder = CommandBuilder.of().addFile(command);
             for (BrowserEntry entry : getEntries()) {
                 builder.addFile(entry.getRawFileEntry().getPath());
             }
 
             var cmd = model.getFileSystem().getShell().orElseThrow().command(builder);
-            CommandDialog.runAsyncAndShow(cmd);
+            CommandDialog.runAndShow(cmd);
+            model.refreshBrowserEntriesSync(getEntries());
         }
     }
 }

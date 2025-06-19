@@ -20,6 +20,7 @@ import lombok.SneakyThrows;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -58,6 +59,11 @@ public class BrowserFileOpener {
             @Override
             public OutputStream open() throws Exception {
                 return fileSystem.openOutput(file.getPath(), totalBytes);
+            }
+
+            @Override
+            public void onFinish() throws Exception {
+                model.refreshFileEntriesSync(List.of(file));
             }
         };
 
@@ -110,6 +116,11 @@ public class BrowserFileOpener {
                     rootFs.close();
                     throw ex;
                 }
+            }
+
+            @Override
+            public void onFinish() throws Exception {
+                model.refreshFileEntriesSync(List.of(file));
             }
         };
         return rootOutput;
@@ -187,6 +198,11 @@ public class BrowserFileOpener {
                                 public OutputStream open() throws Exception {
                                     return entry.getFileSystem().openOutput(file, size);
                                 }
+
+                                @Override
+                                public void onFinish() throws Exception {
+                                    model.refreshFileEntriesSync(List.of(entry));
+                                }
                             };
                         },
                         s -> FileOpener.openWithAnyApplication(s));
@@ -227,6 +243,11 @@ public class BrowserFileOpener {
                                 @Override
                                 public OutputStream open() throws Exception {
                                     return entry.getFileSystem().openOutput(file, size);
+                                }
+
+                                @Override
+                                public void onFinish() throws Exception {
+                                    model.refreshFileEntriesSync(List.of(entry));
                                 }
                             };
                         },

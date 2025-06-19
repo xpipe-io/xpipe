@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Getter
@@ -122,16 +123,16 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void close() {
         BooleanScope.executeExclusive(busy, () -> {
-            var current = getCurrentDirectory();
+            var current = currentPath.getValue();
             // We might close this after storage shutdown
             // If this entry does not exist, it's not that bad if we save it anyway
             if (
             //                    DataStorage.get() != null
             //                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
             savedState != null && current != null) {
-                savedState.cd(current.getPath(), false);
+                savedState.cd(current, false);
                 BrowserHistorySavedStateImpl.get()
-                        .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current.getPath()));
+                        .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current));
                 BrowserHistorySavedStateImpl.get().save();
             }
             try {
@@ -153,24 +154,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         transferCancelled.set(true);
     }
 
-    public void withShell(FailableConsumer<ShellControl, Exception> c, boolean refresh) {
-        ThreadHelper.runFailableAsync(() -> {
-            BooleanScope.executeExclusive(busy, () -> {
-                if (entry.getStore() instanceof ShellStore s) {
-                    c.accept(fileSystem.getShell().orElseThrow());
-                    if (refresh) {
-                        refreshSync();
-                    }
-                }
-            });
-        });
-    }
-
     public void refreshSync() {
         cdSyncWithoutCheck(currentPath.get());
     }
 
-    public void refreshEntriesSync(List<BrowserEntry> entries) throws Exception {
+    public void refreshBrowserEntriesSync(List<BrowserEntry> entries) throws Exception {
+        refreshFileEntriesSync(entries.stream().map(BrowserEntry::getRawFileEntry).collect(Collectors.toList()));
+    }
+
+    public void refreshFileEntriesSync(List<FileEntry> entries) throws Exception {
         if (fileList.getAll().getValue().size() < 10) {
             refreshSync();
             return;
@@ -181,9 +173,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return;
         }
 
-        for (BrowserEntry browserEntry : entries) {
-            var refresh = fileSystem.getFileInfo(browserEntry.getRawFileEntry().getPath());
-            fileList.updateEntry(browserEntry.getRawFileEntry().getPath(), refresh.orElse(null));
+        for (var e : entries) {
+            var refresh = fileSystem.getFileInfo(e.getPath());
+            fileList.updateEntry(e.getPath(), refresh.orElse(null));
         }
     }
 

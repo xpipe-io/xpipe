@@ -54,7 +54,7 @@ public class ChmodActionProvider implements BrowserActionProvider {
                                             .getPath()
                                             .toString())
                                     .toList()));
-            model.refreshEntriesSync(getEntries());
+            model.refreshBrowserEntriesSync(getEntries());
         }
     }
 }

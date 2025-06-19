@@ -39,7 +39,7 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
                 var cmd = sc.command(script);
                 map.put(ref.get().getName(), cmd);
             }
-            CommandDialog.runAsyncAndShow(map);
+            CommandDialog.runMultipleAndShow(map);
         }
     }
 }

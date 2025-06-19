@@ -32,7 +32,7 @@ public class RunHubScriptActionProvider implements ActionProvider {
             var sc = ref.getStore().getOrStartSession();
             var script = scriptStore.getStore().assembleScriptChain(sc);
             var cmd = sc.command(script);
-            CommandDialog.runAsyncAndShow(cmd);
+            CommandDialog.runAndShow(cmd);
         }
     }
 }
