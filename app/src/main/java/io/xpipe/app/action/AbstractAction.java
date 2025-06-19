@@ -90,7 +90,7 @@ public abstract class AbstractAction {
             }
         }
 
-        executeSyncImpl();
+        executeSyncImpl(true);
     }
 
     public void executeAsync() {
@@ -108,11 +108,11 @@ public abstract class AbstractAction {
         }
 
         ThreadHelper.runAsync(() -> {
-            executeSyncImpl();
+            executeSyncImpl(true);
         });
     }
 
-    private void executeSyncImpl() {
+    public void executeSyncImpl(boolean confirm) {
         if (!ActionConfirmation.confirmAction(this)) {
             return;
         }

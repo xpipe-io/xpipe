@@ -142,8 +142,8 @@ open module io.xpipe.app {
             OpenFileWithMenuProvider,
             OpenDirectoryMenuProvider,
             OpenDirectoryInNewTabMenuProvider,
-            ScanHubLeafProvider,
-            RefreshHubLeafProvider,
+            ScanHubLeafProvider, RefreshActionProvider,
+            ToggleActionProvider,
             OpenTerminalMenuProvider,
             OpenNativeFileDetailsMenuProvider,
             BrowseInNativeManagerActionProvider,
@@ -213,9 +213,10 @@ open module io.xpipe.app {
             ConnectionRemoveExchangeImpl,
             ConnectionAddExchangeImpl,
             CategoryAddExchangeImpl,
-            ConnectionBrowseExchangeImpl,
-            ConnectionTerminalExchangeImpl,
-            ConnectionToggleExchangeImpl,
+            CategoryQueryExchangeImpl,
+            CategoryInfoExchangeImpl,
+            CategoryRemoveExchangeImpl,
+            ActionExchangeImpl,
             ConnectionRefreshExchangeImpl,
             DaemonOpenExchangeImpl,
             DaemonFocusExchangeImpl,
@@ -234,5 +235,7 @@ open module io.xpipe.app {
             TerminalLaunchExchangeImpl,
             TerminalExternalLaunchExchangeImpl,
             SshLaunchExchangeImpl,
-            DaemonVersionExchangeImpl;
+            DaemonVersionExchangeImpl,
+            SecretEncryptExchangeImpl,
+            SecretDecryptExchangeImpl;
 }

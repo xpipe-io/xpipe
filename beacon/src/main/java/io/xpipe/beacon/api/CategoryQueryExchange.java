@@ -1,19 +1,19 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
 import java.util.UUID;
 
-public class ConnectionToggleExchange extends BeaconInterface<ConnectionToggleExchange.Request> {
+public class CategoryQueryExchange extends BeaconInterface<CategoryQueryExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/toggle";
+        return "/category/query";
     }
 
     @Jacksonized
@@ -21,14 +21,14 @@ public class ConnectionToggleExchange extends BeaconInterface<ConnectionToggleEx
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
-
-        @NonNull
-        Boolean state;
+        String filter;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response {}
+    public static class Response {
+        @NonNull
+        List<@NonNull UUID> found;
+    }
 }

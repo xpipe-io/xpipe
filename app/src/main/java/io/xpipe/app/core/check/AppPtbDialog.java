@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 
-public class PtbDialog {
+public class AppPtbDialog {
 
     public static void showIfNeeded() {
         if (!AppProperties.get().isStaging()) {

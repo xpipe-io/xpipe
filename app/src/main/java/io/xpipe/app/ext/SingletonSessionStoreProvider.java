@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.hub.action.impl.ToggleActionProvider;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
@@ -38,16 +39,11 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         ObservableValue<LabelGraphic> g = enabled.map(aBoolean -> aBoolean
                 ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
                 : new LabelGraphic.IconGraphic("mdi2p-power"));
-        var t = new StoreToggleComp(null, g, sec, enabled, aBoolean -> {
+        var t = new StoreToggleComp(null, g, sec, enabled, newState -> {
             SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
-            if (s.isSessionEnabled() != aBoolean) {
-                ThreadHelper.runFailableAsync(() -> {
-                    if (aBoolean) {
-                        s.startSessionIfNeeded();
-                    } else {
-                        s.stopSessionIfNeeded();
-                    }
-                });
+            if (s.isSessionEnabled() != newState) {
+                var action = ToggleActionProvider.Action.builder().ref(sec.getWrapper().getEntry().ref()).enabled(newState).build();
+                action.executeAsync();
             }
         });
         t.tooltipKey("enabled");

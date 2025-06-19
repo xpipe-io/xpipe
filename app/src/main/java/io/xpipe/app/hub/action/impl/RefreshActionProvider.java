@@ -7,7 +7,7 @@ import io.xpipe.core.store.DataStore;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class RefreshHubLeafProvider implements ActionProvider {
+public class RefreshActionProvider implements ActionProvider {
 
     @Override
     public String getId() {

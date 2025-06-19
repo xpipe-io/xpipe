@@ -116,7 +116,7 @@ public class StoreCategoryWrapper {
         for (var c : children.getList()) {
             c.delete();
         }
-        DataStorage.get().deleteStoreCategory(category);
+        DataStorage.get().deleteStoreCategory(category, false, false);
     }
 
     private void setupListeners() {

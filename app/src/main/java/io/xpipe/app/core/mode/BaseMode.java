@@ -65,7 +65,7 @@ public class BaseMode extends OperationMode {
         AppLayoutModel.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
-            PtbDialog.showIfNeeded();
+            AppPtbDialog.showIfNeeded();
         }
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
@@ -159,6 +159,7 @@ public class BaseMode extends OperationMode {
         DataStoreProviders.init();
 
         AppConfigurationDialog.showIfNeeded();
+        AppGnomeScaleDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;

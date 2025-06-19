@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.*;
-import io.xpipe.app.hub.action.impl.RefreshHubLeafProvider;
+import io.xpipe.app.hub.action.impl.RefreshActionProvider;
 import io.xpipe.app.hub.comp.StoreCategoryConfigComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
@@ -362,7 +362,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
         @Override
         public StoreAction<ShellStore> createBatchAction(DataStoreEntryRef<ShellStore> ref) {
-            return RefreshHubLeafProvider.Action.builder()
+            return RefreshActionProvider.Action.builder()
                     .ref(ref.asNeeded())
                     .build()
                     .asNeeded();

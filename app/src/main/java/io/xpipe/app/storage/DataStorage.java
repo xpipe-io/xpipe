@@ -812,20 +812,45 @@ public abstract class DataStorage {
         return true;
     }
 
-    public void deleteStoreCategory(@NonNull DataStoreCategory cat) {
+    public void deleteStoreCategory(@NonNull DataStoreCategory cat, boolean deleteChildren, boolean deleteEntries) {
         if (!canDeleteStoreCategory(cat)) {
             return;
         }
 
-        storeEntriesSet.forEach(entry -> {
-            if (entry.getCategoryUuid().equals(cat.getUuid())) {
-                entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+        var toDelete = new ArrayList<DataStoreCategory>();
+        if (deleteChildren) {
+            for (DataStoreCategory other : getStoreCategories()) {
+                var hierarchy = getCategoryParentHierarchy(other);
+                if (hierarchy.contains(cat)) {
+                    toDelete.add(other);
+                }
             }
-        });
+        } else {
+            toDelete.add(cat);
+        }
 
-        storeCategories.remove(cat);
+        for (DataStoreCategory delCat : toDelete) {
+            if (deleteEntries) {
+                var toDeleteEntries = new ArrayList<DataStoreEntry>();
+                for (DataStoreEntry entry : storeEntriesSet) {
+                    if (getStoreCategory(entry).equals(delCat)) {
+                        toDeleteEntries.add(entry);
+                    }
+                }
+                deleteWithChildren(toDeleteEntries.toArray(DataStoreEntry[]::new));
+            } else {
+                storeEntriesSet.forEach(entry -> {
+                    if (entry.getCategoryUuid().equals(delCat.getUuid())) {
+                        entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+                    }
+                });
+            }
+
+            storeCategories.remove(delCat);
+            this.listeners.forEach(l -> l.onCategoryRemove(delCat));
+        }
+
         saveAsync();
-        this.listeners.forEach(l -> l.onCategoryRemove(cat));
     }
 
     // Get operations

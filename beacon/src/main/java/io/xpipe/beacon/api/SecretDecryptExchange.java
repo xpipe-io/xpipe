@@ -1,42 +1,32 @@
 package io.xpipe.beacon.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.beacon.BeaconInterface;
-
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange.Request> {
+public class SecretDecryptExchange extends BeaconInterface<SecretDecryptExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/daemon/version";
+        return "/secret/decrypt";
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Request {}
+    public static class Request {
+        @NonNull
+        JsonNode encrypted;
+    }
 
     @Jacksonized
     @Builder
     @Value
     public static class Response {
-
         @NonNull
-        String version;
-
-        @NonNull
-        String canonicalVersion;
-
-        @NonNull
-        String buildVersion;
-
-        @NonNull
-        String jvmVersion;
-
-        @NonNull
-        String plan;
+        String decrypted;
     }
 }

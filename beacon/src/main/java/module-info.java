@@ -41,9 +41,10 @@ open module io.xpipe.beacon {
             ConnectionRemoveExchange,
             ConnectionAddExchange,
             CategoryAddExchange,
-            ConnectionBrowseExchange,
-            ConnectionTerminalExchange,
-            ConnectionToggleExchange,
+            CategoryQueryExchange,
+            CategoryInfoExchange,
+            CategoryRemoveExchange,
+            ActionExchange,
             ConnectionRefreshExchange,
             AskpassExchange,
             TerminalPrepareExchange,
@@ -56,5 +57,7 @@ open module io.xpipe.beacon {
             FsBlobExchange,
             FsWriteExchange,
             FsScriptExchange,
-            DaemonVersionExchange;
+            DaemonVersionExchange,
+            SecretEncryptExchange,
+            SecretDecryptExchange;
 }

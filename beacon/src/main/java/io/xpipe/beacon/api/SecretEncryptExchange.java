@@ -1,8 +1,8 @@
 package io.xpipe.beacon.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.store.FilePath;
-
+import io.xpipe.core.util.SecretValue;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -10,11 +10,11 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.UUID;
 
-public class ConnectionBrowseExchange extends BeaconInterface<ConnectionBrowseExchange.Request> {
+public class SecretEncryptExchange extends BeaconInterface<SecretEncryptExchange.Request> {
 
     @Override
     public String getPath() {
-        return "/connection/browse";
+        return "/secret/encrypt";
     }
 
     @Jacksonized
@@ -22,13 +22,14 @@ public class ConnectionBrowseExchange extends BeaconInterface<ConnectionBrowseEx
     @Value
     public static class Request {
         @NonNull
-        UUID connection;
-
-        FilePath directory;
+        String value;
     }
 
     @Jacksonized
     @Builder
     @Value
-    public static class Response {}
+    public static class Response {
+        @NonNull
+        JsonNode encrypted;
+    }
 }
