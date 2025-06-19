@@ -33,7 +33,7 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
 
         @Override
         public void executeImpl() throws Exception {
-            var cmd = CommandBuilder.of().addFile(command);
+            var cmd = CommandBuilder.of().add(command);
             for (BrowserEntry entry : getEntries()) {
                 cmd.addFile(entry.getRawFileEntry().getPath());
             }

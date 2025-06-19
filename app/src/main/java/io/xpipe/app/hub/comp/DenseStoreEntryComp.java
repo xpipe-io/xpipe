@@ -38,6 +38,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                                 var infoValue = info.getValue();
                                 if (summaryValue != null && infoValue != null && grid.isHover()) {
                                     return summaryValue;
+                                } else if (summaryValue != null && infoValue != null) {
+                                    return infoValue;
                                 } else if (infoValue == null && summaryValue != null) {
                                     return summaryValue;
                                 } else if (summaryValue == null && infoValue != null) {

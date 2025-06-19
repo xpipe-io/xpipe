@@ -2,11 +2,10 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.prefs.AppPrefs;
 
 public class AppGnomeScaleDialog {
 
@@ -17,6 +16,11 @@ public class AppGnomeScaleDialog {
         }
 
         if (AppMainWindow.getInstance() == null) {
+            return;
+        }
+
+        // Only happens for externally set display scale
+        if (AppPrefs.get().uiScale().getValue() != null) {
             return;
         }
 

@@ -19,7 +19,7 @@ public class DeleteActionProvider implements BrowserActionProvider {
         }
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             var toDelete =
                     getEntries().stream().map(entry -> entry.getRawFileEntry()).toList();
             BrowserFileSystemHelper.delete(toDelete);

@@ -3,16 +3,10 @@ package io.xpipe.app.beacon.impl;
 import io.xpipe.app.action.ActionJacksonMapper;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ActionExchange;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.beacon.api.TerminalExternalLaunchExchange;
-
-import java.util.List;
 
 public class ActionExchangeImpl extends ActionExchange {
 

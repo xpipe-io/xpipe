@@ -3,10 +3,8 @@ package io.xpipe.app.beacon.impl;
 import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.CategoryRemoveExchange;
-import io.xpipe.beacon.api.ConnectionRemoveExchange;
 
 import java.util.ArrayList;
 import java.util.UUID;

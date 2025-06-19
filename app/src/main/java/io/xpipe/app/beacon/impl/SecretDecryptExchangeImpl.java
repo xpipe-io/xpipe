@@ -4,8 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.SecretDecryptExchange;
-import io.xpipe.beacon.api.SecretEncryptExchange;
-import io.xpipe.core.util.InPlaceSecretValue;
 
 import java.io.IOException;
 

@@ -48,7 +48,7 @@ public class BrowserTransferModel {
                 Optional<Item> toDownload;
                 synchronized (items) {
                     toDownload = items.stream()
-                            .filter(item -> !item.downloadFinished().get())
+                            .filter(item -> !item.getDownloadFinished().get())
                             .findFirst();
                 }
                 if (toDownload.isPresent()) {
@@ -87,7 +87,7 @@ public class BrowserTransferModel {
         List<Item> toClear;
         synchronized (items) {
             toClear =
-                    items.stream().filter(item -> item.downloadFinished().get()).toList();
+                    items.stream().filter(item -> item.getDownloadFinished().get()).toList();
             if (toClear.isEmpty()) {
                 return;
             }
@@ -124,7 +124,7 @@ public class BrowserTransferModel {
             return;
         }
 
-        if (item.downloadFinished().get()) {
+        if (item.getDownloadFinished().get()) {
             return;
         }
 
@@ -173,7 +173,7 @@ public class BrowserTransferModel {
         List<Item> toMove;
         synchronized (items) {
             toMove =
-                    items.stream().filter(item -> item.downloadFinished().get()).toList();
+                    items.stream().filter(item -> item.getDownloadFinished().get()).toList();
             if (toMove.isEmpty()) {
                 return;
             }
@@ -226,6 +226,7 @@ public class BrowserTransferModel {
         BrowserEntry browserEntry;
         Path localFile;
         Property<BrowserTransferProgress> progress;
+        ObservableBooleanValue downloadFinished;
 
         public Item(
                 BrowserFileSystemTabModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
@@ -234,17 +235,12 @@ public class BrowserTransferModel {
             this.browserEntry = browserEntry;
             this.localFile = localFile;
             this.progress = new SimpleObjectProperty<>();
-        }
-
-        public ObservableBooleanValue downloadFinished() {
-            synchronized (progress) {
-                return Bindings.createBooleanBinding(
-                        () -> {
-                            return progress.getValue() != null
-                                    && progress.getValue().done();
-                        },
-                        progress);
-            }
+            this.downloadFinished = Bindings.createBooleanBinding(
+                    () -> {
+                        return progress.getValue() != null
+                                && progress.getValue().done();
+                    },
+                    progress);
         }
     }
 }

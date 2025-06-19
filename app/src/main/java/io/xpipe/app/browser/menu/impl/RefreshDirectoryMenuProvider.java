@@ -16,7 +16,7 @@ import java.util.List;
 public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         model.refreshSync();
     }
 

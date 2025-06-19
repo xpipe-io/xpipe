@@ -9,7 +9,6 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.WrapperFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -181,7 +180,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     public FileEntry getCurrentParentDirectory() {
         if (currentPath.get() == null) {
-            return FileEntry.ofDirectory(fileSystem, FilePath.of("?"));
+            return null;
         }
 
         var parent = currentPath.get().getParent();
@@ -193,10 +192,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public FileEntry getCurrentDirectory() {
-        // This should never happen, this should not be called in a context
-        // where the current path is null
         if (currentPath.get() == null) {
-            return FileEntry.ofDirectory(fileSystem, FilePath.of("?"));
+            return null;
         }
 
         return new FileEntry(fileSystem, currentPath.get(), null, null, null, FileKind.DIRECTORY);

@@ -4,14 +4,10 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.CategoryInfoExchange;
-import io.xpipe.beacon.api.ConnectionInfoExchange;
-import io.xpipe.core.store.StorePath;
 import io.xpipe.core.util.JacksonMapper;
-import org.apache.commons.lang3.ClassUtils;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class CategoryInfoExchangeImpl extends CategoryInfoExchange {
 

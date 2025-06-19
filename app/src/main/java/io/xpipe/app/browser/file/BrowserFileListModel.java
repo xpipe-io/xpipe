@@ -111,7 +111,7 @@ public final class BrowserFileListModel {
         return us;
     }
 
-    public BrowserEntry rename(BrowserEntry old, String newName) throws Exception {
+    public BrowserEntry rename(BrowserEntry old, String newName) {
         if (old == null
                 || newName == null
                 || fileSystemModel == null

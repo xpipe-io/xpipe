@@ -113,7 +113,7 @@ public abstract class AbstractAction {
     }
 
     public void executeSyncImpl(boolean confirm) {
-        if (!ActionConfirmation.confirmAction(this)) {
+        if (confirm && !ActionConfirmation.confirmAction(this)) {
             return;
         }
 

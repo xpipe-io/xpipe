@@ -26,7 +26,7 @@ public interface BrowserFileOutput {
             }
 
             @Override
-            public void onFinish() throws Exception {
+            public void onFinish() {
 
             }
         };

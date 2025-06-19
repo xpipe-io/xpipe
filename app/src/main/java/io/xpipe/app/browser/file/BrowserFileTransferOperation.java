@@ -346,8 +346,9 @@ public class BrowserFileTransferOperation {
                             start);
                 }
             }
-            updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
         } finally {
+            updateProgress(BrowserTransferProgress.finished(source.getName(), totalSize.get()));
+
             if (optimizedSourceFs != originalSourceFs) {
                 optimizedSourceFs.close();
             }

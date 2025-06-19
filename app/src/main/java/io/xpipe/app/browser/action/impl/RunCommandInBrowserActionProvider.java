@@ -31,7 +31,7 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
 
         @Override
         public void executeImpl() throws Exception {
-            var builder = CommandBuilder.of().addFile(command);
+            var builder = CommandBuilder.of().add(command);
             for (BrowserEntry entry : getEntries()) {
                 builder.addFile(entry.getRawFileEntry().getPath());
             }

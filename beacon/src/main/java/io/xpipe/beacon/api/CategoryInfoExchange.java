@@ -10,7 +10,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class CategoryInfoExchange extends BeaconInterface<CategoryInfoExchange.Request> {

@@ -4,7 +4,6 @@ import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.beacon.api.CategoryQueryExchange;
-import io.xpipe.beacon.api.ConnectionQueryExchange;
 
 public class CategoryQueryExchangeImpl extends CategoryQueryExchange {
 
