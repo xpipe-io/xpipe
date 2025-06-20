@@ -74,6 +74,19 @@ public final class BrowserFileListComp extends SimpleComp {
         sizeCol.textProperty().bind(AppI18n.observable("size"));
         sizeCol.setCellValueFactory(param -> new ReadOnlyStringWrapper(
                 param.getValue().getRawFileEntry().resolved().getSize()));
+        sizeCol.setComparator((size1, size2) -> {
+            if (size1 == null && size2 == null) return 0;
+            if (size1 == null) return -1;
+            if (size2 == null) return 1;
+
+            try {
+                long long1 = Long.parseLong(size1);
+                long long2 = Long.parseLong(size2);
+            return Long.compare(long1, long2);
+            } catch (NumberFormatException e) {
+                return size1.compareTo(size2);
+            }
+        });
         sizeCol.setCellFactory(col -> new FileSizeCell());
         sizeCol.setResizable(false);
         sizeCol.setPrefWidth(120);
