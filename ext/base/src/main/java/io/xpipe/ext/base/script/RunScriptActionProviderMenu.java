@@ -222,6 +222,15 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
         @Override
         public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
+            return getChildren();
+        }
+
+        @Override
+        public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+            return getChildren();
+        }
+
+        private List<HubMenuItemProvider<?>> getChildren() {
             if (hierarchy.isLeaf()) {
                 return List.of(
                         new TerminalRunActionProvider(hierarchy),

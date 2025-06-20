@@ -50,14 +50,14 @@ public class TransferFilesActionProvider implements ActionProvider {
         @Override
         public Map<String, String> toDisplayMap() {
             var map = new LinkedHashMap<String, String>();
-            map.put("action", getDisplayName());
+            map.put("Action", getDisplayName());
             map.put(
-                    "sources",
+                    "Sources",
                     operation.getFiles().stream()
                             .map(fileEntry -> fileEntry.getName())
                             .collect(Collectors.joining("\n")));
-            map.put("target", DataStorage.get().getStoreEntryDisplayName(target.get()));
-            map.put("targetDirectory", operation.getTarget().getPath().toString());
+            map.put("Target system", DataStorage.get().getStoreEntryDisplayName(target.get()));
+            map.put("Target directory", operation.getTarget().getPath().toString());
             return map;
         }
 

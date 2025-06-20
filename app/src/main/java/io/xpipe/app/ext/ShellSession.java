@@ -26,7 +26,9 @@ public class ShellSession extends Session {
 
         try {
             shellControl.start();
-            startAliveListener();
+            if (shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                startAliveListener();
+            }
         } catch (Exception ex) {
             try {
                 stop();

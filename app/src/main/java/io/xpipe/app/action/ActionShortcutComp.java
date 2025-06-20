@@ -1,5 +1,6 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -8,6 +9,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
@@ -31,6 +33,7 @@ public class ActionShortcutComp extends SimpleComp {
         var options = new OptionsBuilder();
         options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
         options.nameAndDescription("actionUrlShortcut").addComp(createUrlComp());
+        options.nameAndDescription("actionApiCall").addComp(createApiComp());
         //        options.nameAndDescription("actionMacro")
         //                .addComp(createMacroComp());
         return options.build();
@@ -76,6 +79,26 @@ public class ActionShortcutComp extends SimpleComp {
                 .tooltipKey("createShortcut");
         var field = new TextFieldComp(name);
         field.grow(true, false);
+        var group = new InputGroupComp(List.of(field, copyButton));
+        return group;
+    }
+
+    private Comp<?> createApiComp() {
+        var url = "curl -X POST \"http://localhost:" + AppBeaconServer.get().getPort() + "/action\" ...";
+        var text = AppI18n.observable("actionApiUrl", url);
+        var prop = new SimpleStringProperty();
+        prop.bind(text);
+
+        var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
+            if (action.getValue() instanceof SerializableAction sa) {
+                ClipboardHelper.copyUrl(sa.toNode().toPrettyString());
+            }
+        })
+                .grow(false, true)
+                .tooltipKey("copyBody");
+        var field = new TextFieldComp(prop, true);
+        field.grow(true, false);
+        field.apply(struc -> struc.get().setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
         return group;
     }

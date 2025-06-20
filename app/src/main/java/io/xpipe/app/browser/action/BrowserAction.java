@@ -6,6 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.FileSystemStore;
 
@@ -44,7 +45,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                             if (isFile) {
                                 return files.getFirst().getParent();
                             } else {
-                                var dir = files.getFirst().getParent();
+                                var dir = files.getFirst();
                                 if (!model.getFileSystem().directoryExists(dir)) {
                                     throw new IllegalArgumentException("Directory does not exist: " + dir);
                                 }
@@ -82,6 +83,11 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                             .findFirst();
                     if (be.isPresent()) {
                         return be.get();
+                    }
+
+                    var current = model.getCurrentDirectory();
+                    if (current != null && filePath.equals(current.getPath())) {
+                        return new BrowserEntry(current, model.getFileList());
                     }
 
                     return null;

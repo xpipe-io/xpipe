@@ -2,6 +2,8 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
@@ -73,6 +75,7 @@ public class ActionConfirmComp extends SimpleComp {
                 grid.add(value, 1, row);
                 row++;
             }
+            AppFontSizes.lg(grid);
             return grid;
         });
     }

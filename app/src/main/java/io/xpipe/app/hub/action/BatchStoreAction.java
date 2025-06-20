@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.action;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
@@ -20,6 +21,13 @@ import java.util.stream.Collectors;
 public final class BatchStoreAction<T extends DataStore> extends SerializableAction implements StoreContextAction {
 
     private final List<StoreAction<T>> actions;
+
+    @Override
+    public String getShortcutName() {
+        var names = actions.size() > 3 ? actions.size() + "..." : actions.stream().map(a -> DataStorage.get().getStoreEntryDisplayName(a.getRef().get())).collect(
+                Collectors.joining(", "));
+        return names + " (" + getDisplayName() + ")";
+    }
 
     @Override
     public void executeImpl() throws Exception {

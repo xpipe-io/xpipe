@@ -1,5 +1,7 @@
 package io.xpipe.app.action;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
@@ -41,8 +43,10 @@ public class ActionJacksonMapper {
         var object = (ObjectNode) tree;
         var ref = tree.get("ref");
 
+        var mapper = JacksonMapper.newMapper().enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
         if (ref != null && !ref.isArray() && StoreAction.class.isAssignableFrom(clazz.get())) {
-            var action = JacksonMapper.getDefault().treeToValue(tree, clazz.get());
+            var action = mapper.treeToValue(tree, clazz.get());
             return (T) action;
         }
 
@@ -56,7 +60,7 @@ public class ActionJacksonMapper {
             object.remove("ref");
             for (JsonNode batchRef : ref) {
                 object.set("ref", batchRef);
-                var action = JacksonMapper.getDefault().treeToValue(object, clazz.get());
+                var action = mapper.treeToValue(object, clazz.get());
                 batchActions.add((StoreAction<DataStore>) action);
             }
             return (T) BatchStoreAction.builder().actions(batchActions).build();
@@ -66,7 +70,7 @@ public class ActionJacksonMapper {
         if (makeMulti) {
             object.remove("ref");
             object.set("refs", ref);
-            var action = JacksonMapper.getDefault().treeToValue(object, clazz.get());
+            var action = mapper.treeToValue(object, clazz.get());
             return (T) action;
         }
 

@@ -183,9 +183,6 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         var l = new ArrayList<>(
                 StoreViewState.get().getEffectiveBatchModeSelection().getList());
         var mapped = l.stream().map(w -> w.getEntry().<T>ref()).toList();
-        var action = ((BatchHubProvider<T>) s).createBatchAction(mapped);
-        if (action != null) {
-            action.executeAsync();
-        }
+        ((BatchHubProvider<T>) s).execute(mapped);
     }
 }

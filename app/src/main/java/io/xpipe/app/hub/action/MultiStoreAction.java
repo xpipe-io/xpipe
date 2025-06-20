@@ -3,6 +3,7 @@ package io.xpipe.app.hub.action;
 import io.xpipe.app.action.ActionJacksonMapper;
 import io.xpipe.app.action.SerializableAction;
 import io.xpipe.app.action.StoreContextAction;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;
@@ -15,12 +16,20 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @SuperBuilder
 public abstract class MultiStoreAction<T extends DataStore> extends SerializableAction implements StoreContextAction {
 
     @Getter
     protected final List<DataStoreEntryRef<T>> refs;
+
+    @Override
+    public String getShortcutName() {
+        var names = refs.size() > 3 ? refs.size() + "..." : refs.stream().map(ref -> DataStorage.get().getStoreEntryDisplayName(ref.get())).collect(
+                Collectors.joining(", "));
+        return names + " (" + getDisplayName() + ")";
+    }
 
     @Override
     protected boolean beforeExecute() {

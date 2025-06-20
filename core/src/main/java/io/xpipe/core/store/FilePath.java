@@ -48,7 +48,7 @@ public final class FilePath {
             return false;
         }
         FilePath filePath = (FilePath) o;
-        return Objects.equals(value, filePath.value);
+        return Objects.equals(normalize().removeTrailingSlash().value, filePath.normalize().removeTrailingSlash().value);
     }
 
     @Override

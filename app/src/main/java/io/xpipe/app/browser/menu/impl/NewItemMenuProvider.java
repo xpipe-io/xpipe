@@ -15,6 +15,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.store.FileKind;
 import io.xpipe.core.store.FilePath;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -66,8 +67,11 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
+                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                                    browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                                    .toList();
                             var builder = NewFileActionProvider.Action.builder();
-                            builder.initEntries(model, entries);
+                            builder.initFiles(model, fixedFiles);
                             builder.name(name.getValue());
                             builder.build().executeAsync();
                         });
@@ -102,8 +106,11 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
+                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                                            browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                                    .toList();
                             var builder = NewDirectoryActionProvider.Action.builder();
-                            builder.initEntries(model, entries);
+                            builder.initFiles(model, fixedFiles);
                             builder.name(name.getValue());
                             builder.build().executeAsync();
                         });
@@ -143,8 +150,11 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
+                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
+                                            browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                                    .toList();
                             var builder = NewLinkActionProvider.Action.builder();
-                            builder.initEntries(model, entries);
+                            builder.initFiles(model, fixedFiles);
                             builder.name(linkName.getValue());
                             builder.target(FilePath.of(target.getValue()));
                             builder.build().executeAsync();

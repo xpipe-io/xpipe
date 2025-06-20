@@ -110,11 +110,8 @@ public class StoreCreationMenu {
             }
 
             Platform.runLater(() -> {
-                StoreCreationDialog.showCreation(
-                        defaultProvider != null
-                                ? DataStoreProviders.byId(defaultProvider).orElseThrow()
-                                : null,
-                        category);
+                var onlyItem = menu.getItems().getFirst();
+                onlyItem.fire();
             });
 
             // Fix weird JavaFX NPE

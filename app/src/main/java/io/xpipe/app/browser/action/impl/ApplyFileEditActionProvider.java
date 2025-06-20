@@ -48,8 +48,8 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         @Override
         public Map<String, String> toDisplayMap() {
             var map = new LinkedHashMap<String, String>();
-            map.put("action", getDisplayName());
-            map.put("target", target);
+            map.put("Action", getDisplayName());
+            map.put("Target", target);
             return map;
         }
     }
