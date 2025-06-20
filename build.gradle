@@ -174,8 +174,19 @@ project.ext {
     // Use project liliput
     jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
 
+    // Reduce heap usage with deduplication
+    jvmRunArgs += ['-XX:+UseStringDeduplication',]
+
     // GC config
-    jvmRunArgs += ['-XX:+UseG1GC', '-Xms300m', '-Xmx4G', '-XX:GCTimeRatio=9', '-XX:+UseStringDeduplication'];
+    jvmRunArgs += ['-XX:+UseG1GC',
+                   '-Xms300m',
+                   '-Xmx4G',
+                   '-XX:MinHeapFreeRatio=20',
+                   '-XX:MaxHeapFreeRatio=30',
+                   '-XX:GCTimeRatio=9',
+                   // The default makes GC pauses longer for some reason
+                   '-XX:G1HeapRegionSize=4m'
+    ]
 
     // Fix platform theme detection on macOS
     if (os.isMacOsX()) {
