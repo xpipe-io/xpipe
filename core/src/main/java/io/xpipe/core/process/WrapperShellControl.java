@@ -323,9 +323,9 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown)
+    public String buildElevatedCommand(CommandConfiguration input, String prefix, UUID requestId, CountDown countDown, String user)
             throws Exception {
-        return parent.buildElevatedCommand(input, prefix, requestId, countDown);
+        return parent.buildElevatedCommand(input, prefix, requestId, countDown, user);
     }
 
     @Override
