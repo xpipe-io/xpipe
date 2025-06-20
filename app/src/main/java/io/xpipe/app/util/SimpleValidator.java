@@ -12,7 +12,9 @@ import net.synedra.validatorfx.Severity;
 import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.ValidationResult;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SimpleValidator implements Validator {
@@ -120,6 +122,11 @@ public class SimpleValidator implements Validator {
                     return str.toString();
                 },
                 validationResultProperty);
+    }
+
+    @Override
+    public Collection<Check> getActiveChecks() {
+        return checks.keySet();
     }
 
     private void refreshProperties() {

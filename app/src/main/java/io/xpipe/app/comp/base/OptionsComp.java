@@ -4,9 +4,12 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.Check;
 import io.xpipe.app.util.Hyperlinks;
 
+import io.xpipe.app.util.Validator;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,12 +34,12 @@ import java.util.List;
 @Getter
 public class OptionsComp extends Comp<CompStructure<VBox>> {
 
-    private final List<Check> checks;
     private final List<Entry> entries;
+    private final Validator validator;
 
-    public OptionsComp(List<Check> checks, List<Entry> entries) {
-        this.checks = checks;
+    public OptionsComp(List<Entry> entries, Validator validator) {
         this.entries = entries;
+        this.validator = validator;
     }
 
     @Override
@@ -212,6 +215,10 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
             });
         }
 
+        for (Region nameRegion : nameRegions) {
+            nameRegion.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        }
+
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
             var nameWidthBinding = Bindings.createDoubleBinding(
                     () -> {
@@ -222,7 +229,14 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                                 .orElse(Region.USE_COMPUTED_SIZE);
                     },
                     nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));
-            nameRegions.forEach(r -> r.minWidthProperty().bind(nameWidthBinding));
+            BindingsHelper.preserve(pane, nameWidthBinding);
+            nameWidthBinding.addListener((observableValue, number, t1) -> {
+                Platform.runLater(() -> {
+                    for (Region nameRegion : nameRegions) {
+                        nameRegion.setPrefWidth(t1.doubleValue());
+                    }
+                });
+            });
         }
 
         Region finalFirstComp = firstComp;
@@ -231,6 +245,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 return;
             }
 
+            var checks = validator.getActiveChecks();
             var failed = checks.stream()
                     .filter(check -> check.getValidationResult().getMessages().size() > 0)
                     .findFirst();

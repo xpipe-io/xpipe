@@ -12,6 +12,7 @@ import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,5 +107,14 @@ public class ChainedValidator implements Validator {
                             .collect(Collectors.joining("\n"));
                 },
                 observables);
+    }
+
+    @Override
+    public Collection<Check> getActiveChecks() {
+        var all = new ArrayList<Check>();
+        for (var val : validators) {
+            all.addAll(val.getActiveChecks());
+        }
+        return all;
     }
 }

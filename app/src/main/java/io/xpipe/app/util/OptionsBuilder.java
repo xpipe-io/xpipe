@@ -206,11 +206,11 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder check(Function<Validator, Check> c) {
+        var check = c.apply(ownValidator);
         lastCompHeadReference.apply(s -> {
-            var check = c.apply(ownValidator);
             check.decorates(s.get());
-            allChecks.add(check);
         });
+        allChecks.add(check);
         return this;
     }
 
@@ -467,7 +467,7 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        var comp = new OptionsComp(allChecks, entries);
+        var comp = new OptionsComp(entries, buildEffectiveValidator());
         for (Augment<CompStructure<VBox>> augment : augments) {
             comp.apply(augment);
         }

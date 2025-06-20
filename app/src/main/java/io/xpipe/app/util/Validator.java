@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 
 import net.synedra.validatorfx.ValidationResult;
 
+import java.util.Collection;
 import java.util.function.Predicate;
 
 public interface Validator {
@@ -122,4 +123,6 @@ public interface Validator {
      * @param separator The string to separate consecutive validation messages with
      */
     StringBinding createStringBinding(String prefix, String separator);
+
+    Collection<Check> getActiveChecks();
 }
