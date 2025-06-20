@@ -82,7 +82,7 @@ public final class BrowserFileListComp extends SimpleComp {
             try {
                 long long1 = Long.parseLong(size1);
                 long long2 = Long.parseLong(size2);
-            return Long.compare(long1, long2);
+                return Long.compare(long1, long2);
             } catch (NumberFormatException e) {
                 return size1.compareTo(size2);
             }
