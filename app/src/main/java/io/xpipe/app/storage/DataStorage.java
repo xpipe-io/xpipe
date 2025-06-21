@@ -64,9 +64,6 @@ public abstract class DataStorage {
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
 
     @Getter
-    protected boolean loaded;
-
-    @Getter
     @Setter
     protected DataStoreCategory selectedCategory;
 
@@ -109,6 +106,8 @@ public abstract class DataStorage {
     public static DataStorage get() {
         return INSTANCE;
     }
+
+    public abstract void reloadContent();
 
     public abstract SecretKey getVaultKey();
 
@@ -385,6 +384,13 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         }
         refreshEntries();
+        saveAsync();
+    }
+
+    public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
+        category.setName(newCategory.getName());
+        category.setParentCategory(newCategory.getParentCategory());
+        updateCategoryConfig(category, newCategory.getConfig());
         saveAsync();
     }
 

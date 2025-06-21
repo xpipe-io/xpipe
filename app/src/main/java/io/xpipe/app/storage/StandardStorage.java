@@ -9,6 +9,7 @@ import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
+import io.xpipe.core.util.UuidHelper;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -25,7 +26,7 @@ import javax.crypto.SecretKey;
 
 public class StandardStorage extends DataStorage {
 
-    private final List<Path> directoriesToKeep = new ArrayList<>();
+    private final Set<Path> directoriesToKeep = new HashSet<>();
 
     @Getter
     private final DataStorageSyncHandler dataStorageSyncHandler;
@@ -90,18 +91,25 @@ public class StandardStorage extends DataStorage {
             dataStorageSyncHandler.initTeamVault();
         }
 
+        reloadContent();
+
+        busyIo.unlock();
+
+        // Full save on initial load
+        saveAsync();
+    }
+
+    public void reloadContent() {
+        busyIo.lock();
+
+        var initialLoad = getStoreEntries().size() == 0;
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
-        var dataDir = getDataDir();
-        try {
-            FileUtils.forceMkdir(storesDir.toFile());
-            FileUtils.forceMkdir(categoriesDir.toFile());
-            FileUtils.forceMkdir(dataDir.toFile());
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
-                    .terminal(true)
-                    .build()
-                    .handle();
+
+        for (DataStoreCategory cat : new ArrayList<>(storeCategories)) {
+            if (!Files.exists(cat.getDirectory())) {
+                deleteStoreCategory(cat);
+            }
         }
 
         try {
@@ -109,14 +117,23 @@ public class StandardStorage extends DataStorage {
             try (var cats = Files.list(categoriesDir)) {
                 cats.filter(Files::isDirectory).forEach(path -> {
                     try {
-                        try (Stream<Path> list = Files.list(path)) {
-                            if (list.findAny().isEmpty()) {
-                                return;
-                            }
+                        var c = DataStoreCategory.fromDirectory(path);
+                        if (c.isEmpty()) {
+                            return;
                         }
 
-                        var c = DataStoreCategory.fromDirectory(path);
-                        c.ifPresent(storeCategories::add);
+                        if (initialLoad) {
+                            storeCategories.add(c.get());
+                            return;
+                        }
+
+                        var existing = getStoreCategoryIfPresent(c.get().getUuid());
+                        if (existing.isPresent()) {
+                            updateCategory(existing.get(), c.get());
+                            return;
+                        }
+
+                        addStoreCategory(c.get());
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -140,26 +157,39 @@ public class StandardStorage extends DataStorage {
             setupBuiltinCategories();
             selectedCategory = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
 
+            for (DataStoreEntry entry : new ArrayList<>(getStoreEntries())) {
+                if (!Files.exists(entry.getDirectory())) {
+                    deleteStoreEntry(entry);
+                }
+            }
+
             try (var dirs = Files.list(storesDir)) {
                 dirs.filter(Files::isDirectory).forEach(path -> {
                     try {
-                        try (Stream<Path> list = Files.list(path)) {
-                            if (list.findAny().isEmpty()) {
-                                return;
-                            }
-                        }
-
                         var entry = DataStoreEntry.fromDirectory(path);
                         if (entry.isEmpty()) {
                             return;
                         }
 
-                        var foundCat = getStoreCategoryIfPresent(entry.get().getCategoryUuid());
-                        if (foundCat.isEmpty()) {
-                            entry.get().setCategoryUuid(null);
+                        if (initialLoad) {
+                            var foundCat = getStoreCategoryIfPresent(entry.get().getCategoryUuid());
+                            if (foundCat.isEmpty()) {
+                                entry.get().setCategoryUuid(null);
+                            }
+
+                            storeEntries.put(entry.get(), entry.get());
+                            return;
                         }
 
-                        storeEntries.put(entry.get(), entry.get());
+                        var existing = getStoreEntryIfPresent(entry.get().getUuid());
+                        if (existing.isPresent() && !Objects.equals(existing.get().getStore(), entry.get().getStore())) {
+                            updateEntry(existing.get(), entry.get());
+                            return;
+                        }
+
+                        if (existing.isEmpty()) {
+                            storeEntries.put(entry.get(), entry.get());
+                        }
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -203,7 +233,6 @@ public class StandardStorage extends DataStorage {
 
         var hasFixedLocal = storeEntriesSet.stream()
                 .anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
-
         if (hasFixedLocal) {
             var local = getStoreEntry(LOCAL_ID);
             if (local.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -234,6 +263,8 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
+        // Remove per user entries early if possible. Doesn't cover all, so do it later again
+        filterPerUserEntries();
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
         refreshEntries();
@@ -242,7 +273,7 @@ public class StandardStorage extends DataStorage {
         refreshEntries();
         // Let providers work on complete stores
         callProviders();
-        // Update validaties after any possible changes
+        // Update validities after any possible changes
         refreshEntries();
         // Add any possible missing synthetic parents
         storeEntriesSet.forEach(entry -> {
@@ -251,29 +282,16 @@ public class StandardStorage extends DataStorage {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-        // Update validaties from synthetic parent changes
+        // Update validities from synthetic parent changes
         refreshEntries();
         // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
         filterPerUserEntries();
 
-        if (!hasFixedLocal) {
-            storeEntriesSet.removeIf(dataStoreEntry ->
-                    !dataStoreEntry.getUuid().equals(LOCAL_ID) && dataStoreEntry.getStore() instanceof LocalStore);
-            storeEntriesSet.stream()
-                    .filter(entry -> entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED)
-                    .forEach(entry -> {
-                        entry.dirty = true;
-                        entry.setStoreNode(DataStorageNode.ofNewStore(entry.getStore()));
-                    });
-            // Save to apply changes
-            save(false);
-        }
-
         deleteLeftovers();
 
-        loaded = true;
-        busyIo.unlock();
         this.dataStorageSyncHandler.afterStorageLoad();
+
+        busyIo.unlock();
     }
 
     private void filterPerUserEntries() {
@@ -349,7 +367,7 @@ public class StandardStorage extends DataStorage {
             return;
         }
 
-        if (!loaded || disposed) {
+        if (disposed) {
             busyIo.unlock();
             return;
         }

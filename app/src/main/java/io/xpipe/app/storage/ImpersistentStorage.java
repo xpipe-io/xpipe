@@ -9,6 +9,9 @@ import javax.crypto.SecretKey;
 public class ImpersistentStorage extends DataStorage {
 
     @Override
+    public void reloadContent() {}
+
+    @Override
     public SecretKey getVaultKey() {
         return EncryptionKey.getVaultSecretKey("");
     }

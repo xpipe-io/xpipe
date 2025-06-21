@@ -16,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -144,8 +145,11 @@ public class DataStoreCategory extends StorageElement {
     }
 
     public void setParentCategory(UUID parentCategory) {
+        var changed = !Objects.equals(this.parentCategory, parentCategory);
         this.parentCategory = parentCategory;
-        notifyUpdate(false, true);
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     public boolean canShare() {

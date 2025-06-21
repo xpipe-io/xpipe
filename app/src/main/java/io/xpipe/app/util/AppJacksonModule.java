@@ -262,13 +262,7 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
-            // Compatibility fix for legacy local stores
-            var toUse = e.getStore() instanceof LocalStore ? DataStorage.get().local() : e;
-            if (toUse == null) {
-                return null;
-            }
-
-            return new DataStoreEntryRef<>(toUse);
+            return new DataStoreEntryRef<>(e);
         }
     }
 }
