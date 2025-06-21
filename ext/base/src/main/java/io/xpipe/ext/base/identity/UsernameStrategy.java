@@ -1,6 +1,9 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.core.util.FailableSupplier;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.Value;
 
 import java.util.Optional;
 
@@ -12,6 +15,8 @@ public interface UsernameStrategy {
 
     String retrieveUsername() throws Exception;
 
+    @EqualsAndHashCode
+    @ToString
     class None implements UsernameStrategy {
 
         @Override
@@ -30,7 +35,9 @@ public interface UsernameStrategy {
         }
     }
 
-    class Fixed implements UsernameStrategy {
+    @EqualsAndHashCode
+    @ToString
+    final class Fixed implements UsernameStrategy {
 
         private final String username;
 
@@ -58,7 +65,7 @@ public interface UsernameStrategy {
         }
     }
 
-    class Dynamic implements UsernameStrategy {
+   final class Dynamic implements UsernameStrategy {
 
         private final FailableSupplier<String> username;
 
@@ -66,7 +73,22 @@ public interface UsernameStrategy {
             this.username = username;
         }
 
-        @Override
+       @Override
+       public int hashCode() {
+           return getClass().hashCode();
+       }
+
+       @Override
+       public boolean equals(Object obj) {
+           return obj instanceof Dynamic;
+       }
+
+       @Override
+       public String toString() {
+           return "<dynamic>";
+       }
+
+       @Override
         public boolean hasUser() {
             return true;
         }

@@ -611,14 +611,20 @@ public class DataStoreEntry extends StorageElement {
             var changed = store != null;
             store = null;
             validity = Validity.LOAD_FAILED;
-            notifyUpdate(false, changed);
+            if (changed) {
+                notifyUpdate(false, true);
+            }
             return;
         }
 
+        var storeChanged = !Objects.equals(store, newStore);
         var newComplete = newStore.isComplete();
         if (!newComplete) {
             validity = Validity.INCOMPLETE;
             store = newStore;
+            if (storeChanged) {
+                notifyUpdate(false, true);
+            }
             return;
         }
 
@@ -628,11 +634,13 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception ignored) {
         }
         var perUserChanged = isPerUserStore() != newPerUser;
-        if (!newStore.equals(store)) {
+        if (storeChanged) {
             store = newStore;
         }
         validity = Validity.COMPLETE;
-        notifyUpdate(false, perUserChanged);
+        if (storeChanged || perUserChanged) {
+            notifyUpdate(false, true);
+        }
     }
 
     public void initializeEntry() {

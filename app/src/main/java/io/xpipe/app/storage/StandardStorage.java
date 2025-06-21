@@ -187,7 +187,9 @@ public class StandardStorage extends DataStorage {
                             return;
                         }
 
-                        addStoreEntryIfNotPresent(entry.get());
+                        if (existing.isEmpty()) {
+                            storeEntries.put(entry.get(), entry.get());
+                        }
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -261,6 +263,8 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
+        // Remove per user entries early if possible. Doesn't cover all, so do it later again
+        filterPerUserEntries();
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
         refreshEntries();
