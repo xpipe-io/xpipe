@@ -107,6 +107,8 @@ public abstract class DataStorage {
         return INSTANCE;
     }
 
+    public abstract void reloadContent();
+
     public abstract SecretKey getVaultKey();
 
     public DataStoreCategory getDefaultConnectionsCategory() {

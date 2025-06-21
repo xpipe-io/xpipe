@@ -91,15 +91,18 @@ public class StandardStorage extends DataStorage {
             dataStorageSyncHandler.initTeamVault();
         }
 
-        refreshContent();
-
-        deleteLeftovers();
+        reloadContent();
 
         busyIo.unlock();
-        this.dataStorageSyncHandler.afterStorageLoad();
+
+        // Full save on initial load
+        saveAsync();
     }
 
-    private void refreshContent() {
+    public void reloadContent() {
+        busyIo.lock();
+
+        var initialLoad = getStoreEntries().size() == 0;
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
 
@@ -116,6 +119,11 @@ public class StandardStorage extends DataStorage {
                     try {
                         var c = DataStoreCategory.fromDirectory(path);
                         if (c.isEmpty()) {
+                            return;
+                        }
+
+                        if (initialLoad) {
+                            storeCategories.add(c.get());
                             return;
                         }
 
@@ -163,8 +171,18 @@ public class StandardStorage extends DataStorage {
                             return;
                         }
 
+                        if (initialLoad) {
+                            var foundCat = getStoreCategoryIfPresent(entry.get().getCategoryUuid());
+                            if (foundCat.isEmpty()) {
+                                entry.get().setCategoryUuid(null);
+                            }
+
+                            storeEntries.put(entry.get(), entry.get());
+                            return;
+                        }
+
                         var existing = getStoreEntryIfPresent(entry.get().getUuid());
-                        if (existing.isPresent()) {
+                        if (existing.isPresent() && !Objects.equals(existing.get().getStore(), entry.get().getStore())) {
                             updateEntry(existing.get(), entry.get());
                             return;
                         }
@@ -213,7 +231,6 @@ public class StandardStorage extends DataStorage {
 
         var hasFixedLocal = storeEntriesSet.stream()
                 .anyMatch(dataStoreEntry -> dataStoreEntry.getUuid().equals(LOCAL_ID));
-
         if (hasFixedLocal) {
             var local = getStoreEntry(LOCAL_ID);
             if (local.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
@@ -268,8 +285,9 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
 
-        busyIo.unlock();
         this.dataStorageSyncHandler.afterStorageLoad();
+
+        busyIo.unlock();
     }
 
     private void filterPerUserEntries() {

@@ -288,7 +288,7 @@ public interface SshIdentityStrategy {
             var s = file.toAbsoluteFilePath(parent);
             // The ~ is supported on all platforms, so manually replace it here for Windows
             if (s.startsWith("~")) {
-                s = s.resolveTildeHome(parent.getOsType().getUserHomeDirectory(parent));
+                s = s.resolveTildeHome(parent.view().userHome().toString());
             }
             var resolved = parent.getShellDialect()
                     .evaluateExpression(parent, s.toString())
@@ -348,7 +348,7 @@ public interface SshIdentityStrategy {
             var s = file.toAbsoluteFilePath(sc);
             // The ~ is supported on all platforms, so manually replace it here for Windows
             if (s.startsWith("~")) {
-                s = s.resolveTildeHome(sc.getOsType().getUserHomeDirectory(sc));
+                s = s.resolveTildeHome(sc.view().userHome().toString());
             }
             var resolved =
                     sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();

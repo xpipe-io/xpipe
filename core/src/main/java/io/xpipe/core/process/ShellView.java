@@ -10,6 +10,9 @@ import java.util.Optional;
 public class ShellView {
 
     protected final ShellControl shellControl;
+    protected String user;
+    protected FilePath userHome;
+    protected Boolean root;
 
     public ShellView(ShellControl shellControl) {
         this.shellControl = shellControl;
@@ -59,7 +62,11 @@ public class ShellView {
     }
 
     public FilePath userHome() throws Exception {
-        return FilePath.of(shellControl.getOsType().getUserHomeDirectory(shellControl));
+        if (userHome == null) {
+            userHome = FilePath.of(shellControl.getOsType().getUserHomeDirectory(shellControl));
+        }
+
+        return userHome;
     }
 
     public boolean fileExists(FilePath path) throws Exception {
@@ -89,7 +96,11 @@ public class ShellView {
     }
 
     public String user() throws Exception {
-        return getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
+        if (user == null) {
+            user = getDialect().printUsernameCommand(shellControl).readStdoutOrThrow();
+        }
+
+        return user;
     }
 
     public String getPath() throws Exception {
@@ -109,6 +120,10 @@ public class ShellView {
     public boolean isRoot() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
             return false;
+        }
+
+        if (root != null) {
+            return root;
         }
 
         var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
