@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -83,13 +83,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                 .addStaticString(st.getContainerName())
                 .buildComp();
         return new GuiDialog(q, val);
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        PodmanContainerStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(
-                        s.getCmd().getStore().getHost().get()) + " container";
     }
 
     @Override

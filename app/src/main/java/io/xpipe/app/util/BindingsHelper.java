@@ -7,33 +7,16 @@ import javafx.beans.value.ObservableValue;
 import lombok.Value;
 
 import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.Function;
 
-@SuppressWarnings("InfiniteLoopStatement")
 public class BindingsHelper {
 
-    private static final Set<ReferenceEntry> REFERENCES = new HashSet<>();
-
-    static {
-        ThreadHelper.createPlatformThread("referenceGC", true, () -> {
-                    while (true) {
-                        synchronized (REFERENCES) {
-                            REFERENCES.removeIf(ReferenceEntry::canGc);
-                        }
-                        ThreadHelper.sleep(1000);
-
-                        // Use for testing
-                        // System.gc();
-                    }
-                })
-                .start();
-    }
+    private static final WeakHashMap<Object, Object> REFERENCES = new WeakHashMap<>();
 
     public static void preserve(Object source, Object target) {
         synchronized (REFERENCES) {
-            REFERENCES.add(new ReferenceEntry(new WeakReference<>(source), target));
+            REFERENCES.put(source, target);
         }
     }
 

@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.core.util.XPipeInstallation;
@@ -82,7 +82,10 @@ public class AppI18nData {
                             lineCounter.incrementAndGet();
                         });
                     } catch (IOException ex) {
-                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -109,7 +112,10 @@ public class AppI18nData {
                     try (var in = Files.newInputStream(file)) {
                         markdownDocumentations.put(name, new String(in.readAllBytes(), StandardCharsets.UTF_8));
                     } catch (IOException ex) {
-                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                     return FileVisitResult.CONTINUE;
                 }

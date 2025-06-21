@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public abstract class IdentityStore implements SelfReferentialStore, DataStore {
 
-    String username;
+    public abstract UsernameStrategy getUsername();
 
     public abstract SecretRetrievalStrategy getPassword();
 
@@ -30,8 +30,4 @@ public abstract class IdentityStore implements SelfReferentialStore, DataStore {
             getSshIdentity().checkComplete();
         }
     }
-
-    abstract EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword();
-
-    abstract EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity();
 }

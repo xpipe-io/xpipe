@@ -1,7 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
@@ -146,7 +146,7 @@ public enum AppDistributionType implements Translatable {
                     return PORTABLE;
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).omit().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
                 return PORTABLE;
             }
         } else {
@@ -167,17 +167,20 @@ public enum AppDistributionType implements Translatable {
         if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
-                if (chocoOut.get().contains("xpipe") && chocoOut.get().contains(AppProperties.get().getVersion())) {
+                if (chocoOut.get().contains("xpipe")
+                        && chocoOut.get().contains(AppProperties.get().getVersion())) {
                     return CHOCO;
                 }
             }
 
-//            var wingetOut = LocalExec.readStdoutIfPossible("winget", "show", "--id", "xpipe-io.xpipe", "--source", "--winget");
-//            if (wingetOut.isPresent()) {
-//                if (wingetOut.get().contains("xpipe-io.xpipe") && wingetOut.get().contains(AppProperties.get().getVersion())) {
-//                    return WINGET;
-//                }
-//            }
+            //            var wingetOut = LocalExec.readStdoutIfPossible("winget", "show", "--id", "xpipe-io.xpipe",
+            // "--source", "--winget");
+            //            if (wingetOut.isPresent()) {
+            //                if (wingetOut.get().contains("xpipe-io.xpipe") &&
+            // wingetOut.get().contains(AppProperties.get().getVersion())) {
+            //                    return WINGET;
+            //                }
+            //            }
         }
 
         if (OsType.getLocal().equals(OsType.MACOS)) {

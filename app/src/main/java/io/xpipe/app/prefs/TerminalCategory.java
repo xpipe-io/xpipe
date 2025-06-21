@@ -2,13 +2,13 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -39,6 +39,11 @@ public class TerminalCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-console");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
@@ -51,7 +56,7 @@ public class TerminalCategory extends AppPrefsCategory {
                     });
                     feature.throwIfUnsupported();
                 } catch (LicenseRequiredException ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
             }
         });
@@ -64,8 +69,10 @@ public class TerminalCategory extends AppPrefsCategory {
                 // .sub(terminalInitScript())
                 .sub(
                         new OptionsBuilder()
-                                .pref(prefs.terminalAlwaysPauseOnExit).addToggle(prefs.terminalAlwaysPauseOnExit)
-                                .pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
+                                .pref(prefs.terminalAlwaysPauseOnExit)
+                                .addToggle(prefs.terminalAlwaysPauseOnExit)
+                                .pref(prefs.clearTerminalOnInit)
+                                .addToggle(prefs.clearTerminalOnInit)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )

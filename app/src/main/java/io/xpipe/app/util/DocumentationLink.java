@@ -8,6 +8,7 @@ public enum DocumentationLink {
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
+    TLS_DECRYPTION("troubleshoot/license-activation#tls-decryption"),
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
@@ -27,6 +28,7 @@ public enum DocumentationLink {
     TAILSCALE("guide/tailscale"),
     TELEPORT("guide/teleport"),
     LXC("guide/lxc"),
+    APPLE_CONTAINERS("guide/apple-containers"),
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     VMWARE("guide/vmware"),
@@ -41,8 +43,11 @@ public enum DocumentationLink {
     TUNNELS("guide/ssh-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
+    SSH_JUMP_SERVERS("guide/ssh#jump-servers"),
     KEEPASSXC("guide/password-manager#keepassxc"),
-    PASSWORD_MANAGER("guide/password-manager");
+    PASSWORD_MANAGER("guide/password-manager"),
+    VNC_CLIENTS("guide/vnc#external-clients"),
+    ;
 
     private final String page;
 

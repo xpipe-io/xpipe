@@ -2,7 +2,7 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandSupport;
@@ -90,7 +90,7 @@ public class PodmanCmdStore
         var running = view.isDaemonRunning();
         if (!running) {
             setState(getState().toBuilder().running(false).build());
-            throw ErrorEvent.expected(new IllegalStateException("Podman daemon is not running"));
+            throw ErrorEventFactory.expected(new IllegalStateException("Podman daemon is not running"));
         }
 
         updateState(sc);

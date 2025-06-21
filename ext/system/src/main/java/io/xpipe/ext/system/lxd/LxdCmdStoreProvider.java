@@ -1,14 +1,13 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 
@@ -54,11 +53,6 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         LxdCmdStore s = store.getStore().asNeeded();
         return s.getHost().get();
-    }
-
-    public String summaryString(StoreEntryWrapper wrapper) {
-        LxdCmdStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " containers";
     }
 
     @Override

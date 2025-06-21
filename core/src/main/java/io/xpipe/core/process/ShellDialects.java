@@ -22,6 +22,7 @@ public class ShellDialects {
     public static ShellDialect ZSH;
     public static ShellDialect CSH;
     public static ShellDialect FISH;
+    public static ShellDialect NUSHELL;
 
     public static ShellDialect NO_INTERACTION;
     public static ShellDialect CISCO;
@@ -31,6 +32,7 @@ public class ShellDialects {
     public static ShellDialect CONSTRAINED_POWERSHELL;
     public static ShellDialect OVH_BASTION;
     public static ShellDialect HETZNER_BOX;
+    public static ShellDialect JUMP_SERVER;
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream()
@@ -88,6 +90,7 @@ public class ShellDialects {
             CSH = byId("csh");
             ASH = byId("ash");
             SH = byId("sh");
+            NUSHELL = byId("nushell");
             NO_INTERACTION = byId("noInteraction");
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
@@ -96,6 +99,7 @@ public class ShellDialects {
             CONSTRAINED_POWERSHELL = byId("constrainedPowershell");
             OVH_BASTION = byId("ovhBastion");
             HETZNER_BOX = byId("hetznerBox");
+            JUMP_SERVER = byId("jumpServer");
         }
     }
 }

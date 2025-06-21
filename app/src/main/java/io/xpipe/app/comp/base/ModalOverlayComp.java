@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.process.OsType;
 
-import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -158,6 +157,7 @@ public class ModalOverlayComp extends SimpleComp {
                 closeButton.setVisible(false);
             }
         }
+        modal.requestFocus();
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
@@ -250,7 +250,7 @@ public class ModalOverlayComp extends SimpleComp {
         if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
             var busy = mocc.busy();
             if (busy != null) {
-                var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+                var loading = new LoadingOverlayComp(Comp.of(() -> modalBox), busy, true);
                 return loading.createRegion();
             }
         }

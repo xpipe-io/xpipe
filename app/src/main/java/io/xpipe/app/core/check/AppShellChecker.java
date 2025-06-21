@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.process.ProcessOutputException;
@@ -28,7 +28,9 @@ public abstract class AppShellChecker {
                 && canFallback
                 && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
             var msg = formatMessage(err.get().getMessage());
-            ErrorEvent.fromThrowable(new IllegalStateException(msg)).expected().handle();
+            ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
+                    .expected()
+                    .handle();
             toggleFallback();
             var fallbackErr = selfTestErrorCheck();
             if (fallbackErr.isPresent()) {
@@ -40,7 +42,7 @@ public abstract class AppShellChecker {
 
         if (err.isPresent()) {
             var msg = formatMessage(err.get().getMessage());
-            var event = ErrorEvent.fromThrowable(new IllegalStateException(msg));
+            var event = ErrorEventFactory.fromThrowable(new IllegalStateException(msg));
             if (!err.get().isCanContinue()) {
                 event.term();
             }

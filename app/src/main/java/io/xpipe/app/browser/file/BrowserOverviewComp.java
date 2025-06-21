@@ -4,7 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.ShellControl;
@@ -32,9 +32,6 @@ public class BrowserOverviewComp extends SimpleComp {
     @SneakyThrows
     protected Region createSimple() {
         // The open file system might have already been closed
-        if (model.getFileSystem() == null) {
-            return new Region();
-        }
 
         ShellControl sc = model.getFileSystem().getShell().orElseThrow();
 
@@ -44,14 +41,11 @@ public class BrowserOverviewComp extends SimpleComp {
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         var fs = model.getFileSystem();
-                        if (fs == null) {
-                            return false;
-                        }
 
                         try {
                             return fs.directoryExists(entry.getPath());
                         } catch (Exception e) {
-                            ErrorEvent.fromThrowable(e).handle();
+                            ErrorEventFactory.fromThrowable(e).handle();
                             return false;
                         }
                     })

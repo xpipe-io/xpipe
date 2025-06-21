@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -18,6 +19,11 @@ public class EditorCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "editor";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2f-file-document-edit-outline");
     }
 
     @Override

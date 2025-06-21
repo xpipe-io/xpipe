@@ -65,9 +65,17 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         });
 
         var header = new Label();
-        header.textProperty().bind(PlatformThread.sync(name));
+        name.subscribe(value -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                header.setText(value);
+            });
+        });
         var desc = new Label();
-        desc.textProperty().bind(PlatformThread.sync(description));
+        description.subscribe(value -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                desc.setText(value);
+            });
+        });
         AppFontSizes.xs(desc);
         desc.setOpacity(0.8);
         var text = new VBox(header, desc);

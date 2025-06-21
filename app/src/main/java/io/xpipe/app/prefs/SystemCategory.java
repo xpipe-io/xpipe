@@ -3,14 +3,19 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
 
 public class SystemCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
         return "system";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2d-desktop-classic");
     }
 
     public Comp<?> create() {

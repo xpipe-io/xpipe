@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialects;
@@ -28,11 +28,11 @@ public class ShellTemp {
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
             }
         }
 
-        return temp.resolve(sub);
+        return sub != null ? temp.resolve(sub) : temp;
     }
 
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
@@ -69,7 +69,7 @@ public class ShellTemp {
         var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
                 || !checkDirectoryPermissions(proc, systemTemp.toString())) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 

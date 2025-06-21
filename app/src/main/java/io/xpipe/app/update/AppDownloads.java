@@ -2,7 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
@@ -35,13 +35,17 @@ public class AppDownloads {
 
             var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
             Files.write(downloadFile, response.body());
-            TrackEvent.withInfo("Downloaded asset").tag("version", version).tag("url", release.getUrl()).tag("size",
-                    FileUtils.byteCountToDisplaySize(response.body().length)).tag("target", downloadFile).handle();
+            TrackEvent.withInfo("Downloaded asset")
+                    .tag("version", version)
+                    .tag("url", release.getUrl())
+                    .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
+                    .tag("target", downloadFile)
+                    .handle();
 
             return downloadFile;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -112,8 +116,7 @@ public class AppDownloads {
             var ver = queryLatestVersion(first, securityOnly);
             return AppRelease.of(ver);
         } catch (Exception e) {
-            throw ErrorEvent.expected(e);
+            throw ErrorEventFactory.expected(e);
         }
     }
-
 }

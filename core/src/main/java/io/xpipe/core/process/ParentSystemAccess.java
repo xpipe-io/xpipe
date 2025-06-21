@@ -95,7 +95,7 @@ public interface ParentSystemAccess {
             }
 
             @Override
-            public boolean supportsExecutables() {
+            public boolean supportsExecutables() throws Exception {
                 return a1.supportsExecutables() && a2.supportsExecutables();
             }
 
@@ -129,7 +129,7 @@ public interface ParentSystemAccess {
 
     boolean supportsFileSystemAccess();
 
-    boolean supportsExecutables();
+    boolean supportsExecutables() throws Exception;
 
     boolean supportsExecutableEnvironment();
 

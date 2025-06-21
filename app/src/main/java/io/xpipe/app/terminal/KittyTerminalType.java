@@ -1,7 +1,8 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ShellTemp;
@@ -104,7 +105,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             try (ShellControl pc = LocalShell.getShell()) {
                 return CommandSupport.findProgram(pc, "kitty").isPresent();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
             }
         }
@@ -154,11 +155,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
     }
 
-    class MacOs extends MacOsType implements KittyTerminalType {
-
-        public MacOs() {
-            super("app.kitty", "kitty");
-        }
+    class MacOs implements ExternalApplicationType.MacApplication, KittyTerminalType {
 
         @Override
         public int getProcessHierarchyOffset() {
@@ -198,6 +195,16 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                 ThreadHelper.sleep(15 * elapsed);
                 return true;
             }
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "kitty";
+        }
+
+        @Override
+        public String getId() {
+            return "app.kitty";
         }
     }
 }

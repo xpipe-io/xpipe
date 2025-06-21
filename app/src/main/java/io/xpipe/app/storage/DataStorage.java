@@ -1,10 +1,9 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
@@ -37,6 +36,7 @@ public abstract class DataStorage {
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
+    public static final UUID ALL_MACROS_CATEGORY_UUID = UUID.fromString("f65b769a-cec9-4f30-ad58-95fe68d79c2c");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
 
@@ -62,9 +62,6 @@ public abstract class DataStorage {
     private final List<StorageListener> listeners = new CopyOnWriteArrayList<>();
 
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
-
-    @Getter
-    protected boolean loaded;
 
     @Getter
     @Setter
@@ -126,6 +123,10 @@ public abstract class DataStorage {
 
     public DataStoreCategory getAllIdentitiesCategory() {
         return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
+    }
+
+    public DataStoreCategory getAllMacrosCategory() {
+        return getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID).orElseThrow();
     }
 
     public void forceRewrite() {
@@ -202,6 +203,15 @@ public abstract class DataStorage {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
         }
 
+        //        var allMacros = getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID);
+        //        if (allMacros.isEmpty()) {
+        //            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
+        //            cat.setDirectory(categoriesDir.resolve(ALL_MACROS_CATEGORY_UUID.toString()));
+        //            storeCategories.add(cat);
+        //        } else {
+        //            allMacros.get().setParentCategory(null);
+        //        }
+
         if (supportsSync()) {
             var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
             if (sharedIdentities.isEmpty()) {
@@ -224,7 +234,6 @@ public abstract class DataStorage {
                     Instant.now(),
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
-                    StoreSortMode.getDefault(),
                     true,
                     DataStoreCategoryConfig.empty()));
         }
@@ -376,6 +385,13 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+    public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
+        category.setName(newCategory.getName());
+        category.setParentCategory(newCategory.getParentCategory());
+        updateCategoryConfig(category, newCategory.getConfig());
+        saveAsync();
+    }
+
     public void updateCategoryConfig(DataStoreCategory category, DataStoreCategoryConfig config) {
         if (category.setConfig(config)) {
             // Update git remote if needed
@@ -403,9 +419,12 @@ public abstract class DataStorage {
         saveAsync();
     }
 
-    public void setOrder(DataStoreEntry entry, DataStoreEntry.Order order) {
-        entry.setExplicitOrder(order);
+    public void setOrderIndex(DataStoreEntry entry, int index) {
+        entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        var cat = getStoreCategory(entry);
+        cat.notifyUpdate(false, true);
+        saveAsync();
     }
 
     @SneakyThrows
@@ -438,7 +457,7 @@ public abstract class DataStorage {
             if (throwOnFail) {
                 throw ex;
             } else {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 return false;
             }
         } finally {
@@ -561,7 +580,7 @@ public abstract class DataStorage {
 
             DataStore merged = ((FixedChildStore) pair.getKey().getStore())
                     .merge(pair.getValue().getStore().asNeeded());
-            if (merged != pair.getKey().getStore()) {
+            if (merged != null && !merged.equals(pair.getKey().getStore())) {
                 pair.getKey().setStoreInternal(merged, false);
             }
 
@@ -860,6 +879,12 @@ public abstract class DataStorage {
         }
 
         return false;
+    }
+
+    public boolean getEffectiveReadOnlyState(DataStoreEntry entry) {
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
+        var catConfig = getEffectiveCategoryConfig(cat);
+        return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isFreeze();
     }
 
     public DataStoreColor getEffectiveColor(DataStoreEntry entry) {

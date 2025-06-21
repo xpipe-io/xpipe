@@ -12,7 +12,11 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    FileSystem createTransferOptimizedFileSystem() throws Exception;
+
     long getFileSize(FilePath file) throws Exception;
+
+    long getDirectorySize(FilePath file) throws Exception;
 
     Optional<ShellControl> getShell();
 
@@ -39,6 +43,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
     boolean directoryExists(FilePath file) throws Exception;
 
     void directoryAccessible(FilePath file) throws Exception;
+
+    Optional<FileEntry> getFileInfo(FilePath file) throws Exception;
 
     Stream<FileEntry> listFiles(FilePath file) throws Exception;
 

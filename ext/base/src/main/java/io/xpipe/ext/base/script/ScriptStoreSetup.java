@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -49,7 +49,7 @@ public class ScriptStoreSetup {
             initFlattened.forEach(s -> {
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
                     @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                    public Optional<String> terminalContent(ShellControl shellControl) {
                         return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
                     }
 
@@ -85,7 +85,7 @@ public class ScriptStoreSetup {
                 });
             }
         } catch (StackOverflowError t) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t));
         } catch (Throwable t) {
             throw new RuntimeException("Unable to set up scripts", t);
@@ -122,7 +122,7 @@ public class ScriptStoreSetup {
                     return targetDir;
                 }
             } catch (NumberFormatException e) {
-                ErrorEvent.fromThrowable(e).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             }
         }
 
@@ -132,7 +132,7 @@ public class ScriptStoreSetup {
         proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
-            var content = d.prepareScriptContent(scriptStore.getStore().getCommands());
+            var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
             var fileName = proc.getOsType()
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));

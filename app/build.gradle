@@ -23,8 +23,8 @@ dependencies {
     api project(':beacon')
 
     compileOnly 'org.hamcrest:hamcrest:3.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.11.4'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.12.2'
 
     api 'com.vladsch.flexmark:flexmark:0.64.8'
     api 'com.vladsch.flexmark:flexmark-util:0.64.8'
@@ -49,21 +49,21 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
     api("com.github.weisj:jsvg:1.7.1")
-    api files("$rootDir/gradle/gradle_scripts/vernacular-1.16.jar")
+    api 'io.xpipe:vernacular:1.15'
     api 'org.bouncycastle:bcprov-jdk18on:1.80'
     api 'info.picocli:picocli:4.7.6'
     api 'org.apache.commons:commons-lang3:3.17.0'
-    api 'io.sentry:sentry:8.7.0'
-    api 'commons-io:commons-io:2.18.0'
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.18.3"
-    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.18.3"
+    api 'io.sentry:sentry:8.13.3'
+    api 'commons-io:commons-io:2.19.0'
+    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.1"
+    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.19.1"
     api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.2.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
-    api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.16'
-    api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.16'
+    api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
+    api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.17'
     api 'io.xpipe:modulefs:0.1.6'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")

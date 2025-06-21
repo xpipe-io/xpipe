@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.store.StoreSection;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellEnvironmentStoreState;
 import io.xpipe.core.process.ShellStoreState;

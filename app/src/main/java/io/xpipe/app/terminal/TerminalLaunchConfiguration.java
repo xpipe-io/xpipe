@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -76,8 +76,10 @@ public class TerminalLaunchConfiguration {
                 .replaceAll(" ", "_"));
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
-                var launcherScript =
-                        ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
+                var launcherScript = ScriptHelper.createExecScript(
+                        ShellDialects.POWERSHELL,
+                        sc,
+                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
                 var content =
                         """
                               echo 'Transcript started, output file is "sessions\\%s"'
@@ -106,12 +108,12 @@ public class TerminalLaunchConfiguration {
                     var suffix = sc.getOsType() == OsType.MACOS
                             ? "This command is available in the util-linux package which can be installed via homebrew."
                             : "This command is available in the util-linux package.";
-                    throw ErrorEvent.expected(new IllegalStateException(
+                    throw ErrorEventFactory.expected(new IllegalStateException(
                             "Logging requires the script command to be installed. " + suffix));
                 }
 
-                var launcherScript = ScriptHelper.createExecScript(sc,
-                        sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
+                var launcherScript = ScriptHelper.createExecScript(
+                        sc, sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
                 var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                         ? """
                        echo "Transcript started, output file is sessions/%s"

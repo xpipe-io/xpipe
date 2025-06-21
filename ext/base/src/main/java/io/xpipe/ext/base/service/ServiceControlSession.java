@@ -1,9 +1,8 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.ext.Session;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ElevationFunction;
-import io.xpipe.core.store.Session;
-import io.xpipe.core.store.SessionListener;
 
 import lombok.Getter;
 
@@ -12,8 +11,7 @@ public class ServiceControlSession extends Session {
 
     private final ServiceControlStore store;
 
-    protected ServiceControlSession(SessionListener listener, ServiceControlStore store) {
-        super(listener);
+    protected ServiceControlSession(ServiceControlStore store) {
         this.store = store;
     }
 
@@ -34,12 +32,8 @@ public class ServiceControlSession extends Session {
         listener.onStateChange(true);
     }
 
-    public boolean isRunning() throws Exception {
-        var session = store.getHost().getStore().getOrStartSession();
-        var r = session.command(store.getStatusScript())
-                .elevated(elevationFunction())
-                .executeAndCheck();
-        return r;
+    public boolean isRunning() {
+        return true;
     }
 
     public void stop() throws Exception {
@@ -51,5 +45,10 @@ public class ServiceControlSession extends Session {
         var session = store.getHost().getStore().getOrStartSession();
         session.command(store.getStopScript()).elevated(elevationFunction()).execute();
         listener.onStateChange(false);
+    }
+
+    @Override
+    public boolean checkAlive() {
+        return true;
     }
 }

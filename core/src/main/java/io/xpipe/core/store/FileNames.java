@@ -1,41 +1,9 @@
 package io.xpipe.core.store;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class FileNames {
-
-    public static String quoteIfNecessary(String n) {
-        return n.contains(" ") ? "\"" + n + "\"" : n;
-    }
-
-    public static String toDirectory(String path) {
-        if (path == null) {
-            return null;
-        }
-
-        if (path.endsWith("/") || path.endsWith("\\")) {
-            return path;
-        }
-
-        if (path.contains("\\")) {
-            return path + "\\";
-        }
-
-        return path + "/";
-    }
-
-    public static String removeTrailingSlash(String path) {
-        if (path.equals("/")) {
-            return path;
-        }
-
-        if (path.endsWith("/") || path.endsWith("\\")) {
-            return path.substring(0, path.length() - 1);
-        }
-        return path;
-    }
 
     public static String getFileName(String file) {
         if (file == null) {
@@ -56,26 +24,6 @@ public class FileNames {
         }
 
         return components.getLast();
-    }
-
-    public static List<String> splitHierarchy(String file) {
-        if (file.isEmpty()) {
-            return List.of();
-        }
-
-        file = file + "/";
-        var list = new ArrayList<String>();
-        int lastElementStart = 0;
-        for (int i = 0; i < file.length(); i++) {
-            if (file.charAt(i) == '\\' || file.charAt(i) == '/') {
-                if (i - lastElementStart > 0) {
-                    list.add(file.substring(0, i));
-                }
-
-                lastElementStart = i + 1;
-            }
-        }
-        return list;
     }
 
     public static String getBaseName(String file) {
@@ -132,13 +80,6 @@ public class FileNames {
         return file.substring(0, file.length() - getFileName(file).length() - 1);
     }
 
-    public static boolean startsWith(String file, String start) {
-        return normalize(file).startsWith(normalize(start));
-    }
-
-    public static String relativize(String from, String to) {
-        return normalize(to).substring(FileNames.toDirectory(normalize(from)).length());
-    }
 
     public static String normalize(String file) {
         var backslash = file.contains("\\");

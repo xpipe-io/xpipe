@@ -1,15 +1,15 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
+import io.xpipe.core.util.InPlaceSecretValue;
+
+import javafx.beans.property.SimpleStringProperty;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.core.util.InPlaceSecretValue;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.time.Duration;
 
@@ -25,15 +25,19 @@ public class AskpassExchangeImpl extends AskpassExchange {
         // SSH auth with a smartcard will prompt to confirm user presence
         // Maybe we can show some dialog for this in the future
         if (msg.getPrompt() != null && msg.getPrompt().toLowerCase().contains("confirm user presence")) {
-            var shown = AppLayoutModel.get().getQueueEntries().stream().anyMatch(queueEntry ->
-                            msg.getPrompt().equals(queueEntry.getName().getValue()));
+            var shown = AppLayoutModel.get().getQueueEntries().stream().anyMatch(queueEntry -> msg.getPrompt()
+                    .equals(queueEntry.getName().getValue()));
             if (!shown) {
-                var qe = new AppLayoutModel.QueueEntry(new SimpleStringProperty(msg.getPrompt()), new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
+                var qe = new AppLayoutModel.QueueEntry(
+                        new SimpleStringProperty(msg.getPrompt()),
+                        new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
                         () -> {});
                 AppLayoutModel.get().getQueueEntries().add(qe);
-                GlobalTimer.delay(() -> {
-                    AppLayoutModel.get().getQueueEntries().remove(qe);
-                }, Duration.ofSeconds(10));
+                GlobalTimer.delay(
+                        () -> {
+                            AppLayoutModel.get().getQueueEntries().remove(qe);
+                        },
+                        Duration.ofSeconds(10));
             }
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }

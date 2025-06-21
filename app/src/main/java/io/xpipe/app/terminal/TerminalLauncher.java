@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -82,7 +82,7 @@ public class TerminalLauncher {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        content = t.prepareScriptContent(content);
+        content = t.prepareScriptContent(processControl, content);
         return content;
     }
 
@@ -143,7 +143,7 @@ public class TerminalLauncher {
             throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+            throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
@@ -213,7 +213,7 @@ public class TerminalLauncher {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
                     ? ex.getMessage() + " in installed /Applications on this system"
                     : ex.getMessage();
-            throw ErrorEvent.expected(new IOException(
+            throw ErrorEventFactory.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
         }
     }

@@ -8,13 +8,10 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellScript;
 import io.xpipe.core.store.FileNames;
@@ -36,6 +33,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdoal-bug_report");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         OptionsBuilder b = new OptionsBuilder()
@@ -44,7 +46,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .spacer(19)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
-                                    var event = ErrorEvent.fromMessage("User Report");
+                                    var event = ErrorEventFactory.fromMessage("User Report");
                                     if (AppLogs.get().isWriteToFile()) {
                                         event.attachment(AppLogs.get().getSessionLogsDirectory());
                                     }

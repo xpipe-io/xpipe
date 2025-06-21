@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class ConnectionHubCategory extends AppPrefsCategory {
@@ -8,6 +9,11 @@ public class ConnectionHubCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "connectionHub";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-connection");
     }
 
     @Override

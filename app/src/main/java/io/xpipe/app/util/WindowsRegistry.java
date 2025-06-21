@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellControl;
 
@@ -60,7 +60,7 @@ public abstract class WindowsRegistry {
             try {
                 return Advapi32Util.registryKeyExists(hkey(hkey), key);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 return false;
             }
         }
@@ -71,7 +71,7 @@ public abstract class WindowsRegistry {
             try {
                 return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 return List.of();
             }
         }
@@ -82,7 +82,7 @@ public abstract class WindowsRegistry {
             try {
                 return Advapi32Util.registryValueExists(hkey(hkey), key, valueName);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 return false;
             }
         }
@@ -97,7 +97,7 @@ public abstract class WindowsRegistry {
 
                 return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 return OptionalInt.empty();
             }
         }
@@ -112,7 +112,7 @@ public abstract class WindowsRegistry {
 
                 return Optional.ofNullable(Advapi32Util.registryGetStringValue(hkey(hkey), key, valueName));
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 return Optional.empty();
             }
         }

@@ -24,7 +24,7 @@ public class UpdateNagDialog {
             return;
         }
 
-        Instant lastCheck = AppCache.getNonNull("lastUpdateNag", Instant.class, null);
+        Instant lastCheck = AppCache.getNonNull("lastUpdateNag", Instant.class, () -> null);
         if (lastCheck == null) {
             AppCache.update("lastUpdateNag", Instant.now());
             return;

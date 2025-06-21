@@ -46,11 +46,18 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             });
         });
         if (name != null) {
-            s.textProperty().bind(PlatformThread.sync(name));
+            name.subscribe(value -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    s.setText(value);
+                });
+            });
         }
         if (graphic != null) {
-            s.graphicProperty()
-                    .bind(PlatformThread.sync(graphic.map(labelGraphic -> labelGraphic.createGraphicNode())));
+            graphic.subscribe(value -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    s.setGraphic(value.createGraphicNode());
+                });
+            });
             s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
         return new SimpleCompStructure<>(s);

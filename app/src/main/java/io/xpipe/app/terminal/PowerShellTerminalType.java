@@ -1,21 +1,23 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ShellDialects;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
+public class PowerShellTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
     public boolean supportsEscapes() {
         return false;
     }
 
-    public PowerShellTerminalType() {
-        super("app.powershell", "powershell", true);
+    @Override
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        launch(toCommand(configuration));
     }
 
     @Override
@@ -39,7 +41,6 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
         return false;
     }
 
-    @Override
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
             return CommandBuilder.of()
@@ -59,5 +60,20 @@ public class PowerShellTerminalType extends ExternalTerminalType.SimplePathType 
                                     .getBytes(StandardCharsets.UTF_16LE));
                     return "\"" + base64 + "\"";
                 });
+    }
+
+    @Override
+    public String getExecutable() {
+        return "powershell.exe";
+    }
+
+    @Override
+    public boolean detach() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.powershell";
     }
 }

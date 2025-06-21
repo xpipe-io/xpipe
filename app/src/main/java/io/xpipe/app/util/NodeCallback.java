@@ -66,6 +66,12 @@ public class NodeCallback {
             c.opacityProperty().addListener((observable, oldValue, newValue) -> {
                 checkPlatformThread();
             });
+            c.accessibleHelpProperty().addListener((observable, oldValue, newValue) -> {
+                checkPlatformThread();
+            });
+            c.accessibleTextProperty().addListener((observable, oldValue, newValue) -> {
+                checkPlatformThread();
+            });
         });
     }
 

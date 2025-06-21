@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconClient;
@@ -73,7 +73,7 @@ public class AppInstance {
             }
 
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to connect to existing running daemon instance as it did not respond."
                                     + " Either try to kill the process xpiped manually or use the command \""
                                     + cli
@@ -92,7 +92,7 @@ public class AppInstance {
                                     .arguments(List.of(e.getURI().toString()))
                                     .build());
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
                 }
             });
             ThreadHelper.sleep(1000);

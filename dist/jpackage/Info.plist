@@ -9,7 +9,9 @@
 	<key>CFBundleExecutable</key>
 	<string>xpiped</string>
 	<key>CFBundleIconFile</key>
-	<string>xpiped.icns</string>
+	<string>xpiped</string>
+	<key>CFBundleIconName</key>
+	<string>xpiped</string>
 	<key>CFBundleIdentifier</key>
 	<string>__BUNDLE__</string>
 	<key>CFBundleInfoDictionaryVersion</key>

@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.beacon.BeaconClientException;
 
@@ -36,7 +36,7 @@ public class BlobManager {
             } catch (IOException ignored) {
             }
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 

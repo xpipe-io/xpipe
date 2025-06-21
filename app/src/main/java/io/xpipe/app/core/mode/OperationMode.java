@@ -105,7 +105,7 @@ public abstract class OperationMode {
                     OperationMode.halt(1);
                 }
 
-                ErrorEvent.fromThrowable(ex).unhandled(true).build().handle();
+                ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
             });
 
             TrackEvent.info("Initial setup");
@@ -132,7 +132,7 @@ public abstract class OperationMode {
             });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).term().handle();
+            ErrorEventFactory.fromThrowable(ex).term().handle();
         }
     }
 
@@ -279,7 +279,7 @@ public abstract class OperationMode {
                 LocalShell.init();
                 r.run();
             } catch (Throwable ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 OperationMode.halt(1);
             }
 
@@ -340,7 +340,7 @@ public abstract class OperationMode {
                 }
                 CURRENT = null;
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).term().handle();
+                ErrorEventFactory.fromThrowable(t).term().handle();
                 OperationMode.halt(1);
             }
 
@@ -391,7 +391,7 @@ public abstract class OperationMode {
             }
             CURRENT = newMode;
         } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).terminal(true).build().handle();
+            ErrorEventFactory.fromThrowable(ex).terminal(true).build().handle();
         }
     }
 

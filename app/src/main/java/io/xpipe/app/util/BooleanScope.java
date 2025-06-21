@@ -3,8 +3,13 @@ package io.xpipe.app.util;
 import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 public class BooleanScope implements AutoCloseable {
+
+    public static BooleanScope noop() {
+        return new BooleanScope(new SimpleBooleanProperty());
+    }
 
     private final BooleanProperty prop;
     private boolean wait;

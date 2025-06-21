@@ -2,8 +2,6 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.core.process.OsType;
@@ -82,17 +80,6 @@ public class AppWindowHelper {
         alert.getDialogPane().setPrefWidth(505);
         alert.getDialogPane().setMaxWidth(505);
         alert.getDialogPane().setContent(AppWindowHelper.alertContentText(s));
-    }
-
-    public static boolean showConfirmationAlert(String title, String header, String content) {
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.titleProperty().bind(AppI18n.observable(title));
-                    alert.headerTextProperty().bind(AppI18n.observable(header));
-                    setContent(alert, AppI18n.get(content));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
     }
 
     @SneakyThrows

@@ -1,7 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.EncryptedValue;
@@ -32,7 +30,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         LocalIdentityStore st = (LocalIdentityStore) store.getValue();
 
-        var user = new SimpleStringProperty(st.getUsername());
+        var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
 
@@ -65,12 +63,6 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                         },
                         store)
                 .buildDialog();
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        var st = (LocalIdentityStore) wrapper.getStore().getValue();
-        return AppI18n.get("localIdentity");
     }
 
     @Override

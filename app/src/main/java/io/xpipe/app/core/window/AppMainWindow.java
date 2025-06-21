@@ -4,11 +4,10 @@ import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
@@ -52,7 +51,7 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+    private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
@@ -140,7 +139,7 @@ public class AppMainWindow {
         return getStage().outputScaleXProperty();
     }
 
-    public static synchronized void initContent() {
+    public void initContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             try {
                 TrackEvent.info("Window content node creation started");
@@ -149,7 +148,7 @@ public class AppMainWindow {
                 TrackEvent.info("Window content node structure created");
                 loadedContent.setValue(s);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).term().handle();
+                ErrorEventFactory.fromThrowable(t).term().handle();
             }
         });
     }
@@ -165,7 +164,8 @@ public class AppMainWindow {
     }
 
     public void focus() {
-        if (AppPrefs.get() != null && !AppPrefs.get().focusWindowOnNotifications().get()) {
+        if (AppPrefs.get() != null
+                && !AppPrefs.get().focusWindowOnNotifications().get()) {
             return;
         }
 
@@ -360,7 +360,7 @@ public class AppMainWindow {
                 try {
                     ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
                 TrackEvent.debug("Screenshot taken");
                 event.consume();

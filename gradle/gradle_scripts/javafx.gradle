@@ -27,7 +27,7 @@ if (rootProject.hasProperty("customJavaFxPath")) {
     dependencies {
         javafx fileTree(dir: customJavaFxPath, include: '*.jar')
     }
-} else {
+} else if (!bundledJdkJavaFx) {
     // Always use maven version for now
     dependencies {
         javafx "org.openjfx:javafx-base:${devJavafxVersion}:${platform}"

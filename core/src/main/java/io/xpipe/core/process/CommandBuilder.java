@@ -95,6 +95,13 @@ public class CommandBuilder {
         return this;
     }
 
+    public CommandBuilder addQuotedKeyValue(String key, String value) {
+        return add(sc -> {
+            var v = sc.getShellDialect().quoteArgument(value);
+            return key + "=" + v;
+        });
+    }
+
     public CommandBuilder add(int index, String... s) {
         for (String s1 : s) {
             elements.add(index++, new Fixed(s1));

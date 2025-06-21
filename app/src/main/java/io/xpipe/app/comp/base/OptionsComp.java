@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.util.Check;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -31,9 +31,11 @@ import java.util.List;
 @Getter
 public class OptionsComp extends Comp<CompStructure<VBox>> {
 
+    private final List<Check> checks;
     private final List<Entry> entries;
 
-    public OptionsComp(List<Entry> entries) {
+    public OptionsComp(List<Check> checks, List<Entry> entries) {
+        this.checks = checks;
         this.entries = entries;
     }
 
@@ -70,13 +72,13 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 if (compRegion != null) {
                     VBox.setVgrow(line, VBox.getVgrow(compRegion));
                     line.spacingProperty()
-                            .bind(PlatformThread.sync(Bindings.createDoubleBinding(
+                            .bind(Bindings.createDoubleBinding(
                                     () -> {
                                         return name.isManaged() ? 2.0 : 0.0;
                                     },
-                                    name.managedProperty())));
-                    name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                    name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                                    name.managedProperty()));
+                    name.visibleProperty().bind(compRegion.visibleProperty());
+                    name.managedProperty().bind(compRegion.managedProperty());
                 }
                 line.getChildren().add(name);
                 VBox.setMargin(name, new Insets(0, 0, 0, 1));
@@ -89,8 +91,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                     description.setAlignment(Pos.CENTER_LEFT);
                     description.setMinHeight(Region.USE_PREF_SIZE);
                     if (compRegion != null) {
-                        description.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                        description.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                        description.visibleProperty().bind(compRegion.visibleProperty());
+                        description.managedProperty().bind(compRegion.managedProperty());
                     }
 
                     if (entry.longDescription() != null) {
@@ -139,8 +141,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
 
                         if (compRegion != null) {
-                            descriptionBox.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                            descriptionBox.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                            descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
+                            descriptionBox.managedProperty().bind(compRegion.managedProperty());
                         }
                     } else {
                         line.getChildren().add(description);
@@ -152,7 +154,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 if (compRegion != null) {
                     compRegion.accessibleTextProperty().bind(name.textProperty());
                     if (entry.description() != null) {
-                        compRegion.accessibleHelpProperty().bind(PlatformThread.sync(entry.description()));
+                        compRegion.accessibleHelpProperty().bind(entry.description());
                     }
                     line.getChildren().add(compRegion);
                     compRegion.getStyleClass().add("options-content");
@@ -171,8 +173,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
                 if (compRegion != null) {
-                    name.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                    name.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                    name.visibleProperty().bind(compRegion.visibleProperty());
+                    name.managedProperty().bind(compRegion.managedProperty());
                 }
                 nameRegions.add(name);
                 line.getChildren().add(name);
@@ -195,15 +197,19 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 Spacer spacer = new Spacer(7, Orientation.VERTICAL);
                 pane.getChildren().add(spacer);
                 if (compRegion != null) {
-                    spacer.visibleProperty().bind(PlatformThread.sync(compRegion.visibleProperty()));
-                    spacer.managedProperty().bind(PlatformThread.sync(compRegion.managedProperty()));
+                    spacer.visibleProperty().bind(compRegion.visibleProperty());
+                    spacer.managedProperty().bind(compRegion.managedProperty());
                 }
             }
         }
 
         if (entries.size() == 1 && firstComp != null) {
-            pane.visibleProperty().bind(PlatformThread.sync(firstComp.visibleProperty()));
-            pane.managedProperty().bind(PlatformThread.sync(firstComp.managedProperty()));
+            firstComp.visibleProperty().subscribe(v -> {
+                pane.setVisible(v);
+            });
+            firstComp.managedProperty().subscribe(v -> {
+                pane.setManaged(v);
+            });
         }
 
         if (entries.stream().anyMatch(entry -> entry.name() != null && entry.description() == null)) {
@@ -221,8 +227,23 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
         Region finalFirstComp = firstComp;
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (finalFirstComp != null && newValue) {
-                finalFirstComp.requestFocus();
+            if (!newValue) {
+                return;
+            }
+
+            var failed = checks.stream()
+                    .filter(check -> check.getValidationResult().getMessages().size() > 0)
+                    .findFirst();
+            if (failed.isPresent()) {
+                var targets = failed.get().getTargets();
+                if (targets.size() > 0) {
+                    var r = targets.getFirst();
+                    r.requestFocus();
+                }
+            } else {
+                if (finalFirstComp != null) {
+                    finalFirstComp.requestFocus();
+                }
             }
         });
 

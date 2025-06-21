@@ -75,7 +75,7 @@ public class IncusContainerStore
                 refreshContainerState(
                         getInstall().getStore().getHost().getStore().getOrStartSession());
 
-                var user = identity != null ? identity.unwrap().getUsername() : null;
+                var user = identity != null ? identity.unwrap().getUsername().retrieveUsername() : null;
                 var sc = new IncusCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
                     var alpine = state.getOsName() != null

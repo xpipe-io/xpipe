@@ -42,7 +42,7 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
     }
 
     public IconButtonComp(ObservableValue<? extends LabelGraphic> icon, Runnable listener) {
-        this.icon = PlatformThread.sync(icon);
+        this.icon = icon;
         this.listener = listener;
     }
 
@@ -51,10 +51,12 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
         var button = new Button();
         button.getStyleClass().add(Styles.FLAT);
         icon.subscribe(labelGraphic -> {
-            button.setGraphic(labelGraphic.createGraphicNode());
-            if (button.getGraphic() instanceof FontIcon fi) {
-                fi.setIconSize((int) new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                button.setGraphic(labelGraphic.createGraphicNode());
+                if (button.getGraphic() instanceof FontIcon fi) {
+                    fi.setIconSize((int) new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
+                }
+            });
         });
         button.fontProperty().subscribe((n) -> {
             if (button.getGraphic() instanceof FontIcon fi) {

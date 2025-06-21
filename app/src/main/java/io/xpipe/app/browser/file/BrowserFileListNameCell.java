@@ -8,6 +8,7 @@ import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.FileKind;
+import io.xpipe.core.store.FilePath;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -58,7 +59,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         var textField = new LazyTextFieldComp(text)
                 .minWidth(USE_PREF_SIZE)
                 .createStructure()
-                .get();
+                .getTextField();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
         setupRename(fileList, textField, editing);
@@ -143,7 +144,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             getTableRow().requestFocus();
             var it = getTableRow().getItem();
             editing.setValue(null);
-            ThreadHelper.runAsync(() -> {
+            ThreadHelper.runFailableAsync(() -> {
                 if (it == null) {
                     return;
                 }
@@ -163,6 +164,21 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     textField.setDisable(false);
                     textField.requestFocus();
+
+                    var content = textField.getText();
+                    if (content != null && !content.isEmpty()) {
+                        var name = FilePath.of(content);
+                        var baseNameEnd = name.getBaseName().toString().length();
+                        textField.positionCaret(baseNameEnd);
+                    }
+                });
+            }
+        });
+
+        textField.disabledProperty().addListener((observable, oldValue, newValue) -> {
+            if (!oldValue && newValue) {
+                Platform.runLater(() -> {
+                    editing.setValue(null);
                 });
             }
         });

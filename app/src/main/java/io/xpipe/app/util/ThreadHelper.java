@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.FailableRunnable;
 
@@ -44,7 +44,7 @@ public class ThreadHelper {
             try {
                 r.run();
             } catch (Throwable e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         });
         t.setDaemon(true);
@@ -78,7 +78,7 @@ public class ThreadHelper {
                     runnable.run();
                     latch.countDown();
                 } catch (Throwable e) {
-                    ErrorEvent.fromThrowable(e).terminal(terminal).handle();
+                    ErrorEventFactory.fromThrowable(e).terminal(terminal).handle();
                     latch.countDown();
                 }
             });

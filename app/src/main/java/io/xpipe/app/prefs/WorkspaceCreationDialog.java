@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.XPipeInstallation;
@@ -63,7 +63,7 @@ public class WorkspaceCreationDialog {
                 DesktopHelper.browseFileInDirectory(file);
                 OperationMode.close();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }));
         modal.show();

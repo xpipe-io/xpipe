@@ -3,10 +3,11 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
@@ -23,8 +24,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-
 import javafx.util.Duration;
+
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
             b.tooltipKey("updateAvailableTooltip").accessibleTextKey("updateAvailableTooltip");
             var stack = createStyle(null, b);
-            stack.hide(PlatformThread.sync(Bindings.createBooleanBinding(
+            stack.hide(Bindings.createBooleanBinding(
                     () -> {
                         return AppDistributionType.get()
                                         .getUpdateHandler()
@@ -73,7 +74,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                         .getValue()
                                 == null;
                     },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
             vbox.getChildren().add(stack.createRegion());
         }
 
@@ -117,6 +118,14 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         vbox.getChildren().add(queueButtons);
         vbox.setMinHeight(0);
         vbox.setPrefHeight(0);
+
+        vbox.opacityProperty()
+                .bind(Bindings.createDoubleBinding(
+                        () -> {
+                            var modals = !AppDialog.getModalOverlays().isEmpty();
+                            return modals ? 0.5 : 1.0;
+                        },
+                        AppDialog.getModalOverlays()));
 
         return new SimpleCompStructure<>(vbox);
     }

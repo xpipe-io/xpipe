@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
@@ -84,11 +84,6 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
         ScriptGroupStore scriptStore =
                 section.getWrapper().getEntry().getStore().asNeeded();
         return new SimpleStringProperty(scriptStore.getDescription());
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        return "Script group";
     }
 
     @Override

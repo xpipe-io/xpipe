@@ -11,8 +11,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 
-import lombok.val;
-
 public class AppPrefsComp extends SimpleComp {
 
     @Override

@@ -1,9 +1,5 @@
 package io.xpipe.core.util;
 
-import io.xpipe.core.dialog.BaseQueryElement;
-import io.xpipe.core.dialog.BusyElement;
-import io.xpipe.core.dialog.ChoiceElement;
-import io.xpipe.core.dialog.HeaderElement;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialect;
 import io.xpipe.core.process.ShellDialects;
@@ -30,12 +26,7 @@ public class CoreJacksonModule extends SimpleModule {
 
     @Override
     public void setupModule(SetupContext context) {
-        context.registerSubtypes(
-                new NamedType(InPlaceSecretValue.class),
-                new NamedType(BaseQueryElement.class),
-                new NamedType(ChoiceElement.class),
-                new NamedType(BusyElement.class),
-                new NamedType(HeaderElement.class));
+        context.registerSubtypes(new NamedType(InPlaceSecretValue.class));
 
         for (ShellDialect t : ShellDialects.ALL) {
             context.registerSubtypes(new NamedType(t.getClass()));

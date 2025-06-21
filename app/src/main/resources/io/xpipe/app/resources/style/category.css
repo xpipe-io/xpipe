@@ -7,11 +7,8 @@
     -fx-background-insets: 0;
 }
 
-.category-button .name {
+.category-button .name .text-field {
     -fx-padding: 0.25em 0.1em;
-}
-
-.category-button .text-field {
     -fx-background-color: transparent;
 }
 

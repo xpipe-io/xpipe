@@ -61,6 +61,12 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
         var vbox = new VBox(transformer.apply(cb));
         vbox.setFillWidth(true);
+        vbox.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                vbox.getChildren().getFirst().requestFocus();
+            }
+        });
+
         cb.prefWidthProperty().bind(vbox.widthProperty());
         cb.valueProperty().subscribe(n -> {
             if (n == null) {

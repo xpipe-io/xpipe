@@ -2,16 +2,14 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.util.ModuleLayerLoader;
 import io.xpipe.core.util.XPipeInstallation;
 
 import lombok.Getter;
-import lombok.Value;
 
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
@@ -19,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -46,7 +43,7 @@ public class AppExtensionManager {
         try {
             ProcessControlProvider.init(INSTANCE.extendedLayer);
             ModuleLayerLoader.loadAll(INSTANCE.extendedLayer, t -> {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             });
         } catch (Throwable t) {
             throw ExtensionException.corrupt("Service provider initialization failed", t);
@@ -112,8 +109,7 @@ public class AppExtensionManager {
 
     public Set<Module> getContentModules() {
         return Stream.concat(
-                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()),
-                        loadedModules.stream())
+                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()), loadedModules.stream())
                 .collect(Collectors.toSet());
     }
 
@@ -137,11 +133,11 @@ public class AppExtensionManager {
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
                     extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
-            ModuleAccess.exportAndOpen(ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
+            ModuleAccess.exportAndOpen(
+                    ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
                     extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
         }
-
     }
 
     private Optional<Module> findAndParseExtension(String name, ModuleLayer parent) {
@@ -190,7 +186,7 @@ public class AppExtensionManager {
                 return Optional.of(mod);
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t)
+            ErrorEventFactory.fromThrowable(t)
                     .description("Unable to load extension from " + dir + ". Is the installation corrupted?")
                     .handle();
         }

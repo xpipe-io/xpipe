@@ -82,7 +82,9 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
             if (ls == null) {
                 ls = List.of();
             }
-            var valid = ls.stream().filter(entry -> entry.getUuid() != null && entry.getPath() != null).toList();
+            var valid = ls.stream()
+                    .filter(entry -> entry.getUuid() != null && entry.getPath() != null)
+                    .toList();
             return new BrowserHistorySavedStateImpl(valid);
         }
     }

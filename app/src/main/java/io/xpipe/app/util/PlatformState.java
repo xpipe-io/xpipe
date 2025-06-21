@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.process.OsType;
 
@@ -31,7 +31,7 @@ public enum PlatformState {
 
     public static Throwable getLastError() {
         if (expectedError) {
-            ErrorEvent.expected(lastError);
+            ErrorEventFactory.expected(lastError);
         }
         return lastError;
     }

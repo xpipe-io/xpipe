@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.CommandBuilder;
 
@@ -8,11 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
-
-    public MobaXTermTerminalType() {
-        super("app.mobaXterm", "MobaXterm");
-    }
+public class MobaXTermTerminalType implements ExternalApplicationType.WindowsType, ExternalTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -20,14 +17,24 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    protected Optional<Path> determineInstallation() {
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
+    public String getExecutable() {
+        return "MobaXterm";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
         try {
             var r = WindowsRegistry.local()
                     .readStringValueIfPresent(
                             WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
             return r.map(Path::of);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return Optional.empty();
         }
     }
@@ -43,12 +50,7 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://mobaxterm.mobatek.net/";
-    }
-
-    @Override
-    protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell()) {
             SshLocalBridge.init();
             var b = SshLocalBridge.get();
@@ -69,11 +71,17 @@ public class MobaXTermTerminalType extends ExternalTerminalType.WindowsType {
             var script = ShellTemp.getLocalTempDataDirectory("mobaxpipe.sh");
             Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
             var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
-            sc.command(CommandBuilder.of()
-                            .addFile(file.toString())
-                            .add("-newtab")
-                            .add(fixedFile))
-                    .execute();
+            launch(CommandBuilder.of().add("-newtab").add(fixedFile));
         }
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://mobaxterm.mobatek.net/";
+    }
+
+    @Override
+    public String getId() {
+        return "app.mobaXterm";
     }
 }

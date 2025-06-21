@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.PlatformState;
@@ -79,12 +79,15 @@ public class AppDesktopIntegration {
                             Taskbar.getTaskbar().setIconImage(awtIcon);
                         }
                     } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).omitted(true).build().handle();
+                        ErrorEventFactory.fromThrowable(ex)
+                                .omitted(true)
+                                .build()
+                                .handle();
                     }
                 }
             }
         } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).term().handle();
+            ErrorEventFactory.fromThrowable(ex).term().handle();
         }
     }
 }

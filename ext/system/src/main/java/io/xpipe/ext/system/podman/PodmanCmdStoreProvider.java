@@ -1,16 +1,15 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.StoreEntryComp;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreSection;
-import io.xpipe.app.comp.store.StoreToggleComp;
-import io.xpipe.app.comp.store.SystemStateComp;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
+import io.xpipe.app.hub.comp.StoreEntryComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.hub.comp.StoreToggleComp;
+import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.store.DataStore;
 
@@ -54,11 +53,6 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         PodmanCmdStore s = store.getStore().asNeeded();
         return s.getHost().get();
-    }
-
-    public String summaryString(StoreEntryWrapper wrapper) {
-        PodmanCmdStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " containers";
     }
 
     @Override

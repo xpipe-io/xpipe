@@ -1,11 +1,12 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.password.PasswordManager;
+import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
+import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.core.util.InPlaceSecretValue;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -47,6 +48,7 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());
+        context.registerSubtypes(ExternalVncClient.getClasses());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
@@ -222,10 +224,7 @@ public class AppJacksonModule extends SimpleModule {
                 return;
             }
 
-            jgen.writeStartObject();
-            jgen.writeFieldName("storeId");
             jgen.writeString(value.get().getUuid().toString());
-            jgen.writeEndObject();
         }
     }
 
@@ -233,14 +232,23 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var obj = (ObjectNode) p.getCodec().readTree(p);
-            if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
-                return null;
-            }
+            JsonNode tree = p.getCodec().readTree(p);
+            String text;
+            if (tree.isObject()) {
+                var obj = (ObjectNode) tree;
+                if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
+                    return null;
+                }
 
-            var text = obj.required("storeId").asText();
-            if (text.isBlank()) {
-                return null;
+                text = obj.required("storeId").asText();
+                if (text.isBlank()) {
+                    return null;
+                }
+            } else {
+                if (!tree.isTextual()) {
+                    return null;
+                }
+                text = tree.asText();
             }
 
             var id = UUID.fromString(text);
@@ -254,13 +262,7 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
-            // Compatibility fix for legacy local stores
-            var toUse = e.getStore() instanceof LocalStore ? DataStorage.get().local() : e;
-            if (toUse == null) {
-                return null;
-            }
-
-            return new DataStoreEntryRef<>(toUse);
+            return new DataStoreEntryRef<>(e);
         }
     }
 }

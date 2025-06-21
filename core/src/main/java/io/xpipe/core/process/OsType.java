@@ -68,8 +68,8 @@ public interface OsType {
                 return profile;
             }
 
-            var name = pc.executeSimpleStringCommand(
-                    pc.getShellDialect().getPrintEnvironmentVariableCommand("USERNAME"));
+            var name =
+                    pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("USERNAME"));
             if (!name.isEmpty()) {
                 return "C:\\Users\\" + name;
             }

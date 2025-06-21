@@ -17,6 +17,8 @@ public interface DataStorageSyncHandler {
 
     boolean supportsSync();
 
+    boolean hasExternalStoredCredentials();
+
     void init();
 
     void retrieveSyncedData();

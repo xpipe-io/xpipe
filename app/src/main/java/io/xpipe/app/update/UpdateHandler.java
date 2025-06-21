@@ -4,7 +4,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
@@ -107,10 +107,11 @@ public abstract class UpdateHandler {
                     var run = !AppProperties.get().isRestarted();
                     while (true) {
                         if (run
-                                && (AppPrefs.get() != null && (AppPrefs.get().automaticallyUpdate().get()
-                                        || AppPrefs.get()
-                                                .checkForSecurityUpdates()
-                                                .get()))) {
+                                && (AppPrefs.get() != null
+                                        && (AppPrefs.get().automaticallyUpdate().get()
+                                                || AppPrefs.get()
+                                                        .checkForSecurityUpdates()
+                                                        .get()))) {
                             event("Performing background update");
                             refreshUpdateCheckSilent(
                                     !checked,
@@ -152,7 +153,7 @@ public abstract class UpdateHandler {
         try {
             return refreshUpdateCheck(first, securityOnly);
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).discard().handle();
+            ErrorEventFactory.fromThrowable(ex).discard().handle();
             return null;
         }
     }
@@ -189,7 +190,7 @@ public abstract class UpdateHandler {
                 UpdateAvailableDialog.showIfNeeded(false);
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
         }
     }
 

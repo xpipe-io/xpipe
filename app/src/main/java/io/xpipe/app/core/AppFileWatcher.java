@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -53,7 +53,7 @@ public class AppFileWatcher {
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to initialize file watcher. Watching and updating files in the file browser will be unavailable.",
                             e)
                     .expected()
@@ -79,7 +79,7 @@ public class AppFileWatcher {
                     break;
                 } catch (Exception ex) {
                     // Catch all other exceptions to not terminate this thread if an error occurs!
-                    ErrorEvent.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
 
                 // Don't sleep, since polling the directories always sleeps for some ms
@@ -100,13 +100,13 @@ public class AppFileWatcher {
         try {
             watchService.close();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
         }
 
         try {
             watcherThread.join();
         } catch (InterruptedException e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
         }
     }
 
@@ -132,7 +132,7 @@ public class AppFileWatcher {
                 dir.register(AppFileWatcher.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
                 Files.list(dir).filter(Files::isDirectory).forEach(this::createRecursiveWatchers);
             } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).omit().handle();
+                ErrorEventFactory.fromThrowable(e).omit().handle();
             }
         }
 
@@ -176,7 +176,7 @@ public class AppFileWatcher {
                 try {
                     file.register(AppFileWatcher.this.watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                 }
             }
 

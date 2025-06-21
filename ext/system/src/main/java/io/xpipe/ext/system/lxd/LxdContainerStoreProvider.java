@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.store.DataStore;
@@ -83,13 +83,6 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                         store)
                 .buildDialog();
         return q;
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        LxdContainerStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(
-                        s.getCmd().getStore().getHost().get()) + " container";
     }
 
     @Override

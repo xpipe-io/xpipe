@@ -1,18 +1,17 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.store.DataStore;
+import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
@@ -27,20 +26,16 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public ActionProvider.Action launchAction(DataStoreEntry store) {
-        return new ActionProvider.Action() {
-
-            @Override
-            public void execute() throws Exception {
-                AbstractServiceStore serviceStore = store.getStore().asNeeded();
-                serviceStore.startSessionIfNeeded();
-                var l = serviceStore.requiresTunnel()
-                        ? serviceStore.getSession().getLocalPort()
-                        : serviceStore.getRemotePort();
-                var base = "localhost:" + l;
-                var full = serviceStore.getServiceProtocolType().formatAddress(base);
-                serviceStore.getServiceProtocolType().open(full);
-            }
+    public FailableRunnable<Exception> launch(DataStoreEntry store) {
+        return () -> {
+            AbstractServiceStore serviceStore = store.getStore().asNeeded();
+            serviceStore.startSessionIfNeeded();
+            var l = serviceStore.requiresTunnel()
+                    ? serviceStore.getSession().getLocalPort()
+                    : serviceStore.getRemotePort();
+            var base = "localhost:" + l;
+            var full = serviceStore.getServiceProtocolType().formatAddress(base);
+            serviceStore.getServiceProtocolType().open(full);
         };
     }
 
@@ -113,16 +108,11 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        AbstractServiceStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " service";
-    }
-
-    @Override
     public ObservableValue<String> informationString(StoreSection section) {
         return Bindings.createStringBinding(
                 () -> {
-                    AbstractServiceStore s = section.getWrapper().getEntry().getStore().asNeeded();
+                    AbstractServiceStore s =
+                            section.getWrapper().getEntry().getStore().asNeeded();
                     var desc = formatService(s);
                     var type = s.getServiceProtocolType() != null
                                     && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)

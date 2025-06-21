@@ -1,7 +1,7 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.NativeBridge;
 
 import javafx.stage.Window;
@@ -44,7 +44,7 @@ public class NativeMacOsWindowControl {
         try {
             lib.get().setAppearance(new NativeLong(nsWindow), seamlessFrame, darkMode);
         } catch (Throwable e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
         return true;
     }

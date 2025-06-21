@@ -1,6 +1,5 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.core.util.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,9 +27,6 @@ public class DataStoreCategory extends StorageElement {
     UUID parentCategory;
 
     @NonFinal
-    StoreSortMode sortMode;
-
-    @NonFinal
     DataStoreCategoryConfig config;
 
     public DataStoreCategory(
@@ -41,12 +37,10 @@ public class DataStoreCategory extends StorageElement {
             Instant lastModified,
             boolean dirty,
             UUID parentCategory,
-            StoreSortMode sortMode,
             boolean expanded,
             DataStoreCategoryConfig config) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.parentCategory = parentCategory;
-        this.sortMode = sortMode;
         this.config = config;
     }
 
@@ -59,7 +53,6 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.getDefault(),
                 true,
                 DataStoreCategoryConfig.empty());
     }
@@ -73,7 +66,6 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.getDefault(),
                 true,
                 DataStoreCategoryConfig.empty());
     }
@@ -98,10 +90,6 @@ public class DataStoreCategory extends StorageElement {
                 .orElse(null);
         var name = json.required("name").textValue();
 
-        var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
-                .map(JsonNode::asText)
-                .flatMap(string -> StoreSortMode.fromId(string))
-                .orElse(StoreSortMode.getDefault());
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
@@ -141,16 +129,8 @@ public class DataStoreCategory extends StorageElement {
             config = config.withColor(color);
         }
 
-        return Optional.of(new DataStoreCategory(
-                dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, expanded, config));
-    }
-
-    public void setSortMode(StoreSortMode sortMode) {
-        var changed = this.sortMode != sortMode;
-        if (changed) {
-            this.sortMode = sortMode;
-            notifyUpdate(false, true);
-        }
+        return Optional.of(
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {
@@ -202,7 +182,6 @@ public class DataStoreCategory extends StorageElement {
         obj.put("name", name);
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
-        stateObj.put("sortMode", sortMode.getId());
         stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
         obj.set("config", JacksonMapper.getDefault().valueToTree(config));

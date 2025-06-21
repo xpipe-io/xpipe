@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.PlatformThread;
 
@@ -73,7 +73,8 @@ public final class BrowserConnectionListComp extends SimpleComp {
                         filter,
                         category,
                         StoreViewState.get().getEntriesListVisibilityObservable(),
-                        StoreViewState.get().getEntriesListUpdateObservable()),
+                        StoreViewState.get().getEntriesListUpdateObservable(),
+                        new ReadOnlyBooleanWrapper(true)),
                 augment,
                 selectedAction -> {
                     BooleanProperty busy = new SimpleBooleanProperty(false);

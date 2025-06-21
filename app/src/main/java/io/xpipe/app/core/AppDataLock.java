@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 
 import org.apache.commons.io.FileUtils;
 
@@ -37,7 +37,7 @@ public class AppDataLock {
             lock = channel.tryLock();
             return lock != null;
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).build().handle();
+            ErrorEventFactory.fromThrowable(ex).build().handle();
             return false;
         }
     }
@@ -53,7 +53,7 @@ public class AppDataLock {
             lock = null;
             channel = null;
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).build().handle();
+            ErrorEventFactory.fromThrowable(ex).build().handle();
         }
     }
 }

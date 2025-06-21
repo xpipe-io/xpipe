@@ -1,7 +1,7 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
@@ -97,7 +97,7 @@ public interface SystemIconSource {
                 if (!present) {
                     var msg =
                             "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
-                    ErrorEvent.fromMessage(msg).expected().handle();
+                    ErrorEventFactory.fromMessage(msg).expected().handle();
                     return;
                 }
 

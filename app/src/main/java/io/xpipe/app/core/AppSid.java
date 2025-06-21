@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.process.OsType;
 
@@ -28,7 +28,7 @@ public class AppSid {
                 hasSetsid = p.exitValue() == 0;
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
 
         if (hasSetsid) {
@@ -50,7 +50,7 @@ public class AppSid {
             func.invoke(new Object[0]);
             TrackEvent.info("Successfully set process sid");
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
     }
 }

@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.JacksonMapper;
 
@@ -47,15 +47,11 @@ public class AppPrefsStorageHandler {
         if (content == null) {
             if (Files.exists(file)) {
                 try {
-                    var s = Files.readString(file);
-                    if (!s.isEmpty()) {
-                        var read = JacksonMapper.getDefault().readTree(s);
-                        if (read.isObject()) {
-                            content = (ObjectNode) read;
-                        }
-                    }
+                    ObjectMapper o = JacksonMapper.getDefault();
+                    var read = o.readTree(Files.readAllBytes(file));
+                    content = read.isObject() ? (ObjectNode) read : null;
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
             }
 
@@ -156,7 +152,7 @@ public class AppPrefsStorageHandler {
             }
             return value;
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
             return defaultObject;
         }
     }
