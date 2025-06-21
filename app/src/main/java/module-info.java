@@ -91,6 +91,9 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
     requires com.github.weisj.jsvg;
+    requires java.net.http;
+    requires org.bouncycastle.provider;
+    requires org.jetbrains.annotations;
 
     // Required runtime modules
     requires jdk.charsets;
@@ -100,12 +103,6 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.materialdesign2;
     requires jdk.zipfs;
-
-    // For debugging
-    requires jdk.jdwp.agent;
-    requires java.net.http;
-    requires org.bouncycastle.provider;
-    requires org.jetbrains.annotations;
 
     uses TerminalLauncher;
     uses ActionProvider;

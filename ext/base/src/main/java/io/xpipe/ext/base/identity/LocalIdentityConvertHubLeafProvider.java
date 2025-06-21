@@ -17,7 +17,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LocalIdentityConvertActionProvider implements HubLeafProvider<LocalIdentityStore> {
+public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<LocalIdentityStore> {
 
     @Override
     public StoreActionCategory getCategory() {

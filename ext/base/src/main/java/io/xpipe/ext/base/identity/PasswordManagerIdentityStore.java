@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.PasswordManager;
@@ -23,9 +24,10 @@ import java.time.Instant;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PasswordManagerIdentityStore extends IdentityStore implements InternalCacheDataStore, ValidatableStore {
+public class PasswordManagerIdentityStore extends IdentityStore implements InternalCacheDataStore, ValidatableStore, UserScopeStore {
 
     String key;
+    boolean perUser;
 
     @Override
     public void checkComplete() throws Throwable {

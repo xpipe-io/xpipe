@@ -4,15 +4,19 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider {
 
@@ -26,12 +30,19 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
         PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store.getValue();
 
         var key = new SimpleStringProperty(st.getKey());
+        var perUser = new SimpleBooleanProperty(st.isPerUser());
 
         var comp = new PasswordManagerTestComp(key, false);
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKey")
                 .addComp(comp.hgrow(), key)
                 .nonNull()
+                .nameAndDescription(
+                        DataStorageUserHandler.getInstance().getActiveUser() != null
+                                ? "identityPerUser"
+                                : "identityPerUserDisabled")
+                .addToggle(perUser)
+                .disable(DataStorageUserHandler.getInstance().getActiveUser() == null)
                 .bind(
                         () -> {
                             return PasswordManagerIdentityStore.builder()

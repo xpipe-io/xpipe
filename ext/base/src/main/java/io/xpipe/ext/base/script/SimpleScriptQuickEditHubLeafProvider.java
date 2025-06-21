@@ -19,7 +19,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.Arrays;
 
-public class SimpleScriptQuickEditActionProvider implements HubLeafProvider<SimpleScriptStore> {
+public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<SimpleScriptStore> {
 
     @Override
     public StoreActionCategory getCategory() {

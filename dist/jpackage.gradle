@@ -81,6 +81,10 @@ jlink {
         addOptions("--add-modules", "io.xpipe.ext.${extProject.name}")
     }
 
+    if (fullVersion && !isStage && !isFullRelease) {
+        addOptions("--add-modules", "jdk.jdwp.agent")
+    }
+
     launcher {
         moduleName = 'io.xpipe.app'
         mainClassName = 'io.xpipe.app.Main'

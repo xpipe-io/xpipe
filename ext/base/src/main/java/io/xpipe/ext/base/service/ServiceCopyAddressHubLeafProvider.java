@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ServiceCopyAddressActionProvider implements HubLeafProvider<AbstractServiceStore> {
+public class ServiceCopyAddressHubLeafProvider implements HubLeafProvider<AbstractServiceStore> {
 
     @Override
     public StoreActionCategory getCategory() {

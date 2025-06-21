@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ServiceRefreshActionProvider
+public class ServiceRefreshHubProvider
         implements HubLeafProvider<FixedServiceCreatorStore>, BatchHubProvider<FixedServiceCreatorStore> {
 
     @Override

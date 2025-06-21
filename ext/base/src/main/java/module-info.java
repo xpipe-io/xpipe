@@ -30,16 +30,16 @@ open module io.xpipe.ext.base {
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
 
-    provides ActionProvider with
-            LocalIdentityConvertActionProvider,
-            SimpleScriptQuickEditActionProvider,
+    provides ActionProvider with LocalIdentityConvertHubLeafProvider,
+            RunBackgroundScriptActionProvider,
+            RunHubBatchScriptActionProvider,
+            RunHubScriptActionProvider,
+            RunTerminalScriptActionProvider, SimpleScriptQuickEditHubLeafProvider,
             StoreStartActionProvider,
             StoreStopActionProvider,
             StorePauseActionProvider,
-            StoreRestartActionProvider,
-            ServiceCopyAddressActionProvider,
-            RunScriptActionProviderMenu,
-            ServiceRefreshActionProvider,
+            StoreRestartActionProvider, ServiceCopyAddressHubLeafProvider,
+            RunScriptActionProviderMenu, ServiceRefreshHubProvider,
             RunFileScriptMenuProvider;
     provides DataStoreProvider with
             FixedServiceGroupStoreProvider,
