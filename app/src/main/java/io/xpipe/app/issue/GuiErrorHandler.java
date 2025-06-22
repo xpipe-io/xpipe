@@ -32,9 +32,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
                 AppLayoutModel.get().showQueueEntry(
                         new AppLayoutModel.QueueEntry(AppI18n.observable("errorOccurred"), new LabelGraphic.IconGraphic("mdoal-error_outline"),
                                 () -> {
-                                    ThreadHelper.runAsync(() -> {
-                                        handleGui(event);
-                                    });
+                                    handleGui(event);
                                 }), Duration.ofSeconds(10), true);
             }
             return;

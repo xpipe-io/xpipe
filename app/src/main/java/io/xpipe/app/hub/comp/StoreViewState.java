@@ -315,10 +315,12 @@ public class StoreViewState {
             @Override
             public void onStoreAdd(DataStoreEntry... entry) {
                 Platform.runLater(() -> {
-                    var l = Arrays.stream(entry)
+                    // Some entries might already be removed again
+                    var wrappers = Arrays.stream(entry)
                             .map(StoreEntryWrapper::new)
-                            .peek(storeEntryWrapper -> storeEntryWrapper.update())
+                            .filter(storeEntryWrapper -> DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
                             .toList();
+                    wrappers.forEach(StoreEntryWrapper::update);
 
                     // Don't update anything if we have already reset
                     if (INSTANCE == null) {
@@ -326,7 +328,7 @@ public class StoreViewState {
                     }
 
                     synchronized (this) {
-                        allEntries.getList().addAll(l);
+                        allEntries.getList().addAll(wrappers);
                     }
                     synchronized (this) {
                         categories.getList().stream()
@@ -339,7 +341,7 @@ public class StoreViewState {
                                                         .getUuid())))
                                 .forEach(storeCategoryWrapper -> storeCategoryWrapper.update());
                     }
-                    l.forEach(storeEntryWrapper -> storeEntryWrapper.update());
+                    wrappers.forEach(storeEntryWrapper -> storeEntryWrapper.update());
                 });
             }
 

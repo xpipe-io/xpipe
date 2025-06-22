@@ -12,6 +12,7 @@ import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -100,14 +101,25 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 queueButtons.getChildren().clear();
                 for (int i = c.getList().size() - 1; i >= 0; i--) {
                     var item = c.getList().get(i);
-                    var b = new IconButtonComp(item.getIcon(), () -> {
-                        item.getAction().run();
-                        queueEntries.remove(item);
-                    });
+                    var b = new IconButtonComp(item.getIcon(), null);
                     b.apply(struc -> {
                         var tt = TooltipHelper.create(item.getName(), null);
                         tt.setShowDelay(Duration.millis(50));
                         Tooltip.install(struc.get(), tt);
+
+                        struc.get().setOnAction(e -> {
+                            struc.get().setDisable(true);
+                            ThreadHelper.runAsync(() -> {
+                                try {
+                                    item.getAction().run();
+                                } finally {
+                                    Platform.runLater(() -> {
+                                        queueEntries.remove(item);
+                                    });
+                                }
+                            });
+                            e.consume();
+                        });
                     });
                     b.accessibleText(item.getName());
                     var stack = createStyle(null, b);

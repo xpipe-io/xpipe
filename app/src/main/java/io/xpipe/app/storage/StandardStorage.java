@@ -297,7 +297,7 @@ public class StandardStorage extends DataStorage {
         directoriesToKeep.addAll(toRemove.stream()
                 .map(dataStoreEntry -> dataStoreEntry.getDirectory())
                 .toList());
-        toRemove.forEach(storeEntries::remove);
+        toRemove.forEach(this::deleteStoreEntry);
     }
 
     private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {

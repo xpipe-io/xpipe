@@ -15,6 +15,7 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
@@ -371,7 +372,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 items.add(item);
             }
 
-            if (cat == StoreActionCategory.CONFIGURATION) {
+            if (cat == StoreActionCategory.CONFIGURATION && getWrapper().getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED) {
                 var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
                 rename.setOnAction(event -> {
                     name.requestFocus();
