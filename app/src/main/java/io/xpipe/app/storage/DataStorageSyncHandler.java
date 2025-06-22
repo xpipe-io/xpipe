@@ -35,7 +35,7 @@ public interface DataStorageSyncHandler {
 
     void handleDeletion(Path target, String name);
 
-    void initTeamVault();
+    void initWatcher();
 
     Path getDirectory();
 

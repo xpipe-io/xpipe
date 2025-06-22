@@ -144,6 +144,12 @@ public class DataStoreCategory extends StorageElement {
         return false;
     }
 
+    public boolean isChangedForReload(DataStoreCategory other) {
+        return !Objects.equals(getName(), other.getName())
+                || !Objects.equals(getConfig(), other.getConfig())
+                || !Objects.equals(getParentCategory(), other.getParentCategory());
+    }
+
     public void setParentCategory(UUID parentCategory) {
         var changed = !Objects.equals(this.parentCategory, parentCategory);
         this.parentCategory = parentCategory;

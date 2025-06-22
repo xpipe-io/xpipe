@@ -227,6 +227,12 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
         var name = json.required("name").textValue().strip();
+
+        // Fix for legacy issue where entries could have empty names
+        if (name.isBlank()) {
+            return Optional.empty();
+        }
+
         var color = Optional.ofNullable(json.get("color"))
                 .map(node -> {
                     try {
@@ -340,6 +346,16 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public boolean isChangedForReload(DataStoreEntry other) {
+        return !Objects.equals(getStore(), other.getStore())
+                || !Objects.equals(getName(), other.getName())
+                || !Objects.equals(getNotes(), other.getNotes())
+                || !Objects.equals(getColor(), other.getColor())
+                || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
+                || !Objects.equals(getOrderIndex(), other.getOrderIndex())
+                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
     }
 
     public boolean isPerUserStore() {
@@ -612,7 +628,7 @@ public class DataStoreEntry extends StorageElement {
             store = null;
             validity = Validity.LOAD_FAILED;
             if (changed) {
-                notifyUpdate(false, true);
+                notifyUpdate(false, false);
             }
             return;
         }
@@ -623,7 +639,7 @@ public class DataStoreEntry extends StorageElement {
             validity = Validity.INCOMPLETE;
             store = newStore;
             if (storeChanged) {
-                notifyUpdate(false, true);
+                notifyUpdate(false, false);
             }
             return;
         }
@@ -639,7 +655,7 @@ public class DataStoreEntry extends StorageElement {
         }
         validity = Validity.COMPLETE;
         if (storeChanged || perUserChanged) {
-            notifyUpdate(false, true);
+            notifyUpdate(false, false);
         }
     }
 
