@@ -22,7 +22,7 @@ public class DelayedInitComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var stack = new StackPane();
-        GlobalTimer.scheduleUntil(Duration.ofMillis(10), () -> {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(10), true, () -> {
             if (!condition.get()) {
                 return false;
             }

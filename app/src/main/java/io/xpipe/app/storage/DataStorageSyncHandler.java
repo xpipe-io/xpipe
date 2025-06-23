@@ -23,6 +23,8 @@ public interface DataStorageSyncHandler {
 
     void retrieveSyncedData();
 
+    void refreshRemoteData();
+
     void afterStorageLoad();
 
     void beforeStorageSave();
@@ -34,8 +36,6 @@ public interface DataStorageSyncHandler {
     void handleCategory(DataStoreCategory category, boolean exists, boolean dirty);
 
     void handleDeletion(Path target, String name);
-
-    void initWatcher();
 
     Path getDirectory();
 

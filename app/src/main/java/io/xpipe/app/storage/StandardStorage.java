@@ -6,6 +6,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionKey;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -83,14 +85,26 @@ public class StandardStorage extends DataStorage {
                     .handle();
         }
         dataStorageUserHandler.login();
-        dataStorageSyncHandler.initWatcher();
 
         reloadContent();
 
         busyIo.unlock();
 
+        startSyncWatcher();
+
         // Full save on initial load
         saveAsync();
+    }
+
+    private void startSyncWatcher() {
+        GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
+            ThreadHelper.runAsync(() -> {
+                busyIo.lock();
+                dataStorageSyncHandler.refreshRemoteData();
+                busyIo.unlock();
+            });
+            return false;
+        });
     }
 
     public void reloadContent() {

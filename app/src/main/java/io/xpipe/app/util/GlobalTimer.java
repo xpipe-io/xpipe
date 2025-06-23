@@ -24,7 +24,7 @@ public class GlobalTimer {
         TIMER = null;
     }
 
-    public static void scheduleUntil(Duration interval, Supplier<Boolean> s) {
+    public static void scheduleUntil(Duration interval, boolean runInstantly, Supplier<Boolean> s) {
         var task = new TimerTask() {
             @Override
             public void run() {
@@ -35,7 +35,7 @@ public class GlobalTimer {
                 cancel();
             }
         };
-        TIMER.scheduleAtFixedRate(task, 0, interval.toMillis());
+        TIMER.scheduleAtFixedRate(task, runInstantly ? 0 : interval.toMillis(), interval.toMillis());
     }
 
     public static void delay(Runnable r, Duration delay) {

@@ -19,7 +19,7 @@ public abstract class Session implements AutoCloseable {
     }
 
     protected void startAliveListener() {
-        GlobalTimer.scheduleUntil(Duration.ofMillis(5000), () -> {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(5000), true, () -> {
             if (!isRunning()) {
                 return true;
             }
