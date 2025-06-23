@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 public class Hyperlinks {
 
-    public static final String DOCS = "https://docs.xpipe.io";
     public static final String GITHUB = "https://github.com/xpipe-io/xpipe";
     public static final String GITHUB_PTB = "https://github.com/xpipe-io/xpipe-ptb";
     public static final String GITHUB_LATEST = "https://github.com/xpipe-io/xpipe/releases/latest";

@@ -1,5 +1,7 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppProperties;
+
 public enum DocumentationLink {
     INDEX(""),
     API("api"),
@@ -56,10 +58,14 @@ public enum DocumentationLink {
     }
 
     public void open() {
-        Hyperlinks.open("https://docs.xpipe.io/" + page);
+        Hyperlinks.open(getLink());
     }
 
     public String getLink() {
-        return "https://docs.xpipe.io/" + page;
+        return getRoot() + "/" + page;
+    }
+
+    public static String getRoot() {
+        return AppProperties.get().isStaging() ? "https://docs-ptb.xpipe.io/" : "https://docs.xpipe.io/";
     }
 }

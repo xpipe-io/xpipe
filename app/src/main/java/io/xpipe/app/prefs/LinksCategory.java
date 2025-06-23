@@ -24,7 +24,7 @@ public class LinksCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp(
                                         "documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
-                                            Hyperlinks.open(Hyperlinks.DOCS);
+                                            Hyperlinks.open(DocumentationLink.getRoot());
                                             e.consume();
                                         })
                                 .grow(true, false),

@@ -138,7 +138,7 @@ public class AppLayoutModel {
                         AppI18n.observable("docs"),
                         new LabelGraphic.IconGraphic("mdi2b-book-open-variant"),
                         null,
-                        () -> Hyperlinks.open(Hyperlinks.DOCS),
+                        () -> Hyperlinks.open(DocumentationLink.getRoot()),
                         null),
                 new Entry(
                         AppI18n.observable("visitGithubRepository"),
