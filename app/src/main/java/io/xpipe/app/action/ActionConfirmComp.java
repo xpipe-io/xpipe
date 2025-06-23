@@ -16,7 +16,9 @@ import io.xpipe.core.store.DataStore;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Label;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
@@ -66,16 +68,16 @@ public class ActionConfirmComp extends SimpleComp {
             var grid = new GridPane();
             grid.setHgap(11);
             grid.setVgap(2);
+            grid.getColumnConstraints().add(new ColumnConstraints(120, 120, 150));
             var row = 0;
             for (Map.Entry<String, String> e : map.entrySet()) {
                 var name = new Label(e.getKey());
                 var value = new Label(e.getValue());
-                value.getStyleClass().add(Styles.TEXT_BOLD);
+                value.setWrapText(true);
                 grid.add(name, 0, row);
                 grid.add(value, 1, row);
                 row++;
             }
-            AppFontSizes.lg(grid);
             return grid;
         });
     }

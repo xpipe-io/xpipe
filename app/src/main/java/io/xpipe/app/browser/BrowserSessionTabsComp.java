@@ -512,9 +512,11 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
                     }
-                    c.addEventHandler(DragEvent.DRAG_ENTERED, mouseEvent -> {
-                        if (tabModel.isCloseable()) {
+                    c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
+                        // Prevent switch when dragging local files into app
+                        if (tabModel.isCloseable() && !de.getDragboard().hasContent(DataFormat.FILES)) {
                             Platform.runLater(() -> tabs.getSelectionModel().select(tab));
+                            de.consume();
                         }
                     });
                 });

@@ -135,6 +135,36 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
+    ExternalTerminalType LXTERMINAL = new SimplePathType("app.lxterminal", "lxterminal", true) {
+        @Override
+        public String getWebsite() {
+            return "https://github.com/lxde/lxterminal";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return false;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-t")
+                    .addQuoted(configuration.getColoredTitle())
+                    .add("-e")
+                    .addFile(configuration.getScriptFile());
+        }
+    };
     ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
         @Override
         public String getWebsite() {
@@ -576,6 +606,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
+            LXTERMINAL,
             Q_TERMINAL,
             WarpTerminalType.LINUX,
             TERMIUS,
