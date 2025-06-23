@@ -106,6 +106,7 @@ public class StandardStorage extends DataStorage {
             }
         }
 
+        var laterAddedEntries = new HashSet<DataStoreEntry>();
         try {
             var exception = new AtomicReference<Exception>();
             try (var cats = Files.list(categoriesDir)) {
@@ -185,7 +186,8 @@ public class StandardStorage extends DataStorage {
                             return;
                         }
 
-                        addStoreEntryIfNotPresent(entry.get());
+                        laterAddedEntries.add(entry.get());
+                        storeEntries.put(entry.get(), entry.get());
                     } catch (IOException ex) {
                         // IO exceptions are not expected
                         exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
@@ -260,7 +262,7 @@ public class StandardStorage extends DataStorage {
         }
 
         // Remove per user entries early if possible. Doesn't cover all, so do it later again
-        filterPerUserEntries();
+        filterPerUserEntries(storeEntries.keySet());
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
         refreshEntries();
@@ -281,7 +283,13 @@ public class StandardStorage extends DataStorage {
         // Update validities from synthetic parent changes
         refreshEntries();
         // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
-        filterPerUserEntries();
+        filterPerUserEntries(storeEntries.keySet());
+
+        // Only add new stores if really necessary
+        laterAddedEntries.stream().filter(dataStoreEntry -> storeEntries.containsKey(dataStoreEntry)).forEach(e -> {
+            storeEntries.remove(e);
+            addStoreEntryIfNotPresent(e);
+        });
 
         deleteLeftovers();
 
@@ -290,14 +298,14 @@ public class StandardStorage extends DataStorage {
         busyIo.unlock();
     }
 
-    private void filterPerUserEntries() {
+    private void filterPerUserEntries(Collection<DataStoreEntry> entries) {
         var toRemove = getStoreEntries().stream()
                 .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
                 .toList();
         directoriesToKeep.addAll(toRemove.stream()
                 .map(dataStoreEntry -> dataStoreEntry.getDirectory())
                 .toList());
-        toRemove.forEach(this::deleteStoreEntry);
+        toRemove.forEach(entries::remove);
     }
 
     private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {

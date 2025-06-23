@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
@@ -32,7 +33,9 @@ public class ActionShortcutComp extends SimpleComp {
     protected Region createSimple() {
         var options = new OptionsBuilder();
         options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
-        options.nameAndDescription("actionUrlShortcut").addComp(createUrlComp());
+        options.nameAndDescription(AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled")
+                .addComp(createUrlComp())
+                .disable(!AppDistributionType.get().isSupportsUrls());
         options.nameAndDescription("actionApiCall").addComp(createApiComp());
         //        options.nameAndDescription("actionMacro")
         //                .addComp(createMacroComp());

@@ -421,6 +421,10 @@ public class StoreEntryWrapper {
             return true;
         }
 
+        if (getEntry().getUuid().toString().equalsIgnoreCase(filter)) {
+            return true;
+        }
+
         if (entry.getValidity().isUsable()
                 && entry.getProvider().getSearchableTerms(entry.getStore()).stream()
                         .anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
