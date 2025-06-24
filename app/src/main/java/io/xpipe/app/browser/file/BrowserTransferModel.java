@@ -86,8 +86,9 @@ public class BrowserTransferModel {
     public void clear(boolean delete) {
         List<Item> toClear;
         synchronized (items) {
-            toClear =
-                    items.stream().filter(item -> item.getDownloadFinished().get()).toList();
+            toClear = items.stream()
+                    .filter(item -> item.getDownloadFinished().get())
+                    .toList();
             if (toClear.isEmpty()) {
                 return;
             }
@@ -172,8 +173,9 @@ public class BrowserTransferModel {
     public void transferToDownloads() throws Exception {
         List<Item> toMove;
         synchronized (items) {
-            toMove =
-                    items.stream().filter(item -> item.getDownloadFinished().get()).toList();
+            toMove = items.stream()
+                    .filter(item -> item.getDownloadFinished().get())
+                    .toList();
             if (toMove.isEmpty()) {
                 return;
             }

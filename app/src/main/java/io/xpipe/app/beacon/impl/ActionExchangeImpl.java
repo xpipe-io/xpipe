@@ -25,7 +25,6 @@ public class ActionExchangeImpl extends ActionExchange {
         return Response.builder().build();
     }
 
-
     private boolean checkPermission() {
         var cache = AppCache.getBoolean("externalActionPermitted", false);
         if (cache) {

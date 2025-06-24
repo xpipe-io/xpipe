@@ -372,7 +372,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 items.add(item);
             }
 
-            if (cat == StoreActionCategory.CONFIGURATION && getWrapper().getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED) {
+            if (cat == StoreActionCategory.CONFIGURATION
+                    && getWrapper().getEntry().getValidity() != DataStoreEntry.Validity.LOAD_FAILED) {
                 var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
                 rename.setOnAction(event -> {
                     name.requestFocus();

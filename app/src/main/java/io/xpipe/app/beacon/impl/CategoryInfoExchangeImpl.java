@@ -1,10 +1,11 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.CategoryInfoExchange;
 import io.xpipe.core.util.JacksonMapper;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.util.ArrayList;
 import java.util.UUID;

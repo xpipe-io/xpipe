@@ -158,7 +158,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void refreshBrowserEntriesSync(List<BrowserEntry> entries) throws Exception {
-        refreshFileEntriesSync(entries.stream().map(BrowserEntry::getRawFileEntry).collect(Collectors.toList()));
+        refreshFileEntriesSync(
+                entries.stream().map(BrowserEntry::getRawFileEntry).collect(Collectors.toList()));
     }
 
     public void refreshFileEntriesSync(List<FileEntry> entries) throws Exception {

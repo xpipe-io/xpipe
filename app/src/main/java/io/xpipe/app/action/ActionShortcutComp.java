@@ -10,7 +10,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
@@ -33,7 +32,8 @@ public class ActionShortcutComp extends SimpleComp {
     protected Region createSimple() {
         var options = new OptionsBuilder();
         options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
-        options.nameAndDescription(AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled")
+        options.nameAndDescription(
+                        AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled")
                 .addComp(createUrlComp())
                 .disable(!AppDistributionType.get().isSupportsUrls());
         options.nameAndDescription("actionApiCall").addComp(createApiComp());
@@ -93,10 +93,10 @@ public class ActionShortcutComp extends SimpleComp {
         prop.bind(text);
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            if (action.getValue() instanceof SerializableAction sa) {
-                ClipboardHelper.copyUrl(sa.toNode().toPrettyString());
-            }
-        })
+                    if (action.getValue() instanceof SerializableAction sa) {
+                        ClipboardHelper.copyUrl(sa.toNode().toPrettyString());
+                    }
+                })
                 .grow(false, true)
                 .tooltipKey("copyBody");
         var field = new TextFieldComp(prop, true);

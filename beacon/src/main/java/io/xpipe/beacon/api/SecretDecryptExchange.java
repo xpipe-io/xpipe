@@ -1,7 +1,8 @@
 package io.xpipe.beacon.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.beacon.BeaconInterface;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;

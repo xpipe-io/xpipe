@@ -1,9 +1,10 @@
 package io.xpipe.app.beacon.impl;
 
-import com.sun.net.httpserver.HttpExchange;
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.SecretDecryptExchange;
+
+import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 
@@ -16,8 +17,6 @@ public class SecretDecryptExchangeImpl extends SecretDecryptExchange {
             throw new BeaconClientException("Unable to parse secret");
         }
 
-        return Response.builder()
-                .decrypted(new String(secret.getSecret()))
-                .build();
+        return Response.builder().decrypted(new String(secret.getSecret())).build();
     }
 }

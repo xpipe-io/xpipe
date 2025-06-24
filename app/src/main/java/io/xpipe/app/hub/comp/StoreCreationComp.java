@@ -35,17 +35,22 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
     private Region createStoreProperties(Comp<?> providerComp, Validator providerVal, Validator propVal) {
         var nameKey = model.storeTypeNameKey();
-        var built = new OptionsBuilder(propVal).addComp(providerComp, model.getStore()).name(nameKey + "Name").description(
-                nameKey + "NameDescription").addString(model.getName(), false).nonNull().check(
-                val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
-                    var same = s != null && model.getExistingEntry() != null && DataStorage.get().getEffectiveReadOnlyState(
-                            model.getExistingEntry()) && s.equals(model.getExistingEntry().getName());
+        var built = new OptionsBuilder(propVal)
+                .addComp(providerComp, model.getStore())
+                .name(nameKey + "Name")
+                .description(nameKey + "NameDescription")
+                .addString(model.getName(), false)
+                .nonNull()
+                .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
+                    var same = s != null
+                            && model.getExistingEntry() != null
+                            && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
+                            && s.equals(model.getExistingEntry().getName());
                     return !same;
-                })).buildComp();
+                }))
+                .buildComp();
         var comp = new OptionsComp(built.getEntries(), new ChainedValidator(List.of(providerVal, propVal)));
-        return comp
-                .styleClass("store-creator-options")
-                .createRegion();
+        return comp.styleClass("store-creator-options").createRegion();
     }
 
     private Region createLayout() {

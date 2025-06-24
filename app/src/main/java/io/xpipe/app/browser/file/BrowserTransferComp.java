@@ -69,8 +69,10 @@ public class BrowserTransferComp extends SimpleComp {
                                         return entry.getFileName();
                                     }
 
-                                    var hideProgress =
-                                            sourceItem.get().getDownloadFinished().get();
+                                    var hideProgress = sourceItem
+                                            .get()
+                                            .getDownloadFinished()
+                                            .get();
                                     var share = p.getTransferred() * 100 / p.getTotal();
                                     var progressSuffix = hideProgress ? "" : " " + share + "%";
                                     return entry.getFileName() + progressSuffix;

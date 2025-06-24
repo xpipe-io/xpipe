@@ -14,7 +14,6 @@ import net.synedra.validatorfx.ValidationResult;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SimpleValidator implements Validator {

@@ -318,7 +318,8 @@ public class StoreViewState {
                     // Some entries might already be removed again
                     var wrappers = Arrays.stream(entry)
                             .map(StoreEntryWrapper::new)
-                            .filter(storeEntryWrapper -> DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
+                            .filter(storeEntryWrapper ->
+                                    DataStorage.get().getStoreEntries().contains(storeEntryWrapper.getEntry()))
                             .toList();
                     wrappers.forEach(StoreEntryWrapper::update);
 

@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
-import io.xpipe.app.util.ThreadHelper;
 
 import java.time.Duration;
 import java.util.stream.Stream;
@@ -29,11 +28,16 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
         if (event.isOmitted()) {
             ErrorAction.ignore().handle(event);
             if (AppLayoutModel.get() != null) {
-                AppLayoutModel.get().showQueueEntry(
-                        new AppLayoutModel.QueueEntry(AppI18n.observable("errorOccurred"), new LabelGraphic.IconGraphic("mdoal-error_outline"),
-                                () -> {
-                                    handleGui(event);
-                                }), Duration.ofSeconds(10), true);
+                AppLayoutModel.get()
+                        .showQueueEntry(
+                                new AppLayoutModel.QueueEntry(
+                                        AppI18n.observable("errorOccurred"),
+                                        new LabelGraphic.IconGraphic("mdoal-error_outline"),
+                                        () -> {
+                                            handleGui(event);
+                                        }),
+                                Duration.ofSeconds(10),
+                                true);
             }
             return;
         }

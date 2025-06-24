@@ -80,7 +80,6 @@ public class FileNames {
         return file.substring(0, file.length() - getFileName(file).length() - 1);
     }
 
-
     public static String normalize(String file) {
         var backslash = file.contains("\\");
         return backslash ? toWindows(file) : toUnix(file);

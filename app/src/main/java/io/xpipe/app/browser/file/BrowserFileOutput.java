@@ -26,9 +26,7 @@ public interface BrowserFileOutput {
             }
 
             @Override
-            public void onFinish() {
-
-            }
+            public void onFinish() {}
         };
     }
 

@@ -36,8 +36,7 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                             model.openTerminalSync(
                                     entry.getRawFileEntry().getName(),
                                     model.getCurrentDirectory() != null
-                                            ? model.getCurrentDirectory()
-                                                    .getPath()
+                                            ? model.getCurrentDirectory().getPath()
                                             : null,
                                     cmd,
                                     entries.size() == 1);
@@ -93,8 +92,8 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                             }
 
                             sc.command(cmd)
-                                    .withWorkingDirectory(model.getCurrentDirectory()
-                                            .getPath())
+                                    .withWorkingDirectory(
+                                            model.getCurrentDirectory().getPath())
                                     .execute();
                         }
                         model.refreshBrowserEntriesSync(entries);

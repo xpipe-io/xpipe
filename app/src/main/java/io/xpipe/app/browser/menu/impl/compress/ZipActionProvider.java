@@ -35,10 +35,15 @@ public class ZipActionProvider implements BrowserActionProvider {
                 var sc = model.getFileSystem().getShell().orElseThrow();
                 if (sc.getOsType() == OsType.WINDOWS) {
                     var base = model.getCurrentDirectory().getPath();
-                    var command = CommandBuilder.of().add("Compress-Archive", "-Force", "-DestinationPath").addFile(target).add("-Path");
+                    var command = CommandBuilder.of()
+                            .add("Compress-Archive", "-Force", "-DestinationPath")
+                            .addFile(target)
+                            .add("-Path");
                     for (int i = 0; i < getEntries().size(); i++) {
-                        var rel = getEntries().get(i).getRawFileEntry().getPath().relativize(base);
-                        if (getEntries().get(i).getRawFileEntry().getKind() == FileKind.DIRECTORY && directoryContentOnly) {
+                        var rel =
+                                getEntries().get(i).getRawFileEntry().getPath().relativize(base);
+                        if (getEntries().get(i).getRawFileEntry().getKind() == FileKind.DIRECTORY
+                                && directoryContentOnly) {
                             command.addQuoted(rel.toDirectory().toWindows() + "*");
                         } else {
                             command.addFile(rel.toWindows());
@@ -59,7 +64,10 @@ public class ZipActionProvider implements BrowserActionProvider {
                     var command = CommandBuilder.of().add("zip", "-q", "-y", "-r", "-");
                     for (BrowserEntry entry : getEntries()) {
                         var base = target.getParent();
-                        var rel = entry.getRawFileEntry().getPath().relativize(base).toUnix();
+                        var rel = entry.getRawFileEntry()
+                                .getPath()
+                                .relativize(base)
+                                .toUnix();
                         if (entry.getRawFileEntry().getKind() == FileKind.DIRECTORY && directoryContentOnly) {
                             command.add(".");
                         } else {
@@ -69,7 +77,12 @@ public class ZipActionProvider implements BrowserActionProvider {
                     command.add(">").addFile(target);
 
                     if (directoryContentOnly) {
-                        sc.command(command).withWorkingDirectory(getEntries().getFirst().getRawFileEntry().getPath()).execute();
+                        sc.command(command)
+                                .withWorkingDirectory(getEntries()
+                                        .getFirst()
+                                        .getRawFileEntry()
+                                        .getPath())
+                                .execute();
                     } else {
                         sc.command(command).execute();
                     }

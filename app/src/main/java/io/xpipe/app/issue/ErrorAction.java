@@ -4,8 +4,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.util.FailableSupplier;
 
-import java.util.function.Supplier;
-
 public interface ErrorAction {
 
     static ErrorAction openDocumentation(String link) {

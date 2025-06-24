@@ -67,8 +67,16 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
-                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
-                                    browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                            var fixedFiles = entries.stream()
+                                    .map(browserEntry ->
+                                            browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
+                                                    ? browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                    : browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                            .getParent())
                                     .toList();
                             var builder = NewFileActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);
@@ -106,8 +114,16 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
-                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
-                                            browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                            var fixedFiles = entries.stream()
+                                    .map(browserEntry ->
+                                            browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
+                                                    ? browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                    : browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                            .getParent())
                                     .toList();
                             var builder = NewDirectoryActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);
@@ -150,8 +166,16 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                 return;
                             }
 
-                            var fixedFiles = entries.stream().map(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY ?
-                                            browserEntry.getRawFileEntry().getPath() : browserEntry.getRawFileEntry().getPath().getParent())
+                            var fixedFiles = entries.stream()
+                                    .map(browserEntry ->
+                                            browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY
+                                                    ? browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                    : browserEntry
+                                                            .getRawFileEntry()
+                                                            .getPath()
+                                                            .getParent())
                                     .toList();
                             var builder = NewLinkActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);

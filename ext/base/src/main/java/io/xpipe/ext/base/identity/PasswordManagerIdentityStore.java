@@ -24,7 +24,8 @@ import java.time.Instant;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class PasswordManagerIdentityStore extends IdentityStore implements InternalCacheDataStore, ValidatableStore, UserScopeStore {
+public class PasswordManagerIdentityStore extends IdentityStore
+        implements InternalCacheDataStore, ValidatableStore, UserScopeStore {
 
     String key;
     boolean perUser;

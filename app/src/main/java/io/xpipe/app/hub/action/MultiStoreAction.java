@@ -26,8 +26,11 @@ public abstract class MultiStoreAction<T extends DataStore> extends Serializable
 
     @Override
     public String getShortcutName() {
-        var names = refs.size() > 3 ? refs.size() + "..." : refs.stream().map(ref -> DataStorage.get().getStoreEntryDisplayName(ref.get())).collect(
-                Collectors.joining(", "));
+        var names = refs.size() > 3
+                ? refs.size() + "..."
+                : refs.stream()
+                        .map(ref -> DataStorage.get().getStoreEntryDisplayName(ref.get()))
+                        .collect(Collectors.joining(", "));
         return names + " (" + getDisplayName() + ")";
     }
 

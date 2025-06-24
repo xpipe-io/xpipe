@@ -19,7 +19,6 @@ public class DataStorageQuery {
         return found;
     }
 
-
     public static List<DataStoreCategory> queryCategory(String categoryFilter) {
         if (DataStorage.get() == null) {
             return List.of();

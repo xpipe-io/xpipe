@@ -312,10 +312,12 @@ public class StandardStorage extends DataStorage {
         filterPerUserEntries(storeEntries.keySet());
 
         // Only add new stores if really necessary
-        laterAddedEntries.stream().filter(dataStoreEntry -> storeEntries.containsKey(dataStoreEntry)).forEach(e -> {
-            storeEntries.remove(e);
-            addStoreEntryIfNotPresent(e);
-        });
+        laterAddedEntries.stream()
+                .filter(dataStoreEntry -> storeEntries.containsKey(dataStoreEntry))
+                .forEach(e -> {
+                    storeEntries.remove(e);
+                    addStoreEntryIfNotPresent(e);
+                });
 
         deleteLeftovers();
 

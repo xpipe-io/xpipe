@@ -42,9 +42,9 @@ public class AppGnomeScaleDialog {
             return;
         }
 
-        var content = AppDialog.dialogText("You are running XPipe with a high display scaling on a Wayland system." +
-                " Due to xwayland limitations, this might result in a blurry window." +
-                " See below for a possible fix.");
+        var content = AppDialog.dialogText("You are running XPipe with a high display scaling on a Wayland system."
+                + " Due to xwayland limitations, this might result in a blurry window."
+                + " See below for a possible fix.");
         var modal = ModalOverlay.of("waylandScalingTitle", content);
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("gnomeScaleNoticeShown", true);

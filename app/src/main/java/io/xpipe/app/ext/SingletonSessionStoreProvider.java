@@ -41,7 +41,10 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         var t = new StoreToggleComp(null, g, sec, enabled, newState -> {
             SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
             if (s.isSessionEnabled() != newState) {
-                var action = ToggleActionProvider.Action.builder().ref(sec.getWrapper().getEntry().ref()).enabled(newState).build();
+                var action = ToggleActionProvider.Action.builder()
+                        .ref(sec.getWrapper().getEntry().ref())
+                        .enabled(newState)
+                        .build();
                 action.executeAsync();
             }
         });
