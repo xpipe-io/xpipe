@@ -51,7 +51,7 @@ public class AppMainWindow {
     private volatile Instant lastUpdate;
 
     @Getter
-    private final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
 
     @Getter
     private static final Property<String> loadingText = new SimpleObjectProperty<>();
@@ -139,7 +139,7 @@ public class AppMainWindow {
         return getStage().outputScaleXProperty();
     }
 
-    public void initContent() {
+    public static synchronized void initContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             try {
                 TrackEvent.info("Window content node creation started");

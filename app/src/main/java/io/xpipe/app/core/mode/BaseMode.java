@@ -121,7 +121,7 @@ public class BaseMode extends OperationMode {
                     iconsLoaded.await();
                     localPrefsLoaded.await();
                     AppMainWindow.loadingText("loadingUserInterface");
-                    AppMainWindow.getInstance().initContent();
+                    AppMainWindow.initContent();
                     TrackEvent.info("Window content initialization thread completed");
                 },
                 () -> {
