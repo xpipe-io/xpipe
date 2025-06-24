@@ -113,6 +113,18 @@ public class StandardStorage extends DataStorage {
         var initialLoad = getStoreEntries().size() == 0;
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
+        var dataDir = getDataDir();
+
+        try {
+            FileUtils.forceMkdir(storesDir.toFile());
+            FileUtils.forceMkdir(categoriesDir.toFile());
+            FileUtils.forceMkdir(dataDir.toFile());
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
 
         for (DataStoreCategory cat : new ArrayList<>(storeCategories)) {
             if (Arrays.stream(cat.getShareableFiles()).noneMatch(Files::exists)) {
