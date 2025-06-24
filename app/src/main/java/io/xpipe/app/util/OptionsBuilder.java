@@ -327,6 +327,7 @@ public class OptionsBuilder {
         comp.apply(struc -> {
             struc.get().setEditable(false);
             struc.get().setOpacity(0.9);
+            struc.get().setFocusTraversable(false);
         });
         pushComp(comp);
         return this;
