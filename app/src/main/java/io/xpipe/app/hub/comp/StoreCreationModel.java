@@ -170,7 +170,7 @@ public class StoreCreationModel {
     }
 
     void connect() {
-        var temp = DataStoreEntry.createTempWrapper(store.getValue());
+        var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
         var action = LaunchHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
     }

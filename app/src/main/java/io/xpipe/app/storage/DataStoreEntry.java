@@ -115,30 +115,6 @@ public class DataStoreEntry extends StorageElement {
         this.orderIndex = orderIndex;
     }
 
-    private DataStoreEntry(
-            Path directory,
-            UUID uuid,
-            UUID categoryUuid,
-            String name,
-            Instant lastUsed,
-            Instant lastModified,
-            DataStore store,
-            String icon,
-            boolean freeze,
-            int orderIndex) {
-        super(directory, uuid, name, lastUsed, lastModified, false, false);
-        this.categoryUuid = categoryUuid;
-        this.store = store;
-        this.icon = icon;
-        this.storeNode = DataStorageNode.fail();
-        this.validity = Validity.INCOMPLETE;
-        this.expanded = false;
-        this.provider = null;
-        this.storePersistentStateNode = null;
-        this.freeze = freeze;
-        this.orderIndex = orderIndex;
-    }
-
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
         return new DataStoreEntry(
                 null,
@@ -148,6 +124,13 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 store,
+                DataStorageNode.fail(),
+                false,
+                Validity.COMPLETE,
+                null,
+                false,
+                null,
+                null,
                 null,
                 false,
                 0);
