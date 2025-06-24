@@ -33,22 +33,17 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         return model.getBusy();
     }
 
-    private Region createStoreProperties(Comp<?> comp, Validator propVal) {
+    private Region createStoreProperties(Comp<?> providerComp, Validator providerVal, Validator propVal) {
         var nameKey = model.storeTypeNameKey();
-        return new OptionsBuilder(propVal)
-                .addComp(comp, model.getStore())
-                .name(nameKey + "Name")
-                .description(nameKey + "NameDescription")
-                .addString(model.getName(), false)
-                .nonNull(propVal)
-                .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
-                    var same = s != null
-                            && model.getExistingEntry() != null
-                            && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
-                            && s.equals(model.getExistingEntry().getName());
+        var built = new OptionsBuilder(propVal).addComp(providerComp, model.getStore()).name(nameKey + "Name").description(
+                nameKey + "NameDescription").addString(model.getName(), false).nonNull().check(
+                val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
+                    var same = s != null && model.getExistingEntry() != null && DataStorage.get().getEffectiveReadOnlyState(
+                            model.getExistingEntry()) && s.equals(model.getExistingEntry().getName());
                     return !same;
-                }))
-                .buildComp()
+                })).buildComp();
+        var comp = new OptionsComp(built.getEntries(), new ChainedValidator(List.of(providerVal, propVal)));
+        return comp
                 .styleClass("store-creator-options")
                 .createRegion();
     }
@@ -70,8 +65,12 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
+                if (d == null || d.getComp() == null || d.getValidator() == null) {
+                    return;
+                }
+
                 var propVal = new SimpleValidator();
-                var propR = createStoreProperties(d == null || d.getComp() == null ? null : d.getComp(), propVal);
+                var propR = createStoreProperties(d.getComp(), d.getValidator(), propVal);
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
@@ -93,16 +92,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
 
+                layout.setCenter(vbox);
+
+                model.getValidator().setValue(new ChainedValidator(List.of(d.getValidator(), propVal)));
+
                 Platform.runLater(() -> {
                     propR.requestFocus();
                 });
-
-                layout.setCenter(vbox);
-
-                model.getValidator()
-                        .setValue(new ChainedValidator(List.of(
-                                d != null && d.getValidator() != null ? d.getValidator() : new SimpleValidator(),
-                                propVal)));
             } else {
                 layout.setCenter(null);
                 model.getValidator().setValue(new SimpleValidator());
