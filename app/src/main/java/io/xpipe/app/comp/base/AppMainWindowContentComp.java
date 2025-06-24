@@ -60,7 +60,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                     offset += 1000 / 60;
 
                     // Move shadow in a circle
-                    var rad = -(offset % 1000.0) / 1000.0 * 2 * Math.PI;
+                    var rad = -(offset % 1300.0) / 1300.0 * 2 * Math.PI;
                     var x = Math.sin(rad);
                     var y = Math.cos(rad);
                     shadow.setOffsetX(x * 3);
