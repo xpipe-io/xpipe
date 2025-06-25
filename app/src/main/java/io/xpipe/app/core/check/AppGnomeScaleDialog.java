@@ -20,18 +20,6 @@ public class AppGnomeScaleDialog {
             return;
         }
 
-        // Only happens for externally set display scale
-        if (AppPrefs.get().uiScale().getValue() != null) {
-            return;
-        }
-
-        var scale = AppMainWindow.getInstance().displayScale().getValue();
-        var highDpi = scale.doubleValue() > 1.5;
-        TrackEvent.debug("Scale value: " + scale.doubleValue());
-        if (!highDpi) {
-            // return;
-        }
-
         var session = System.getenv("XDG_SESSION_TYPE");
         var wayland = session != null && session.toLowerCase().contains("wayland");
         if (!wayland) {

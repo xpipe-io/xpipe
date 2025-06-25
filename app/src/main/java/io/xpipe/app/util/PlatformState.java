@@ -175,44 +175,6 @@ public enum PlatformState {
         }
     }
 
-    public static OptionalInt determineDefaultScalingFactor() {
-        if (OsType.getLocal() != OsType.LINUX) {
-            return OptionalInt.empty();
-        }
-
-        var factor =
-                LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
-        if (factor.isEmpty()) {
-            return OptionalInt.empty();
-        }
-
-        var readCustom = factor.get().equals("uint32 1") || factor.get().equals("uint32 2");
-        if (!readCustom) {
-            return OptionalInt.empty();
-        }
-
-        var textFactor = LocalExec.readStdoutIfPossible(
-                "gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
-        if (textFactor.isEmpty()) {
-            return OptionalInt.empty();
-        }
-
-        var s = textFactor.get();
-        if (s.equals("1.0")) {
-            return OptionalInt.empty();
-        } else if (s.equals("2.0")) {
-            return OptionalInt.of(200);
-        } else if (s.equals("1.25")) {
-            return OptionalInt.of(125);
-        } else if (s.equals("1.5")) {
-            return OptionalInt.of(150);
-        } else if (s.equals("1.75")) {
-            return OptionalInt.of(175);
-        } else {
-            return OptionalInt.empty();
-        }
-    }
-
     @SneakyThrows
     private static void disableToolkitShutdownHook() {
         var tkClass = Class.forName(

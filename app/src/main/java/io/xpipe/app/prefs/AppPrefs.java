@@ -337,7 +337,6 @@ public class AppPrefs {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
-        INSTANCE.adjustLocalValues();
         INSTANCE.vaultStorageHandler =
                 new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
     }
@@ -593,13 +592,6 @@ public class AppPrefs {
             }
 
             loadValue(globalStorageHandler, value);
-        }
-    }
-
-    private void adjustLocalValues() {
-        if (AppProperties.get().isInitialLaunch()) {
-            var f = PlatformState.determineDefaultScalingFactor();
-            uiScale.setValue(f.isPresent() ? f.getAsInt() : null);
         }
     }
 
