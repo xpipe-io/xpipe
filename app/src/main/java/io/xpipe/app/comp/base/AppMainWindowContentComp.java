@@ -40,6 +40,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(80);
             loadingIcon.setFitHeight(80);
+            loadingIcon.setOpacity(0.9);
 
             var color =
                     AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark()

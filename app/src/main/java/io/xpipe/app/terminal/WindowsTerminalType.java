@@ -38,8 +38,11 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         // A weird behavior in Windows Terminal causes the trailing
         // backslash of a filepath to escape the closing quote in the title argument
         // So just remove that slash
-        var fixedName = FilePath.of(configuration.getColoredTitle()).removeTrailingSlash();
-        cmd.add("--title").addQuoted(fixedName.toString());
+        var fixedName = FilePath.of(configuration.getColoredTitle()).removeTrailingSlash().toString();
+        // To fix https://github.com/microsoft/terminal/issues/13264
+        fixedName = fixedName.replaceAll(";", "_");
+
+        cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
         cmd.add(configuration.getDialectLaunchCommand());
         return cmd;

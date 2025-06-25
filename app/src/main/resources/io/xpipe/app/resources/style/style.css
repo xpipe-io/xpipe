@@ -158,10 +158,3 @@
     -fx-padding: 3 10;
 }
 
-.root:light .action-picker {
-    -fx-background-color: #fffe;
-}
-
-.root:dark .action-picker {
-    -fx-background-color: #111e;
-}

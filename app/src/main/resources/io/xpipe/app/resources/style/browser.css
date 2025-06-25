@@ -331,7 +331,7 @@
     -fx-background-color: -color-success-subtle;
 }
 
-.root:key-navigation .browser .table-view:focus-within .table-row-cell:focused {
+.root:key-navigation .browser .browser-content:focus-within .table-view:focus-within .table-row-cell:focus-visible {
     -fx-background-color: -color-warning-subtle;
 }
 
