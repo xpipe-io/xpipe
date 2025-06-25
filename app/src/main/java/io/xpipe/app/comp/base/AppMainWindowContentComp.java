@@ -112,12 +112,12 @@ public class AppMainWindowContentComp extends SimpleComp {
                     TrackEvent.info("Window content node set");
                     PlatformThread.runNestedLoopIteration();
                     struc.prepareAddition();
+                    pane.getStyleClass().remove("background");
+                    loadingAnimation.stop();
+                    pane.getChildren().remove(vbox);
                     pane.getChildren().add(struc.get());
                     sidebarPresent.set(true);
                     PlatformThread.runNestedLoopIteration();
-                    pane.getStyleClass().remove("background");
-                    pane.getChildren().remove(vbox);
-                    loadingAnimation.stop();
                     struc.show();
                     TrackEvent.info("Window content node shown");
                 }
