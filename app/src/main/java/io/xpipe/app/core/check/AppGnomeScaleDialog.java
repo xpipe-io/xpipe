@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 
 public class AppGnomeScaleDialog {
@@ -26,8 +27,9 @@ public class AppGnomeScaleDialog {
 
         var scale = AppMainWindow.getInstance().displayScale().getValue();
         var highDpi = scale.doubleValue() > 1.5;
+        TrackEvent.debug("Scale value: " + scale.doubleValue());
         if (!highDpi) {
-            return;
+            // return;
         }
 
         var session = System.getenv("XDG_SESSION_TYPE");
