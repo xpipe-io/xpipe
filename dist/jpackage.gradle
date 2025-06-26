@@ -130,7 +130,7 @@ task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
     }
 }
 
-task prepareMacOSInfo(type: DefaultTask) {
+task prepareMacOSResources(type: DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
@@ -143,11 +143,18 @@ task prepareMacOSInfo(type: DefaultTask) {
                                                rootProject.isStage ? 'io.xpipe.ptb-app' : 'io.xpipe.app'))
             into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
+
+        copy {
+            from file("$projectDir/logo/Assets.car")
+            into file("$distDir/jpackage/$outputName")
+        }
+
+        file("$distDir/jpackage/$outputName/xpiped.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
     }
 }
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    jpackageImage.dependsOn(prepareMacOSInfo)
+    jpackageImage.dependsOn(prepareMacOSResources)
 }
 
 jpackage.finalizedBy(copyBundledExtensions)

@@ -106,10 +106,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/$app/Contents/"
             }
             copy {
-                from "$projectDir/logo/logo.icns"
-                into "$distDir/$app/Contents/Resources/"
-            }
-            copy {
                 from "$distDir/licenses"
                 into "$distDir/$app/Contents/Resources/licenses"
             }
