@@ -143,7 +143,11 @@ task prepareMacOSResources(type: DefaultTask) {
                                                rootProject.isStage ? 'io.xpipe.ptb-app' : 'io.xpipe.app'))
             into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
+    }
+}
 
+task finalizeMacOSResources(type: DefaultTask) {
+    doLast {
         copy {
             from file("$projectDir/logo/Assets.car")
             into file("$distDir/jpackage/$outputName")
@@ -154,6 +158,7 @@ task prepareMacOSResources(type: DefaultTask) {
 }
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    jpackageImage.finalizedBy(finalizeMacOSResources)
     jpackageImage.dependsOn(prepareMacOSResources)
 }
 
