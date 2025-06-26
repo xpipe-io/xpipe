@@ -10,6 +10,10 @@ public interface NetworkTunnelStore extends DataStore {
         return getNetworkParent() != null;
     }
 
+    default String getTunnelHostName() {
+        return null;
+    }
+
     default boolean isLocallyTunnelable() {
         NetworkTunnelStore current = this;
         while (true) {

@@ -14,10 +14,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 import javafx.scene.text.TextAlignment;
 
@@ -94,9 +91,22 @@ public class BrowserTransferComp extends SimpleComp {
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
                 .tooltipKey("clearTransferDescription");
 
-        var downloadButton = new IconButtonComp("mdi2f-folder-move-outline", () -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        model.transferToDownloads();
+        var downloadButton = new IconButtonComp("mdi2f-folder-move-outline", null)
+                .apply(struc -> {
+                    struc.get().setOnMouseClicked(e -> {
+                        if (e.getButton() == MouseButton.PRIMARY) {
+                            var open = !e.isShiftDown();
+                            ThreadHelper.runFailableAsync(() -> {
+                                model.transferToDownloads(open);
+                            });
+                            e.consume();
+                        }
+                    });
+                    struc.get().setOnAction(e -> {
+                        ThreadHelper.runFailableAsync(() -> {
+                            model.transferToDownloads(true);
+                        });
+                        e.consume();
                     });
                 })
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))

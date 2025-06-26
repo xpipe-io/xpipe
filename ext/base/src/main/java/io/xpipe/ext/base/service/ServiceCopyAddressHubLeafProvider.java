@@ -59,11 +59,7 @@ public class ServiceCopyAddressHubLeafProvider implements HubLeafProvider<Abstra
         public void executeImpl() throws Exception {
             var serviceStore = ref.getStore();
             serviceStore.startSessionIfNeeded();
-            var l = serviceStore.requiresTunnel()
-                    ? serviceStore.getSession().getLocalPort()
-                    : serviceStore.getRemotePort();
-            var base = "localhost:" + l;
-            var full = serviceStore.getServiceProtocolType().formatAddress(base);
+            var full = serviceStore.getServiceProtocolType().formatAddress(serviceStore.getOpenTargetUrl());
             ClipboardHelper.copyUrl(full);
         }
     }

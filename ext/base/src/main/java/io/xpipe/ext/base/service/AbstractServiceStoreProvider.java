@@ -30,11 +30,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         return () -> {
             AbstractServiceStore serviceStore = store.getStore().asNeeded();
             serviceStore.startSessionIfNeeded();
-            var l = serviceStore.requiresTunnel()
-                    ? serviceStore.getSession().getLocalPort()
-                    : serviceStore.getRemotePort();
-            var base = "localhost:" + l;
-            var full = serviceStore.getServiceProtocolType().formatAddress(base);
+            var full = serviceStore.getServiceProtocolType().formatAddress(serviceStore.getOpenTargetUrl());
             serviceStore.getServiceProtocolType().open(full);
         };
     }
@@ -89,7 +85,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 () -> {
                     AbstractServiceStore s =
                             sec.getWrapper().getEntry().getStore().asNeeded();
-                    if (!s.getHost().getStore().requiresTunnel()) {
+                    if (!s.getHost().getStore().requiresTunnel() || !s.getHost().getStore().isLocallyTunnelable()) {
                         return false;
                     }
 

@@ -170,7 +170,7 @@ public class BrowserTransferModel {
         }
     }
 
-    public void transferToDownloads() throws Exception {
+    public void transferToDownloads(boolean open) throws Exception {
         List<Item> toMove;
         synchronized (items) {
             toMove = items.stream()
@@ -201,7 +201,9 @@ public class BrowserTransferModel {
                 Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
             }
         }
-        DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
+        if (open) {
+            DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
+        }
     }
 
     private Path getDownloadsTargetDirectory() throws Exception {
