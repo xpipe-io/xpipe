@@ -222,7 +222,7 @@ public class StoreEntryWrapper {
                                 AppPrefs.get().censorMode(),
                                 information));
                     } catch (Exception e) {
-                        ErrorEventFactory.fromThrowable(e).handle();
+                        ErrorEventFactory.fromThrowable(e).omit().handle();
                         information.bind(new SimpleStringProperty());
                     }
                 }
@@ -237,7 +237,7 @@ public class StoreEntryWrapper {
                         entry.getProvider() != null ? entry.getProvider().summaryString(this) : null);
             } catch (Exception ex) {
                 // Summary creation might fail or have a bug
-                ErrorEventFactory.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
         }
 
@@ -288,7 +288,7 @@ public class StoreEntryWrapper {
                     minorActionProviders.setAll(newMinorProviders);
                 }
             } catch (Exception ex) {
-                ErrorEventFactory.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
         }
 
