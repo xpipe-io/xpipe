@@ -72,6 +72,8 @@ public class AppPrefs {
     final Property<Integer> uiScale = mapLocal(new SimpleObjectProperty<>(null), "uiScale", Integer.class, true);
     final BooleanProperty saveWindowLocation =
             mapLocal(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
+    final BooleanProperty preferTerminalTabs =
+            mapLocal(new SimpleBooleanProperty(true), "preferTerminalTabs", Boolean.class, false);
     final ObjectProperty<ExternalTerminalType> terminalType =
             mapLocal(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class, false);
     final ObjectProperty<ExternalRdpClient> rdpClientType =
@@ -88,6 +90,10 @@ public class AppPrefs {
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .build());
+
+    public final ObservableBooleanValue preferTerminalTabs() {
+        return preferTerminalTabs;
+    }
 
     public final ObservableValue<List<SystemIconSource>> getIconSources() {
         return iconSources;

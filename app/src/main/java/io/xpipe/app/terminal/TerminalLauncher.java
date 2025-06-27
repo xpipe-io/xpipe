@@ -160,20 +160,21 @@ public class TerminalLauncher {
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
         var alwaysPromptRestart = AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
+        var effectivePreferTabs = preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
         var config = TerminalLaunchConfiguration.create(
-                request, entry, cleanTitle, adjustedTitle, preferTabs, alwaysPromptRestart);
+                request, entry, cleanTitle, adjustedTitle, effectivePreferTabs, alwaysPromptRestart);
 
         synchronized (TerminalLauncher.class) {
             // There will be timing issues when launching multiple tabs in a short time span
             TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
 
-            if (preferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
+            if (effectivePreferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
                 latch.await();
                 return;
             }
 
-            if (preferTabs) {
+            if (effectivePreferTabs) {
                 var multiplexerConfig = launchMultiplexerTabInNewTerminal(request, terminalConfig, config);
                 if (multiplexerConfig.isPresent()) {
                     TerminalMultiplexerManager.registerMultiplexerLaunch(request);
