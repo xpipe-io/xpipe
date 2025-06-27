@@ -167,22 +167,18 @@ project.ext {
     jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
 
     // Reduce heap usage with deduplication
-    jvmRunArgs += ['-XX:+UseStringDeduplication',]
+    jvmRunArgs += ['-XX:+UseStringDeduplication']
 
     // GC config
-    jvmRunArgs += [
-            '-XX:+UseG1GC',
-            // Resizing heap is costly
-            // Make sure that heap is not resized on startup at least
-            '-Xms500m',
-            '-Xmx4G',
-            '-XX:MinHeapFreeRatio=15',
-            '-XX:MaxHeapFreeRatio=25',
-            '-XX:GCTimeRatio=9',
-            // This is very important for some older Windows systems
-            // The default makes GC pauses longer for some reason
-            '-XX:G1HeapRegionSize=4m'
-    ];
+    jvmRunArgs += ['-XX:+UseG1GC',
+                   '-Xms300m',
+                   '-Xmx4G',
+                   '-XX:MinHeapFreeRatio=20',
+                   '-XX:MaxHeapFreeRatio=30',
+                   '-XX:GCTimeRatio=9',
+                   // The default makes GC pauses longer for some reason
+                   '-XX:G1HeapRegionSize=4m'
+    ]
 
     // Fix platform theme detection on macOS
     if (os.isMacOsX()) {

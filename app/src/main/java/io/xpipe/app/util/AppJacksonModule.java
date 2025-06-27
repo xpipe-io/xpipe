@@ -233,14 +233,23 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var obj = (ObjectNode) p.getCodec().readTree(p);
-            if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
-                return null;
-            }
+            JsonNode tree = p.getCodec().readTree(p);
+            String text;
+            if (tree.isObject()) {
+                var obj = (ObjectNode) tree;
+                if (!obj.has("storeId") || !obj.required("storeId").isTextual()) {
+                    return null;
+                }
 
-            var text = obj.required("storeId").asText();
-            if (text.isBlank()) {
-                return null;
+                text = obj.required("storeId").asText();
+                if (text.isBlank()) {
+                    return null;
+                }
+            } else {
+                if (!tree.isTextual()) {
+                    return null;
+                }
+                text = tree.asText();
             }
 
             var id = UUID.fromString(text);
