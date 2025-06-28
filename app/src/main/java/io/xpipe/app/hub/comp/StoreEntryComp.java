@@ -454,7 +454,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 }
 
                 {
-                    var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2b-bookmark-multiple-outline"));
+                    var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2f-format-list-bulleted"));
 
                     var index = new MenuItem(AppI18n.get("index"), new FontIcon("mdi2o-order-numeric-ascending"));
                     index.setOnAction(event -> {
@@ -475,14 +475,14 @@ public abstract class StoreEntryComp extends SimpleComp {
                         order.getItems().add(noOrder);
                     }
 
-                    var first = new MenuItem(AppI18n.get("moveToTop"), new FontIcon("mdi2o-order-bool-descending"));
+                    var first = new MenuItem(AppI18n.get("moveToFirst"), new FontIcon("mdi2o-order-bool-descending"));
                     first.setOnAction(event -> {
                         getWrapper().orderFirst();
                         event.consume();
                     });
                     order.getItems().add(first);
 
-                    var last = new MenuItem(AppI18n.get("moveToBottom"), new FontIcon("mdi2o-order-bool-ascending"));
+                    var last = new MenuItem(AppI18n.get("moveToLast"), new FontIcon("mdi2o-order-bool-ascending"));
                     last.setOnAction(event -> {
                         getWrapper().orderLast();
                         event.consume();
@@ -492,7 +492,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     order.getItems().add(new SeparatorMenuItem());
 
                     var top = new MenuItem(
-                            AppI18n.get("stickToTop"), new FontIcon("mdi2o-order-bool-descending-variant"));
+                            AppI18n.get("keepFirst"), new FontIcon("mdi2o-order-bool-descending-variant"));
                     top.setOnAction(event -> {
                         getWrapper().orderStickFirst();
                         event.consume();
@@ -501,7 +501,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     order.getItems().add(top);
 
                     var bottom = new MenuItem(
-                            AppI18n.get("stickToBottom"), new FontIcon("mdi2o-order-bool-ascending-variant"));
+                            AppI18n.get("keepLast"), new FontIcon("mdi2o-order-bool-ascending-variant"));
                     bottom.setOnAction(event -> {
                         getWrapper().orderStickLast();
                         event.consume();
@@ -537,6 +537,32 @@ public abstract class StoreEntryComp extends SimpleComp {
                                 move.getItems().add(m);
                             });
                     items.add(move);
+                }
+
+                if (getWrapper().getPinToTop().getValue() || section.getDepth() > 1) {
+                    var pinToTop = new MenuItem();
+                    pinToTop.graphicProperty()
+                            .bind(Bindings.createObjectBinding(
+                                    () -> {
+                                        var is = getWrapper().getPinToTop().get();
+                                        return is
+                                                ? new FontIcon("mdi2p-pin-off-outline")
+                                                : new FontIcon("mdi2p-pin-outline");
+                                    },
+                                    getWrapper().getPinToTop()));
+                    pinToTop.textProperty()
+                            .bind(Bindings.createStringBinding(
+                                    () -> {
+                                        var is = getWrapper().getPinToTop().get();
+                                        return is
+                                                ? AppI18n.get("unpinFromTop")
+                                                : AppI18n.get("pinToTop");
+                                    },
+                                    AppI18n.activeLanguage(),
+                                    getWrapper().getPinToTop()));
+                    pinToTop.setOnAction(event -> getWrapper()
+                            .togglePinToTop());
+                    items.add(pinToTop);
                 }
             }
 

@@ -64,6 +64,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
+    private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
 
     private boolean effectiveBusyProviderBound = false;
@@ -197,6 +198,7 @@ public class StoreEntryWrapper {
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
+        pinToTop.setValue(entry.isPinToTop());
 
         var storeChanged = store.getValue() != entry.getStore();
         store.setValue(entry.getStore());
@@ -414,6 +416,23 @@ public class StoreEntryWrapper {
 
     public void toggleExpanded() {
         this.expanded.set(!expanded.getValue());
+    }
+
+    public void togglePinToTop() {
+        if (getEntry().isPinToTop()) {
+            getEntry().setPinToTop(false);
+            StoreViewState.get().triggerStoreListUpdate();
+        } else {
+            var root = StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList().stream().filter(
+                    storeSection -> storeSection.anyMatches(storeEntryWrapper -> storeEntryWrapper == this)).findFirst();
+            var sortMode = StoreSectionSortMode.DATE_DESC;
+            var date = root.isPresent() ? sortMode.date(sortMode.getRepresentative(root.get())).plus(Duration.ofSeconds(1)) : Instant.now();
+            getEntry().setPinToTop(!getEntry().isPinToTop());
+            StoreViewState.get().triggerStoreListUpdate();
+            getEntry().setLastUsed(date);
+            getEntry().setLastModified(date);
+            StoreViewState.get().triggerStoreListUpdate();
+        }
     }
 
     public boolean matchesFilter(String filter) {

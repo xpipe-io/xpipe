@@ -862,6 +862,10 @@ public abstract class DataStorage {
     // Get operations
 
     public boolean isRootEntry(DataStoreEntry entry, DataStoreCategory current) {
+        if (entry.isPinToTop()) {
+            return true;
+        }
+
         var parent = getDefaultDisplayParent(entry);
         var noParent = parent.isEmpty();
         if (noParent) {

@@ -79,6 +79,10 @@ public class DataStoreEntry extends StorageElement {
     @Getter
     boolean freeze;
 
+    @NonFinal
+    @Getter
+    boolean pinToTop;
+
     @Getter
     @NonFinal
     int orderIndex;
@@ -100,6 +104,7 @@ public class DataStoreEntry extends StorageElement {
             String notes,
             String icon,
             boolean freeze,
+            boolean pinToTop,
             int orderIndex) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
@@ -112,6 +117,7 @@ public class DataStoreEntry extends StorageElement {
         this.notes = notes;
         this.icon = icon;
         this.freeze = freeze;
+        this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
     }
 
@@ -132,6 +138,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
+                false,
                 false,
                 0);
     }
@@ -170,6 +177,7 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
+                false,
                 false,
                 0);
         return entry;
@@ -226,6 +234,9 @@ public class DataStoreEntry extends StorageElement {
                 })
                 .orElse(null);
         var freeze = Optional.ofNullable(json.get("freeze"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(false);
+        var pinToTop = Optional.ofNullable(json.get("pinToTop"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
 
@@ -305,6 +316,7 @@ public class DataStoreEntry extends StorageElement {
                 notes,
                 icon,
                 freeze,
+                pinToTop,
                 orderIndex));
     }
 
@@ -464,6 +476,7 @@ public class DataStoreEntry extends StorageElement {
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
         obj.put("freeze", freeze);
+        obj.put("pinToTop", pinToTop);
         obj.put("orderIndex", orderIndex);
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
@@ -516,6 +529,15 @@ public class DataStoreEntry extends StorageElement {
         this.freeze = newValue;
         if (changed) {
             notifyUpdate(false, true);
+        }
+    }
+
+    public void setPinToTop(boolean newValue) {
+        var changed = pinToTop != newValue;
+        this.pinToTop = newValue;
+        if (changed) {
+            notifyUpdate(false, false);
+            dirty = true;
         }
     }
 

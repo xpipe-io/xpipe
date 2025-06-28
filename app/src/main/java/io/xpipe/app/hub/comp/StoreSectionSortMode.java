@@ -57,9 +57,9 @@ public interface StoreSectionSortMode {
                     .reversed();
         }
     };
-    StoreSectionSortMode DATE_DESC = new StoreSectionSortMode.DateSortMode() {
+    StoreSectionSortMode.DateSortMode DATE_DESC = new StoreSectionSortMode.DateSortMode() {
 
-        protected Instant date(StoreSection s) {
+        public Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccess().getValue();
             if (la == null) {
                 return Instant.MAX;
@@ -78,9 +78,9 @@ public interface StoreSectionSortMode {
             return "date-desc";
         }
     };
-    StoreSectionSortMode DATE_ASC = new StoreSectionSortMode.DateSortMode() {
+    StoreSectionSortMode.DateSortMode DATE_ASC = new StoreSectionSortMode.DateSortMode() {
 
-        protected Instant date(StoreSection s) {
+        public Instant date(StoreSection s) {
             var la = s.getWrapper().getLastAccess().getValue();
             if (la == null) {
                 return Instant.MIN;
@@ -117,7 +117,7 @@ public interface StoreSectionSortMode {
         private int entriesListObservableIndex = -1;
         private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
 
-        private StoreSection computeRepresentative(StoreSection s) {
+        public StoreSection computeRepresentative(StoreSection s) {
             return Stream.concat(
                             s.getShownChildren().getList().stream()
                                     .filter(section -> section.getWrapper()
@@ -130,7 +130,7 @@ public interface StoreSectionSortMode {
                     .orElseThrow();
         }
 
-        private StoreSection getRepresentative(StoreSection s) {
+        public StoreSection getRepresentative(StoreSection s) {
             if (StoreViewState.get().getEntriesListUpdateObservable().get() != entriesListObservableIndex) {
                 cachedRepresentatives.clear();
                 entriesListObservableIndex =
@@ -146,7 +146,7 @@ public interface StoreSectionSortMode {
             return r;
         }
 
-        protected abstract Instant date(StoreSection s);
+        public abstract Instant date(StoreSection s);
 
         protected abstract int compare(Instant s1, Instant s2);
 
