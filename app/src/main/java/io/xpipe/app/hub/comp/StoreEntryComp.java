@@ -20,6 +20,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
@@ -238,6 +239,18 @@ public abstract class StoreEntryComp extends SimpleComp {
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
+        return button;
+    }
+
+    protected Comp<?> createPinIcon() {
+        var button = new IconButtonComp("mdi2p-pin-outline");
+        button.disable(new SimpleBooleanProperty(true));
+        button.tooltipKey("pinned");
+        button.apply(struc -> {
+            AppFontSizes.xs(struc.get());
+            struc.get().setOpacity(1.0);
+        });
+        button.hide(Bindings.not(getWrapper().getPinToTop()));
         return button;
     }
 
