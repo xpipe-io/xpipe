@@ -23,6 +23,7 @@ public class ShellDialects {
     public static ShellDialect CSH;
     public static ShellDialect FISH;
     public static ShellDialect NUSHELL;
+    public static ShellDialect XONSH;
 
     public static ShellDialect NO_INTERACTION;
     public static ShellDialect CISCO;
@@ -91,6 +92,7 @@ public class ShellDialects {
             ASH = byId("ash");
             SH = byId("sh");
             NUSHELL = byId("nushell");
+            XONSH = byId("xonsh");
             NO_INTERACTION = byId("noInteraction");
             CISCO = byId("cisco");
             MIKROTIK = byId("mikrotik");
