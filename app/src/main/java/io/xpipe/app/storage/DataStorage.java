@@ -401,6 +401,53 @@ public abstract class DataStorage {
         }
     }
 
+    public DataStoreCategory breakOutCategory(DataStoreEntry entry) {
+        if (!(entry.getStore() instanceof FixedHierarchyStore)) {
+            return null;
+        }
+
+        var cat = getStoreCategory(entry);
+        var breakOut = new DataStoreCategory(null, UUID.randomUUID(), entry.getName(), Instant.now(), Instant.now(), true,
+                cat.getUuid(), true, DataStoreCategoryConfig.empty());
+        addStoreCategory(breakOut);
+        entry.setBreakOutCategory(breakOut);
+
+        var children = getStoreChildren(entry);
+        children.forEach(child -> {
+            child.setCategoryUuid(breakOut.getUuid());
+        });
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange(cat, breakOut));
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        saveAsync();
+        return breakOut;
+    }
+
+    public void mergeBreakOutCategory(DataStoreEntry entry) {
+        if (!(entry.getStore() instanceof FixedHierarchyStore)) {
+            return;
+        }
+
+        if (entry.getBreakOutCategory() == null) {
+            return;
+        }
+
+        var breakOut = getStoreCategoryIfPresent(entry.getBreakOutCategory());
+        if (breakOut.isEmpty()) {
+            entry.setBreakOutCategory(null);
+            return;
+        }
+
+        var children = getStoreChildren(entry);
+        children.forEach(child -> {
+            child.setCategoryUuid(entry.getCategoryUuid());
+        });
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange(breakOut.get(), getStoreCategory(entry)));
+        deleteStoreCategory(breakOut.get(), false, false);
+        entry.setBreakOutCategory(null);
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        saveAsync();
+    }
+
     public void moveEntryToCategory(DataStoreEntry entry, DataStoreCategory newCategory) {
         if (newCategory.getUuid().equals(entry.getCategoryUuid())) {
             return;
@@ -571,6 +618,9 @@ public abstract class DataStorage {
 
         if (h.removeLeftovers()) {
             deleteWithChildren(toRemove.toArray(DataStoreEntry[]::new));
+        }
+        if (e.getBreakOutCategory() != null) {
+            toAdd.forEach(nc -> nc.get().setCategoryUuid(e.getBreakOutCategory()));
         }
         addStoreEntriesIfNotPresent(toAdd.stream().map(DataStoreEntryRef::get).toArray(DataStoreEntry[]::new));
         toUpdate.forEach(pair -> {
@@ -747,7 +797,7 @@ public abstract class DataStorage {
             }
 
             var displayParent = syntheticParent.or(() -> getDefaultDisplayParent(e));
-            if (displayParent.isPresent()) {
+            if (displayParent.isPresent() && (displayParent.get().getBreakOutCategory() == null || getStoreCategoryIfPresent(displayParent.get().getBreakOutCategory()).isEmpty())) {
                 displayParent.get().setExpanded(true);
                 e.setCategoryUuid(displayParent.get().getCategoryUuid());
             }

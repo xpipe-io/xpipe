@@ -577,6 +577,28 @@ public abstract class StoreEntryComp extends SimpleComp {
                             .togglePinToTop());
                     items.add(pinToTop);
                 }
+
+
+                if (getWrapper().getStore().getValue() instanceof FixedHierarchyStore) {
+                    var breakOut = new MenuItem();
+                    var is = getWrapper().getEntry().getBreakOutCategory() != null;
+                    if (is) {
+                        breakOut.textProperty().bind(AppI18n.observable("mergeCategory"));
+                        breakOut.setGraphic( new FontIcon("mdi2c-collapse-all-outline"));
+                    } else {
+                        breakOut.textProperty().bind(AppI18n.observable("breakOutCategory"));
+                        breakOut.setGraphic( new FontIcon("mdi2e-expand-all-outline"));
+                    }
+                    breakOut.setOnAction(event -> {
+                        if (is) {
+                            getWrapper().mergeBreakOutCategory();
+                        } else {
+                            getWrapper().breakOutCategory();
+                        }
+                        event.consume();
+                    });
+                    items.add(breakOut);
+                }
             }
 
             if (cat == StoreActionCategory.DELETION) {

@@ -14,10 +14,12 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -334,6 +336,26 @@ public class StoreEntryWrapper {
         }
 
         return false;
+    }
+
+    public void breakOutCategory() {
+        ThreadHelper.runAsync(() -> {
+            var cat = DataStorage.get().breakOutCategory(entry);
+            if (cat != null) {
+                Platform.runLater(() -> {
+                    StoreViewState.get().getActiveCategory().setValue(StoreViewState.get().getCategoryWrapper(cat));
+                });
+            }
+        });
+    }
+
+    public void mergeBreakOutCategory() {
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().mergeBreakOutCategory(entry);
+            Platform.runLater(() -> {
+                StoreViewState.get().getActiveCategory().setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(entry)));
+            });
+        });
     }
 
     public void refreshChildren() {

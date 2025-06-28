@@ -87,6 +87,10 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     int orderIndex;
 
+    @Getter
+    @NonFinal
+    UUID breakOutCategory;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -105,7 +109,8 @@ public class DataStoreEntry extends StorageElement {
             String icon,
             boolean freeze,
             boolean pinToTop,
-            int orderIndex) {
+            int orderIndex,
+            UUID breakOutCategory) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;
@@ -119,6 +124,7 @@ public class DataStoreEntry extends StorageElement {
         this.freeze = freeze;
         this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
+        this.breakOutCategory = breakOutCategory;
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -140,7 +146,8 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 false,
                 false,
-                0);
+                0,
+                null);
     }
 
     public static DataStoreEntry createNew(@NonNull NameableStore store) {
@@ -179,7 +186,8 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 false,
                 false,
-                0);
+                0,
+                null);
         return entry;
     }
 
@@ -217,6 +225,9 @@ public class DataStoreEntry extends StorageElement {
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
+        var breakOutCategory = Optional.ofNullable(json.get("breakOutCategoryUuid"))
+                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+                .orElse(null);
         var name = json.required("name").textValue().strip();
 
         // Fix for legacy issue where entries could have empty names
@@ -317,7 +328,8 @@ public class DataStoreEntry extends StorageElement {
                 icon,
                 freeze,
                 pinToTop,
-                orderIndex));
+                orderIndex,
+                breakOutCategory));
     }
 
     public void setColor(DataStoreColor newColor) {
@@ -424,6 +436,14 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    public void setBreakOutCategory(DataStoreCategory category) {
+        var changed = !Objects.equals(breakOutCategory, category != null ? category.getUuid() : null);
+        this.breakOutCategory = category != null ? category.getUuid() : null;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setStorePersistentState(DataStoreState value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
@@ -473,6 +493,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
+        obj.put("breakOutCategoryUuid", categoryUuid != null ? categoryUuid.toString() : null);
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
         obj.put("freeze", freeze);
