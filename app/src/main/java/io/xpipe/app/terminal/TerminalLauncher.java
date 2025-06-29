@@ -160,7 +160,8 @@ public class TerminalLauncher {
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
         var alwaysPromptRestart = AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
-        var effectivePreferTabs = preferTabs && AppPrefs.get().preferTerminalTabs().get();
+        var effectivePreferTabs =
+                preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
         var config = TerminalLaunchConfiguration.create(
                 request, entry, cleanTitle, adjustedTitle, effectivePreferTabs, alwaysPromptRestart);

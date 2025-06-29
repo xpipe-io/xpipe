@@ -407,8 +407,16 @@ public abstract class DataStorage {
         }
 
         var cat = getStoreCategory(entry);
-        var breakOut = new DataStoreCategory(null, UUID.randomUUID(), entry.getName(), Instant.now(), Instant.now(), true,
-                cat.getUuid(), true, DataStoreCategoryConfig.empty());
+        var breakOut = new DataStoreCategory(
+                null,
+                UUID.randomUUID(),
+                entry.getName(),
+                Instant.now(),
+                Instant.now(),
+                true,
+                cat.getUuid(),
+                true,
+                DataStoreCategoryConfig.empty());
         addStoreCategory(breakOut);
         entry.setBreakOutCategory(breakOut);
 
@@ -441,7 +449,8 @@ public abstract class DataStorage {
         children.forEach(child -> {
             child.setCategoryUuid(entry.getCategoryUuid());
         });
-        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange(breakOut.get(), getStoreCategory(entry)));
+        listeners.forEach(
+                storageListener -> storageListener.onEntryCategoryChange(breakOut.get(), getStoreCategory(entry)));
         deleteStoreCategory(breakOut.get(), false, false);
         entry.setBreakOutCategory(null);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
@@ -797,7 +806,10 @@ public abstract class DataStorage {
             }
 
             var displayParent = syntheticParent.or(() -> getDefaultDisplayParent(e));
-            if (displayParent.isPresent() && (displayParent.get().getBreakOutCategory() == null || getStoreCategoryIfPresent(displayParent.get().getBreakOutCategory()).isEmpty())) {
+            if (displayParent.isPresent()
+                    && (displayParent.get().getBreakOutCategory() == null
+                            || getStoreCategoryIfPresent(displayParent.get().getBreakOutCategory())
+                                    .isEmpty())) {
                 displayParent.get().setExpanded(true);
                 e.setCategoryUuid(displayParent.get().getCategoryUuid());
             }

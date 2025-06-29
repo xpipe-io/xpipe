@@ -85,7 +85,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 () -> {
                     AbstractServiceStore s =
                             sec.getWrapper().getEntry().getStore().asNeeded();
-                    if (!s.getHost().getStore().requiresTunnel() || !s.getHost().getStore().isLocallyTunnelable()) {
+                    if (!s.getHost().getStore().requiresTunnel()
+                            || !s.getHost().getStore().isLocallyTunnelable()) {
                         return false;
                     }
 

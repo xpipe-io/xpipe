@@ -54,6 +54,7 @@ public class NodeCallback {
             checkPlatformThread();
         }
     };
+
     @SuppressWarnings("rawtypes")
     private static final ListChangeListener listListener = new ListChangeListener() {
 

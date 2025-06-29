@@ -2,7 +2,6 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.util.FailableSupplier;
 
@@ -80,7 +79,10 @@ public class ShellSession extends Session {
     public boolean checkAlive() throws Exception {
         try {
             // Don't print it constantly
-            return shellControl.command(CommandBuilder.of().add("echo", "xpipetest")).sensitive().executeAndCheck();
+            return shellControl
+                    .command(CommandBuilder.of().add("echo", "xpipetest"))
+                    .sensitive()
+                    .executeAndCheck();
         } catch (Exception ex) {
             throw ErrorEventFactory.expected(ex);
         }

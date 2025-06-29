@@ -16,8 +16,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Optional;
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = IdentityValue.InPlace.class),
@@ -39,9 +37,12 @@ public interface IdentityValue {
         return new Ref(found.get().ref());
     }
 
-
     static IdentityValue ofCategory(DataStoreEntry e) {
-        var target = e.getBreakOutCategory() != null ? DataStorage.get().getStoreCategoryIfPresent(e.getBreakOutCategory()).orElse(null) : null;
+        var target = e.getBreakOutCategory() != null
+                ? DataStorage.get()
+                        .getStoreCategoryIfPresent(e.getBreakOutCategory())
+                        .orElse(null)
+                : null;
         if (target == null) {
             target = DataStorage.get().getStoreCategory(e);
         }

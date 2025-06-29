@@ -61,11 +61,13 @@ public class TerminalCategory extends AppPrefsCategory {
             }
         });
 
-        var tabsSettingSupported = Bindings.createBooleanBinding(() -> {
-                    return prefs.terminalType().getValue() != null &&
-                            prefs.terminalType().getValue().getOpenFormat() == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-                }, prefs.terminalType()
-        );
+        var tabsSettingSupported = Bindings.createBooleanBinding(
+                () -> {
+                    return prefs.terminalType().getValue() != null
+                            && prefs.terminalType().getValue().getOpenFormat()
+                                    == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+                },
+                prefs.terminalType());
 
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")

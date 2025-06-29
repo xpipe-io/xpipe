@@ -504,8 +504,8 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                     order.getItems().add(new SeparatorMenuItem());
 
-                    var top = new MenuItem(
-                            AppI18n.get("keepFirst"), new FontIcon("mdi2o-order-bool-descending-variant"));
+                    var top =
+                            new MenuItem(AppI18n.get("keepFirst"), new FontIcon("mdi2o-order-bool-descending-variant"));
                     top.setOnAction(event -> {
                         getWrapper().orderStickFirst();
                         event.consume();
@@ -513,8 +513,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                     top.setDisable(getWrapper().getEntry().getOrderIndex() == Integer.MIN_VALUE);
                     order.getItems().add(top);
 
-                    var bottom = new MenuItem(
-                            AppI18n.get("keepLast"), new FontIcon("mdi2o-order-bool-ascending-variant"));
+                    var bottom =
+                            new MenuItem(AppI18n.get("keepLast"), new FontIcon("mdi2o-order-bool-ascending-variant"));
                     bottom.setOnAction(event -> {
                         getWrapper().orderStickLast();
                         event.consume();
@@ -567,27 +567,23 @@ public abstract class StoreEntryComp extends SimpleComp {
                             .bind(Bindings.createStringBinding(
                                     () -> {
                                         var is = getWrapper().getPinToTop().get();
-                                        return is
-                                                ? AppI18n.get("unpinFromTop")
-                                                : AppI18n.get("pinToTop");
+                                        return is ? AppI18n.get("unpinFromTop") : AppI18n.get("pinToTop");
                                     },
                                     AppI18n.activeLanguage(),
                                     getWrapper().getPinToTop()));
-                    pinToTop.setOnAction(event -> getWrapper()
-                            .togglePinToTop());
+                    pinToTop.setOnAction(event -> getWrapper().togglePinToTop());
                     items.add(pinToTop);
                 }
-
 
                 if (getWrapper().getStore().getValue() instanceof FixedHierarchyStore) {
                     var breakOut = new MenuItem();
                     var is = getWrapper().getEntry().getBreakOutCategory() != null;
                     if (is) {
                         breakOut.textProperty().bind(AppI18n.observable("mergeCategory"));
-                        breakOut.setGraphic( new FontIcon("mdi2c-collapse-all-outline"));
+                        breakOut.setGraphic(new FontIcon("mdi2c-collapse-all-outline"));
                     } else {
                         breakOut.textProperty().bind(AppI18n.observable("breakOutCategory"));
-                        breakOut.setGraphic( new FontIcon("mdi2e-expand-all-outline"));
+                        breakOut.setGraphic(new FontIcon("mdi2e-expand-all-outline"));
                     }
                     breakOut.setOnAction(event -> {
                         if (is) {

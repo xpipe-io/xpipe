@@ -14,7 +14,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -343,7 +342,9 @@ public class StoreEntryWrapper {
             var cat = DataStorage.get().breakOutCategory(entry);
             if (cat != null) {
                 Platform.runLater(() -> {
-                    StoreViewState.get().getActiveCategory().setValue(StoreViewState.get().getCategoryWrapper(cat));
+                    StoreViewState.get()
+                            .getActiveCategory()
+                            .setValue(StoreViewState.get().getCategoryWrapper(cat));
                 });
             }
         });
@@ -353,7 +354,10 @@ public class StoreEntryWrapper {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().mergeBreakOutCategory(entry);
             Platform.runLater(() -> {
-                StoreViewState.get().getActiveCategory().setValue(StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(entry)));
+                StoreViewState.get()
+                        .getActiveCategory()
+                        .setValue(StoreViewState.get()
+                                .getCategoryWrapper(DataStorage.get().getStoreCategory(entry)));
             });
         });
     }
@@ -445,10 +449,13 @@ public class StoreEntryWrapper {
             getEntry().setPinToTop(false);
             StoreViewState.get().triggerStoreListUpdate();
         } else {
-            var root = StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList().stream().filter(
-                    storeSection -> storeSection.anyMatches(storeEntryWrapper -> storeEntryWrapper == this)).findFirst();
+            var root = StoreViewState.get().getCurrentTopLevelSection().getAllChildren().getList().stream()
+                    .filter(storeSection -> storeSection.anyMatches(storeEntryWrapper -> storeEntryWrapper == this))
+                    .findFirst();
             var sortMode = StoreSectionSortMode.DATE_DESC;
-            var date = root.isPresent() ? sortMode.date(sortMode.getRepresentative(root.get())).plus(Duration.ofSeconds(1)) : Instant.now();
+            var date = root.isPresent()
+                    ? sortMode.date(sortMode.getRepresentative(root.get())).plus(Duration.ofSeconds(1))
+                    : Instant.now();
             getEntry().setPinToTop(!getEntry().isPinToTop());
             StoreViewState.get().triggerStoreListUpdate();
             getEntry().setLastUsed(date);

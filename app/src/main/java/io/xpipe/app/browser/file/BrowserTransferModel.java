@@ -202,7 +202,8 @@ public class BrowserTransferModel {
             }
         }
         if (open) {
-            DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
+            DesktopHelper.browseFileInDirectory(
+                    downloads.resolve(files.getFirst().getFileName()));
         }
     }
 

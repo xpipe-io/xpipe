@@ -8,13 +8,11 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.PlatformThread;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -41,7 +39,8 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                     return model.getSelected().getValue().equals(entry);
                                 },
                                 model.getSelected()),
-                        (v1, v2) -> v2, LinkedHashMap::new));
+                        (v1, v2) -> v2,
+                        LinkedHashMap::new));
         var multi = new MultiContentComp(map, true);
         multi.styleClass("background");
 

@@ -14,7 +14,6 @@ import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;

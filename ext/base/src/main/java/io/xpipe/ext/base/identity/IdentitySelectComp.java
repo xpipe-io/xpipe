@@ -37,7 +37,6 @@ import atlantafx.base.theme.Styles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
@@ -225,7 +224,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                         if (store != null) {
                             var provider = store.get().getProvider();
                             var image = provider.getDisplayIconFileName(store.getStore());
-                            setGraphic(PrettyImageHelper.ofFixedSize(image, 16, 16).createRegion());
+                            setGraphic(
+                                    PrettyImageHelper.ofFixedSize(image, 16, 16).createRegion());
                         }
                     } else {
                         setGraphic(null);

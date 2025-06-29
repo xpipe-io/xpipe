@@ -14,7 +14,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
-import java.util.OptionalInt;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {
