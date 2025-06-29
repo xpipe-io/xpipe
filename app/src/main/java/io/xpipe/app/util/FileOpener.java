@@ -124,6 +124,9 @@ public class FileOpener {
                         (size) -> {
                             return new BrowserFileOutput() {
                                 @Override
+                                public void beforeTransfer() throws Exception {}
+
+                                @Override
                                 public Optional<DataStoreEntry> target() {
                                     return Optional.empty();
                                 }

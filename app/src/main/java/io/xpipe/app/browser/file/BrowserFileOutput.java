@@ -26,6 +26,9 @@ public interface BrowserFileOutput {
             }
 
             @Override
+            public void beforeTransfer() throws Exception {}
+
+            @Override
             public void onFinish() {}
         };
     }
@@ -35,6 +38,8 @@ public interface BrowserFileOutput {
     boolean hasOutput();
 
     OutputStream open() throws Exception;
+
+    void beforeTransfer() throws Exception;
 
     void onFinish() throws Exception;
 }

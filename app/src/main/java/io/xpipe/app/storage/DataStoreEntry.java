@@ -226,7 +226,8 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
         var breakOutCategory = Optional.ofNullable(json.get("breakOutCategoryUuid"))
-                .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
+                .filter(jsonNode -> !jsonNode.isNull())
+                .map(jsonNode -> UUID.fromString(jsonNode.asText()))
                 .orElse(null);
         var name = json.required("name").textValue().strip();
 

@@ -57,7 +57,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                             DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
                     for (DataStoreEntry child : children) {
                         if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                            if (serviceStore.getHost().getStore().requiresTunnel()) {
+                            if (serviceStore.getHost() != null && serviceStore.getHost().getStore().requiresTunnel()) {
                                 return true;
                             }
                         }

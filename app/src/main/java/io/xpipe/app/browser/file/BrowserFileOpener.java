@@ -3,6 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
@@ -11,6 +13,7 @@ import io.xpipe.app.util.FileOpener;
 import io.xpipe.core.process.CommandBuilder;
 import io.xpipe.core.process.ElevationFunction;
 import io.xpipe.core.process.OsType;
+import io.xpipe.core.process.ProcessOutputException;
 import io.xpipe.core.store.FileEntry;
 import io.xpipe.core.store.FileInfo;
 import io.xpipe.core.store.FilePath;
@@ -44,36 +47,11 @@ public class BrowserFileOpener {
             }
         }
 
-        var defOutput = new BrowserFileOutput() {
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        var requiresSudo = sc.getOsType() != OsType.WINDOWS &&
+                requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
 
-            @Override
-            public Optional<DataStoreEntry> target() {
-                return Optional.of(model.getEntry().get());
-            }
-
-            @Override
-            public boolean hasOutput() {
-                return true;
-            }
-
-            @Override
-            public OutputStream open() throws Exception {
-                return fileSystem.openOutput(file.getPath(), totalBytes);
-            }
-
-            @Override
-            public void onFinish() throws Exception {
-                model.refreshFileEntriesSync(List.of(file));
-            }
-        };
-
-        var sc = fileSystem.getShell().get();
-        if (sc.getOsType() == OsType.WINDOWS) {
-            return defOutput;
-        }
-
-        var info = (FileInfo.Unix) file.getInfo();
-        var requiresSudo = requiresSudo(model, info, file.getPath());
+        var defOutput = createFileOutput(model, file, totalBytes, false);
         if (!requiresSudo) {
             return defOutput;
         }
@@ -83,46 +61,7 @@ public class BrowserFileOpener {
             return defOutput;
         }
 
-        var rootSc = sc.identicalDialectSubShell()
-                .elevated(ElevationFunction.elevated(null))
-                .start();
-        var rootFs = new ConnectionFileSystem(rootSc);
-        var rootOutput = new BrowserFileOutput() {
-
-            @Override
-            public Optional<DataStoreEntry> target() {
-                return Optional.of(model.getEntry().get());
-            }
-
-            @Override
-            public boolean hasOutput() {
-                return true;
-            }
-
-            @Override
-            public OutputStream open() throws Exception {
-                try {
-                    return new FilterOutputStream(rootFs.openOutput(file.getPath(), totalBytes)) {
-                        @Override
-                        public void close() throws IOException {
-                            try {
-                                super.close();
-                            } finally {
-                                rootFs.close();
-                            }
-                        }
-                    };
-                } catch (Exception ex) {
-                    rootFs.close();
-                    throw ex;
-                }
-            }
-
-            @Override
-            public void onFinish() throws Exception {
-                model.refreshFileEntriesSync(List.of(file));
-            }
-        };
+        var rootOutput = createFileOutput(model, file, totalBytes, true);
         return rootOutput;
     }
 
@@ -155,6 +94,68 @@ public class BrowserFileOpener {
         return !test;
     }
 
+    private static BrowserFileOutput createFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws
+            Exception {
+        var sc = elevate ? model.getFileSystem().getShell().orElseThrow()
+                .identicalDialectSubShell()
+                .elevated(ElevationFunction.elevated(null))
+                .start() : model.getFileSystem().getShell().orElseThrow().start();
+        var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
+        var isSudoersFile = file.getPath().startsWith("/etc/sudo");
+        var output = new BrowserFileOutput() {
+
+            @Override
+            public Optional<DataStoreEntry> target() {
+                return Optional.of(model.getEntry().get());
+            }
+
+            @Override
+            public boolean hasOutput() {
+                return true;
+            }
+
+            @Override
+            public OutputStream open() throws Exception {
+                try {
+                    return fs.openOutput(file.getPath(), totalBytes);
+                } catch (Exception ex) {
+                    if (elevate) {
+                        fs.close();
+                    }
+                    throw ex;
+                }
+            }
+
+            @Override
+            public void beforeTransfer() throws Exception {
+                if (isSudoersFile) {
+                    fs.copy(file.getPath(), sc.getSystemTemporaryDirectory().join(file.getName()));
+                }
+            }
+
+            @Override
+            public void onFinish() throws Exception {
+                if (isSudoersFile) {
+                    if (sc.view().findProgram("visudo").isPresent()) {
+                        try {
+                            sc.command(CommandBuilder.of().add("visudo", "-c", "-f").addFile(file.getPath())).execute();
+                        } catch (ProcessOutputException ex) {
+                            ErrorEventFactory.fromThrowable(ex).expected().handle();
+                            fs.copy(sc.getSystemTemporaryDirectory().join(file.getName()), file.getPath());
+                        }
+                    }
+                }
+
+                if (elevate) {
+                    fs.close();
+                }
+
+                model.refreshFileEntriesSync(List.of(file));
+            }
+        };
+        return output;
+    }
+
     @SneakyThrows
     private static int calculateKey(BrowserFileSystemTabModel model, FileEntry entry) {
         // Use different key for empty / non-empty files to prevent any issues from blanked files when transfer fails
@@ -184,6 +185,9 @@ public class BrowserFileOpener {
                             }
 
                             return new BrowserFileOutput() {
+                                @Override
+                                public void beforeTransfer() throws Exception {}
+
                                 @Override
                                 public boolean hasOutput() {
                                     return true;
@@ -230,6 +234,9 @@ public class BrowserFileOpener {
                             }
 
                             return new BrowserFileOutput() {
+                                @Override
+                                public void beforeTransfer() throws Exception {}
+
                                 @Override
                                 public boolean hasOutput() {
                                     return true;
