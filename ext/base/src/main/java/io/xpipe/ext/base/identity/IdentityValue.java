@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
@@ -14,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.Optional;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -30,6 +33,25 @@ public interface IdentityValue {
 
         var found = DataStorage.get().getStoreEntryIfPresent(effective.getDefaultIdentityStore());
         if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore identityStore)) {
+            return null;
+        }
+
+        return new Ref(found.get().ref());
+    }
+
+
+    static IdentityValue ofCategory(DataStoreEntry e) {
+        var target = e.getBreakOutCategory() != null ? DataStorage.get().getStoreCategoryIfPresent(e.getBreakOutCategory()).orElse(null) : null;
+        if (target == null) {
+            target = DataStorage.get().getStoreCategory(e);
+        }
+        var effective = DataStorage.get().getEffectiveCategoryConfig(target);
+        if (effective.getDefaultIdentityStore() == null) {
+            return null;
+        }
+
+        var found = DataStorage.get().getStoreEntryIfPresent(effective.getDefaultIdentityStore());
+        if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore)) {
             return null;
         }
 

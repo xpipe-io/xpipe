@@ -69,7 +69,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 .nameAndDescription("categorySync")
                 .addYesNoToggle(sync)
                 .hide(!DataStorage.get().supportsSync()
-                        || !wrapper.getCategory().canShare())
+                        || ((sync.getValue() == null || !sync.getValue()) && !wrapper.getCategory().canShare()))
                 .nameAndDescription("categoryDontAllowScripts")
                 .addYesNoToggle(scripts)
                 .hide(!connectionsCategory)

@@ -493,7 +493,7 @@ public class DataStoreEntry extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
-        obj.put("breakOutCategoryUuid", categoryUuid != null ? categoryUuid.toString() : null);
+        obj.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
         obj.put("freeze", freeze);

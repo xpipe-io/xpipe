@@ -11,23 +11,25 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     private final Property<String> value;
     private final List<String> predefinedValues;
-    private final Callback<ListView<String>, ListCell<String>> customCellFactory;
+    private final Supplier<ListCell<String>> customCellFactory;
 
     public ComboTextFieldComp(
             Property<String> value,
             List<String> predefinedValues,
-            Callback<ListView<String>, ListCell<String>> customCellFactory) {
+            Supplier<ListCell<String>> customCellFactory) {
         this.value = value;
         this.predefinedValues = predefinedValues;
         this.customCellFactory = customCellFactory;
@@ -60,7 +62,8 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         });
 
         if (customCellFactory != null) {
-            text.setCellFactory(customCellFactory);
+            text.setCellFactory(param -> customCellFactory.get());
+            text.setButtonCell(customCellFactory.get());
         }
 
         text.setOnKeyPressed(ke -> {

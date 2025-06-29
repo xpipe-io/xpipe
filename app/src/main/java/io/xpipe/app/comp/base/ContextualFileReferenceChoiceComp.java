@@ -173,7 +173,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         prop.addListener((observable, oldValue, newValue) -> {
             filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
         });
-        var combo = new ComboTextFieldComp(prop, items, param -> {
+        var combo = new ComboTextFieldComp(prop, items, () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {

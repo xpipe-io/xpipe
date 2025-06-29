@@ -37,6 +37,7 @@ import atlantafx.base.theme.Styles;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
@@ -208,7 +209,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
         });
 
-        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), param -> {
+        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -218,6 +219,17 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     }
 
                     setText(item);
+
+                    if (item != null) {
+                        var store = map.get(item);
+                        if (store != null) {
+                            var provider = store.get().getProvider();
+                            var image = provider.getDisplayIconFileName(store.getStore());
+                            setGraphic(PrettyImageHelper.ofFixedSize(image, 16, 16).createRegion());
+                        }
+                    } else {
+                        setGraphic(null);
+                    }
                 }
             };
         });
