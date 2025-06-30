@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.ext.base.identity.IdentityValue;
 import lombok.NonNull;
 
 import java.util.*;
@@ -112,7 +113,7 @@ public class IncusCommandView extends CommandViewBase {
         return listContainersAndStates().entrySet().stream()
                 .map(s -> {
                     boolean running = s.getValue().toLowerCase(Locale.ROOT).equals("running");
-                    var c = new IncusContainerStore(store, s.getKey(), null);
+                    var c = new IncusContainerStore(store, s.getKey(), IdentityValue.ofBreakout(store.get()));
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
                             .containerState(s.getValue())

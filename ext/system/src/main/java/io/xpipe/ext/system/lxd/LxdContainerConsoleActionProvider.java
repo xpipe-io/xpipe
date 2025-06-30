@@ -52,8 +52,8 @@ public class LxdContainerConsoleActionProvider implements HubLeafProvider<LxdCon
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (LxdContainerStore) ref.getStore();
-            var view = new IncusCommandView(
+            var d = ref.getStore();
+            var view = new LxdCommandView(
                     d.getCmd().getStore().getHost().getStore().getOrStartSession());
             TerminalLauncher.open(ref.get().getName(), view.console(d.getContainerName()));
         }

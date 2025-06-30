@@ -139,7 +139,9 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
         layout.apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
-                struc.get().getChildren().getFirst().requestFocus();
+                Platform.runLater(() -> {
+                    struc.get().getChildren().getFirst().requestFocus();
+                });
             });
         });
 

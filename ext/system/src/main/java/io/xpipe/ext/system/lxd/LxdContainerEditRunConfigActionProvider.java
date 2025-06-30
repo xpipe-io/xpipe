@@ -60,7 +60,7 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (LxdContainerStore) ref.getStore();
+            var d = ref.getStore();
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getCmd().getStore().getHost().get().ref());
             var file = FilePath.of("/run/lxd/" + d.getContainerName() + "/lxc.conf");

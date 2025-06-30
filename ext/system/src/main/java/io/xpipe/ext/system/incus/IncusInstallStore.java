@@ -8,7 +8,7 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStoreState;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.ext.base.SelfReferentialStore;
+import io.xpipe.app.ext.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

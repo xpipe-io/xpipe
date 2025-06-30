@@ -416,6 +416,10 @@ public class StoreViewState {
                         return;
                     }
 
+                    if (found.get().equals(activeCategory.getValue())) {
+                        activeCategory.setValue(found.get().getParent());
+                    }
+
                     synchronized (this) {
                         categories.getList().remove(found.get());
                     }
@@ -427,7 +431,7 @@ public class StoreViewState {
             }
 
             @Override
-            public void onEntryCategoryChange(DataStoreCategory from, DataStoreCategory to) {
+            public void onEntryCategoryChange() {
                 Platform.runLater(() -> {
                     synchronized (this) {
                         categories.getList().forEach(storeCategoryWrapper -> storeCategoryWrapper.update());

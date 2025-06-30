@@ -1,4 +1,4 @@
-package io.xpipe.ext.base;
+package io.xpipe.app.ext;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.store.DataStore;

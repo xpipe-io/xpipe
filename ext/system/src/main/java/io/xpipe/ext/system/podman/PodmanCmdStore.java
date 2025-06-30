@@ -10,7 +10,7 @@ import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.*;
-import io.xpipe.ext.base.SelfReferentialStore;
+import io.xpipe.app.ext.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

@@ -9,7 +9,7 @@ import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.store.FixedChildStore;
 import io.xpipe.core.store.InternalCacheDataStore;
 import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.ext.base.SelfReferentialStore;
+import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.ext.base.service.AbstractServiceStore;
 import io.xpipe.ext.base.service.FixedServiceCreatorStore;
 import io.xpipe.ext.base.service.MappedServiceStore;

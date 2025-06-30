@@ -3,7 +3,7 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.store.DataStore;
-import io.xpipe.ext.base.GroupStore;
+import io.xpipe.app.ext.GroupStore;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

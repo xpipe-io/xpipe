@@ -11,7 +11,6 @@ import io.xpipe.ext.base.store.StoreStartActionProvider;
 import io.xpipe.ext.base.store.StoreStopActionProvider;
 
 open module io.xpipe.ext.base {
-    exports io.xpipe.ext.base;
     exports io.xpipe.ext.base.script;
     exports io.xpipe.ext.base.store;
     exports io.xpipe.ext.base.desktop;

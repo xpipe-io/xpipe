@@ -575,9 +575,9 @@ public abstract class StoreEntryComp extends SimpleComp {
                     items.add(pinToTop);
                 }
 
-                if (getWrapper().getStore().getValue() instanceof FixedHierarchyStore) {
+                if (getWrapper().canBreakOutCategory()) {
                     var breakOut = new MenuItem();
-                    var is = getWrapper().getEntry().getBreakOutCategory() != null;
+                    var is = getWrapper().getBreakoutCategory().isPresent();
                     if (is) {
                         breakOut.textProperty().bind(AppI18n.observable("mergeCategory"));
                         breakOut.setGraphic(new FontIcon("mdi2c-collapse-all-outline"));

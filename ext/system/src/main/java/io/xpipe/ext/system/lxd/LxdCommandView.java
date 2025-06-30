@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.process.*;
 
+import io.xpipe.ext.base.identity.IdentityValue;
 import lombok.NonNull;
 
 import java.util.*;
@@ -123,6 +124,7 @@ public class LxdCommandView extends CommandViewBase {
                     var c = LxdContainerStore.builder()
                             .cmd(store)
                             .containerName(s.getKey())
+                            .identity(IdentityValue.ofBreakout(store.get()))
                             .build();
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.SingletonSessionStore;
@@ -14,6 +15,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.store.DataStore;
@@ -337,6 +339,11 @@ public class StoreEntryWrapper {
         return false;
     }
 
+    public boolean canBreakOutCategory() {
+        return (getStore().getValue() instanceof FixedHierarchyStore || getStore().getValue() instanceof GroupStore<?>) &&
+                StoreViewState.get().getParentSectionForWrapper(this).isPresent();
+    }
+
     public void breakOutCategory() {
         ThreadHelper.runAsync(() -> {
             var cat = DataStorage.get().breakOutCategory(entry);
@@ -348,6 +355,19 @@ public class StoreEntryWrapper {
                 });
             }
         });
+    }
+
+    public Optional<StoreCategoryWrapper> getBreakoutCategory() {
+        if (entry.getBreakOutCategory() == null) {
+            return Optional.empty();
+        }
+
+        var cat = DataStorage.get().getStoreCategoryIfPresent(entry.getBreakOutCategory());
+        if (cat.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(StoreViewState.get().getCategoryWrapper(cat.get()));
     }
 
     public void mergeBreakOutCategory() {
