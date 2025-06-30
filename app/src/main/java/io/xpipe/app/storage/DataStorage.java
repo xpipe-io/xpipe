@@ -453,6 +453,7 @@ public abstract class DataStorage {
         });
         categoriesToMove.forEach(toMove -> {
             toMove.setParentCategory(breakOut.getUuid());
+            // The update mechanism does not support moves, so readd them
             listeners.forEach(storageListener -> storageListener.onCategoryRemove(toMove));
             listeners.forEach(storageListener -> storageListener.onCategoryAdd(toMove));
         });
@@ -481,19 +482,32 @@ public abstract class DataStorage {
         }
 
         var moveCategories = new ArrayList<DataStoreCategory>();
-        var children = getStoreChildren(entry);
+        var children = getDeepStoreChildren(entry);
+
+        var childrenToKeep = new HashSet<DataStoreEntry>();
+        children.forEach(c -> {
+            if (c.getBreakOutCategory() != null) {
+                childrenToKeep.addAll(getDeepStoreChildren(c));
+                childrenToKeep.add(c);
+            }
+        });
+
         children.forEach(child -> {
-            if (child.getBreakOutCategory() == null) {
-                child.setCategoryUuid(parent.get().getCategoryUuid());
-            } else {
+            if (childrenToKeep.contains(child)) {
                 var cbo = getStoreCategoryIfPresent(child.getBreakOutCategory());
                 if (cbo.isPresent() && cbo.get().getParentCategory().equals(breakOut.get().getUuid())) {
                     moveCategories.add(cbo.get());
                 }
+                return;
             }
+
+            child.setCategoryUuid(parent.get().getCategoryUuid());
         });
-        moveCategories.forEach(mc -> {
-            mc.setParentCategory(parent.get().getCategoryUuid());
+        moveCategories.forEach(toMove -> {
+            toMove.setParentCategory(parent.get().getCategoryUuid());
+            // The update mechanism does not support moves, so readd them
+            listeners.forEach(storageListener -> storageListener.onCategoryRemove(toMove));
+            listeners.forEach(storageListener -> storageListener.onCategoryAdd(toMove));
         });
         entry.setCategoryUuid(parent.get().getCategoryUuid());
 
@@ -528,8 +542,6 @@ public abstract class DataStorage {
     public void setOrderIndex(DataStoreEntry entry, int index) {
         entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
-        var cat = getStoreCategory(entry);
-        cat.notifyUpdate(false, true);
         saveAsync();
     }
 

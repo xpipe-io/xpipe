@@ -420,13 +420,16 @@ public class StoreEntryWrapper {
             return;
         }
 
+        var isSingle = section.get().getAllChildren().getList().stream()
+                .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
+                .count() == 1;
         var max = section.get().getAllChildren().getList().stream()
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
                 .mapToInt(value -> value)
                 .max()
                 .orElse(0);
-        if (orderIndex.getValue() != null && max == orderIndex.getValue()) {
+        if (isSingle && max == orderIndex.getValue()) {
             return;
         }
 
@@ -439,13 +442,16 @@ public class StoreEntryWrapper {
             return;
         }
 
+        var isSingle = section.get().getAllChildren().getList().stream()
+                .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
+                .count() == 1;
         var min = section.get().getAllChildren().getList().stream()
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
                 .mapToInt(value -> value)
                 .min()
                 .orElse(0);
-        if (orderIndex.getValue() != null && min == orderIndex.getValue()) {
+        if (isSingle && min == orderIndex.getValue()) {
             return;
         }
 
