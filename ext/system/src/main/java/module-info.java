@@ -1,18 +1,9 @@
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ScanProvider;
-import io.xpipe.ext.system.incus.IncusContainerActionProviderMenu;
-import io.xpipe.ext.system.incus.IncusContainerStoreProvider;
-import io.xpipe.ext.system.incus.IncusInstallStoreProvider;
-import io.xpipe.ext.system.incus.IncusScanProvider;
-import io.xpipe.ext.system.lxd.LxdCmdStoreProvider;
-import io.xpipe.ext.system.lxd.LxdContainerActionProviderMenu;
-import io.xpipe.ext.system.lxd.LxdContainerStoreProvider;
-import io.xpipe.ext.system.lxd.LxdScanProvider;
-import io.xpipe.ext.system.podman.PodmanCmdStoreProvider;
-import io.xpipe.ext.system.podman.PodmanContainerActionProviderMenu;
-import io.xpipe.ext.system.podman.PodmanContainerStoreProvider;
-import io.xpipe.ext.system.podman.PodmanScanProvider;
+import io.xpipe.ext.system.incus.*;
+import io.xpipe.ext.system.lxd.*;
+import io.xpipe.ext.system.podman.*;
 
 open module io.xpipe.ext.system {
     requires com.fasterxml.jackson.databind;
@@ -36,7 +27,13 @@ open module io.xpipe.ext.system {
             PodmanContainerStoreProvider,
             PodmanCmdStoreProvider;
     provides ActionProvider with
-            IncusContainerActionProviderMenu,
+            IncusContainerActionProviderMenu, IncusContainerConsoleActionProvider,
+            IncusContainerEditConfigActionProvider,
+            IncusContainerEditRunConfigActionProvider, LxdContainerConsoleActionProvider,
+            LxdContainerEditConfigActionProvider,
+            LxdContainerEditRunConfigActionProvider,
             LxdContainerActionProviderMenu,
-            PodmanContainerActionProviderMenu;
+            PodmanContainerActionProviderMenu, PodmanContainerInspectActionProvider,
+            PodmanContainerAttachActionProvider,
+            PodmanContainerLogsActionProvider;
 }

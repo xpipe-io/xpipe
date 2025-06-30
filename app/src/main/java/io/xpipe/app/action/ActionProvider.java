@@ -1,6 +1,10 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.hub.action.BatchHubProvider;
+import io.xpipe.app.hub.action.HubBranchProvider;
+import io.xpipe.app.hub.action.HubLeafProvider;
+import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.util.ModuleLayerLoader;
@@ -16,6 +20,19 @@ public interface ActionProvider {
         for (ActionProvider actionProvider : ALL) {
             try {
                 actionProvider.init();
+
+                // For debugging
+//                if (actionProvider instanceof HubLeafProvider<?>) {
+//                    actionProvider.getActionClass().orElseThrow();
+//                }
+//                if (actionProvider instanceof HubBranchProvider<?> b) {
+//                    for (HubMenuItemProvider<?> child : b.getChildren(null)) {
+//                        if (ALL.stream().noneMatch(a -> a.getClass().equals(child.getClass()))) {
+//                            System.out.println(child.getClass());
+//                        }
+//                    }
+//                }
+
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).handle();
             }
