@@ -370,6 +370,8 @@ public abstract class DataStorage {
             }
         }
 
+        var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
+
         entry.applyChanges(newEntry);
         entry.initializeEntry();
 
@@ -384,6 +386,12 @@ public abstract class DataStorage {
             var toAdd = Stream.concat(Stream.of(entry), children.stream()).toArray(DataStoreEntry[]::new);
             listeners.forEach(storageListener -> storageListener.onStoreAdd(toAdd));
         }
+
+        if (categoryChanged) {
+            listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+            listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        }
+
         refreshEntries();
         saveAsync();
     }

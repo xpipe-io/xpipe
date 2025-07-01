@@ -38,7 +38,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                 var provider = getWrapper().getEntry().getProvider();
                 return AppI18n.get(provider.getId() + ".displayName");
             }
-        }));
+        }, getWrapper().getShownSummary()));
         summary.getStyleClass().add("summary");
         AppFontSizes.xs(summary);
         return summary;

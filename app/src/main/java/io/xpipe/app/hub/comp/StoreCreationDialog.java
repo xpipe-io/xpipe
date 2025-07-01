@@ -31,6 +31,10 @@ public class StoreCreationDialog {
     }
 
     public static void showEdit(DataStoreEntry e, Consumer<DataStoreEntry> c) {
+        showEdit(e, e.getStore(), c);
+    }
+
+    public static void showEdit(DataStoreEntry e, DataStore base, Consumer<DataStoreEntry> c) {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!DataStorage.get().getStoreEntries().contains(e)
@@ -55,10 +59,21 @@ public class StoreCreationDialog {
                         }
                     }
                 }
+
+                // Select new category if needed
+                var cat = DataStorage.get()
+                        .getStoreCategoryIfPresent(e.getCategoryUuid())
+                        .orElseThrow();
+                PlatformThread.runLaterIfNeeded(() -> {
+                    StoreViewState.get()
+                            .getActiveCategory()
+                            .setValue(StoreViewState.get().getCategoryWrapper(cat));
+                });
+
                 c.accept(e);
             });
         };
-        show(e.getName(), e.getProvider(), e.getStore(), v -> true, consumer, true, e);
+        show(e.getName(), DataStoreProviders.byStore(base), base, v -> true, consumer, true, e);
     }
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {

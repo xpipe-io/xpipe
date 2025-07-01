@@ -9,6 +9,7 @@ import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 import io.xpipe.core.store.DataStore;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -44,7 +45,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription("base:sshKey")
                 .sub(
-                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false, true),
+                        SshIdentityStrategyHelper.identity(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), identity, null, false, true),
                         identity)
                 .bind(
                         () -> {

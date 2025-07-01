@@ -261,7 +261,7 @@ public class ModalOverlayComp extends SimpleComp {
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getWidth() - 50;
+                    var max = pane.getWidth() - 120;
                     if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, r.getPrefWidth() + 50);
                     }

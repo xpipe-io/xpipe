@@ -580,6 +580,7 @@ public class DataStoreEntry extends StorageElement {
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
         icon = e.icon;
+        categoryUuid = e.categoryUuid;
         notifyUpdate(false, true);
     }
 

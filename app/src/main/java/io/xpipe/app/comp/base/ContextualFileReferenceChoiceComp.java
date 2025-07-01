@@ -140,6 +140,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 ErrorEventFactory.fromThrowable(e).handle();
             }
         });
+        gitShareButton.styleClass("git-sync-file-button");
         gitShareButton.tooltipKey("gitShareFileTooltip");
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
         gitShareButton.disable(Bindings.createBooleanBinding(

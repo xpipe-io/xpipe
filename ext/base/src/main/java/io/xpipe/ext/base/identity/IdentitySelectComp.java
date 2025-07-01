@@ -60,40 +60,20 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     private final boolean allowUserInput;
 
     private void addNamedIdentity() {
-        var canSync = DataStorage.get()
-                .getStoreCategoryIfPresent(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)
-                .isPresent();
-
-        IdentityStore id;
-        if (canSync) {
-            var pass = EncryptedValue.VaultKey.of(password.getValue());
-            if (pass == null) {
-                pass = EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None());
-            }
-            var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
-            if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new SshIdentityStrategy.None());
-            }
-            id = SyncedIdentityStore.builder()
-                    .username(inPlaceUser.getValue())
-                    .password(pass)
-                    .sshIdentity(ssh)
-                    .build();
-        } else {
-            var pass = EncryptedValue.CurrentKey.of(password.getValue());
-            if (pass == null) {
-                pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
-            }
-            var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
-            if (ssh == null) {
-                ssh = EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None());
-            }
-            id = LocalIdentityStore.builder()
-                    .username(inPlaceUser.getValue())
-                    .password(pass)
-                    .sshIdentity(ssh)
-                    .build();
+        var pass = EncryptedValue.CurrentKey.of(password.getValue());
+        if (pass == null) {
+            pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
         }
+        var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
+        if (ssh == null) {
+            ssh = EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None());
+        }
+        var id = LocalIdentityStore.builder()
+                .username(inPlaceUser.getValue())
+                .password(pass)
+                .sshIdentity(ssh)
+                .build();
+
         StoreCreationDialog.showCreation(
                 id,
                 DataStoreCreationCategory.IDENTITY,
