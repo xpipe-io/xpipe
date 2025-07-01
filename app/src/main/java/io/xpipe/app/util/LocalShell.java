@@ -9,9 +9,6 @@ import lombok.SneakyThrows;
 
 public class LocalShell {
 
-    @Getter
-    private static ShellControlCache localCache;
-
     private static ShellControl local;
     private static ShellControl localPowershell;
 
@@ -24,8 +21,6 @@ public class LocalShell {
             local.writeLine(
                     local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
         }
-
-        localCache = new ShellControlCache(local);
     }
 
     public static void reset(boolean force) {
@@ -42,7 +37,6 @@ public class LocalShell {
             }
             local = null;
         }
-        localCache = null;
         if (localPowershell != null) {
             if (!force) {
                 try {

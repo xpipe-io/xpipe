@@ -33,18 +33,6 @@ import java.util.function.Supplier;
 
 public class AppWindowHelper {
 
-    public static Region alertContentText(String s) {
-        return alertContentText(s, 450);
-    }
-
-    public static Region alertContentText(String s, int width) {
-        var text = new Text(s);
-        text.setWrappingWidth(width);
-        var sp = new StackPane(text);
-        sp.setPadding(new Insets(5));
-        return sp;
-    }
-
     public static void addMaximizedPseudoClass(Stage stage) {
         stage.getScene().rootProperty().subscribe(root -> {
             stage.maximizedProperty().subscribe(v -> {
@@ -73,13 +61,6 @@ public class AppWindowHelper {
                     };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
-    }
-
-    public static void setContent(Alert alert, String s) {
-        alert.getDialogPane().setMinWidth(505);
-        alert.getDialogPane().setPrefWidth(505);
-        alert.getDialogPane().setMaxWidth(505);
-        alert.getDialogPane().setContent(AppWindowHelper.alertContentText(s));
     }
 
     @SneakyThrows

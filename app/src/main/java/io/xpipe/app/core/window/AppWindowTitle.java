@@ -12,7 +12,7 @@ import lombok.Getter;
 public class AppWindowTitle {
 
     @Getter
-    private static final StringProperty title = new SimpleStringProperty();
+    private static final StringProperty title = new SimpleStringProperty(createTitle());
 
     public static void init() {
         if (LicenseProvider.get() != null) {
