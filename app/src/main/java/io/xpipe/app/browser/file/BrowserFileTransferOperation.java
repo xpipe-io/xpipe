@@ -133,6 +133,13 @@ public class BrowserFileTransferOperation {
         return cancelled.get();
     }
 
+    public boolean isMove() {
+        var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
+        var doesMove = transferMode == BrowserFileTransferMode.MOVE
+                || (same && transferMode == BrowserFileTransferMode.NORMAL);
+        return doesMove;
+    }
+
     public void execute() throws Exception {
         if (files.isEmpty()) {
             updateProgress(null);
@@ -144,12 +151,6 @@ public class BrowserFileTransferOperation {
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         var doesMove = transferMode == BrowserFileTransferMode.MOVE
                 || (same && transferMode == BrowserFileTransferMode.NORMAL);
-        if (doesMove) {
-            if (!BrowserAlerts.showMoveAlert(files, target)) {
-                return;
-            }
-        }
-
         try {
             for (var file : files) {
                 if (cancelled()) {

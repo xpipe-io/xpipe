@@ -185,6 +185,10 @@ public abstract class AbstractAction {
         return false;
     }
 
+    public boolean forceConfirmation() {
+        return false;
+    }
+
     protected void afterExecute() {}
 
     public abstract Map<String, String> toDisplayMap();

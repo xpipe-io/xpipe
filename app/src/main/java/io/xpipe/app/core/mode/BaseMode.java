@@ -11,6 +11,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.window.AppWindowTitle;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.comp.StoreViewState;
@@ -56,6 +57,7 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
+        AppWindowTitle.init();
         AppPathCorruptCheck.check();
         AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
@@ -95,7 +97,6 @@ public class BaseMode extends OperationMode {
                     AppPrefs.setLocalDefaultsIfNeeded();
                     localPrefsLoaded.countDown();
                     PlatformInit.init(true);
-                    AppMainWindow.addUpdateTitleListener();
                     TrackEvent.info("Shell initialization thread completed");
                 },
                 () -> {

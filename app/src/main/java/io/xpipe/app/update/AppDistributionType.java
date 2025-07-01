@@ -123,7 +123,6 @@ public enum AppDistributionType implements Translatable {
 
     public static AppDistributionType get() {
         if (type == null) {
-            TrackEvent.withWarn("Distribution type requested before init").handle();
             return UNKNOWN;
         }
 

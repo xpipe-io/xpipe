@@ -127,6 +127,12 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     handler.addDataFile(pubSource, pubTarget, sync.getPerUser().test(pubSource));
                 }
 
+                var ppkSource = Path.of(source + ".ppk");
+                if (Files.exists(ppkSource)) {
+                    var pubTarget = sync.getTargetLocation().apply(ppkSource);
+                    handler.addDataFile(ppkSource, pubTarget, sync.getPerUser().test(ppkSource));
+                }
+
                 Platform.runLater(() -> {
                     filePath.setValue(FilePath.of(syncedTarget));
                 });

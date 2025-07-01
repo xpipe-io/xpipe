@@ -43,14 +43,20 @@ public class TransferFilesActionProvider implements ActionProvider {
         }
 
         @Override
+        public boolean forceConfirmation() {
+            return operation.isMove();
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             operation.execute();
         }
 
         @Override
         public Map<String, String> toDisplayMap() {
+            var name = operation.isMove() ? "Move files" : getDisplayName();
             var map = new LinkedHashMap<String, String>();
-            map.put("Action", getDisplayName());
+            map.put("Action", name);
             map.put(
                     "Sources",
                     operation.getFiles().stream()

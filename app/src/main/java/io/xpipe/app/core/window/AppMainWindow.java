@@ -107,14 +107,18 @@ public class AppMainWindow {
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
-        INSTANCE.addBasicTitleListener();
-        addUpdateTitleListener();
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
         AppWindowHelper.addMaximizedPseudoClass(stage);
         AppWindowHelper.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
+
+        AppWindowTitle.getTitle().subscribe(s -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                stage.setTitle(s);
+            });
+        });
 
         var state = INSTANCE.loadState();
         TrackEvent.withDebug("Window state loaded").tag("state", state).handle();
@@ -176,54 +180,6 @@ public class AppMainWindow {
 
             stage.setIconified(false);
             stage.requestFocus();
-        });
-    }
-
-    private static String createTitle() {
-        var t = LicenseProvider.get() != null ? LicenseProvider.get().licenseTitle() : new SimpleStringProperty("?");
-        var base =
-                String.format("XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
-        var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-        var dist = AppDistributionType.get();
-        if (dist == AppDistributionType.UNKNOWN) {
-            var u = dist.getUpdateHandler().getPreparedUpdate();
-            var suffix = u.getValue() != null
-                    ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
-                    : "";
-            return prefix + base + suffix;
-        } else {
-            return prefix + base;
-        }
-    }
-
-    public static synchronized void addUpdateTitleListener() {
-        if (INSTANCE == null || AppDistributionType.get() == AppDistributionType.UNKNOWN) {
-            return;
-        }
-
-        var u = AppDistributionType.get().getUpdateHandler().getPreparedUpdate();
-        u.subscribe(up -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                INSTANCE.getStage().setTitle(createTitle());
-            });
-        });
-    }
-
-    private void addBasicTitleListener() {
-        if (LicenseProvider.get() != null) {
-            var t = LicenseProvider.get().licenseTitle();
-            t.subscribe(up -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    stage.setTitle(createTitle());
-                });
-            });
-        }
-
-        var l = AppI18n.activeLanguage();
-        l.subscribe(up -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                stage.setTitle(createTitle());
-            });
         });
     }
 
