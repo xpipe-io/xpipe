@@ -49,7 +49,12 @@ public enum DocumentationLink {
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager"),
     VNC_CLIENTS("guide/vnc#external-clients"),
-    ;
+    SHELL_ENVIRONMENTS("guide/environments"),
+    SHELL_ENVIRONMENTS_USER("guide/environments#users"),
+    SHELL_ENVIRONMENTS_SCRIPTS("guide/environments#scripts"),
+    SERIAL("guide/serial"),
+    SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
+    SERIAL_PORTS("guide/serial#serial-ports");
 
     private final String page;
 
@@ -66,6 +71,6 @@ public enum DocumentationLink {
     }
 
     public static String getRoot() {
-        return AppProperties.get().isStaging() ? "https://docs-ptb.xpipe.io/" : "https://docs.xpipe.io/";
+        return AppProperties.get().isStaging() ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }

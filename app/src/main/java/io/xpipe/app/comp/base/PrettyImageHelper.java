@@ -6,6 +6,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.core.store.FileNames;
 
+import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +20,7 @@ public class PrettyImageHelper {
 
     private static Optional<String> rasterizedImageIfExists(String img, int height) {
         if (img != null && img.endsWith(".svg")) {
-            var base = FileNames.getBaseName(img);
+            var base = FilePath.of(img).getBaseName();
             var renderedName = base + "-" + height + ".png";
             if (AppImages.hasNormalImage(renderedName)) {
                 return Optional.of(renderedName);
@@ -51,7 +52,7 @@ public class PrettyImageHelper {
                     }
 
                     var mult = Math.round(obs.get() * height);
-                    var base = FileNames.getBaseName(img);
+                    var base = FilePath.of(img).getBaseName();
                     var available = IntStream.of(availableSizes)
                             .filter(integer -> AppImages.hasNormalImage(base + "-" + integer + ".png"))
                             .boxed()

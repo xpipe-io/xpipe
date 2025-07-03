@@ -128,7 +128,7 @@ public interface SystemIconSource {
 
         @Override
         public String getDisplayName() {
-            return FileNames.getFileName(remote);
+            return FilePath.of(remote).getFileName();
         }
 
         @Override

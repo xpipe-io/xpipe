@@ -26,31 +26,6 @@ public class FileNames {
         return components.getLast();
     }
 
-    public static String getBaseName(String file) {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
-
-        var split = file.lastIndexOf(".");
-        if (split == -1) {
-            return file;
-        }
-        return file.substring(0, split);
-    }
-
-    public static String getExtension(String file) {
-        if (file == null || file.isEmpty()) {
-            return null;
-        }
-
-        var name = FileNames.getFileName(file);
-        var split = name.split("\\.");
-        if (split.length == 0) {
-            return null;
-        }
-        return split[split.length - 1];
-    }
-
     public static String join(String... parts) {
         var joined = String.join("/", parts);
         return normalize(joined);
