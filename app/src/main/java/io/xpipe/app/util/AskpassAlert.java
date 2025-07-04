@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

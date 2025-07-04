@@ -6,7 +6,7 @@ import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;

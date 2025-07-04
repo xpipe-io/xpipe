@@ -1,7 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

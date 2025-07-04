@@ -1,6 +1,6 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import lombok.Builder;
 import lombok.Value;

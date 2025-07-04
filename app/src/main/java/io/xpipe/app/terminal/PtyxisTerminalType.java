@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 public class PtyxisTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 

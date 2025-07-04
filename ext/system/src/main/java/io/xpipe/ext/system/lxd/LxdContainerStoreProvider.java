@@ -6,7 +6,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 

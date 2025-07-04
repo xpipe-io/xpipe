@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.core.FailableConsumer;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;

@@ -4,8 +4,11 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.process.*;
 
 import lombok.Getter;
 

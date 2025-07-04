@@ -2,12 +2,10 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;

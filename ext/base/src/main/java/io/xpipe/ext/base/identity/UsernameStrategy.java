@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.core.FailableSupplier;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

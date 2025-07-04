@@ -7,7 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanDialog;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

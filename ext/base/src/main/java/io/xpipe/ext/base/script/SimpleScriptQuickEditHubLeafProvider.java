@@ -6,11 +6,11 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.OsType;
 
 import javafx.beans.value.ObservableValue;
 
@@ -78,7 +78,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
             var script = ref.getStore();
             var dialect = script.getMinimumDialect();
             var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
-            var name = OsType.getLocal().makeFileSystemCompatible(ref.get().getName());
+            var name = OsFileSystem.ofLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
                 ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);
             });

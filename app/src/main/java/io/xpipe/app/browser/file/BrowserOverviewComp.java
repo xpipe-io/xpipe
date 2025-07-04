@@ -5,10 +5,11 @@ import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileEntry;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.ext.FileEntry;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -37,7 +38,7 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
         ThreadHelper.runFailableAsync(() -> {
-            var common = sc.getOsType().determineInterestingPaths(sc).stream()
+            var common = OsFileSystem.of(sc.getOsType()).determineInterestingPaths(sc).stream()
                     .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
                     .filter(entry -> {
                         var fs = model.getFileSystem();

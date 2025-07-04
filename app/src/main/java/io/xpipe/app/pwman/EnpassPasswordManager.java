@@ -5,11 +5,11 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

@@ -1,8 +1,8 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.process.TerminalInitScriptConfig;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.TerminalInitScriptConfig;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

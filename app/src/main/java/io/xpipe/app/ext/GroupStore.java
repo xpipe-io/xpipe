@@ -1,7 +1,6 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
 
 public interface GroupStore<T extends DataStore> extends DataStore {
 

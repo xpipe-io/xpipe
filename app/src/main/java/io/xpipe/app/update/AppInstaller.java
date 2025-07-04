@@ -8,13 +8,13 @@ import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellScript;
 
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableRunnable;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.FailableRunnable;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

@@ -2,7 +2,7 @@ package io.xpipe.app.vnc;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 

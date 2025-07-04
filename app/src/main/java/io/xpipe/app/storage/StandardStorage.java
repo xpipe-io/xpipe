@@ -8,7 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;

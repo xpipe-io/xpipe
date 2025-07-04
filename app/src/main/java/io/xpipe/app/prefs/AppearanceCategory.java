@@ -10,7 +10,7 @@ import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;

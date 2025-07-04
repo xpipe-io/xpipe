@@ -10,7 +10,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.value.ObservableValue;
 

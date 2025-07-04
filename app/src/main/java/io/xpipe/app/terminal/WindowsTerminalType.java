@@ -4,10 +4,10 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 

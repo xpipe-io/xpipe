@@ -8,6 +8,7 @@ import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ShellStartExchange;
 
 import com.sun.net.httpserver.HttpExchange;
+import io.xpipe.core.JacksonMapper;
 import lombok.SneakyThrows;
 
 public class ShellStartExchangeImpl extends ShellStartExchange {
@@ -41,11 +42,11 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
             AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
         }
         return Response.builder()
-                .shellDialect(control.getShellDialect())
+                .shellDialect(control.getShellDialect().getId())
                 .osType(control.getOsType())
                 .osName(control.getOsName())
                 .temp(control.getSystemTemporaryDirectory())
-                .ttyState(control.getTtyState())
+                .ttyState(JacksonMapper.getDefault().writeValueAsString(control.getTtyState()))
                 .build();
     }
 }

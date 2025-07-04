@@ -1,8 +1,9 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.core.OsType;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,7 +95,7 @@ public class DesktopShortcuts {
     }
 
     public static Path create(String executable, String args, String name) throws Exception {
-        var compat = OsType.getLocal().makeFileSystemCompatible(name);
+        var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
         if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return createWindowsShortcut(executable, args, compat);
         } else if (OsType.getLocal().equals(OsType.LINUX)) {

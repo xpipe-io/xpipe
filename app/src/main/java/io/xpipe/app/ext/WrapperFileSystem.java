@@ -1,9 +1,7 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystem;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 
 import lombok.Getter;
 

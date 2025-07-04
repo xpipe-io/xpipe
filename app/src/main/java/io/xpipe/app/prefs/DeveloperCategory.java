@@ -10,7 +10,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.app.process.ProcessOutputException;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;

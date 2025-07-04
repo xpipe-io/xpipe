@@ -4,10 +4,10 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.core.process.SystemState;
+import io.xpipe.app.process.SystemState;
 
 
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;

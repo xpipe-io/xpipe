@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;

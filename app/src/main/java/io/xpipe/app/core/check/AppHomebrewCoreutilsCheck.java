@@ -1,9 +1,9 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

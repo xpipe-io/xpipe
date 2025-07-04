@@ -3,10 +3,11 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

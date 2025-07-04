@@ -1,8 +1,8 @@
 package io.xpipe.beacon.test;
 
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.ModuleLayerLoader;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeDaemonMode;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

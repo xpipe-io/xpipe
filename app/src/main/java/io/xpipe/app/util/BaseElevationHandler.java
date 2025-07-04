@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.process.CountDown;
-import io.xpipe.core.process.ElevationHandler;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.SecretReference;
+import io.xpipe.app.process.CountDown;
+import io.xpipe.app.process.ElevationHandler;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.process.SecretReference;
 
 import java.util.List;
 import java.util.UUID;

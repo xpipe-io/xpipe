@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -11,11 +12,11 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.core.FilePath;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -69,11 +70,12 @@ public class TerminalLaunchConfiguration {
 
         var logDir = AppProperties.get().getDataDir().resolve("sessions");
         Files.createDirectories(logDir);
-        var logFile = logDir.resolve(FilePath.of(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
-                        + DATE_FORMATTER.format(Instant.now()) + ").log")
-                .fileSystemCompatible(OsType.getLocal())
+        var logName = OsFileSystem.ofLocal().makeFileSystemCompatible(
+                FilePath.of(DataStorage.get().getStoreEntryDisplayName(entry) + " ("
+                        + DATE_FORMATTER.format(Instant.now()) + ").log"))
                 .toString()
-                .replaceAll(" ", "_"));
+                .replaceAll(" ", "_");
+        var logFile = logDir.resolve(logName);
         try (var sc = LocalShell.getShell().start()) {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var launcherScript = ScriptHelper.createExecScript(

@@ -5,8 +5,8 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;

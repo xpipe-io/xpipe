@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.EnabledStoreState;
+import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.store.*;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;

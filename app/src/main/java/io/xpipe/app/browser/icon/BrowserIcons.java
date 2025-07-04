@@ -2,7 +2,7 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.core.store.FileEntry;
+import io.xpipe.app.ext.FileEntry;
 
 public class BrowserIcons {
 

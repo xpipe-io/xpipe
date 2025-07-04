@@ -6,7 +6,7 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

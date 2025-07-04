@@ -5,7 +5,7 @@ import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.AskpassExchange;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.SimpleStringProperty;
 

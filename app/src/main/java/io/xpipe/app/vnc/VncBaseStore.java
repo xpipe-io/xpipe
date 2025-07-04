@@ -1,7 +1,7 @@
 package io.xpipe.app.vnc;
 
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 public interface VncBaseStore extends DataStore {
 

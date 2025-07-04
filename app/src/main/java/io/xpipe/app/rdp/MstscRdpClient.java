@@ -4,8 +4,8 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.SecretValue;
 
 import org.apache.commons.io.FileUtils;
 

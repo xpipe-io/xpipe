@@ -2,7 +2,7 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

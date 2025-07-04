@@ -4,10 +4,10 @@ import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FileKind;
+import io.xpipe.core.OsType;
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.core.FileInfo;
+import io.xpipe.core.FileKind;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

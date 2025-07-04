@@ -7,7 +7,7 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

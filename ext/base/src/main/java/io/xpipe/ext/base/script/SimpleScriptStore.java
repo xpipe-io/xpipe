@@ -4,8 +4,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.ext.SelfReferentialStore;
 

@@ -6,7 +6,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
 
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

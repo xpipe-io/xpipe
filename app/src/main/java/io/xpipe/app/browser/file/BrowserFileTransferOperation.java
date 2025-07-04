@@ -1,9 +1,13 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
 
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 
@@ -314,8 +318,8 @@ public class BrowserFileTransferOperation {
                 }
 
                 var sourceFile = e.getKey();
-                var fixedRelPath = FilePath.of(e.getValue())
-                        .fileSystemCompatible(targetFs.getShell().orElseThrow().getOsType());
+                var os = targetFs.getShell().orElseThrow().getOsType();
+                var fixedRelPath = OsFileSystem.of(os).makeFileSystemCompatible(FilePath.of(e.getValue()));
                 var targetFile = target.getPath().join(fixedRelPath.toString());
                 if (sourceFile.getFileSystem().equals(targetFs)) {
                     throw new IllegalStateException();

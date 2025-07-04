@@ -3,13 +3,13 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import java.nio.file.Path;
 import java.util.*;

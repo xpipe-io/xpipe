@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.process.*;
 
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.core.FilePath;
+import io.xpipe.app.ext.StatefulDataStore;
 
 import java.util.*;
 
@@ -133,7 +133,7 @@ public class ScriptStoreSetup {
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
             var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
-            var fileName = proc.getOsType()
+            var fileName = OsFileSystem.of(proc.getOsType())
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
             var scriptFile = FilePath.of(targetDir, fileName + "." + d.getScriptFileEnding());

@@ -4,7 +4,7 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

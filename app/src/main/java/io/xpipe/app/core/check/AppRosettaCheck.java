@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 public class AppRosettaCheck {
 

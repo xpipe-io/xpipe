@@ -2,7 +2,7 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 public class RemoteDesktopAppRdpClient implements ExternalApplicationType.MacApplication, ExternalRdpClient {
 

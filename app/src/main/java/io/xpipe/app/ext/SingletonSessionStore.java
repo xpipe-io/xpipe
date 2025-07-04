@@ -1,8 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.store.ExpandedLifecycleStore;
-import io.xpipe.core.store.InternalCacheDataStore;
-
 public interface SingletonSessionStore<T extends Session>
         extends ExpandedLifecycleStore, InternalCacheDataStore, SessionListener {
 

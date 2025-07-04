@@ -8,8 +8,9 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 
@@ -35,7 +36,7 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var sep = model.getFileSystem().getShell().orElseThrow().getOsType().getFileSystemSeparator();
+        var sep = OsFileSystem.of(model.getFileSystem().getShell().orElseThrow().getOsType()).getFileSystemSeparator();
         var dir = entries.size() > 1
                 ? "[...]"
                 : UnzipActionProvider.getTarget(

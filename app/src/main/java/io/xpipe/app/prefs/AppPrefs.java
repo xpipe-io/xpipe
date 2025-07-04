@@ -18,7 +18,7 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
-import io.xpipe.core.process.ShellScript;
+import io.xpipe.app.process.ShellScript;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;

@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;

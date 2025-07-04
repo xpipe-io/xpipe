@@ -9,8 +9,8 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;

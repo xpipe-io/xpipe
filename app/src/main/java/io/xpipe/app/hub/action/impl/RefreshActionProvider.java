@@ -2,7 +2,7 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

@@ -2,8 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
 
 public class CmdTerminalType
         implements ExternalApplicationType.PathApplication, ExternalTerminalType, TrackableTerminalType {

@@ -1,7 +1,7 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import lombok.Builder;
 import lombok.NonNull;

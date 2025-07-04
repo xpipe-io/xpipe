@@ -4,7 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

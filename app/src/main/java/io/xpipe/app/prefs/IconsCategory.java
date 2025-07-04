@@ -10,7 +10,7 @@ import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

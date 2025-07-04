@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

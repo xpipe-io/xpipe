@@ -1,8 +1,9 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -65,7 +66,7 @@ public class ContextualFileReference {
 
     public FilePath toAbsoluteFilePath(ShellControl sc) {
         return FilePath.of(path.replaceAll(
-                "/", Matcher.quoteReplacement(sc != null ? sc.getOsType().getFileSystemSeparator() : "/")));
+                "/", Matcher.quoteReplacement(sc != null ? OsFileSystem.of(sc.getOsType()).getFileSystemSeparator() : "/")));
     }
 
     public boolean isInDataDirectory() {

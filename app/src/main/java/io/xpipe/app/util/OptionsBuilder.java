@@ -7,7 +7,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;

@@ -4,7 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 import org.apache.commons.io.FileUtils;
 

@@ -11,7 +11,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;

@@ -4,11 +4,11 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;
 import lombok.Setter;

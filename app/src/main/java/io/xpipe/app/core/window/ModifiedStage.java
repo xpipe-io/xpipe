@@ -3,7 +3,7 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;

@@ -14,7 +14,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;

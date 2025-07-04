@@ -1,6 +1,6 @@
 package io.xpipe.core.test;
 
-import io.xpipe.core.store.StorePath;
+import io.xpipe.core.StorePath;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

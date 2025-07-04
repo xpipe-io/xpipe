@@ -2,16 +2,17 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.core.process.*;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.xpipe.core.OsType;
 
 import java.util.UUID;
 

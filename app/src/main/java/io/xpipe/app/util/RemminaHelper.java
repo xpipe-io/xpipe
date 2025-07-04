@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.SecretValue;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -46,7 +46,7 @@ public class RemminaHelper {
     }
 
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
-        var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
         var string =
                 """
@@ -77,7 +77,7 @@ public class RemminaHelper {
     }
 
     public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
-        var name = OsType.getLocal().makeFileSystemCompatible(configuration.getTitle());
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
         var string =
                 """

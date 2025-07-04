@@ -4,8 +4,8 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.ext.DataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;

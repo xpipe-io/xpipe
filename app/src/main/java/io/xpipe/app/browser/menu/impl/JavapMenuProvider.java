@@ -8,8 +8,8 @@ import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.browser.menu.FileTypeMenuProvider;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

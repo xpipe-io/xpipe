@@ -2,9 +2,9 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.TerminalInitFunction;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.TerminalInitFunction;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

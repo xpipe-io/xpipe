@@ -8,8 +8,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.EnabledStoreState;
-import io.xpipe.core.store.StatefulDataStore;
 
 import javafx.beans.property.SimpleBooleanProperty;
 

@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.SecretValue;
 
 import javafx.animation.PauseTransition;
 import javafx.scene.input.Clipboard;

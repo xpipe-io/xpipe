@@ -4,9 +4,9 @@ import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellDialects;
 
 import com.sun.jna.platform.win32.Shell32;
 import com.sun.jna.platform.win32.ShellAPI;

@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.scene.Node;
 

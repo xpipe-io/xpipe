@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.ext.DataStore;
 
 import lombok.Value;
 

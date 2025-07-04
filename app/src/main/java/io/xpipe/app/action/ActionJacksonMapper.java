@@ -3,8 +3,8 @@ package io.xpipe.app.action;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;

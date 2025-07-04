@@ -9,7 +9,7 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;

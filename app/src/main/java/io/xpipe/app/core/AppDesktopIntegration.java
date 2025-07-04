@@ -7,7 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import java.awt.*;
 import java.awt.desktop.*;

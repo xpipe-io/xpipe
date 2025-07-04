@@ -4,9 +4,9 @@ import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionToken;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;

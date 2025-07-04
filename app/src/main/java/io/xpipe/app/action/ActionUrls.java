@@ -1,9 +1,9 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.UuidHelper;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.UuidHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

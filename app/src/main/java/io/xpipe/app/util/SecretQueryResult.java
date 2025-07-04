@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.SecretValue;
 
 import lombok.Value;
 

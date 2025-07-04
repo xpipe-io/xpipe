@@ -2,10 +2,12 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.vnc.VncBaseStore;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.DataStore;
 
 import java.util.ServiceLoader;
 

@@ -9,7 +9,7 @@ import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;

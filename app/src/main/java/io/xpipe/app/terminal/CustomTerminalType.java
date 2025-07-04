@@ -5,7 +5,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import java.util.Locale;
 

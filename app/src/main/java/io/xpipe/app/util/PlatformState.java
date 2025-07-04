@@ -3,7 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.check.AppSystemFontCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.scene.text.Font;

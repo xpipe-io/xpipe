@@ -1,16 +1,13 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.*;
-import io.xpipe.app.ext.SelfReferentialStore;
+import io.xpipe.app.process.ShellControl;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

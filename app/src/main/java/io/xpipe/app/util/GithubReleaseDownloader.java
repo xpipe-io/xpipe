@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import java.io.IOException;
 import java.net.URI;

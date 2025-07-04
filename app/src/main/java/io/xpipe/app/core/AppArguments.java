@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.LogErrorHandler;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import lombok.Value;
 import picocli.CommandLine;

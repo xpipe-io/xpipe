@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.desktop;
 
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.ext.DataStore;
 
 public interface DesktopBaseStore extends DataStore {
 

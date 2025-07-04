@@ -1,8 +1,9 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -64,7 +65,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                             return new Label("");
                         }
 
-                        return new Label(sc.get().getOsType().getFileSystemSeparator());
+                        return new Label(OsFileSystem.of(sc.get().getOsType()).getFileSystemSeparator());
                     });
                 }
 

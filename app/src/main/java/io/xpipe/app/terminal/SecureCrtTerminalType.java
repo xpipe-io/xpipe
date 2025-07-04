@@ -4,7 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

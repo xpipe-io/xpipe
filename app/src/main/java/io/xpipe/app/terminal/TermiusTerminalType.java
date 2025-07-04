@@ -7,7 +7,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.net.URLEncoder;

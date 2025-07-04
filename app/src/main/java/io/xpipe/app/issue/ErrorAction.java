@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.core.FailableSupplier;
 
 public interface ErrorAction {
 

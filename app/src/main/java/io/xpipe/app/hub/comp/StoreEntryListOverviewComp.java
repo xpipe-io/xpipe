@@ -10,7 +10,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

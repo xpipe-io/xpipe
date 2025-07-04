@@ -5,8 +5,8 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 
 import javafx.beans.value.ObservableValue;
 

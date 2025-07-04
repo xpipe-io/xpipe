@@ -4,14 +4,14 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableFunction;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.FailableFunction;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.IOException;
 import java.util.List;

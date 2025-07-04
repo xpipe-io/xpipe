@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.service;
 
 import io.xpipe.app.ext.Session;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ElevationFunction;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ElevationFunction;
 
 import lombok.Getter;
 

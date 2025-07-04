@@ -3,8 +3,8 @@ package io.xpipe.app.browser.menu.impl.compress;
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.FilePath;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

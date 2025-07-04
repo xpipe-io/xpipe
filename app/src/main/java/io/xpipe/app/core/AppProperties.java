@@ -4,7 +4,7 @@ import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import lombok.Getter;
 import lombok.Value;

@@ -4,11 +4,11 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -109,7 +109,7 @@ public class BrowserTransferModel {
                     return;
                 }
 
-                var fixedFile = entry.getRawFileEntry().getPath().fileSystemCompatible(OsType.getLocal());
+                var fixedFile = OsFileSystem.ofLocal().makeFileSystemCompatible(entry.getRawFileEntry().getPath());
                 Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);

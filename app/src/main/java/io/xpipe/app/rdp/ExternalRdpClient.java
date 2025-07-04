@@ -2,8 +2,9 @@ package io.xpipe.app.rdp;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,7 +83,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     boolean supportsPasswordPassing();
 
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
-        var name = OsType.getLocal().makeFileSystemCompatible(title);
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
         var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
         var string = input.toString();
         Files.createDirectories(file.getParent());

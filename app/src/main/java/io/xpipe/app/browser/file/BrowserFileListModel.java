@@ -3,10 +3,10 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.action.impl.MoveFileActionProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.OsType;
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;

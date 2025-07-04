@@ -1,10 +1,10 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.api.DaemonStopExchange;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

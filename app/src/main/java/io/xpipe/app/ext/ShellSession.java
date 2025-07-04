@@ -1,9 +1,9 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FailableSupplier;
 
 import lombok.Getter;
 

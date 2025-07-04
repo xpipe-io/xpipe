@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import com.sun.jna.Function;
 import lombok.Getter;

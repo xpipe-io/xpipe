@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.*;
 import io.xpipe.app.ext.SelfReferentialStore;
 
 import lombok.EqualsAndHashCode;

@@ -5,9 +5,9 @@ import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellControl;
 
 import java.nio.file.Path;
 import java.util.Optional;

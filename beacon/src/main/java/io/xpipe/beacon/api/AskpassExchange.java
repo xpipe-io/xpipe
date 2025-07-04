@@ -1,7 +1,7 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.SecretValue;
 
 import lombok.Builder;
 import lombok.NonNull;

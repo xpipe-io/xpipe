@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.util.ModuleLayerLoader;
+import io.xpipe.core.ModuleLayerLoader;
 
 import java.util.Comparator;
 import java.util.List;

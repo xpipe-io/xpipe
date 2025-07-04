@@ -9,8 +9,8 @@ import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.FilePath;
+import io.xpipe.app.ext.FileSystemStore;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;

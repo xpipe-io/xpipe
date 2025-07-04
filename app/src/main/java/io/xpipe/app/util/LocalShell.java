@@ -2,9 +2,9 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.process.*;
+import io.xpipe.app.process.*;
 
-import lombok.Getter;
+import io.xpipe.core.OsType;
 import lombok.SneakyThrows;
 
 public class LocalShell {

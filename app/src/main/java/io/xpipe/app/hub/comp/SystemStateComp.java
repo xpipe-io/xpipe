@@ -3,7 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.ShellStoreState;
+import io.xpipe.app.process.ShellStoreState;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;

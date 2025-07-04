@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.OsType;
+import io.xpipe.core.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Value;

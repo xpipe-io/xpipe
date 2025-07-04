@@ -2,7 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import java.util.List;
 

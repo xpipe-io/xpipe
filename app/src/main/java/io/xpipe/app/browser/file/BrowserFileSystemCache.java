@@ -2,10 +2,10 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.util.PasswdFile;
 import io.xpipe.app.util.ShellControlCache;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialect;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialect;
 
 import lombok.Getter;
 

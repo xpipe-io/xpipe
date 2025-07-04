@@ -8,9 +8,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.ShellTtyState;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.ValidatableStore;
+import io.xpipe.app.process.ShellTtyState;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.ext.ValidationException;
 
 import javafx.application.Platform;

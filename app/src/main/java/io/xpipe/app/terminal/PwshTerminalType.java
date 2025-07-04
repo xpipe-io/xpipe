@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

@@ -1,7 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.core.util.Deobfuscator;
+import io.xpipe.core.Deobfuscator;
 
 public class LogErrorHandler implements ErrorHandler {
 

@@ -1,7 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import lombok.Value;
 

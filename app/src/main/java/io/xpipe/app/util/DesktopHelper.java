@@ -2,11 +2,11 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
 
 import java.awt.*;
 import java.io.File;

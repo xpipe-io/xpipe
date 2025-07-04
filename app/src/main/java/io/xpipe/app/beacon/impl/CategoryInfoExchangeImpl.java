@@ -3,7 +3,7 @@ package io.xpipe.app.beacon.impl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.CategoryInfoExchange;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.sun.net.httpserver.HttpExchange;
 

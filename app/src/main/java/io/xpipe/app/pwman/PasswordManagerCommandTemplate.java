@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import java.util.List;
 import java.util.stream.Stream;

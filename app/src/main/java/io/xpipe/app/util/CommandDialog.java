@@ -2,8 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.ProcessOutputException;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;

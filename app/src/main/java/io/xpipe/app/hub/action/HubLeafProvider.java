@@ -2,7 +2,7 @@ package io.xpipe.app.hub.action;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import lombok.SneakyThrows;
 

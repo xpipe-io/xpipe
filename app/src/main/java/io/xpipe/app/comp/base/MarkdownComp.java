@@ -11,7 +11,7 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.MarkdownHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;

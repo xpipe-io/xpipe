@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.core.FailableConsumer;
 import io.xpipe.modulefs.ModuleFileSystem;
 
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 public class AppShellCheck {
 

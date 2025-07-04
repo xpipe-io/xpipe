@@ -5,9 +5,9 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.ext.StatefulDataStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

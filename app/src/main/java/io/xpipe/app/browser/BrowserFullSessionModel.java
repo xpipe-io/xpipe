@@ -9,9 +9,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.util.FailableFunction;
+import io.xpipe.core.FilePath;
+import io.xpipe.app.ext.FileSystemStore;
+import io.xpipe.core.FailableFunction;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

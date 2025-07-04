@@ -2,7 +2,7 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;

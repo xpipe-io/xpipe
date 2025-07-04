@@ -3,7 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 

@@ -13,8 +13,8 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.FilePath;
+import io.xpipe.app.ext.FileSystemStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

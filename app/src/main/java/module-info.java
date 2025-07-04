@@ -10,13 +10,13 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.action.impl.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
-import io.xpipe.app.storage.DataStateProviderImpl;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.util.DataStateProvider;
-import io.xpipe.core.util.ModuleLayerLoader;
+import io.xpipe.core.ModuleLayerLoader;
 
 import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
@@ -55,6 +55,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.browser.menu.impl.compress;
     exports io.xpipe.app.hub.action;
     exports io.xpipe.app.hub.action.impl;
+    exports io.xpipe.app.process;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -117,6 +118,7 @@ open module io.xpipe.app {
     uses io.xpipe.beacon.BeaconInterface;
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
+    uses ShellDialect;
 
     provides ActionProvider with
             BrowseHubLeafProvider,
@@ -195,9 +197,8 @@ open module io.xpipe.app {
             ActionProvider.Loader,
             PrefsProvider.Loader,
             LicenseProvider.Loader,
-            ScanProvider.Loader;
-    provides DataStateProvider with
-            DataStateProviderImpl;
+            ScanProvider.Loader,
+            ShellDialects.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with

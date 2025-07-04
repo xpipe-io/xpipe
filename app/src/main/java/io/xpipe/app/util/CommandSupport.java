@@ -3,9 +3,9 @@ package io.xpipe.app.util;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.FailableSupplier;
 
 import java.io.IOException;
 import java.util.Optional;

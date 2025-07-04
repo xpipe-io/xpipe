@@ -2,7 +2,7 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.process.ShellDialects;
+import io.xpipe.app.process.ShellDialects;
 
 import lombok.Getter;
 import lombok.Setter;

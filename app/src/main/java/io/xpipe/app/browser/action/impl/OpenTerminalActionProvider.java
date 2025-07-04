@@ -5,8 +5,8 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

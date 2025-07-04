@@ -2,7 +2,7 @@ package io.xpipe.app.test;
 
 
 
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 import lombok.SneakyThrows;
 
 import java.nio.file.Files;

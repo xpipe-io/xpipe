@@ -4,16 +4,9 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.Alert;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class BrowserAlerts {
 

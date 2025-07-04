@@ -9,9 +9,9 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.core.XPipeInstallation;
 
 import java.nio.file.Files;
 import java.time.Instant;

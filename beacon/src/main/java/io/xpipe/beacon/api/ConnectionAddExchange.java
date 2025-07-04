@@ -1,7 +1,7 @@
 package io.xpipe.beacon.api;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.store.DataStore;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -25,7 +25,7 @@ public class ConnectionAddExchange extends BeaconInterface<ConnectionAddExchange
         String name;
 
         @NonNull
-        DataStore data;
+        JsonNode data;
 
         @NonNull
         Boolean validate;

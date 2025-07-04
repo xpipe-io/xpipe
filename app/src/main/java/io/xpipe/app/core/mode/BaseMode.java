@@ -27,7 +27,7 @@ import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import java.util.concurrent.CountDownLatch;
 

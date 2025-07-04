@@ -6,7 +6,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.*;
 

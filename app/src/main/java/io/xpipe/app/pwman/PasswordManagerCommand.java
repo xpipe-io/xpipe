@@ -9,10 +9,10 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

@@ -2,10 +2,10 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.comp.StoreSection;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellEnvironmentStoreState;
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.process.ShellTtyState;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellEnvironmentStoreState;
+import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.process.ShellTtyState;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;

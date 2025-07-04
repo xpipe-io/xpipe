@@ -1,8 +1,8 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.core.OsType;
+import io.xpipe.app.process.ProcessOutputException;
 
 import java.util.Arrays;
 import java.util.IdentityHashMap;

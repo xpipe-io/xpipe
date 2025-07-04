@@ -2,7 +2,7 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.beacon.api.SecretEncryptExchange;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import com.sun.net.httpserver.HttpExchange;
 

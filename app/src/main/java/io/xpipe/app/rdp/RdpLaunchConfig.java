@@ -1,7 +1,7 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.util.RdpConfig;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.core.SecretValue;
 
 import lombok.Value;
 

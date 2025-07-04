@@ -3,7 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.process.CommandBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;

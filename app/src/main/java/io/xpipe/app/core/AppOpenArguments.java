@@ -8,7 +8,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import java.net.URI;
 import java.nio.file.Files;
