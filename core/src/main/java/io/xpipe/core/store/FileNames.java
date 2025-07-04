@@ -5,27 +5,6 @@ import java.util.List;
 
 public class FileNames {
 
-    public static String getFileName(String file) {
-        if (file == null) {
-            return null;
-        }
-
-        if (file.isEmpty()) {
-            return "";
-        }
-
-        var split = file.split("[\\\\/]");
-        if (split.length == 0) {
-            return "";
-        }
-        var components = Arrays.stream(split).filter(s -> !s.isEmpty()).toList();
-        if (components.size() == 0) {
-            return "";
-        }
-
-        return components.getLast();
-    }
-
     public static String join(String... parts) {
         var joined = String.join("/", parts);
         return normalize(joined);
@@ -41,18 +20,6 @@ public class FileNames {
         }
 
         return true;
-    }
-
-    public static String getParent(String file) {
-        if (split(file).size() == 0) {
-            return null;
-        }
-
-        if (split(file).size() == 1) {
-            return file.startsWith("/") && !file.equals("/") ? "/" : null;
-        }
-
-        return file.substring(0, file.length() - getFileName(file).length() - 1);
     }
 
     public static String normalize(String file) {

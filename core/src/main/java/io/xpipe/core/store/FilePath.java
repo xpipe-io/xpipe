@@ -22,6 +22,15 @@ public final class FilePath {
         return path != null ? new FilePath(path) : null;
     }
 
+    public static FilePath of(String... path) {
+        if (path == null || path.length == 0) {
+            return null;
+        }
+
+        var cp = Arrays.stream(path).skip(1).toArray(String[]::new);
+        return path.length > 1 ? new FilePath(path[0]).join(cp) : new FilePath(path[0]);
+    }
+
     public static FilePath of(Path path) {
         return path != null ? new FilePath(path.toString()) : null;
     }

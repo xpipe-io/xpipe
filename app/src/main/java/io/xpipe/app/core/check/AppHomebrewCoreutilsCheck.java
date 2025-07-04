@@ -3,6 +3,7 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.store.FileNames;
+import io.xpipe.core.store.FilePath;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +17,7 @@ public class AppHomebrewCoreutilsCheck {
             var out = new String(proc.getInputStream().readAllBytes());
             proc.waitFor(1, TimeUnit.SECONDS);
             var first = out.lines().findFirst();
-            return first.filter(s -> s.contains("coreutils")).map(s -> FileNames.getParent(s));
+            return first.filter(s -> s.contains("coreutils")).map(s -> FilePath.of(s).getParent().toString());
         } catch (Exception e) {
             return Optional.empty();
         }

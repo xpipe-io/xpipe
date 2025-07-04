@@ -424,7 +424,7 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
                 var file = getFile(sc);
-                var dir = FileNames.getParent(file);
+                var dir = FilePath.of(file).getFileName();
                 if (sc.getOsType() == OsType.WINDOWS) {
                     var path = sc.view().getPath();
                     builder.fixedEnvironment("PATH", dir + ";" + path);
@@ -467,7 +467,7 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
                 var file = getFile();
-                var dir = FileNames.getParent(file);
+                var dir = FilePath.of(file).getParent();
                 if (sc.getOsType() == OsType.WINDOWS) {
                     var path = sc.view().getPath();
                     builder.fixedEnvironment("PATH", dir + ";" + path);
