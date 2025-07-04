@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 
 @JsonTypeName("incusContainer")
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @Getter
 @AllArgsConstructor
@@ -39,6 +39,12 @@ public class IncusContainerStore
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (IncusContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
 
     @Override
     public Class<ContainerStoreState> getStateClass() {

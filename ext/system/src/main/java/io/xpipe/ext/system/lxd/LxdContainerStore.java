@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 
 @JsonTypeName("lxd")
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @Value
 @AllArgsConstructor
@@ -37,6 +37,12 @@ public class LxdContainerStore
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (LxdContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
 
     @Override
     public String getName() {
