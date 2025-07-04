@@ -11,7 +11,8 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.process.OsType;
 import io.xpipe.core.process.ShellDialects;
 import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.store.FileNames;
+
+import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.FailableRunnable;
 import io.xpipe.core.util.XPipeInstallation;
 
@@ -75,15 +76,15 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
-                var logFile = FileNames.join(
+                var logFile = FilePath.of(
                         logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var cmdScript =
                         ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
                                 && !systemWide;
                 var command = cmdScript
-                        ? getCmdCommand(file.toString(), logFile)
-                        : getPowershellCommand(file.toString(), logFile, systemWide);
+                        ? getCmdCommand(file.toString(), logFile.toString())
+                        : getPowershellCommand(file.toString(), logFile.toString(), systemWide);
 
                 runAndClose(() -> {
                     try (var sc = LocalShell.getShell().start()) {

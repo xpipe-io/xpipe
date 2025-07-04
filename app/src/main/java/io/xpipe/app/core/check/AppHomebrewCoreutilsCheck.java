@@ -2,7 +2,7 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
+
 import io.xpipe.core.store.FilePath;
 
 import java.util.Optional;

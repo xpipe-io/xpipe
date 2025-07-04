@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FileNames;
 
 import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;

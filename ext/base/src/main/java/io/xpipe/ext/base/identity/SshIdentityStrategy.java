@@ -6,7 +6,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FileNames;
+
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.KeyValue;
 import io.xpipe.core.util.ValidationException;

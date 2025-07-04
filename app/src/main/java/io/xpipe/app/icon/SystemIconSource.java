@@ -6,7 +6,7 @@ import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.store.FileNames;
+
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.util.ValidationException;
 

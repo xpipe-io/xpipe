@@ -79,8 +79,8 @@ public class ShellTemp {
         // This system xpipe temp directory might contain other files on the local machine, so only clear the exec
         //        d.deleteFileOrDirectory(proc, systemTemp.join("xpipe", "exec").toString()).executeAndCheck();
         //        var home = proc.getOsType().getHomeDirectory(proc);
-        //        d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "temp")).executeAndCheck();
-        //        d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "system_id")).executeAndCheck();
+        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "temp")).executeAndCheck();
+        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "system_id")).executeAndCheck();
     }
 
     private static boolean checkDirectoryPermissions(ShellControl proc, String dir) throws Exception {

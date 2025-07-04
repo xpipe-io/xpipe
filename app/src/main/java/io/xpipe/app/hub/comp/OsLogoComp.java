@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.core.process.SystemState;
-import io.xpipe.core.store.FileNames;
+
 
 import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;

@@ -6,7 +6,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.process.*;
-import io.xpipe.core.store.FileNames;
+
 import io.xpipe.core.store.FilePath;
 import io.xpipe.core.store.StatefulDataStore;
 
@@ -112,10 +112,10 @@ public class ScriptStoreSetup {
         var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
                 .join(proc.getShellDialect().getId())
                 .toString();
-        var hashFile = FileNames.join(targetDir, "hash");
+        var hashFile = FilePath.of(targetDir, "hash");
         var d = proc.getShellDialect();
-        if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {
-            var read = d.getFileReadCommand(proc, hashFile).readStdoutOrThrow();
+        if (d.createFileExistsCommand(proc, hashFile.toString()).executeAndCheck()) {
+            var read = d.getFileReadCommand(proc, hashFile.toString()).readStdoutOrThrow();
             try {
                 var readHash = Integer.parseInt(read);
                 if (hash == readHash) {
@@ -136,11 +136,11 @@ public class ScriptStoreSetup {
             var fileName = proc.getOsType()
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-            var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
-            proc.view().writeScriptFile(FilePath.of(scriptFile), content);
+            var scriptFile = FilePath.of(targetDir, fileName + "." + d.getScriptFileEnding());
+            proc.view().writeScriptFile(scriptFile, content);
         }
 
-        proc.view().writeTextFile(FilePath.of(hashFile), String.valueOf(hash));
+        proc.view().writeTextFile(hashFile, String.valueOf(hash));
         return targetDir;
     }
 

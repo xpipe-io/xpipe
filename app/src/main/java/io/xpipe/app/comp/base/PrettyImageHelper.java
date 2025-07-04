@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.core.store.FileNames;
+
 
 import io.xpipe.core.store.FilePath;
 import javafx.beans.binding.Bindings;

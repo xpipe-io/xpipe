@@ -1,8 +1,8 @@
 package io.xpipe.core.util;
 
 import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
 
+import io.xpipe.core.store.FilePath;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -46,7 +46,7 @@ public class XPipeInstallation {
             }
         }
 
-        return "\"" + FileNames.join(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
+        return "\"" + FilePath.of(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
                 + "\"" + modeOption + suffix;
     }
 
@@ -259,41 +259,41 @@ public class XPipeInstallation {
 
     public static String getDaemonDebugScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("scripts", "xpiped_debug.bat");
+            return FilePath.of("scripts", "xpiped_debug.bat").toString();
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("scripts", "xpiped_debug.sh");
+            return FilePath.of("scripts", "xpiped_debug.sh").toString();
         } else {
-            return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug.sh");
+            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug.sh").toString();
         }
     }
 
     public static String getDaemonDebugAttachScriptPath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("scripts", "xpiped_debug_attach.bat");
+            return FilePath.of("scripts", "xpiped_debug_attach.bat").toString();
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("scripts", "xpiped_debug_attach.sh");
+            return FilePath.of("scripts", "xpiped_debug_attach.sh").toString();
         } else {
-            return FileNames.join("Contents", "Resources", "scripts", "xpiped_debug_attach.sh");
+            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug_attach.sh").toString();
         }
     }
 
     public static String getDaemonExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("xpiped.exe");
+            return FilePath.of("xpiped.exe").toString();
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("bin", "xpiped");
+            return FilePath.of("bin", "xpiped").toString();
         } else {
-            return FileNames.join("Contents", "MacOS", "xpiped");
+            return FilePath.of("Contents", "MacOS", "xpiped").toString();
         }
     }
 
     public static String getRelativeCliExecutablePath(OsType.Local type) {
         if (type.equals(OsType.WINDOWS)) {
-            return FileNames.join("bin", "xpipe.exe");
+            return FilePath.of("bin", "xpipe.exe").toString();
         } else if (type.equals(OsType.LINUX)) {
-            return FileNames.join("bin", "xpipe");
+            return FilePath.of("bin", "xpipe").toString();
         } else {
-            return FileNames.join("Contents", "MacOS", "xpipe");
+            return FilePath.of("Contents", "MacOS", "xpipe").toString();
         }
     }
 }

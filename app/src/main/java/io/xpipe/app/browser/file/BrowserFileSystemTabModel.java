@@ -291,7 +291,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         // Handle commands typed into navigation bar
         if (customInput
                 && !evaluatedPath.isBlank()
-                && !FileNames.isAbsolute(evaluatedPath)
+                && !FilePath.of(evaluatedPath).isAbsolute()
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
             var name = adjustedPath + " - " + entry.get().getName();
