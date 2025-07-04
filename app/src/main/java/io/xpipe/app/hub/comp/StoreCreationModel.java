@@ -11,7 +11,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.process.ShellTtyState;
 import io.xpipe.core.store.DataStore;
 import io.xpipe.core.store.ValidatableStore;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.app.ext.ValidationException;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

@@ -1,4 +1,4 @@
-package io.xpipe.core.util;
+package io.xpipe.app.ext;
 
 import lombok.experimental.StandardException;
 

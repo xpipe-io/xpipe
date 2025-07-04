@@ -5,7 +5,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionAddExchange;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.app.ext.ValidationException;
 
 import com.sun.net.httpserver.HttpExchange;
 

@@ -6,7 +6,7 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.process.ShellControl;
 import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.ext.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

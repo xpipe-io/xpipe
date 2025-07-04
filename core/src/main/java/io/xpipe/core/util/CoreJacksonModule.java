@@ -44,9 +44,6 @@ public class CoreJacksonModule extends SimpleModule {
         addSerializer(ShellDialect.class, new ShellDialectSerializer());
         addDeserializer(ShellDialect.class, new ShellDialectDeserializer());
 
-        addSerializer(StreamCharset.class, new StreamCharsetSerializer());
-        addDeserializer(StreamCharset.class, new StreamCharsetDeserializer());
-
         addSerializer(NewLine.class, new NewLineSerializer());
         addDeserializer(NewLine.class, new NewLineDeserializer());
 
@@ -172,22 +169,6 @@ public class CoreJacksonModule extends SimpleModule {
         @Override
         public NewLine deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             return NewLine.byId(p.getValueAsString());
-        }
-    }
-
-    public static class StreamCharsetSerializer extends JsonSerializer<StreamCharset> {
-
-        @Override
-        public void serialize(StreamCharset value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            jgen.writeString(value.toString());
-        }
-    }
-
-    public static class StreamCharsetDeserializer extends JsonDeserializer<StreamCharset> {
-
-        @Override
-        public StreamCharset deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return StreamCharset.get(p.getValueAsString());
         }
     }
 

@@ -7,7 +7,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.app.ext.ValidationException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
