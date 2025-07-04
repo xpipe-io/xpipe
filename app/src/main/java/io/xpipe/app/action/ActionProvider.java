@@ -36,7 +36,7 @@ public interface ActionProvider {
         TrackEvent.trace("Finished action provider initialization");
     }
 
-    default void init() throws Exception {}
+    default void init() {}
 
     default String getLicensedFeatureId() {
         return null;

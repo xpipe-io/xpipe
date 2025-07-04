@@ -82,7 +82,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         }
 
         public void show() {
-            stack.getChildren().add(children.get(0));
+            stack.getChildren().add(children.getFirst());
             for (int i = 1; i < children.size(); i++) {
                 children.get(i).setVisible(false);
                 children.get(i).setManaged(false);

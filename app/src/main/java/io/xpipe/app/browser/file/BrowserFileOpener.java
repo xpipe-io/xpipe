@@ -190,7 +190,7 @@ public class BrowserFileOpener {
 
                             return new BrowserFileOutput() {
                                 @Override
-                                public void beforeTransfer() throws Exception {}
+                                public void beforeTransfer() {}
 
                                 @Override
                                 public boolean hasOutput() {
@@ -239,7 +239,7 @@ public class BrowserFileOpener {
 
                             return new BrowserFileOutput() {
                                 @Override
-                                public void beforeTransfer() throws Exception {}
+                                public void beforeTransfer() {}
 
                                 @Override
                                 public boolean hasOutput() {

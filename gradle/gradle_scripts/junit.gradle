@@ -21,7 +21,7 @@ tasks.withType(Test) {
 
         exceptionFormat = 'full'
         showExceptions = true
-        showCauses true
+        showCauses = true
         showStandardStreams = true
     }
 

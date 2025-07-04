@@ -26,7 +26,7 @@ public interface BrowserFileOutput {
             }
 
             @Override
-            public void beforeTransfer() throws Exception {}
+            public void beforeTransfer() {}
 
             @Override
             public void onFinish() {}

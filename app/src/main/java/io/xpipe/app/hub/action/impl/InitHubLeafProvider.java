@@ -11,7 +11,7 @@ public abstract class InitHubLeafProvider<T extends DataStore, O> implements Hub
     protected O available;
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         ThreadHelper.runFailableAsync(() -> {
             available = check();
 

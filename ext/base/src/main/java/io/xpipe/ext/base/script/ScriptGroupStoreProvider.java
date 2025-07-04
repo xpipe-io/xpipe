@@ -2,7 +2,6 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;

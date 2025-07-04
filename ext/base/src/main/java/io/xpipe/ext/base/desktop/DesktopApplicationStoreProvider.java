@@ -2,7 +2,6 @@ package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreCategory;

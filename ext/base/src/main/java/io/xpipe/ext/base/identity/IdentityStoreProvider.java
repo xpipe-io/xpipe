@@ -2,7 +2,6 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;

@@ -19,7 +19,7 @@ dependencies {
 
 version = rootProject.versionString
 group = 'io.xpipe'
-archivesBaseName = 'xpipe-core'
+base.archivesName = 'xpipe-core'
 
 repositories {
     mavenCentral()

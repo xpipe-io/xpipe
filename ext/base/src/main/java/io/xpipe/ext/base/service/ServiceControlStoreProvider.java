@@ -3,7 +3,6 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreViewState;

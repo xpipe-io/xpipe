@@ -1,7 +1,7 @@
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = project.archivesBaseName
+            artifactId = project.base.archivesName
 
             from components.java
 
