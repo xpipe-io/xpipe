@@ -68,8 +68,7 @@ public class Deobfuscator {
                             file.toString())
                     .redirectErrorStream(true);
             var active = proc.start();
-            var out = new String(active.getInputStream().readAllBytes())
-                    .replaceAll("\r\n", "\n");
+            var out = new String(active.getInputStream().readAllBytes()).replaceAll("\r\n", "\n");
             var code = active.waitFor();
             if (code == 0) {
                 return out;

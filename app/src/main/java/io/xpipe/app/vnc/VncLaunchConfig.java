@@ -1,7 +1,7 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.SecretValue;
 
 import lombok.Value;

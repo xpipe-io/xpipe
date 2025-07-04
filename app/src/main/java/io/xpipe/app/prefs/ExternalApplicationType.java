@@ -2,13 +2,13 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.Translatable;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandControl;
 import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellControl;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -2,11 +2,11 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.*;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 

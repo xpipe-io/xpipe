@@ -66,7 +66,9 @@ public class ContextualFileReference {
 
     public FilePath toAbsoluteFilePath(ShellControl sc) {
         return FilePath.of(path.replaceAll(
-                "/", Matcher.quoteReplacement(sc != null ? OsFileSystem.of(sc.getOsType()).getFileSystemSeparator() : "/")));
+                "/",
+                Matcher.quoteReplacement(
+                        sc != null ? OsFileSystem.of(sc.getOsType()).getFileSystemSeparator() : "/")));
     }
 
     public boolean isInDataDirectory() {

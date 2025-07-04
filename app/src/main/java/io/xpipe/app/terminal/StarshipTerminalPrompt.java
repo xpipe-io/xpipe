@@ -5,8 +5,8 @@ import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.FilePath;
-
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.Property;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

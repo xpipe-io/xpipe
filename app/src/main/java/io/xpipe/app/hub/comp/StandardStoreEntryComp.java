@@ -30,15 +30,18 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     private Label createSummary() {
         var summary = new Label();
-        summary.textProperty().bind(Bindings.createStringBinding(() -> {
-            var summaryValue = getWrapper().getShownSummary().getValue();
-            if (summaryValue != null) {
-                return summaryValue;
-            } else {
-                var provider = getWrapper().getEntry().getProvider();
-                return AppI18n.get(provider.getId() + ".displayName");
-            }
-        }, getWrapper().getShownSummary()));
+        summary.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            var summaryValue = getWrapper().getShownSummary().getValue();
+                            if (summaryValue != null) {
+                                return summaryValue;
+                            } else {
+                                var provider = getWrapper().getEntry().getProvider();
+                                return AppI18n.get(provider.getId() + ".displayName");
+                            }
+                        },
+                        getWrapper().getShownSummary()));
         summary.getStyleClass().add("summary");
         AppFontSizes.xs(summary);
         return summary;

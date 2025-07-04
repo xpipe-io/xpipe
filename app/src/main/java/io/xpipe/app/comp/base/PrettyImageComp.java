@@ -5,8 +5,8 @@ import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-
 import io.xpipe.core.FilePath;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -98,7 +98,8 @@ public class PrettyImageComp extends SimpleComp {
                         && AppPrefs.get().theme().getValue() != null
                         && AppPrefs.get().theme().getValue().isDark();
                 var fixed = val != null
-                        ? FilePath.of(val).getBaseName() + (useDark ? "-dark" : "") + "." +  FilePath.of(val).getExtension().orElseThrow()
+                        ? FilePath.of(val).getBaseName() + (useDark ? "-dark" : "") + "."
+                                + FilePath.of(val).getExtension().orElseThrow()
                         : null;
                 image.set(fixed);
 

@@ -2,9 +2,9 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellTtyState;
+import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.collections.ObservableList;
 

@@ -1,8 +1,8 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalShell;
 
 public class MacOsTerminalType implements ExternalApplicationType.MacApplication, TrackableTerminalType {
 

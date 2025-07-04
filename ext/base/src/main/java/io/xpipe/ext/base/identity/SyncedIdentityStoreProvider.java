@@ -1,12 +1,12 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.*;
 
@@ -68,7 +68,12 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .longDescription("base:sshKey")
                 .sub(
                         SshIdentityStrategyHelper.identity(
-                                new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), identity, path -> perUser.get(), true, true),
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
+                                identity,
+                                path -> perUser.get(),
+                                true,
+                                true),
                         identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f

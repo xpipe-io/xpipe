@@ -1,13 +1,13 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.value.ObservableValue;
 

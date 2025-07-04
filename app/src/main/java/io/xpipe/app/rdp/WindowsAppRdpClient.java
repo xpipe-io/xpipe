@@ -1,8 +1,8 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalShell;
 
 public class WindowsAppRdpClient implements ExternalApplicationType.MacApplication, ExternalRdpClient {
 

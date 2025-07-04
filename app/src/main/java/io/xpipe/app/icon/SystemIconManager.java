@@ -3,11 +3,11 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.ext.ValidationException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

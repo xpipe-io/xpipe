@@ -50,7 +50,8 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var sep = OsFileSystem.of(model.getFileSystem().getShell().orElseThrow().getOsType()).getFileSystemSeparator();
+        var sep = OsFileSystem.of(model.getFileSystem().getShell().orElseThrow().getOsType())
+                .getFileSystemSeparator();
         var dir = entries.size() > 1
                 ? "[...]"
                 : UnzipActionProvider.getTarget(

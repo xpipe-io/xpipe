@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
+
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;

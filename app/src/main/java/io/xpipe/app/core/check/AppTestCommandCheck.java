@@ -1,8 +1,8 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
-import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.core.XPipeInstallation;
 
 public class AppTestCommandCheck {

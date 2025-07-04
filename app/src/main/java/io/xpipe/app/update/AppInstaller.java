@@ -4,16 +4,15 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.process.ShellScript;
-
-import io.xpipe.core.FilePath;
 import io.xpipe.core.FailableRunnable;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -76,8 +75,8 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
-                var logFile = FilePath.of(
-                        logsDir, "installer_" + file.getFileName().toString() + ".log");
+                var logFile =
+                        FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var cmdScript =
                         ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)

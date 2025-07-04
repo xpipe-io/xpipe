@@ -8,8 +8,8 @@ import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.OsType;
 import io.xpipe.core.FileKind;
+import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;

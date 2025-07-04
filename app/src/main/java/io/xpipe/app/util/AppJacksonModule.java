@@ -1,7 +1,5 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import io.xpipe.core.OsType;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
@@ -13,11 +11,13 @@ import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
@@ -52,7 +52,7 @@ public class AppJacksonModule extends SimpleModule {
 
         addSerializer(ShellDialect.class, new ShellDialectSerializer());
         addDeserializer(ShellDialect.class, new ShellDialectDeserializer());
-        
+
         addSerializer(OsType.class, new OsTypeSerializer());
         addDeserializer(OsType.Local.class, new OsTypeLocalDeserializer());
         addDeserializer(OsType.Any.class, new OsTypeAnyDeserializer());

@@ -4,9 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.BindingsHelper;
-
-
 import io.xpipe.core.FilePath;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;

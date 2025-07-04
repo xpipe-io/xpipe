@@ -3,11 +3,11 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.util.*;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FileKind;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

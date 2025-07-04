@@ -4,12 +4,12 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.ext.FileEntry;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;

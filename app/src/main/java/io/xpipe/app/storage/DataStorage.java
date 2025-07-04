@@ -1,6 +1,8 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.FixedChildStore;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
@@ -8,8 +10,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.FixedChildStore;
 import io.xpipe.core.StorePath;
 
 import javafx.util.Pair;
@@ -454,7 +454,8 @@ public abstract class DataStorage {
         children.forEach(child -> {
             if (child.getBreakOutCategory() != null) {
                 var childBreakOut = getStoreCategoryIfPresent(child.getBreakOutCategory());
-                if (childBreakOut.isPresent() && childBreakOut.get().getParentCategory().equals(cat.getUuid())) {
+                if (childBreakOut.isPresent()
+                        && childBreakOut.get().getParentCategory().equals(cat.getUuid())) {
                     categoriesToMove.add(childBreakOut.get());
                 }
             }
@@ -503,7 +504,8 @@ public abstract class DataStorage {
         children.forEach(child -> {
             if (childrenToKeep.contains(child)) {
                 var cbo = getStoreCategoryIfPresent(child.getBreakOutCategory());
-                if (cbo.isPresent() && cbo.get().getParentCategory().equals(breakOut.get().getUuid())) {
+                if (cbo.isPresent()
+                        && cbo.get().getParentCategory().equals(breakOut.get().getUuid())) {
                     moveCategories.add(cbo.get());
                 }
                 return;
@@ -519,8 +521,7 @@ public abstract class DataStorage {
         });
         entry.setCategoryUuid(parent.get().getCategoryUuid());
 
-        listeners.forEach(
-                storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
         deleteStoreCategory(breakOut.get(), false, false);
         entry.setBreakOutCategory(null);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());

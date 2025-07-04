@@ -5,8 +5,8 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ModuleAccess;
-import io.xpipe.core.OsType;
 import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;

@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.OsType;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import org.apache.commons.io.FileUtils;
 

@@ -4,14 +4,14 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
-import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.core.FailableFunction;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;

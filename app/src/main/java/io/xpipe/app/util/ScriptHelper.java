@@ -1,11 +1,11 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.OsType;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
 
 import lombok.SneakyThrows;

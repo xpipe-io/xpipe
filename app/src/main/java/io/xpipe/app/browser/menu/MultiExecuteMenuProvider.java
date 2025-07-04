@@ -4,9 +4,9 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.CommandDialog;
 
 import javafx.beans.value.ObservableValue;
 

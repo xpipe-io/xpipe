@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.core.OsType;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeInstallation;
 
 import java.nio.file.Files;

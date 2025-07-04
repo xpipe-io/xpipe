@@ -1,12 +1,12 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.ext.DataStore;
 
 import lombok.Value;
 

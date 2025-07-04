@@ -1,10 +1,10 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellTerminalInitCommand;
+import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

@@ -1,11 +1,11 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.process.ShellTerminalInitCommand;
+import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.Property;

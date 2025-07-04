@@ -2,8 +2,8 @@ package io.xpipe.app.vnc;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

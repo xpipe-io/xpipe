@@ -3,6 +3,7 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreViewState;
@@ -12,7 +13,6 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.StoreStateFormat;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

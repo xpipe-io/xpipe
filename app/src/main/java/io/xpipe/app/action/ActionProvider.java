@@ -18,16 +18,16 @@ public interface ActionProvider {
                 actionProvider.init();
 
                 // For debugging
-//                if (actionProvider instanceof HubLeafProvider<?>) {
-//                    actionProvider.getActionClass().orElseThrow();
-//                }
-//                if (actionProvider instanceof HubBranchProvider<?> b) {
-//                    for (HubMenuItemProvider<?> child : b.getChildren(null)) {
-//                        if (ALL.stream().noneMatch(a -> a.getClass().equals(child.getClass()))) {
-//                            System.out.println(child.getClass());
-//                        }
-//                    }
-//                }
+                //                if (actionProvider instanceof HubLeafProvider<?>) {
+                //                    actionProvider.getActionClass().orElseThrow();
+                //                }
+                //                if (actionProvider instanceof HubBranchProvider<?> b) {
+                //                    for (HubMenuItemProvider<?> child : b.getChildren(null)) {
+                //                        if (ALL.stream().noneMatch(a -> a.getClass().equals(child.getClass()))) {
+                //                            System.out.println(child.getClass());
+                //                        }
+                //                    }
+                //                }
 
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).handle();

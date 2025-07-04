@@ -125,9 +125,11 @@ public class BeaconServer {
             throw new IllegalStateException();
         } else {
             if (BeaconConfig.attachDebuggerToDaemon()) {
-                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType)).toString();
+                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType))
+                        .toString();
             } else {
-                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType)).toString();
+                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType))
+                        .toString();
             }
         }
     }

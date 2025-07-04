@@ -1,10 +1,10 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

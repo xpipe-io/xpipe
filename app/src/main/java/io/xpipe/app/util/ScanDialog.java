@@ -5,10 +5,10 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 
 import java.util.List;
 

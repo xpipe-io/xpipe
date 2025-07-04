@@ -1,8 +1,8 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalShell;
 
 import java.util.Arrays;
 import java.util.Locale;

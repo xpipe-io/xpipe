@@ -593,7 +593,9 @@ public class DataStoreEntry extends StorageElement {
         this.store = store;
         this.storeNode = DataStorageNode.ofNewStore(store);
         this.provider = DataStoreProviders.byStore(store);
-        this.validity = provider != null ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE) : Validity.LOAD_FAILED;
+        this.validity = provider != null
+                ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE)
+                : Validity.LOAD_FAILED;
         if (updateTime) {
             lastModified = Instant.now();
         }

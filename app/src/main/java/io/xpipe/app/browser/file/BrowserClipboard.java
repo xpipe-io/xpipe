@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.GlobalClipboard;
-import io.xpipe.app.ext.FileEntry;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

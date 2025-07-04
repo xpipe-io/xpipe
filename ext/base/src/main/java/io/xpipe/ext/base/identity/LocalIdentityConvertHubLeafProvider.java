@@ -2,23 +2,20 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-
 import javafx.scene.control.Button;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -77,11 +74,15 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
                     .sshIdentity(EncryptedValue.VaultKey.of(st.getSshIdentity()))
                     .perUser(false)
                     .build();
-            StoreCreationDialog.showEdit(ref.get(), synced, _ -> {});
+            StoreCreationDialog.showEdit(ref.get(), synced, ignored -> {});
 
             // Ugly solution to sync key file if needed
             Platform.runLater(() -> {
-                var found = AppMainWindow.getInstance().getStage().getScene().getRoot().lookupAll(".git-sync-file-button");
+                var found = AppMainWindow.getInstance()
+                        .getStage()
+                        .getScene()
+                        .getRoot()
+                        .lookupAll(".git-sync-file-button");
                 if (found.size() != 1) {
                     return;
                 }

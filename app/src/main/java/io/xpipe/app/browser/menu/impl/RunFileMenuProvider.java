@@ -5,13 +5,13 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.core.OsType;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.FileKind;
+import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
 

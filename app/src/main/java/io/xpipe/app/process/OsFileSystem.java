@@ -19,11 +19,11 @@ public interface OsFileSystem {
 
     static OsFileSystem of(OsType osType) {
         return switch (osType) {
-          case OsType.Windows _ -> WINDOWS;
-            case OsType.Bsd _ -> UNIX;
-            case OsType.Linux _ -> UNIX;
-            case OsType.MacOs _ -> MACOS;
-            case OsType.Solaris _ -> UNIX;
+            case OsType.Windows ignored -> WINDOWS;
+            case OsType.Bsd ignored -> UNIX;
+            case OsType.Linux ignored -> UNIX;
+            case OsType.MacOs ignored -> MACOS;
+            case OsType.Solaris ignored -> UNIX;
             default -> throw new IllegalStateException();
         };
     }

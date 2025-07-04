@@ -3,8 +3,8 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ListProperty;

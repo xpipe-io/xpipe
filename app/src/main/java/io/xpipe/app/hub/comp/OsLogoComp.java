@@ -5,9 +5,8 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.process.SystemState;
-
-
 import io.xpipe.core.FilePath;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -76,7 +75,12 @@ public class OsLogoComp extends SimpleComp {
                             .map(path -> path.getFileName().toString())
                             .forEach(path -> {
                                 var base = path.replace("-dark", "").replace("-24.png", ".svg");
-                                ICONS.put(FilePath.of(base).getBaseName().toString().split("-")[0], "os/" + base);
+                                ICONS.put(
+                                        FilePath.of(base)
+                                                .getBaseName()
+                                                .toString()
+                                                .split("-")[0],
+                                        "os/" + base);
                             });
                 }
             });

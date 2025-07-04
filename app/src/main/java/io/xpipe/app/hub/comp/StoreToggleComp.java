@@ -3,10 +3,10 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

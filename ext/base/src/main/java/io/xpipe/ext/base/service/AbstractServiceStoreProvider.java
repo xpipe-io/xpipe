@@ -2,6 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.ext.SingletonSessionStoreProvider;
@@ -10,7 +11,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.core.FailableRunnable;
 
 import javafx.beans.binding.Bindings;

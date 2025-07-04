@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.ext.ScanProvider;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.process.ShellControl;
 
 public class PodmanScanProvider extends ScanProvider {
 

@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.ext.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

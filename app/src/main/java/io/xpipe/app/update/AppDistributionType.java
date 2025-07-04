@@ -3,10 +3,10 @@ package io.xpipe.app.update;
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellScript;
 import io.xpipe.core.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;

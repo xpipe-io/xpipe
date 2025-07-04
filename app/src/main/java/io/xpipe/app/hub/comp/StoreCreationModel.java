@@ -1,17 +1,17 @@
 package io.xpipe.app.hub.comp;
 
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.ValidatableStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.action.impl.LaunchHubMenuLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.app.process.ShellTtyState;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.ValidatableStore;
-import io.xpipe.app.ext.ValidationException;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

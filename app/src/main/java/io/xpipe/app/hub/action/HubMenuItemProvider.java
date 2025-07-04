@@ -1,9 +1,9 @@
 package io.xpipe.app.hub.action;
 
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.value.ObservableValue;
 

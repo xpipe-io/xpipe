@@ -2,6 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.hub.comp.*;
@@ -9,7 +10,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -57,7 +57,8 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                             DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
                     for (DataStoreEntry child : children) {
                         if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                            if (serviceStore.getHost() != null && serviceStore.getHost().getStore().requiresTunnel()) {
+                            if (serviceStore.getHost() != null
+                                    && serviceStore.getHost().getStore().requiresTunnel()) {
                                 return true;
                             }
                         }

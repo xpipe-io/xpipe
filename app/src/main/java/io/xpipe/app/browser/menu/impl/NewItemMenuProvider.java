@@ -14,9 +14,9 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.OsType;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;

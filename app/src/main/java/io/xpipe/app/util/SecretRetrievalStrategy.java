@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.app.ext.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

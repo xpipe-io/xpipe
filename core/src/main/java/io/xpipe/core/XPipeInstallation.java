@@ -43,8 +43,8 @@ public class XPipeInstallation {
             }
         }
 
-        return "\"" + FilePath.of(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                + "\"" + modeOption + suffix;
+        return "\"" + FilePath.of(installationBase, XPipeInstallation.getDaemonExecutablePath(OsType.getLocal())) + "\""
+                + modeOption + suffix;
     }
 
     public static String createExternalLaunchCommand(String command, String arguments, XPipeDaemonMode mode) {
@@ -260,7 +260,8 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FilePath.of("scripts", "xpiped_debug.sh").toString();
         } else {
-            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug.sh").toString();
+            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug.sh")
+                    .toString();
         }
     }
 
@@ -270,7 +271,8 @@ public class XPipeInstallation {
         } else if (type.equals(OsType.LINUX)) {
             return FilePath.of("scripts", "xpiped_debug_attach.sh").toString();
         } else {
-            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug_attach.sh").toString();
+            return FilePath.of("Contents", "Resources", "scripts", "xpiped_debug_attach.sh")
+                    .toString();
         }
     }
 

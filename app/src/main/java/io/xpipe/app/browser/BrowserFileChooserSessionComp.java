@@ -9,6 +9,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
@@ -18,7 +19,6 @@ import io.xpipe.app.util.FileReference;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
-import io.xpipe.app.ext.FileSystemStore;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;

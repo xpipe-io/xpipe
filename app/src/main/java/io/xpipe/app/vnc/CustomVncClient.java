@@ -2,8 +2,8 @@ package io.xpipe.app.vnc;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

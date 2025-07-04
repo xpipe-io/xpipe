@@ -6,6 +6,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -14,7 +15,6 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
-import io.xpipe.app.ext.FileSystemStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

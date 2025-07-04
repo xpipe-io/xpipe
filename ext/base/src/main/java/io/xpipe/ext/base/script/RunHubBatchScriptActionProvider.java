@@ -3,9 +3,9 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.MultiStoreAction;
+import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.app.process.CommandControl;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

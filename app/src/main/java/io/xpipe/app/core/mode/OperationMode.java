@@ -12,8 +12,8 @@ import io.xpipe.app.prefs.CloseBehaviour;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 import io.xpipe.core.FailableRunnable;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeDaemonMode;
 
 import javafx.application.Platform;

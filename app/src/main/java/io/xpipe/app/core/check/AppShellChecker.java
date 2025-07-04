@@ -2,10 +2,10 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellSpawnException;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.ScriptHelper;
 
 import lombok.Value;
 

@@ -1,11 +1,11 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.TerminalInitFunction;
+import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.WindowsRegistry;
 
 import java.nio.file.Path;
 import java.util.Optional;

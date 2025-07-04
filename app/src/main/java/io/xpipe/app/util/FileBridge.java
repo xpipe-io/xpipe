@@ -6,9 +6,9 @@ import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.OsType;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FailableSupplier;
+import io.xpipe.core.OsType;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;

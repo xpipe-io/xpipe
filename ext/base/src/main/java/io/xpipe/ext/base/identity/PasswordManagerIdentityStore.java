@@ -1,12 +1,12 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.InternalCacheDataStore;
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
-import io.xpipe.app.ext.InternalCacheDataStore;
-import io.xpipe.app.ext.ValidatableStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

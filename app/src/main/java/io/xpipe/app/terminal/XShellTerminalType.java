@@ -7,10 +7,10 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.app.process.CommandBuilder;
 
 import java.nio.file.Path;
 import java.util.Optional;

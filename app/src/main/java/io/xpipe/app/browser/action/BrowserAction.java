@@ -5,9 +5,9 @@ import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.core.FilePath;
-import io.xpipe.app.ext.FileSystemStore;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.experimental.SuperBuilder;

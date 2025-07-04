@@ -1,6 +1,7 @@
 package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.hub.comp.StoreEntryComp;
@@ -11,7 +12,6 @@ import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.value.ObservableValue;
 

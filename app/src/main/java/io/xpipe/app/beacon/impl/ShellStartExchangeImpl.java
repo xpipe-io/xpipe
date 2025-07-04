@@ -6,9 +6,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ShellStartExchange;
+import io.xpipe.core.JacksonMapper;
 
 import com.sun.net.httpserver.HttpExchange;
-import io.xpipe.core.JacksonMapper;
 import lombok.SneakyThrows;
 
 public class ShellStartExchangeImpl extends ShellStartExchange {

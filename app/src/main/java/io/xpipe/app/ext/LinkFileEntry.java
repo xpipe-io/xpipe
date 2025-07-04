@@ -3,9 +3,11 @@ package io.xpipe.app.ext;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
+
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.Value;
+
 import java.time.Instant;
 
 @Value

@@ -1,8 +1,8 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStoreState;
-
 import io.xpipe.core.OsType;
+
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

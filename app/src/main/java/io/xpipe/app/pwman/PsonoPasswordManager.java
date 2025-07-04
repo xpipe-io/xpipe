@@ -5,9 +5,9 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.*;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 

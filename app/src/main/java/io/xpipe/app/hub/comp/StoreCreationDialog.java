@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -13,7 +14,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

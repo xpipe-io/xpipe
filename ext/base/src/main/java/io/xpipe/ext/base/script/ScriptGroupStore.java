@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.SelfReferentialStore;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

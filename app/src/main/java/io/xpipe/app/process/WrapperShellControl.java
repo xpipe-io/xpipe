@@ -1,10 +1,10 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.FailableConsumer;
-
+import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import lombok.Getter;
 
 import java.io.IOException;

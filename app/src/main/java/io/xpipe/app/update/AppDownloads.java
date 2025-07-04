@@ -5,8 +5,8 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.apache.commons.io.FileUtils;

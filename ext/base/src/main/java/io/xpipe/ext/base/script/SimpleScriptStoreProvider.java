@@ -5,19 +5,19 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.EnabledParentStoreProvider;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellDialect;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -218,7 +218,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         var os = st.getMinimumDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getMinimumDialect())
                 ? OsType.WINDOWS
                 : OsType.LINUX;
-        return OsFileSystem.of(os).makeFileSystemCompatible(name) + "." + st.getMinimumDialect().getScriptFileEnding();
+        return OsFileSystem.of(os).makeFileSystemCompatible(name) + "."
+                + st.getMinimumDialect().getScriptFileEnding();
     }
 
     @SneakyThrows

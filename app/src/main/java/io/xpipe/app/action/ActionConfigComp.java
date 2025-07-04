@@ -3,6 +3,7 @@ package io.xpipe.app.action;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
@@ -11,7 +12,6 @@ import io.xpipe.app.hub.comp.StoreListChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

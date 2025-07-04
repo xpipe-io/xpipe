@@ -3,19 +3,19 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ElevationFunction;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ElevationFunction;
-import io.xpipe.core.OsType;
-import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.ext.FileEntry;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import lombok.SneakyThrows;
 
@@ -45,8 +45,8 @@ public class BrowserFileOpener {
         }
 
         var sc = model.getFileSystem().getShell().orElseThrow();
-        var requiresSudo = sc.getOsType() != OsType.WINDOWS &&
-                requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
+        var requiresSudo =
+                sc.getOsType() != OsType.WINDOWS && requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
 
         var defOutput = createFileOutput(model, file, totalBytes, false);
         if (!requiresSudo) {
@@ -91,12 +91,16 @@ public class BrowserFileOpener {
         return !test;
     }
 
-    private static BrowserFileOutput createFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws
-            Exception {
-        var sc = elevate ? model.getFileSystem().getShell().orElseThrow()
-                .identicalDialectSubShell()
-                .elevated(ElevationFunction.elevated(null))
-                .start() : model.getFileSystem().getShell().orElseThrow().start();
+    private static BrowserFileOutput createFileOutput(
+            BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws Exception {
+        var sc = elevate
+                ? model.getFileSystem()
+                        .getShell()
+                        .orElseThrow()
+                        .identicalDialectSubShell()
+                        .elevated(ElevationFunction.elevated(null))
+                        .start()
+                : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
         var isSudoersFile = file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
@@ -135,7 +139,10 @@ public class BrowserFileOpener {
                 if (isSudoersFile) {
                     if (sc.view().findProgram("visudo").isPresent()) {
                         try {
-                            sc.command(CommandBuilder.of().add("visudo", "-c", "-f").addFile(file.getPath())).execute();
+                            sc.command(CommandBuilder.of()
+                                            .add("visudo", "-c", "-f")
+                                            .addFile(file.getPath()))
+                                    .execute();
                         } catch (ProcessOutputException ex) {
                             ErrorEventFactory.fromThrowable(ex).expected().handle();
                             fs.copy(sc.getSystemTemporaryDirectory().join(file.getName()), file.getPath());

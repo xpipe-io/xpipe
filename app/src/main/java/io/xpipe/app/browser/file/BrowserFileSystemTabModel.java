@@ -8,6 +8,7 @@ import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -20,11 +21,10 @@ import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableConsumer;
-
-import io.xpipe.app.ext.FileEntry;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

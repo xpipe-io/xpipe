@@ -4,9 +4,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.PlatformThread;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
 import lombok.Getter;
 
 public class AppWindowTitle {
@@ -17,26 +18,28 @@ public class AppWindowTitle {
     public static void init() {
         if (LicenseProvider.get() != null) {
             var t = LicenseProvider.get().licenseTitle();
-            t.subscribe(_ -> {
+            t.subscribe(ignored -> {
                 title.setValue(createTitle());
             });
         }
 
         var l = AppI18n.activeLanguage();
-        l.subscribe(_ -> {
+        l.subscribe(ignored -> {
             title.setValue(createTitle());
         });
 
         if (AppDistributionType.get() != AppDistributionType.UNKNOWN) {
             var u = AppDistributionType.get().getUpdateHandler().getPreparedUpdate();
-            u.subscribe(_ -> {
+            u.subscribe(ignored -> {
                 title.setValue(createTitle());
             });
         }
     }
 
     private static String createTitle() {
-        var t = LicenseProvider.get() != null ? " " + LicenseProvider.get().licenseTitle().getValue() : "";
+        var t = LicenseProvider.get() != null
+                ? " " + LicenseProvider.get().licenseTitle().getValue()
+                : "";
         var base = String.format("XPipe%s (%s)", t, AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
         var dist = AppDistributionType.get();

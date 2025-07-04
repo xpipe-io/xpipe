@@ -3,11 +3,11 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellControl;
 
 import java.nio.file.Path;
 import java.util.Optional;

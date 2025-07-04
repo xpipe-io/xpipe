@@ -10,12 +10,11 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
-import io.xpipe.app.process.ShellScript;
-
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;

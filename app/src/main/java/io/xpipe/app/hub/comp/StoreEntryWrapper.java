@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
@@ -18,7 +19,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.DataStore;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -340,8 +340,9 @@ public class StoreEntryWrapper {
     }
 
     public boolean canBreakOutCategory() {
-        return (getStore().getValue() instanceof FixedHierarchyStore || getStore().getValue() instanceof GroupStore<?>) &&
-                StoreViewState.get().getParentSectionForWrapper(this).isPresent();
+        return (getStore().getValue() instanceof FixedHierarchyStore
+                        || getStore().getValue() instanceof GroupStore<?>)
+                && StoreViewState.get().getParentSectionForWrapper(this).isPresent();
     }
 
     public void breakOutCategory() {
@@ -421,8 +422,9 @@ public class StoreEntryWrapper {
         }
 
         var isSingle = section.get().getAllChildren().getList().stream()
-                .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
-                .count() == 1;
+                        .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
+                        .count()
+                == 1;
         var max = section.get().getAllChildren().getList().stream()
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)
@@ -443,8 +445,9 @@ public class StoreEntryWrapper {
         }
 
         var isSingle = section.get().getAllChildren().getList().stream()
-                .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
-                .count() == 1;
+                        .filter(sec -> sec.getWrapper().getOrderIndex().get() == orderIndex.getValue())
+                        .count()
+                == 1;
         var min = section.get().getAllChildren().getList().stream()
                 .map(sec -> sec.getWrapper().getOrderIndex().getValue())
                 .filter(value -> value != null && value != Integer.MIN_VALUE && value != Integer.MAX_VALUE)

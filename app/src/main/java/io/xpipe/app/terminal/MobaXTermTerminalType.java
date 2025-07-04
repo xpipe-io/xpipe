@@ -2,8 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.*;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
