@@ -75,69 +75,74 @@ public class TerminalLaunchConfiguration {
                         + DATE_FORMATTER.format(Instant.now()) + ").log"))
                 .toString()
                 .replaceAll(" ", "_");
-        var logFile = logDir.resolve(logName);
-        try (var sc = LocalShell.getShell().start()) {
-            if (OsType.getLocal() == OsType.WINDOWS) {
-                var launcherScript = ScriptHelper.createExecScript(
-                        ShellDialects.POWERSHELL,
-                        sc,
-                        ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
-                var content =
-                        """
-                              echo 'Transcript started, output file is "sessions\\%s"'
-                              Start-Transcript -Force -LiteralPath "%s" > $Out-Null
-                              & %s
-                              Stop-Transcript > $Out-Null
-                              echo 'Transcript stopped, output file is "sessions\\%s"'
-                              """
-                                .formatted(
-                                        logFile.getFileName().toString(),
-                                        logFile,
-                                        launcherScript,
-                                        logFile.getFileName().toString());
-                var config = new TerminalLaunchConfiguration(
-                        entry != null ? color : null,
-                        adjustedTitle,
-                        cleanTitle,
-                        preferTabs,
-                        content,
-                        ShellDialects.POWERSHELL);
-                return config;
-            } else {
-                var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
-                        .executeAndCheck();
-                if (!found) {
-                    var suffix = sc.getOsType() == OsType.MACOS
-                            ? "This command is available in the util-linux package which can be installed via homebrew."
-                            : "This command is available in the util-linux package.";
-                    throw ErrorEventFactory.expected(new IllegalStateException(
-                            "Logging requires the script command to be installed. " + suffix));
-                }
 
-                var launcherScript = ScriptHelper.createExecScript(
-                        sc, sc.getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
-                var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
-                        ? """
-                       echo "Transcript started, output file is sessions/%s"
-                       script -e -q "%s" "%s"
-                       echo "Transcript stopped, output file is sessions/%s"
-                       """
-                                .formatted(logFile.getFileName(), logFile, launcherScript, logFile.getFileName())
-                        : """
-                       echo "Transcript started, output file is sessions/%s"
-                       script --quiet --command "%s" "%s"
-                       echo "Transcript stopped, output file is sessions/%s"
-                       """
-                                .formatted(logFile.getFileName(), launcherScript, logFile, logFile.getFileName());
-                var config = new TerminalLaunchConfiguration(
-                        entry != null ? color : null,
-                        adjustedTitle,
-                        cleanTitle,
-                        preferTabs,
-                        content,
-                        sc.getShellDialect());
-                return config;
+        var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell()).start();
+        var logFile = sc.getLocalSystemAccess().translateFromLocalSystemPath(FilePath.of(logDir.resolve(logName)));
+
+        if (sc.getOsType() == OsType.WINDOWS) {
+            var launcherScript = ScriptHelper.createExecScript(
+                    ShellDialects.POWERSHELL,
+                    sc,
+                    ShellDialects.POWERSHELL.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
+            var content =
+                    """
+                          echo 'Transcript started, output file is "sessions\\%s"'
+                          Start-Transcript -Force -LiteralPath "%s" > $Out-Null
+                          & %s
+                          Stop-Transcript > $Out-Null
+                          echo 'Transcript stopped, output file is "sessions\\%s"'
+                          """
+                            .formatted(logFile.getFileName(),
+                                    logFile,
+                                    launcherScript, logFile.getFileName());
+            var config = new TerminalLaunchConfiguration(
+                    entry != null ? color : null,
+                    adjustedTitle,
+                    cleanTitle,
+                    preferTabs,
+                    content,
+                    ShellDialects.POWERSHELL);
+            return config;
+        } else {
+            var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
+                    .executeAndCheck();
+            if (!found) {
+                var suffix = sc.getOsType() == OsType.MACOS
+                        ? "This command is available in the util-linux package which can be installed via homebrew."
+                        : "This command is available in the util-linux package.";
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "Logging requires the script command to be installed. " + suffix));
             }
+
+            var launcherScript = ScriptHelper.createExecScript(
+                    LocalShell.getShell(), LocalShell.getShell().getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
+            var command = sc == LocalShell.getShell() ? launcherScript :
+                    LocalShell.getShell().getShellDialect().getOpenScriptCommand(launcherScript.toString()).buildFull(LocalShell.getShell());
+            var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
+                    ? """
+                   echo "Transcript started, output file is sessions/%s"
+                   script -e -q '%s' "%s"
+                   echo "Transcript stopped, output file is sessions/%s"
+                   sed $'s,\\x1B\\[[0-9;]*[a-zA-Z],,g'
+                   """
+                            .formatted(logFile.getFileName(), logFile, command, logFile.getFileName())
+                    : """
+                   echo "Transcript started, output file is sessions/%s"
+                   script --quiet --command '%s' "%s"
+                   echo "Transcript stopped, output file is sessions/%s"
+                   cat "%s" | perl -pe 's/\\e([^\\[\\]]|\\[.*?[a-zA-Z]|\\].*?\\a)/\\n/g' | perl -0 -pe 's/\\n+/\\n/g' | col -b > "%s.new"
+                   mv -f "%s.new" "%s"
+                   """
+                            .formatted(logFile.getFileName(), command, logFile, logFile.getFileName(), logFile, logFile, logFile, logFile);
+            var config = new TerminalLaunchConfiguration(
+                    entry != null ? color : null,
+                    adjustedTitle,
+                    cleanTitle,
+                    preferTabs,
+                    content,
+                    sc.getShellDialect());
+            config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
+            return config;
         }
     }
 
