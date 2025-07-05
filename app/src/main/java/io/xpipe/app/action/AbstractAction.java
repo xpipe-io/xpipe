@@ -76,9 +76,9 @@ public abstract class AbstractAction {
         }
     }
 
-    public void executeSync() {
+    public boolean executeSync() {
         if (closed) {
-            return;
+            return false;
         }
 
         synchronized (AbstractAction.class) {
@@ -86,11 +86,11 @@ public abstract class AbstractAction {
                 TrackEvent.withTrace("Picked action").tags(toDisplayMap()).handle();
                 pick.accept(this);
                 pick = null;
-                return;
+                return false;
             }
         }
 
-        executeSyncImpl(true);
+        return executeSyncImpl(true);
     }
 
     public void executeAsync() {
@@ -112,13 +112,13 @@ public abstract class AbstractAction {
         });
     }
 
-    public void executeSyncImpl(boolean confirm) {
+    public boolean executeSyncImpl(boolean confirm) {
         if (confirm && !ActionConfirmation.confirmAction(this)) {
-            return;
+            return false;
         }
 
         if (closed) {
-            return;
+            return false;
         }
 
         synchronized (active) {
@@ -129,17 +129,19 @@ public abstract class AbstractAction {
 
         try {
             if (!beforeExecute()) {
-                return;
+                return false;
             }
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
-            return;
+            return false;
         }
 
         try {
             executeImpl();
+            return true;
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
+            return false;
         } finally {
             afterExecute();
             synchronized (active) {

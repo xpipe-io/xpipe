@@ -164,8 +164,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         var button = new IconButtonComp(icon, () -> {
             if (sortMode.getValue() == StoreSectionSortMode.INDEX_ASC) {
                 sortMode.setValue(StoreSectionSortMode.INDEX_DESC);
-            } else if (sortMode.getValue() == StoreSectionSortMode.INDEX_DESC) {
-                sortMode.setValue(null);
             } else {
                 sortMode.setValue(StoreSectionSortMode.INDEX_ASC);
             }

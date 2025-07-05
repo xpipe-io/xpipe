@@ -30,6 +30,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -406,8 +407,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         .operation(op)
                         .target(this.entry.asNeeded())
                         .build();
-                action.executeSync();
-                refreshSync();
+                if (action.executeSync()) {
+                    refreshSync();
+                }
             });
         });
     }
