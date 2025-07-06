@@ -69,6 +69,10 @@ public class AppOpenArguments {
     }
 
     public static List<? extends AbstractAction> parseActions(String input) {
+        if (input == null || input.isBlank()) {
+            return List.of();
+        }
+
         if (input.startsWith("\"") && input.endsWith("\"")) {
             input = input.substring(1, input.length() - 1);
         }
