@@ -399,14 +399,6 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder longDescription(String descriptionKey) {
-        finishCurrent();
-        longDescription = descriptionKey.startsWith("http")
-                ? descriptionKey
-                : AppI18n.get().getMarkdownDocumentation(descriptionKey);
-        return this;
-    }
-
     public OptionsBuilder addComp(Comp<?> comp) {
         pushComp(comp);
         return this;

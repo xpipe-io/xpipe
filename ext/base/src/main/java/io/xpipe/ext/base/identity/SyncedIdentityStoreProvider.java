@@ -65,7 +65,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription("base:sshKey")
+                .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
                         SshIdentityStrategyHelper.identity(
                                 new ReadOnlyObjectWrapper<>(

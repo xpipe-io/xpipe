@@ -3,10 +3,7 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
+import io.xpipe.app.util.*;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -43,7 +40,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription("base:sshKey")
+                .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
                         SshIdentityStrategyHelper.identity(
                                 new ReadOnlyObjectWrapper<>(

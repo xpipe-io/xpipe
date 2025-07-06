@@ -3,6 +3,7 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.SecretRetrievalStrategyHelper;
@@ -70,7 +71,7 @@ public class IdentityChoice {
         if (keyInput) {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
-                    .longDescription("base:sshKey")
+                    .longDescription(DocumentationLink.SSH_KEYS)
                     .sub(
                             SshIdentityStrategyHelper.identity(
                                     host != null
