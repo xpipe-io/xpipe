@@ -727,7 +727,7 @@ public class AppPrefs {
                 boolean log) {
             var m = new Mapping(id, property, t, false, requiresRestart, log);
             customEntries.put(m, builder);
-            mapping.add(m);
+            map(m);
         }
     }
 }
