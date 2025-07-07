@@ -14,35 +14,25 @@ import java.util.Locale;
 @AllArgsConstructor
 @Getter
 public enum SupportedLocale implements PrefsChoiceValue {
-    ENGLISH(Locale.ENGLISH, "en", false),
-    GERMAN(Locale.GERMAN, "de", false),
-    DUTCH(Locale.of("nl"), "nl", false),
-    SPANISH(Locale.of("es"), "es", false),
-    FRENCH(Locale.FRENCH, "fr", true),
-    ITALIAN(Locale.ITALIAN, "it", false),
-    PORTUGUESE(Locale.of("pt"), "pt", false),
-    RUSSIAN(Locale.of("ru"), "ru", true),
-    JAPANESE(Locale.of("ja"), "ja", false),
-    CHINESE(Locale.CHINESE, "zh", true),
-    DANISH(Locale.of("da"), "da", false),
-    INDONESIAN(Locale.of("id"), "id", false),
-    SWEDISH(Locale.of("sv"), "sv", false),
-    POLISH(Locale.of("pl"), "pl", false),
-    KOREAN(Locale.of("ko"), "ko", false),
-    TURKISH(Locale.of("tr"), "tr", true);
+    ENGLISH(Locale.ENGLISH, "en"),
+    GERMAN(Locale.GERMAN, "de"),
+    DUTCH(Locale.of("nl"), "nl"),
+    SPANISH(Locale.of("es"), "es"),
+    FRENCH(Locale.FRENCH, "fr"),
+    ITALIAN(Locale.ITALIAN, "it"),
+    PORTUGUESE(Locale.of("pt"), "pt"),
+    RUSSIAN(Locale.of("ru"), "ru"),
+    JAPANESE(Locale.of("ja"), "ja"),
+    CHINESE(Locale.CHINESE, "zh"),
+    DANISH(Locale.of("da"), "da"),
+    INDONESIAN(Locale.of("id"), "id"),
+    SWEDISH(Locale.of("sv"), "sv"),
+    POLISH(Locale.of("pl"), "pl"),
+    KOREAN(Locale.of("ko"), "ko"),
+    TURKISH(Locale.of("tr"), "tr");
 
     private final Locale locale;
     private final String id;
-    private final boolean setDefault;
-
-    public static SupportedLocale getInitial() {
-        var s = Locale.getDefault();
-        return Arrays.stream(values())
-                .filter(supportedLocale -> supportedLocale.isSetDefault()
-                        && supportedLocale.getLocale().getLanguage().equals(s.getLanguage()))
-                .findFirst()
-                .orElse(getEnglish());
-    }
 
     public static SupportedLocale getEnglish() {
         return Arrays.stream(values())

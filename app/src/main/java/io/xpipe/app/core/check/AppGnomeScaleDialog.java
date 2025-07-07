@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.util.DocumentationLink;
 
 public class AppGnomeScaleDialog {
 
@@ -32,7 +33,7 @@ public class AppGnomeScaleDialog {
 
         var content = AppDialog.dialogText("You are running XPipe with a high display scaling on a Wayland system."
                 + " Due to xwayland limitations, this might result in a blurry window."
-                + " See below for a possible fix.");
+                + " If you are using a high-dpi display, see " + DocumentationLink.GNOME_WAYLAND_SCALING.getLink() + " for a fix.");
         var modal = ModalOverlay.of("waylandScalingTitle", content);
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("gnomeScaleNoticeShown", true);

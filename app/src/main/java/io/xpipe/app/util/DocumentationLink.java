@@ -64,6 +64,7 @@ public enum DocumentationLink {
     SHELL_ENVIRONMENTS_USER("guide/environments#users"),
     SHELL_ENVIRONMENTS_SCRIPTS("guide/environments#scripts"),
     SERIAL("guide/serial"),
+    GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
     SERIAL_PORTS("guide/serial#serial-ports");
 

@@ -207,7 +207,7 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "disableSshPinCaching", Boolean.class, false);
 
     final ObjectProperty<SupportedLocale> language = mapLocal(
-            new SimpleObjectProperty<>(SupportedLocale.getInitial()), "language", SupportedLocale.class, false);
+            new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class, false);
 
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
