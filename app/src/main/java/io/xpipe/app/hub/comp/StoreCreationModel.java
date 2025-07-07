@@ -221,7 +221,11 @@ public class StoreCreationModel {
                 return;
             }
 
-            try (var ignored = new BooleanScope(busy).start()) {
+            if (busy.get()) {
+                return;
+            }
+
+            try (var ignored = new BooleanScope(busy).exclusive().start()) {
                 DataStorage.get().addStoreEntryInProgress(entry.getValue());
                 validate();
                 commit(true);

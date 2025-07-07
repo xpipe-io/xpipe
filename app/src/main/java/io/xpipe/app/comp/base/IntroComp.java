@@ -66,7 +66,7 @@ public class IntroComp extends SimpleComp {
                 buttonGraphic != null ? buttonGraphic.createGraphicNode() : null,
                 buttonAction);
         if (buttonDefault) {
-            button.apply(struc -> struc.get().setDefaultButton(true));
+            button.styleClass(Styles.ACCENT);
         }
         var buttonPane = new StackPane(button.createRegion());
         buttonPane.setAlignment(Pos.CENTER);

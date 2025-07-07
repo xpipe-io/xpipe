@@ -74,7 +74,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
         importDesc.setMaxWidth(470);
 
         var importButton = new Button(null, new FontIcon("mdi2p-play-circle"));
-        importButton.setDefaultButton(true);
+        importButton.getStyleClass().add(Styles.ACCENT);
         importButton.textProperty().bind(AppI18n.observable("scriptsIntroStart"));
         importButton.setOnAction(event -> {
             AppCache.update("scriptsIntroCompleted", true);

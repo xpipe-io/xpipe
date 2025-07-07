@@ -1,13 +1,16 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.xpipe.core.UuidHelper;
 import lombok.experimental.SuperBuilder;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuperBuilder
 public abstract class SerializableAction extends AbstractAction {
@@ -51,9 +54,19 @@ public abstract class SerializableAction extends AbstractAction {
             }
 
             var name = DataStoreFormatter.camelCaseToName(property.getKey());
+            name = Arrays.stream(name.split(" ")).filter(s -> !s.equals("Store")).collect(Collectors.joining(" "));
+
             var value = property.getValue().asText();
             if (!value.isEmpty()) {
-                map.put(name, value);
+                var uuid = UuidHelper.parse(value);
+                if (uuid.isPresent()) {
+                    var refName = DataStorage.get().getStoreEntryIfPresent(uuid.get()).map(e -> e.getName()).or(() -> {
+                        return DataStorage.get().getStoreCategoryIfPresent(uuid.get()).map(c -> c.getName());
+                    });
+                    map.put(name, refName.orElse(value));
+                } else {
+                    map.put(name, value);
+                }
             } else if (property.getValue().isArray()) {
                 var list = new ArrayList<String>();
                 for (JsonNode jsonNode : property.getValue()) {

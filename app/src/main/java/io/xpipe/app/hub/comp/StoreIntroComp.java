@@ -40,7 +40,7 @@ public class StoreIntroComp extends SimpleComp {
         scanButton.textProperty().bind(AppI18n.observable("detectConnections"));
         scanButton.setOnAction(
                 event -> ScanDialog.showSingleAsync(DataStorage.get().local()));
-        scanButton.setDefaultButton(true);
+        scanButton.getStyleClass().add(Styles.ACCENT);
         var scanPane = new StackPane(scanButton);
         scanPane.setAlignment(Pos.CENTER);
 
