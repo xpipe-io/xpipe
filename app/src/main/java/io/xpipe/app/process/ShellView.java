@@ -153,6 +153,10 @@ public class ShellView {
         cd(directory.toString());
     }
 
+    public FilePath pwd() throws Exception {
+        return FilePath.of(shellControl.command(shellControl.getShellDialect().getPrintWorkingDirectoryCommand()).readStdoutOrThrow());
+    }
+
     public void cd(String directory) throws Exception {
         var d = shellControl.getShellDialect();
         var cmd = shellControl.command(d.getCdCommand(directory));
