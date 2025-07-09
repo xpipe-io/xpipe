@@ -11,6 +11,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.FileOpener;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -42,16 +43,14 @@ public class JavapMenuProvider
 
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
-        ShellControl sc = model.getFileSystem().getShell().orElseThrow();
-        for (BrowserEntry entry : entries) {
-            var command = CommandBuilder.of()
-                    .add("javap", "-c", "-p")
-                    .addFile(entry.getRawFileEntry().getPath());
-            var out = sc.command(command)
-                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
-                    .readStdoutOrThrow();
-            FileOpener.openReadOnlyString(out);
-        }
+        ThreadHelper.runFailableAsync(() -> {
+            ShellControl sc = model.getFileSystem().getShell().orElseThrow();
+            for (BrowserEntry entry : entries) {
+                var command = CommandBuilder.of().add("javap", "-c", "-p").addFile(entry.getRawFileEntry().getPath());
+                var out = sc.command(command).withWorkingDirectory(model.getCurrentDirectory().getPath()).readStdoutOrThrow();
+                FileOpener.openReadOnlyString(out);
+            }
+        });
     }
 
     @Override

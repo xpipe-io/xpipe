@@ -8,6 +8,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.CommandDialog;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                             }
 
                             var cmd = sc.command(c);
-                            model.openTerminalSync(
+                            model.openTerminalAsync(
                                     entry.getRawFileEntry().getName(),
                                     model.getCurrentDirectory() != null
                                             ? model.getCurrentDirectory().getPath()
@@ -61,17 +62,19 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
-                        var sc = model.getFileSystem().getShell().orElseThrow();
-                        for (BrowserEntry entry : entries) {
-                            var c = createCommand(sc, model, entry);
-                            if (c == null) {
-                                return;
-                            }
+                        ThreadHelper.runAsync(() -> {
+                            var sc = model.getFileSystem().getShell().orElseThrow();
+                            for (BrowserEntry entry : entries) {
+                                var c = createCommand(sc, model, entry);
+                                if (c == null) {
+                                    return;
+                                }
 
-                            var cmd = sc.command(c);
-                            CommandDialog.runAndShow(cmd);
-                        }
-                        model.refreshBrowserEntriesSync(entries);
+                                var cmd = sc.command(c);
+                                CommandDialog.runAndShow(cmd);
+                            }
+                            model.refreshBrowserEntriesSync(entries);
+                        });
                     }
 
                     @Override
@@ -84,19 +87,18 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
-                        var sc = model.getFileSystem().getShell().orElseThrow();
-                        for (BrowserEntry entry : entries) {
-                            var cmd = createCommand(sc, model, entry);
-                            if (cmd == null) {
-                                continue;
-                            }
+                        ThreadHelper.runFailableAsync(() -> {
+                            var sc = model.getFileSystem().getShell().orElseThrow();
+                            for (BrowserEntry entry : entries) {
+                                var cmd = createCommand(sc, model, entry);
+                                if (cmd == null) {
+                                    continue;
+                                }
 
-                            sc.command(cmd)
-                                    .withWorkingDirectory(
-                                            model.getCurrentDirectory().getPath())
-                                    .execute();
-                        }
-                        model.refreshBrowserEntriesSync(entries);
+                                sc.command(cmd).withWorkingDirectory(model.getCurrentDirectory().getPath()).execute();
+                            }
+                            model.refreshBrowserEntriesSync(entries);
+                        });
                     }
 
                     @Override

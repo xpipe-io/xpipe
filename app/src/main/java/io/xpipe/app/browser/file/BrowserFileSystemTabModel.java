@@ -163,12 +163,12 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         cdSyncWithoutCheck(currentPath.get());
     }
 
-    public void refreshBrowserEntriesSync(List<BrowserEntry> entries) throws Exception {
+    public void refreshBrowserEntriesSync(List<BrowserEntry> entries) {
         refreshFileEntriesSync(
                 entries.stream().map(BrowserEntry::getRawFileEntry).collect(Collectors.toList()));
     }
 
-    public void refreshFileEntriesSync(List<FileEntry> entries) throws Exception {
+    public void refreshFileEntriesSync(List<FileEntry> entries) {
         if (fileList.getAll().getValue().size() < 10) {
             refreshSync();
             return;
@@ -179,9 +179,13 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return;
         }
 
-        for (var e : entries) {
-            var refresh = fileSystem.getFileInfo(e.getPath());
-            fileList.updateEntry(e.getPath(), refresh.orElse(null));
+        try {
+            for (var e : entries) {
+                var refresh = fileSystem.getFileInfo(e.getPath());
+                fileList.updateEntry(e.getPath(), refresh.orElse(null));
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 

@@ -48,9 +48,6 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         if (Boolean.TRUE.equals(config.getDontAllowScripts())) {
             return List.of(new BrowserMenuLeafProvider() {
                 @Override
-                public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {}
-
-                @Override
                 public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                     return AppI18n.observable("scriptsDisabled");
                 }
