@@ -27,12 +27,12 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
 
     @Override
     default boolean isRecommended() {
-        return true;
+        return AppPrefs.get().terminalMultiplexer().getValue() != null;
     }
 
     @Override
     default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
@@ -72,7 +72,7 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-n", "-a")
                             .addQuoted(getApplicationName())
-                            .add("--args")
+                            .add("--args", "-e")
                             .add(configuration.getDialectLaunchCommand()));
         }
 
