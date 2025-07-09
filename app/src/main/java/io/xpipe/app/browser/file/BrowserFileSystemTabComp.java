@@ -103,18 +103,21 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var navBar = new BrowserNavBarComp(model).createStructure();
         filter.textField().prefHeightProperty().bind(navBar.get().heightProperty());
         AppFontSizes.base(navBar.get());
+
+        var leftBox = new HBox(overview, backBtn, forthBtn);
+        leftBox.setFillHeight(true);
+        leftBox.getStyleClass().add("button-bar");
+        var rightBox = new HBox(filter.get(), refreshBtn, terminalBtn, menuButton);
+        rightBox.setFillHeight(true);
+        rightBox.getStyleClass().add("button-bar");
+
         topBar.getChildren()
                 .setAll(
-                        overview,
-                        backBtn,
-                        forthBtn,
-                        new Spacer(10),
+                        leftBox,
+                        new Spacer(6),
                         navBar.get(),
-                        new Spacer(5),
-                        filter.get(),
-                        refreshBtn,
-                        terminalBtn,
-                        menuButton);
+                        new Spacer(6),
+                        rightBox);
         topBar.setMinWidth(0);
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
@@ -138,7 +141,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 }
                 e.consume();
             });
-            topBar.getChildren().add(7, pinButton);
+            rightBox.getChildren().add(1, pinButton);
             squaredSize(navBar.get(), pinButton, true);
         }
 
@@ -196,11 +199,11 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         if (width) {
             toResize.minWidthProperty().bind(ref.heightProperty());
         }
-        toResize.minHeightProperty().bind(ref.heightProperty());
+        toResize.minHeightProperty().bind(ref.heightProperty().add(-2));
         if (width) {
             toResize.maxWidthProperty().bind(ref.heightProperty());
         }
-        toResize.maxHeightProperty().bind(ref.heightProperty());
+        toResize.maxHeightProperty().bind(ref.heightProperty().add(-2));
     }
 
     private Region createFileListContent() {

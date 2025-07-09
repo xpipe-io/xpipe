@@ -122,31 +122,40 @@
     -fx-padding: 6 4 6px 0;
 }
 
-.browser .top-bar > .button {
+.browser .top-bar > .button-bar {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+}
+
+.root:nord .browser .top-bar > .button-bar {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.browser .top-bar > .button-bar > .button {
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
 
-.browser .top-bar > .menu-button {
+.browser .top-bar > .button-bar > .menu-button {
     -fx-padding: 0;
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
 
-.browser .top-bar .button:hover, .root:key-navigation .browser .top-bar .button:focused {
-    -fx-background-color: -color-accent-subtle;
+.browser .top-bar > .button-bar > .button:hover, .root:key-navigation .browser .top-bar > .button-bar > .button:focused {
+    -fx-background-color: -color-neutral-muted;
 }
 
-.browser .top-bar .menu-button:hover, .root:key-navigation .browser .top-bar .menu-button:focused {
-    -fx-background-color: -color-accent-subtle;
+.browser .top-bar > .button-bar > .menu-button:hover, .root:key-navigation .browser .top-bar > .button-bar > .menu-button:focused {
+    -fx-background-color: -color-neutral-muted;
 }
 
-.browser .top-bar > .menu-button:hover {
-    -fx-background-color: -color-accent-subtle;
-}
-
-.browser .top-bar .browser-filter .button:hover {
-    -fx-background-color: -color-accent-subtle;
+.browser .top-bar > .button-bar > .browser-filter .button:hover {
+    -fx-background-color: -color-neutral-muted;
 }
 
 .browser .status-bar {
@@ -182,8 +191,18 @@
     -fx-background-color: -color-neutral-muted;
 }
 
-.browser .path-text, .browser .browser-filter .text-field {
+.browser .path-text {
     -fx-padding: 3 12;
+}
+
+.browser .browser-filter .text-field {
+    -fx-padding: 3 12;
+    -fx-background-radius: 4 0 0 4;
+    -fx-background-insets: 0;
+}
+
+.root:nord .browser .browser-filter .text-field {
+    -fx-background-radius: 0;
 }
 
 .browser .path-text:invisible {

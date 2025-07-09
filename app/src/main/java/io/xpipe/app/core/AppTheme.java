@@ -65,7 +65,7 @@ public class AppTheme {
 
             AppPrefs.get().theme().subscribe(t -> {
                 Theme.ALL.forEach(theme -> {
-                    root.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.equals(t));
+                    root.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.getCssId().equals(t.getCssId()));
                 });
                 if (t == null) {
                     return;
