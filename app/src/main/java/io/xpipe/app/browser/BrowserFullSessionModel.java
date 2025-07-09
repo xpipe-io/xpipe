@@ -5,6 +5,7 @@ import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
 import io.xpipe.app.ext.FileSystemStore;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -33,14 +34,18 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public static final BrowserFullSessionModel DEFAULT = new BrowserFullSessionModel();
 
-    @SneakyThrows
-    public static void init() {
+    public static void init() throws Exception {
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
                     DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
-            DEFAULT.openSync(tab, null);
-            DEFAULT.pinTab(tab);
+            try {
+                DEFAULT.openSync(tab, null);
+                DEFAULT.pinTab(tab);
+            } catch (Exception ex) {
+                // Don't fail startup if this operation fails
+                ErrorEventFactory.fromThrowable(ex).handle();
+            }
         }
     }
 

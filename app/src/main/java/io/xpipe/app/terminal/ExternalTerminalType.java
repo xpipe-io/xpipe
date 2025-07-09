@@ -325,32 +325,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
-    ExternalTerminalType GHOSTTY = new SimplePathType("app.ghostty", "ghostty", true) {
-        @Override
-        public String getWebsite() {
-            return "https://ghostty.org";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
-        }
-    };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
 
         @Override
@@ -600,7 +574,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             ELEMENTARY,
             KONSOLE,
             GNOME_TERMINAL,
-            GHOSTTY,
+            GhosttyTerminalType.GHOSTTY_LINUX,
             TILIX,
             GUAKE,
             TILDA,
@@ -621,6 +595,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
+            GhosttyTerminalType.GHOSTTY_MACOS,
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);

@@ -73,10 +73,6 @@ public class LocalShell {
         return sc;
     }
 
-    public static boolean isLocalShellInitialized() {
-        return local != null;
-    }
-
     @SneakyThrows
     public static ShellControl getShell() {
         if (local == null) {

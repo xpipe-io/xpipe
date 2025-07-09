@@ -11,8 +11,8 @@ public class ProcessOutputException extends Exception {
     private final long exitCode;
     private final String output;
 
-    private ProcessOutputException(String message, long exitCode, String output) {
-        super(message);
+    private ProcessOutputException(String message, long exitCode, String output, Exception cause) {
+        super(message, cause);
         this.exitCode = exitCode;
         this.output = output;
     }
@@ -20,19 +20,19 @@ public class ProcessOutputException extends Exception {
     public static ProcessOutputException withParagraph(String customPrefix, ProcessOutputException ex) {
         var messageSuffix = ex.getOutput() != null ? ex.getOutput() : "";
         var message = customPrefix + "\n\n" + messageSuffix;
-        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput(), ex);
     }
 
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
         var messageSuffix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ":\n" + ex.getOutput() : "";
         var message = customPrefix + messageSuffix;
-        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput(), ex);
     }
 
     public static ProcessOutputException withSuffix(String customSuffix, ProcessOutputException ex) {
         var messagePrefix = ex.getOutput() != null && !ex.getOutput().isBlank() ? ex.getOutput() + "\n" : "";
         var message = messagePrefix + customSuffix;
-        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput());
+        return new ProcessOutputException(message, ex.getExitCode(), ex.getOutput(), ex);
     }
 
     public static ProcessOutputException of(long exitCode, String... messages) {
@@ -54,7 +54,7 @@ public class ProcessOutputException extends Exception {
                     case CommandControl.ELEVATION_FAILED_EXIT_CODE -> "Process elevation failed" + errorSuffix;
                     default -> "Process returned exit code " + exitCode + errorSuffix;
                 };
-        return new ProcessOutputException(message, exitCode, combinedError);
+        return new ProcessOutputException(message, exitCode, combinedError, null);
     }
 
     public boolean isIrregularExit() {

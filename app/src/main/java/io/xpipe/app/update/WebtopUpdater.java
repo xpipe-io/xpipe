@@ -8,7 +8,7 @@ import java.util.List;
 public class WebtopUpdater extends PortableUpdater {
 
     public WebtopUpdater() {
-        super(true);
+        super(false);
     }
 
     @Override
