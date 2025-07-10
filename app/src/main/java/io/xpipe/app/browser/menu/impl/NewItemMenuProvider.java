@@ -80,7 +80,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                     .toList();
                             var builder = NewFileActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);
-                            builder.name(name.getValue());
+                            builder.name(name.getValue().strip());
                             builder.build().executeAsync();
                         });
                         modal.show();
@@ -127,7 +127,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                     .toList();
                             var builder = NewDirectoryActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);
-                            builder.name(name.getValue());
+                            builder.name(name.getValue().strip());
                             builder.build().executeAsync();
                         });
                         modal.show();
@@ -179,7 +179,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                                     .toList();
                             var builder = NewLinkActionProvider.Action.builder();
                             builder.initFiles(model, fixedFiles);
-                            builder.name(linkName.getValue());
+                            builder.name(linkName.getValue().strip());
                             builder.target(FilePath.of(target.getValue()));
                             builder.build().executeAsync();
                         });

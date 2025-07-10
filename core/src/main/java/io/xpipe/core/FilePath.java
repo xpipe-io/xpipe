@@ -33,10 +33,10 @@ public final class FilePath {
     private FilePath(@NonNull String value) {
         this.value = value;
         if (value.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("File path is empty");
         }
         if (!value.equals(value.strip())) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("File path " + value + " has leading or trailing spaces");
         }
     }
 

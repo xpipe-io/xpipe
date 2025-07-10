@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
@@ -78,6 +79,7 @@ public class AppDownloads {
         req.put("first", first);
         req.put("license", LicenseProvider.get().getLicenseId());
         req.put("dist", AppDistributionType.get().getId());
+        req.put("lang", AppPrefs.get() != null ? AppPrefs.get().language().getValue().getId() : null);
         var url = URI.create("https://api.xpipe.io/version");
 
         var builder = HttpRequest.newBuilder();
