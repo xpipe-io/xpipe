@@ -1,11 +1,11 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.core.FailableSupplier;
+import io.xpipe.core.FilePath;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -46,7 +46,7 @@ public class CommandSupport {
             throws Exception {
         if (!isInPath(processControl, executable)) {
             var prefix = displayName != null ? displayName + " executable " + executable : executable + " executable";
-            throw ErrorEvent.expected(new IOException(
+            throw ErrorEventFactory.expected(new IOException(
                     prefix + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
@@ -54,7 +54,7 @@ public class CommandSupport {
     public static void isSupported(FailableSupplier<Boolean> supplier, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!supplier.get()) {
-            throw ErrorEvent.expected(new IOException(displayName + " is not supported"
+            throw ErrorEventFactory.expected(new IOException(displayName + " is not supported"
                     + (connection != null ? " on system " + connection.getName() : "")));
         }
     }
@@ -74,7 +74,7 @@ public class CommandSupport {
         if (present) {
             return;
         }
-        throw ErrorEvent.expected(
+        throw ErrorEventFactory.expected(
                 new IOException(
                         prefix
                                 + " not found in PATH. Install the executable, add it to the PATH, and refresh the environment by restarting XPipe to fix this."));

@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import java.util.concurrent.TimeUnit;
 

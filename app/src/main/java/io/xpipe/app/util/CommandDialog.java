@@ -2,8 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ProcessOutputException;
+import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.ProcessOutputException;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
@@ -16,44 +16,40 @@ import java.util.stream.Collectors;
 
 public class CommandDialog {
 
-    public static void runAsyncAndShow(Map<String, CommandControl> cmds) {
-        ThreadHelper.runAsync(() -> {
-            StringBuilder acc = new StringBuilder();
-            for (var e : cmds.entrySet()) {
-                String out;
-                try {
-                    out = e.getValue().readStdoutOrThrow();
-                    out = formatOutput(out);
-                } catch (ProcessOutputException ex) {
-                    out = ex.getMessage();
-                } catch (Throwable t) {
-                    out = ExceptionUtils.getStackTrace(t);
-                }
-
-                acc.append(e.getKey())
-                        .append(" (exit code ")
-                        .append(e.getValue().getExitCode())
-                        .append("):\n")
-                        .append(out)
-                        .append("\n\n");
-            }
-            show(acc.toString());
-        });
-    }
-
-    public static void runAsyncAndShow(CommandControl cmd) {
-        ThreadHelper.runAsync(() -> {
+    public static void runMultipleAndShow(Map<String, CommandControl> cmds) {
+        StringBuilder acc = new StringBuilder();
+        for (var e : cmds.entrySet()) {
             String out;
             try {
-                out = cmd.readStdoutOrThrow();
+                out = e.getValue().readStdoutOrThrow();
                 out = formatOutput(out);
-            } catch (ProcessOutputException e) {
-                out = e.getMessage();
+            } catch (ProcessOutputException ex) {
+                out = ex.getMessage();
             } catch (Throwable t) {
                 out = ExceptionUtils.getStackTrace(t);
             }
-            show(out);
-        });
+
+            acc.append(e.getKey())
+                    .append(" (exit code ")
+                    .append(e.getValue().getExitCode())
+                    .append("):\n")
+                    .append(out)
+                    .append("\n\n");
+        }
+        show(acc.toString());
+    }
+
+    public static void runAndShow(CommandControl cmd) {
+        String out;
+        try {
+            out = cmd.readStdoutOrThrow();
+            out = formatOutput(out);
+        } catch (ProcessOutputException e) {
+            out = e.getMessage();
+        } catch (Throwable t) {
+            out = ExceptionUtils.getStackTrace(t);
+        }
+        show(out);
     }
 
     private static void show(String out) {

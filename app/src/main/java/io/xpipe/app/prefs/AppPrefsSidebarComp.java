@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,10 +32,14 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .toList();
         var buttons = effectiveCategories.stream()
                 .<Comp<?>>map(appPrefsCategory -> {
-                    return new ButtonComp(AppI18n.observable(appPrefsCategory.getId()), () -> {
-                                AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
-                            })
+                    return new ButtonComp(
+                                    AppI18n.observable(appPrefsCategory.getId()),
+                                    new ReadOnlyObjectWrapper<>(appPrefsCategory.getIcon()),
+                                    () -> {
+                                        AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
+                                    })
                             .apply(struc -> {
+                                struc.get().setGraphicTextGap(9);
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {

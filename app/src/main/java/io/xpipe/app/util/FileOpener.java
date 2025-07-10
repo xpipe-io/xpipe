@@ -1,19 +1,24 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.browser.file.BrowserFileOutput;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.core.OsType;
+
 import com.sun.jna.platform.win32.Shell32;
 import com.sun.jna.platform.win32.ShellAPI;
 import com.sun.jna.platform.win32.User32;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialects;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -28,7 +33,7 @@ public class FileOpener {
         try {
             editor.launch(Path.of(localFile).toRealPath());
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to launch editor "
                                     + editor.toTranslatedString().getValue()
                                     + ".\nMaybe try to use a different editor in the settings.",
@@ -62,7 +67,8 @@ public class FileOpener {
                 }
             }
         } catch (Throwable e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)
+                    .handle();
         }
     }
 
@@ -81,7 +87,8 @@ public class FileOpener {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Unable to open file " + localFile, e).handle();
+            ErrorEventFactory.fromThrowable("Unable to open file " + localFile, e)
+                    .handle();
         }
     }
 
@@ -114,12 +121,35 @@ public class FileOpener {
                         key,
                         null,
                         () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
-                        (size) -> new ByteArrayOutputStream(s.length()) {
-                            @Override
-                            public void close() throws IOException {
-                                super.close();
-                                output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
-                            }
+                        (size) -> {
+                            return new BrowserFileOutput() {
+                                @Override
+                                public void beforeTransfer() {}
+
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.empty();
+                                }
+
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public OutputStream open() {
+                                    return new ByteArrayOutputStream(s.length()) {
+                                        @Override
+                                        public void close() throws IOException {
+                                            super.close();
+                                            output.accept(new String(toByteArray(), StandardCharsets.UTF_8));
+                                        }
+                                    };
+                                }
+
+                                @Override
+                                public void onFinish() {}
+                            };
                         },
                         file -> openInTextEditor(file));
     }

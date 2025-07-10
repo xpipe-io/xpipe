@@ -1,9 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import java.nio.file.FileSystems;
 

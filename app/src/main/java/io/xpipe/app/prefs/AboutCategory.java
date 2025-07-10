@@ -3,12 +3,13 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -22,6 +23,11 @@ public class AboutCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "about";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2i-information-outline");
     }
 
     @Override

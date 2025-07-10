@@ -1,14 +1,13 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ShellTemp;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.core.FilePath;
 
 import java.util.*;
 
@@ -49,7 +48,7 @@ public class ScriptStoreSetup {
             initFlattened.forEach(s -> {
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
                     @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                    public Optional<String> terminalContent(ShellControl shellControl) {
                         return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
                     }
 
@@ -85,7 +84,7 @@ public class ScriptStoreSetup {
                 });
             }
         } catch (StackOverflowError t) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new RuntimeException("Unable to set up scripts. Is there a circular script dependency?", t));
         } catch (Throwable t) {
             throw new RuntimeException("Unable to set up scripts", t);
@@ -112,17 +111,17 @@ public class ScriptStoreSetup {
         var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
                 .join(proc.getShellDialect().getId())
                 .toString();
-        var hashFile = FileNames.join(targetDir, "hash");
+        var hashFile = FilePath.of(targetDir, "hash");
         var d = proc.getShellDialect();
-        if (d.createFileExistsCommand(proc, hashFile).executeAndCheck()) {
-            var read = d.getFileReadCommand(proc, hashFile).readStdoutOrThrow();
+        if (d.createFileExistsCommand(proc, hashFile.toString()).executeAndCheck()) {
+            var read = d.getFileReadCommand(proc, hashFile.toString()).readStdoutOrThrow();
             try {
                 var readHash = Integer.parseInt(read);
                 if (hash == readHash) {
                     return targetDir;
                 }
             } catch (NumberFormatException e) {
-                ErrorEvent.fromThrowable(e).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             }
         }
 
@@ -132,15 +131,15 @@ public class ScriptStoreSetup {
         proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
 
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
-            var content = d.prepareScriptContent(scriptStore.getStore().getCommands());
-            var fileName = proc.getOsType()
+            var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
+            var fileName = OsFileSystem.of(proc.getOsType())
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-            var scriptFile = FileNames.join(targetDir, fileName + "." + d.getScriptFileEnding());
-            proc.view().writeScriptFile(FilePath.of(scriptFile), content);
+            var scriptFile = FilePath.of(targetDir, fileName + "." + d.getScriptFileEnding());
+            proc.view().writeScriptFile(scriptFile, content);
         }
 
-        proc.view().writeTextFile(FilePath.of(hashFile), String.valueOf(hash));
+        proc.view().writeTextFile(hashFile, String.valueOf(hash));
         return targetDir;
     }
 

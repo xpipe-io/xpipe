@@ -1,8 +1,8 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.util.Deobfuscator;
+import io.xpipe.core.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -120,7 +120,7 @@ public class AppLogs {
             } catch (Exception ex) {
                 // It can happen that another instance is running that is locking a log file
                 // Since we initialized before checking for another instance, this might fail
-                ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
             }
         }
 
@@ -143,7 +143,7 @@ public class AppLogs {
                 var buf = new BufferedOutputStream(fos);
                 outFileStream = new PrintStream(buf, false);
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).build().handle();
+                ErrorEventFactory.fromThrowable(ex).build().handle();
             }
         }
 

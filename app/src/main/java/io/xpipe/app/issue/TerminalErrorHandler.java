@@ -63,7 +63,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     private void handleWithSecondaryException(ErrorEvent event, Throwable t) {
         ErrorAction.ignore().handle(event);
 
-        var second = ErrorEvent.fromThrowable(t).build();
+        var second = ErrorEventFactory.fromThrowable(t).build();
         log.handle(second);
         ErrorAction.ignore().handle(second);
         ThreadHelper.sleep(1000);
@@ -87,7 +87,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
                 AppDialog.showAndWait(updateModal);
             }
         } catch (Throwable t) {
-            var event = ErrorEvent.fromThrowable(t).build();
+            var event = ErrorEventFactory.fromThrowable(t).build();
             log.handle(event);
             ErrorAction.ignore().handle(event);
             ThreadHelper.sleep(1000);

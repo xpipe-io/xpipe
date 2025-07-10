@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -82,7 +82,9 @@ public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
             if (ls == null) {
                 ls = List.of();
             }
-            var valid = ls.stream().filter(entry -> entry.getUuid() != null && entry.getPath() != null).toList();
+            var valid = ls.stream()
+                    .filter(entry -> entry.getUuid() != null && entry.getPath() != null)
+                    .toList();
             return new BrowserHistorySavedStateImpl(valid);
         }
     }

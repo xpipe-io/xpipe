@@ -1,8 +1,8 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppResources;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.scene.text.Font;
 
@@ -29,10 +29,11 @@ public class AppFont {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         try (var in = Files.newInputStream(file)) {
-                            Font.loadFont(in, OsType.getLocal() == OsType.LINUX ? 11 : 12);
+                            Font.loadFont(in, 11);
                         } catch (Throwable t) {
                             // Font loading can fail in rare cases. This is however not important, so we can just ignore
                             // it
+                            ErrorEventFactory.fromThrowable(t).expected().omit().handle();
                         }
                         return FileVisitResult.CONTINUE;
                     }

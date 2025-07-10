@@ -1,14 +1,14 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.NetworkTunnelSession;
+import io.xpipe.app.ext.NetworkTunnelStore;
+import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.NetworkTunnelSession;
-import io.xpipe.core.store.NetworkTunnelStore;
-import io.xpipe.core.store.SingletonSessionStore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,7 +39,28 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         Validators.nonNull(serviceProtocolType);
     }
 
+    public String getOpenTargetUrl() {
+        var s = getSession();
+        if (s == null) {
+            var host = getHost().getStore().getTunnelHostName() != null
+                    ? getHost().getStore().getTunnelHostName()
+                    : "localhost";
+            return host + ":" + remotePort;
+        }
+
+        return "localhost:" + s.getLocalPort();
+    }
+
     public boolean requiresTunnel() {
+        if (!getHost().getStore().isLocallyTunnelable()) {
+            var parent = getHost().getStore().getNetworkParent();
+            if (!(parent instanceof NetworkTunnelStore nts)) {
+                return false;
+            }
+
+            return nts.requiresTunnel();
+        }
+
         return getHost().getStore().requiresTunnel();
     }
 
@@ -59,6 +80,13 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         }
 
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
+
+        var parent = getHost().getStore().getNetworkParent();
+        if (!getHost().getStore().isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
+            return nts.createTunnelSession(
+                    l, remotePort, nts.getTunnelHostName() != null ? nts.getTunnelHostName() : "localhost");
+        }
+
         return getHost().getStore().createTunnelSession(l, remotePort, "localhost");
     }
 

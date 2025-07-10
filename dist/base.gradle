@@ -37,6 +37,14 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/lang"
             }
 
+            file("$distDir/base/app/.jpackage.xml").delete()
+
+            def batLauncherFile = file("$distDir/base/runtime/bin/xpiped.bat")
+            def batLauncherContent = batLauncherFile.text
+            batLauncherContent = batLauncherContent.replace(" -p \"%~dp0/../app\"", "")
+            batLauncherFile.text = batLauncherContent
+            file("$distDir/base/runtime/bin/xpiped").delete()
+
             file("$distDir/base/scripts").mkdirs()
             def debug = file("$distDir/base/scripts/xpiped_debug.bat")
             debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
@@ -70,6 +78,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/lang"
             }
 
+            def shLauncherFile = file("$distDir/base/lib/runtime/bin/xpiped")
+            def shLauncherContent = shLauncherFile.text
+            shLauncherContent = shLauncherContent.replace(" -p \"\$DIR/../app\"", "")
+            shLauncherFile.text = shLauncherContent
+            file("$distDir/base/lib/runtime/bin/xpiped.bat").delete()
+
             file("$distDir/base/scripts").mkdirs()
             def debug = file("$distDir/base/scripts/xpiped_debug.sh")
             debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
@@ -92,10 +106,6 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/$app/Contents/"
             }
             copy {
-                from "$projectDir/logo/logo.icns"
-                into "$distDir/$app/Contents/Resources/"
-            }
-            copy {
                 from "$distDir/licenses"
                 into "$distDir/$app/Contents/Resources/licenses"
             }
@@ -107,6 +117,12 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 from "$rootDir/lang"
                 into "$distDir/$app/Contents/Resources/lang"
             }
+
+            def shLauncherFile = file("$distDir/$app/Contents/runtime/Contents/Home/bin/xpiped")
+            def shLauncherContent = shLauncherFile.text
+            shLauncherContent = shLauncherContent.replace(" -p \"\$DIR/../app\"", "")
+            shLauncherFile.text = shLauncherContent
+            file("$distDir/$app/Contents/runtime/Contents/Home/bin/xpiped.bat").delete()
 
             file("$distDir/$app/Contents/Resources/scripts").mkdirs()
             def debug = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug.sh")

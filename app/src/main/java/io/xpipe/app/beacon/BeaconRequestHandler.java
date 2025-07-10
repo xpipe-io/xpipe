@@ -1,12 +1,12 @@
 package io.xpipe.app.beacon;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.*;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -106,12 +106,12 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 response = beaconInterface.handle(exchange, object);
             }
         } catch (BeaconClientException clientException) {
-            ErrorEvent.fromThrowable(clientException).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(clientException).omit().expected().handle();
             writeError(exchange, new BeaconClientErrorResponse(clientException.getMessage()), 400);
             return;
         } catch (BeaconServerException serverException) {
             var cause = serverException.getCause() != null ? serverException.getCause() : serverException;
-            var event = ErrorEvent.fromThrowable(cause).omit().handle();
+            var event = ErrorEventFactory.fromThrowable(cause).omit().handle();
             var link = event.getLink();
             writeError(exchange, new BeaconServerErrorResponse(cause, link), 500);
             return;
@@ -119,9 +119,9 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             // Handle serialization errors as normal exceptions and other IO exceptions as assuming that the connection
             // is broken
             if (!ex.getClass().getName().contains("jackson")) {
-                ErrorEvent.fromThrowable(ex).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             } else {
-                ErrorEvent.fromThrowable(ex).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
                 // Make deserialization error message more readable
                 var message = ex.getMessage()
                         .replace("$RequestBuilder", "")
@@ -133,7 +133,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
             }
             return;
         } catch (Throwable other) {
-            var event = ErrorEvent.fromThrowable(other).omit().expected().handle();
+            var event = ErrorEventFactory.fromThrowable(other).omit().expected().handle();
             var link = event.getLink();
             writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
             return;
@@ -159,10 +159,10 @@ public class BeaconRequestHandler<T> implements HttpHandler {
         } catch (IOException ioException) {
             // The exchange implementation might have already sent a response manually
             if (!"headers already sent".equals(ioException.getMessage())) {
-                ErrorEvent.fromThrowable(ioException).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(ioException).omit().expected().handle();
             }
         } catch (Throwable other) {
-            var event = ErrorEvent.fromThrowable(other).handle();
+            var event = ErrorEventFactory.fromThrowable(other).handle();
             var link = event.getLink();
             writeError(exchange, new BeaconServerErrorResponse(other, link), 500);
         }
@@ -177,7 +177,7 @@ public class BeaconRequestHandler<T> implements HttpHandler {
                 os.write(bytes);
             }
         } catch (IOException ex) {
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
     }
 

@@ -8,17 +8,14 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.util.*;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
@@ -36,6 +33,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdoal-bug_report");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         OptionsBuilder b = new OptionsBuilder()
@@ -44,7 +46,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .spacer(19)
                 .addComp(
                         new TileButtonComp("reportIssue", "reportIssueDescription", "mdal-bug_report", e -> {
-                                    var event = ErrorEvent.fromMessage("User Report");
+                                    var event = ErrorEventFactory.fromMessage("User Report");
                                     if (AppLogs.get().isWriteToFile()) {
                                         event.attachment(AppLogs.get().getSessionLogsDirectory());
                                     }
@@ -56,14 +58,14 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
-                                        var script = FileNames.join(
+                                        var script = FilePath.of(
                                                 XPipeInstallation.getCurrentInstallationBasePath()
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
                                         TerminalLauncher.openDirectFallback(
                                                 "XPipe Debug",
                                                 sc -> new ShellScript(
-                                                        sc.getShellDialect().runScriptCommand(sc, script)));
+                                                        sc.getShellDialect().runScriptCommand(sc, script.toString())));
                                     });
                                     e.consume();
                                 })

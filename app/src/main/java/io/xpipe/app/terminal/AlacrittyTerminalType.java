@@ -1,8 +1,9 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
 
 public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -30,14 +31,10 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         return false;
     }
 
-    class Windows extends SimplePathType implements AlacrittyTerminalType {
-
-        public Windows() {
-            super("app.alacritty", "alacritty", true);
-        }
+    class Windows implements ExternalApplicationType.PathApplication, ExternalTerminalType, AlacrittyTerminalType {
 
         @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var b = CommandBuilder.of();
 
             //            if (configuration.getColor() != null) {
@@ -48,33 +45,69 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
-            return b.add("-t")
-                    .addQuoted(configuration.getCleanTitle())
-                    .add("-e")
-                    .add(configuration.getDialectLaunchCommand());
-        }
-    }
-
-    class Linux extends SimplePathType implements AlacrittyTerminalType {
-
-        public Linux() {
-            super("app.alacritty", "alacritty", true);
+            b.add("-t").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.getDialectLaunchCommand());
+            launch(b);
         }
 
         @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
+        public String getExecutable() {
+            return "alacritty";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getId() {
+            return "app.alacritty";
+        }
+    }
+
+    class Linux implements ExternalApplicationType.PathApplication, AlacrittyTerminalType {
+
+        @Override
+        public String getExecutable() {
+            return "alacritty";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getId() {
+            return "app.alacritty";
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var b = CommandBuilder.of()
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
                     .addFile(configuration.getScriptFile());
+            launch(b);
         }
     }
 
-    class MacOs extends MacOsType implements AlacrittyTerminalType {
+    class MacOs implements ExternalApplicationType.MacApplication, ExternalTerminalType, TrackableTerminalType {
 
-        public MacOs() {
-            super("app.alacritty", "Alacritty");
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return null;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return false;
         }
 
         @Override
@@ -87,6 +120,16 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                             .addQuoted(configuration.getCleanTitle())
                             .add("-e")
                             .addFile(configuration.getScriptFile()));
+        }
+
+        @Override
+        public String getId() {
+            return "app.alacritty";
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "Alacritty";
         }
     }
 }

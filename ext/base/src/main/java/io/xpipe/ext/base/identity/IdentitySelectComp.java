@@ -4,12 +4,12 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreCreationDialog;
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -60,40 +60,20 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     private final boolean allowUserInput;
 
     private void addNamedIdentity() {
-        var canSync = DataStorage.get()
-                .getStoreCategoryIfPresent(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID)
-                .isPresent();
-
-        IdentityStore id;
-        if (canSync) {
-            var pass = EncryptedValue.VaultKey.of(password.getValue());
-            if (pass == null) {
-                pass = EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None());
-            }
-            var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
-            if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new SshIdentityStrategy.None());
-            }
-            id = SyncedIdentityStore.builder()
-                    .username(inPlaceUser.getValue())
-                    .password(pass)
-                    .sshIdentity(ssh)
-                    .build();
-        } else {
-            var pass = EncryptedValue.CurrentKey.of(password.getValue());
-            if (pass == null) {
-                pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
-            }
-            var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
-            if (ssh == null) {
-                ssh = EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None());
-            }
-            id = LocalIdentityStore.builder()
-                    .username(inPlaceUser.getValue())
-                    .password(pass)
-                    .sshIdentity(ssh)
-                    .build();
+        var pass = EncryptedValue.CurrentKey.of(password.getValue());
+        if (pass == null) {
+            pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
         }
+        var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
+        if (ssh == null) {
+            ssh = EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None());
+        }
+        var id = LocalIdentityStore.builder()
+                .username(inPlaceUser.getValue())
+                .password(pass)
+                .sshIdentity(ssh)
+                .build();
+
         StoreCreationDialog.showCreation(
                 id,
                 DataStoreCreationCategory.IDENTITY,
@@ -139,7 +119,9 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
         layout.apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
-                struc.get().getChildren().getFirst().requestFocus();
+                Platform.runLater(() -> {
+                    struc.get().getChildren().getFirst().requestFocus();
+                });
             });
         });
 
@@ -208,7 +190,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
         });
 
-        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), param -> {
+        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -218,6 +200,18 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     }
 
                     setText(item);
+
+                    if (item != null) {
+                        var store = map.get(item);
+                        if (store != null) {
+                            var provider = store.get().getProvider();
+                            var image = provider.getDisplayIconFileName(store.getStore());
+                            setGraphic(
+                                    PrettyImageHelper.ofFixedSize(image, 16, 16).createRegion());
+                        }
+                    } else {
+                        setGraphic(null);
+                    }
                 }
             };
         });
@@ -285,6 +279,11 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             struc.get().prefHeightProperty().bind(comboRegion.prefHeightProperty());
             AnchorPane.setLeftAnchor(comboRegion, 0.0);
             AnchorPane.setRightAnchor(comboRegion, 0.0);
+            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    struc.get().getChildren().getFirst().requestFocus();
+                }
+            });
         });
 
         return stack;

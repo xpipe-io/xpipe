@@ -64,11 +64,11 @@
 }
 
 .root:light .loading-comp {
-    -fx-background-color: rgba(100, 100, 100, 0.5);
+    -fx-background-color: rgba(100, 100, 100, 0.3);
 }
 
 .root:dark .loading-comp {
-    -fx-background-color: rgba(0, 0, 0, 0.5);
+    -fx-background-color: rgba(0, 0, 0, 0.4);
 }
 
 .icon-browser {
@@ -125,7 +125,7 @@
     -fx-border-color: -color-fg-subtle;
 }
 
-.root.nord .icon-button-comp.batch-mode-button {
+.root:nord .icon-button-comp.batch-mode-button {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
@@ -157,3 +157,4 @@
 .toggle-group-comp .toggle-button {
     -fx-padding: 3 10;
 }
+

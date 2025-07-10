@@ -253,7 +253,7 @@ public class SshIdentityStrategyHelper {
                                                                                         ? 8
                                                                                         : strat == null ? -1 : 0);
         return new OptionsBuilder()
-                .longDescription("base:sshKey")
+                .longDescription(DocumentationLink.SSH_KEYS)
                 .choice(identityMethodSelected, map)
                 .bindChoice(
                         () -> {

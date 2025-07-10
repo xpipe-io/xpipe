@@ -4,7 +4,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppGpuCheck;
 import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Application;
 

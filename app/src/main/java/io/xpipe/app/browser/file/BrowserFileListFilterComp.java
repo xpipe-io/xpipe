@@ -6,9 +6,8 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.InputHelper;
-
 import io.xpipe.app.util.PlatformThread;
-import javafx.application.Platform;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -114,13 +113,9 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
             if (val) {
                 text.setPrefWidth(250);
                 text.setFocusTraversable(true);
-                button.getStyleClass().add(Styles.RIGHT_PILL);
-                button.getStyleClass().remove(Styles.FLAT);
             } else {
                 text.setPrefWidth(0);
                 text.setFocusTraversable(false);
-                button.getStyleClass().remove(Styles.RIGHT_PILL);
-                button.getStyleClass().add(Styles.FLAT);
             }
         });
         button.minHeightProperty().bind(text.heightProperty());

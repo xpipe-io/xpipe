@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.util.FailableRunnable;
+import io.xpipe.core.FailableRunnable;
 
 import java.time.Duration;
 import java.util.Timer;
@@ -24,18 +24,23 @@ public class GlobalTimer {
         TIMER = null;
     }
 
-    public static void scheduleUntil(Duration interval, Supplier<Boolean> s) {
-        var task = new TimerTask() {
+    private static TimerTask createDelayedTask(Duration interval, Supplier<Boolean> s) {
+        return new TimerTask() {
             @Override
             public void run() {
                 if (!s.get()) {
-                    return;
+                    // Use this approach instead of scheduleAtFixedRate
+                    // to prevent it from being run rapidly in case the timer is trying
+                    // to catch up. For example with system hibernation
+                    TIMER.schedule(createDelayedTask(interval, s), interval.toMillis());
                 }
-
-                cancel();
             }
         };
-        TIMER.scheduleAtFixedRate(task, 0, interval.toMillis());
+    }
+
+    public static void scheduleUntil(Duration interval, boolean runInstantly, Supplier<Boolean> s) {
+        var task = createDelayedTask(interval, s);
+        TIMER.schedule(task, runInstantly ? interval.toMillis() : 0);
     }
 
     public static void delay(Runnable r, Duration delay) {

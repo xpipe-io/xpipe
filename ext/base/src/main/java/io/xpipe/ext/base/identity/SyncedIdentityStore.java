@@ -1,9 +1,9 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.UserScopeStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
@@ -20,11 +20,16 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class SyncedIdentityStore extends IdentityStore implements UserScopeStore {
 
+    String username;
     // We can encrypt it with only the vault key as
     // per user stores are additionally encrypted on the entry level
     EncryptedValue.VaultKey<SecretRetrievalStrategy> password;
     EncryptedValue.VaultKey<SshIdentityStrategy> sshIdentity;
     boolean perUser;
+
+    public UsernameStrategy.Fixed getUsername() {
+        return new UsernameStrategy.Fixed(username);
+    }
 
     @Override
     public SecretRetrievalStrategy getPassword() {
@@ -46,12 +51,10 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
         }
     }
 
-    @Override
     EncryptedValue.VaultKey<SecretRetrievalStrategy> getEncryptedPassword() {
         return password;
     }
 
-    @Override
     EncryptedValue.VaultKey<SshIdentityStrategy> getEncryptedSshIdentity() {
         return sshIdentity;
     }

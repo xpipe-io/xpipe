@@ -10,7 +10,7 @@
     -fx-background-radius: 0;
 }
 
-.root.nord .store-section-mini-comp .item:hover, .root.nord:key-navigation .store-section-mini-comp .item:focused {
+.root:nord .store-section-mini-comp .item:hover, .root:nord:key-navigation .store-section-mini-comp .item:focused {
     -fx-background-color: -color-accent-muted;
 }
 
@@ -81,7 +81,7 @@
     -fx-border-color: #3339;
 }
 
-.root.nord .store-section-mini-comp:sub:expanded {
+.root:nord .store-section-mini-comp:sub:expanded {
     -fx-border-radius: 0;
 }
 

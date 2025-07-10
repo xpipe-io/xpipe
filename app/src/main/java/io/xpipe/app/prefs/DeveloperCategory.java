@@ -6,10 +6,11 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.process.ProcessOutputException;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.ProcessOutputException;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -30,6 +31,11 @@ public class DeveloperCategory extends AppPrefsCategory {
     @Override
     protected boolean show() {
         return AppPrefs.get().developerMode().getValue();
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-code-tags");
     }
 
     @Override

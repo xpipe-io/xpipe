@@ -2,27 +2,26 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
 
-import javafx.animation.Animation;
+import javafx.animation.*;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-
-import atlantafx.base.util.Animations;
 
 public class AppMainWindowContentComp extends SimpleComp {
 
@@ -36,29 +35,58 @@ public class AppMainWindowContentComp extends SimpleComp {
     protected Region createSimple() {
         var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
+        var sidebarPresent = new SimpleBooleanProperty();
         var bg = Comp.of(() -> {
             var loadingIcon = new ImageView();
-            loadingIcon.setFitWidth(64);
-            loadingIcon.setFitHeight(64);
+            loadingIcon.setFitWidth(80);
+            loadingIcon.setFitHeight(80);
+            loadingIcon.setOpacity(0.9);
 
-            var anim = Animations.pulse(loadingIcon, 1.1);
-            if (OsType.getLocal() != OsType.LINUX) {
-                anim.setRate(0.85);
-                anim.setCycleCount(Animation.INDEFINITE);
-                anim.play();
-            }
+            var color =
+                    AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark()
+                            ? Color.web("#0b898aff").darker()
+                            : Color.web("#0b898aff");
+            DropShadow shadow = new DropShadow();
+            shadow.setRadius(10);
+            shadow.setColor(color);
+
+            var loadingAnimation = new AnimationTimer() {
+
+                long offset;
+
+                @Override
+                public void handle(long now) {
+                    // Increment offset as we are always having 60fps
+                    // Prevents animation jumps when the animation timer isn't called for a long time
+                    offset += 1000 / 60;
+
+                    // Move shadow in a circle
+                    var rad = -(offset % 1300.0) / 1300.0 * 2 * Math.PI;
+                    var x = Math.sin(rad);
+                    var y = Math.cos(rad);
+                    shadow.setOffsetX(x * 3);
+                    shadow.setOffsetY(y * 3);
+                }
+            };
+
+            loadingIcon.setEffect(shadow);
+            loadingAnimation.start();
 
             // This allows for assigning logos even if AppImages has not been initialized yet
             var dir = "img/logo/";
             AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
-                loadingIcon.setImage(AppImages.loadImage(path.resolve("loading.png")));
+                var image = AppPrefs.get() != null
+                                && AppPrefs.get().theme().getValue().isDark()
+                        ? path.resolve("loading-dark.png")
+                        : path.resolve("loading.png");
+                loadingIcon.setImage(AppImages.loadImage(image));
             });
 
             var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
                     + AppProperties.get().getVersion());
             version.apply(struc -> {
-                AppFontSizes.xxl(struc.get());
-                struc.get().setOpacity(0.6);
+                AppFontSizes.apply(struc.get(), appFontSizes -> "15");
+                struc.get().setOpacity(0.65);
             });
 
             var text = new LabelComp(AppMainWindow.getLoadingText());
@@ -84,12 +112,13 @@ public class AppMainWindowContentComp extends SimpleComp {
                 if (struc != null) {
                     TrackEvent.info("Window content node set");
                     PlatformThread.runNestedLoopIteration();
-                    anim.stop();
                     struc.prepareAddition();
-                    pane.getChildren().add(struc.get());
-                    PlatformThread.runNestedLoopIteration();
                     pane.getStyleClass().remove("background");
+                    loadingAnimation.stop();
                     pane.getChildren().remove(vbox);
+                    pane.getChildren().add(struc.get());
+                    sidebarPresent.set(true);
+                    PlatformThread.runNestedLoopIteration();
                     struc.show();
                     TrackEvent.info("Window content node shown");
                 }
@@ -111,7 +140,18 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             return pane;
         });
+
         var modal = new ModalOverlayStackComp(bg, overlay);
-        return modal.createRegion();
+        var r = modal.createRegion();
+        var p = r.lookupAll(".modal-overlay-stack-element");
+        sidebarPresent.subscribe(v -> {
+            if (v) {
+                p.forEach(node -> {
+                    node.pseudoClassStateChanged(PseudoClass.getPseudoClass("loaded"), true);
+                });
+            }
+        });
+
+        return r;
     }
 }

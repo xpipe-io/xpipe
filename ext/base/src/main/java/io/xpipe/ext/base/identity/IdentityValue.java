@@ -1,12 +1,13 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.util.ValidationException;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -29,7 +30,18 @@ public interface IdentityValue {
         }
 
         var found = DataStorage.get().getStoreEntryIfPresent(effective.getDefaultIdentityStore());
-        if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore identityStore)) {
+        if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore)) {
+            return null;
+        }
+
+        return new Ref(found.get().ref());
+    }
+
+    static IdentityValue ofBreakout(DataStoreEntry e) {
+        var cat = DataStorage.get().getStoreCategory(e);
+        var uuid = cat.getConfig().getDefaultIdentityStore();
+        var found = DataStorage.get().getStoreEntryIfPresent(uuid);
+        if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore)) {
             return null;
         }
 
@@ -72,7 +84,7 @@ public interface IdentityValue {
     boolean isPerUser();
 
     default void checkCompleteUser() throws ValidationException {
-        Validators.nonNull(unwrap().getUsername(), "Identity username");
+        Validators.nonNull(unwrap().getUsername().hasUser() ? new Object() : null, "Identity username");
     }
 
     default void checkCompletePassword() throws ValidationException {
@@ -100,7 +112,9 @@ public interface IdentityValue {
 
         @Override
         public LocalIdentityStore unwrap() {
-        return identityStore != null ? identityStore : LocalIdentityStore.builder().build();
+            return identityStore != null
+                    ? identityStore
+                    : LocalIdentityStore.builder().build();
         }
 
         @Override
@@ -125,7 +139,9 @@ public interface IdentityValue {
 
         @Override
         public IdentityStore unwrap() {
-            return ref != null && ref.getStore() != null ? ref.getStore() : LocalIdentityStore.builder().build();
+            return ref != null && ref.getStore() != null
+                    ? ref.getStore()
+                    : LocalIdentityStore.builder().build();
         }
 
         @Override

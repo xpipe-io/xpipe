@@ -1,8 +1,8 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.api.HandshakeExchange;
-import io.xpipe.core.util.JacksonMapper;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;

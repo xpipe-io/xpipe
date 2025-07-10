@@ -1,13 +1,9 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.ext.NameableStore;
-import io.xpipe.app.ext.UserScopeStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.*;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.*;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JacksonException;
@@ -69,14 +65,27 @@ public class DataStoreEntry extends StorageElement {
     String lastWrittenNotes;
 
     @NonFinal
-    Order explicitOrder;
-
-    @NonFinal
     String icon;
 
     @NonFinal
     @Getter
     DataStoreColor color;
+
+    @NonFinal
+    @Getter
+    boolean freeze;
+
+    @NonFinal
+    @Getter
+    boolean pinToTop;
+
+    @Getter
+    @NonFinal
+    int orderIndex;
+
+    @Getter
+    @NonFinal
+    UUID breakOutCategory;
 
     private DataStoreEntry(
             Path directory,
@@ -93,41 +102,25 @@ public class DataStoreEntry extends StorageElement {
             boolean expanded,
             DataStoreColor color,
             String notes,
-            Order explicitOrder,
-            String icon) {
+            String icon,
+            boolean freeze,
+            boolean pinToTop,
+            int orderIndex,
+            UUID breakOutCategory) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
         this.validity = validity;
-        this.explicitOrder = explicitOrder;
         this.provider = store != null ? DataStoreProviders.byStore(store) : null;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
         this.icon = icon;
-    }
-
-    private DataStoreEntry(
-            Path directory,
-            UUID uuid,
-            UUID categoryUuid,
-            String name,
-            Instant lastUsed,
-            Instant lastModified,
-            DataStore store,
-            Order explicitOrder,
-            String icon) {
-        super(directory, uuid, name, lastUsed, lastModified, false, false);
-        this.categoryUuid = categoryUuid;
-        this.store = store;
-        this.explicitOrder = explicitOrder;
-        this.icon = icon;
-        this.storeNode = DataStorageNode.fail();
-        this.validity = Validity.INCOMPLETE;
-        this.expanded = false;
-        this.provider = null;
-        this.storePersistentStateNode = null;
+        this.freeze = freeze;
+        this.pinToTop = pinToTop;
+        this.orderIndex = orderIndex;
+        this.breakOutCategory = breakOutCategory;
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -139,7 +132,17 @@ public class DataStoreEntry extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 store,
+                DataStorageNode.fail(),
+                false,
+                Validity.COMPLETE,
                 null,
+                false,
+                null,
+                null,
+                null,
+                false,
+                false,
+                0,
                 null);
     }
 
@@ -177,6 +180,9 @@ public class DataStoreEntry extends StorageElement {
                 null,
                 null,
                 null,
+                false,
+                false,
+                0,
                 null);
         return entry;
     }
@@ -215,7 +221,17 @@ public class DataStoreEntry extends StorageElement {
         var categoryUuid = Optional.ofNullable(json.get("categoryUuid"))
                 .map(jsonNode -> UUID.fromString(jsonNode.textValue()))
                 .orElse(DataStorage.DEFAULT_CATEGORY_UUID);
+        var breakOutCategory = Optional.ofNullable(json.get("breakOutCategoryUuid"))
+                .filter(jsonNode -> !jsonNode.isNull())
+                .map(jsonNode -> UUID.fromString(jsonNode.asText()))
+                .orElse(null);
         var name = json.required("name").textValue().strip();
+
+        // Fix for legacy issue where entries could have empty names
+        if (name.isBlank()) {
+            return Optional.empty();
+        }
+
         var color = Optional.ofNullable(json.get("color"))
                 .map(node -> {
                     try {
@@ -225,6 +241,12 @@ public class DataStoreEntry extends StorageElement {
                     }
                 })
                 .orElse(null);
+        var freeze = Optional.ofNullable(json.get("freeze"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(false);
+        var pinToTop = Optional.ofNullable(json.get("pinToTop"))
+                .map(jsonNode -> jsonNode.booleanValue())
+                .orElse(false);
 
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
@@ -235,6 +257,9 @@ public class DataStoreEntry extends StorageElement {
         }
 
         var persistentState = stateJson.get("persistentState");
+        var orderIndex = Optional.ofNullable(json.get("orderIndex"))
+                .map(jsonNode -> jsonNode.intValue())
+                .orElse(0);
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
@@ -243,15 +268,6 @@ public class DataStoreEntry extends StorageElement {
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
                 .orElse(Instant.EPOCH);
-        var order = Optional.ofNullable(stateJson.get("order"))
-                .map(node -> {
-                    try {
-                        return mapper.treeToValue(node, Order.class);
-                    } catch (JsonProcessingException e) {
-                        return null;
-                    }
-                })
-                .orElse(null);
         var expanded = Optional.ofNullable(stateJson.get("expanded"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(true);
@@ -286,7 +302,7 @@ public class DataStoreEntry extends StorageElement {
             var fileNode = mapper.readTree(storeFile.toFile());
             node = DataStorageNode.readPossiblyEncryptedNode(fileNode);
         } catch (JacksonException ex) {
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             node = DataStorageNode.fail();
         }
 
@@ -306,16 +322,11 @@ public class DataStoreEntry extends StorageElement {
                 expanded,
                 color,
                 notes,
-                order,
-                icon));
-    }
-
-    public void setExplicitOrder(Order uuid) {
-        var changed = !Objects.equals(explicitOrder, uuid);
-        this.explicitOrder = uuid;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
+                icon,
+                freeze,
+                pinToTop,
+                orderIndex,
+                breakOutCategory));
     }
 
     public void setColor(DataStoreColor newColor) {
@@ -339,6 +350,16 @@ public class DataStoreEntry extends StorageElement {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public boolean isChangedForReload(DataStoreEntry other) {
+        return !Objects.equals(getStore(), other.getStore())
+                || !Objects.equals(getName(), other.getName())
+                || !Objects.equals(getNotes(), other.getNotes())
+                || !Objects.equals(getColor(), other.getColor())
+                || !Objects.equals(getCategoryUuid(), other.getCategoryUuid())
+                || !Objects.equals(getOrderIndex(), other.getOrderIndex())
+                || !Objects.equals(getEffectiveIconFile(), other.getEffectiveIconFile());
     }
 
     public boolean isPerUserStore() {
@@ -412,12 +433,28 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    public void setBreakOutCategory(DataStoreCategory category) {
+        var changed = !Objects.equals(breakOutCategory, category != null ? category.getUuid() : null);
+        this.breakOutCategory = category != null ? category.getUuid() : null;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setStorePersistentState(DataStoreState value) {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
             notifyUpdate(false, true);
+        }
+    }
+
+    public void setOrderIndex(int orderIndex) {
+        var changed = this.orderIndex != orderIndex;
+        this.orderIndex = orderIndex;
+        if (changed) {
+            notifyUpdate(false, false);
         }
     }
 
@@ -453,15 +490,18 @@ public class DataStoreEntry extends StorageElement {
         obj.put("uuid", uuid.toString());
         obj.put("name", name);
         obj.put("categoryUuid", categoryUuid.toString());
+        obj.put("breakOutCategoryUuid", breakOutCategory != null ? breakOutCategory.toString() : null);
         obj.set("color", mapper.valueToTree(color));
         obj.set("icon", mapper.valueToTree(icon));
+        obj.put("freeze", freeze);
+        obj.put("pinToTop", pinToTop);
+        obj.put("orderIndex", orderIndex);
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
         stateObj.set("persistentState", storePersistentStateNode);
         stateObj.put("expanded", expanded);
-        stateObj.set("order", mapper.valueToTree(explicitOrder));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);
@@ -502,6 +542,23 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    public void setFreeze(boolean newValue) {
+        var changed = freeze != newValue;
+        this.freeze = newValue;
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
+    public void setPinToTop(boolean newValue) {
+        var changed = pinToTop != newValue;
+        this.pinToTop = newValue;
+        if (changed) {
+            notifyUpdate(false, false);
+            dirty = true;
+        }
+    }
+
     public boolean isDisabled() {
         return validity == Validity.LOAD_FAILED;
     }
@@ -519,6 +576,7 @@ public class DataStoreEntry extends StorageElement {
         storePersistentState = e.storePersistentState;
         storePersistentStateNode = e.storePersistentStateNode;
         icon = e.icon;
+        categoryUuid = e.categoryUuid;
         notifyUpdate(false, true);
     }
 
@@ -535,6 +593,9 @@ public class DataStoreEntry extends StorageElement {
         this.store = store;
         this.storeNode = DataStorageNode.ofNewStore(store);
         this.provider = DataStoreProviders.byStore(store);
+        this.validity = provider != null
+                ? (store.isComplete() ? Validity.COMPLETE : Validity.INCOMPLETE)
+                : Validity.LOAD_FAILED;
         if (updateTime) {
             lastModified = Instant.now();
         }
@@ -552,7 +613,7 @@ public class DataStoreEntry extends StorageElement {
         try {
             validateOrThrow();
         } catch (Throwable ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
         }
     }
 
@@ -585,7 +646,7 @@ public class DataStoreEntry extends StorageElement {
             // Check whether we have a provider as well
             DataStoreProviders.byStore(newStore);
         } catch (Throwable e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             newStore = null;
         }
 
@@ -593,14 +654,20 @@ public class DataStoreEntry extends StorageElement {
             var changed = store != null;
             store = null;
             validity = Validity.LOAD_FAILED;
-            notifyUpdate(false, changed);
+            if (changed) {
+                notifyUpdate(false, false);
+            }
             return;
         }
 
+        var storeChanged = !Objects.equals(store, newStore);
         var newComplete = newStore.isComplete();
         if (!newComplete) {
             validity = Validity.INCOMPLETE;
             store = newStore;
+            if (storeChanged) {
+                notifyUpdate(false, false);
+            }
             return;
         }
 
@@ -610,11 +677,13 @@ public class DataStoreEntry extends StorageElement {
         } catch (Exception ignored) {
         }
         var perUserChanged = isPerUserStore() != newPerUser;
-        if (!newStore.equals(store)) {
+        if (storeChanged) {
             store = newStore;
         }
         validity = Validity.COMPLETE;
-        notifyUpdate(false, perUserChanged);
+        if (storeChanged || perUserChanged) {
+            notifyUpdate(false, false);
+        }
     }
 
     public void initializeEntry() {
@@ -624,7 +693,7 @@ public class DataStoreEntry extends StorageElement {
                 notifyUpdate(false, false);
                 lifecycleStore.initializeStore();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             } finally {
                 decrementBusyCounter();
                 notifyUpdate(false, false);
@@ -639,7 +708,7 @@ public class DataStoreEntry extends StorageElement {
                 notifyUpdate(false, false);
                 lifecycleStore.finalizeStore();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             } finally {
                 decrementBusyCounter();
                 notifyUpdate(false, false);
@@ -676,13 +745,5 @@ public class DataStoreEntry extends StorageElement {
         Validity(boolean isUsable) {
             this.isUsable = isUsable;
         }
-    }
-
-    @Getter
-    public enum Order {
-        @JsonProperty("top")
-        TOP,
-        @JsonProperty("bottom")
-        BOTTOM
     }
 }

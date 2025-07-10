@@ -1,6 +1,6 @@
 package io.xpipe.app.icon;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
@@ -51,7 +51,8 @@ public class SystemIconSourceData {
                 var hasLightModeVariant = Files.exists(lightModeFile);
 
                 if (hasBaseVariant) {
-                    sourceFiles.add(new SystemIconSourceFile(source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
+                    sourceFiles.add(new SystemIconSourceFile(
+                            source, displayName, baseFile, SystemIconSourceFile.ColorSchemeData.DEFAULT));
                 }
                 if (hasLightModeVariant) {
                     sourceFiles.add(new SystemIconSourceFile(
@@ -63,7 +64,7 @@ public class SystemIconSourceData {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 }

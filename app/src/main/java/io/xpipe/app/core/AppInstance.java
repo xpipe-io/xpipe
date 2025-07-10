@@ -2,19 +2,23 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.beacon.BeaconAuthMethod;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 import io.xpipe.beacon.api.DaemonOpenExchange;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.beacon.api.HandshakeExchange;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import java.awt.*;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 
 public class AppInstance {
 
@@ -22,6 +26,14 @@ public class AppInstance {
         checkStart(0);
     }
 
+    public static Optional<BeaconClient> tryEstablishConnection(int port) {
+        try {
+            return Optional.of(BeaconClient.establishConnection(port, BeaconClientInformation.Daemon.builder().build()));
+        } catch (Exception ex) {
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
+            return Optional.empty();
+        }
+    }
     private static void checkStart(int attemptCounter) {
         var port = AppBeaconServer.get().getPort();
         var reachable = BeaconServer.isReachable(port);
@@ -40,8 +52,7 @@ public class AppInstance {
             return;
         }
 
-        var client = BeaconClient.tryEstablishConnection(
-                port, BeaconClientInformation.Daemon.builder().build());
+        var client = tryEstablishConnection(port);
         if (client.isEmpty()) {
             // If an instance is running as another user, we cannot connect to it as the xpipe_auth file is inaccessible
             // Therefore the beacon client is not present.
@@ -73,7 +84,7 @@ public class AppInstance {
             }
 
             var cli = XPipeInstallation.getLocalDefaultCliExecutable();
-            ErrorEvent.fromThrowable(
+            ErrorEventFactory.fromThrowable(
                             "Unable to connect to existing running daemon instance as it did not respond."
                                     + " Either try to kill the process xpiped manually or use the command \""
                                     + cli
@@ -92,7 +103,7 @@ public class AppInstance {
                                     .arguments(List.of(e.getURI().toString()))
                                     .build());
                 } catch (Exception ex) {
-                    ErrorEvent.fromThrowable(ex).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
                 }
             });
             ThreadHelper.sleep(1000);

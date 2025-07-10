@@ -1,10 +1,11 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.TerminalInitFunction;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -50,11 +51,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         return TerminalInitFunction.none();
     }
 
-    class Windows extends ExternalTerminalType.WindowsType implements TabbyTerminalType {
-
-        public Windows() {
-            super("app.tabby", "Tabby.exe");
-        }
+    class Windows implements ExternalApplicationType.WindowsType, TabbyTerminalType {
 
         @Override
         public int getProcessHierarchyOffset() {
@@ -67,32 +64,38 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         }
 
         @Override
-        protected void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception {
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
             if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
-                LocalShell.getShell()
-                        .executeSimpleCommand(CommandBuilder.of()
-                                .addFile(file.toString())
-                                .add("run")
-                                .addFile(configuration.getScriptFile())
-                                .discardAllOutput());
+                launch(CommandBuilder.of()
+                        .add("run")
+                        .addFile(configuration.getScriptFile())
+                        .discardAllOutput());
             } else {
                 // This is probably not going to work as it does not launch a bat file
-                LocalShell.getShell()
-                        .executeSimpleCommand(CommandBuilder.of()
-                                .addFile(file.toString())
-                                .add("run")
-                                .add(sc -> configuration
-                                        .getDialectLaunchCommand()
-                                        .buildFull(sc)
-                                        .replaceFirst("\\.exe", ""))
-                                .discardAllOutput());
+                launch(CommandBuilder.of()
+                        .add("run")
+                        .add(sc -> configuration
+                                .getDialectLaunchCommand()
+                                .buildFull(sc)
+                                .replaceFirst("\\.exe", ""))
+                        .discardAllOutput());
             }
         }
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Tabby.exe";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             var perUser = WindowsRegistry.local()
                     .readStringValueIfPresent(
                             WindowsRegistry.HKEY_CURRENT_USER,
@@ -113,17 +116,18 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                     .map(Path::of);
             return systemWide;
         }
+
+        @Override
+        public String getId() {
+            return "app.tabby";
+        }
     }
 
-    class MacOs extends MacOsType implements TabbyTerminalType {
+    class MacOs implements ExternalApplicationType.MacApplication, TabbyTerminalType {
 
         @Override
         public boolean isRecommended() {
             return true;
-        }
-
-        public MacOs() {
-            super("app.tabby", "Tabby");
         }
 
         @Override
@@ -134,6 +138,16 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                             .addQuoted("Tabby.app")
                             .add("-n", "--args", "run")
                             .addFile(configuration.getScriptFile()));
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "Tabby";
+        }
+
+        @Override
+        public String getId() {
+            return "app.tabby";
         }
     }
 }

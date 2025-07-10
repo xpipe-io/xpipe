@@ -4,8 +4,8 @@ import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconServer;
-import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.IOException;
 

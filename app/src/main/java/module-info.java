@@ -1,16 +1,22 @@
+import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.action.XPipeUrlProvider;
 import io.xpipe.app.beacon.impl.*;
-import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserActionProvider;
+import io.xpipe.app.browser.action.impl.*;
+import io.xpipe.app.browser.menu.impl.*;
+import io.xpipe.app.browser.menu.impl.compress.*;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.action.impl.*;
 import io.xpipe.app.issue.EventHandler;
 import io.xpipe.app.issue.EventHandlerImpl;
-import io.xpipe.app.storage.DataStateProviderImpl;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.AppJacksonModule;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.util.DataStateProvider;
-import io.xpipe.core.util.ModuleLayerLoader;
+import io.xpipe.core.ModuleLayerLoader;
 
 import com.fasterxml.jackson.databind.Module;
 import org.slf4j.spi.SLF4JServiceProvider;
@@ -24,7 +30,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.comp.base;
     exports io.xpipe.app.core.mode;
     exports io.xpipe.app.prefs;
-    exports io.xpipe.app.comp.store;
+    exports io.xpipe.app.hub.comp;
     exports io.xpipe.app.storage;
     exports io.xpipe.app.update;
     exports io.xpipe.app.ext;
@@ -37,10 +43,19 @@ open module io.xpipe.app {
     exports io.xpipe.app.terminal;
     exports io.xpipe.app.browser.file;
     exports io.xpipe.app.core.window;
-    exports io.xpipe.app.resources;
     exports io.xpipe.app.comp;
     exports io.xpipe.app.icon;
-    exports io.xpipe.app.password;
+    exports io.xpipe.app.pwman;
+    exports io.xpipe.app.rdp;
+    exports io.xpipe.app.vnc;
+    exports io.xpipe.app.action;
+    exports io.xpipe.app.browser.menu;
+    exports io.xpipe.app.browser.menu.impl;
+    exports io.xpipe.app.browser.action.impl;
+    exports io.xpipe.app.browser.menu.impl.compress;
+    exports io.xpipe.app.hub.action;
+    exports io.xpipe.app.hub.action.impl;
+    exports io.xpipe.app.process;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;
@@ -77,6 +92,9 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.core;
     requires jdk.httpserver;
     requires com.github.weisj.jsvg;
+    requires java.net.http;
+    requires org.bouncycastle.provider;
+    requires org.jetbrains.annotations;
 
     // Required runtime modules
     requires jdk.charsets;
@@ -87,26 +105,90 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.materialdesign2;
     requires jdk.zipfs;
 
-    // For debugging
-    requires jdk.jdwp.agent;
-    requires java.net.http;
-    requires org.bouncycastle.provider;
-    requires org.jetbrains.annotations;
-
     uses TerminalLauncher;
-    uses io.xpipe.app.ext.ActionProvider;
+    uses ActionProvider;
     uses EventHandler;
     uses PrefsProvider;
     uses DataStoreProvider;
     uses ModuleLayerLoader;
     uses ScanProvider;
-    uses BrowserAction;
+    uses BrowserActionProvider;
     uses LicenseProvider;
     uses io.xpipe.app.util.LicensedFeature;
     uses io.xpipe.beacon.BeaconInterface;
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
+    uses ShellDialect;
 
+    provides ActionProvider with
+            BrowseHubLeafProvider,
+            XPipeUrlProvider,
+            LaunchHubMenuLeafProvider,
+            EditHubLeafProvider,
+            CloneHubLeafProvider,
+            DownloadMenuProvider,
+            RefreshChildrenHubLeafProvider,
+            ScanHubBatchProvider,
+            RunCommandInBrowserActionProvider,
+            RunCommandInBackgroundActionProvider,
+            RunCommandInTerminalActionProvider,
+            ComputeDirectorySizesMenuProvider,
+            FollowLinkMenuProvider,
+            BackMenuProvider,
+            ForwardMenuProvider,
+            RefreshDirectoryMenuProvider,
+            OpenFileDefaultMenuProvider,
+            OpenFileWithMenuProvider,
+            OpenDirectoryMenuProvider,
+            OpenDirectoryInNewTabMenuProvider,
+            ScanHubLeafProvider,
+            RefreshActionProvider,
+            ToggleActionProvider,
+            OpenTerminalMenuProvider,
+            OpenNativeFileDetailsMenuProvider,
+            BrowseInNativeManagerActionProvider,
+            ApplyFileEditActionProvider,
+            TransferFilesActionProvider,
+            EditFileMenuProvider,
+            RunFileMenuProvider,
+            RenameMenuProvider,
+            ChmodMenuProvider,
+            ChownMenuProvider,
+            ChgrpActionProvider,
+            ChgrpMenuProvider,
+            CopyMenuProvider,
+            CopyPathMenuProvider,
+            PasteMenuProvider,
+            CompressMenuProvider,
+            NewItemMenuProvider,
+            DeleteActionProvider,
+            ComputeDirectorySizesActionProvider,
+            DeleteMenuProvider,
+            ChownActionProvider,
+            ChmodActionProvider,
+            TarActionProvider,
+            UntarActionProvider,
+            ZipActionProvider,
+            UnzipActionProvider,
+            UnzipHereUnixMenuProvider,
+            UnzipDirectoryUnixMenuProvider,
+            UnzipHereWindowsActionProvider,
+            UnzipDirectoryWindowsActionProvider,
+            UntarHereMenuProvider,
+            UntarGzHereMenuProvider,
+            UntarDirectoryMenuProvider,
+            UntarGzDirectoryMenuProvider,
+            JavapMenuProvider,
+            JarMenuProvider,
+            MoveFileActionProvider,
+            NewFileActionProvider,
+            NewDirectoryActionProvider,
+            NewLinkActionProvider,
+            OpenDirectoryActionProvider,
+            OpenFileDefaultActionProvider,
+            OpenFileNativeDetailsActionProvider,
+            OpenFileWithActionProvider,
+            OpenTerminalActionProvider;
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with
@@ -114,11 +196,9 @@ open module io.xpipe.app {
             DataStoreProviders.Loader,
             ActionProvider.Loader,
             PrefsProvider.Loader,
-            BrowserAction.Loader,
             LicenseProvider.Loader,
-            ScanProvider.Loader;
-    provides DataStateProvider with
-            DataStateProviderImpl;
+            ScanProvider.Loader,
+            ShellDialects.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with
@@ -132,9 +212,10 @@ open module io.xpipe.app {
             ConnectionRemoveExchangeImpl,
             ConnectionAddExchangeImpl,
             CategoryAddExchangeImpl,
-            ConnectionBrowseExchangeImpl,
-            ConnectionTerminalExchangeImpl,
-            ConnectionToggleExchangeImpl,
+            CategoryQueryExchangeImpl,
+            CategoryInfoExchangeImpl,
+            CategoryRemoveExchangeImpl,
+            ActionExchangeImpl,
             ConnectionRefreshExchangeImpl,
             DaemonOpenExchangeImpl,
             DaemonFocusExchangeImpl,
@@ -153,5 +234,7 @@ open module io.xpipe.app {
             TerminalLaunchExchangeImpl,
             TerminalExternalLaunchExchangeImpl,
             SshLaunchExchangeImpl,
-            DaemonVersionExchangeImpl;
+            DaemonVersionExchangeImpl,
+            SecretEncryptExchangeImpl,
+            SecretDecryptExchangeImpl;
 }

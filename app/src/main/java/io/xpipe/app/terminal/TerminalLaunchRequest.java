@@ -1,11 +1,14 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ProcessControl;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.TerminalInitScriptConfig;
+import io.xpipe.app.process.WorkingDirectoryFunction;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServerException;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
 
 import lombok.Setter;
 import lombok.Value;
@@ -46,7 +49,7 @@ public class TerminalLaunchRequest {
             }
 
             if (getResult() == null) {
-                throw ErrorEvent.expected(new BeaconServerException("Launch request aborted"));
+                throw ErrorEventFactory.expected(new BeaconServerException("Launch request aborted"));
             }
 
             var r = getResult();

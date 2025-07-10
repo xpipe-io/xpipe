@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class AppCache {
         try {
             FileUtils.cleanDirectory(getBasePath().toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -65,14 +65,14 @@ public class AppCache {
                     return r;
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
+                ErrorEventFactory.fromThrowable("Could not parse cached data for key " + key, ex)
                         .omit()
                         .expected()
                         .handle();
                 FileUtils.deleteQuietly(path.toFile());
             }
         }
-        return notPresent != null ? notPresent.get() : null;
+        return notPresent.get();
     }
 
     public static boolean getBoolean(String key, boolean notPresent) {
@@ -88,7 +88,7 @@ public class AppCache {
 
                 return tree.asBoolean();
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable("Could not parse cached data for key " + key, ex)
+                ErrorEventFactory.fromThrowable("Could not parse cached data for key " + key, ex)
                         .omit()
                         .expected()
                         .handle();
@@ -105,7 +105,7 @@ public class AppCache {
             FileUtils.forceMkdirParent(path.toFile());
             JacksonMapper.getDefault().writeValue(path.toFile(), val);
         } catch (Exception e) {
-            ErrorEvent.fromThrowable("Could not write cache data for key " + key, e)
+            ErrorEventFactory.fromThrowable("Could not write cache data for key " + key, e)
                     .omitted(true)
                     .expected()
                     .build()
@@ -120,7 +120,7 @@ public class AppCache {
                 var t = Files.getLastModifiedTime(path);
                 return Optional.of(t.toInstant());
             } catch (Exception e) {
-                ErrorEvent.fromThrowable("Could not get modified date for " + key, e)
+                ErrorEventFactory.fromThrowable("Could not get modified date for " + key, e)
                         .omitted(true)
                         .expected()
                         .build()

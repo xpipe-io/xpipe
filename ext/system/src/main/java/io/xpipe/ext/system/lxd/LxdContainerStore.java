@@ -1,11 +1,9 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.ext.base.identity.IdentityValue;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
@@ -21,7 +19,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 
 @JsonTypeName("lxd")
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @Value
 @AllArgsConstructor
@@ -37,6 +35,12 @@ public class LxdContainerStore
     DataStoreEntryRef<LxdCmdStore> cmd;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (LxdContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
 
     @Override
     public String getName() {
@@ -77,7 +81,7 @@ public class LxdContainerStore
             public ShellControl control(ShellControl parent) throws Exception {
                 refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
 
-                var user = identity != null ? identity.unwrap().getUsername() : null;
+                var user = identity != null ? identity.unwrap().getUsername().retrieveUsername() : null;
                 var sc = new LxdCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
                     var alpine = state.getOsName() != null

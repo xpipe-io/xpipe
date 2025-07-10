@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeInstallation;
 
 public class ExtensionException extends RuntimeException {
 

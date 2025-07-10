@@ -5,9 +5,9 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.resources.AppResources;
+import io.xpipe.app.core.AppResources;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.scene.layout.Region;
 

@@ -1,11 +1,11 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -93,22 +93,25 @@ public class PrettyImageComp extends SimpleComp {
         stack.getChildren().add(storeIcon);
 
         Consumer<String> update = val -> {
-            var useDark = AppPrefs.get() != null
-                    && AppPrefs.get().theme().getValue() != null
-                    && AppPrefs.get().theme().getValue().isDark();
-            var fixed = val != null
-                    ? FileNames.getBaseName(val) + (useDark ? "-dark" : "") + "." + FileNames.getExtension(val)
-                    : null;
-            image.set(fixed);
+            PlatformThread.runLaterIfNeeded(() -> {
+                var useDark = AppPrefs.get() != null
+                        && AppPrefs.get().theme().getValue() != null
+                        && AppPrefs.get().theme().getValue().isDark();
+                var fixed = val != null
+                        ? FilePath.of(val).getBaseName() + (useDark ? "-dark" : "") + "."
+                                + FilePath.of(val).getExtension().orElseThrow()
+                        : null;
+                image.set(fixed);
 
-            if (val == null) {
-                stack.getChildren().getFirst().setVisible(false);
-            } else {
-                stack.getChildren().getFirst().setVisible(true);
-            }
+                if (val == null) {
+                    stack.getChildren().getFirst().setVisible(false);
+                } else {
+                    stack.getChildren().getFirst().setVisible(true);
+                }
+            });
         };
 
-        PlatformThread.sync(value).subscribe(update);
+        value.subscribe(update);
         if (AppPrefs.get() != null) {
             AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
                 update.accept(value.getValue());

@@ -86,10 +86,12 @@ Note that this is a desktop application that should be run on your local desktop
 Installers are the easiest way to get started and come with an optional automatic update functionality:
 
 - [Windows .msi Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-x86_64.msi)
+- [Windows .msi Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-windows-arm64.msi)
 
 If you don't like installers, you can also use a portable version that is packaged as an archive:
 
 - [Windows .zip Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-x86_64.zip)
+- [Windows .zip Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-windows-arm64.zip)
 
 Alternatively, you can also use the following package managers:
 - [choco](https://community.chocolatey.org/packages/xpipe) to install it with `choco install xpipe`.

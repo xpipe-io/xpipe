@@ -1,10 +1,10 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.FixedChildStore;
+import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.NetworkTunnelStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

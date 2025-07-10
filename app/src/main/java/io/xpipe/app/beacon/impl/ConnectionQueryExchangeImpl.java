@@ -10,7 +10,8 @@ public class ConnectionQueryExchangeImpl extends ConnectionQueryExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        var found = DataStorageQuery.query(msg.getCategoryFilter(), msg.getConnectionFilter(), msg.getTypeFilter());
+        var found =
+                DataStorageQuery.queryEntry(msg.getCategoryFilter(), msg.getConnectionFilter(), msg.getTypeFilter());
         return Response.builder()
                 .found(found.stream().map(entry -> entry.getUuid()).toList())
                 .build();

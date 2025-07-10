@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.core.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.CharBuffer;
 import java.time.Duration;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -139,7 +140,7 @@ public interface SecretRetrievalStrategy {
                 public SecretQueryResult query(String prompt) {
                     var pm = AppPrefs.get().passwordManager().getValue();
                     if (pm == null) {
-                        ErrorEvent.fromMessage(
+                        ErrorEventFactory.fromMessage(
                                         "A password manager was requested but no password manager has been set in the settings menu")
                                 .expected()
                                 .handle();
@@ -151,15 +152,18 @@ public interface SecretRetrievalStrategy {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
-                    if (r.lines().count() > 1 || r.isBlank()) {
-                        throw ErrorEvent.expected(
-                                new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
-                                        + "XPipe requires your password manager command to output only the raw password."
-                                        + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
-                                        + " you will have to change the command and/or password key."));
-                    }
-
-                    return new SecretQueryResult(InPlaceSecretValue.of(r), SecretQueryState.NORMAL);
+                    r.withSecretValue(chars -> {
+                        var seq = CharBuffer.wrap(chars);
+                        var newline = seq.chars().anyMatch(value -> value == 10);
+                        if (seq.length() == 0 || newline) {
+                            throw ErrorEventFactory.expected(
+                                    new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
+                                            + "XPipe requires your password manager command to output only the raw password."
+                                            + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
+                                            + " you will have to change the command and/or password key."));
+                        }
+                    });
+                    return new SecretQueryResult(r, SecretQueryState.NORMAL);
                 }
 
                 @Override
@@ -200,7 +204,7 @@ public interface SecretRetrievalStrategy {
                 @Override
                 public SecretQueryResult query(String prompt) {
                     if (command == null || command.isBlank()) {
-                        throw ErrorEvent.expected(new IllegalStateException("No custom command specified"));
+                        throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
                     }
 
                     try (var cc = ProcessControlProvider.get()
@@ -210,7 +214,7 @@ public interface SecretRetrievalStrategy {
                         return new SecretQueryResult(
                                 InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                     } catch (Exception ex) {
-                        ErrorEvent.fromThrowable("Unable to retrieve password with command " + command, ex)
+                        ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + command, ex)
                                 .handle();
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }

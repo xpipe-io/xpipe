@@ -1,7 +1,6 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,9 +26,6 @@ public class DataStoreCategory extends StorageElement {
 
     @NonFinal
     UUID parentCategory;
-
-    @NonFinal
-    StoreSortMode sortMode;
 
     @NonFinal
     DataStoreCategoryConfig config;
@@ -41,12 +38,10 @@ public class DataStoreCategory extends StorageElement {
             Instant lastModified,
             boolean dirty,
             UUID parentCategory,
-            StoreSortMode sortMode,
             boolean expanded,
             DataStoreCategoryConfig config) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.parentCategory = parentCategory;
-        this.sortMode = sortMode;
         this.config = config;
     }
 
@@ -59,7 +54,6 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.getDefault(),
                 true,
                 DataStoreCategoryConfig.empty());
     }
@@ -73,7 +67,6 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 true,
                 parentCategory,
-                StoreSortMode.getDefault(),
                 true,
                 DataStoreCategoryConfig.empty());
     }
@@ -98,10 +91,6 @@ public class DataStoreCategory extends StorageElement {
                 .orElse(null);
         var name = json.required("name").textValue();
 
-        var sortMode = Optional.ofNullable(stateJson.get("sortMode"))
-                .map(JsonNode::asText)
-                .flatMap(string -> StoreSortMode.fromId(string))
-                .orElse(StoreSortMode.getDefault());
         var lastUsed = Optional.ofNullable(stateJson.get("lastUsed"))
                 .map(jsonNode -> jsonNode.textValue())
                 .map(Instant::parse)
@@ -141,16 +130,8 @@ public class DataStoreCategory extends StorageElement {
             config = config.withColor(color);
         }
 
-        return Optional.of(new DataStoreCategory(
-                dir, uuid, name, lastUsed, lastModified, false, parentUuid, sortMode, expanded, config));
-    }
-
-    public void setSortMode(StoreSortMode sortMode) {
-        var changed = this.sortMode != sortMode;
-        if (changed) {
-            this.sortMode = sortMode;
-            notifyUpdate(false, true);
-        }
+        return Optional.of(
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {
@@ -163,9 +144,18 @@ public class DataStoreCategory extends StorageElement {
         return false;
     }
 
+    public boolean isChangedForReload(DataStoreCategory other) {
+        return !Objects.equals(getName(), other.getName())
+                || !Objects.equals(getConfig(), other.getConfig())
+                || !Objects.equals(getParentCategory(), other.getParentCategory());
+    }
+
     public void setParentCategory(UUID parentCategory) {
+        var changed = !Objects.equals(this.parentCategory, parentCategory);
         this.parentCategory = parentCategory;
-        notifyUpdate(false, true);
+        if (changed) {
+            notifyUpdate(false, true);
+        }
     }
 
     public boolean canShare() {
@@ -174,6 +164,10 @@ public class DataStoreCategory extends StorageElement {
         }
 
         if (getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID)) {
+            return false;
+        }
+
+        if (getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID)) {
             return false;
         }
 
@@ -202,7 +196,6 @@ public class DataStoreCategory extends StorageElement {
         obj.put("name", name);
         stateObj.put("lastUsed", lastUsed.toString());
         stateObj.put("lastModified", lastModified.toString());
-        stateObj.put("sortMode", sortMode.getId());
         stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
         obj.set("config", JacksonMapper.getDefault().valueToTree(config));

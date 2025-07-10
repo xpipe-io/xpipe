@@ -1,11 +1,9 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.StatefulDataStore;
 import io.xpipe.ext.base.identity.IdentityValue;
 import io.xpipe.ext.base.store.PauseableStore;
 import io.xpipe.ext.base.store.StartableStore;
@@ -22,7 +20,7 @@ import java.util.Objects;
 import java.util.OptionalInt;
 
 @JsonTypeName("incusContainer")
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Jacksonized
 @Getter
 @AllArgsConstructor
@@ -39,6 +37,12 @@ public class IncusContainerStore
     DataStoreEntryRef<IncusInstallStore> install;
     String containerName;
     IdentityValue identity;
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (IncusContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
 
     @Override
     public Class<ContainerStoreState> getStateClass() {
@@ -75,7 +79,7 @@ public class IncusContainerStore
                 refreshContainerState(
                         getInstall().getStore().getHost().getStore().getOrStartSession());
 
-                var user = identity != null ? identity.unwrap().getUsername() : null;
+                var user = identity != null ? identity.unwrap().getUsername().retrieveUsername() : null;
                 var sc = new IncusCommandView(parent).exec(containerName, user, () -> {
                     var state = getState();
                     var alpine = state.getOsName() != null

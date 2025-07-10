@@ -2,18 +2,18 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.comp.store.StoreChoiceComp;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -39,6 +39,11 @@ public class TerminalCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-console");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
@@ -51,10 +56,19 @@ public class TerminalCategory extends AppPrefsCategory {
                     });
                     feature.throwIfUnsupported();
                 } catch (LicenseRequiredException ex) {
-                    ErrorEvent.fromThrowable(ex).handle();
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
             }
         });
+
+        var tabsSettingSupported = Bindings.createBooleanBinding(
+                () -> {
+                    return prefs.terminalType().getValue() != null
+                            && prefs.terminalType().getValue().getOpenFormat()
+                                    == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+                },
+                prefs.terminalType());
+
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(terminalChoice())
@@ -64,8 +78,13 @@ public class TerminalCategory extends AppPrefsCategory {
                 // .sub(terminalInitScript())
                 .sub(
                         new OptionsBuilder()
-                                .pref(prefs.terminalAlwaysPauseOnExit).addToggle(prefs.terminalAlwaysPauseOnExit)
-                                .pref(prefs.clearTerminalOnInit).addToggle(prefs.clearTerminalOnInit)
+                                .pref(prefs.terminalAlwaysPauseOnExit)
+                                .addToggle(prefs.terminalAlwaysPauseOnExit)
+                                .pref(prefs.clearTerminalOnInit)
+                                .addToggle(prefs.clearTerminalOnInit)
+                                .pref(prefs.preferTerminalTabs)
+                                .addToggle(prefs.preferTerminalTabs)
+                                .hide(tabsSettingSupported.not())
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )

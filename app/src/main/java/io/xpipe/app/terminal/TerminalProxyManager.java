@@ -1,12 +1,12 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.DataStore;
 
 import lombok.Value;
 
@@ -70,7 +70,7 @@ public class TerminalProxyManager {
                 matchingSession.getControl().start();
                 return Optional.of(matchingSession.getControl());
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 activeSession = new ActiveSession(uuid, null);
                 return Optional.empty();
             }
@@ -84,7 +84,7 @@ public class TerminalProxyManager {
                 return control;
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
         }
         activeSession = new ActiveSession(uuid, null);
         return Optional.empty();

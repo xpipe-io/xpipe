@@ -1,7 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.DataStoreState;
+import io.xpipe.app.process.ShellStoreState;
 
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

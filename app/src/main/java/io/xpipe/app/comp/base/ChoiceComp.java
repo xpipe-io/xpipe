@@ -35,12 +35,6 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         this.includeNone = includeNone;
     }
 
-    public ChoiceComp(Property<T> value, ObservableValue<Map<T, ObservableValue<String>>> range, boolean includeNone) {
-        this.value = value;
-        this.range = PlatformThread.sync(range);
-        this.includeNone = includeNone;
-    }
-
     public static <T extends Translatable> ChoiceComp<T> ofTranslatable(
             Property<T> value, List<T> range, boolean includeNone) {
         var map = range.stream()

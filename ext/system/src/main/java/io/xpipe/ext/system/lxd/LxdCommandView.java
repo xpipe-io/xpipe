@@ -1,11 +1,12 @@
 package io.xpipe.ext.system.lxd;
 
 import io.xpipe.app.ext.ContainerStoreState;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandViewBase;
-import io.xpipe.core.process.*;
+import io.xpipe.ext.base.identity.IdentityValue;
 
 import io.xpipe.core.store.FilePath;
 import lombok.NonNull;
@@ -51,7 +52,7 @@ public class LxdCommandView extends CommandViewBase {
     }
 
     private static <T extends Throwable> T convertException(T s) {
-        return ErrorEvent.expectedIfContains(s);
+        return ErrorEventFactory.expectedIfContains(s);
     }
 
     @Override
@@ -130,6 +131,7 @@ public class LxdCommandView extends CommandViewBase {
                     var c = LxdContainerStore.builder()
                             .cmd(store)
                             .containerName(s.getKey())
+                            .identity(IdentityValue.ofBreakout(store.get()))
                             .build();
                     var entry = DataStoreEntry.createNew(c.getContainerName(), c);
                     entry.setStorePersistentState(ContainerStoreState.builder()
@@ -148,10 +150,14 @@ public class LxdCommandView extends CommandViewBase {
             var output = c.readStdoutOrThrow();
             return output.lines()
                     .collect(Collectors.toMap(
-                            s -> s.strip().split(",")[0], s -> s.strip().split(",")[1], (x, y) -> y, LinkedHashMap::new));
+                            s -> s.strip().split(",")[0],
+                            s -> s.strip().split(",")[1],
+                            (x, y) -> y,
+                            LinkedHashMap::new));
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
-                throw ErrorEvent.expected(ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
+                throw ErrorEventFactory.expected(
+                        ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
             } else {
                 throw ex;
             }

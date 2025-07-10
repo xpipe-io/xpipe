@@ -1,6 +1,6 @@
 package io.xpipe.app.test;
 
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.core.FailableSupplier;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Named;

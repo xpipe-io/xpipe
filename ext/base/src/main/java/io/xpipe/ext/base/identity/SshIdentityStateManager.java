@@ -2,11 +2,12 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,7 +29,7 @@ public class SshIdentityStateManager {
             var opensshRunning = opensshList.contains("ssh-agent.exe");
 
             if (external && !gpgRunning && !opensshRunning) {
-                throw ErrorEvent.expected(
+                throw ErrorEventFactory.expected(
                         new IllegalStateException(
                                 "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
             }
@@ -42,7 +43,7 @@ public class SshIdentityStateManager {
                 var msg =
                         "The Windows OpenSSH agent is running. This will cause it to interfere with other agents. You have to manually stop the running ssh-agent service to allow other agents to work";
                 var r = new AtomicBoolean();
-                var event = ErrorEvent.fromMessage(msg).expected();
+                var event = ErrorEventFactory.fromMessage(msg).expected();
                 var shutdown = new ErrorAction() {
                     @Override
                     public String getName() {
@@ -86,7 +87,8 @@ public class SshIdentityStateManager {
     public static synchronized void checkAgentIdentities(ShellControl sc, String authSock) throws Exception {
         var found = sc.view().findProgram("ssh-add");
         if (found.isEmpty()) {
-            throw ErrorEvent.expected(new IllegalStateException("SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
+            throw ErrorEventFactory.expected(new IllegalStateException(
+                    "SSH agent tool ssh-add not found in PATH. Is the SSH agent correctly installed?"));
         }
 
         try (var c = sc.command(CommandBuilder.of().add("ssh-add", "-l").fixedEnvironment("SSH_AUTH_SOCK", authSock))
@@ -98,13 +100,15 @@ public class SshIdentityStateManager {
                         + "\n"
                         + r[1]
                         + "\nPlease check your SSH agent configuration%s.".formatted(posixMessage));
-                var eventBuilder = ErrorEvent.fromThrowable(ex).expected();
-                ErrorEvent.preconfigure(eventBuilder);
+                var eventBuilder = ErrorEventFactory.fromThrowable(ex).expected();
+                ErrorEventFactory.preconfigure(eventBuilder);
                 throw ex;
             }
         } catch (ProcessOutputException ex) {
             if (sc.getOsType() == OsType.WINDOWS && ex.getOutput().contains("No such file or directory")) {
-                throw ProcessOutputException.withPrefix("Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?", ex);
+                throw ProcessOutputException.withPrefix(
+                        "Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?",
+                        ex);
             } else {
                 throw ex;
             }
@@ -123,7 +127,7 @@ public class SshIdentityStateManager {
                 var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
                 if (!pipeExists) {
                     // No agent is running
-                    throw ErrorEvent.expected(
+                    throw ErrorEventFactory.expected(
                             new IllegalStateException(
                                     "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
                 }
@@ -193,12 +197,7 @@ public class SshIdentityStateManager {
     }
 
     public static synchronized void prepareRemoteOpenSshAgent(ShellControl sc) throws Exception {
-        if (sc.getOsType() == OsType.WINDOWS) {
-            checkAgentIdentities(sc, null);
-        } else {
-            var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
-            checkLocalAgentIdentities(socketEnvVariable);
-        }
+        checkAgentIdentities(sc, null);
     }
 
     public static synchronized void prepareLocalOpenSshAgent(ShellControl sc) throws Exception {
@@ -211,7 +210,15 @@ public class SshIdentityStateManager {
             stopWindowsAgents(false, true, true);
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
+        } else if (sc.getOsType() == OsType.MACOS) {
+            // On macOS, we prefer the shell variable compared to any global env variable
+            // as that one is set by default and might not be the right one
+            // This happens for example with homebrew ssh
+            var shellVariable = sc.view().getEnvironmentVariable("SSH_AUTH_SOCK");
+            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
+            checkLocalAgentIdentities(socketEnvVariable);
         } else {
+            // On Linux, there is no automatically set env variable, so we can always prefer the env variable
             var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
             checkLocalAgentIdentities(socketEnvVariable);
         }

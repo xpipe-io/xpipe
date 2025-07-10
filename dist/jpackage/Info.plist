@@ -9,7 +9,9 @@
 	<key>CFBundleExecutable</key>
 	<string>xpiped</string>
 	<key>CFBundleIconFile</key>
-	<string>xpiped.icns</string>
+	<string>xpipe</string>
+	<key>CFBundleIconName</key>
+	<string>xpipe</string>
 	<key>CFBundleIdentifier</key>
 	<string>__BUNDLE__</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -39,7 +41,7 @@
 	<key>NSHighResolutionCapable</key>
 	<string>true</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright (C) 2024</string>
+	<string>Copyright (C) 2025</string>
 	<key>CFBundleShortVersionString</key>
 	<string>__VERSION__</string>
 	<key>CFBundleVersion</key>

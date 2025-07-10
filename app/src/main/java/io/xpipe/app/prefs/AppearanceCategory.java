@@ -8,8 +8,9 @@ import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
@@ -17,11 +18,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.theme.Styles;
-import javafx.scene.shape.Rectangle;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Arrays;
@@ -33,6 +33,11 @@ public class AppearanceCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "appearance";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2b-brush");
     }
 
     @Override

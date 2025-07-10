@@ -9,14 +9,12 @@ import lombok.Singular;
 
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Builder
 @Getter
 public class ErrorEvent {
 
-    private static final Map<Throwable, ErrorEventBuilder> EVENT_BASES = new ConcurrentHashMap<>();
     private static final Set<Throwable> HANDLED = new CopyOnWriteArraySet<>();
 
     @Builder.Default
@@ -44,63 +42,6 @@ public class ErrorEvent {
     private String email;
     private String userReport;
     private boolean unhandled;
-
-    public static ErrorEventBuilder fromThrowable(Throwable t) {
-        if (EVENT_BASES.containsKey(t)) {
-            return EVENT_BASES.remove(t).description(t.getMessage());
-        }
-
-        return builder().throwable(t).description(t.getMessage());
-    }
-
-    public static ErrorEventBuilder fromThrowable(String msg, Throwable t) {
-        if (EVENT_BASES.containsKey(t)) {
-            return EVENT_BASES.remove(t).description(msg);
-        }
-
-        return builder()
-                .throwable(t)
-                .description(
-                        msg + (t.getMessage() != null ? "\n\n" + t.getMessage().strip() : ""));
-    }
-
-    public static ErrorEventBuilder fromMessage(String msg) {
-        return builder().description(msg);
-    }
-
-    public static <T extends Throwable> T expectedIfEndsWith(T t, String... s) {
-        return expectedIf(
-                t,
-                t.getMessage() != null
-                        && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
-                                .toLowerCase(Locale.ROOT)
-                                .endsWith(string)));
-    }
-
-    public static <T extends Throwable> T expectedIfContains(T t, String... s) {
-        return expectedIf(
-                t,
-                t.getMessage() != null
-                        && Arrays.stream(s).map(String::toLowerCase).anyMatch(string -> t.getMessage()
-                                .toLowerCase(Locale.ROOT)
-                                .contains(string)));
-    }
-
-    public static <T extends Throwable> T expectedIf(T t, boolean b) {
-        if (b) {
-            EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
-        }
-        return t;
-    }
-
-    public static <T extends Throwable> T expected(T t) {
-        EVENT_BASES.put(t, ErrorEvent.fromThrowable(t).expected());
-        return t;
-    }
-
-    public static void preconfigure(ErrorEventBuilder event) {
-        EVENT_BASES.put(event.throwable, event);
-    }
 
     public void attachUserReport(String email, String text) {
         this.email = email;
@@ -180,6 +121,14 @@ public class ErrorEvent {
             if (contains) {
                 expected();
             }
+        }
+
+        Throwable getThrowable() {
+            return throwable;
+        }
+
+        String getLink() {
+            return link;
         }
     }
 }

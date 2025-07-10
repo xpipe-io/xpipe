@@ -1,8 +1,5 @@
 package io.xpipe.app.util;
 
-import lombok.SneakyThrows;
-
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 public class ModuleAccess {
@@ -22,8 +19,13 @@ public class ModuleAccess {
                 break;
             }
         }
-        modifiers.setAccessible(true);
 
+        // Maybe an unknown JDK version?
+        if (modifiers == null) {
+            return;
+        }
+
+        modifiers.setAccessible(true);
         modifiers.invoke(source, pkg, target, false, true);
         modifiers.invoke(source, pkg, target, true, true);
     }

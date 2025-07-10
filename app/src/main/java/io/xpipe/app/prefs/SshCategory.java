@@ -1,8 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 public class SshCategory extends AppPrefsCategory {
 
@@ -12,12 +13,16 @@ public class SshCategory extends AppPrefsCategory {
     }
 
     @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-console-network-outline");
+    }
+
+    @Override
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder().addTitle("sshConfiguration");
         if (OsType.getLocal() == OsType.WINDOWS) {
-            options.sub(new OptionsBuilder()
-                    .addComp(prefs.getCustomComp("x11WslInstance").maxWidth(getCompWidth())));
+            options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp().maxWidth(600));
         }
         return options.buildComp();
     }

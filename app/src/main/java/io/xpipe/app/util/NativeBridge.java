@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -43,7 +43,7 @@ public class NativeBridge {
                 var l = Native.load("xpipe_bridge", MacOsLibrary.class, Map.of());
                 macOsLibrary = l;
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
                 loadingFailed = true;
             }
         }

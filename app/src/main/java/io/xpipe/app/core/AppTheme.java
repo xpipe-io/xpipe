@@ -2,13 +2,12 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.ColorHelper;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -56,7 +55,7 @@ public class AppTheme {
                     PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
-                root.getStyleClass().add(def.getCssId());
+                root.pseudoClassStateChanged(PseudoClass.getPseudoClass(def.getCssId()), true);
                 root.pseudoClassStateChanged(LIGHT, true);
                 root.pseudoClassStateChanged(DARK, false);
                 root.pseudoClassStateChanged(PRETTY, true);
@@ -65,12 +64,13 @@ public class AppTheme {
             }
 
             AppPrefs.get().theme().subscribe(t -> {
-                Theme.ALL.forEach(theme -> root.getStyleClass().remove(theme.getCssId()));
+                Theme.ALL.forEach(theme -> {
+                    root.pseudoClassStateChanged(PseudoClass.getPseudoClass(theme.getCssId()), theme.getCssId().equals(t.getCssId()));
+                });
                 if (t == null) {
                     return;
                 }
 
-                root.getStyleClass().add(t.getCssId());
                 root.pseudoClassStateChanged(LIGHT, !t.isDark());
                 root.pseudoClassStateChanged(DARK, t.isDark());
             });
@@ -124,9 +124,9 @@ public class AppTheme {
             });
         } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
 
         var t = AppPrefs.get().theme().getValue();
@@ -200,7 +200,7 @@ public class AppTheme {
             }
         } catch (IllegalStateException ex) {
             // The platform preferences are sometimes not initialized yet
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
         } catch (Exception ex) {
             // The color scheme query can fail if the toolkit is not initialized properly
             AppPrefs.get().theme.setValue(Theme.getDefaultLightTheme());

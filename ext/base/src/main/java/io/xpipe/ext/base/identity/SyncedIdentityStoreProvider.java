@@ -1,17 +1,14 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.DataStore;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +35,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         SyncedIdentityStore st = (SyncedIdentityStore) store.getValue();
 
-        var user = new SimpleStringProperty(st.getUsername());
+        var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
@@ -68,10 +65,15 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription("base:sshKey")
+                .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
                         SshIdentityStrategyHelper.identity(
-                                new SimpleObjectProperty<>(), identity, path -> perUser.get(), true, true),
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
+                                identity,
+                                path -> perUser.get(),
+                                true,
+                                true),
                         identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof SshIdentityStrategy.File f

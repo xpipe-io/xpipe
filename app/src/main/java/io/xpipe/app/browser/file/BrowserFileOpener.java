@@ -3,75 +3,63 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ElevationFunction;
+import io.xpipe.app.process.ProcessOutputException;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ElevationFunction;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FileInfo;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import lombok.SneakyThrows;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BrowserFileOpener {
 
-    private static OutputStream openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
+    private static BrowserFileOutput openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
             throws Exception {
         var fileSystem = model.getFileSystem();
         if (model.isClosed() || fileSystem.getShell().isEmpty()) {
-            return OutputStream.nullOutputStream();
+            return BrowserFileOutput.none();
         }
 
         if (totalBytes == 0) {
             var existingSize = model.getFileSystem().getFileSize(file.getPath());
             if (existingSize != 0) {
-                var blank = AppDialog.confirm("fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
+                var blank = AppDialog.confirm(
+                        "fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
                 if (!blank) {
-                    return OutputStream.nullOutputStream();
+                    return BrowserFileOutput.none();
                 }
             }
         }
 
-        var sc = fileSystem.getShell().get();
-        if (sc.getOsType() == OsType.WINDOWS) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
-        }
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        var requiresSudo =
+                sc.getOsType() != OsType.WINDOWS && requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
 
-        var info = (FileInfo.Unix) file.getInfo();
-        var requiresSudo = requiresSudo(model, info, file.getPath());
+        var defOutput = createFileOutput(model, file, totalBytes, false);
         if (!requiresSudo) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
+            return defOutput;
         }
 
         var elevate = AppDialog.confirm("fileWriteSudo");
         if (!elevate) {
-            return fileSystem.openOutput(file.getPath(), totalBytes);
+            return defOutput;
         }
 
-        var rootSc = sc.identicalDialectSubShell()
-                .elevated(ElevationFunction.elevated(null))
-                .start();
-        var rootFs = new ConnectionFileSystem(rootSc);
-        try {
-            return new FilterOutputStream(rootFs.openOutput(file.getPath(), totalBytes)) {
-                @Override
-                public void close() throws IOException {
-                    super.close();
-                    rootFs.close();
-                }
-            };
-        } catch (Exception ex) {
-            rootFs.close();
-            throw ex;
-        }
+        var rootOutput = createFileOutput(model, file, totalBytes, true);
+        return rootOutput;
     }
 
     private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
@@ -103,6 +91,75 @@ public class BrowserFileOpener {
         return !test;
     }
 
+    private static BrowserFileOutput createFileOutput(
+            BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws Exception {
+        var sc = elevate
+                ? model.getFileSystem()
+                        .getShell()
+                        .orElseThrow()
+                        .identicalDialectSubShell()
+                        .elevated(ElevationFunction.elevated(null))
+                        .start()
+                : model.getFileSystem().getShell().orElseThrow().start();
+        var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
+        var isSudoersFile = file.getPath().startsWith("/etc/sudo");
+        var output = new BrowserFileOutput() {
+
+            @Override
+            public Optional<DataStoreEntry> target() {
+                return Optional.of(model.getEntry().get());
+            }
+
+            @Override
+            public boolean hasOutput() {
+                return true;
+            }
+
+            @Override
+            public OutputStream open() throws Exception {
+                try {
+                    return fs.openOutput(file.getPath(), totalBytes);
+                } catch (Exception ex) {
+                    if (elevate) {
+                        fs.close();
+                    }
+                    throw ex;
+                }
+            }
+
+            @Override
+            public void beforeTransfer() throws Exception {
+                if (isSudoersFile) {
+                    fs.copy(file.getPath(), sc.getSystemTemporaryDirectory().join(file.getName()));
+                }
+            }
+
+            @Override
+            public void onFinish() throws Exception {
+                if (isSudoersFile) {
+                    if (sc.view().findProgram("visudo").isPresent()) {
+                        try {
+                            sc.command(CommandBuilder.of()
+                                            .add("visudo", "-c", "-f")
+                                            .addFile(file.getPath()))
+                                    .execute();
+                        } catch (ProcessOutputException ex) {
+                            ErrorEventFactory.fromThrowable(ex).expected().handle();
+                            fs.copy(sc.getSystemTemporaryDirectory().join(file.getName()), file.getPath());
+                        }
+                    }
+                }
+
+                if (elevate) {
+                    fs.close();
+                }
+
+                model.refreshFileEntriesSync(List.of(file));
+            }
+        };
+        return output;
+    }
+
     @SneakyThrows
     private static int calculateKey(BrowserFileSystemTabModel model, FileEntry entry) {
         // Use different key for empty / non-empty files to prevent any issues from blanked files when transfer fails
@@ -128,10 +185,33 @@ public class BrowserFileOpener {
                         },
                         (size) -> {
                             if (model.isClosed()) {
-                                return OutputStream.nullOutputStream();
+                                return BrowserFileOutput.none();
                             }
 
-                            return entry.getFileSystem().openOutput(file, size);
+                            return new BrowserFileOutput() {
+                                @Override
+                                public void beforeTransfer() {}
+
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
+                                }
+
+                                @Override
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
+
+                                @Override
+                                public void onFinish() throws Exception {
+                                    model.refreshFileEntriesSync(List.of(entry));
+                                }
+                            };
                         },
                         s -> FileOpener.openWithAnyApplication(s));
     }
@@ -154,10 +234,33 @@ public class BrowserFileOpener {
                         },
                         (size) -> {
                             if (model.isClosed()) {
-                                return OutputStream.nullOutputStream();
+                                return BrowserFileOutput.none();
                             }
 
-                            return entry.getFileSystem().openOutput(file, size);
+                            return new BrowserFileOutput() {
+                                @Override
+                                public void beforeTransfer() {}
+
+                                @Override
+                                public boolean hasOutput() {
+                                    return true;
+                                }
+
+                                @Override
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
+                                }
+
+                                @Override
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
+
+                                @Override
+                                public void onFinish() throws Exception {
+                                    model.refreshFileEntriesSync(List.of(entry));
+                                }
+                            };
                         },
                         s -> FileOpener.openInDefaultApplication(s));
     }

@@ -1,12 +1,14 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
+import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.FailableFunction;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.core.FailableFunction;
+import io.xpipe.core.FailableSupplier;
+import io.xpipe.core.OsType;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -64,7 +66,7 @@ public class FileBridge {
                 }
             });
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -120,7 +122,7 @@ public class FileBridge {
                 event("File doesn't seem to be changed");
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).omit().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().handle();
         }
     }
 
@@ -152,7 +154,7 @@ public class FileBridge {
             Object key,
             BooleanScope scope,
             FailableSupplier<InputStream> input,
-            FailableFunction<Long, OutputStream, Exception> output,
+            FailableFunction<Long, BrowserFileOutput, Exception> output,
             Consumer<String> consumer) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
@@ -163,7 +165,7 @@ public class FileBridge {
                     in.transferTo(out);
                 }
             } catch (Exception ex) {
-                ErrorEvent.fromThrowable(ex).handle();
+                ErrorEventFactory.fromThrowable(ex).handle();
                 return;
             }
             ext.get().registerChange();
@@ -180,26 +182,27 @@ public class FileBridge {
                 in.transferTo(out);
             }
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return;
         }
 
         var entry = new Entry(file, key, keyName, scope, (in, size) -> {
             if (output != null) {
-                if (scope != null) {
-                    try (var ignored = scope.start()) {
-                        try (var out = output.apply(size)) {
-                            in.transferTo(out);
-                        } catch (Exception ex) {
-                            ErrorEvent.fromThrowable(ex).handle();
-                        }
+                var effectiveScope = scope != null ? scope : BooleanScope.noop();
+                try (var ignored = effectiveScope.start()) {
+                    var outSupplier = output.apply(size);
+                    if (!outSupplier.hasOutput()) {
+                        return;
                     }
-                } else {
-                    try (var out = output.apply(size)) {
-                        in.transferTo(out);
-                    } catch (Exception ex) {
-                        ErrorEvent.fromThrowable(ex).handle();
-                    }
+
+                    var action = ApplyFileEditActionProvider.Action.builder()
+                            .input(in)
+                            .output(outSupplier)
+                            .target(file.getFileName().toString())
+                            .build();
+                    action.executeSync();
+                } catch (Exception ex) {
+                    ErrorEventFactory.fromThrowable(ex).handle();
                 }
             }
         });

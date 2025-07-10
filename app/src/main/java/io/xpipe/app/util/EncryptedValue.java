@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.storage.DataStorageSecret;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

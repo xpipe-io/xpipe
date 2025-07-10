@@ -1,17 +1,17 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellScript;
+import io.xpipe.core.OsType;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,42 +22,103 @@ import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
 
-    ExternalEditorType NOTEPAD = new WindowsType("app.notepad", "notepad", false) {
+    ExternalEditorType NOTEPAD = new WindowsType() {
+
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.notepad";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "notepad";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
-    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType("app.vscodium", "codium.cmd", false) {
+    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.vscodium";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "codium.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("VSCodium")
-                    .resolve("bin")
-                    .resolve("codium.cmd"))
+                            .resolve("Programs")
+                            .resolve("VSCodium")
+                            .resolve("bin")
+                            .resolve("codium.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    WindowsType CURSOR_WINDOWS = new WindowsType("app.cursor", "Cursor", true) {
+    WindowsType CURSOR_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.cursor";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Cursor";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("cursor")
-                    .resolve("Cursor.exe"))
+                            .resolve("Programs")
+                            .resolve("cursor")
+                            .resolve("Cursor.exe"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    WindowsType VOID_WINDOWS = new WindowsType("app.void", "Void", true) {
+    WindowsType VOID_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.void";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Void";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
                             .resolve("Void")
                             .resolve("Void.exe"))
@@ -65,75 +126,165 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType WINDSURF_WINDOWS = new WindowsType("app.windsurf", "windsurf.cmd", false) {
+    WindowsType WINDSURF_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.windsurf";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "windsurf.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Windsurf")
-                    .resolve("bin")
-                    .resolve("windsurf.cmd"))
+                            .resolve("Programs")
+                            .resolve("Windsurf")
+                            .resolve("bin")
+                            .resolve("windsurf.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
 
     // Cli is broken, keep inactive
-    WindowsType THEIAIDE_WINDOWS = new WindowsType("app.theiaide", "Theiaide", true) {
+    WindowsType THEIAIDE_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.theiaide";
+        }
+
+        @Override
+        public boolean detach() {
+            return true;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Theiaide";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("TheiaIDE")
-                    .resolve("TheiaIDE.exe"))
+                            .resolve("Programs")
+                            .resolve("TheiaIDE")
+                            .resolve("TheiaIDE.exe"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    WindowsType TRAE_WINDOWS = new WindowsType("app.trae", "trae.cmd", false) {
+    WindowsType TRAE_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.trae";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "trae.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Trae")
-                    .resolve("bin")
-                    .resolve("trae.cmd"))
+                            .resolve("Programs")
+                            .resolve("Trae")
+                            .resolve("bin")
+                            .resolve("trae.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    WindowsType VSCODE_WINDOWS = new WindowsType("app.vscode", "code.cmd", false) {
+    WindowsType VSCODE_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.vscode";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "code.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Microsoft VS Code")
-                    .resolve("bin")
-                    .resolve("code.cmd"))
+                            .resolve("Programs")
+                            .resolve("Microsoft VS Code")
+                            .resolve("bin")
+                            .resolve("code.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType("app.vscodeInsiders", "code-insiders.cmd", false) {
+    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.vscodeInsiders";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "code-insiders.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
-                    .resolve("Programs")
-                    .resolve("Microsoft VS Code Insiders")
-                    .resolve("bin")
-                    .resolve("code-insiders.cmd"))
+                            .resolve("Programs")
+                            .resolve("Microsoft VS Code Insiders")
+                            .resolve("bin")
+                            .resolve("code-insiders.cmd"))
                     .filter(path -> Files.exists(path));
         }
     };
 
-    ExternalEditorType NOTEPADPLUSPLUS = new WindowsType("app.notepad++", "notepad++", false) {
+    ExternalEditorType NOTEPADPLUSPLUS = new WindowsType() {
 
         @Override
-        protected Optional<Path> determineInstallation() {
+        public String getId() {
+            return "app.notepad++";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "notepad++";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
             var found = WindowsRegistry.local()
                     .readStringValueIfPresent(WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Notepad++", null);
 
@@ -152,7 +303,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of()
                     .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
-                    .addFile(executable)
+                    .addFile(getExecutable())
                     .addFile(file.toString());
             ExternalApplicationHelper.startAsync(builder);
         }
@@ -191,7 +342,9 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public ObservableValue<String> toTranslatedString() {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
-            if (customCommand == null || customCommand.isBlank() || customCommand.replace("$FILE", "").strip().contains(" ")) {
+            if (customCommand == null
+                    || customCommand.isBlank()
+                    || customCommand.replace("$FILE", "").strip().contains(" ")) {
                 return ExternalEditorType.super.toTranslatedString();
             }
 
@@ -202,7 +355,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         public void launch(Path file) throws Exception {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
             if (customCommand == null || customCommand.isBlank()) {
-                throw ErrorEvent.expected(new IllegalStateException("No custom editor command specified"));
+                throw ErrorEventFactory.expected(new IllegalStateException("No custom editor command specified"));
             }
 
             var format =
@@ -310,10 +463,14 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     void launch(Path file) throws Exception;
 
-    class MacOsEditor extends ExternalApplicationType.MacApplication implements ExternalEditorType {
+    class MacOsEditor implements ExternalApplicationType.MacApplication, ExternalEditorType {
 
-        public MacOsEditor(String id, String applicationName) {
-            super(id, applicationName);
+        private final String id;
+        private final String appName;
+
+        public MacOsEditor(String id, String appName) {
+            this.id = id;
+            this.appName = appName;
         }
 
         @Override
@@ -321,33 +478,64 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             try (var sc = LocalShell.getShell().start()) {
                 sc.executeSimpleCommand(CommandBuilder.of()
                         .add("open", "-a")
-                        .addQuoted(applicationName)
+                        .addQuoted(getApplicationName())
                         .addFile(file.toString()));
             }
         }
+
+        @Override
+        public String getApplicationName() {
+            return appName;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
     }
 
-    class GenericPathType extends ExternalApplicationType.PathApplication implements ExternalEditorType {
+    class GenericPathType implements ExternalApplicationType.PathApplication, ExternalEditorType {
 
-        public GenericPathType(String id, String command, boolean explicityAsync) {
-            super(id, command, explicityAsync);
+        private final String id;
+        private final String executable;
+        private final boolean async;
+
+        public GenericPathType(String id, String executable, boolean async) {
+            this.id = id;
+            this.executable = executable;
+            this.async = async;
         }
 
         @Override
         public void launch(Path file) throws Exception {
-            var builder = CommandBuilder.of().addFile(executable).addFile(file.toString());
-            if (explicitlyAsync) {
+            var builder = CommandBuilder.of().addFile(getExecutable()).addFile(file.toString());
+            if (detach()) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);
             }
         }
+
+        @Override
+        public String getExecutable() {
+            return executable;
+        }
+
+        @Override
+        public boolean detach() {
+            return async;
+        }
+
+        @Override
+        public String getId() {
+            return id;
+        }
     }
 
     class LinuxPathType extends GenericPathType {
 
-        public LinuxPathType(String id, String command) {
-            super(id, command, true);
+        public LinuxPathType(String id, String executable) {
+            super(id, executable, true);
         }
 
         @Override
@@ -356,37 +544,17 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     }
 
-    abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalEditorType {
-
-        private final boolean detach;
-
-        public WindowsType(String id, String executable, boolean detach) {
-            super(id, executable);
-            this.detach = detach;
-        }
+    interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
 
         @Override
-        public void launch(Path file) throws Exception {
+        default void launch(Path file) throws Exception {
             var location = findExecutable();
-            if (location.isEmpty()) {
-                throw ErrorEvent.expected(new IOException(
-                        "Unable to find installation of " + toTranslatedString().getValue()));
-            }
-
-            var builder = CommandBuilder.of().addFile(location.get().toString()).addFile(file.toString());
-            if (detach) {
+            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
+            if (detach()) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);
             }
-        }
-
-        public Optional<Path> findExecutable() {
-            var location = determineFromPath();
-            if (location.isEmpty()) {
-                location = determineInstallation();
-            }
-            return location;
         }
     }
 }

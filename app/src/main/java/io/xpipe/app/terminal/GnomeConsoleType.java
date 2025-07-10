@@ -1,12 +1,9 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.core.process.CommandBuilder;
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
 
-public class GnomeConsoleType extends ExternalTerminalType.SimplePathType implements TrackableTerminalType {
-
-    public GnomeConsoleType() {
-        super("app.gnomeConsole", "kgx", true);
-    }
+public class GnomeConsoleType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -29,11 +26,26 @@ public class GnomeConsoleType extends ExternalTerminalType.SimplePathType implem
     }
 
     @Override
-    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .add("--")
                 .add(configuration.getDialectLaunchCommand());
-        return toExecute;
+        launch(toExecute);
+    }
+
+    @Override
+    public String getExecutable() {
+        return "kgx";
+    }
+
+    @Override
+    public boolean detach() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.gnomeConsole";
     }
 }

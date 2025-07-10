@@ -5,10 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
-import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -27,6 +24,11 @@ public class SyncCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "vaultSync";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdrmz-vpn_lock");
     }
 
     public Comp<?> create() {
@@ -71,7 +73,9 @@ public class SyncCategory extends AppPrefsCategory {
                         .addComp(remoteRow, prefs.storageGitRemote)
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
-                        .addComp(prefs.getCustomComp("gitVaultIdentityStrategy"))
+                        .sub(prefs.getCustomOptions("gitUsername"))
+                        .sub(prefs.getCustomOptions("gitPassword"))
+                        .sub(prefs.getCustomOptions("gitVaultIdentityStrategy"))
                         .nameAndDescription("browseVault")
                         .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
                             DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());

@@ -1,10 +1,10 @@
 package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 public class AppRosettaCheck {
 
@@ -25,7 +25,7 @@ public class AppRosettaCheck {
         }
 
         if (ret.get().equals("1")) {
-            ErrorEvent.fromMessage("You are running the Intel version of XPipe on an Apple Silicon system."
+            ErrorEventFactory.fromMessage("You are running the Intel version of XPipe on an Apple Silicon system."
                             + " There is a native build available that comes with much better performance."
                             + " Please install that one instead.")
                     .documentationLink(DocumentationLink.MACOS_SETUP)

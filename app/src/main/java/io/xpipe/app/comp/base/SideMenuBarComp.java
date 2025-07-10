@@ -3,13 +3,14 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -23,8 +24,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-
 import javafx.util.Duration;
+
 import lombok.AllArgsConstructor;
 
 import java.util.List;
@@ -65,7 +66,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
             b.tooltipKey("updateAvailableTooltip").accessibleTextKey("updateAvailableTooltip");
             var stack = createStyle(null, b);
-            stack.hide(PlatformThread.sync(Bindings.createBooleanBinding(
+            stack.hide(Bindings.createBooleanBinding(
                     () -> {
                         return AppDistributionType.get()
                                         .getUpdateHandler()
@@ -73,7 +74,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                         .getValue()
                                 == null;
                     },
-                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate())));
+                    AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
             vbox.getChildren().add(stack.createRegion());
         }
 
@@ -99,14 +100,25 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 queueButtons.getChildren().clear();
                 for (int i = c.getList().size() - 1; i >= 0; i--) {
                     var item = c.getList().get(i);
-                    var b = new IconButtonComp(item.getIcon(), () -> {
-                        item.getAction().run();
-                        queueEntries.remove(item);
-                    });
+                    var b = new IconButtonComp(item.getIcon(), null);
                     b.apply(struc -> {
                         var tt = TooltipHelper.create(item.getName(), null);
                         tt.setShowDelay(Duration.millis(50));
                         Tooltip.install(struc.get(), tt);
+
+                        struc.get().setOnAction(e -> {
+                            struc.get().setDisable(true);
+                            ThreadHelper.runAsync(() -> {
+                                try {
+                                    item.getAction().run();
+                                } finally {
+                                    Platform.runLater(() -> {
+                                        queueEntries.remove(item);
+                                    });
+                                }
+                            });
+                            e.consume();
+                        });
                     });
                     b.accessibleText(item.getName());
                     var stack = createStyle(null, b);

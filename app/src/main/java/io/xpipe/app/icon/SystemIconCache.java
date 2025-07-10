@@ -1,7 +1,7 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 
 import com.github.weisj.jsvg.SVGDocument;
@@ -18,13 +18,12 @@ import java.net.URL;
 import java.nio.file.*;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 public class SystemIconCache {
 
-    private static enum ImageColorScheme {
+    private enum ImageColorScheme {
         TRANSPARENT,
         MIXED,
         LIGHT,
@@ -57,7 +56,8 @@ public class SystemIconCache {
     public static void rebuildCache(Map<SystemIconSource, SystemIconSourceData> all) {
         try {
             var versionFile = DIRECTORY.resolve("version");
-            var version = Files.exists(versionFile) ? Files.readString(versionFile).strip() : null;
+            var version =
+                    Files.exists(versionFile) ? Files.readString(versionFile).strip() : null;
             if (!String.valueOf(VERSION).equals(version)) {
                 if (Files.isDirectory(DIRECTORY)) {
                     FileUtils.cleanDirectory(DIRECTORY.toFile());
@@ -73,8 +73,9 @@ public class SystemIconCache {
 
                 Map<String, ImageColorScheme> colorSchemeMap = new HashMap<>();
 
-                var baseIcons = e.getValue().getIcons().stream().filter(
-                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DEFAULT).toList();
+                var baseIcons = e.getValue().getIcons().stream()
+                        .filter(f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DEFAULT)
+                        .toList();
                 for (var icon : baseIcons) {
                     var schemeFile = target.resolve(icon.getName() + ".scheme");
                     if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
@@ -90,7 +91,7 @@ public class SystemIconCache {
                     if (scheme == ImageColorScheme.TRANSPARENT) {
                         var message = "Failed to rasterize icon "
                                 + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
-                        ErrorEvent.fromMessage(message).omit().expected().handle();
+                        ErrorEventFactory.fromMessage(message).omit().expected().handle();
                         continue;
                     }
 
@@ -98,11 +99,13 @@ public class SystemIconCache {
                     Files.writeString(schemeFile, scheme.name().toLowerCase(Locale.ROOT));
                 }
 
-                var darkIconNames = e.getValue().getIcons().stream().filter(
-                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).map(f -> f.getName())
+                var darkIconNames = e.getValue().getIcons().stream()
+                        .filter(f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK)
+                        .map(f -> f.getName())
                         .collect(Collectors.toSet());
-                var darkAvailableIcons = e.getValue().getIcons().stream().filter(
-                        f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK).toList();
+                var darkAvailableIcons = e.getValue().getIcons().stream()
+                        .filter(f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.DARK)
+                        .toList();
                 for (var icon : darkAvailableIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
                     var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK;
@@ -115,7 +118,10 @@ public class SystemIconCache {
                         if (scheme == ImageColorScheme.TRANSPARENT) {
                             var message = "Failed to rasterize icon "
                                     + icon.getFile().getFileName().toString() + ": Rasterized image is transparent";
-                            ErrorEvent.fromMessage(message).omit().expected().handle();
+                            ErrorEventFactory.fromMessage(message)
+                                    .omit()
+                                    .expected()
+                                    .handle();
                         }
 
                         continue;
@@ -124,7 +130,8 @@ public class SystemIconCache {
 
                 for (var icon : baseIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkModeInverse = existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
+                    var generateDarkModeInverse =
+                            existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
                     if (generateDarkModeInverse) {
                         rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                         continue;
@@ -132,7 +139,7 @@ public class SystemIconCache {
                 }
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -171,13 +178,16 @@ public class SystemIconCache {
             return c != null ? c : ImageColorScheme.TRANSPARENT;
         } catch (Exception ex) {
             var message = "Failed to rasterize icon icon " + path.getFileName().toString() + ": " + ex.getMessage();
-            ErrorEvent.fromThrowable(ex).description(message).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex)
+                    .description(message)
+                    .omit()
+                    .expected()
+                    .handle();
             return ImageColorScheme.TRANSPARENT;
         }
     }
 
-    private static void rasterizeSizesInverted(Path path, Path dir, String name, boolean dark)
-            throws IOException {
+    private static void rasterizeSizesInverted(Path path, Path dir, String name, boolean dark) throws IOException {
         try {
             for (var size : sizes) {
                 var image = rasterize(path, size);
@@ -193,7 +203,7 @@ public class SystemIconCache {
                 throw ex;
             }
 
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
     }
 

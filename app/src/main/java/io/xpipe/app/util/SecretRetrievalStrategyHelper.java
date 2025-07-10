@@ -75,6 +75,7 @@ public class SecretRetrievalStrategyHelper {
                     }
                 }));
         return new OptionsBuilder()
+                .nameAndDescription("passwordManagerKey")
                 .addComp(content, keyProperty)
                 .nonNull()
                 .bind(
@@ -132,8 +133,8 @@ public class SecretRetrievalStrategyHelper {
                 .bindChoice(
                         () -> {
                             return switch (selected.get() - offset) {
-                                case 0 -> new SimpleObjectProperty<>(
-                                        allowNone ? new SecretRetrievalStrategy.None() : null);
+                                case 0 ->
+                                    new SimpleObjectProperty<>(allowNone ? new SecretRetrievalStrategy.None() : null);
                                 case 1 -> new SimpleObjectProperty<>(new SecretRetrievalStrategy.Prompt());
                                 case 2 -> inPlace;
                                 case 3 -> passwordManager;

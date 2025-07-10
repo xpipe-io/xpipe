@@ -5,7 +5,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import lombok.Getter;
 import lombok.Value;

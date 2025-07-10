@@ -37,6 +37,6 @@ public class DaemonVersionExchange extends BeaconInterface<DaemonVersionExchange
         String jvmVersion;
 
         @NonNull
-        Boolean pro;
+        String plan;
     }
 }

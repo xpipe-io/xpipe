@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FailableSupplier;
 
 import lombok.Getter;
 

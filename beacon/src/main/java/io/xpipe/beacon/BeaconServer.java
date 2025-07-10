@@ -1,10 +1,10 @@
 package io.xpipe.beacon;
 
 import io.xpipe.beacon.api.DaemonStopExchange;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.util.XPipeDaemonMode;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeDaemonMode;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -125,9 +125,11 @@ public class BeaconServer {
             throw new IllegalStateException();
         } else {
             if (BeaconConfig.attachDebuggerToDaemon()) {
-                return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType));
+                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugAttachScriptPath(osType))
+                        .toString();
             } else {
-                return FileNames.join(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType));
+                return FilePath.of(installationBase, XPipeInstallation.getDaemonDebugScriptPath(osType))
+                        .toString();
             }
         }
     }

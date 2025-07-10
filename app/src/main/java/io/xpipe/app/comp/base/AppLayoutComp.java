@@ -2,8 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.PlatformThread;
@@ -20,6 +20,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +38,9 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                 () -> {
                                     return model.getSelected().getValue().equals(entry);
                                 },
-                                model.getSelected())));
+                                model.getSelected()),
+                        (v1, v2) -> v2,
+                        LinkedHashMap::new));
         var multi = new MultiContentComp(map, true);
         multi.styleClass("background");
 
@@ -79,10 +82,13 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         }
 
         public void show() {
-            for (var child : children) {
-                stack.getChildren().add(child);
-                PlatformThread.runNestedLoopIteration();
+            stack.getChildren().add(children.getFirst());
+            for (int i = 1; i < children.size(); i++) {
+                children.get(i).setVisible(false);
+                children.get(i).setManaged(false);
+                stack.getChildren().add(children.get(i));
             }
+            PlatformThread.runNestedLoopIteration();
             sidebar.setDisable(false);
         }
 

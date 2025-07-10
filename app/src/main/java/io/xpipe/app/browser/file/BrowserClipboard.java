@@ -1,11 +1,9 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.GlobalClipboard;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.util.FailableRunnable;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,7 +14,6 @@ import javafx.scene.input.Dragboard;
 import lombok.SneakyThrows;
 import lombok.Value;
 
-import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
@@ -45,7 +42,10 @@ public class BrowserClipboard {
 
                     List<File> data = (List<File>) clipboard.getData(DataFlavor.javaFileListFlavor);
                     // Sometimes file data can contain invalid chars. Why?
-                    var files = data.stream().filter(file -> file.toString().chars().noneMatch(value -> Character.isISOControl(value))).map(f -> f.toPath()).toList();
+                    var files = data.stream()
+                            .filter(file -> file.toString().chars().noneMatch(value -> Character.isISOControl(value)))
+                            .map(f -> f.toPath())
+                            .toList();
                     if (files.size() == 0) {
                         return;
                     }
@@ -55,9 +55,10 @@ public class BrowserClipboard {
                         entries.add(BrowserLocalFileSystem.getLocalBrowserEntry(file));
                     }
 
-                    currentCopyClipboard.setValue(new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
+                    currentCopyClipboard.setValue(
+                            new Instance(UUID.randomUUID(), null, entries, BrowserFileTransferMode.COPY));
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omit().handle();
                 }
             }
         });

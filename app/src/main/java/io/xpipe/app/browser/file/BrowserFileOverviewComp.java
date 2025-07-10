@@ -6,7 +6,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
-import io.xpipe.core.store.FileEntry;
+import io.xpipe.app.ext.FileEntry;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;

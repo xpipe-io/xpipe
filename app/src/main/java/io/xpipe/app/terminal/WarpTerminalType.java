@@ -1,18 +1,19 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.TerminalInitFunction;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface WarpTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
-    static WarpTerminalType WINDOWS = new Windows();
-    static WarpTerminalType LINUX = new Linux();
-    static WarpTerminalType MACOS = new MacOs();
+    WarpTerminalType WINDOWS = new Windows();
+    WarpTerminalType LINUX = new Linux();
+    WarpTerminalType MACOS = new MacOs();
 
     class Windows implements WarpTerminalType {
 
@@ -91,11 +92,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         }
     }
 
-    class MacOs extends MacOsType implements WarpTerminalType {
-
-        public MacOs() {
-            super("app.warp", "Warp");
-        }
+    class MacOs implements ExternalApplicationType.MacApplication, WarpTerminalType {
 
         @Override
         public int getProcessHierarchyOffset() {
@@ -114,6 +111,16 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "Warp";
+        }
+
+        @Override
+        public String getId() {
+            return "app.warp";
         }
     }
 

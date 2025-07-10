@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.ThreadHelper;
@@ -30,7 +30,7 @@ public class AppWindowsShutdown {
             PROC.hwnd = hwnd;
             PROC.hhook = User32.INSTANCE.SetWindowsHookEx(4, PROC, null, windowThreadID);
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
     }
 
@@ -68,7 +68,8 @@ public class AppWindowsShutdown {
                 if (hookProcStruct.message.longValue() == WM_QUERYENDSESSION) {
                     TrackEvent.info("Received window shutdown callback WM_QUERYENDSESSION");
 
-                    // We don't always receive an exit signal with a queryendsession, e.g. in case an .msi wants to shut it down
+                    // We don't always receive an exit signal with a queryendsession, e.g. in case an .msi wants to shut
+                    // it down
                     // Guarantee that the shutdown is run regardless
                     ThreadHelper.runAsync(() -> {
                         OperationMode.externalShutdown();

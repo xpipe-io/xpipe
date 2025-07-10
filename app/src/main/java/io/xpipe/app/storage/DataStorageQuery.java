@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class DataStorageQuery {
 
     public static List<DataStoreEntry> queryUserInput(String connection) {
-        var found = query("**", "**" + connection + "**", "*");
+        var found = queryEntry("**", "**" + connection + "**", "*");
         if (found.size() > 1) {
             var narrow = found.stream()
                     .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection))
@@ -19,12 +19,31 @@ public class DataStorageQuery {
         return found;
     }
 
-    public static List<DataStoreEntry> query(String categoryFilter, String connectionFilter, String typeFilter) {
+    public static List<DataStoreCategory> queryCategory(String categoryFilter) {
         if (DataStorage.get() == null) {
             return List.of();
         }
 
-        var catMatcher = Pattern.compile(toRegex("all connections/" + categoryFilter.toLowerCase()));
+        var catMatcher = Pattern.compile(toRegex(categoryFilter.toLowerCase()));
+
+        List<DataStoreCategory> found = new ArrayList<>();
+        for (DataStoreCategory cat : DataStorage.get().getStoreCategories()) {
+            var c = DataStorage.get().getStorePath(cat).toString();
+            if (!catMatcher.matcher(c).matches()) {
+                continue;
+            }
+
+            found.add(cat);
+        }
+        return found;
+    }
+
+    public static List<DataStoreEntry> queryEntry(String categoryFilter, String connectionFilter, String typeFilter) {
+        if (DataStorage.get() == null) {
+            return List.of();
+        }
+
+        var catMatcher = Pattern.compile(toRegex(categoryFilter.toLowerCase()));
         var conMatcher = Pattern.compile(toRegex(connectionFilter.toLowerCase()));
         var typeMatcher = Pattern.compile(toRegex(typeFilter.toLowerCase()));
 

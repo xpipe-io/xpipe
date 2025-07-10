@@ -1,9 +1,9 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.Session;
-import io.xpipe.core.store.SessionListener;
-import io.xpipe.core.util.FailableSupplier;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FailableSupplier;
 
 import lombok.Getter;
 
@@ -13,8 +13,7 @@ public class ShellSession extends Session {
     private final FailableSupplier<ShellControl> supplier;
     private final ShellControl shellControl;
 
-    public ShellSession(SessionListener listener, FailableSupplier<ShellControl> supplier) throws Exception {
-        super(listener);
+    public ShellSession(FailableSupplier<ShellControl> supplier) throws Exception {
         this.supplier = supplier;
         this.shellControl = createControl();
     }
@@ -28,6 +27,12 @@ public class ShellSession extends Session {
 
         try {
             shellControl.start();
+
+            var supportsAliveCheck =
+                    shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
+            if (supportsAliveCheck) {
+                startAliveListener();
+            }
         } catch (Exception ex) {
             try {
                 stop();
@@ -56,6 +61,9 @@ public class ShellSession extends Session {
                 listener.onStateChange(false);
             });
         });
+        pc.onExit(shellControl -> {
+            listener.onStateChange(false);
+        });
         return pc;
     }
 
@@ -65,5 +73,18 @@ public class ShellSession extends Session {
 
     public void stop() throws Exception {
         shellControl.shutdown();
+    }
+
+    @Override
+    public boolean checkAlive() throws Exception {
+        try {
+            // Don't print it constantly
+            return shellControl
+                    .command(CommandBuilder.of().add("echo", "xpipetest"))
+                    .sensitive()
+                    .executeAndCheck();
+        } catch (Exception ex) {
+            throw ErrorEventFactory.expected(ex);
+        }
     }
 }

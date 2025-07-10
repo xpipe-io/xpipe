@@ -1,13 +1,13 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileInfo;
-import io.xpipe.core.store.FileKind;
+import io.xpipe.core.FileInfo;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
@@ -89,7 +90,6 @@ public final class BrowserFileListComp extends SimpleComp {
         });
         sizeCol.setCellFactory(col -> new FileSizeCell());
         sizeCol.setResizable(false);
-        sizeCol.setPrefWidth(120);
         sizeCol.setReorderable(false);
 
         var mtimeCol = new TableColumn<BrowserEntry, Instant>();
@@ -137,13 +137,14 @@ public final class BrowserFileListComp extends SimpleComp {
         });
         table.setFixedCellSize(30.0);
 
-        prepareColumnVisibility(table, ownerCol, filenameCol);
+        prepareColumnVisibility(table, filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         prepareTableScrollFix(table);
         prepareTableSelectionModel(table);
         prepareTableShortcuts(table);
         prepareTableEntries(table);
         prepareTableChanges(table, filenameCol, mtimeCol, modeCol, ownerCol);
         prepareTypedSelectionModel(table);
+        table.setMinWidth(0);
         return table;
     }
 
@@ -161,8 +162,11 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareColumnVisibility(
             TableView<BrowserEntry> table,
+            TableColumn<BrowserEntry, String> filenameCol,
+            TableColumn<BrowserEntry, Instant> mtimeCol,
+            TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol,
-            TableColumn<BrowserEntry, String> filenameCol) {
+            TableColumn<BrowserEntry, String> sizeCol) {
         var os = fileList.getFileSystemModel()
                 .getFileSystem()
                 .getShell()
@@ -172,6 +176,15 @@ public final class BrowserFileListComp extends SimpleComp {
             if (os != OsType.WINDOWS && os != OsType.MACOS) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
+
+            var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+            if (!OsType.WINDOWS.equals(shell.getOsType()) && !OsType.MACOS.equals(shell.getOsType())) {
+                modeCol.setVisible(newValue.doubleValue() > 600);
+            }
+
+            mtimeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 150 : 100);
+            sizeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 120 : 90);
+
             var width = getFilenameWidth(table);
             filenameCol.setPrefWidth(width);
         });
@@ -184,7 +197,7 @@ public final class BrowserFileListComp extends SimpleComp {
                         .mapToDouble(value -> value.getPrefWidth())
                         .sum()
                 + 7;
-        return tableView.getWidth() - sum;
+        return Math.max(200, tableView.getWidth() - sum);
     }
 
     private String formatOwner(BrowserEntry param) {
@@ -349,7 +362,7 @@ public final class BrowserFileListComp extends SimpleComp {
             }
 
             var selected = fileList.getSelection();
-            var action = BrowserAction.getFlattened(fileList.getFileSystemModel(), selected).stream()
+            var action = BrowserMenuProviders.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
                             && browserAction.isActive(fileList.getFileSystemModel(), selected))
                     .filter(browserAction -> browserAction.getShortcut() != null)
@@ -358,9 +371,11 @@ public final class BrowserFileListComp extends SimpleComp {
             action.ifPresent(browserAction -> {
                 // Prevent concurrent modification by creating copy on platform thread
                 var selectionCopy = new ArrayList<>(selected);
-                ThreadHelper.runFailableAsync(() -> {
+                try {
                     browserAction.execute(fileList.getFileSystemModel(), selectionCopy);
-                });
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
                 event.consume();
             });
             if (action.isPresent()) {
@@ -492,8 +507,29 @@ public final class BrowserFileListComp extends SimpleComp {
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol) {
         var lastDir = new SimpleObjectProperty<FileEntry>();
-        Runnable updateHandler = () -> {
+        BiConsumer<List<BrowserEntry>, List<BrowserEntry>> updateHandler = (o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
+                // Optimization for single entry updates
+                if (o != null && n != null && o.size() == n.size()) {
+                    var left = new HashSet<>(n);
+                    o.forEach(left::remove);
+                    if (left.size() == 1) {
+                        var updatedEntry = left.iterator().next();
+                        var found = o.stream()
+                                .filter(browserEntry -> browserEntry
+                                        .getRawFileEntry()
+                                        .getPath()
+                                        .equals(updatedEntry.getRawFileEntry().getPath()))
+                                .findFirst();
+                        if (found.isPresent()) {
+                            table.refresh();
+                            table.getItems().set(table.getItems().indexOf(found.get()), updatedEntry);
+                            return;
+                        }
+                    }
+                }
+
+                table.setDisable(true);
                 var newItems = new ArrayList<>(fileList.getShown().getValue());
                 table.getItems().clear();
 
@@ -519,21 +555,17 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                if (fileList.getFileSystemModel().getFileSystem() != null) {
-                    var shell = fileList.getFileSystemModel()
-                            .getFileSystem()
-                            .getShell()
-                            .orElseThrow();
-                    if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
-                        modeCol.setVisible(false);
+                var shell =
+                        fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
+                if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
+                    modeCol.setVisible(false);
+                    ownerCol.setVisible(false);
+                } else {
+                    modeCol.setVisible(table.getWidth() > 600);
+                    if (table.getWidth() > 1000) {
+                        ownerCol.setVisible(hasOwner);
+                    } else if (!hasOwner) {
                         ownerCol.setVisible(false);
-                    } else {
-                        modeCol.setVisible(true);
-                        if (table.getWidth() > 1000) {
-                            ownerCol.setVisible(hasOwner);
-                        } else if (!hasOwner) {
-                            ownerCol.setVisible(false);
-                        }
                     }
                 }
 
@@ -554,17 +586,20 @@ public final class BrowserFileListComp extends SimpleComp {
                     }
                 }
                 lastDir.setValue(currentDirectory);
+                table.setDisable(false);
             });
         };
 
-        updateHandler.run();
+        updateHandler.accept(null, null);
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
             // Delay to prevent internal tableview exceptions when sorting
-            Platform.runLater(updateHandler);
+            Platform.runLater(() -> {
+                updateHandler.accept(oldValue, newValue);
+            });
         });
         fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
             if (oldValue == null) {
-                updateHandler.run();
+                updateHandler.accept(null, null);
             }
         });
     }
@@ -607,16 +642,15 @@ public final class BrowserFileListComp extends SimpleComp {
             if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                 setText(null);
             } else {
-                var path = getTableRow().getItem();
-                if (path.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
-                    setText(null);
-                } else if (fileSize != null) {
+                if (fileSize != null) {
                     try {
                         var l = Long.parseLong(fileSize);
                         setText(byteCount(l));
                     } catch (NumberFormatException e) {
                         setText(fileSize);
                     }
+                } else {
+                    setText(null);
                 }
             }
         }

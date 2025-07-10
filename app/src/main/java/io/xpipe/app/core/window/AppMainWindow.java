@@ -4,16 +4,14 @@ import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -108,14 +106,18 @@ public class AppMainWindow {
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
-        INSTANCE.addBasicTitleListener();
-        addUpdateTitleListener();
         AppWindowHelper.addIcons(stage);
         AppWindowHelper.setupStylesheets(stage.getScene());
         AppWindowHelper.setupClickShield(stage);
         AppWindowHelper.addMaximizedPseudoClass(stage);
         AppWindowHelper.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
+
+        AppWindowTitle.getTitle().subscribe(s -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                stage.setTitle(s);
+            });
+        });
 
         var state = INSTANCE.loadState();
         TrackEvent.withDebug("Window state loaded").tag("state", state).handle();
@@ -149,7 +151,7 @@ public class AppMainWindow {
                 TrackEvent.info("Window content node structure created");
                 loadedContent.setValue(s);
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).term().handle();
+                ErrorEventFactory.fromThrowable(t).term().handle();
             }
         });
     }
@@ -165,7 +167,8 @@ public class AppMainWindow {
     }
 
     public void focus() {
-        if (AppPrefs.get() != null && !AppPrefs.get().focusWindowOnNotifications().get()) {
+        if (AppPrefs.get() != null
+                && !AppPrefs.get().focusWindowOnNotifications().get()) {
             return;
         }
 
@@ -176,54 +179,6 @@ public class AppMainWindow {
 
             stage.setIconified(false);
             stage.requestFocus();
-        });
-    }
-
-    private static String createTitle() {
-        var t = LicenseProvider.get() != null ? LicenseProvider.get().licenseTitle() : new SimpleStringProperty("?");
-        var base =
-                String.format("XPipe %s (%s)", t.getValue(), AppProperties.get().getVersion());
-        var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
-        var dist = AppDistributionType.get();
-        if (dist == AppDistributionType.UNKNOWN) {
-            var u = dist.getUpdateHandler().getPreparedUpdate();
-            var suffix = u.getValue() != null
-                    ? " " + AppI18n.get("updateReadyTitle", u.getValue().getVersion())
-                    : "";
-            return prefix + base + suffix;
-        } else {
-            return prefix + base;
-        }
-    }
-
-    public static synchronized void addUpdateTitleListener() {
-        if (INSTANCE == null || AppDistributionType.get() == AppDistributionType.UNKNOWN) {
-            return;
-        }
-
-        var u = AppDistributionType.get().getUpdateHandler().getPreparedUpdate();
-        u.subscribe(up -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                INSTANCE.getStage().setTitle(createTitle());
-            });
-        });
-    }
-
-    private void addBasicTitleListener() {
-        if (LicenseProvider.get() != null) {
-            var t = LicenseProvider.get().licenseTitle();
-            t.subscribe(up -> {
-                PlatformThread.runLaterIfNeeded(() -> {
-                    stage.setTitle(createTitle());
-                });
-            });
-        }
-
-        var l = AppI18n.activeLanguage();
-        l.subscribe(up -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                stage.setTitle(createTitle());
-            });
         });
     }
 
@@ -360,7 +315,7 @@ public class AppMainWindow {
                 try {
                     ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
                 TrackEvent.debug("Screenshot taken");
                 event.consume();
@@ -375,7 +330,7 @@ public class AppMainWindow {
             if (state.maximized) {
                 stage.setMaximized(true);
                 stage.setWidth(1280);
-                stage.setHeight(720);
+                stage.setHeight(760);
             } else {
                 stage.setX(state.windowX);
                 stage.setY(state.windowY);
@@ -389,7 +344,7 @@ public class AppMainWindow {
                 stage.setHeight(600);
             } else {
                 stage.setWidth(1280);
-                stage.setHeight(720);
+                stage.setHeight(760);
             }
         } else {
             stage.setX(312);

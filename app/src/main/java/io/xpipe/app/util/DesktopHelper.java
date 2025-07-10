@@ -1,12 +1,12 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.store.FileKind;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.awt.*;
 import java.io.File;
@@ -47,7 +47,7 @@ public class DesktopHelper {
                 pb.start();
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -145,7 +145,7 @@ public class DesktopHelper {
                     Desktop.getDesktop().open(file.toFile());
                     return;
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omitted(xdg).handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
                 }
             }
 
@@ -168,7 +168,7 @@ public class DesktopHelper {
                     Desktop.getDesktop().browseFileDirectory(file.toFile());
                     return;
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omitted(xdg).handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
                 }
             }
 

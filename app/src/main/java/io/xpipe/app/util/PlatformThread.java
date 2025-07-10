@@ -1,7 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
@@ -282,7 +282,7 @@ public class PlatformThread {
             Platform.enterNestedEventLoop(key);
         } catch (IllegalStateException ex) {
             // We might be in an animation or layout call
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
     }
 
@@ -292,7 +292,7 @@ public class PlatformThread {
         } catch (IllegalArgumentException ex) {
             // The event loop might have died somehow
             // Or we passed an invalid key
-            ErrorEvent.fromThrowable(ex).omit().expected().handle();
+            ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
         }
     }
 
@@ -317,7 +317,7 @@ public class PlatformThread {
             try {
                 r.run();
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         };
 
@@ -337,7 +337,7 @@ public class PlatformThread {
             try {
                 r.run();
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         };
 

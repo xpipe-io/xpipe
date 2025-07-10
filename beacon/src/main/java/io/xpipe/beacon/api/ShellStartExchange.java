@@ -1,10 +1,8 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellTtyState;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -33,7 +31,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
     @Value
     public static class Response {
         @NonNull
-        ShellDialect shellDialect;
+        String shellDialect;
 
         @NonNull
         OsType.Any osType;
@@ -42,7 +40,7 @@ public class ShellStartExchange extends BeaconInterface<ShellStartExchange.Reque
         String osName;
 
         @NonNull
-        ShellTtyState ttyState;
+        String ttyState;
 
         @NonNull
         FilePath temp;

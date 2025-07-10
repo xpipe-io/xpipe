@@ -1,7 +1,7 @@
 package io.xpipe.beacon.api;
 
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import lombok.Builder;
 import lombok.NonNull;

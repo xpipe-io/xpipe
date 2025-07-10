@@ -1,9 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -55,7 +55,7 @@ public class AppPrefsStorageHandler {
                         }
                     }
                 } catch (IOException e) {
-                    ErrorEvent.fromThrowable(e).handle();
+                    ErrorEventFactory.fromThrowable(e).handle();
                 }
             }
 
@@ -156,7 +156,7 @@ public class AppPrefsStorageHandler {
             }
             return value;
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
             return defaultObject;
         }
     }

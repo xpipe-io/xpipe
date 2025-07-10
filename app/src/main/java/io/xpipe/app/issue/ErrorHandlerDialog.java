@@ -5,10 +5,7 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.PlatformState;
 
 import javafx.application.Platform;
 import javafx.scene.paint.Color;
@@ -20,25 +17,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ErrorHandlerDialog {
 
     public static void showAndWait(ErrorEvent event) {
-        if (PlatformState.getCurrent() == PlatformState.EXITED || event.isOmitted()) {
-            ErrorAction.ignore().handle(event);
-            return;
-        }
-
         // There might be unfortunate freezes when there are errors on the platform
         // thread on startup
         if (Platform.isFxApplicationThread() && OperationMode.isInStartup()) {
             ErrorAction.ignore().handle(event);
-        }
-
-        try {
-            PlatformInit.init(true);
-            AppMainWindow.init(true);
-        } catch (Throwable t) {
-            var platformEvent = ErrorEvent.fromThrowable(t).build();
-            ErrorAction.ignore().handle(platformEvent);
-            ErrorAction.ignore().handle(event);
-            return;
         }
 
         try {
@@ -90,7 +72,7 @@ public class ErrorHandlerDialog {
                 comp.getTakenAction().setValue(ErrorAction.ignore());
             }
         } catch (Throwable t) {
-            ErrorAction.ignore().handle(ErrorEvent.fromThrowable(t).build());
+            ErrorAction.ignore().handle(ErrorEventFactory.fromThrowable(t).build());
             ErrorAction.ignore().handle(event);
         }
     }

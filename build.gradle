@@ -1,5 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
+import java.lang.module.ModuleFinder
 import java.util.stream.Stream
 
 buildscript {
@@ -14,7 +15,7 @@ buildscript {
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id 'org.gradlex.extra-java-module-info' version '1.12' apply false
-    id("com.diffplug.spotless") version "7.0.2" apply false
+    id("com.diffplug.spotless") version "7.0.4" apply false
 }
 
 allprojects { subproject ->
@@ -134,6 +135,13 @@ project.ext {
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
 
+    // Virtual threads cause crashes on Windows ARM
+    if (os.isWindows() && arch == "arm64") {
+        jvmRunArgs += [
+                "-Dio.xpipe.app.useVirtualThreads=false"
+        ]
+    }
+
     // Disable JDK24 warnings
     jvmRunArgs += [
             "--enable-native-access=com.sun.jna",
@@ -196,6 +204,8 @@ project.ext {
     signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : (System.getenv('GPG_KEY') != null ? System.getenv('GPG_KEY') : "")
     signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : (System.getenv('GPG_KEY_PASSWORD') != null ? System.getenv('GPG_KEY_PASSWORD') : "")
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
+
+    bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
 
     // Define a custom JavaFX SDK location
     // customJavaFxPath = null

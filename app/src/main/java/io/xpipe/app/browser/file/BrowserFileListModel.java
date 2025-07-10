@@ -1,10 +1,12 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.browser.action.impl.MoveFileActionProvider;
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.FileEntry;
-import io.xpipe.core.store.FileKind;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -56,12 +58,31 @@ public final class BrowserFileListModel {
         }
     }
 
+    public void updateEntry(FilePath p, FileEntry n) {
+        var found = all.getValue().stream()
+                .filter(browserEntry -> browserEntry.getRawFileEntry().getPath().equals(p))
+                .findFirst();
+        if (found.isEmpty()) {
+            return;
+        }
+
+        var index = all.getValue().indexOf(found.get());
+        var l = new ArrayList<>(all.getValue());
+        if (n != null) {
+            l.set(index, new BrowserEntry(n, this));
+        } else {
+            l.remove(index);
+        }
+        all.setValue(l);
+        refreshShown();
+    }
+
     public void setComparator(Comparator<BrowserEntry> comparator) {
         comparatorProperty.setValue(comparator);
         refreshShown();
     }
 
-    private void refreshShown() {
+    void refreshShown() {
         List<BrowserEntry> filtered = fileSystemModel.getFilter().getValue() != null
                 ? all.getValue().stream()
                         .filter(entry -> {
@@ -99,7 +120,6 @@ public final class BrowserFileListModel {
             return old;
         }
 
-        var fullPath = fileSystemModel.getCurrentPath().get().join(old.getFileName());
         var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file
@@ -113,22 +133,25 @@ public final class BrowserFileListModel {
                 exists = fileSystemModel.getFileSystem().fileExists(newFullPath)
                         || fileSystemModel.getFileSystem().directoryExists(newFullPath);
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
                 return old;
             }
 
             if (exists) {
-                ErrorEvent.fromMessage("Target " + newFullPath + " does already exist")
+                ErrorEventFactory.fromMessage("Target " + newFullPath + " does already exist")
                         .expected()
                         .handle();
-                fileSystemModel.refresh();
+                fileSystemModel.refreshSync();
                 return old;
             }
         }
 
         try {
-            fileSystemModel.getFileSystem().move(fullPath, newFullPath);
-            fileSystemModel.refresh();
+            var builder = MoveFileActionProvider.Action.builder();
+            builder.initEntries(fileSystemModel, List.of(old));
+            builder.target(newFullPath);
+            builder.build().executeSync();
+
             var b = all.getValue().stream()
                     .filter(browserEntry ->
                             browserEntry.getRawFileEntry().getPath().equals(newFullPath))
@@ -136,7 +159,7 @@ public final class BrowserFileListModel {
                     .orElse(old);
             return b;
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return old;
         }
     }

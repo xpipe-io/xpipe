@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 import java.util.Arrays;
 import java.util.List;
 
-public interface PrefsChoiceValue extends Translatable {
+public interface PrefsChoiceValue extends PrefsValue, Translatable {
 
     @SuppressWarnings("unchecked")
     @SneakyThrows
@@ -39,14 +39,6 @@ public interface PrefsChoiceValue extends Translatable {
         }
 
         return all.stream().filter(t -> ((PrefsChoiceValue) t).isSelectable()).toList();
-    }
-
-    default boolean isAvailable() {
-        return true;
-    }
-
-    default boolean isSelectable() {
-        return true;
     }
 
     @Override

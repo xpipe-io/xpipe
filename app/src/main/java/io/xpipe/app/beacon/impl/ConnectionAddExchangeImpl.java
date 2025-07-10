@@ -1,11 +1,13 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionAddExchange;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.core.JacksonMapper;
 
 import com.sun.net.httpserver.HttpExchange;
 
@@ -13,14 +15,18 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Throwable {
-        var found = DataStorage.get().getStoreEntryIfPresent(msg.getData(), false);
+        var store = JacksonMapper.getDefault().treeToValue(msg.getData(), DataStore.class);
+        if (store == null) {
+            throw new BeaconClientException("Unable to parse store data into valid store");
+        }
+
+        var found = DataStorage.get().getStoreEntryIfPresent(store, false);
         if (found.isEmpty()) {
             found = DataStorage.get().getStoreEntryIfPresent(msg.getName());
         }
 
         if (found.isPresent()) {
-            var data = msg.getData();
-            found.get().setStoreInternal(data, true);
+            found.get().setStoreInternal(store, true);
             return Response.builder().connection(found.get().getUuid()).build();
         }
 
@@ -31,7 +37,7 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             throw new BeaconClientException("Category with id " + msg.getCategory() + " does not exist");
         }
 
-        var entry = DataStoreEntry.createNew(msg.getName(), msg.getData());
+        var entry = DataStoreEntry.createNew(msg.getName(), store);
         if (msg.getCategory() != null) {
             entry.setCategoryUuid(msg.getCategory());
         }
@@ -42,10 +48,10 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
             }
         } catch (Throwable ex) {
             if (ex instanceof ValidationException) {
-                ErrorEvent.expected(ex);
+                ErrorEventFactory.expected(ex);
             } else if (ex instanceof StackOverflowError) {
                 // Cycles in connection graphs can fail hard but are expected
-                ErrorEvent.expected(ex);
+                ErrorEventFactory.expected(ex);
             }
             throw ex;
         } finally {

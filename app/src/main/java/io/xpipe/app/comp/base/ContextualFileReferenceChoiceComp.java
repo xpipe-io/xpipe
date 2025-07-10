@@ -5,17 +5,16 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystemStore;
+import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -73,7 +72,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                     var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
                     BrowserFileChooserSessionComp.openSingleFile(
                             () -> replacement,
-                            () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
+                            () -> filePath.getValue() != null
+                                    ? filePath.getValue().getParent()
+                                    : null,
                             fileStore -> {
                                 if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());
@@ -104,36 +105,42 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             try {
                 var source = currentPath.asLocalPath();
                 if (!Files.exists(source)) {
-                    ErrorEvent.fromMessage("Unable to resolve local file path " + source).expected().handle();
+                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + source)
+                            .expected()
+                            .handle();
                     return;
                 }
 
                 var target = sync.getTargetLocation().apply(source);
-                var shouldCopy = AppWindowHelper.showConfirmationAlert(
-                        "confirmGitShareTitle", "confirmGitShareHeader", "confirmGitShareContent");
+                var shouldCopy = AppDialog.confirm("confirmGitShare");
                 if (!shouldCopy) {
                     return;
                 }
 
                 var handler = DataStorageSyncHandler.getInstance();
-                var syncedTarget = handler.addDataFile(
-                        source, target, sync.getPerUser().test(source));
+                var syncedTarget =
+                        handler.addDataFile(source, target, sync.getPerUser().test(source));
 
                 var pubSource = Path.of(source + ".pub");
                 if (Files.exists(pubSource)) {
                     var pubTarget = sync.getTargetLocation().apply(pubSource);
-                    handler
-                            .addDataFile(
-                                    pubSource, pubTarget, sync.getPerUser().test(pubSource));
+                    handler.addDataFile(pubSource, pubTarget, sync.getPerUser().test(pubSource));
+                }
+
+                var ppkSource = Path.of(source + ".ppk");
+                if (Files.exists(ppkSource)) {
+                    var pubTarget = sync.getTargetLocation().apply(ppkSource);
+                    handler.addDataFile(ppkSource, pubTarget, sync.getPerUser().test(ppkSource));
                 }
 
                 Platform.runLater(() -> {
                     filePath.setValue(FilePath.of(syncedTarget));
                 });
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         });
+        gitShareButton.styleClass("git-sync-file-button");
         gitShareButton.tooltipKey("gitShareFileTooltip");
         gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
         gitShareButton.disable(Bindings.createBooleanBinding(
@@ -173,7 +180,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         prop.addListener((observable, oldValue, newValue) -> {
             filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
         });
-        var combo = new ComboTextFieldComp(prop, items, param -> {
+        var combo = new ComboTextFieldComp(prop, items, () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {

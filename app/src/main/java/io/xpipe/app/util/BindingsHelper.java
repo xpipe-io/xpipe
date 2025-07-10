@@ -17,7 +17,7 @@ public class BindingsHelper {
     private static final Set<ReferenceEntry> REFERENCES = new HashSet<>();
 
     static {
-        ThreadHelper.createPlatformThread("referenceGC", true, () -> {
+        ThreadHelper.createPlatformThread("Binding Reference GC", true, () -> {
                     while (true) {
                         synchronized (REFERENCES) {
                             REFERENCES.removeIf(ReferenceEntry::canGc);

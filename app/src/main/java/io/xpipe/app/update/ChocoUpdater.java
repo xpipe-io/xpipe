@@ -5,15 +5,14 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.process.ShellScript;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeInstallation;
 
 import java.nio.file.Files;
 import java.time.Instant;
@@ -63,19 +62,24 @@ public class ChocoUpdater extends UpdateHandler {
         }
 
         var pkg = "xpipe";
-        var out = LocalShell.getShell().command(CommandBuilder.of().add("choco", "outdated")).readStdoutIfPossible();
+        var out = LocalShell.getShell()
+                .command(CommandBuilder.of().add("choco", "outdated"))
+                .readStdoutIfPossible();
         if (out.isEmpty()) {
             return Optional.empty();
         }
 
-        var line = out.get().lines().filter(s -> {
-            var split = s.split("\\|");
-            if (split.length != 4) {
-                return false;
-            } else {
-                return split[0].equals(pkg);
-            }
-        }).findFirst();
+        var line = out.get()
+                .lines()
+                .filter(s -> {
+                    var split = s.split("\\|");
+                    if (split.length != 4) {
+                        return false;
+                    } else {
+                        return split[0].equals(pkg);
+                    }
+                })
+                .findFirst();
         if (line.isEmpty()) {
             return Optional.empty();
         }
@@ -115,22 +119,22 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                var systemWide =
-                        Files.exists(XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                var systemWide = Files.exists(
+                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
                 TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
                     var pkg = "xpipe";
                     var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
                             + ", -y" + propertiesArguments;
                     var powershell = ShellDialects.isPowershell(sc);
-                    var powershellCommand = powershell ? "powershell -Command " + sc.getShellDialect().quoteArgument(commandToRun) : "powershell -Command " + commandToRun;
-                    return ShellScript.lines(
-                            powershellCommand,
-                            AppRestart.getTerminalRestartCommand());
+                    var powershellCommand = powershell
+                            ? "powershell -Command " + sc.getShellDialect().quoteArgument(commandToRun)
+                            : "powershell -Command " + commandToRun;
+                    return ShellScript.lines(powershellCommand, AppRestart.getTerminalRestartCommand());
                 });
             });
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             preparedUpdate.setValue(null);
         }
     }

@@ -1,10 +1,10 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import org.apache.commons.io.FileUtils;
 
@@ -28,11 +28,11 @@ public class ShellTemp {
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
             }
         }
 
-        return temp.resolve(sub);
+        return sub != null ? temp.resolve(sub) : temp;
     }
 
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
@@ -69,7 +69,7 @@ public class ShellTemp {
         var systemTemp = proc.getSystemTemporaryDirectory();
         if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
                 || !checkDirectoryPermissions(proc, systemTemp.toString())) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 
@@ -79,8 +79,8 @@ public class ShellTemp {
         // This system xpipe temp directory might contain other files on the local machine, so only clear the exec
         //        d.deleteFileOrDirectory(proc, systemTemp.join("xpipe", "exec").toString()).executeAndCheck();
         //        var home = proc.getOsType().getHomeDirectory(proc);
-        //        d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "temp")).executeAndCheck();
-        //        d.deleteFileOrDirectory(proc, FileNames.join(home, ".xpipe", "system_id")).executeAndCheck();
+        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "temp")).executeAndCheck();
+        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "system_id")).executeAndCheck();
     }
 
     private static boolean checkDirectoryPermissions(ShellControl proc, String dir) throws Exception {

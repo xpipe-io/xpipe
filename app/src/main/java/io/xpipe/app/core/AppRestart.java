@@ -2,11 +2,11 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.process.ShellDialect;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import java.util.List;
 

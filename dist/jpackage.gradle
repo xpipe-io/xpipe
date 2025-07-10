@@ -40,7 +40,7 @@ dependencies {
             implementation files(it)
         }
     }
-    if (!useBundledJavaFx) {
+    if (!useBundledJna) {
         configurations.jna.getAsFileTree().getFiles().forEach {
             implementation files(it)
         }
@@ -68,7 +68,7 @@ jlink {
         options.addAll('--strip-native-debug-symbols', 'exclude-debuginfo-files')
     }
 
-    if (useBundledJavaFx) {
+    if (useBundledJavaFx && !bundledJdkJavaFx) {
         addExtraModulePath(layout.projectDirectory.dir("javafx/${platformName}/${arch}").toString())
     }
     if (useBundledJna) {
@@ -79,6 +79,10 @@ jlink {
         def dir = "${extProject.buildDir}/libs_ext"
         addExtraModulePath(dir)
         addOptions("--add-modules", "io.xpipe.ext.${extProject.name}")
+    }
+
+    if (!ci || (!isStage && !isFullRelease)) {
+        addOptions("--add-modules", "jdk.jdwp.agent")
     }
 
     launcher {
@@ -126,7 +130,7 @@ task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
     }
 }
 
-task prepareMacOSInfo(type: DefaultTask) {
+task prepareMacOSResources(type: DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
@@ -142,8 +146,20 @@ task prepareMacOSInfo(type: DefaultTask) {
     }
 }
 
+task finalizeMacOSResources(type: DefaultTask) {
+    doLast {
+        copy {
+            from file("$projectDir/logo/Assets.car")
+            into file("$distDir/jpackage/$outputName")
+        }
+
+        file("$distDir/jpackage/$outputName/xpiped.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
+    }
+}
+
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    jpackageImage.dependsOn(prepareMacOSInfo)
+    jpackageImage.finalizedBy(finalizeMacOSResources)
+    jpackageImage.dependsOn(prepareMacOSResources)
 }
 
 jpackage.finalizedBy(copyBundledExtensions)

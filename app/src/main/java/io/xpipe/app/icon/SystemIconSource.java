@@ -1,14 +1,13 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.store.FileNames;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.ValidationException;
+import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -97,7 +96,7 @@ public interface SystemIconSource {
                 if (!present) {
                     var msg =
                             "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
-                    ErrorEvent.fromMessage(msg).expected().handle();
+                    ErrorEventFactory.fromMessage(msg).expected().handle();
                     return;
                 }
 
@@ -128,7 +127,7 @@ public interface SystemIconSource {
 
         @Override
         public String getDisplayName() {
-            return FileNames.getFileName(remote);
+            return FilePath.of(remote).getFileName();
         }
 
         @Override

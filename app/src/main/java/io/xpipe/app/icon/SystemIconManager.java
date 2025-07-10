@@ -1,12 +1,13 @@
 package io.xpipe.app.icon;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.app.resources.AppImages;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.util.ValidationException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ public class SystemIconManager {
     private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
 
-    public static List<SystemIconSource> getEffectiveSources() {
+    public static List<SystemIconSource> getAllSources() {
         var prefs = AppPrefs.get().getIconSources().getValue();
         var all = new ArrayList<SystemIconSource>();
         all.add(SystemIconSource.Directory.builder()
@@ -30,14 +31,17 @@ public class SystemIconManager {
         // For chinese users, GitHub link might be unreliable
         // So use an alternative chinese mirror they can use
         all.add(SystemIconSource.GitRepository.builder()
-                .remote(AppPrefs.get().language().getValue() == SupportedLocale.CHINESE ? "https://gitcode.com/gh_mirrors/icons13/icons" : "https://github.com/selfhst/icons")
+                .remote(
+                        AppPrefs.get().language().getValue() == SupportedLocale.CHINESE
+                                ? "https://gitcode.com/gh_mirrors/icons13/icons"
+                                : "https://github.com/selfhst/icons")
                 .id("selfhst")
                 .build());
         for (var pref : prefs) {
             try {
                 pref.checkComplete();
             } catch (ValidationException e) {
-                ErrorEvent.fromThrowable(e).omit().expected().handle();
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                 continue;
             }
 
@@ -45,6 +49,13 @@ public class SystemIconManager {
                 all.add(pref);
             }
         }
+        return all;
+    }
+
+    public static List<SystemIconSource> getEffectiveSources() {
+        var all = getAllSources();
+        var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
+        all.removeIf(systemIconSource -> disabled.contains(systemIconSource.getId()));
         return all;
     }
 
@@ -90,7 +101,7 @@ public class SystemIconManager {
                 AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
             }
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
@@ -100,7 +111,7 @@ public class SystemIconManager {
             try {
                 source.refresh();
             } catch (Exception e) {
-                ErrorEvent.fromThrowable(e).expected().handle();
+                ErrorEventFactory.fromThrowable(e).expected().handle();
             }
         }
         reloadSources();

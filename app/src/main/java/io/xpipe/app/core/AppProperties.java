@@ -1,10 +1,10 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import lombok.Getter;
 import lombok.Value;
@@ -78,7 +78,7 @@ public class AppProperties {
                     }
                 });
             } catch (IOException e) {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
         var referenceDir = Files.exists(appDir) ? appDir : Path.of(System.getProperty("user.dir"));
@@ -146,7 +146,7 @@ public class AppProperties {
         // We require the user dir from here
         AppUserDirectoryCheck.check(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
-        UUID id = AppCache.getNonNull("uuid", UUID.class, null);
+        UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
         if (id == null) {
             uuid = UUID.randomUUID();
             AppCache.update("uuid", uuid);

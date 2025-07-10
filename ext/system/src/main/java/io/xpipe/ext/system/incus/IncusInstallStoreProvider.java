@@ -1,16 +1,15 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.store.DataStore;
 
 import javafx.beans.value.ObservableValue;
 
@@ -54,11 +53,6 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         IncusInstallStore s = store.getStore().asNeeded();
         return s.getHost().get();
-    }
-
-    public String summaryString(StoreEntryWrapper wrapper) {
-        IncusInstallStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(s.getHost().get()) + " containers";
     }
 
     @Override

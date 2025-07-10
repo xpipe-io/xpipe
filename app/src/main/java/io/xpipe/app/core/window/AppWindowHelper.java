@@ -2,25 +2,19 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.resources.AppImages;
-import io.xpipe.app.resources.AppResources;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformInit;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.PseudoClass;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.*;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import lombok.SneakyThrows;
@@ -34,18 +28,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class AppWindowHelper {
-
-    public static Region alertContentText(String s) {
-        return alertContentText(s, 450);
-    }
-
-    public static Region alertContentText(String s, int width) {
-        var text = new Text(s);
-        text.setWrappingWidth(width);
-        var sp = new StackPane(text);
-        sp.setPadding(new Insets(5));
-        return sp;
-    }
 
     public static void addMaximizedPseudoClass(Stage stage) {
         stage.getScene().rootProperty().subscribe(root -> {
@@ -75,24 +57,6 @@ public class AppWindowHelper {
                     };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
-    }
-
-    public static void setContent(Alert alert, String s) {
-        alert.getDialogPane().setMinWidth(505);
-        alert.getDialogPane().setPrefWidth(505);
-        alert.getDialogPane().setMaxWidth(505);
-        alert.getDialogPane().setContent(AppWindowHelper.alertContentText(s));
-    }
-
-    public static boolean showConfirmationAlert(String title, String header, String content) {
-        return AppWindowHelper.showBlockingAlert(alert -> {
-                    alert.titleProperty().bind(AppI18n.observable(title));
-                    alert.headerTextProperty().bind(AppI18n.observable(header));
-                    setContent(alert, AppI18n.get(content));
-                    alert.setAlertType(Alert.AlertType.CONFIRMATION);
-                })
-                .map(b -> b.getButtonData().isDefaultButton())
-                .orElse(false);
     }
 
     @SneakyThrows

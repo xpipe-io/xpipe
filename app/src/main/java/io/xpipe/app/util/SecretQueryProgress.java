@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.CountDown;
-import io.xpipe.core.util.SecretReference;
-import io.xpipe.core.util.SecretValue;
+import io.xpipe.app.process.CountDown;
+import io.xpipe.app.process.SecretReference;
+import io.xpipe.core.SecretValue;
 
 import lombok.Getter;
 import lombok.NonNull;

@@ -4,7 +4,7 @@
     -fx-background-radius: 4px;
 }
 
-.root.nord .tile-button-comp {
+.root:nord .tile-button-comp {
     -fx-background-radius: 0;
 }
 

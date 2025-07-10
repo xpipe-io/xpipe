@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.check.AppSystemFontCheck;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.scene.text.Font;
@@ -14,7 +14,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.awt.*;
-import java.util.OptionalInt;
 import java.util.concurrent.CountDownLatch;
 
 public enum PlatformState {
@@ -31,7 +30,7 @@ public enum PlatformState {
 
     public static Throwable getLastError() {
         if (expectedError) {
-            ErrorEvent.expected(lastError);
+            ErrorEventFactory.expected(lastError);
         }
         return lastError;
     }
@@ -172,44 +171,6 @@ public enum PlatformState {
             lastError = ex;
             PlatformState.setCurrent(PlatformState.EXITED);
             return;
-        }
-    }
-
-    public static OptionalInt determineDefaultScalingFactor() {
-        if (OsType.getLocal() != OsType.LINUX) {
-            return OptionalInt.empty();
-        }
-
-        var factor =
-                LocalExec.readStdoutIfPossible("gsettings", "get", "org.gnome.desktop.interface", "scaling-factor");
-        if (factor.isEmpty()) {
-            return OptionalInt.empty();
-        }
-
-        var readCustom = factor.get().equals("uint32 1") || factor.get().equals("uint32 2");
-        if (!readCustom) {
-            return OptionalInt.empty();
-        }
-
-        var textFactor = LocalExec.readStdoutIfPossible(
-                "gsettings", "get", "org.gnome.desktop.interface", "text-scaling-factor");
-        if (textFactor.isEmpty()) {
-            return OptionalInt.empty();
-        }
-
-        var s = textFactor.get();
-        if (s.equals("1.0")) {
-            return OptionalInt.empty();
-        } else if (s.equals("2.0")) {
-            return OptionalInt.of(200);
-        } else if (s.equals("1.25")) {
-            return OptionalInt.of(125);
-        } else if (s.equals("1.5")) {
-            return OptionalInt.of(150);
-        } else if (s.equals("1.75")) {
-            return OptionalInt.of(175);
-        } else {
-            return OptionalInt.empty();
         }
     }
 

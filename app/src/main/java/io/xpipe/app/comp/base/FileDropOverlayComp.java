@@ -2,8 +2,8 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.util.FailableConsumer;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.core.FailableConsumer;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -73,7 +73,7 @@ public class FileDropOverlayComp<T extends CompStructure<?>> extends Comp<FileDr
                 try {
                     fileConsumer.accept(list);
                 } catch (Throwable t) {
-                    ErrorEvent.fromThrowable(t).handle();
+                    ErrorEventFactory.fromThrowable(t).handle();
                 }
             }
             event.consume();

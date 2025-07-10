@@ -1,9 +1,9 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.CommandView;
 import io.xpipe.app.util.CommandViewBase;
-import io.xpipe.core.process.*;
 
 import lombok.NonNull;
 import lombok.Value;
@@ -28,7 +28,7 @@ public class PodmanCommandView extends CommandViewBase {
     }
 
     private static <T extends Throwable> T convertException(T s) {
-        return ErrorEvent.expectedIfContains(
+        return ErrorEventFactory.expectedIfContains(
                 s,
                 "Error: unable to connect to Podman.",
                 "no connection could be made because the target machine actively refused it.",

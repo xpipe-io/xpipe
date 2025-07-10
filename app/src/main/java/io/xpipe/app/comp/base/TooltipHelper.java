@@ -2,7 +2,6 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,9 +26,9 @@ public class TooltipHelper {
                     },
                     text,
                     s);
-            tt.textProperty().bind(PlatformThread.sync(binding));
+            tt.textProperty().bind(binding);
         } else {
-            tt.textProperty().bind(PlatformThread.sync(text));
+            tt.textProperty().bind(text);
         }
         AppFontSizes.base(tt.getStyleableNode());
         tt.setWrapText(true);

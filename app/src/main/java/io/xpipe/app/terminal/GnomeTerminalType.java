@@ -1,16 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationType;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
 
-public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implements TrackableTerminalType {
-
-    public GnomeTerminalType() {
-        super("app.gnomeTerminal", "gnome-terminal", true);
-    }
+public class GnomeTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -35,10 +32,11 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (ShellControl pc = LocalShell.getShell()) {
-            CommandSupport.isInPathOrThrow(pc, executable, toTranslatedString().getValue(), null);
+            CommandSupport.isInPathOrThrow(
+                    pc, getExecutable(), toTranslatedString().getValue(), null);
 
             var toExecute = CommandBuilder.of()
-                    .add(executable, "-v", "--title")
+                    .add(getExecutable(), "-v", "--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--")
                     .addFile(configuration.getScriptFile())
@@ -47,5 +45,20 @@ public class GnomeTerminalType extends ExternalTerminalType.PathCheckType implem
                     .environment("GNOME_TERMINAL_SCREEN", sc -> "");
             pc.executeSimpleCommand(toExecute);
         }
+    }
+
+    @Override
+    public String getExecutable() {
+        return "gnome-terminal";
+    }
+
+    @Override
+    public boolean detach() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.gnomeTerminal";
     }
 }

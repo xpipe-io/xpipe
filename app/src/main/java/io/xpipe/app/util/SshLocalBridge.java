@@ -3,12 +3,12 @@ package io.xpipe.app.util;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellDialects;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -230,7 +230,7 @@ public class SshLocalBridge {
     private static FilePath getSshd(ShellControl sc) throws Exception {
         var exec = CommandSupport.findProgram(sc, "sshd");
         if (exec.isEmpty()) {
-            throw ErrorEvent.expected(
+            throw ErrorEventFactory.expected(
                     new IllegalStateException(
                             "No sshd executable found in PATH. The SSH terminal bridge for SSH clients requires a local ssh server to be installed"));
         }
@@ -245,7 +245,7 @@ public class SshLocalBridge {
         try {
             INSTANCE.getRunningShell().closeStdin();
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).omit().handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
         }
         INSTANCE.getRunningShell().kill();
         INSTANCE = null;

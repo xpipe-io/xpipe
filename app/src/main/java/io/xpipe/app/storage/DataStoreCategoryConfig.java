@@ -1,9 +1,6 @@
 package io.xpipe.app.storage;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
-import lombok.With;
+import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
@@ -16,7 +13,7 @@ import java.util.UUID;
 public class DataStoreCategoryConfig {
 
     public static DataStoreCategoryConfig empty() {
-        return new DataStoreCategoryConfig(null, null, null, null, null);
+        return new DataStoreCategoryConfig(null, null, null, null, null, null);
     }
 
     public static DataStoreCategoryConfig merge(List<DataStoreCategoryConfig> configs) {
@@ -24,6 +21,7 @@ public class DataStoreCategoryConfig {
         Boolean dontAllowScripts = null;
         Boolean warnOnAllModifications = null;
         Boolean sync = null;
+        Boolean readOnly = null;
         UUID defaultIdentityStore = null;
         for (int i = configs.size() - 1; i >= 0; i--) {
             var config = configs.get(i);
@@ -42,8 +40,12 @@ public class DataStoreCategoryConfig {
             if (sync == null) {
                 sync = config.sync;
             }
+            if (readOnly == null) {
+                readOnly = config.freezeConfigurations;
+            }
         }
-        return new DataStoreCategoryConfig(color, dontAllowScripts, warnOnAllModifications, sync, defaultIdentityStore);
+        return new DataStoreCategoryConfig(
+                color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore);
     }
 
     @With
@@ -55,6 +57,8 @@ public class DataStoreCategoryConfig {
 
     @With
     Boolean sync;
+
+    Boolean freezeConfigurations;
 
     UUID defaultIdentityStore;
 }

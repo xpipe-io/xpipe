@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.resources.AppResources;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;

@@ -17,9 +17,13 @@ public interface DataStorageSyncHandler {
 
     boolean supportsSync();
 
+    boolean hasExternalStoredCredentials();
+
     void init();
 
     void retrieveSyncedData();
+
+    void refreshRemoteData();
 
     void afterStorageLoad();
 
@@ -32,8 +36,6 @@ public interface DataStorageSyncHandler {
     void handleCategory(DataStoreCategory category, boolean exists, boolean dirty);
 
     void handleDeletion(Path target, String name);
-
-    void initTeamVault();
 
     Path getDirectory();
 

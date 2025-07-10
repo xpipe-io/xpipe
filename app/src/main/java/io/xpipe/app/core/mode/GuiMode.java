@@ -2,9 +2,10 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.PlatformThread;
+import io.xpipe.core.OsType;
 
-import io.xpipe.core.process.OsType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
@@ -32,6 +33,12 @@ public class GuiMode extends PlatformMode {
     @Override
     public void onSwitchTo() throws Throwable {
         super.onSwitchTo();
+
+        // Refresh license check
+        // In case our exit behavior is set to continue in background,
+        // this will apply a new license properly
+        LicenseProvider.get().init();
+
         PlatformThread.runLaterIfNeededBlocking(() -> {
             AppMainWindow.getInstance().show();
         });

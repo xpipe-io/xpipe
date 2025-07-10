@@ -1,10 +1,10 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeInstallation;
 
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -18,7 +18,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
             var wsh = CommandSupport.findProgram(sc, "wsh");
             return wsh.isPresent();
         } catch (Exception ex) {
-            ErrorEvent.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).handle();
             return false;
         }
     }
@@ -66,7 +66,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                                         inPath
                                                 ? "xpipe open"
                                                 : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
-                throw ErrorEvent.expected(new IllegalStateException(msg));
+                throw ErrorEventFactory.expected(new IllegalStateException(msg));
             }
 
             sc.command(CommandBuilder.of()

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.util.InPlaceSecretValue;
+import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

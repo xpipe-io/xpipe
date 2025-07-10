@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppProperties;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -43,6 +45,26 @@ public class NodeCallback {
         });
     }
 
+    // Reuse listener for everything. Disabling generics allows that
+    @SuppressWarnings("rawtypes")
+    private static final ChangeListener listener = new ChangeListener() {
+
+        @Override
+        public void changed(ObservableValue observableValue, Object o, Object t1) {
+            checkPlatformThread();
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    private static final ListChangeListener listListener = new ListChangeListener() {
+
+        @Override
+        public void onChanged(Change change) {
+            checkPlatformThread();
+        }
+    };
+
+    @SuppressWarnings("unchecked")
     private static void watchPlatformThreadChanges(Node node) {
         watchGraph(node, c -> {
             if (!nodes.add(c)) {
@@ -50,22 +72,15 @@ public class NodeCallback {
             }
 
             if (c instanceof Parent p) {
-                p.getChildrenUnmodifiable().addListener((ListChangeListener<? super Node>) change -> {
-                    checkPlatformThread();
-                });
+                p.getChildrenUnmodifiable().addListener(listListener);
             }
-            c.visibleProperty().addListener((observable, oldValue, newValue) -> {
-                checkPlatformThread();
-            });
-            c.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
-                checkPlatformThread();
-            });
-            c.managedProperty().addListener((observable, oldValue, newValue) -> {
-                checkPlatformThread();
-            });
-            c.opacityProperty().addListener((observable, oldValue, newValue) -> {
-                checkPlatformThread();
-            });
+
+            c.visibleProperty().addListener(listener);
+            c.boundsInParentProperty().addListener(listener);
+            c.managedProperty().addListener(listener);
+            c.opacityProperty().addListener(listener);
+            c.accessibleHelpProperty().addListener(listener);
+            c.accessibleTextProperty().addListener(listener);
         });
     }
 

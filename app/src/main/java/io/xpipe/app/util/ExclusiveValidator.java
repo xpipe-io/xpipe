@@ -7,10 +7,10 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ObservableValue;
 
-import net.synedra.validatorfx.Check;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 public final class ExclusiveValidator<T> implements Validator {
@@ -83,5 +83,10 @@ public final class ExclusiveValidator<T> implements Validator {
                     return get().createStringBinding(prefix, separator).get();
                 },
                 observables);
+    }
+
+    @Override
+    public Collection<Check> getActiveChecks() {
+        return validators.get(obs.getValue()).getActiveChecks();
     }
 }

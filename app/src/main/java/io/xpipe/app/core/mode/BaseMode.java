@@ -1,23 +1,24 @@
 package io.xpipe.app.core.mode;
 
+import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserLocalFileSystem;
 import io.xpipe.app.browser.icon.BrowserIconManager;
-import io.xpipe.app.comp.store.StoreViewState;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.ActionProvider;
+import io.xpipe.app.core.window.AppWindowTitle;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.password.KeePassXcManager;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.resources.*;
+import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
@@ -26,7 +27,7 @@ import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.update.UpdateChangelogAlert;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
-import io.xpipe.core.util.XPipeDaemonMode;
+import io.xpipe.core.XPipeDaemonMode;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -56,6 +57,7 @@ public class BaseMode extends OperationMode {
         TrackEvent.info("Initializing base mode components ...");
         AppMainWindow.loadingText("initializingApp");
         LicenseProvider.get().init();
+        AppWindowTitle.init();
         AppPathCorruptCheck.check();
         AppHomebrewCoreutilsCheck.check();
         AppAvCheck.check();
@@ -65,7 +67,7 @@ public class BaseMode extends OperationMode {
         AppLayoutModel.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
-            PtbDialog.showIfNeeded();
+            AppPtbDialog.showIfNeeded();
         }
 
         // If we downloaded an update, and decided to no longer automatically update, don't remind us!
@@ -95,7 +97,6 @@ public class BaseMode extends OperationMode {
                     AppPrefs.setLocalDefaultsIfNeeded();
                     localPrefsLoaded.countDown();
                     PlatformInit.init(true);
-                    AppMainWindow.addUpdateTitleListener();
                     TrackEvent.info("Shell initialization thread completed");
                 },
                 () -> {
@@ -159,6 +160,7 @@ public class BaseMode extends OperationMode {
         DataStoreProviders.init();
 
         AppConfigurationDialog.showIfNeeded();
+        AppGnomeScaleDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;
@@ -170,7 +172,7 @@ public class BaseMode extends OperationMode {
     @Override
     public void finalTeardown() throws Exception {
         TrackEvent.withInfo("Base mode shutdown started").build();
-        // In order of importance for shutdown signals that might kill us before we finish
+        AbstractAction.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
@@ -180,7 +182,7 @@ public class BaseMode extends OperationMode {
         ProcessControlProvider.get().reset();
         AppPrefs.reset();
         AppBeaconServer.reset();
-        KeePassXcManager.reset();
+        KeePassXcPasswordManager.reset();
         StoreViewState.reset();
         AppLayoutModel.reset();
         AppTheme.reset();

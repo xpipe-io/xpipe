@@ -1,6 +1,6 @@
 .root { -color-bg-default-transparent: #FFFFFFAF; }
 
-.root .button {
+.root .button, .root .toggle-button {
     -fx-effect: NONE;
 }
 

@@ -1,16 +1,12 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.store.StoreEntryWrapper;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
-import io.xpipe.core.store.DataStore;
+import io.xpipe.app.util.*;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -32,7 +28,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         LocalIdentityStore st = (LocalIdentityStore) store.getValue();
 
-        var user = new SimpleStringProperty(st.getUsername());
+        var user = new SimpleStringProperty(st.getUsername().get());
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
 
@@ -44,9 +40,15 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription("base:sshKey")
+                .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
-                        SshIdentityStrategyHelper.identity(new SimpleObjectProperty<>(), identity, null, false, true),
+                        SshIdentityStrategyHelper.identity(
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
+                                identity,
+                                null,
+                                false,
+                                true),
                         identity)
                 .bind(
                         () -> {
@@ -65,12 +67,6 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                         },
                         store)
                 .buildDialog();
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        var st = (LocalIdentityStore) wrapper.getStore().getValue();
-        return AppI18n.get("localIdentity");
     }
 
     @Override

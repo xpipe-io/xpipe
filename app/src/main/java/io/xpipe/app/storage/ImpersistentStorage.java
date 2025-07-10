@@ -1,6 +1,5 @@
 package io.xpipe.app.storage;
 
-import io.xpipe.app.comp.store.StoreSortMode;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.util.EncryptionKey;
 
@@ -8,6 +7,9 @@ import java.time.Instant;
 import javax.crypto.SecretKey;
 
 public class ImpersistentStorage extends DataStorage {
+
+    @Override
+    public void reloadContent() {}
 
     @Override
     public SecretKey getVaultKey() {
@@ -29,6 +31,10 @@ public class ImpersistentStorage extends DataStorage {
             storeCategories.add(cat);
         }
         {
+            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
+            storeCategories.add(cat);
+        }
+        {
             var cat = new DataStoreCategory(
                     null,
                     DEFAULT_CATEGORY_UUID,
@@ -37,7 +43,6 @@ public class ImpersistentStorage extends DataStorage {
                     Instant.now(),
                     true,
                     ALL_CONNECTIONS_CATEGORY_UUID,
-                    StoreSortMode.getDefault(),
                     true,
                     DataStoreCategoryConfig.empty());
             storeCategories.add(cat);

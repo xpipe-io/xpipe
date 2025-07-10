@@ -1,16 +1,13 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.*;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.*;
+import io.xpipe.core.OsType;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 public class LocalShell {
-
-    @Getter
-    private static LocalShellCache localCache;
 
     private static ShellControl local;
     private static ShellControl localPowershell;
@@ -21,10 +18,9 @@ public class LocalShell {
         // Ensure that electron applications on Linux use wayland features if possible
         // https://github.com/microsoft/vscode/issues/207033#issuecomment-2167500295
         if (OsType.getLocal() == OsType.LINUX) {
-            local.writeLine(local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
+            local.writeLine(
+                    local.getShellDialect().getSetEnvironmentVariableCommand("ELECTRON_OZONE_PLATFORM_HINT", "auto"));
         }
-
-        localCache = new LocalShellCache(local);
     }
 
     public static void reset(boolean force) {
@@ -33,7 +29,7 @@ public class LocalShell {
                 try {
                     local.exitAndWait();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                     local.kill();
                 }
             } else {
@@ -41,13 +37,12 @@ public class LocalShell {
             }
             local = null;
         }
-        localCache = null;
         if (localPowershell != null) {
             if (!force) {
                 try {
                     localPowershell.exitAndWait();
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).omit().handle();
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
                     local.kill();
                 }
             } else {
@@ -76,10 +71,6 @@ public class LocalShell {
         var sc = localPowershell.start();
         sc.getShellDialect().getDumbMode().throwIfUnsupported();
         return sc;
-    }
-
-    public static boolean isLocalShellInitialized() {
-        return local != null;
     }
 
     @SneakyThrows

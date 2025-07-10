@@ -1,8 +1,8 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.*;
-import io.xpipe.ext.base.SelfReferentialStore;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public abstract class IdentityStore implements SelfReferentialStore, DataStore {
 
-    String username;
+    public abstract UsernameStrategy getUsername();
 
     public abstract SecretRetrievalStrategy getPassword();
 
@@ -30,8 +30,4 @@ public abstract class IdentityStore implements SelfReferentialStore, DataStore {
             getSshIdentity().checkComplete();
         }
     }
-
-    abstract EncryptedValue<SecretRetrievalStrategy> getEncryptedPassword();
-
-    abstract EncryptedValue<SshIdentityStrategy> getEncryptedSshIdentity();
 }

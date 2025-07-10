@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
 public class HttpApiCategory extends AppPrefsCategory {
@@ -12,6 +13,11 @@ public class HttpApiCategory extends AppPrefsCategory {
     @Override
     protected String getId() {
         return "httpApi";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-code-json");
     }
 
     @Override

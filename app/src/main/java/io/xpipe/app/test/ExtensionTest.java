@@ -1,6 +1,6 @@
 package io.xpipe.app.test;
 
-import io.xpipe.core.store.FileNames;
+import io.xpipe.core.FilePath;
 
 import lombok.SneakyThrows;
 
@@ -12,7 +12,7 @@ public class ExtensionTest {
     @SneakyThrows
     public static Path getResourcePath(Class<?> c, String name) {
         var loc = Path.of(c.getProtectionDomain().getCodeSource().getLocation().toURI());
-        var testName = FileNames.getBaseName(loc.getFileName().toString()).split("-")[1];
+        var testName = FilePath.of(loc.getFileName()).getBaseName().toString().split("-")[1];
         var f = loc.getParent()
                 .getParent()
                 .resolve("resources")

@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,7 +20,7 @@ public class AppTempCheck {
         }
 
         if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
-            ErrorEvent.fromThrowable(new IOException("Specified temporary directory " + tmpdir
+            ErrorEventFactory.fromThrowable(new IOException("Specified temporary directory " + tmpdir
                             + ", set via the environment variable %TEMP% is invalid."))
                     .term()
                     .expected()

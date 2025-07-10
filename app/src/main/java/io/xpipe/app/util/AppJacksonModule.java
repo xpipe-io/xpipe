@@ -1,18 +1,23 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.password.PasswordManager;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
-import io.xpipe.core.util.InPlaceSecretValue;
-import io.xpipe.core.util.JacksonMapper;
+import io.xpipe.app.vnc.ExternalVncClient;
+import io.xpipe.core.InPlaceSecretValue;
+import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
@@ -23,6 +28,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class AppJacksonModule extends SimpleModule {
 
@@ -44,12 +50,59 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(EncryptedValue.VaultKey.class, new EncryptedValueSerializer());
         addDeserializer(EncryptedValue.VaultKey.class, new EncryptedValueDeserializer<>());
 
+        addSerializer(ShellDialect.class, new ShellDialectSerializer());
+        addDeserializer(ShellDialect.class, new ShellDialectDeserializer());
+
+        addSerializer(OsType.class, new OsTypeSerializer());
+        addDeserializer(OsType.Local.class, new OsTypeLocalDeserializer());
+        addDeserializer(OsType.Any.class, new OsTypeAnyDeserializer());
+
+        addSerializer(ShellScript.class, new ShellScriptSerializer());
+        addDeserializer(ShellScript.class, new ShellScriptDeserializer());
+
+        for (ShellDialect t : ShellDialects.ALL) {
+            context.registerSubtypes(new NamedType(t.getClass()));
+        }
+
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());
+        context.registerSubtypes(ExternalVncClient.getClasses());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);
+    }
+
+    public static class OsTypeSerializer extends JsonSerializer<OsType> {
+
+        @Override
+        public void serialize(OsType value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.getName());
+        }
+    }
+
+    public static class OsTypeLocalDeserializer extends JsonDeserializer<OsType.Local> {
+
+        @Override
+        public OsType.Local deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS);
+            var n = p.getValueAsString();
+            return stream.filter(osType -> osType.getName().equals(n))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    public static class OsTypeAnyDeserializer extends JsonDeserializer<OsType.Any> {
+
+        @Override
+        public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS);
+            var n = p.getValueAsString();
+            return stream.filter(osType -> osType.getName().equals(n))
+                    .findFirst()
+                    .orElse(null);
+        }
     }
 
     public static class LocalFileReferenceSerializer extends JsonSerializer<ContextualFileReference> {
@@ -58,6 +111,47 @@ public class AppJacksonModule extends SimpleModule {
         public void serialize(ContextualFileReference value, JsonGenerator jgen, SerializerProvider provider)
                 throws IOException {
             jgen.writeString(value.serialize());
+        }
+    }
+
+    public static class ShellDialectSerializer extends JsonSerializer<ShellDialect> {
+
+        @Override
+        public void serialize(ShellDialect value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.getId());
+        }
+    }
+
+    public static class ShellDialectDeserializer extends JsonDeserializer<ShellDialect> {
+
+        @Override
+        public ShellDialect deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
+            if (tree.isObject()) {
+                var t = tree.get("type");
+                if (t == null) {
+                    return null;
+                }
+                return ShellDialects.byNameIfPresent(t.asText()).orElse(null);
+            }
+
+            return ShellDialects.byNameIfPresent(tree.asText()).orElse(null);
+        }
+    }
+
+    public static class ShellScriptSerializer extends JsonSerializer<ShellScript> {
+
+        @Override
+        public void serialize(ShellScript value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            jgen.writeString(value.getValue());
+        }
+    }
+
+    public static class ShellScriptDeserializer extends JsonDeserializer<ShellScript> {
+
+        @Override
+        public ShellScript deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            return new ShellScript(p.getValueAsString());
         }
     }
 
@@ -222,10 +316,7 @@ public class AppJacksonModule extends SimpleModule {
                 return;
             }
 
-            jgen.writeStartObject();
-            jgen.writeFieldName("storeId");
             jgen.writeString(value.get().getUuid().toString());
-            jgen.writeEndObject();
         }
     }
 
@@ -267,13 +358,7 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
-            // Compatibility fix for legacy local stores
-            var toUse = e.getStore() instanceof LocalStore ? DataStorage.get().local() : e;
-            if (toUse == null) {
-                return null;
-            }
-
-            return new DataStoreEntryRef<>(toUse);
+            return new DataStoreEntryRef<>(e);
         }
     }
 }

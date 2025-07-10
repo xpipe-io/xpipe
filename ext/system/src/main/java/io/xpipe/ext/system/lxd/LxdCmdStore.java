@@ -1,14 +1,14 @@
 package io.xpipe.ext.system.lxd;
 
+import io.xpipe.app.ext.DataStoreState;
+import io.xpipe.app.ext.FixedChildStore;
+import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.FixedHierarchyStore;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.store.DataStoreState;
-import io.xpipe.core.store.FixedChildStore;
-import io.xpipe.core.store.StatefulDataStore;
-import io.xpipe.ext.base.SelfReferentialStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

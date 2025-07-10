@@ -20,3 +20,23 @@
     -color-modal-pane-overlay: rgba(0, 0, 0, 0.4);
 }
 
+.modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -fx-background-insets: 0 3.2em 0 0;
+}
+
+.root:seamless-frame .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -fx-background-radius: 0 6 0 0;
+}
+
+.modal-overlay-stack-element > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -color-modal-pane-overlay: transparent
+}
+
+.root:light .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -color-modal-pane-overlay: rgba(0, 0, 0, 0.3);
+}
+
+.root:dark .modal-overlay-stack-element:loaded > .modal-overlay-comp.modal-pane > .scroll-pane > .viewport > * > .scrollable-content {
+    -color-modal-pane-overlay: rgba(0, 0, 0, 0.4);
+}
+

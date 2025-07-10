@@ -1,13 +1,15 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 
-import io.xpipe.core.process.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
@@ -46,7 +48,7 @@ public class BrowserTransferModel {
                 Optional<Item> toDownload;
                 synchronized (items) {
                     toDownload = items.stream()
-                            .filter(item -> !item.downloadFinished().get())
+                            .filter(item -> !item.getDownloadFinished().get())
                             .findFirst();
                 }
                 if (toDownload.isPresent()) {
@@ -77,15 +79,16 @@ public class BrowserTransferModel {
         try {
             FileUtils.forceDelete(item.getLocalFile().toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
         }
     }
 
     public void clear(boolean delete) {
         List<Item> toClear;
         synchronized (items) {
-            toClear =
-                    items.stream().filter(item -> item.downloadFinished().get()).toList();
+            toClear = items.stream()
+                    .filter(item -> item.getDownloadFinished().get())
+                    .toList();
             if (toClear.isEmpty()) {
                 return;
             }
@@ -106,7 +109,8 @@ public class BrowserTransferModel {
                     return;
                 }
 
-                var fixedFile = entry.getRawFileEntry().getPath().fileSystemCompatible(OsType.getLocal());
+                var fixedFile = OsFileSystem.ofLocal()
+                        .makeFileSystemCompatible(entry.getRawFileEntry().getPath());
                 Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);
@@ -118,11 +122,11 @@ public class BrowserTransferModel {
         try {
             FileUtils.forceMkdir(TEMP.toFile());
         } catch (IOException e) {
-            ErrorEvent.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).handle();
             return;
         }
 
-        if (item.downloadFinished().get()) {
+        if (item.getDownloadFinished().get()) {
             return;
         }
 
@@ -151,9 +155,14 @@ public class BrowserTransferModel {
                         itemModel.getProgress().setValue(progress);
                     },
                     itemModel.getTransferCancelled());
-            op.execute();
+            var action = TransferFilesActionProvider.Action.builder()
+                    .operation(op)
+                    .target(DataStorage.get().local().ref())
+                    .download(true)
+                    .build();
+            action.executeSync();
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).handle();
+            ErrorEventFactory.fromThrowable(t).handle();
             synchronized (items) {
                 items.remove(item);
             }
@@ -162,11 +171,12 @@ public class BrowserTransferModel {
         }
     }
 
-    public void transferToDownloads() throws Exception {
+    public void transferToDownloads(boolean open) throws Exception {
         List<Item> toMove;
         synchronized (items) {
-            toMove =
-                    items.stream().filter(item -> item.downloadFinished().get()).toList();
+            toMove = items.stream()
+                    .filter(item -> item.getDownloadFinished().get())
+                    .toList();
             if (toMove.isEmpty()) {
                 return;
             }
@@ -192,7 +202,10 @@ public class BrowserTransferModel {
                 Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
             }
         }
-        DesktopHelper.browseFileInDirectory(downloads.resolve(files.getFirst().getFileName()));
+        if (open) {
+            DesktopHelper.browseFileInDirectory(
+                    downloads.resolve(files.getFirst().getFileName()));
+        }
     }
 
     private Path getDownloadsTargetDirectory() throws Exception {
@@ -219,6 +232,7 @@ public class BrowserTransferModel {
         BrowserEntry browserEntry;
         Path localFile;
         Property<BrowserTransferProgress> progress;
+        ObservableBooleanValue downloadFinished;
 
         public Item(
                 BrowserFileSystemTabModel openFileSystemModel, String name, BrowserEntry browserEntry, Path localFile) {
@@ -227,17 +241,12 @@ public class BrowserTransferModel {
             this.browserEntry = browserEntry;
             this.localFile = localFile;
             this.progress = new SimpleObjectProperty<>();
-        }
-
-        public ObservableBooleanValue downloadFinished() {
-            synchronized (progress) {
-                return Bindings.createBooleanBinding(
-                        () -> {
-                            return progress.getValue() != null
-                                    && progress.getValue().done();
-                        },
-                        progress);
-            }
+            this.downloadFinished = Bindings.createBooleanBinding(
+                    () -> {
+                        return progress.getValue() != null
+                                && progress.getValue().done();
+                    },
+                    progress);
         }
     }
 }

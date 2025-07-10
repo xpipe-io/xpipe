@@ -1,9 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.util.ValidationException;
 
 import java.util.List;
 

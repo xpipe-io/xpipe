@@ -1,8 +1,11 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.store.*;
+import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileSystem;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.core.FileKind;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.time.Instant;
 import java.util.List;
@@ -26,9 +29,6 @@ public class BrowserFileSystemHelper {
         }
 
         // Handle special case when file system creation has failed
-        if (model.getFileSystem() == null) {
-            return path;
-        }
 
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty()) {
@@ -47,10 +47,6 @@ public class BrowserFileSystemHelper {
             return null;
         }
 
-        if (model.getFileSystem() == null) {
-            return path;
-        }
-
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty() || !shell.get().isRunning(true)) {
             return path;
@@ -63,7 +59,7 @@ public class BrowserFileSystemHelper {
                     .readStdoutOrThrow();
             return !r.isBlank() ? r : null;
         } catch (Exception ex) {
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -72,10 +68,6 @@ public class BrowserFileSystemHelper {
             throws Exception {
         if (path == null) {
             return null;
-        }
-
-        if (model.getFileSystem() == null) {
-            return path;
         }
 
         var shell = model.getFileSystem().getShell();
@@ -105,24 +97,20 @@ public class BrowserFileSystemHelper {
             return;
         }
 
-        if (model.getFileSystem() == null) {
-            return;
-        }
-
         var shell = model.getFileSystem().getShell();
         if (shell.isEmpty()) {
             return;
         }
 
         if (verifyExists && !model.getFileSystem().directoryExists(path)) {
-            throw ErrorEvent.expected(new IllegalArgumentException(
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
                     String.format("Directory %s does not exist or is not accessible", path)));
         }
 
         try {
             model.getFileSystem().directoryAccessible(path);
         } catch (Exception ex) {
-            ErrorEvent.expected(ex);
+            ErrorEventFactory.expected(ex);
             throw ex;
         }
     }
@@ -146,7 +134,7 @@ public class BrowserFileSystemHelper {
             try {
                 file.getFileSystem().delete(file.getPath());
             } catch (Throwable t) {
-                ErrorEvent.fromThrowable(t).handle();
+                ErrorEventFactory.fromThrowable(t).handle();
             }
         }
     }

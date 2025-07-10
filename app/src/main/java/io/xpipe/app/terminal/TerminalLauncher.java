@@ -2,16 +2,16 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.core.process.*;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.util.FailableFunction;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.FailableFunction;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.IOException;
 import java.util.List;
@@ -82,7 +82,7 @@ public class TerminalLauncher {
             content += nl + t.getPassthroughExitCommand();
         }
 
-        content = t.prepareScriptContent(content);
+        content = t.prepareScriptContent(processControl, content);
         return content;
     }
 
@@ -143,7 +143,7 @@ public class TerminalLauncher {
             throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
-            throw ErrorEvent.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+            throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
@@ -160,20 +160,22 @@ public class TerminalLauncher {
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
         var alwaysPromptRestart = AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
+        var effectivePreferTabs =
+                preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
         var config = TerminalLaunchConfiguration.create(
-                request, entry, cleanTitle, adjustedTitle, preferTabs, alwaysPromptRestart);
+                request, entry, cleanTitle, adjustedTitle, effectivePreferTabs, alwaysPromptRestart);
 
         synchronized (TerminalLauncher.class) {
             // There will be timing issues when launching multiple tabs in a short time span
             TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
 
-            if (preferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
+            if (effectivePreferTabs && launchMultiplexerTabInExistingTerminal(request, terminalConfig, config)) {
                 latch.await();
                 return;
             }
 
-            if (preferTabs) {
+            if (effectivePreferTabs) {
                 var multiplexerConfig = launchMultiplexerTabInNewTerminal(request, terminalConfig, config);
                 if (multiplexerConfig.isPresent()) {
                     TerminalMultiplexerManager.registerMultiplexerLaunch(request);
@@ -213,7 +215,7 @@ public class TerminalLauncher {
             var modMsg = ex.getMessage() != null && ex.getMessage().contains("Unable to find application named")
                     ? ex.getMessage() + " in installed /Applications on this system"
                     : ex.getMessage();
-            throw ErrorEvent.expected(new IOException(
+            throw ErrorEventFactory.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
         }
     }

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.service;
 
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.store.DataStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;

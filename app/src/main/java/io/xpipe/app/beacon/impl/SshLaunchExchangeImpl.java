@@ -1,9 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.beacon.api.SshLaunchExchange;
-import io.xpipe.core.process.ShellDialects;
 
 import com.sun.net.httpserver.HttpExchange;
 

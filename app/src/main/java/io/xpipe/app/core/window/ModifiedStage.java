@@ -1,9 +1,9 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -17,8 +17,6 @@ import javafx.util.Duration;
 
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
-
-import java.awt.*;
 
 public class ModifiedStage extends Stage {
 
@@ -123,7 +121,7 @@ public class ModifiedStage extends Stage {
                 }
             }
         } catch (Throwable t) {
-            ErrorEvent.fromThrowable(t).omit().handle();
+            ErrorEventFactory.fromThrowable(t).omit().handle();
         }
     }
 

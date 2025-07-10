@@ -1,8 +1,8 @@
 package io.xpipe.app.util;
 
-import io.xpipe.core.process.CommandBuilder;
-import io.xpipe.core.process.CommandControl;
-import io.xpipe.core.process.ShellControl;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.ShellControl;
 
 import lombok.Getter;
 

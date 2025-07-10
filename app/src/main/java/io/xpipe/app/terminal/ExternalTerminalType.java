@@ -1,17 +1,17 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.*;
-import io.xpipe.core.process.*;
+import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.TerminalInitFunction;
+import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.core.OsType;
 
 import lombok.Getter;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.*;
 
 public interface ExternalTerminalType extends PrefsChoiceValue {
@@ -19,7 +19,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //    ExternalTerminalType PUTTY = new WindowsType("app.putty","putty") {
     //
     //        @Override
-    //        protected Optional<Path> determineInstallation() {
+    //        public Optional<Path> determineInstallation() {
     //            try {
     //                var r = WindowsRegistry.local().readValue(WindowsRegistry.HKEY_LOCAL_MACHINE,
     //                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
@@ -106,40 +106,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
 
-    ExternalTerminalType KONSOLE = new SimplePathType("app.konsole", "konsole", true) {
-
-        @Override
-        public String getWebsite() {
-            return "https://konsole.kde.org/download.html";
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            // Tabs are only supported when single process option is enabled in konsole
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            // Note for later: When debugging konsole launches, it will always open as a child process of
-            // IntelliJ/XPipe even though we try to detach it.
-            // This is not the case for production where it works as expected
-            return CommandBuilder.of()
-                    .addIf(configuration.isPreferTabs(), "--new-tab")
-                    .add("-e")
-                    .addFile(configuration.getScriptFile());
-        }
-    };
+    ExternalTerminalType KONSOLE = new KonsoleTerminalType();
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
         public String getWebsite() {
@@ -168,6 +135,36 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--command")
+                    .addFile(configuration.getScriptFile());
+        }
+    };
+    ExternalTerminalType LXTERMINAL = new SimplePathType("app.lxterminal", "lxterminal", true) {
+        @Override
+        public String getWebsite() {
+            return "https://github.com/lxde/lxterminal";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return false;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-t")
+                    .addQuoted(configuration.getColoredTitle())
+                    .add("-e")
                     .addFile(configuration.getScriptFile());
         }
     };
@@ -328,32 +325,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
-    ExternalTerminalType GHOSTTY = new SimplePathType("app.ghostty", "ghostty", true) {
-        @Override
-        public String getWebsite() {
-            return "https://ghostty.org";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
-        }
-    };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
 
         @Override
@@ -465,11 +436,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public boolean supportsUnicode() {
-            return true;
-        }
-
-        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-title")
@@ -577,73 +543,8 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-e").add(configuration.getDialectLaunchCommand());
         }
     };
-    ExternalTerminalType MACOS_TERMINAL = new MacOsType("app.macosTerminal", "Terminal") {
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
-        public int getProcessHierarchyOffset() {
-            return 2;
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("Terminal.app")
-                            .addFile(configuration.getScriptFile()));
-        }
-    };
-    ExternalTerminalType ITERM2 = new MacOsType("app.iterm2", "iTerm") {
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
-        public int getProcessHierarchyOffset() {
-            return 3;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://iterm2.com/";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return true;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("iTerm.app")
-                            .addFile(configuration.getScriptFile()));
-        }
-    };
+    ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
+    ExternalTerminalType ITERM2 = new ITerm2TerminalType();
     ExternalTerminalType CUSTOM = new CustomTerminalType();
     List<ExternalTerminalType> WINDOWS_TERMINALS = List.of(
             WindowsTerminalType.WINDOWS_TERMINAL_CANARY,
@@ -673,7 +574,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             ELEMENTARY,
             KONSOLE,
             GNOME_TERMINAL,
-            GHOSTTY,
+            GhosttyTerminalType.GHOSTTY_LINUX,
             TILIX,
             GUAKE,
             TILDA,
@@ -682,6 +583,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
+            LXTERMINAL,
             Q_TERMINAL,
             WarpTerminalType.LINUX,
             TERMIUS,
@@ -693,6 +595,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
+            GhosttyTerminalType.GHOSTTY_MACOS,
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);
@@ -781,58 +684,33 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return true;
     }
 
-    default void launch(TerminalLaunchConfiguration configuration) throws Exception {}
+    void launch(TerminalLaunchConfiguration configuration) throws Exception;
 
-    abstract class WindowsType extends ExternalApplicationType.WindowsType implements ExternalTerminalType {
+    abstract class SimplePathType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
-        public WindowsType(String id, String executable) {
-            super(id, executable);
+        @Getter
+        private final String id;
+
+        @Getter
+        private final String executable;
+
+        private final boolean async;
+
+        public SimplePathType(String id, String executable, boolean async) {
+            this.id = id;
+            this.executable = executable;
+            this.async = async;
         }
 
         @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            var location = determineFromPath();
-            if (location.isEmpty()) {
-                location = determineInstallation();
-                if (location.isEmpty()) {
-                    throw new IOException("Unable to find installation of "
-                            + toTranslatedString().getValue());
-                }
-            }
-
-            execute(location.get(), configuration);
-        }
-
-        protected abstract void execute(Path file, TerminalLaunchConfiguration configuration) throws Exception;
-    }
-
-    abstract class MacOsType extends ExternalApplicationType.MacApplication
-            implements ExternalTerminalType, TrackableTerminalType {
-
-        public MacOsType(String id, String applicationName) {
-            super(id, applicationName);
-        }
-    }
-
-    @Getter
-    abstract class PathCheckType extends ExternalApplicationType.PathApplication implements ExternalTerminalType {
-
-        public PathCheckType(String id, String executable, boolean explicitAsync) {
-            super(id, executable, explicitAsync);
-        }
-    }
-
-    @Getter
-    abstract class SimplePathType extends PathCheckType implements TrackableTerminalType {
-
-        public SimplePathType(String id, String executable, boolean explicitAsync) {
-            super(id, executable, explicitAsync);
+        public boolean detach() {
+            return async;
         }
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
-            launch(configuration.getColoredTitle(), args);
+            launch(args);
         }
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);

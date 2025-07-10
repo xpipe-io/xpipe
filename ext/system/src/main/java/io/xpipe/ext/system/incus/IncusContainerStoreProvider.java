@@ -1,12 +1,12 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.store.*;
 import io.xpipe.app.ext.ContainerStoreState;
+import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.core.store.DataStore;
 import io.xpipe.ext.base.identity.IdentityChoice;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
@@ -88,13 +88,6 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                         store)
                 .buildDialog();
         return q;
-    }
-
-    @Override
-    public String summaryString(StoreEntryWrapper wrapper) {
-        IncusContainerStore s = wrapper.getEntry().getStore().asNeeded();
-        return DataStoreFormatter.toApostropheName(
-                        s.getInstall().getStore().getHost().get()) + " container";
     }
 
     @Override

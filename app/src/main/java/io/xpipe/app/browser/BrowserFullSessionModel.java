@@ -4,14 +4,15 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
+import io.xpipe.app.ext.FileSystemStore;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.store.FilePath;
-import io.xpipe.core.store.FileSystemStore;
-import io.xpipe.core.util.FailableFunction;
+import io.xpipe.core.FailableFunction;
+import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
@@ -33,14 +34,18 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public static final BrowserFullSessionModel DEFAULT = new BrowserFullSessionModel();
 
-    @SneakyThrows
-    public static void init() {
+    public static void init() throws Exception {
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
                     DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
-            DEFAULT.openSync(tab, null);
-            DEFAULT.pinTab(tab);
+            try {
+                DEFAULT.openSync(tab, null);
+                DEFAULT.pinTab(tab);
+            } catch (Exception ex) {
+                // Don't fail startup if this operation fails
+                ErrorEventFactory.fromThrowable(ex).handle();
+            }
         }
     }
 
@@ -232,7 +237,12 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             }
         }
         if (path != null) {
-            model.initWithGivenDirectory(path.apply(model).toDirectory());
+            var applied = path.apply(model);
+            if (applied != null) {
+                model.initWithGivenDirectory(applied.toDirectory());
+            } else {
+                model.initWithDefaultDirectory();
+            }
         } else {
             model.initWithDefaultDirectory();
         }

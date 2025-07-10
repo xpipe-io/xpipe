@@ -1,10 +1,8 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEvent;
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.StubShellControl;
-import io.xpipe.core.store.*;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.StubShellControl;
 
 public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore, SingletonSessionStore<ShellSession> {
 
@@ -24,20 +22,17 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                     existingSession.getShellControl().command(" echo xpipetest").execute();
                     return new StubShellControl(existingSession.getShellControl());
                 } catch (Exception e) {
-                    ErrorEvent.fromThrowable(e).expected().omit().handle();
+                    ErrorEventFactory.fromThrowable(e).expected().omit().handle();
                     stopSessionIfNeeded();
                 }
             }
         }
 
-        startSessionIfNeeded();
+        var session = startSessionIfNeeded();
 
-        var session = getSession();
         // This might be null if this store has been removed from this storage since the session was started
         // Then, the cache returns null
-        if (session == null) {
-            return standaloneControl().start();
-        }
+        // getSession()
 
         return new StubShellControl(session.getShellControl());
     }
@@ -52,11 +47,11 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
             session.getShellControl().command(" echo xpipetest").execute();
             return true;
         } catch (Exception e) {
-            ErrorEvent.fromThrowable(e).expected().omit().handle();
+            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
             try {
                 stopSessionIfNeeded();
             } catch (Exception se) {
-                ErrorEvent.fromThrowable(se).expected().omit().handle();
+                ErrorEventFactory.fromThrowable(se).expected().omit().handle();
             }
             return false;
         }
@@ -66,7 +61,9 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     default ShellSession newSession() throws Exception {
         var func = shellFunction();
         var c = func.control();
-        return new ShellSession(this, () -> c);
+        var session = new ShellSession(() -> c);
+        session.addListener(this);
+        return session;
     }
 
     @Override

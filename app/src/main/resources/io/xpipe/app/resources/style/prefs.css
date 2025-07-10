@@ -56,7 +56,7 @@
     -fx-background-radius: 4;
 }
 
-.root.nord .prefs .sidebar {
+.root:nord .prefs .sidebar {
     -fx-border-radius: 0;
     -fx-background-radius: 0;
 }
@@ -68,7 +68,7 @@
     -fx-background-insets: 0, 1 4 1 4;
 }
 
-.root.nord .prefs .sidebar .button {
+.root:nord .prefs .sidebar .button {
     -fx-background-radius: 0, 0, 0;
 }
 

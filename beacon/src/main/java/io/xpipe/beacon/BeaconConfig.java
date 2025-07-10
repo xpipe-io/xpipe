@@ -1,6 +1,6 @@
 package io.xpipe.beacon;
 
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.experimental.UtilityClass;
 

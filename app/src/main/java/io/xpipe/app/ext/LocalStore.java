@@ -1,11 +1,7 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.process.ShellControl;
-import io.xpipe.core.process.ShellStoreState;
-import io.xpipe.core.store.DataStore;
-import io.xpipe.core.store.NetworkTunnelSession;
-import io.xpipe.core.store.NetworkTunnelStore;
-import io.xpipe.core.store.StatefulDataStore;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.ShellStoreState;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;

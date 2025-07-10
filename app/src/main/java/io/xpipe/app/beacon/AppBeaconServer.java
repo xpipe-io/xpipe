@@ -1,12 +1,12 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
-import io.xpipe.core.process.OsType;
-import io.xpipe.core.util.XPipeInstallation;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -75,7 +75,7 @@ public class AppBeaconServer {
         } catch (Exception ex) {
             // Not terminal!
             // We can still continue without the running server
-            ErrorEvent.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
+            ErrorEventFactory.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
                     .build()
                     .handle();
         }
@@ -135,7 +135,7 @@ public class AppBeaconServer {
             t.setDaemon(true);
             t.setName("http handler");
             t.setUncaughtExceptionHandler((t1, e) -> {
-                ErrorEvent.fromThrowable(e).handle();
+                ErrorEventFactory.fromThrowable(e).handle();
             });
             return t;
         });

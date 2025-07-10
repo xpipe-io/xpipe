@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.core.util.Deobfuscator;
+import io.xpipe.core.Deobfuscator;
 
 import java.nio.file.Path;
 

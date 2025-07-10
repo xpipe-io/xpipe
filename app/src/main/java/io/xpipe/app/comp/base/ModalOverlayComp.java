@@ -5,13 +5,14 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.PlatformThread;
-import io.xpipe.core.process.OsType;
+import io.xpipe.core.OsType;
 
-import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
@@ -34,6 +35,7 @@ public class ModalOverlayComp extends SimpleComp {
 
     private final Comp<?> background;
     private final Property<ModalOverlay> overlayContent;
+    private final BooleanScope actionRunning = new BooleanScope(new SimpleBooleanProperty()).exclusive();
 
     public ModalOverlayComp(Comp<?> background, Property<ModalOverlay> overlayContent) {
         this.background = background;
@@ -88,6 +90,10 @@ public class ModalOverlayComp extends SimpleComp {
 
         modal.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.ENTER) {
+                if (actionRunning.get()) {
+                    return;
+                }
+
                 var ov = overlayContent.getValue();
                 if (ov != null) {
                     var def = ov.getButtons().stream()
@@ -96,7 +102,9 @@ public class ModalOverlayComp extends SimpleComp {
                     if (def.isPresent()) {
                         var mb = (ModalButton) def.get();
                         if (mb.getAction() != null) {
-                            mb.getAction().run();
+                            try (var ignored = actionRunning.start()) {
+                                mb.getAction().run();
+                            }
                         }
                         if (mb.isClose()) {
                             overlayContent.setValue(null);
@@ -158,6 +166,7 @@ public class ModalOverlayComp extends SimpleComp {
                 closeButton.setVisible(false);
             }
         }
+        modal.requestFocus();
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
@@ -250,7 +259,7 @@ public class ModalOverlayComp extends SimpleComp {
         if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
             var busy = mocc.busy();
             if (busy != null) {
-                var loading = LoadingOverlayComp.noProgress(Comp.of(() -> modalBox), busy);
+                var loading = new LoadingOverlayComp(Comp.of(() -> modalBox), busy, true);
                 return loading.createRegion();
             }
         }
@@ -261,7 +270,7 @@ public class ModalOverlayComp extends SimpleComp {
     private ObservableDoubleValue modalBoxWidth(ModalPane pane, Region r) {
         return Bindings.createDoubleBinding(
                 () -> {
-                    var max = pane.getWidth() - 50;
+                    var max = pane.getWidth() - 120;
                     if (r.getPrefWidth() != Region.USE_COMPUTED_SIZE) {
                         return Math.min(max, r.getPrefWidth() + 50);
                     }
@@ -281,8 +290,14 @@ public class ModalOverlayComp extends SimpleComp {
         }
         button.managedProperty().bind(button.visibleProperty());
         button.setOnAction(event -> {
+            if (actionRunning.get()) {
+                return;
+            }
+
             if (mb.getAction() != null) {
-                mb.getAction().run();
+                try (var ignored = actionRunning.start()) {
+                    mb.getAction().run();
+                }
             }
             if (mb.isClose()) {
                 overlayContent.setValue(null);
