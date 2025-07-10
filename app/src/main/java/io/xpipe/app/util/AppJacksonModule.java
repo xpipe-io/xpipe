@@ -234,6 +234,10 @@ public class AppJacksonModule extends SimpleModule {
         @Override
         public DataStoreEntryRef<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             JsonNode tree = p.getCodec().readTree(p);
+            if (tree == null) {
+                return null;
+            }
+
             String text;
             if (tree.isObject()) {
                 var obj = (ObjectNode) tree;
