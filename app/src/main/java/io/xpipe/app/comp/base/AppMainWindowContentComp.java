@@ -77,8 +77,8 @@ public class AppMainWindowContentComp extends SimpleComp {
             AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
                 var image = AppPrefs.get() != null
                                 && AppPrefs.get().theme().getValue().isDark()
-                        ? path.resolve("loading-dark.png")
-                        : path.resolve("loading.png");
+                        ? path.resolve("loading-160-dark.png")
+                        : path.resolve("loading-160.png");
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
