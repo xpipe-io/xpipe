@@ -20,7 +20,6 @@ import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
 
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableDoubleValue;
@@ -183,7 +182,7 @@ public class AppPrefs {
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty disableApiHttpsTlsCheck =
-            mapLocal(new SimpleBooleanProperty(false), "disableApiHttpsTlsCheck", Boolean.class, true);
+            mapLocal(new SimpleBooleanProperty(false), "disableApiHttpsTlsCheck", Boolean.class, false);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new SimpleBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
@@ -646,19 +645,14 @@ public class AppPrefs {
     }
 
     public void selectCategory(String id) {
+        AppLayoutModel.get().selectSettings();
         var found = categories.stream()
                 .filter(appPrefsCategory -> appPrefsCategory.getId().equals(id))
                 .findFirst();
         found.ifPresent(appPrefsCategory -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                AppLayoutModel.get().selectSettings();
-
-                Platform.runLater(() -> {
-                    // Reset scroll in case the target category is already somewhat in focus
-                    selectedCategory.setValue(null);
-                    selectedCategory.setValue(appPrefsCategory);
-                });
-            });
+            // Reset scroll in case the target category is already somewhat in focus
+            selectedCategory.setValue(null);
+            selectedCategory.setValue(appPrefsCategory);
         });
     }
 
