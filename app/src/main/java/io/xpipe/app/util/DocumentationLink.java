@@ -6,7 +6,7 @@ public enum DocumentationLink {
     INDEX(""),
     API("api"),
     TTY("troubleshoot/tty"),
-    WINDOWS_SSH("troubleshoot/windows-ssh"),
+    WINDOWS_SSH("guide/ssh#windows-ssh-servers"),
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
@@ -37,8 +37,12 @@ public enum DocumentationLink {
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
-    SSH_HOST_KEYS("guide/ssh"),
-    SSH_KEX("guide/ssh"),
+    SSH_HOST_KEYS("guide/ssh#no-matching-host-key-type-found"),
+    SSH_KEX("guide/ssh#no-matching-key-exchange-method"),
+    SSH_PERMISSION_DENIED("guide/ssh#permission-denied"),
+    SSH_CONNECTION_CLOSED("guide/ssh#connection-closed-by-remote-host"),
+    SSH_KEY_PERMISSIONS("guide/ssh#key-permissions-too-open"),
+    SSH_NO_ROUTE("guide/ssh#no-route-to-host"),
     SSH_CONFIG("guide/ssh-config"),
     SSH_KEYS("guide/ssh#key-based-authentication"),
     SSH_OPTIONS("guide/ssh-config#adding-ssh-options"),
@@ -55,7 +59,7 @@ public enum DocumentationLink {
     TUNNELS_DYNAMIC("guide/ssh-tunnels#dynamic-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("guide/ssh#no-matching-mac-found"),
-    SSH_JUMP_SERVERS("guide/ssh#jump-servers"),
+    SSH_JUMP_SERVERS("guide/ssh#gateways-and-jump-servers"),
     SSH_CUSTOM("guide/ssh-config#custom-ssh-connections"),
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager"),
@@ -83,6 +87,7 @@ public enum DocumentationLink {
     }
 
     public static String getRoot() {
-        return AppProperties.get().isStaging() ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
+        var ptbDocs = AppProperties.get().isDevelopmentEnvironment() || AppProperties.get().isStaging();
+        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }
