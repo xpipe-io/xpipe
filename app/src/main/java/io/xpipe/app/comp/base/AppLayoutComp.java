@@ -44,6 +44,12 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         var multi = new MultiContentComp(map, true);
         multi.styleClass("background");
 
+        multi.apply(struc -> {
+            struc.get().opacityProperty().bind(Bindings.createDoubleBinding(() -> {
+                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.9;
+            }, AppPrefs.get().performanceMode()));
+        });
+
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
         StackPane multiR = (StackPane) multi.createRegion();
