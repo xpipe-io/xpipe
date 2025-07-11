@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.process.ShellScript;
@@ -161,7 +162,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
                     new TileButtonComp("uninstallApplication", "uninstallApplicationDescription", "mdi2d-dump-truck", e -> {
                         var file = XPipeInstallation.getCurrentInstallationBasePath().resolve("Contents").resolve("Resources").resolve("scripts").resolve("uninstall.sh");
                         OperationMode.executeAfterShutdown(() -> {
-                            TerminalLauncher.openDirectFallback("Uninstall", sc -> ShellScript.lines(file.toString()));
+                            TerminalLauncher.openDirectFallback("Uninstall", sc -> ShellScript.lines(
+                                    "echo \"+ sudo " + file.toString() + "\"",
+                                    "sudo " + file.toString(),
+                                    ProcessControlProvider.get().getEffectiveLocalDialect().getPauseCommand())
+                            );
                         });
                         e.consume();
                     })
