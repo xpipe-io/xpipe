@@ -12,6 +12,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -23,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.management.MBeanServer;
 
 public class TroubleshootCategory extends AppPrefsCategory {
@@ -153,6 +155,20 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                 })
                                 .grow(true, false),
                         null);
+
+        if (OsType.getLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
+            b.addComp(
+                    new TileButtonComp("uninstallApplication", "uninstallApplicationDescription", "mdi2d-dump-truck", e -> {
+                        var file = XPipeInstallation.getCurrentInstallationBasePath().resolve("Contents").resolve("Resources").resolve("scripts").resolve("uninstall.sh");
+                        OperationMode.executeAfterShutdown(() -> {
+                            TerminalLauncher.openDirectFallback("Uninstall", sc -> ShellScript.lines(file.toString()));
+                        });
+                        e.consume();
+                    })
+                            .grow(true, false),
+                    null);
+        }
+
         return b.buildComp();
     }
 
