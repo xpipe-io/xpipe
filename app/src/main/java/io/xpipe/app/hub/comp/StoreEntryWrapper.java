@@ -261,7 +261,13 @@ public class StoreEntryWrapper {
                                 && def.isApplicable(entry.ref())
                                 && def.isDefault(entry.ref()))
                         .findFirst()
-                        .orElse(new EditHubLeafProvider());
+                        .or(() -> {
+                            if (entry.getStore() instanceof GroupStore<?>) {
+                                return Optional.empty();
+                            } else {
+                                return Optional.of(new EditHubLeafProvider());
+                            }
+                        }).orElse(null);
                 this.defaultActionProvider.setValue(defaultProvider);
 
                 var newMajorProviders = ActionProvider.ALL.stream()
