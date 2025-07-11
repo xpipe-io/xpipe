@@ -46,7 +46,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
 
         multi.apply(struc -> {
             struc.get().opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.9;
+                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.95;
             }, AppPrefs.get().performanceMode()));
         });
 
