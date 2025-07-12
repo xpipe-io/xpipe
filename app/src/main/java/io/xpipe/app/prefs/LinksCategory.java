@@ -37,7 +37,7 @@ public class LinksCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null)
                 .addComp(
-                        new TileButtonComp("tryPtb", "tryPtbDescription", "mdi2t-test-tube", e -> {
+                        new TileButtonComp("tryPtb", "tryPtbDescription", "mdoal-insights", e -> {
                                     Hyperlinks.open(Hyperlinks.GITHUB_PTB);
                                     e.consume();
                                 })

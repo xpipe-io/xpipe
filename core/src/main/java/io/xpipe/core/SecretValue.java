@@ -21,11 +21,11 @@ public interface SecretValue {
 
     static String toBase64e(byte[] b) {
         var base64 = Base64.getEncoder().encodeToString(b);
-        return base64.replace("/", "-");
+        return base64.replace("/", "-").replace("+", "_");
     }
 
     static byte[] fromBase64e(String s) {
-        return Base64.getDecoder().decode(s.replace("-", "/"));
+        return Base64.getDecoder().decode(s.replace("_", "+").replace("-", "/"));
     }
 
     InPlaceSecretValue inPlace();

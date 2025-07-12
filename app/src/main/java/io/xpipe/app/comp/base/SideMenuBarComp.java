@@ -79,7 +79,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         }
 
         if (!AppProperties.get().isStaging()) {
-            var b = new IconButtonComp("mdi2t-test-tube", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
+            var b = new IconButtonComp("mdoal-insights", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
             b.tooltipKey("ptbAvailableTooltip");
             b.accessibleTextKey("ptbAvailableTooltip");
             var stack = createStyle(null, b);

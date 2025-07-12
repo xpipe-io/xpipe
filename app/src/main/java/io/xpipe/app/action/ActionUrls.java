@@ -3,6 +3,7 @@ package io.xpipe.app.action;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.SecretValue;
 import io.xpipe.core.UuidHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,8 +39,8 @@ public class ActionUrls {
             return list;
         }
 
-        var enc = InPlaceSecretValue.of(node.toPrettyString()).getEncryptedValue();
-        return List.of(enc);
+        var enc = SecretValue.toBase64e(node.toPrettyString().getBytes(StandardCharsets.UTF_8));
+        return List.of("~" + enc);
     }
 
     @SneakyThrows
@@ -49,8 +50,7 @@ public class ActionUrls {
         }
 
         var json = sa.toNode();
-        var parsed =
-                JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
+        var parsed = JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
 
         Map<String, List<String>> requestParams = new LinkedHashMap<>();
         for (Map.Entry<String, JsonNode> e : parsed.entrySet()) {
@@ -96,27 +96,23 @@ public class ActionUrls {
             return Optional.empty();
         }
 
-        for (String store : stores) {
-            var uuid = UuidHelper.parse(store);
-            if (uuid.isEmpty()) {
-                throw new IllegalArgumentException("Invalid store id: " + store);
+        var fixedMap = new LinkedHashMap<String, Object>();
+        for (var entry : query.entrySet()) {
+            var list = new ArrayList<>();
+            for (String s : entry.getValue()) {
+                if (s.startsWith("~")) {
+                    var json = SecretValue.fromBase64e(s.substring(1));
+                    var node = JacksonMapper.getDefault().readTree(json);
+                    list.add(node);
+                } else {
+                    list.add(s);
+                }
             }
 
-            var entry = DataStorage.get().getStoreEntryIfPresent(uuid.get());
-            if (entry.isEmpty()) {
-                throw new IllegalArgumentException("Store not found for id: " + store);
-            }
-
-            if (!entry.get().getValidity().isUsable()) {
-                throw new IllegalArgumentException(
-                        "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
-            }
+            var unwrapped = list.size() == 1 ? list.getFirst() : list;
+            fixedMap.put(entry.getKey(), unwrapped);
         }
 
-        var fixedMap = query.entrySet().stream()
-                .collect(Collectors.toMap(
-                        entry -> entry.getKey(),
-                        entry -> entry.getValue().size() == 1 ? entry.getValue().getFirst() : entry.getValue()));
         var json = (ObjectNode) JacksonMapper.getDefault().valueToTree(fixedMap);
         var instance = ActionJacksonMapper.parse(json);
         return Optional.ofNullable(instance);

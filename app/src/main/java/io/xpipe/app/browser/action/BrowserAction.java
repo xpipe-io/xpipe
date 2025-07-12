@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,20 +37,13 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                     .findFirst();
             if (found.isPresent()) {
                 model = (BrowserFileSystemTabModel) found.get();
+                var target = getTargetDirectory(model);
+                model.cdSync(target.toString());
             } else {
                 model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
                         ref.asNeeded(),
                         model -> {
-                            var isFile = model.getFileSystem().fileExists(files.getFirst());
-                            if (isFile) {
-                                return files.getFirst().getParent();
-                            } else {
-                                var dir = files.getFirst();
-                                if (!model.getFileSystem().directoryExists(dir)) {
-                                    throw new IllegalArgumentException("Directory does not exist: " + dir);
-                                }
-                                return dir;
-                            }
+                            return getTargetDirectory(model);
                         },
                         null,
                         true);
@@ -62,6 +56,19 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         model.getFileSystem().getShell().orElseThrow().start();
 
         return true;
+    }
+
+    private FilePath getTargetDirectory(BrowserFileSystemTabModel model) throws Exception {
+        var isFile = model.getFileSystem().fileExists(files.getFirst());
+        if (isFile) {
+            return files.getFirst().getParent();
+        } else {
+            var dir = files.getFirst();
+            if (!model.getFileSystem().directoryExists(dir)) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Directory does not exist: " + dir));
+            }
+            return dir;
+        }
     }
 
     @Override

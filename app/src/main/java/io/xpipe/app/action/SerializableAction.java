@@ -56,8 +56,8 @@ public abstract class SerializableAction extends AbstractAction {
             var name = DataStoreFormatter.camelCaseToName(property.getKey());
             name = Arrays.stream(name.split(" ")).filter(s -> !s.equals("Store")).collect(Collectors.joining(" "));
 
-            var value = property.getValue().asText();
-            if (!value.isEmpty()) {
+            if (property.getValue().isTextual()) {
+                var value = property.getValue().textValue();
                 var uuid = UuidHelper.parse(value);
                 if (uuid.isPresent()) {
                     var refName = DataStorage.get().getStoreEntryIfPresent(uuid.get()).map(e -> e.getName()).or(() -> {
@@ -79,6 +79,11 @@ public abstract class SerializableAction extends AbstractAction {
                 if (!list.isEmpty()) {
                     map.put(name, String.join("\n", list));
                 }
+            } else if (property.getValue().isBoolean()) {
+                map.put(name, property.getValue().booleanValue() ? "Yes" : "No");
+            } else {
+                var value = property.getValue().asText();
+                map.put(name, value);
             }
         }
         return map;

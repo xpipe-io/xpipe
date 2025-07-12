@@ -169,7 +169,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                     if (content != null && !content.isEmpty()) {
                         var name = FilePath.of(content);
                         var baseNameEnd = name.getBaseName().toString().length();
-                        textField.positionCaret(baseNameEnd);
+                        textField.selectRange(0, baseNameEnd);
                     }
                 });
             }

@@ -42,6 +42,7 @@ public class UntarActionProvider implements BrowserActionProvider {
                         .withWorkingDirectory(model.getCurrentDirectory().getPath())
                         .execute();
             }
+            model.refreshSync();
         }
 
         private FilePath getTarget(FilePath name) {

@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.xpipe.core.UuidHelper;
 
 import java.util.ArrayList;
 
@@ -45,6 +47,7 @@ public class ActionJacksonMapper {
         var mapper = JacksonMapper.newMapper().enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         if (ref != null && !ref.isArray() && StoreAction.class.isAssignableFrom(clazz.get())) {
+            validateRef(ref.asText());
             var action = mapper.treeToValue(tree, clazz.get());
             return (T) action;
         }
@@ -58,6 +61,7 @@ public class ActionJacksonMapper {
             var batchActions = new ArrayList<StoreAction<DataStore>>();
             object.remove("ref");
             for (JsonNode batchRef : ref) {
+                validateRef(batchRef.asText());
                 object.set("ref", batchRef);
                 var action = mapper.treeToValue(object, clazz.get());
                 batchActions.add((StoreAction<DataStore>) action);
@@ -67,6 +71,7 @@ public class ActionJacksonMapper {
 
         var makeMulti = ref != null && ref.isArray() && MultiStoreAction.class.isAssignableFrom(clazz.get());
         if (makeMulti) {
+            validateRef(ref.asText());
             object.remove("ref");
             object.set("refs", ref);
             var action = mapper.treeToValue(object, clazz.get());
@@ -74,6 +79,23 @@ public class ActionJacksonMapper {
         }
 
         return null;
+    }
+
+    private static void validateRef(String ref) {
+        var uuid = UuidHelper.parse(ref);
+        if (uuid.isEmpty()) {
+            throw new IllegalArgumentException("Invalid store id: " + ref);
+        }
+
+        var entry = DataStorage.get().getStoreEntryIfPresent(uuid.get());
+        if (entry.isEmpty()) {
+            throw new IllegalArgumentException("Store not found for id: " + ref);
+        }
+
+        if (!entry.get().getValidity().isUsable()) {
+            throw new IllegalArgumentException(
+                    "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
+        }
     }
 
     public static ObjectNode write(AbstractAction value) {
