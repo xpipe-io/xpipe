@@ -11,6 +11,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
     protected final List<FilePath> files;
 
     @JsonIgnore
+    @Getter
     protected BrowserFileSystemTabModel model;
 
     @JsonIgnore
@@ -48,6 +50,8 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                         null,
                         true);
             }
+
+            validateAutomatedAction();
         }
 
         model.getBusy().set(true);
@@ -58,6 +62,23 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         return true;
     }
 
+
+    private void validateAutomatedAction() throws Exception {
+        var bap = (BrowserActionProvider) getProvider();
+        if (!bap.isApplicable(getModel(), getEntries())) {
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
+                    "Selection is not applicable for action type"));
+        }
+
+        if (files != null) {
+            for (var f : files) {
+                if (!model.getFileSystem().fileExists(f)) {
+                    throw ErrorEventFactory.expected(new IllegalArgumentException("Target " + f + " does not exist"));
+                }
+            }
+        }
+    }
+
     private FilePath getTargetDirectory(BrowserFileSystemTabModel model) throws Exception {
         var isFile = model.getFileSystem().fileExists(files.getFirst());
         if (isFile) {
@@ -65,7 +86,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         } else {
             var dir = files.getFirst();
             if (!model.getFileSystem().directoryExists(dir)) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Directory does not exist: " + dir));
+                throw ErrorEventFactory.expected(new IllegalArgumentException("File or directory does not exist: " + dir));
             }
             return dir;
         }
@@ -76,7 +97,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         model.getBusy().set(false);
     }
 
-    protected List<BrowserEntry> getEntries() {
+    public List<BrowserEntry> getEntries() {
         if (entries != null) {
             return entries;
         }

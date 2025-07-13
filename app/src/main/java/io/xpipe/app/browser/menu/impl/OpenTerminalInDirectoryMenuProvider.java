@@ -20,7 +20,7 @@ import javafx.scene.input.KeyCombination;
 import java.util.Collections;
 import java.util.List;
 
-public class OpenTerminalMenuProvider implements BrowserMenuLeafProvider {
+public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
@@ -43,7 +43,7 @@ public class OpenTerminalMenuProvider implements BrowserMenuLeafProvider {
     }
 
     public String getId() {
-        return "openTerminal";
+        return "openInTerminal";
     }
 
     @Override

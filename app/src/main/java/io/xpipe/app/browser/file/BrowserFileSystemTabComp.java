@@ -70,7 +70,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var refreshBtn = BrowserMenuProviders.byId("refresh", model, List.of()).toButton(root, model, List.of());
         // Don't handle key events for this button, we also have that available as a menu item
         var terminalBtn =
-                BrowserMenuProviders.byId("openTerminal", model, List.of()).toButton(new Region(), model, List.of());
+                BrowserMenuProviders.byId("openInTerminal", model, List.of()).toButton(new Region(), model, List.of());
 
         var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(

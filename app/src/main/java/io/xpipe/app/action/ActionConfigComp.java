@@ -58,6 +58,7 @@ public class ActionConfigComp extends SimpleComp {
         var choice = new StoreListChoiceComp<>(
                 listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
         choice.hide(listProp.emptyProperty());
+        choice.maxHeight(450);
         return choice;
     }
 

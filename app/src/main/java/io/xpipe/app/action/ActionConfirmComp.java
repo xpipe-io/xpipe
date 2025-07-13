@@ -2,6 +2,7 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
@@ -36,7 +37,8 @@ public class ActionConfirmComp extends SimpleComp {
         options.nameAndDescription(plural ? "actionConnections" : "actionConnection")
                 .addComp(createList());
         options.nameAndDescription("actionConfiguration").addComp(createTable());
-        return options.build();
+        var scroll = new ScrollComp(options.buildComp());
+        return scroll.createRegion();
     }
 
     @SuppressWarnings("unchecked")
@@ -52,6 +54,7 @@ public class ActionConfirmComp extends SimpleComp {
 
         var choice = new StoreListChoiceComp<>(
                 listProp, DataStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+        choice.maxHeight(450);
         choice.setEditable(false);
         choice.hide(listProp.emptyProperty());
         return choice;

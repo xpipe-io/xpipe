@@ -51,7 +51,7 @@ public class AppLayoutModel {
         this.queueEntries = FXCollections.observableArrayList();
     }
 
-    public void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
+    public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
         if (!allowDuplicates && queueEntries.contains(entry)) {
             return;
         }
@@ -60,7 +60,9 @@ public class AppLayoutModel {
         if (duration != null) {
             GlobalTimer.delay(
                     () -> {
-                        queueEntries.remove(entry);
+                        synchronized (this) {
+                            queueEntries.remove(entry);
+                        }
                     },
                     duration);
         }

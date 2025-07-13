@@ -1,6 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
+import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.SimpleObjectProperty;
@@ -22,6 +23,7 @@ public class ActionPickComp extends ModalOverlayContentComp {
             getModalOverlay().close();
         });
         var options = new OptionsBuilder().addComp(top).addComp(bottom);
-        return options.build();
+        var scroll = new ScrollComp(options.buildComp());
+        return scroll.createRegion();
     }
 }

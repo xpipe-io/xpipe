@@ -52,10 +52,13 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                                 return null;
                             }
 
-                            var label = new LabelComp(t.get().getName()).apply(struc -> struc.get()
-                                    .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                                    t.get().getEffectiveIconFile(), 16)
-                                            .createRegion()));
+                            var label = new LabelComp(t.get().getName()).apply(struc -> {
+                                struc.get()
+                                        .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                                        t.get().getEffectiveIconFile(), 16)
+                                                .createRegion());
+                                struc.get().setGraphicTextGap(8);
+                            });
 
                             var up = new IconButtonComp("mdi2a-arrow-up", () -> {
                                 var index = selectedList.get().indexOf(t);

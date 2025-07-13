@@ -60,6 +60,7 @@ public interface ActionProvider {
         @Override
         public void init(ModuleLayer layer) {
             ALL.addAll(ServiceLoader.load(layer, ActionProvider.class).stream()
+                    .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
             for (var p : DataStoreProviders.getAll()) {

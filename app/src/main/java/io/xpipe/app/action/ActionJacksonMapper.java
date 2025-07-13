@@ -1,9 +1,10 @@
 package io.xpipe.app.action;
 
+import io.xpipe.app.browser.action.BrowserAction;
+import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.hub.action.BatchStoreAction;
-import io.xpipe.app.hub.action.MultiStoreAction;
-import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.hub.action.*;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.JacksonMapper;
 
@@ -47,7 +48,7 @@ public class ActionJacksonMapper {
         var mapper = JacksonMapper.newMapper().enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         if (ref != null && !ref.isArray() && StoreAction.class.isAssignableFrom(clazz.get())) {
-            validateRef(ref.asText());
+            validateRef(provider.get(), ref.asText());
             var action = mapper.treeToValue(tree, clazz.get());
             return (T) action;
         }
@@ -61,7 +62,7 @@ public class ActionJacksonMapper {
             var batchActions = new ArrayList<StoreAction<DataStore>>();
             object.remove("ref");
             for (JsonNode batchRef : ref) {
-                validateRef(batchRef.asText());
+                validateRef(provider.get(), batchRef.asText());
                 object.set("ref", batchRef);
                 var action = mapper.treeToValue(object, clazz.get());
                 batchActions.add((StoreAction<DataStore>) action);
@@ -71,7 +72,7 @@ public class ActionJacksonMapper {
 
         var makeMulti = ref != null && ref.isArray() && MultiStoreAction.class.isAssignableFrom(clazz.get());
         if (makeMulti) {
-            validateRef(ref.asText());
+            validateRef(provider.get(), ref.asText());
             object.remove("ref");
             object.set("refs", ref);
             var action = mapper.treeToValue(object, clazz.get());
@@ -81,20 +82,32 @@ public class ActionJacksonMapper {
         return null;
     }
 
-    private static void validateRef(String ref) {
+    private static void validateRef(ActionProvider provider, String ref) {
         var uuid = UuidHelper.parse(ref);
         if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("Invalid store id: " + ref);
+            throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid store id: " + ref));
         }
 
         var entry = DataStorage.get().getStoreEntryIfPresent(uuid.get());
         if (entry.isEmpty()) {
-            throw new IllegalArgumentException("Store not found for id: " + ref);
+            throw ErrorEventFactory.expected(new IllegalArgumentException("Store not found for id: " + ref));
         }
 
         if (!entry.get().getValidity().isUsable()) {
-            throw new IllegalArgumentException(
-                    "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete");
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
+                    "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete"));
+        }
+
+        if (provider instanceof HubLeafProvider<?> l &&
+                (!l.getApplicableClass().isAssignableFrom(entry.get().getStore().getClass()) || !l.isApplicable(entry.get().ref()))) {
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
+                    "Store " + DataStorage.get().getStorePath(entry.get()) + " is not applicable for action type"));
+        }
+
+        if (provider instanceof BatchHubProvider<?> h &&
+                (!h.getApplicableClass().isAssignableFrom(entry.get().getStore().getClass()) || !h.isApplicable(entry.get().ref()))) {
+            throw ErrorEventFactory.expected(new IllegalArgumentException(
+                    "Store " + DataStorage.get().getStorePath(entry.get()) + " is not applicable for action type"));
         }
     }
 

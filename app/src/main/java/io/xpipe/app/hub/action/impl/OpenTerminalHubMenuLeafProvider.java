@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class LaunchHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
+public class OpenTerminalHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -23,7 +23,7 @@ public class LaunchHubMenuLeafProvider implements HubLeafProvider<DataStore>, Ba
 
     @Override
     public String getId() {
-        return "launch";
+        return "openTerminal";
     }
 
     @Jacksonized
@@ -44,12 +44,12 @@ public class LaunchHubMenuLeafProvider implements HubLeafProvider<DataStore>, Ba
 
     @Override
     public ObservableValue<String> getName() {
-        return AppI18n.observable("launch");
+        return AppI18n.observable("openTerminal");
     }
 
     @Override
     public LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2p-play");
+        return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 
     @Override
@@ -64,11 +64,11 @@ public class LaunchHubMenuLeafProvider implements HubLeafProvider<DataStore>, Ba
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("launch");
+        return AppI18n.observable("openTerminal");
     }
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2p-play");
+        return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 }

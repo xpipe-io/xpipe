@@ -121,9 +121,7 @@ open module io.xpipe.app {
     uses ShellDialect;
 
     provides ActionProvider with
-            BrowseHubLeafProvider,
-            XPipeUrlProvider,
-            LaunchHubMenuLeafProvider,
+            XPipeUrlProvider, OpenTerminalHubMenuLeafProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,
             DownloadMenuProvider,
@@ -142,9 +140,9 @@ open module io.xpipe.app {
             OpenDirectoryMenuProvider,
             OpenDirectoryInNewTabMenuProvider,
             ScanHubLeafProvider,
+            BrowseHubLeafProvider,
             RefreshActionProvider,
-            ToggleActionProvider,
-            OpenTerminalMenuProvider,
+            ToggleActionProvider, OpenTerminalInDirectoryMenuProvider,
             OpenNativeFileDetailsMenuProvider,
             BrowseInNativeManagerActionProvider,
             ApplyFileEditActionProvider,
