@@ -28,9 +28,9 @@ public class ShellSession extends Session {
         try {
             shellControl.start();
 
-            var supportsAliveCheck =
-                    shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
-            if (supportsAliveCheck) {
+            var shouldAliveCheck = !shellControl.isLocal();
+            var supportsAliveCheck = shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
+            if (shouldAliveCheck && supportsAliveCheck) {
                 startAliveListener();
             }
         } catch (Exception ex) {
@@ -77,6 +77,10 @@ public class ShellSession extends Session {
 
     @Override
     public boolean checkAlive() throws Exception {
+        if (shellControl.isSubShellActive()) {
+            return true;
+        }
+
         try {
             // Don't print it constantly
             return shellControl

@@ -44,16 +44,20 @@ public class DataStoreProviders {
         return ALL.stream().filter(d -> d.getId().equalsIgnoreCase(id)).findAny();
     }
 
+
     @SuppressWarnings("unchecked")
-    public static <T extends DataStoreProvider> T byStore(DataStore store) {
+    public static <T extends DataStoreProvider> Optional<T> byStoreIfPresent(DataStore store) {
         if (ALL == null) {
             throw new IllegalStateException("Not initialized");
         }
 
-        return (T) ALL.stream()
+        return (Optional<T>) ALL.stream()
                 .filter(d -> d.getStoreClasses().contains(store.getClass()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
+                .findAny();
+    }
+
+    public static <T extends DataStoreProvider> T byStore(DataStore store) {
+        return DataStoreProviders.<T>byStoreIfPresent(store).orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
     }
 
     public static List<DataStoreProvider> getAll() {

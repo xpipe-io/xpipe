@@ -77,7 +77,10 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
                 divs.getFirst().setPosition(d);
                 r.layout();
                 Platform.runLater(() -> {
-                    divs.getFirst().setPosition(oldPos / r.getWidth());
+                    // Div might be removed again since last time
+                    if (divs.size() > 0) {
+                        divs.getFirst().setPosition(oldPos / r.getWidth());
+                    }
                 });
                 if (onDividerChange != null) {
                     onDividerChange.accept(d);

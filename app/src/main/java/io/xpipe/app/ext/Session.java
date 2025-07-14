@@ -19,12 +19,16 @@ public abstract class Session implements AutoCloseable {
     }
 
     protected void startAliveListener() {
-        GlobalTimer.scheduleUntil(Duration.ofMillis(5000), false, () -> {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(10000), false, () -> {
             if (!isRunning()) {
                 return true;
             }
 
             ThreadHelper.runAsync(() -> {
+                if (!isRunning()) {
+                    return;
+                }
+
                 try {
                     var r = checkAlive();
                     if (r) {

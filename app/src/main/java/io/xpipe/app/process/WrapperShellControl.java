@@ -247,6 +247,16 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void setSubShellActive(boolean active) {
+        parent.setSubShellActive(active);
+    }
+
+    @Override
+    public boolean isSubShellActive() {
+        return parent.isSubShellActive();
+    }
+
+    @Override
     public void close() throws Exception {
         parent.close();
     }

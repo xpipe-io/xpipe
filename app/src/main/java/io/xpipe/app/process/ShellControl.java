@@ -2,6 +2,7 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
@@ -32,6 +33,16 @@ public interface ShellControl extends ProcessControl {
     void writeLine(String line, boolean log) throws IOException;
 
     void write(byte[] b) throws IOException;
+
+    void setSubShellActive(boolean active);
+
+    boolean isSubShellActive();
+
+    default void waitForSubShellExit() {
+        while (isSubShellActive()) {
+            ThreadHelper.sleep(10);
+        }
+    }
 
     @Override
     LocalProcessInputStream getStdout();

@@ -160,7 +160,8 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         text.addListener(listener);
 
         editing.addListener((observable, oldValue, newValue) -> {
-            if (getTableRow().getItem() != null && getTableRow().getItem().equals(newValue)) {
+            var item = getTableRow().getItem();
+            if (item != null && item.equals(newValue)) {
                 PlatformThread.runLaterIfNeeded(() -> {
                     textField.setDisable(false);
                     textField.requestFocus();
@@ -168,7 +169,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                     var content = textField.getText();
                     if (content != null && !content.isEmpty()) {
                         var name = FilePath.of(content);
-                        var baseNameEnd = name.getBaseName().toString().length();
+                        var baseNameEnd = item.getRawFileEntry().getKind() == FileKind.DIRECTORY ? content.length() : name.getBaseName().toString().length();
                         textField.selectRange(0, baseNameEnd);
                     }
                 });

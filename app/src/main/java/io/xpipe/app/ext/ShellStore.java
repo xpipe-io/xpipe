@@ -19,6 +19,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
                 stopSessionIfNeeded();
             } else {
                 try {
+                    existingSession.getShellControl().waitForSubShellExit();
                     existingSession.getShellControl().command(" echo xpipetest").execute();
                     return new StubShellControl(existingSession.getShellControl());
                 } catch (Exception e) {

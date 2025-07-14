@@ -35,7 +35,7 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
     @Override
     public String getShortcutName() {
         var names = actions.size() > 3
-                ? actions.size() + "..."
+                ? actions.size() + " connections"
                 : actions.stream()
                         .map(a -> DataStorage.get()
                                 .getStoreEntryDisplayName(a.getRef().get()))

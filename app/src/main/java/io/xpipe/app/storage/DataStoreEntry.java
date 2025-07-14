@@ -112,8 +112,8 @@ public class DataStoreEntry extends StorageElement {
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
-        this.validity = validity;
-        this.provider = store != null ? DataStoreProviders.byStore(store) : null;
+        this.provider = store != null ? DataStoreProviders.byStoreIfPresent(store).orElse(null) : null;
+        this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
         this.icon = icon;
