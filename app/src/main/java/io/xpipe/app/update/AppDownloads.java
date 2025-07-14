@@ -102,7 +102,7 @@ public class AppDownloads {
         var ptbAvailable = json.get("ptbAvailable");
         if (ptbAvailable != null) {
             var b = ptbAvailable.asBoolean();
-            if (b && AppLayoutModel.get() != null) {
+            if (b && AppLayoutModel.get() != null && !AppProperties.get().isStaging()) {
                 GlobalTimer.delay(
                         () -> {
                             AppLayoutModel.get().getPtbAvailable().set(true);
