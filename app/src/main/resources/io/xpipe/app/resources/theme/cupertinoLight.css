@@ -1,4 +1,6 @@
-.root { -color-bg-default-transparent: #FFFFFFAF; }
+.root:windows { -color-bg-default-transparent: #FFFFFFAF; }
+
+.root:macos { -color-bg-default-transparent: #FFFFFFBF; }
 
 .root .button, .root .toggle-button {
     -fx-effect: NONE;

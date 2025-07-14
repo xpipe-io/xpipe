@@ -53,6 +53,7 @@ public class DesktopShortcuts {
 
     private static Path createMacOSShortcut(String executable, String args, String name) throws Exception {
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
+        var assets = icon.getParent().resolve("Assets.car");
         var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
                 """
@@ -79,12 +80,15 @@ public class DesktopShortcuts {
                                                     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
                                                     <plist version="1.0">
                                                     <dict>
+                                                        <key>CFBundleIconName</key>
+                                                        <string>xpipe</string>
                                                     	<key>CFBundleIconFile</key>
-                                                    	<string>icon.icns</string>
+                                                    	<string>xpipe</string>
                                                     </dict>
                                                     </plist>
                                                     """);
-            pc.executeSimpleCommand("cp \"" + icon + "\" \"" + base + "/Contents/Resources/icon.icns\"");
+            pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"").execute();
+            pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"").execute();
         }
         return base;
     }
