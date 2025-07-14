@@ -459,7 +459,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         var compRegion = comp.createRegion();
 
         var empty = new StackPane();
-        empty.setMinWidth(0);
+        empty.setMinWidth(180);
         empty.widthProperty().addListener((observable, oldValue, newValue) -> {
             if (tabModel.isCloseable() && tabs.getSelectionModel().getSelectedItem() == tab) {
                 rightPadding.setValue(newValue.doubleValue());

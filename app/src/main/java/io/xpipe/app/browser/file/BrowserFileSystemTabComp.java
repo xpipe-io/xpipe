@@ -51,6 +51,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
     private Region createContent() {
         var root = new VBox();
+        root.setMinWidth(190);
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync((FilePath) null));
         Tooltip.install(
