@@ -21,8 +21,8 @@ It currently supports:
 - [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
 - [Tailscale](https://docs.xpipe.io/guide/tailscale) and [Teleport](https://docs.xpipe.io/guide/teleport) connections
 - Windows Subsystem for Linux, Cygwin, and MSYS2 environments
-- Powershell Remote Sessions
-- RDP and VNC connections
+- [Powershell Remote Sessions](https://docs.xpipe.io/guide/pssession)
+- [RDP](https://docs.xpipe.io/guide/rdp) and [VNC](https://docs.xpipe.io/guide/vnc) connections
 
 ## Connection hub
 
@@ -186,7 +186,7 @@ The distributed XPipe application consists out of two parts:
 - The open-source core that you can find this repository. It is licensed under the [Apache License 2.0](/LICENSE.md).
 - The closed-source extensions, mostly for homelab/professional plan features, which are not included in this repository
 
-Additional features are available in the homelab/professional plan . For more details see https://xpipe.io/pricing.
+Additional features are available in the homelab/professional plan. For more details see https://xpipe.io/pricing.
 If your enterprise puts great emphasis on having access to the full source code, there are also full source-available enterprise options available.
 
 ## Documentation
