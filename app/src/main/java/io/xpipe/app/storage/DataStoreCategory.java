@@ -13,6 +13,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -71,7 +72,7 @@ public class DataStoreCategory extends StorageElement {
                 DataStoreCategoryConfig.empty());
     }
 
-    public static Optional<DataStoreCategory> fromDirectory(Path dir) {
+    public static Optional<DataStoreCategory> fromDirectory(Path dir) throws IOException {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("category.json");

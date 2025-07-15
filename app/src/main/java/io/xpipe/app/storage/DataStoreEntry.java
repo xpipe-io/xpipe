@@ -16,6 +16,7 @@ import lombok.*;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -200,7 +201,7 @@ public class DataStoreEntry extends StorageElement {
         return "icons/" + icon + ".svg";
     }
 
-    public static Optional<DataStoreEntry> fromDirectory(Path dir) {
+    public static Optional<DataStoreEntry> fromDirectory(Path dir) throws IOException {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("entry.json");

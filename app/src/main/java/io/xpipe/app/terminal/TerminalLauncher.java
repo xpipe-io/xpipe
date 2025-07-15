@@ -144,7 +144,7 @@ public class TerminalLauncher {
             FilePath directory,
             ProcessControl cc,
             UUID request,
-            boolean preferTabs) {
+            boolean preferTabs) throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
             throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
