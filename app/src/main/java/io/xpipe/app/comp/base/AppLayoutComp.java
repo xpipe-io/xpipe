@@ -45,9 +45,13 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         multi.styleClass("background");
 
         multi.apply(struc -> {
-            struc.get().opacityProperty().bind(Bindings.createDoubleBinding(() -> {
-                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.95;
-            }, AppPrefs.get().performanceMode()));
+            struc.get()
+                    .opacityProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.95;
+                            },
+                            AppPrefs.get().performanceMode()));
         });
 
         var pane = new BorderPane();

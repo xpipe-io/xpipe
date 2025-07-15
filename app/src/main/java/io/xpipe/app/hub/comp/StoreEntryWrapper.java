@@ -267,7 +267,8 @@ public class StoreEntryWrapper {
                             } else {
                                 return Optional.of(new EditHubLeafProvider());
                             }
-                        }).orElse(null);
+                        })
+                        .orElse(null);
                 this.defaultActionProvider.setValue(defaultProvider);
 
                 var newMajorProviders = ActionProvider.ALL.stream()

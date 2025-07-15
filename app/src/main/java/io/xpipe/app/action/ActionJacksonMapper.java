@@ -1,19 +1,17 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.browser.action.BrowserAction;
-import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.UuidHelper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.core.UuidHelper;
 
 import java.util.ArrayList;
 
@@ -98,14 +96,18 @@ public class ActionJacksonMapper {
                     "Store " + DataStorage.get().getStorePath(entry.get()) + " is incomplete"));
         }
 
-        if (provider instanceof HubLeafProvider<?> l &&
-                (!l.getApplicableClass().isAssignableFrom(entry.get().getStore().getClass()) || !l.isApplicable(entry.get().ref()))) {
+        if (provider instanceof HubLeafProvider<?> l
+                && (!l.getApplicableClass()
+                                .isAssignableFrom(entry.get().getStore().getClass())
+                        || !l.isApplicable(entry.get().ref()))) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     "Store " + DataStorage.get().getStorePath(entry.get()) + " is not applicable for action type"));
         }
 
-        if (provider instanceof BatchHubProvider<?> h &&
-                (!h.getApplicableClass().isAssignableFrom(entry.get().getStore().getClass()) || !h.isApplicable(entry.get().ref()))) {
+        if (provider instanceof BatchHubProvider<?> h
+                && (!h.getApplicableClass()
+                                .isAssignableFrom(entry.get().getStore().getClass())
+                        || !h.isApplicable(entry.get().ref()))) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     "Store " + DataStorage.get().getStorePath(entry.get()) + " is not applicable for action type"));
         }

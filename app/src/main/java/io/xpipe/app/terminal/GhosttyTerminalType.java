@@ -1,19 +1,9 @@
 package io.xpipe.app.terminal;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ShellTemp;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.XPipeInstallation;
 
 public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 

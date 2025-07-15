@@ -25,7 +25,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import javax.management.MBeanServer;
 
 public class TroubleshootCategory extends AppPrefsCategory {
@@ -159,17 +158,28 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
         if (OsType.getLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
             b.addComp(
-                    new TileButtonComp("uninstallApplication", "uninstallApplicationDescription", "mdi2d-dump-truck", e -> {
-                        var file = XPipeInstallation.getCurrentInstallationBasePath().resolve("Contents").resolve("Resources").resolve("scripts").resolve("uninstall.sh");
-                        OperationMode.executeAfterShutdown(() -> {
-                            TerminalLauncher.openDirectFallback("Uninstall", sc -> ShellScript.lines(
-                                    "echo \"+ sudo " + file.toString() + "\"",
-                                    "sudo " + file.toString(),
-                                    ProcessControlProvider.get().getEffectiveLocalDialect().getPauseCommand())
-                            );
-                        });
-                        e.consume();
-                    })
+                    new TileButtonComp(
+                                    "uninstallApplication",
+                                    "uninstallApplicationDescription",
+                                    "mdi2d-dump-truck",
+                                    e -> {
+                                        var file = XPipeInstallation.getCurrentInstallationBasePath()
+                                                .resolve("Contents")
+                                                .resolve("Resources")
+                                                .resolve("scripts")
+                                                .resolve("uninstall.sh");
+                                        OperationMode.executeAfterShutdown(() -> {
+                                            TerminalLauncher.openDirectFallback(
+                                                    "Uninstall",
+                                                    sc -> ShellScript.lines(
+                                                            "echo \"+ sudo " + file + "\"",
+                                                            "sudo " + file,
+                                                            ProcessControlProvider.get()
+                                                                    .getEffectiveLocalDialect()
+                                                                    .getPauseCommand()));
+                                        });
+                                        e.consume();
+                                    })
                             .grow(true, false),
                     null);
         }

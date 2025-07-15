@@ -3,10 +3,10 @@ package io.xpipe.app.action;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.UuidHelper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.xpipe.core.UuidHelper;
 import lombok.experimental.SuperBuilder;
 
 import java.util.*;
@@ -54,15 +54,22 @@ public abstract class SerializableAction extends AbstractAction {
             }
 
             var name = DataStoreFormatter.camelCaseToName(property.getKey());
-            name = Arrays.stream(name.split(" ")).filter(s -> !s.equals("Store")).collect(Collectors.joining(" "));
+            name = Arrays.stream(name.split(" "))
+                    .filter(s -> !s.equals("Store"))
+                    .collect(Collectors.joining(" "));
 
             if (property.getValue().isTextual()) {
                 var value = property.getValue().textValue();
                 var uuid = UuidHelper.parse(value);
                 if (uuid.isPresent()) {
-                    var refName = DataStorage.get().getStoreEntryIfPresent(uuid.get()).map(e -> e.getName()).or(() -> {
-                        return DataStorage.get().getStoreCategoryIfPresent(uuid.get()).map(c -> c.getName());
-                    });
+                    var refName = DataStorage.get()
+                            .getStoreEntryIfPresent(uuid.get())
+                            .map(e -> e.getName())
+                            .or(() -> {
+                                return DataStorage.get()
+                                        .getStoreCategoryIfPresent(uuid.get())
+                                        .map(c -> c.getName());
+                            });
                     map.put(name, refName.orElse(value));
                 } else {
                     map.put(name, value);

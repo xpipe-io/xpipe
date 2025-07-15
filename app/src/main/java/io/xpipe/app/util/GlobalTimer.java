@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.FailableRunnable;
 
 import java.time.Duration;
 import java.util.Timer;

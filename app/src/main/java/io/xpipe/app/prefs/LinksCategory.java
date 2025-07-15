@@ -23,9 +23,9 @@ public class LinksCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("reddit", "redditDescription", "mdi2r-reddit", e -> {
-                            Hyperlinks.open(Hyperlinks.REDDIT);
-                            e.consume();
-                        })
+                                    Hyperlinks.open(Hyperlinks.REDDIT);
+                                    e.consume();
+                                })
                                 .grow(true, false),
                         null)
                 .addComp(

@@ -165,7 +165,8 @@ public class BrowserFileTransferOperation {
                     handleSingleOnSameFileSystem(file);
                 } else {
                     // Transfers might change the working directory
-                    var currentDir = file.getFileSystem().getShell().orElseThrow().view().pwd();
+                    var currentDir =
+                            file.getFileSystem().getShell().orElseThrow().view().pwd();
                     handleSingleAcrossFileSystems(file);
                     file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
                 }

@@ -139,8 +139,12 @@ public class TerminalLauncher {
     }
 
     public static void open(
-            DataStoreEntry entry, String title, FilePath directory, ProcessControl cc, UUID request, boolean preferTabs)
-            throws Exception {
+            DataStoreEntry entry,
+            String title,
+            FilePath directory,
+            ProcessControl cc,
+            UUID request,
+            boolean preferTabs) {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
             throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));

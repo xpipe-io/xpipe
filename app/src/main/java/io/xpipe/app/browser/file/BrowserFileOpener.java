@@ -208,7 +208,7 @@ public class BrowserFileOpener {
                                 }
 
                                 @Override
-                                public void onFinish() throws Exception {
+                                public void onFinish() {
                                     model.refreshFileEntriesSync(List.of(entry));
                                 }
                             };
@@ -257,7 +257,7 @@ public class BrowserFileOpener {
                                 }
 
                                 @Override
-                                public void onFinish() throws Exception {
+                                public void onFinish() {
                                     model.refreshFileEntriesSync(List.of(entry));
                                 }
                             };

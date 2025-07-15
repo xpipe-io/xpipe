@@ -1,10 +1,7 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.SecretValue;
-import io.xpipe.core.UuidHelper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,7 +47,8 @@ public class ActionUrls {
         }
 
         var json = sa.toNode();
-        var parsed = JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
+        var parsed =
+                JacksonMapper.getDefault().treeToValue(json, new TypeReference<LinkedHashMap<String, JsonNode>>() {});
 
         Map<String, List<String>> requestParams = new LinkedHashMap<>();
         for (Map.Entry<String, JsonNode> e : parsed.entrySet()) {

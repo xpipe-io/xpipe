@@ -87,8 +87,10 @@ public class DesktopShortcuts {
                                                     </dict>
                                                     </plist>
                                                     """);
-            pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"").execute();
-            pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"").execute();
+            pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"")
+                    .execute();
+            pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"")
+                    .execute();
         }
         return base;
     }

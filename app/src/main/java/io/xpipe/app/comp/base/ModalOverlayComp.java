@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.OsType;
 
@@ -17,7 +18,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -182,12 +182,16 @@ public class ModalOverlayComp extends SimpleComp {
         content.setSpacing(20);
 
         if (newValue.getTitle() != null) {
-            var l = new Label(
+            var l = new LabelComp(
                     newValue.getTitle().getValue(),
-                    newValue.getGraphic() != null ? newValue.getGraphic().createGraphicNode() : null);
-            l.setGraphicTextGap(8);
-            AppFontSizes.xl(l);
-            content.getChildren().addFirst(l);
+                    newValue.getGraphic() != null
+                            ? newValue.getGraphic()
+                            : new LabelGraphic.IconGraphic("mdi2i-information-outline"));
+            l.apply(struc -> {
+                struc.get().setGraphicTextGap(8);
+                AppFontSizes.xl(struc.get());
+            });
+            content.getChildren().addFirst(l.createRegion());
         } else {
             content.getChildren().addFirst(Comp.vspacer(0).createRegion());
         }

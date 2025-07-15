@@ -157,11 +157,8 @@ public class StandardStorage extends DataStorage {
                         }
 
                         addStoreCategory(c.get());
-                    } catch (IOException ex) {
-                        // IO exceptions are not expected
-                        exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
-                        directoriesToKeep.add(path);
-                    } catch (Exception ex) {
+                    } // IO exceptions are not expected
+                    catch (Exception ex) {
                         // Data corruption and schema changes are expected
                         ErrorEventFactory.fromThrowable(ex)
                                 .expected()
@@ -214,11 +211,8 @@ public class StandardStorage extends DataStorage {
 
                         laterAddedEntries.add(entry.get());
                         storeEntries.put(entry.get(), entry.get());
-                    } catch (IOException ex) {
-                        // IO exceptions are not expected
-                        exception.set(new IOException("Unable to load data from " + path + ". Is it corrupted?", ex));
-                        directoriesToKeep.add(path);
-                    } catch (Exception ex) {
+                    } // IO exceptions are not expected
+                    catch (Exception ex) {
                         // Data corruption and schema changes are expected
 
                         // We only keep invalid entries in developer mode as there's no point in keeping them in

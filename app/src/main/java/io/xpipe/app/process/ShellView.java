@@ -154,7 +154,9 @@ public class ShellView {
     }
 
     public FilePath pwd() throws Exception {
-        return FilePath.of(shellControl.command(shellControl.getShellDialect().getPrintWorkingDirectoryCommand()).readStdoutOrThrow());
+        return FilePath.of(shellControl
+                .command(shellControl.getShellDialect().getPrintWorkingDirectoryCommand())
+                .readStdoutOrThrow());
     }
 
     public void cd(String directory) throws Exception {

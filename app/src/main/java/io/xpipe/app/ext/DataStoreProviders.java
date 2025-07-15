@@ -44,7 +44,6 @@ public class DataStoreProviders {
         return ALL.stream().filter(d -> d.getId().equalsIgnoreCase(id)).findAny();
     }
 
-
     @SuppressWarnings("unchecked")
     public static <T extends DataStoreProvider> Optional<T> byStoreIfPresent(DataStore store) {
         if (ALL == null) {
@@ -57,7 +56,8 @@ public class DataStoreProviders {
     }
 
     public static <T extends DataStoreProvider> T byStore(DataStore store) {
-        return DataStoreProviders.<T>byStoreIfPresent(store).orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
+        return DataStoreProviders.<T>byStoreIfPresent(store)
+                .orElseThrow(() -> new IllegalArgumentException("Unknown store class"));
     }
 
     public static List<DataStoreProvider> getAll() {

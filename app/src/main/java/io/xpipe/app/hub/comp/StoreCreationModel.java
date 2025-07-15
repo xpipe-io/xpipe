@@ -114,7 +114,8 @@ public class StoreCreationModel {
                             && store.get().isComplete()
                             && store.get() instanceof ValidatableStore) {
                         if (existingEntry != null) {
-                            return !existingEntry.isFreeze() || !existingEntry.getName().equals(name.getValue());
+                            return !existingEntry.isFreeze()
+                                    || !existingEntry.getName().equals(name.getValue());
                         } else {
                             return true;
                         }
@@ -175,7 +176,8 @@ public class StoreCreationModel {
 
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
-        var action = OpenTerminalHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
+        var action =
+                OpenTerminalHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
     }
 

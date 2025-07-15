@@ -62,12 +62,11 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         return true;
     }
 
-
     private void validateAutomatedAction() throws Exception {
         var bap = (BrowserActionProvider) getProvider();
         if (!bap.isApplicable(getModel(), getEntries())) {
-            throw ErrorEventFactory.expected(new IllegalArgumentException(
-                    "Selection is not applicable for action type"));
+            throw ErrorEventFactory.expected(
+                    new IllegalArgumentException("Selection is not applicable for action type"));
         }
 
         if (files != null) {
@@ -86,7 +85,8 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         } else {
             var dir = files.getFirst();
             if (!model.getFileSystem().directoryExists(dir)) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("File or directory does not exist: " + dir));
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("File or directory does not exist: " + dir));
             }
             return dir;
         }

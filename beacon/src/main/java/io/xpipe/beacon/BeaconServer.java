@@ -5,6 +5,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeDaemonMode;
 import io.xpipe.core.XPipeInstallation;
+
 import lombok.SneakyThrows;
 
 import java.io.BufferedReader;
@@ -22,7 +23,7 @@ public class BeaconServer {
 
     @SneakyThrows
     public static boolean isReachable(int port) {
-        var local = Inet4Address.getByAddress(new byte[]{0x7f, 0x00, 0x00, 0x01});
+        var local = Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01});
 
         try (var socket = new Socket()) {
             InetSocketAddress adress = new InetSocketAddress(local, port);
@@ -36,7 +37,7 @@ public class BeaconServer {
         // To be sure, check that the socket is indeed occupied
         try (var ignored = new ServerSocket(port, 0, local)) {
             return false;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             return true;
         }
     }

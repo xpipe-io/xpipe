@@ -29,7 +29,8 @@ public class ShellSession extends Session {
             shellControl.start();
 
             var shouldAliveCheck = !shellControl.isLocal();
-            var supportsAliveCheck = shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
+            var supportsAliveCheck =
+                    shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
             if (shouldAliveCheck && supportsAliveCheck) {
                 startAliveListener();
             }

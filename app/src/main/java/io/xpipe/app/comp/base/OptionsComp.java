@@ -225,7 +225,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                                 .map(Region::getWidth)
                                 .filter(aDouble -> aDouble > 0.0)
                                 .max(Double::compareTo)
-                                .map(d -> d)
                                 .orElse(Region.USE_COMPUTED_SIZE);
                     },
                     nameRegions.stream().map(Region::widthProperty).toList().toArray(new Observable[0]));

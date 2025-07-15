@@ -112,7 +112,8 @@ public class DataStoreEntry extends StorageElement {
         this.categoryUuid = categoryUuid;
         this.store = store;
         this.storeNode = storeNode;
-        this.provider = store != null ? DataStoreProviders.byStoreIfPresent(store).orElse(null) : null;
+        this.provider =
+                store != null ? DataStoreProviders.byStoreIfPresent(store).orElse(null) : null;
         this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
@@ -199,7 +200,7 @@ public class DataStoreEntry extends StorageElement {
         return "icons/" + icon + ".svg";
     }
 
-    public static Optional<DataStoreEntry> fromDirectory(Path dir) throws Exception {
+    public static Optional<DataStoreEntry> fromDirectory(Path dir) {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("entry.json");

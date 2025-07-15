@@ -89,7 +89,8 @@ public enum DocumentationLink {
     }
 
     public static String getRoot() {
-        var ptbDocs = AppProperties.get().isDevelopmentEnvironment() || AppProperties.get().isStaging();
+        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
+                || AppProperties.get().isStaging();
         return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }

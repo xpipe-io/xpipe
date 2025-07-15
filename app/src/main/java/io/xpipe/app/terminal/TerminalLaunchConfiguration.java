@@ -92,9 +92,7 @@ public class TerminalLaunchConfiguration {
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
-                            .formatted(logFile.getFileName(),
-                                    logFile,
-                                    launcherScript, logFile.getFileName());
+                            .formatted(logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null,
                     adjustedTitle,
@@ -104,20 +102,27 @@ public class TerminalLaunchConfiguration {
                     ShellDialects.POWERSHELL);
             return config;
         } else {
-            var found = sc.command(sc.getShellDialect().getWhichCommand("script"))
-                    .executeAndCheck();
+            var found =
+                    sc.command(sc.getShellDialect().getWhichCommand("script")).executeAndCheck();
             if (!found) {
                 var suffix = sc.getOsType() == OsType.MACOS
                         ? "This command is available in the util-linux package which can be installed via homebrew."
                         : "This command is available in the util-linux package.";
-                throw ErrorEventFactory.expected(new IllegalStateException(
-                        "Logging requires the script command to be installed. " + suffix));
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Logging requires the script command to be installed. " + suffix));
             }
 
             var launcherScript = ScriptHelper.createExecScript(
-                    LocalShell.getShell(), LocalShell.getShell().getShellDialect().terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
-            var command = sc == LocalShell.getShell() ? launcherScript :
-                    LocalShell.getShell().getShellDialect().getOpenScriptCommand(launcherScript.toString()).buildFull(LocalShell.getShell());
+                    LocalShell.getShell(),
+                    LocalShell.getShell()
+                            .getShellDialect()
+                            .terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart));
+            var command = sc == LocalShell.getShell()
+                    ? launcherScript
+                    : LocalShell.getShell()
+                            .getShellDialect()
+                            .getOpenScriptCommand(launcherScript.toString())
+                            .buildFull(LocalShell.getShell());
             var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                     ? """
                    echo "Transcript started, output file is sessions/%s"
@@ -126,7 +131,15 @@ public class TerminalLaunchConfiguration {
                    cat "%s" | perl -pe 's/\\e([^\\[\\]]|\\[.*?[a-zA-Z]|\\].*?\\a)/\\n/g' | perl -0 -pe 's/\\n+/\\n/g' | col -b > "%s.new"
                    mv -f "%s.new" "%s"
                    """
-                            .formatted(logFile.getFileName(), logFile, command, logFile.getFileName(), logFile, logFile, logFile, logFile)
+                            .formatted(
+                                    logFile.getFileName(),
+                                    logFile,
+                                    command,
+                                    logFile.getFileName(),
+                                    logFile,
+                                    logFile,
+                                    logFile,
+                                    logFile)
                     : """
                    echo "Transcript started, output file is sessions/%s"
                    script --quiet --command '%s' "%s"
@@ -134,14 +147,17 @@ public class TerminalLaunchConfiguration {
                    cat "%s" | perl -pe 's/\\e([^\\[\\]]|\\[.*?[a-zA-Z]|\\].*?\\a)/\\n/g' | perl -0 -pe 's/\\n+/\\n/g' | col -b > "%s.new"
                    mv -f "%s.new" "%s"
                    """
-                            .formatted(logFile.getFileName(), command, logFile, logFile.getFileName(), logFile, logFile, logFile, logFile);
+                            .formatted(
+                                    logFile.getFileName(),
+                                    command,
+                                    logFile,
+                                    logFile.getFileName(),
+                                    logFile,
+                                    logFile,
+                                    logFile,
+                                    logFile);
             var config = new TerminalLaunchConfiguration(
-                    entry != null ? color : null,
-                    adjustedTitle,
-                    cleanTitle,
-                    preferTabs,
-                    content,
-                    sc.getShellDialect());
+                    entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, content, sc.getShellDialect());
             config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
             return config;
         }

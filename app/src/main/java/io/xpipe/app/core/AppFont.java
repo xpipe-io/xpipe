@@ -2,7 +2,6 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.OsType;
 
 import javafx.scene.text.Font;
 

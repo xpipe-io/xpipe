@@ -112,13 +112,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         rightBox.setFillHeight(true);
         rightBox.getStyleClass().add("button-bar");
 
-        topBar.getChildren()
-                .setAll(
-                        leftBox,
-                        new Spacer(6),
-                        navBar.get(),
-                        new Spacer(6),
-                        rightBox);
+        topBar.getChildren().setAll(leftBox, new Spacer(6), navBar.get(), new Spacer(6), rightBox);
         topBar.setMinWidth(0);
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {

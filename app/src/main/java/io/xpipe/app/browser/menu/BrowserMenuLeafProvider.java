@@ -25,7 +25,7 @@ import java.util.List;
 
 public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
-    default void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) throws Exception {
+    default void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         createAction(model, entries).executeAsync();
     }
 

@@ -5,18 +5,15 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconAuthMethod;
 import io.xpipe.beacon.BeaconClient;
 import io.xpipe.beacon.BeaconClientInformation;
 import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 import io.xpipe.beacon.api.DaemonOpenExchange;
-import io.xpipe.beacon.api.HandshakeExchange;
 import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeInstallation;
 
 import java.awt.*;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,12 +25,14 @@ public class AppInstance {
 
     public static Optional<BeaconClient> tryEstablishConnection(int port) {
         try {
-            return Optional.of(BeaconClient.establishConnection(port, BeaconClientInformation.Daemon.builder().build()));
+            return Optional.of(BeaconClient.establishConnection(
+                    port, BeaconClientInformation.Daemon.builder().build()));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
             return Optional.empty();
         }
     }
+
     private static void checkStart(int attemptCounter) {
         var port = AppBeaconServer.get().getPort();
         var reachable = BeaconServer.isReachable(port);

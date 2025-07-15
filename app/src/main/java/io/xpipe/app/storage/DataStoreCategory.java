@@ -71,7 +71,7 @@ public class DataStoreCategory extends StorageElement {
                 DataStoreCategoryConfig.empty());
     }
 
-    public static Optional<DataStoreCategory> fromDirectory(Path dir) throws Exception {
+    public static Optional<DataStoreCategory> fromDirectory(Path dir) {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
         var entryFile = dir.resolve("category.json");
