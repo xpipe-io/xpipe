@@ -283,7 +283,7 @@ public abstract class OperationMode {
                 OperationMode.halt(1);
             }
 
-            ThreadHelper.sleep(500);
+            ThreadHelper.sleep(50);
             OperationMode.halt(0);
         };
 

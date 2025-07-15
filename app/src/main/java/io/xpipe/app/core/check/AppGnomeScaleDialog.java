@@ -33,7 +33,7 @@ public class AppGnomeScaleDialog {
 
         var content = AppDialog.dialogText(
                 "You are running XPipe on a Wayland system."
-                        + " If you are using a high-dpi display, eue to xwayland limitations, this might result in a blurry window. See the documentation for workarounds if you are affected.");
+                        + " If you are using a high-dpi display, due to xwayland limitations, this might result in a blurry window. See the documentation for workarounds if you are affected.");
         var modal = ModalOverlay.of("waylandScalingTitle", content);
         modal.addButton(new ModalButton(
                 "docs",
