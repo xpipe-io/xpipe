@@ -34,6 +34,7 @@ public enum DocumentationLink {
     APPLE_CONTAINERS("guide/apple-containers"),
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
+    KVM_VNC("guide/kvm#vnc-access"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
