@@ -11,6 +11,7 @@ public enum DocumentationLink {
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
     TLS_DECRYPTION("troubleshoot/license-activation#tls-decryption"),
+    UPDATE_FAIL("troubleshoot/update-fail"),
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),

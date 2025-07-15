@@ -133,6 +133,10 @@ public class SystemIconCache {
                     var generateDarkModeInverse =
                             existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
                     if (generateDarkModeInverse) {
+                        if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
+                            continue;
+                        }
+
                         rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                         continue;
                     }

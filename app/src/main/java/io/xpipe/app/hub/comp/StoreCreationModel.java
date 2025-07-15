@@ -113,7 +113,11 @@ public class StoreCreationModel {
                     if (entry.getValue() != null
                             && store.get().isComplete()
                             && store.get() instanceof ValidatableStore) {
-                        return true;
+                        if (existingEntry != null) {
+                            return !existingEntry.isFreeze() || !existingEntry.getName().equals(name.getValue());
+                        } else {
+                            return true;
+                        }
                     } else {
                         return false;
                     }

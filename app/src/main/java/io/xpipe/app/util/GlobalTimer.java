@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FailableRunnable;
 
 import java.time.Duration;
@@ -38,13 +39,22 @@ public class GlobalTimer {
         };
     }
 
+    private static void schedule(TimerTask task, long delay) {
+        try {
+            // The timer might be shutdown already
+            TIMER.schedule(task, delay);
+        } catch (IllegalStateException e) {
+            ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+        }
+    }
+
     public static void scheduleUntil(Duration interval, boolean runInstantly, Supplier<Boolean> s) {
         var task = createDelayedTask(interval, s);
-        TIMER.schedule(task, runInstantly ? interval.toMillis() : 0);
+        schedule(task, runInstantly ? interval.toMillis() : 0);
     }
 
     public static void delay(Runnable r, Duration delay) {
-        TIMER.schedule(
+        schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
@@ -55,22 +65,11 @@ public class GlobalTimer {
     }
 
     public static void delayAsync(Runnable r, Duration delay) {
-        TIMER.schedule(
+        schedule(
                 new TimerTask() {
                     @Override
                     public void run() {
                         ThreadHelper.runAsync(r);
-                    }
-                },
-                delay.toMillis());
-    }
-
-    public static void delayFailableAsync(FailableRunnable<Throwable> r, Duration delay) {
-        TIMER.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        ThreadHelper.runFailableAsync(r);
                     }
                 },
                 delay.toMillis());

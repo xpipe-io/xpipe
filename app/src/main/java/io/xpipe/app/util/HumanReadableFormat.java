@@ -68,28 +68,13 @@ public final class HumanReadableFormat {
                     .format(x);
         }
 
-        // not this week
-        if (getWeekNumber(x) != getWeekNumber(now)) {
-            return DAY_MONTH
-                    .withLocale(AppI18n.activeLanguage().getValue().getLocale())
-                    .format(x);
-        }
-
-        // not today
-        int xDay = x.getDayOfWeek().getValue();
-        int nowDay = now.getDayOfWeek().getValue();
-        if (xDay == nowDay - 1) {
-            return AppI18n.get("yesterday");
-        }
-        if (xDay != nowDay) {
-            return DAY_OF_WEEK
-                    .withLocale(AppI18n.activeLanguage().getValue().getLocale())
-                    .format(x);
-        }
-
-        return HOUR_MINUTE
+        var time = HOUR_MINUTE
                 .withLocale(AppI18n.activeLanguage().getValue().getLocale())
                 .format(x);
+        var date = DAY_MONTH
+                .withLocale(AppI18n.activeLanguage().getValue().getLocale())
+                .format(x);
+        return date + " " + time;
     }
 
     private static int getWeekNumber(LocalDateTime date) {
