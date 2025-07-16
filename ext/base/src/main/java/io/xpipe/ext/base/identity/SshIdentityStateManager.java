@@ -95,7 +95,8 @@ public class SshIdentityStateManager {
                 .start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
-                var posixMessage = sc.getOsType() != OsType.WINDOWS ? " and the SSH_AUTH_SOCK variable." : "";
+                var posixMessage = sc.getOsType() != OsType.WINDOWS ? authSock != null ? " and the socket " + authSock + "."
+                        : " and the SSH_AUTH_SOCK variable." : "";
                 var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
                         + "\n"
                         + r[1]

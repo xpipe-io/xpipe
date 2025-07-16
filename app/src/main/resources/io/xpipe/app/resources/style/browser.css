@@ -1,3 +1,7 @@
+.root:macos .browser .browser-content, .root:macos .browser .top-bar {
+    -fx-font-family: "Roboto";
+}
+
 .browser .visual-display {
     -fx-border-color: -color-border-default;
     -fx-border-width: 2 1 1 1;
