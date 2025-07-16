@@ -8,6 +8,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -18,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,6 +51,15 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
+                                // Only Windows 11 has colored background support
+                                if (OsType.getLocal() == OsType.WINDOWS && !SystemUtils.IS_OS_WINDOWS_11) {
+                                    return 1.0;
+                                }
+
+                                if (OsType.getLocal() == OsType.LINUX) {
+                                    return 1.0;
+                                }
+
                                 return AppPrefs.get().performanceMode().get() ? 1.0 : 0.95;
                             },
                             AppPrefs.get().performanceMode()));
