@@ -54,7 +54,7 @@ public class DesktopShortcuts {
 
         // Mark shortcuts as trusted on gnome
         LocalShell.getShell().command(CommandBuilder.of().add("gio", "set")
-                .addFile(file).addQuoted("metadata::trusted").add("yes"))
+                .addFile(file).addQuoted("metadata::trusted").add("true"))
                 .executeAndCheck();
 
         return file;
