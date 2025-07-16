@@ -111,13 +111,6 @@ public class ShellView {
         return path;
     }
 
-    public String getLibraryPath() throws Exception {
-        var path = shellControl
-                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("LD_LIBRARY_PATH"))
-                .readStdoutOrThrow();
-        return path;
-    }
-
     public boolean isRoot() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
             return false;

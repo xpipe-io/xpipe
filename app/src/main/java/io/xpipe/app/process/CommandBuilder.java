@@ -4,6 +4,7 @@ import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -46,6 +47,19 @@ public class CommandBuilder {
 
     public CommandBuilder fixedEnvironment(String k, String v) {
         environmentVariables.put(k, new Fixed(v));
+        return this;
+    }
+
+    public CommandBuilder addToPath(FilePath dir, boolean append) {
+        return addToEnvironmentPath("PATH", dir, append);
+    }
+
+    public CommandBuilder addToEnvironmentPath(String name, FilePath dir, boolean append) {
+        environmentVariables.put(name, sc -> {
+            var sep = sc.getOsType() == OsType.WINDOWS ? ";" : ":";
+            var var = sc.view().getEnvironmentVariable(name);
+            return append ? var + sep + dir : dir + sep + var;
+        });
         return this;
     }
 

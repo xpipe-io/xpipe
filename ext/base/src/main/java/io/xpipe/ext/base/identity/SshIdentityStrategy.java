@@ -426,13 +426,11 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
                 var file = getFile(sc);
-                var dir = FilePath.of(file).getFileName();
+                var dir = FilePath.of(file).getParent();
                 if (sc.getOsType() == OsType.WINDOWS) {
-                    var path = sc.view().getPath();
-                    builder.fixedEnvironment("PATH", dir + ";" + path);
+                    builder.addToPath(dir, true);
                 } else {
-                    var path = sc.view().getLibraryPath();
-                    builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
+                    builder.addToEnvironmentPath("LD_LIBRARY_PATH", dir, true);
                 }
             });
         }
@@ -454,13 +452,13 @@ public interface SshIdentityStrategy {
     @AllArgsConstructor
     class CustomPkcs11Library implements SshIdentityStrategy {
 
-        String file;
+        FilePath file;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
             parent.requireLicensedFeature("pkcs11Identity");
 
-            if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
+            if (!parent.getShellDialect().createFileExistsCommand(parent, file.toString()).executeAndCheck()) {
                 throw ErrorEventFactory.expected(new IOException("PKCS11 library at " + file + " not found"));
             }
         }
@@ -468,14 +466,11 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.setup(sc -> {
-                var file = getFile();
-                var dir = FilePath.of(file).getParent();
+                var dir = file.getParent();
                 if (sc.getOsType() == OsType.WINDOWS) {
-                    var path = sc.view().getPath();
-                    builder.fixedEnvironment("PATH", dir + ";" + path);
+                    builder.addToPath(dir, true);
                 } else {
-                    var path = sc.view().getLibraryPath();
-                    builder.fixedEnvironment("LD_LIBRARY_PATH", dir + ":" + path);
+                    builder.addToEnvironmentPath("LD_LIBRARY_PATH", dir, true);
                 }
             });
         }
@@ -484,7 +479,7 @@ public interface SshIdentityStrategy {
         public List<KeyValue> configOptions(ShellControl parent) {
             return List.of(
                     new KeyValue("IdentitiesOnly", "no"),
-                    new KeyValue("PKCS11Provider", file),
+                    new KeyValue("PKCS11Provider", file.toString()),
                     new KeyValue("IdentityFile", "none"),
                     new KeyValue("IdentityAgent", "none"));
         }

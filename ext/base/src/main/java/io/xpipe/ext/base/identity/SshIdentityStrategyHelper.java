@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ContextualFileReferenceSync;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.ContextualFileReference;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 
@@ -135,10 +136,10 @@ public class SshIdentityStrategyHelper {
     }
 
     private static OptionsBuilder customPkcs11Library(Property<SshIdentityStrategy.CustomPkcs11Library> p) {
-        var file = new SimpleStringProperty(p.getValue() != null ? p.getValue().getFile() : null);
+        var file = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getFile() : null);
         return new OptionsBuilder()
-                .name("library")
-                .addString(file)
+                .nameAndDescription("pkcs11Library")
+                .addComp(new ContextualFileReferenceChoiceComp(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), file, null, List.of()), file)
                 .nonNull()
                 .bind(
                         () -> {
