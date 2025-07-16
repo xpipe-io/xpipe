@@ -84,6 +84,9 @@ public class OptionsBuilder {
                 new SimpleObjectProperty<>(selectedIndex.getValue() != -1 ? list.get(selectedIndex.getValue()) : null);
         selected.addListener((observable, oldValue, newValue) -> {
             selectedIndex.setValue(newValue != null ? list.indexOf(newValue) : null);
+            if (newValue != null) {
+                validatorList.get(list.indexOf(newValue)).validate();
+            }
         });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {

@@ -3,6 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -57,6 +59,11 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                 }
 
                                 if (OsType.getLocal() == OsType.LINUX) {
+                                    return 1.0;
+                                }
+
+                                // On macOS, we don't have a transparent background in dev mode
+                                if (OsType.getLocal() == OsType.MACOS && AppProperties.get().isDevelopmentEnvironment()) {
                                     return 1.0;
                                 }
 

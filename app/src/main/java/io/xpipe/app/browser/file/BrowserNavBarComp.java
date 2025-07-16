@@ -22,10 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -165,6 +162,12 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                             Platform.runLater(() -> {
                                 struc.get().end();
                             });
+                        }
+                    });
+
+                    struc.get().addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
+                        if (ke.getCode().equals(KeyCode.ENTER)) {
+                            ke.consume();
                         }
                     });
 
