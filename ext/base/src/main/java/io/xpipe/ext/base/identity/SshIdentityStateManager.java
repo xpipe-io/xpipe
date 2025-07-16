@@ -16,12 +16,12 @@ public class SshIdentityStateManager {
     private static RunningAgent runningAgent;
 
     private static void stopWindowsAgents(boolean openssh, boolean gpg, boolean external) throws Exception {
-        try (var sc = LocalShell.getShell().start()) {
-            var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
-            if (!pipeExists) {
-                return;
-            }
+        var pipeExists = LocalShell.getLocalPowershell().view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
+        if (!pipeExists) {
+            return;
+        }
 
+        try (var sc = LocalShell.getShell().start()) {
             var gpgList = sc.executeSimpleStringCommand("TASKLIST /FI \"IMAGENAME eq gpg-agent.exe\"");
             var gpgRunning = gpgList.contains("gpg-agent.exe");
 
@@ -66,11 +66,11 @@ public class SshIdentityStateManager {
                 if (r.get()) {
                     if (sc.getShellDialect().equals(ShellDialects.CMD)) {
                         sc.command(
-                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList ^\"/c^\", ^\"sc^\", ^\"stop^\", ^\"ssh-agent^\" -Verb runAs\"")
+                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList /c, sc, stop, ssh-agent -Verb runAs\"")
                                 .executeAndCheck();
                     } else {
                         sc.command(
-                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList `\"/c`\", `\"sc`\", `\"stop`\", `\"ssh-agent`\" -Verb runAs\"")
+                                        "powershell -Command \"Start-Process cmd -Wait -ArgumentList /c, sc, stop, ssh-agent -Verb runAs\"")
                                 .executeAndCheck();
                     }
                 }
@@ -174,9 +174,9 @@ public class SshIdentityStateManager {
                 if (!content.contains("enable-win32-openssh-support")) {
                     content += "\nenable-win32-openssh-support\n";
                     sc.view().writeTextFile(confFile, content);
-                    // reloadagent does not work correctly, so kill it
-                    stopWindowsAgents(false, true, false);
                 }
+                // reloadagent does not work correctly, so kill it
+                stopWindowsAgents(true, true, false);
                 sc.command(CommandBuilder.of().add("gpg-connect-agent", "/bye")).execute();
                 checkLocalAgentIdentities(null);
             } else {
