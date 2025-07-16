@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -32,6 +33,8 @@ public class DesktopShortcuts {
     }
 
     private static Path createLinuxShortcut(String executable, String args, String name) throws Exception {
+        // Linux .desktop names are very restrictive
+        var fixedName = name.replaceAll("[^\\w _]", "");
         var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                 """
@@ -44,10 +47,16 @@ public class DesktopShortcuts {
                         Terminal=false
                         Categories=Utility;Development;
                         """,
-                name, executable, args, icon);
+                fixedName, executable, args, icon);
         var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
+
+        // Mark shortcuts as trusted on gnome
+        LocalShell.getShell().command(CommandBuilder.of().add("gio", "set")
+                .addFile(file).addQuoted("metadata::trusted").add("yes"))
+                .executeAndCheck();
+
         return file;
     }
 

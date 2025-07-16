@@ -34,37 +34,39 @@ public class WorkspaceCreationDialog {
                 .apply(struc -> AppFontSizes.xs(struc.get()));
         var modal = ModalOverlay.of("workspaceCreationAlertTitle", content);
         modal.addButton(ModalButton.ok(() -> {
-            if (name.get() == null || path.get() == null) {
-                return;
-            }
+            ThreadHelper.runAsync(() -> {
+                if (name.get() == null || path.get() == null) {
+                    return;
+                }
 
-            try {
-                var shortcutName = (AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " (" + name.get() + ")";
-                var file =
-                        switch (OsType.getLocal()) {
-                            case OsType.Windows w -> {
-                                var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                                        .resolve(XPipeInstallation.getDaemonExecutablePath(w))
-                                        .toString();
-                                yield DesktopShortcuts.create(
-                                        exec,
-                                        "-Dio.xpipe.app.dataDir=\"" + path.get().toString()
-                                                + "\" -Dio.xpipe.app.acceptEula=true",
-                                        shortcutName);
-                            }
-                            default -> {
-                                var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                                        .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()))
-                                        .toString();
-                                yield DesktopShortcuts.create(
-                                        exec, "-d \"" + path.get().toString() + "\" --accept-eula", shortcutName);
-                            }
-                        };
-                DesktopHelper.browseFileInDirectory(file);
-                OperationMode.close();
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).handle();
-            }
+                try {
+                    var shortcutName = name.get();
+                    var file =
+                            switch (OsType.getLocal()) {
+                                case OsType.Windows w -> {
+                                    var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                                            .resolve(XPipeInstallation.getDaemonExecutablePath(w))
+                                            .toString();
+                                    yield DesktopShortcuts.create(
+                                            exec,
+                                            "-Dio.xpipe.app.dataDir=\"" + path.get().toString()
+                                                    + "\" -Dio.xpipe.app.acceptEula=true",
+                                            shortcutName);
+                                }
+                                default -> {
+                                    var exec = XPipeInstallation.getCurrentInstallationBasePath()
+                                            .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()))
+                                            .toString();
+                                    yield DesktopShortcuts.create(
+                                            exec, "open -d \"" + path.get().toString() + "\" --accept-eula", shortcutName);
+                                }
+                            };
+                    DesktopHelper.browseFileInDirectory(file);
+                    OperationMode.close();
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+            });
         }));
         modal.show();
     }
