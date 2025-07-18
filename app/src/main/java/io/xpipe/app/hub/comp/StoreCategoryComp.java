@@ -129,7 +129,8 @@ public class StoreCategoryComp extends SimpleComp {
                 category.getShownContainedEntriesCount(),
                 category.getAllContainedEntriesCount(),
                 string -> "(" + string + ")");
-        count.visible(Bindings.notEqual(0, category.getShownContainedEntriesCount()));
+        count.hide(Bindings.equal(0, category.getShownContainedEntriesCount()));
+        count.minWidth(Region.USE_PREF_SIZE);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
                 .or(showing);

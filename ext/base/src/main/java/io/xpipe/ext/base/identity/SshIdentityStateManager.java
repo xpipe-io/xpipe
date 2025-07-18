@@ -9,6 +9,8 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SshIdentityStateManager {
@@ -16,8 +18,8 @@ public class SshIdentityStateManager {
     private static RunningAgent runningAgent;
 
     private static void stopWindowsAgents(boolean openssh, boolean gpg, boolean external) throws Exception {
-        var pipeExists = LocalShell.getLocalPowershell().view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
-        if (!pipeExists) {
+        var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");
+        if (!Files.exists(pipePath)) {
             return;
         }
 
@@ -95,8 +97,8 @@ public class SshIdentityStateManager {
                 .start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
-                var posixMessage = sc.getOsType() != OsType.WINDOWS ? authSock != null ? " and the socket " + authSock + "."
-                        : " and the SSH_AUTH_SOCK variable." : "";
+                var posixMessage = sc.getOsType() != OsType.WINDOWS ? authSock != null ? " and the socket " + authSock
+                        : " and the SSH_AUTH_SOCK variable" : "";
                 var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
                         + "\n"
                         + r[1]
@@ -124,14 +126,13 @@ public class SshIdentityStateManager {
         if (OsType.getLocal() == OsType.WINDOWS) {
             stopWindowsAgents(true, true, false);
 
-            try (var sc = LocalShell.getLocalPowershell().start()) {
-                var pipeExists = sc.view().fileExists(FilePath.of("\\\\.\\pipe\\openssh-ssh-agent"));
-                if (!pipeExists) {
-                    // No agent is running
-                    throw ErrorEventFactory.expected(
-                            new IllegalStateException(
-                                    "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
-                }
+            var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");
+            var pipeExists = Files.exists(pipePath);
+            if (!pipeExists) {
+                // No agent is running
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException(
+                                "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
             }
         }
 

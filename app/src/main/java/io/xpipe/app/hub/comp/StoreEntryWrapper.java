@@ -216,6 +216,11 @@ public class StoreEntryWrapper {
                         information.bind(is);
                         shownInformation.bind(Bindings.createStringBinding(
                                 () -> {
+                                    // Might have changed validity meanwhile
+                                    if (!entry.getValidity().isUsable()) {
+                                        return "";
+                                    }
+
                                     var n = information.getValue();
                                     return n != null
                                                     && AppPrefs.get()

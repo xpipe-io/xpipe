@@ -145,7 +145,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         return client;
     }
 
-    private static Optional<Path> findKeePassProxy() {
+    private static Optional<Path> findKeePassProxy() throws IOException {
         try (var sc = LocalShell.getShell().start()) {
             var found = sc.view().findProgram("keepassxc-proxy");
             if (found.isPresent()) {
@@ -156,9 +156,9 @@ public class KeePassXcPasswordManager implements PasswordManager {
             ErrorEventFactory.fromThrowable(e).handle();
         }
 
-        return switch (OsType.getLocal()) {
+        Optional<Path> found = switch (OsType.getLocal()) {
             case OsType.Linux linux -> {
-                var paths = List.of(Path.of("/usr/bin/keepassxc-proxy"), Path.of("/usr/local/bin/keepassxc-proxy"));
+                var paths = List.of(Path.of("/usr/bin/keepassxc-proxy"), Path.of("/usr/local/bin/keepassxc-proxy"), Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
                 yield paths.stream().filter(path -> Files.exists(path)).findFirst();
             }
             case OsType.MacOs macOs -> {
@@ -188,6 +188,13 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 yield Optional.empty();
             }
         };
+        if (found.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Symlinks don't work with the proxy
+        var real =  found.get().toRealPath();
+        return Optional.of(real);
     }
 
     @Override
