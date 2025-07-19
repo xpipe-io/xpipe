@@ -65,13 +65,11 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
             modelMethod.setAccessible(true);
             modelMethod.invoke(b, model);
 
-            var entriesMethod = b.getClass().getMethod("files", List.class);
+            var entriesMethod = b.getClass().getMethod("entries", List.class);
             entriesMethod.setAccessible(true);
             entriesMethod.invoke(
                     b,
-                    entries.stream()
-                            .map(browserEntry -> browserEntry.getRawFileEntry().getPath())
-                            .toList());
+                    entries);
         }
 
         var m = b.getClass().getDeclaredMethod("build");

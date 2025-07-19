@@ -95,7 +95,8 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(90);
+                .prefWidth(90)
+                .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
 
@@ -116,7 +117,8 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(150);
+                .prefWidth(150)
+                .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
 
