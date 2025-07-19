@@ -38,14 +38,7 @@ public interface PasswordManager {
         SecretValue password;
     }
 
-    default CredentialResult retrieveCredentials(String key) {
-        throw new UnsupportedOperationException();
-    }
-
-    default SecretValue retrievePassword(String key) {
-        var result = retrieveCredentials(key);
-        return result == null ? null : result.getPassword();
-    }
+     CredentialResult retrieveCredentials(String key);
 
     String getKeyPlaceholder();
 }

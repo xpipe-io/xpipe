@@ -147,12 +147,12 @@ public interface SecretRetrievalStrategy {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
-                    var r = pm.retrievePassword(key);
-                    if (r == null) {
+                    var r = pm.retrieveCredentials(key);
+                    if (r == null || r.getPassword() == null) {
                         return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                     }
 
-                    r.withSecretValue(chars -> {
+                    r.getPassword().withSecretValue(chars -> {
                         var seq = CharBuffer.wrap(chars);
                         var newline = seq.chars().anyMatch(value -> value == 10);
                         if (seq.length() == 0 || newline) {
@@ -163,7 +163,7 @@ public interface SecretRetrievalStrategy {
                                             + " you will have to change the command and/or password key."));
                         }
                     });
-                    return new SecretQueryResult(r, SecretQueryState.NORMAL);
+                    return new SecretQueryResult(r.getPassword(), SecretQueryState.NORMAL);
                 }
 
                 @Override

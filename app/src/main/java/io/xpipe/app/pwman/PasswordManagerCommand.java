@@ -99,13 +99,14 @@ public class PasswordManagerCommand implements PasswordManager {
     ShellScript script;
 
     @Override
-    public SecretValue retrievePassword(String key) {
+    public CredentialResult retrieveCredentials(String key) {
         if (script == null) {
             return null;
         }
 
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
-        return retrieveWithCommand(cmd);
+        var secret = retrieveWithCommand(cmd);
+        return new CredentialResult(null, secret);
     }
 
     @Override
