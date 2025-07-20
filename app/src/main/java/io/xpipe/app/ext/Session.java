@@ -38,14 +38,18 @@ public abstract class Session implements AutoCloseable {
                     ErrorEventFactory.fromThrowable(e).omit().handle();
                 }
 
-                try {
-                    stop();
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).omit().handle();
-                }
+                handleSessionDeath();
             });
             return false;
         });
+    }
+
+    protected void handleSessionDeath() {
+        try {
+            stop();
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().handle();
+        }
     }
 
     public abstract boolean isRunning();
