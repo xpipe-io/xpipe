@@ -48,11 +48,11 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Optional<FileEntry> getFileInfo(FilePath file) throws Exception;
 
-    Stream<FileEntry> listFiles(FilePath file) throws Exception;
+    Stream<FileEntry> listFiles(FileSystem system, FilePath file) throws Exception;
 
-    default List<FileEntry> listFilesRecursively(FilePath file) throws Exception {
+    default List<FileEntry> listFilesRecursively(FileSystem system, FilePath file) throws Exception {
         List<FileEntry> base;
-        try (var filesStream = listFiles(file)) {
+        try (var filesStream = listFiles(system, file)) {
             base = filesStream.toList();
         }
         return base.stream()
@@ -64,7 +64,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
                     try {
                         var list = new ArrayList<FileEntry>();
                         list.add(fileEntry);
-                        list.addAll(listFilesRecursively(fileEntry.getPath()));
+                        list.addAll(listFilesRecursively(system, fileEntry.getPath()));
                         return list.stream();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

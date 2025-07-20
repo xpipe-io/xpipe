@@ -374,7 +374,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 startIfNeeded();
                 var fs = getFileSystem();
 
-                var stream = fs.listFiles(dir);
+                var stream = fs.listFiles(fs, dir);
                 consumer.accept(stream);
             } else {
                 consumer.accept(Stream.of());
@@ -387,7 +387,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             startIfNeeded();
             var fs = getFileSystem();
             if (dir != null) {
-                var stream = fs.listFiles(dir);
+                var stream = fs.listFiles(fs, dir);
                 fileList.setAll(stream);
             } else {
                 fileList.setAll(Stream.of());

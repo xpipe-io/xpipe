@@ -219,8 +219,8 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public Stream<FileEntry> listFiles(FilePath file) throws Exception {
-        return shellControl.getShellDialect().listFiles(this, shellControl, file.toString(), true);
+    public Stream<FileEntry> listFiles(FileSystem system, FilePath file) throws Exception {
+        return shellControl.getShellDialect().listFiles(system, shellControl, file.toString(), true);
     }
 
     @Override
