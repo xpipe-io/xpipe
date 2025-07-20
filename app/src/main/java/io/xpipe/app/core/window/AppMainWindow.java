@@ -330,7 +330,7 @@ public class AppMainWindow {
             if (state.maximized) {
                 stage.setMaximized(true);
                 stage.setWidth(1280);
-                stage.setHeight(760);
+                stage.setHeight(780);
             } else {
                 stage.setX(state.windowX);
                 stage.setY(state.windowY);
@@ -344,7 +344,7 @@ public class AppMainWindow {
                 stage.setHeight(600);
             } else {
                 stage.setWidth(1280);
-                stage.setHeight(760);
+                stage.setHeight(780);
             }
         } else {
             stage.setX(312);

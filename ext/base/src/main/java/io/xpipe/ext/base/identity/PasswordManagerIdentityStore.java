@@ -63,12 +63,12 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
         if (r.getUsername() == null) {
             throw ErrorEventFactory.expected(
-                    new UnsupportedOperationException("Identity " + key + " does not include username"));
+                    new UnsupportedOperationException("Identity " + key + " does not provide a username"));
         }
 
         if (r.getPassword() == null) {
             throw ErrorEventFactory.expected(
-                    new UnsupportedOperationException("Identity " + key + " does not include a password"));
+                    new UnsupportedOperationException("Identity " + key + " does not provide a password"));
         }
 
         setCache("lastQueried", Instant.now());
