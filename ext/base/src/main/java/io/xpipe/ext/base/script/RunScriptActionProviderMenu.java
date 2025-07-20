@@ -37,6 +37,14 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         ScriptHierarchy hierarchy;
 
         @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunTerminalScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
         public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
@@ -83,6 +91,14 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     private static class HubRunActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
+
+        @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunHubScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
 
         @Override
         public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
@@ -136,6 +152,14 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
             implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
+
+        @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunBackgroundScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
 
         @Override
         public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {

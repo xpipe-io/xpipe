@@ -63,9 +63,6 @@ public interface ActionProvider {
                     .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
-            for (var p : DataStoreProviders.getAll()) {
-                ALL.addAll(p.getActionProviders());
-            }
         }
     }
 }
