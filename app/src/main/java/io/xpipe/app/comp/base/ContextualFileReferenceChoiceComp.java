@@ -221,6 +221,18 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
+
+
+        if (prompt != null) {
+            fileNameComp.apply(struc -> {
+                prompt.subscribe(filePath -> {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        struc.get().setPromptText(filePath != null ? filePath.toString() : null);
+                    });
+                });
+            });
+        }
+
         return fileNameComp;
     }
 }
