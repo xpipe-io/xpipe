@@ -424,7 +424,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             NOTEPADPLUSPLUS,
             NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS = List.of(
-            ExternalEditorType.CURSOR_LINUX,
             ExternalEditorType.WINDSURF_LINUX,
             ExternalEditorType.KIRO_LINUX,
             VSCODIUM_LINUX,
@@ -435,7 +434,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             PLUMA,
             LEAFPAD,
             MOUSEPAD,
-            GNOME);
+            GNOME,
+            ExternalEditorType.CURSOR_LINUX);
     List<ExternalEditorType> MACOS_EDITORS = List.of(
             VOID_MACOS,
             CURSOR_MACOS,
