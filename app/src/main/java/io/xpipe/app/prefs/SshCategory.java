@@ -39,9 +39,4 @@ public class SshCategory extends AppPrefsCategory {
         }
         return options.buildComp();
     }
-
-    @Override
-    protected boolean show() {
-        return OsType.getLocal() == OsType.WINDOWS;
-    }
 }
