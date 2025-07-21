@@ -187,8 +187,9 @@ public class BrowserFileTransferOperation {
     }
 
     private void handleSingleOnSameFileSystem(FileEntry source) throws Exception {
-        // Prevent dropping directory into itself
-        if (source.getPath().equals(target.getPath())) {
+        // Prevent dropping files into itself
+        if ((source.getKind() == FileKind.DIRECTORY && source.getPath().equals(target.getPath()))
+                || (source.getKind() != FileKind.DIRECTORY && source.getPath().getParent().equals(target.getPath()))) {
             return;
         }
 
@@ -278,7 +279,7 @@ public class BrowserFileTransferOperation {
             flatFiles.put(source, directoryName);
 
             var baseRelative = source.getPath().getParent().toDirectory();
-            List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getPath());
+            List<FileEntry> list = source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath());
             for (FileEntry fileEntry : list) {
                 if (cancelled()) {
                     return;

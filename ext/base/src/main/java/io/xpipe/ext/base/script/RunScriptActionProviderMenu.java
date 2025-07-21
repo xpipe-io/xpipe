@@ -394,6 +394,14 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         }
 
         @Override
+        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RefreshActionProvider.Action.builder()
+                    .ref(ref.asNeeded())
+                    .build()
+                    .asNeeded();
+        }
+
+        @Override
         public StoreAction<ShellStore> createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RefreshActionProvider.Action.builder()
                     .ref(ref.asNeeded())
