@@ -94,6 +94,12 @@ public abstract class OperationMode {
                     return;
                 }
 
+                // There are some accessibility exceptions on macOS, nothing we can do about that
+                if (Platform.isFxApplicationThread() && ex instanceof NullPointerException && ex.getMessage() != null && ex.getMessage().contains("Accessible")) {
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().build().handle();
+                    return;
+                }
+
                 // Handle any startup uncaught errors
                 if (OperationMode.isInStartup() && thread.threadId() == 1) {
                     ex.printStackTrace();
