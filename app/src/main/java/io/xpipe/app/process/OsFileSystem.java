@@ -5,6 +5,8 @@ import io.xpipe.core.OsType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public interface OsFileSystem {
@@ -30,14 +32,21 @@ public interface OsFileSystem {
 
     default FilePath makeFileSystemCompatible(FilePath name) {
         var split = name.split();
-        var needsReplacement = split.stream().anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
+        var needsReplacement = split.stream().skip(hasMultipleRoots() ? 1 : 0).anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
         if (!needsReplacement) {
             return name;
         }
 
         var p = Pattern.compile("[^/\\\\]+");
         var m = p.matcher(name.toString());
-        var replaced = m.replaceAll(matchResult -> makeFileSystemCompatible(matchResult.group()));
+        var first = new AtomicBoolean(true);
+        var replaced = m.replaceAll(matchResult -> {
+            if (first.getAndSet(false) && hasMultipleRoots()) {
+                return matchResult.group();
+            }
+
+            return makeFileSystemCompatible(matchResult.group());
+        });
         return FilePath.of(replaced);
     }
 
@@ -48,6 +57,8 @@ public interface OsFileSystem {
     String getUserHomeDirectory(ShellControl pc) throws Exception;
 
     String getFileSystemSeparator();
+
+    boolean hasMultipleRoots();
 
     final class Windows implements OsFileSystem {
 
@@ -82,6 +93,11 @@ public interface OsFileSystem {
         @Override
         public String getFileSystemSeparator() {
             return "\\";
+        }
+
+        @Override
+        public boolean hasMultipleRoots() {
+            return true;
         }
     }
 
@@ -134,6 +150,11 @@ public interface OsFileSystem {
         public String getFileSystemSeparator() {
             return "/";
         }
+
+        @Override
+        public boolean hasMultipleRoots() {
+            return false;
+        }
     }
 
     final class MacOs implements OsFileSystem {
@@ -168,6 +189,11 @@ public interface OsFileSystem {
         @Override
         public String getFileSystemSeparator() {
             return "/";
+        }
+
+        @Override
+        public boolean hasMultipleRoots() {
+            return false;
         }
     }
 }
