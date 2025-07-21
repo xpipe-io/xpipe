@@ -26,6 +26,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
 import atlantafx.base.theme.Styles;
+import lombok.Setter;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -47,6 +48,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final Property<FilePath> filePath;
     private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
+
+    @Setter
+    private Property<FilePath> prompt;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             Property<DataStoreEntryRef<T>> fileSystem,
@@ -198,6 +202,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
             };
         });
+        combo.setPrompt(prompt);
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);

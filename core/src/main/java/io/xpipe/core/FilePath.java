@@ -7,6 +7,10 @@ import java.util.*;
 
 public final class FilePath {
 
+    public static FilePath parse(String path) {
+        return path != null && path.equals(path.strip()) && !path.isBlank() ? new FilePath(path) : null;
+    }
+
     public static FilePath of(String path) {
         return path != null ? new FilePath(path) : null;
     }

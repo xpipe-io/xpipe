@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.PlatformThread;
 
+import io.xpipe.core.FilePath;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
@@ -12,6 +13,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +24,9 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     private final Property<String> value;
     private final List<String> predefinedValues;
     private final Supplier<ListCell<String>> customCellFactory;
+
+    @Setter
+    private Property<FilePath> prompt;
 
     public ComboTextFieldComp(
             Property<String> value, List<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {
@@ -44,6 +49,15 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         text.valueProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? n : null);
         });
+
+        if (prompt != null) {
+            prompt.subscribe(filePath -> {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    text.setPromptText(filePath != null ? filePath.toString() : null);
+                });
+            });
+        }
+
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
