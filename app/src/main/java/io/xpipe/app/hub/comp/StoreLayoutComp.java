@@ -29,6 +29,7 @@ public class StoreLayoutComp extends SimpleComp {
         left.hide(AppMainWindow.getInstance().getStage().widthProperty().lessThan(1000));
         left.minWidth(270);
         left.maxWidth(500);
+        left.minHeight(0);
         var comp = new LeftSplitPaneComp(left, new StoreEntryListComp())
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getSidebarWidth())
                 .withOnDividerChange(aDouble -> {
