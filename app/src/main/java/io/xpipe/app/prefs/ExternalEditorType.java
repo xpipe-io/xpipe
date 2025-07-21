@@ -154,6 +154,34 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+    WindowsType KIRO_WINDOWS = new WindowsType() {
+
+        @Override
+        public String getId() {
+            return "app.kiro";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "kiro.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
+                            .resolve("Programs")
+                            .resolve("Kiro")
+                            .resolve("bin")
+                            .resolve("kiro.cmd"))
+                    .filter(path -> Files.exists(path));
+        }
+    };
+
     // Cli is broken, keep inactive
     WindowsType THEIAIDE_WINDOWS = new WindowsType() {
 
@@ -311,6 +339,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf");
 
+    LinuxPathType CURSOR_LINUX = new LinuxPathType("app.cursor", "cursor");
+
+    LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro");
+
     LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed");
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed");
@@ -336,6 +368,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor");
     ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void");
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
+    ExternalEditorType KIRO_MACOS = new MacOsEditor("app.kiro", "Kiro");
     ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
@@ -384,13 +417,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             CURSOR_WINDOWS,
             WINDSURF_WINDOWS,
             TRAE_WINDOWS,
+            KIRO_WINDOWS,
             VSCODIUM_WINDOWS,
             VSCODE_INSIDERS_WINDOWS,
             VSCODE_WINDOWS,
             NOTEPADPLUSPLUS,
             NOTEPAD);
     List<LinuxPathType> LINUX_EDITORS = List.of(
+            ExternalEditorType.CURSOR_LINUX,
             ExternalEditorType.WINDSURF_LINUX,
+            ExternalEditorType.KIRO_LINUX,
             VSCODIUM_LINUX,
             VSCODE_LINUX,
             ZED_LINUX,
@@ -404,6 +440,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             VOID_MACOS,
             CURSOR_MACOS,
             WINDSURF_MACOS,
+            KIRO_MACOS,
             TRAE_MACOS,
             BBEDIT,
             VSCODIUM_MACOS,
