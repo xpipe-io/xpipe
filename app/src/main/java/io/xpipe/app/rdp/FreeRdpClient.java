@@ -1,7 +1,9 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 public class FreeRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
@@ -9,18 +11,25 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        var b = CommandBuilder.of().addFile(file.toString())
+        var b = CommandBuilder.of().add(getExecutable())
+                .addFile(file.toString())
                 .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")
                 .add("+clipboard")
-                .add("-themes");
+                .add("-themes")
+                .add("/size:100%");
+
         if (configuration.getPassword() != null) {
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
             b.add("/p:'" + escapedPw + "'");
         }
-        launch(b);
+
+        try (var sc = LocalShell.getShell().start()) {
+            var cmd = sc.getShellDialect().launchAsnyc(b);
+            sc.command(cmd).sensitive().execute();
+        }
     }
 
     @Override
