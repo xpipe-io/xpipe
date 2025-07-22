@@ -57,6 +57,8 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      cert_ignore=1
+                     scale=2
+                     window_maximize=1
                      """
                         .formatted(
                                 configuration.getTitle(),
@@ -88,6 +90,8 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      colordepth=32
+                     scale=2
+                     window_maximize=1
                      """
                         .formatted(
                                 configuration.getTitle(),
