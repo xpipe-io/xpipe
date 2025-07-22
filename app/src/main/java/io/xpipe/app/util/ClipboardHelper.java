@@ -60,7 +60,9 @@ public class ClipboardHelper {
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {
-                    apply(Map.of(DataFormat.PLAIN_TEXT, text));
+                    var map = new HashMap<DataFormat, Object>();
+                    map.put(DataFormat.PLAIN_TEXT, text);
+                    apply(map);
                 }
             });
             transition.play();
