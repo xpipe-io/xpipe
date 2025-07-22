@@ -12,6 +12,8 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
         var b = CommandBuilder.of().addFile(file.toString())
                 .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
                 .add("/dynamic-resolution")
+                .add("/network:auto")
+                .add("/compression")
                 .add("+clipboard")
                 .add("-themes");
         if (configuration.getPassword() != null) {
