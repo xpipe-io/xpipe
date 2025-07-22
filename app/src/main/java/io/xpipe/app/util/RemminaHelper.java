@@ -91,6 +91,7 @@ public class RemminaHelper {
                      password=%s
                      colordepth=32
                      scale=2
+                     resolution_mode=1
                      window_maximize=1
                      """
                         .formatted(
