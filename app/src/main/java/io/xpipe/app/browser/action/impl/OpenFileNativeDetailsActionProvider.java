@@ -29,6 +29,11 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
                 switch (OsType.getLocal()) {
                     case OsType.Windows windows -> {
+                        var shell = LocalShell.getLocalPowershell();
+                        if (shell.isEmpty()) {
+                            return;
+                        }
+
                         var parent = localFile.getParent();
                         // If we execute this on a drive root there will be no parent, so we have to check for that!
                         var content = parent != null
@@ -43,7 +48,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // as
                         // long as the parent process is running.
                         // So let's keep one process running
-                        LocalShell.getLocalPowershell()
+                        shell.get()
                                 .command(content)
                                 .notComplex()
                                 .execute();

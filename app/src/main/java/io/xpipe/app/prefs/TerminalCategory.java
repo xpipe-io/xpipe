@@ -9,6 +9,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -160,19 +161,16 @@ public class TerminalCategory extends AppPrefsCategory {
                         var term = AppPrefs.get().terminalType().getValue();
                         if (term != null) {
                             // Don't use tabs to not use multiplexer stuff
-                            TerminalLauncher.open(
-                                    null,
-                                    "Test",
-                                    null,
-                                    ProcessControlProvider.get()
-                                            .createLocalProcessControl(true)
-                                            .command(ProcessControlProvider.get()
-                                                    .getEffectiveLocalDialect()
-                                                    .getEchoCommand(
-                                                            "If you can read this, the terminal integration works",
-                                                            false)),
-                                    UUID.randomUUID(),
-                                    false);
+                            TerminalLaunch.builder()
+                                    .title("Test")
+                                    .localScript(new ShellScript(ProcessControlProvider.get()
+                                            .getEffectiveLocalDialect()
+                                            .getEchoCommand(
+                                                    "If you can read this, the terminal integration works",
+                                                    false)))
+                                    .preferTabs(false)
+                                    .logIfEnabled(false)
+                                    .launch();
                         }
                     });
                 })

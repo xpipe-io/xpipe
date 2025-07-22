@@ -8,6 +8,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
@@ -119,7 +120,7 @@ public class WingetUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
+                TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
                     var systemWide = Files.exists(
                             XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
                     var pkgId = "xpipe-io.xpipe";

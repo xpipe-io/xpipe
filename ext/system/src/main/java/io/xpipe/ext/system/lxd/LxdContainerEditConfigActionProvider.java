@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LabelGraphic;
 
@@ -59,7 +60,7 @@ public class LxdContainerEditConfigActionProvider implements HubLeafProvider<Lxd
             var d = ref.getStore();
             var view = new LxdCommandView(
                     d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLauncher.open(ref.get().getName(), view.configEdit(d.getContainerName()));
+            TerminalLaunch.builder().entry(ref.get()).title("Config").command(view.configEdit(d.getName())).launch();
         }
     }
 }

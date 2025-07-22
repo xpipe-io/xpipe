@@ -18,6 +18,12 @@ public class WindowsCredentialManager implements PasswordManager {
         try {
             if (!loaded) {
                 loaded = true;
+
+                var shell = LocalShell.getLocalPowershell();
+                if (shell.isEmpty()) {
+                    return null;
+                }
+
                 var cmd =
                         """
                           $code = @"
@@ -85,14 +91,19 @@ public class WindowsCredentialManager implements PasswordManager {
                           "@
                           Add-Type -TypeDefinition $code -Language CSharp
                           """;
-                LocalShell.getLocalPowershell().command(cmd).execute();
+                shell.get().command(cmd).execute();
             }
 
-            var username = LocalShell.getLocalPowershell()
+            var shell = LocalShell.getLocalPowershell();
+            if (shell.isEmpty()) {
+                return null;
+            }
+
+            var username = shell.get()
                     .command("[CredManager.Credential]::GetUserName(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();
-            var password = LocalShell.getLocalPowershell()
+            var password = shell.get()
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();

@@ -37,7 +37,7 @@ public class TerminalLauncher {
         return ScriptHelper.createExecScriptRaw(processControl, file, content);
     }
 
-    public static String constructTerminalInitScript(
+    private static String constructTerminalInitScript(
             ShellDialect t,
             ShellControl processControl,
             WorkingDirectoryFunction workingDirectory,
@@ -86,24 +86,7 @@ public class TerminalLauncher {
         return content;
     }
 
-    public static void openDirect(String title, ShellScript command) throws Exception {
-        openDirect(title, sc -> command, AppPrefs.get().terminalType().getValue());
-    }
-
-    public static void openDirectFallback(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
-            throws Exception {
-        // We can't use the SSH bridge and other stuff
-        var type = ExternalTerminalType.determineFallbackTerminalToOpen(
-                AppPrefs.get().terminalType().getValue());
-        openDirect(title, command, type);
-    }
-
-    public static void openDirect(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
-            throws Exception {
-        openDirect(title, command, AppPrefs.get().terminalType().getValue());
-    }
-
-    public static void openDirect(
+    static void openDirect(
             String title, FailableFunction<ShellControl, ShellScript, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
@@ -125,36 +108,20 @@ public class TerminalLauncher {
         }
     }
 
-    public static void open(String title, ProcessControl cc) throws Exception {
-        open(null, title, null, cc, UUID.randomUUID(), true);
-    }
-
-    public static void open(String title, ProcessControl cc, UUID request) throws Exception {
-        open(null, title, null, cc, request, true);
-    }
-
-    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc)
-            throws Exception {
-        open(entry, title, directory, cc, UUID.randomUUID(), true);
-    }
-
-    public static void open(
+    static void open(
             DataStoreEntry entry,
             String title,
             FilePath directory,
             ProcessControl cc,
             UUID request,
-            boolean preferTabs) throws Exception {
-        var type = AppPrefs.get().terminalType().getValue();
-        if (type == null) {
-            throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
-        }
-
+            boolean preferTabs,
+            boolean enableLogging,
+            ExternalTerminalType type) throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
-        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
+        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
         var adjustedTitle = prefix + cleanTitle;
-        var log = AppPrefs.get().enableTerminalLogging().get();
+        var log = enableLogging && AppPrefs.get().enableTerminalLogging().get();
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
                 !log

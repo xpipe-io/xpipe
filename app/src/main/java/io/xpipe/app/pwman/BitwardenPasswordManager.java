@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
@@ -44,7 +45,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
                         "bw login");
-                TerminalLauncher.openDirect("Bitwarden login", script);
+                TerminalLaunch.builder().title("Bitwarden login").localScript(script).logIfEnabled(false).launch();
                 return null;
             }
 

@@ -27,7 +27,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     @Override
     public boolean supportsPasswordPassing() {
-        return true;
+        return LocalShell.getLocalPowershell().isPresent();
     }
 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
@@ -38,6 +38,10 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
         if (input.get("username").isEmpty()) {
             // return input;
+        }
+
+        if (!supportsPasswordPassing()) {
+            return input;
         }
 
         var pass = configuration.getPassword();
@@ -54,7 +58,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     private String encrypt(SecretValue password) throws Exception {
-        var ps = LocalShell.getLocalPowershell();
+        var ps = LocalShell.getLocalPowershell().orElseThrow();
         var cmd = ps.command(CommandBuilder.of()
                 .add(sc -> "(" + sc.getShellDialect().literalArgument(password.getSecretValue())
                         + " | ConvertTo-SecureString -AsPlainText -Force) | ConvertFrom-SecureString"));

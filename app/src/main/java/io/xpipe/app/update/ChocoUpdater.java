@@ -9,6 +9,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
@@ -122,7 +123,7 @@ public class ChocoUpdater extends UpdateHandler {
                 var systemWide = Files.exists(
                         XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
-                TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
+                TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
                     var pkg = "xpipe";
                     var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
                             + ", -y" + propertiesArguments;

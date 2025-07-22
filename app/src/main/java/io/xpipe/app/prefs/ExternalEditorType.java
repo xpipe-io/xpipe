@@ -4,6 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
@@ -396,7 +397,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             var command = CommandBuilder.of()
                     .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLauncher.openDirect(file.toString(), sc -> new ShellScript(command.buildFull(sc)));
+                TerminalLaunch.builder().title(file.toString()).localScript(sc -> new ShellScript(command.buildFull(sc)))
+                        .logIfEnabled(false).preferTabs(false).launch();
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }

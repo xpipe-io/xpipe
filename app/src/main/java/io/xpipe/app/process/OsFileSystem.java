@@ -32,7 +32,7 @@ public interface OsFileSystem {
 
     default FilePath makeFileSystemCompatible(FilePath name) {
         var split = name.split();
-        var needsReplacement = split.stream().skip(hasMultipleRoots() ? 1 : 0).anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
+        var needsReplacement = split.stream().skip(hasMultipleRoots() && name.isAbsolute() ? 1 : 0).anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
         if (!needsReplacement) {
             return name;
         }
@@ -41,7 +41,7 @@ public interface OsFileSystem {
         var m = p.matcher(name.toString());
         var first = new AtomicBoolean(true);
         var replaced = m.replaceAll(matchResult -> {
-            if (first.getAndSet(false) && hasMultipleRoots()) {
+            if (first.getAndSet(false) && hasMultipleRoots() && name.isAbsolute()) {
                 return matchResult.group();
             }
 
