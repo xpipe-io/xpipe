@@ -1277,11 +1277,11 @@ public abstract class DataStorage {
 
     public String getStoreEntryDisplayName(DataStoreEntry entry) {
         if (entry == null) {
-            return "?";
+            return "Unknown";
         }
 
         if (!entry.getValidity().isUsable()) {
-            return "?";
+            return "Unknown";
         }
 
         return entry.getProvider().displayName(entry);
