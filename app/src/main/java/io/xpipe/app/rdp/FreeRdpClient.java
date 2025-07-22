@@ -9,7 +9,11 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        var b = CommandBuilder.of().addFile(file.toString()).add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore");
+        var b = CommandBuilder.of().addFile(file.toString())
+                .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
+                .add("/dynamic-resolution")
+                .add("+clipboard")
+                .add("-themes");
         if (configuration.getPassword() != null) {
             var escapedPw = configuration.getPassword().getSecretValue().replaceAll("'", "\\\\'");
             b.add("/p:'" + escapedPw + "'");
