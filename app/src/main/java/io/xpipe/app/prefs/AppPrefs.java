@@ -22,6 +22,7 @@ import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
 
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -216,6 +217,14 @@ public class AppPrefs {
             mapLocal(new SimpleObjectProperty<>(), "sshAgentSocket", FilePath.class, false);
 
     final ObjectProperty<FilePath> defaultSshAgentSocket =new SimpleObjectProperty<>();
+
+    public ObservableValue<FilePath> sshAgentSocket() {
+        return sshAgentSocket;
+    }
+
+    public ObservableValue<FilePath> defaultSshAgentSocket() {
+        return defaultSshAgentSocket;
+    }
 
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
@@ -624,9 +633,14 @@ public class AppPrefs {
             }
         }
 
-        var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
-        var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
-        defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            // On Linux and macOS, we prefer the shell variable compared to any global env variable
+            // as that one is set by default and might not be the right one
+            // This happens for example with homebrew ssh
+            var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
+            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
+            defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
+        }
     }
 
     @SuppressWarnings("unchecked")

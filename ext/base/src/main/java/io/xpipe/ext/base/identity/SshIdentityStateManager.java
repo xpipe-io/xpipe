@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.core.App;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
@@ -98,7 +100,7 @@ public class SshIdentityStateManager {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
                 var posixMessage = sc.getOsType() != OsType.WINDOWS ? authSock != null ? " and the socket " + authSock
-                        : " and the SSH_AUTH_SOCK variable" : "";
+                        : " and the SSH agent socket in the settings menu" : "";
                 var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
                         + "\n"
                         + r[1]
@@ -212,13 +214,12 @@ public class SshIdentityStateManager {
             stopWindowsAgents(false, true, true);
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
-        } else if (sc.getOsType() == OsType.LINUX || sc.getOsType() == OsType.MACOS) {
-            // On Linux and macOS, we prefer the shell variable compared to any global env variable
-            // as that one is set by default and might not be the right one
-            // This happens for example with homebrew ssh
-            var shellVariable = sc.view().getEnvironmentVariable("SSH_AUTH_SOCK");
-            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
-            checkLocalAgentIdentities(socketEnvVariable);
+        } else if (AppPrefs.get() != null) {
+            var socket = AppPrefs.get().sshAgentSocket().getValue();
+            if (socket == null) {
+                socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+            }
+            checkLocalAgentIdentities(socket != null ? socket.toString() : null);
         }
 
         runningAgent = RunningAgent.SSH_AGENT;
