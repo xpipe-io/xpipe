@@ -223,7 +223,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
 
-
         if (prompt != null) {
             fileNameComp.apply(struc -> {
                 prompt.subscribe(filePath -> {

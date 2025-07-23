@@ -1,6 +1,5 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStorage;
@@ -12,10 +11,15 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable(), "XFreeRDP", DataStorage.get().local());
+        CommandSupport.isInPathOrThrow(
+                LocalShell.getShell(),
+                getExecutable(),
+                "XFreeRDP",
+                DataStorage.get().local());
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        var b = CommandBuilder.of().add(getExecutable())
+        var b = CommandBuilder.of()
+                .add(getExecutable())
                 .addFile(file.toString())
                 .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
                 .add("/dynamic-resolution")

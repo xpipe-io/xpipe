@@ -136,10 +136,18 @@ public class SshIdentityStrategyHelper {
     }
 
     private static OptionsBuilder customPkcs11Library(Property<SshIdentityStrategy.CustomPkcs11Library> p) {
-        var file = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getFile() : null);
+        var file =
+                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getFile() : null);
         return new OptionsBuilder()
                 .nameAndDescription("pkcs11Library")
-                .addComp(new ContextualFileReferenceChoiceComp(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), file, null, List.of()), file)
+                .addComp(
+                        new ContextualFileReferenceChoiceComp(
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
+                                file,
+                                null,
+                                List.of()),
+                        file)
                 .nonNull()
                 .bind(
                         () -> {

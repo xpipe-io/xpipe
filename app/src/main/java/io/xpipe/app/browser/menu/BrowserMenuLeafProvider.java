@@ -67,9 +67,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
             var entriesMethod = b.getClass().getMethod("entries", List.class);
             entriesMethod.setAccessible(true);
-            entriesMethod.invoke(
-                    b,
-                    entries);
+            entriesMethod.invoke(b, entries);
         }
 
         var m = b.getClass().getDeclaredMethod("build");

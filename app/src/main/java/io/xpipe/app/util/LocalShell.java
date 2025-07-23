@@ -73,7 +73,9 @@ public class LocalShell {
             localPowershell.getShellDialect().getDumbMode().throwIfUnsupported();
         } catch (Exception ex) {
             localPowershell = null;
-            ErrorEventFactory.fromThrowable(ex).descriptionPrefix("Failed to start local powershell process").handle();
+            ErrorEventFactory.fromThrowable(ex)
+                    .descriptionPrefix("Failed to start local powershell process")
+                    .handle();
         }
 
         return Optional.ofNullable(localPowershell);

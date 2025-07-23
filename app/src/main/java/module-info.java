@@ -121,7 +121,8 @@ open module io.xpipe.app {
     uses ShellDialect;
 
     provides ActionProvider with
-            XPipeUrlProvider, OpenHubMenuLeafProvider,
+            XPipeUrlProvider,
+            OpenHubMenuLeafProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,
             DownloadMenuProvider,

@@ -6,7 +6,6 @@ import io.xpipe.core.OsType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public interface OsFileSystem {
@@ -32,7 +31,9 @@ public interface OsFileSystem {
 
     default FilePath makeFileSystemCompatible(FilePath name) {
         var split = name.split();
-        var needsReplacement = split.stream().skip(hasMultipleRoots() && name.isAbsolute() ? 1 : 0).anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
+        var needsReplacement = split.stream()
+                .skip(hasMultipleRoots() && name.isAbsolute() ? 1 : 0)
+                .anyMatch(s -> !s.equals(makeFileSystemCompatible(s)));
         if (!needsReplacement) {
             return name;
         }

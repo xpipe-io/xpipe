@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.core.App;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -99,8 +98,11 @@ public class SshIdentityStateManager {
                 .start()) {
             var r = c.readStdoutAndStderr();
             if (c.getExitCode() != 0) {
-                var posixMessage = sc.getOsType() != OsType.WINDOWS ? authSock != null ? " and the socket " + authSock
-                        : " and the SSH agent socket in the settings menu" : "";
+                var posixMessage = sc.getOsType() != OsType.WINDOWS
+                        ? authSock != null
+                                ? " and the socket " + authSock
+                                : " and the SSH agent socket in the settings menu"
+                        : "";
                 var ex = new IllegalStateException("Unable to list agent identities via command ssh-add -l:\n" + r[0]
                         + "\n"
                         + r[1]

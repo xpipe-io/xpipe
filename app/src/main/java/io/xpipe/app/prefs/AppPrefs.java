@@ -20,9 +20,9 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
-
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -216,7 +216,7 @@ public class AppPrefs {
     final ObjectProperty<FilePath> sshAgentSocket =
             mapLocal(new SimpleObjectProperty<>(), "sshAgentSocket", FilePath.class, false);
 
-    final ObjectProperty<FilePath> defaultSshAgentSocket =new SimpleObjectProperty<>();
+    final ObjectProperty<FilePath> defaultSshAgentSocket = new SimpleObjectProperty<>();
 
     public ObservableValue<FilePath> sshAgentSocket() {
         return sshAgentSocket;

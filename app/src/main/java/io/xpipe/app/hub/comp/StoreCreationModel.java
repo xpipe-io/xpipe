@@ -176,8 +176,7 @@ public class StoreCreationModel {
 
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
-        var action =
-                OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
+        var action = OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
     }
 

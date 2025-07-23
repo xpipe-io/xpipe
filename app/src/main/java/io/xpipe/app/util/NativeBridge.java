@@ -25,7 +25,9 @@ public class NativeBridge {
     }
 
     public static Optional<MacOsLibrary> getMacOsLibrary() {
-        if (!AppProperties.get().isImage() || !AppProperties.get().isFullVersion() || !AppProperties.get().getArch().equals("arm64")) {
+        if (!AppProperties.get().isImage()
+                || !AppProperties.get().isFullVersion()
+                || !AppProperties.get().getArch().equals("arm64")) {
             return Optional.empty();
         }
 
