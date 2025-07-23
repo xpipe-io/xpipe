@@ -8,6 +8,7 @@ import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -26,7 +27,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     private final Supplier<ListCell<String>> customCellFactory;
 
     @Setter
-    private Property<FilePath> prompt;
+    private ObservableValue<FilePath> prompt;
 
     public ComboTextFieldComp(
             Property<String> value, List<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {

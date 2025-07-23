@@ -363,7 +363,7 @@ public class AppPrefs {
                 new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
     }
 
-    public static void initSharedRemote() throws Exception {
+    public static void initWithShell() throws Exception {
         INSTANCE.loadSharedRemote();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
@@ -635,7 +635,7 @@ public class AppPrefs {
 
         if (OsType.getLocal() != OsType.WINDOWS) {
             // On Linux and macOS, we prefer the shell variable compared to any global env variable
-            // as that one is set by default and might not be the right one
+            // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh
             var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
             var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;

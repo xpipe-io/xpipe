@@ -15,7 +15,7 @@ public class LocalShell {
     private static ShellControl localPowershell;
     private static boolean powershellInitialized;
 
-    public static void init() throws Exception {
+    public static synchronized void init() throws Exception {
         local = ProcessControlProvider.get().createLocalProcessControl(false).start();
 
         // Ensure that electron applications on Linux use wayland features if possible
@@ -26,7 +26,7 @@ public class LocalShell {
         }
     }
 
-    public static void reset(boolean force) {
+    public static synchronized void reset(boolean force) {
         if (local != null) {
             if (!force) {
                 try {
@@ -55,10 +55,9 @@ public class LocalShell {
         }
     }
 
-    public static Optional<ShellControl> getLocalPowershell() {
-        var s = getShell();
-        if (ShellDialects.isPowershell(s)) {
-            return Optional.of(s);
+    public static synchronized Optional<ShellControl> getLocalPowershell() {
+        if (local != null && ShellDialects.isPowershell(local)) {
+            return Optional.of(local);
         }
 
         if (powershellInitialized) {
