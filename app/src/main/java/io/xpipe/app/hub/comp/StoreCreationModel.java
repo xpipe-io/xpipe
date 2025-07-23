@@ -247,7 +247,9 @@ public class StoreCreationModel {
 
                 ErrorEventFactory.fromThrowable(ex).handle();
             } finally {
-                DataStorage.get().removeStoreEntryInProgress(entry.getValue());
+                if (DataStorage.get() != null) {
+                    DataStorage.get().removeStoreEntryInProgress(entry.getValue());
+                }
             }
         });
     }
