@@ -111,6 +111,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var buttonBar = r.lookup(".button-bar");
         var iconChooser = r.lookup(".icon");
         var batchMode = r.lookup(".batch-mode-selector");
+        var customContent = r.lookup(".custom-content");
 
         var button = new Button();
         button.setGraphic(r);
@@ -133,7 +134,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
                     || NodeHelper.isParent(batchMode, event.getTarget())
-                    || NodeHelper.isParent(buttonBar, event.getTarget());
+                    || NodeHelper.isParent(buttonBar, event.getTarget())
+                    || NodeHelper.isParent(customContent, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();
@@ -147,7 +149,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             var notOnButton = NodeHelper.isParent(iconChooser, event.getTarget())
                     || NodeHelper.isParent(batchMode, event.getTarget())
-                    || NodeHelper.isParent(buttonBar, event.getTarget());
+                    || NodeHelper.isParent(buttonBar, event.getTarget())
+                    || NodeHelper.isParent(customContent, event.getTarget());
             if (AppPrefs.get().requireDoubleClickForConnections().get() && !notOnButton) {
                 if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() != 2) {
                     event.consume();

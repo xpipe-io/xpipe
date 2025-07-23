@@ -1,6 +1,5 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.ModuleLayerLoader;

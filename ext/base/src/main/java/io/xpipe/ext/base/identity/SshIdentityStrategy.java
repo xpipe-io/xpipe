@@ -458,7 +458,9 @@ public interface SshIdentityStrategy {
         public void prepareParent(ShellControl parent) throws Exception {
             parent.requireLicensedFeature("pkcs11Identity");
 
-            if (!parent.getShellDialect().createFileExistsCommand(parent, file.toString()).executeAndCheck()) {
+            if (!parent.getShellDialect()
+                    .createFileExistsCommand(parent, file.toString())
+                    .executeAndCheck()) {
                 throw ErrorEventFactory.expected(new IOException("PKCS11 library at " + file + " not found"));
             }
         }

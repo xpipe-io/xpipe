@@ -17,8 +17,8 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-
 import io.xpipe.core.XPipeInstallation;
+
 import lombok.*;
 import lombok.experimental.NonFinal;
 
@@ -124,11 +124,15 @@ public class TerminalLaunchConfiguration {
                             .getShellDialect()
                             .getOpenScriptCommand(launcherScript.toString())
                             .buildFull(LocalShell.getShell());
-            var cliExecutable = TerminalProxyManager.getProxy().orElse(LocalShell.getShell()).getLocalSystemAccess().translateFromLocalSystemPath(
-                    FilePath.of(XPipeInstallation.getLocalDefaultCliExecutable()));
-            var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD ?
-                    "script -e -q '%s' \"%s\"".formatted(logFile, command) : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
-            var content = """
+            var cliExecutable = TerminalProxyManager.getProxy()
+                    .orElse(LocalShell.getShell())
+                    .getLocalSystemAccess()
+                    .translateFromLocalSystemPath(FilePath.of(XPipeInstallation.getLocalDefaultCliExecutable()));
+            var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
+                    ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
+                    : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
+            var content =
+                    """
                    echo "Transcript started, output file is sessions/%s"
                    %s
                    echo "Transcript stopped, output file is sessions/%s"

@@ -38,7 +38,7 @@ public interface PasswordManager {
         SecretValue password;
     }
 
-     CredentialResult retrieveCredentials(String key);
+    CredentialResult retrieveCredentials(String key);
 
     String getKeyPlaceholder();
 }

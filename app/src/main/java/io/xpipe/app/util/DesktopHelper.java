@@ -12,7 +12,6 @@ import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class DesktopHelper {
 
@@ -59,7 +58,9 @@ public class DesktopHelper {
                 return Path.of(System.getProperty("user.home")).resolve("Desktop");
             }
 
-            return Path.of(shell.get().command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)").readStdoutOrThrow());
+            return Path.of(shell.get()
+                    .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
+                    .readStdoutOrThrow());
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command("xdg-user-dir DESKTOP").readStdoutIfPossible();
@@ -79,7 +80,9 @@ public class DesktopHelper {
                 return Path.of(System.getProperty("user.home")).resolve("Desktop");
             }
 
-            return Path.of(shell.get().command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path").readStdoutOrThrow());
+            return Path.of(shell.get()
+                    .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
+                    .readStdoutOrThrow());
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();

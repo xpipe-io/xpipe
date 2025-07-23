@@ -110,6 +110,13 @@ public class ErrorEvent {
             return omit().expected();
         }
 
+        public ErrorEventBuilder ignore() {
+            if (throwable != null) {
+                HANDLED.add(throwable);
+            }
+            return this;
+        }
+
         public ErrorEvent handle() {
             var event = build();
             event.handle();

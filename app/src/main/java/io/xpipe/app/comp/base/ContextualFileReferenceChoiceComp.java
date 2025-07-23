@@ -21,6 +21,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -50,7 +51,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final List<PreviousFileReference> previousFileReferences;
 
     @Setter
-    private Property<FilePath> prompt;
+    private ObservableValue<FilePath> prompt;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
             Property<DataStoreEntryRef<T>> fileSystem,
@@ -221,7 +222,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
                 .styleClass(Styles.LEFT_PILL)
                 .grow(false, true);
-
 
         if (prompt != null) {
             fileNameComp.apply(struc -> {
