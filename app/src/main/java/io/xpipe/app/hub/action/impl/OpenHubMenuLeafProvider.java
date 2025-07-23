@@ -14,7 +14,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class OpenTerminalHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
+public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -23,7 +23,7 @@ public class OpenTerminalHubMenuLeafProvider implements HubLeafProvider<DataStor
 
     @Override
     public String getId() {
-        return "openTerminal";
+        return "open";
     }
 
     @Jacksonized
@@ -44,7 +44,7 @@ public class OpenTerminalHubMenuLeafProvider implements HubLeafProvider<DataStor
 
     @Override
     public ObservableValue<String> getName() {
-        return AppI18n.observable("openTerminal");
+        return AppI18n.observable("open");
     }
 
     @Override
@@ -64,7 +64,7 @@ public class OpenTerminalHubMenuLeafProvider implements HubLeafProvider<DataStor
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("openTerminal");
+        return AppI18n.observable("open");
     }
 
     @Override
