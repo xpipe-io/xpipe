@@ -5,7 +5,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.hub.action.impl.OpenTerminalHubMenuLeafProvider;
+import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.storage.DataStorage;
@@ -177,7 +177,7 @@ public class StoreCreationModel {
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
         var action =
-                OpenTerminalHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
+                OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();
         action.executeAsync();
     }
 
