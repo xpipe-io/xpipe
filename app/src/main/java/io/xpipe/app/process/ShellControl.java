@@ -22,6 +22,8 @@ public interface ShellControl extends ProcessControl {
 
     void setUser(String user);
 
+    boolean isExiting();
+
     boolean isInitializing();
 
     void setDumbOpen(ShellOpenFunction openFunction);

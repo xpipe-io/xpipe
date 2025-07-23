@@ -217,6 +217,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public boolean isExiting() {
+        return parent.isExiting();
+    }
+
+    @Override
     public boolean isInitializing() {
         return parent.isInitializing();
     }
