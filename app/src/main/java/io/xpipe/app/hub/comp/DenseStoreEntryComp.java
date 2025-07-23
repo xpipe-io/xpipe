@@ -129,6 +129,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(infoCC, custom);
 
         var cr = content != null ? content.createRegion() : new Region();
+        cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);
         controls.setFillHeight(true);
