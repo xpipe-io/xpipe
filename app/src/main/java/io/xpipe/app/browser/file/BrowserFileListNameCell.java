@@ -39,12 +39,14 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
     private final StringProperty text = new SimpleStringProperty();
 
     private final BooleanProperty updating = new SimpleBooleanProperty();
+    private final Property<BrowserEntry> editing;
 
     public BrowserFileListNameCell(
             BrowserFileListModel fileList,
             ObservableStringValue typedSelection,
             Property<BrowserEntry> editing,
             TableView<BrowserEntry> tableView) {
+        this.editing = editing;
         this.fileList = fileList;
         this.typedSelection = typedSelection;
 
@@ -62,7 +64,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 .getTextField();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
-        setupRename(fileList, textField, editing);
+        setupRename(fileList, textField);
 
         Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
         HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), textField);
@@ -135,7 +137,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
         });
     }
 
-    private void setupRename(BrowserFileListModel fileList, TextField textField, Property<BrowserEntry> editing) {
+    private void setupRename(BrowserFileListModel fileList, TextField textField) {
         ChangeListener<String> listener = (observable, oldValue, newValue) -> {
             if (updating.get()) {
                 return;
@@ -153,7 +155,6 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 Platform.runLater(() -> {
                     updateItem(getItem(), isEmpty());
                     fileList.getSelection().setAll(r);
-                    getTableView().scrollTo(r);
                 });
             });
         };
@@ -175,6 +176,10 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                         textField.selectRange(0, baseNameEnd);
                     }
                 });
+            } else {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    textField.setDisable(true);
+                });
             }
         });
 
@@ -189,6 +194,9 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
     @Override
     protected void updateItem(String newName, boolean empty) {
+        // Cancel rename on any change
+        editing.setValue(null);
+
         if (updating.get()) {
             super.updateItem(newName, empty);
             return;

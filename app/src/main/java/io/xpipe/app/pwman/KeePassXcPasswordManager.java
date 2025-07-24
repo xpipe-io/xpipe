@@ -147,11 +147,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private static Optional<Path> findKeePassProxy() throws IOException {
         try (var sc = LocalShell.getShell().start()) {
-            var found = sc.view().findProgram("keepassxc-proxy");
+            var found = sc.view().findProgram("keepassxc-proxy").map(filePath -> filePath.asLocalPath());
             if (found.isPresent()) {
-                return found.map(filePath -> filePath.asLocalPath());
+                // Symlinks don't work with the proxy
+                return Optional.of(found.get().toRealPath());
             }
-
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }

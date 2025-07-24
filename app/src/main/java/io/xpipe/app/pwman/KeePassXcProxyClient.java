@@ -94,60 +94,62 @@ public class KeePassXcProxyClient {
      * @throws IOException If there's an error communicating with KeePassXC
      */
     public void exchangeKeys() throws IOException {
-        // Generate a nonce
-        byte[] nonceBytes = TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE);
-        String nonce = TweetNaClHelper.encodeBase64(nonceBytes);
+        if (process.isAlive()) {
+            // Generate a nonce
+            byte[] nonceBytes = TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE);
+            String nonce = TweetNaClHelper.encodeBase64(nonceBytes);
 
-        // Convert our public key to base64
-        String publicKeyB64 = TweetNaClHelper.encodeBase64(keyPair.getPublicKey());
+            // Convert our public key to base64
+            String publicKeyB64 = TweetNaClHelper.encodeBase64(keyPair.getPublicKey());
 
-        // Build the key exchange message - NOTE: This is NOT encrypted
-        String requestId = UUID.randomUUID().toString();
-        Map<String, Object> messageMap = new HashMap<>();
-        messageMap.put("action", "change-public-keys");
-        messageMap.put("publicKey", publicKeyB64);
-        messageMap.put("nonce", nonce);
-        messageMap.put("clientID", clientId);
-        messageMap.put("requestId", requestId);
+            // Build the key exchange message - NOTE: This is NOT encrypted
+            String requestId = UUID.randomUUID().toString();
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put("action", "change-public-keys");
+            messageMap.put("publicKey", publicKeyB64);
+            messageMap.put("nonce", nonce);
+            messageMap.put("clientID", clientId);
+            messageMap.put("requestId", requestId);
 
-        // Convert to JSON string
-        String keyExchangeMessage = mapToJson(messageMap);
+            // Convert to JSON string
+            String keyExchangeMessage = mapToJson(messageMap);
 
-        // Send the message directly
-        long startTime = System.currentTimeMillis();
-        sendNativeMessage(keyExchangeMessage);
+            // Send the message directly
+            long startTime = System.currentTimeMillis();
+            sendNativeMessage(keyExchangeMessage);
 
-        // Wait for a direct response rather than using CompletableFuture
-        // This is a special case because we can't use the encryption yet
-        long timeout = 3000; // 3 seconds for key exchange
+            // Wait for a direct response rather than using CompletableFuture
+            // This is a special case because we can't use the encryption yet
+            long timeout = 3000; // 3 seconds for key exchange
 
-        while (System.currentTimeMillis() - startTime < timeout) {
-            if (process.getInputStream().available() > 0) {
-                String response = receiveNativeMessage();
-                if (response.contains("change-public-keys")) {
-                    // Use regex to extract the public key to avoid any JSON parsing issues
-                    Pattern pattern = Pattern.compile("\"publicKey\":\"([^\"]+)\"");
-                    Matcher matcher = pattern.matcher(response);
+            while (System.currentTimeMillis() - startTime < timeout) {
+                if (process.getInputStream().available() > 0) {
+                    String response = receiveNativeMessage();
+                    if (response.contains("change-public-keys")) {
+                        // Use regex to extract the public key to avoid any JSON parsing issues
+                        Pattern pattern = Pattern.compile("\"publicKey\":\"([^\"]+)\"");
+                        Matcher matcher = pattern.matcher(response);
 
-                    if (matcher.find()) {
-                        String serverPubKeyB64 = matcher.group(1);
+                        if (matcher.find()) {
+                            String serverPubKeyB64 = matcher.group(1);
 
-                        // Store the server's public key
-                        this.serverPublicKey = TweetNaClHelper.decodeBase64(serverPubKeyB64);
+                            // Store the server's public key
+                            this.serverPublicKey = TweetNaClHelper.decodeBase64(serverPubKeyB64);
 
-                        // Check for success in the response
-                        boolean success = response.contains("\"success\":\"true\"");
-                        if (!success) {
-                            throw new IllegalStateException("Key exchange failed");
-                        } else {
-                            return;
+                            // Check for success in the response
+                            boolean success = response.contains("\"success\":\"true\"");
+                            if (!success) {
+                                throw new IllegalStateException("Key exchange failed");
+                            } else {
+                                return;
+                            }
                         }
                     }
                 }
-            }
 
-            // Small sleep to prevent CPU hogging
-            ThreadHelper.sleep(50);
+                // Small sleep to prevent CPU hogging
+                ThreadHelper.sleep(50);
+            }
         }
 
         var ex = new IllegalStateException(
@@ -295,7 +297,9 @@ public class KeePassXcProxyClient {
      * Disconnects from KeePassXC.
      */
     public void disconnect() {
-        process.destroy();
+        if (process != null) {
+            process.destroy();
+        }
         process = null;
     }
 

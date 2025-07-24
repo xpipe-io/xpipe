@@ -89,11 +89,15 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
                 return;
             }
 
-            int intValue = Integer.parseInt(newValue);
-            if (minValue > intValue || intValue > maxValue) {
-                field.textProperty().setValue(oldValue);
-            } else {
-                value.setValue(intValue);
+            try {
+                int intValue = Integer.parseInt(newValue);
+                if (minValue > intValue || intValue > maxValue) {
+                    field.textProperty().setValue(oldValue);
+                } else {
+                    value.setValue(intValue);
+                }
+            } catch (NumberFormatException ignored) {
+                // If you really try to break it, you can still insert non-integer text into this
             }
         });
 
