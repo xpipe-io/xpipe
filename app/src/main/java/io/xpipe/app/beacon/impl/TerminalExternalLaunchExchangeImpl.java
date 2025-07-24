@@ -25,7 +25,7 @@ public class TerminalExternalLaunchExchangeImpl extends TerminalExternalLaunchEx
         }
 
         if (found.size() > 1) {
-            throw new BeaconServerException("Multiple connections found: "
+            throw new BeaconClientException("Multiple connections found: "
                     + found.stream().map(DataStoreEntry::getName).toList());
         }
 
