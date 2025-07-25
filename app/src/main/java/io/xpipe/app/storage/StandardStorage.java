@@ -99,7 +99,9 @@ public class StandardStorage extends DataStorage {
     private void startSyncWatcher() {
         GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
             ThreadHelper.runAsync(() -> {
-                busyIo.lock();
+                if (!busyIo.tryLock()) {
+                    return;
+                }
                 dataStorageSyncHandler.refreshRemoteData();
                 busyIo.unlock();
             });
