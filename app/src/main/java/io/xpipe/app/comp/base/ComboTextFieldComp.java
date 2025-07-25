@@ -10,6 +10,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.input.KeyCode;
@@ -24,14 +25,14 @@ import java.util.function.Supplier;
 public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     private final Property<String> value;
-    private final List<String> predefinedValues;
+    private final ObservableList<String> predefinedValues;
     private final Supplier<ListCell<String>> customCellFactory;
 
     @Setter
     private ObservableValue<FilePath> prompt;
 
     public ComboTextFieldComp(
-            Property<String> value, List<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {
+            Property<String> value, ObservableList<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {
         this.value = value;
         this.predefinedValues = predefinedValues;
         this.customCellFactory = customCellFactory;
@@ -39,7 +40,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     @Override
     public CompStructure<ComboBox<String>> createBase() {
-        var text = new ComboBox<>(FXCollections.observableList(predefinedValues));
+        var text = new ComboBox<>(predefinedValues);
         text.addEventFilter(KeyEvent.ANY, event -> {
             Platform.runLater(() -> {
                 text.commitValue();

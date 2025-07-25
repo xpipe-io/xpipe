@@ -24,6 +24,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListCell;
 import javafx.scene.input.KeyCode;
@@ -190,7 +191,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
         });
 
-        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), () -> {
+        var combo = new ComboTextFieldComp(prop, FXCollections.observableList(map.keySet().stream().toList()), () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
