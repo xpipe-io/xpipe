@@ -42,14 +42,14 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
     private final Mode mode;
     private final DataStoreEntry self;
     private final Property<DataStoreEntryRef<T>> selected;
-    private final Class<T> storeClass;
+    private final Class<?> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
     private Popover popover;
 
     public static <T extends DataStore> StoreChoiceComp<T> other(
             Property<DataStoreEntryRef<T>> selected,
-            Class<T> clazz,
+            Class<?> clazz,
             Predicate<DataStoreEntryRef<T>> filter,
             StoreCategoryWrapper initialCategory) {
         return new StoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);

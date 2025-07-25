@@ -35,6 +35,7 @@ public enum DocumentationLink {
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     KVM_VNC("guide/kvm#vnc-access"),
+    HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
