@@ -2,6 +2,7 @@ package io.xpipe.app.vnc;
 
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.SecretManager;
 import io.xpipe.core.SecretValue;
 
 import lombok.Value;
@@ -36,7 +37,7 @@ public class VncLaunchConfig {
             return Optional.empty();
         }
 
-        var r = strat.query().query("Password for " + title);
-        return Optional.ofNullable(r.getSecret());
+        var secret = SecretManager.retrieve(strat, "VNC login password", entry.get().getUuid(), 1, true);
+        return Optional.ofNullable(secret);
     }
 }
