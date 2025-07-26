@@ -28,7 +28,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     private final Supplier<ListCell<String>> customCellFactory;
 
     @Setter
-    private ObservableValue<FilePath> prompt;
+    private ObservableValue<String> prompt;
 
     public ComboTextFieldComp(
             Property<String> value, List<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {
@@ -55,7 +55,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
         if (prompt != null) {
             prompt.subscribe(filePath -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    text.setPromptText(filePath != null ? filePath.toString() : null);
+                    text.setPromptText(filePath);
                 });
             });
         }
