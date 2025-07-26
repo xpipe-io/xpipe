@@ -1,5 +1,6 @@
 package io.xpipe.app.ext;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
@@ -14,7 +15,9 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -77,7 +80,33 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             currentAddress.setValue(newValue);
         });
 
-        var combo = new ComboTextFieldComp(prop, allAddresses, null);
+        var combo = new ComboTextFieldComp(prop, allAddresses, () -> {
+            return new ListCell<>() {
+
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        return;
+                    }
+
+                    var hbox = new HBox();
+                    hbox.getChildren().add(new Label(item));
+                    hbox.getChildren().add(new Spacer());
+                    hbox.getChildren().add(new IconButtonComp("mdi2l-link-plus", () -> {
+
+                    }).createRegion());
+
+                    setGraphic(hbox);
+                    setText(null);
+                }
+            };
+        });
+        combo.apply(struc -> {
+            var skin = new ComboBoxListViewSkin<>(struc.get());
+            struc.get().setSkin(skin);
+            skin.setHideOnClick(false);
+        });
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);
