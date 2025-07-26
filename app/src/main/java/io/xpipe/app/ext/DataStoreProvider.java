@@ -1,6 +1,5 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;

@@ -7,12 +7,15 @@ import io.xpipe.core.OsType;
 
 import lombok.SneakyThrows;
 
+import java.util.Optional;
+
 public class LocalShell {
 
     private static ShellControl local;
     private static ShellControl localPowershell;
+    private static boolean powershellInitialized;
 
-    public static void init() throws Exception {
+    public static synchronized void init() throws Exception {
         local = ProcessControlProvider.get().createLocalProcessControl(false).start();
 
         // Ensure that electron applications on Linux use wayland features if possible
@@ -23,7 +26,7 @@ public class LocalShell {
         }
     }
 
-    public static void reset(boolean force) {
+    public static synchronized void reset(boolean force) {
         if (local != null) {
             if (!force) {
                 try {
@@ -52,25 +55,30 @@ public class LocalShell {
         }
     }
 
-    public static ShellControl getLocalPowershell() throws Exception {
-        var s = getShell();
-        if (ShellDialects.isPowershell(s)) {
-            return s;
+    public static synchronized Optional<ShellControl> getLocalPowershell() {
+        if (local != null && ShellDialects.isPowershell(local)) {
+            return Optional.of(local);
         }
 
-        if (localPowershell == null) {
-            try {
-                localPowershell = ProcessControlProvider.get()
-                        .createLocalProcessControl(false)
-                        .subShell(ShellDialects.POWERSHELL)
-                        .start();
-            } catch (ProcessOutputException ex) {
-                throw ProcessOutputException.withPrefix("Failed to start local powershell process", ex);
-            }
+        if (powershellInitialized) {
+            return Optional.ofNullable(localPowershell);
         }
-        var sc = localPowershell.start();
-        sc.getShellDialect().getDumbMode().throwIfUnsupported();
-        return sc;
+
+        try {
+            powershellInitialized = true;
+            localPowershell = ProcessControlProvider.get()
+                    .createLocalProcessControl(false)
+                    .subShell(ShellDialects.POWERSHELL)
+                    .start();
+            localPowershell.getShellDialect().getDumbMode().throwIfUnsupported();
+        } catch (Exception ex) {
+            localPowershell = null;
+            ErrorEventFactory.fromThrowable(ex)
+                    .descriptionPrefix("Failed to start local powershell process")
+                    .handle();
+        }
+
+        return Optional.ofNullable(localPowershell);
     }
 
     @SneakyThrows

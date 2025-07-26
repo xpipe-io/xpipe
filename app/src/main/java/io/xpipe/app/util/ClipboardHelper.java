@@ -21,7 +21,7 @@ public class ClipboardHelper {
             new LabelGraphic.IconGraphic("mdi2c-clipboard-check-outline"),
             () -> {});
 
-    private static void apply(Map<DataFormat, Object> map) {
+    private static void apply(Map<DataFormat, Object> map, boolean showNotification) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         Map<DataFormat, Object> contents = Stream.of(
                         DataFormat.PLAIN_TEXT,
@@ -38,11 +38,14 @@ public class ClipboardHelper {
                         return new AbstractMap.SimpleEntry<>(dataFormat, null);
                     }
                 })
-                .filter(o -> o.getValue() != null)
                 .collect(HashMap::new, (m, v) -> m.put(v.getKey(), v.getValue()), HashMap::putAll);
         contents.putAll(map);
+        contents.entrySet().removeIf(e -> e.getValue() == null);
         clipboard.setContent(contents);
-        AppLayoutModel.get().showQueueEntry(COPY_QUEUE_ENTRY, java.time.Duration.ofSeconds(10), true);
+
+        if (showNotification) {
+            AppLayoutModel.get().showQueueEntry(COPY_QUEUE_ENTRY, java.time.Duration.ofSeconds(15), true);
+        }
     }
 
     public static void copyPassword(SecretValue pass) {
@@ -54,13 +57,15 @@ public class ClipboardHelper {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             var text = clipboard.getString();
 
-            apply(Map.of(DataFormat.PLAIN_TEXT, pass.getSecretValue()));
+            apply(Map.of(DataFormat.PLAIN_TEXT, pass.getSecretValue()), true);
 
             var transition = new PauseTransition(Duration.millis(15000));
             transition.setOnFinished(e -> {
                 var present = clipboard.getString();
                 if (present != null && present.equals(pass.getSecretValue())) {
-                    apply(Map.of(DataFormat.PLAIN_TEXT, text));
+                    var map = new HashMap<DataFormat, Object>();
+                    map.put(DataFormat.PLAIN_TEXT, text);
+                    apply(map, false);
                 }
             });
             transition.play();
@@ -69,13 +74,13 @@ public class ClipboardHelper {
 
     public static void copyText(String s) {
         PlatformThread.runLaterIfNeeded(() -> {
-            apply(Map.of(DataFormat.PLAIN_TEXT, s));
+            apply(Map.of(DataFormat.PLAIN_TEXT, s), true);
         });
     }
 
     public static void copyUrl(String s) {
         PlatformThread.runLaterIfNeeded(() -> {
-            apply(Map.of(DataFormat.URL, s, DataFormat.PLAIN_TEXT, s));
+            apply(Map.of(DataFormat.URL, s, DataFormat.PLAIN_TEXT, s), true);
         });
     }
 }

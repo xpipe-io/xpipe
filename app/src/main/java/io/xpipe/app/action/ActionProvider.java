@@ -1,6 +1,5 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.ModuleLayerLoader;
@@ -49,7 +48,7 @@ public interface ActionProvider {
     @SuppressWarnings("unchecked")
     default Optional<Class<? extends AbstractAction>> getActionClass() {
         var child = Arrays.stream(getClass().getDeclaredClasses())
-                .filter(aClass -> aClass.getSimpleName().equals("Action"))
+                .filter(aClass -> AbstractAction.class.isAssignableFrom(aClass))
                 .findFirst()
                 .map(aClass -> (Class<? extends AbstractAction>) aClass);
         return child.isPresent() ? Optional.of(child.get()) : Optional.empty();

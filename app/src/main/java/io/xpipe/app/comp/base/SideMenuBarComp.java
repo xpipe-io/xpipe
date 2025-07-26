@@ -28,6 +28,7 @@ import javafx.util.Duration;
 
 import lombok.AllArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -96,10 +97,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         var queueButtons = new VBox();
         queueEntries.addListener((ListChangeListener<? super AppLayoutModel.QueueEntry>) c -> {
+            var l = new ArrayList<>(c.getList());
             PlatformThread.runLaterIfNeeded(() -> {
                 queueButtons.getChildren().clear();
-                for (int i = c.getList().size() - 1; i >= 0; i--) {
-                    var item = c.getList().get(i);
+                for (int i = l.size() - 1; i >= 0; i--) {
+                    var item = l.get(i);
                     var b = new IconButtonComp(item.getIcon(), null);
                     b.apply(struc -> {
                         var tt = TooltipHelper.create(item.getName(), null);

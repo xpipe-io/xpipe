@@ -4,13 +4,12 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.window.ModifiedStage;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.PlatformThread;
-
 import io.xpipe.core.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
@@ -21,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+
 import org.apache.commons.lang3.SystemUtils;
 
 import java.util.ArrayList;
@@ -63,7 +63,8 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                 }
 
                                 // On macOS, we don't have a transparent background in dev mode
-                                if (OsType.getLocal() == OsType.MACOS && AppProperties.get().isDevelopmentEnvironment()) {
+                                if (OsType.getLocal() == OsType.MACOS
+                                        && AppProperties.get().isDevelopmentEnvironment()) {
                                     return 1.0;
                                 }
 

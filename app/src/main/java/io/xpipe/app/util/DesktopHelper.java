@@ -53,8 +53,14 @@ public class DesktopHelper {
 
     public static Path getDesktopDirectory() throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {
-            return Path.of(LocalShell.getLocalPowershell()
-                    .executeSimpleStringCommand("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)"));
+            var shell = LocalShell.getLocalPowershell();
+            if (shell.isEmpty()) {
+                return Path.of(System.getProperty("user.home")).resolve("Desktop");
+            }
+
+            return Path.of(shell.get()
+                    .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
+                    .readStdoutOrThrow());
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command("xdg-user-dir DESKTOP").readStdoutIfPossible();
@@ -69,9 +75,14 @@ public class DesktopHelper {
 
     public static Path getDownloadsDirectory() throws Exception {
         if (OsType.getLocal() == OsType.WINDOWS) {
-            return Path.of(LocalShell.getLocalPowershell()
-                    .executeSimpleStringCommand(
-                            "(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path"));
+            var shell = LocalShell.getLocalPowershell();
+            if (shell.isEmpty()) {
+                return Path.of(System.getProperty("user.home")).resolve("Desktop");
+            }
+
+            return Path.of(shell.get()
+                    .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
+                    .readStdoutOrThrow());
         } else if (OsType.getLocal() == OsType.LINUX) {
             try (var sc = LocalShell.getShell().start()) {
                 var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();

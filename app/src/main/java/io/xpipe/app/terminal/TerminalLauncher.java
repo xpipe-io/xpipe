@@ -139,12 +139,8 @@ public class TerminalLauncher {
     }
 
     public static void open(
-            DataStoreEntry entry,
-            String title,
-            FilePath directory,
-            ProcessControl cc,
-            UUID request,
-            boolean preferTabs) throws Exception {
+            DataStoreEntry entry, String title, FilePath directory, ProcessControl cc, UUID request, boolean preferTabs)
+            throws Exception {
         var type = AppPrefs.get().terminalType().getValue();
         if (type == null) {
             throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
@@ -152,7 +148,7 @@ public class TerminalLauncher {
 
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
-        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "?");
+        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
         var adjustedTitle = prefix + cleanTitle;
         var log = AppPrefs.get().enableTerminalLogging().get();
         var terminalConfig = new TerminalInitScriptConfig(

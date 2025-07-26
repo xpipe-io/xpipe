@@ -17,6 +17,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -123,39 +124,27 @@ public class TerminalLaunchConfiguration {
                             .getShellDialect()
                             .getOpenScriptCommand(launcherScript.toString())
                             .buildFull(LocalShell.getShell());
-            var content = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
-                    ? """
+            var cliExecutable = TerminalProxyManager.getProxy()
+                    .orElse(LocalShell.getShell())
+                    .getLocalSystemAccess()
+                    .translateFromLocalSystemPath(FilePath.of(XPipeInstallation.getLocalDefaultCliExecutable()));
+            var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
+                    ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
+                    : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
+            var content =
+                    """
                    echo "Transcript started, output file is sessions/%s"
-                   script -e -q '%s' "%s"
+                   %s
                    echo "Transcript stopped, output file is sessions/%s"
-                   cat "%s" | perl -pe 's/\\e([^\\[\\]]|\\[.*?[a-zA-Z]|\\].*?\\a)/\\n/g' | perl -0 -pe 's/\\n+/\\n/g' | col -b > "%s.new"
-                   mv -f "%s.new" "%s"
+                   cat "%s" | "%s" terminal-clean > "%s.txt"
                    """
                             .formatted(
                                     logFile.getFileName(),
-                                    logFile,
-                                    command,
+                                    scriptCommand,
                                     logFile.getFileName(),
                                     logFile,
-                                    logFile,
-                                    logFile,
-                                    logFile)
-                    : """
-                   echo "Transcript started, output file is sessions/%s"
-                   script --quiet --command '%s' "%s"
-                   echo "Transcript stopped, output file is sessions/%s"
-                   cat "%s" | perl -pe 's/\\e([^\\[\\]]|\\[.*?[a-zA-Z]|\\].*?\\a)/\\n/g' | perl -0 -pe 's/\\n+/\\n/g' | col -b > "%s.new"
-                   mv -f "%s.new" "%s"
-                   """
-                            .formatted(
-                                    logFile.getFileName(),
-                                    command,
-                                    logFile,
-                                    logFile.getFileName(),
-                                    logFile,
-                                    logFile,
-                                    logFile,
-                                    logFile);
+                                    cliExecutable,
+                                    logFile.getBaseName());
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, content, sc.getShellDialect());
             config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);

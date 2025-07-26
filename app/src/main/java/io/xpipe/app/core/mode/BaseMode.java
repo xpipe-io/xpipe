@@ -107,7 +107,7 @@ public class BaseMode extends OperationMode {
                     }
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();
                     AppMainWindow.loadingText("loadingSettings");
-                    AppPrefs.initSharedRemote();
+                    AppPrefs.initWithShell();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
                     storageLoaded.countDown();

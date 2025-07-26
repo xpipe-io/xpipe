@@ -71,7 +71,8 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
 
         if (files != null) {
             for (var f : files) {
-                if (!model.getFileSystem().fileExists(f) && !model.getFileSystem().directoryExists(f)) {
+                if (!model.getFileSystem().fileExists(f)
+                        && !model.getFileSystem().directoryExists(f)) {
                     throw ErrorEventFactory.expected(new IllegalArgumentException("Target " + f + " does not exist"));
                 }
             }

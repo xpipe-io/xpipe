@@ -147,53 +147,59 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private static Optional<Path> findKeePassProxy() throws IOException {
         try (var sc = LocalShell.getShell().start()) {
-            var found = sc.view().findProgram("keepassxc-proxy");
+            var found = sc.view().findProgram("keepassxc-proxy").map(filePath -> filePath.asLocalPath());
             if (found.isPresent()) {
-                return found.map(filePath -> filePath.asLocalPath());
+                // Symlinks don't work with the proxy
+                return Optional.of(found.get().toRealPath());
             }
-
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }
 
-        Optional<Path> found = switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
-                var paths = List.of(Path.of("/usr/bin/keepassxc-proxy"), Path.of("/usr/local/bin/keepassxc-proxy"), Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
-                yield paths.stream().filter(path -> Files.exists(path)).findFirst();
-            }
-            case OsType.MacOs macOs -> {
-                var paths = List.of(Path.of("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-proxy"));
-                yield paths.stream().filter(path -> Files.exists(path)).findFirst();
-            }
-            case OsType.Windows windows -> {
-                try {
-                    var foundKey = WindowsRegistry.local()
-                            .findKeyForEqualValueMatchRecursive(
-                                    WindowsRegistry.HKEY_LOCAL_MACHINE,
-                                    "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
-                                    "https://keepassxc.org");
-                    if (foundKey.isPresent()) {
-                        var installKey = WindowsRegistry.local()
-                                .readStringValueIfPresent(
-                                        foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
-                        if (installKey.isPresent()) {
-                            yield installKey
-                                    .map(p -> p + "\\keepassxc-proxy.exe")
-                                    .map(Path::of);
-                        }
+        Optional<Path> found =
+                switch (OsType.getLocal()) {
+                    case OsType.Linux linux -> {
+                        var paths = List.of(
+                                Path.of("/usr/bin/keepassxc-proxy"),
+                                Path.of("/usr/local/bin/keepassxc-proxy"),
+                                Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
+                        yield paths.stream().filter(path -> Files.exists(path)).findFirst();
                     }
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                }
-                yield Optional.empty();
-            }
-        };
+                    case OsType.MacOs macOs -> {
+                        var paths = List.of(Path.of("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-proxy"));
+                        yield paths.stream().filter(path -> Files.exists(path)).findFirst();
+                    }
+                    case OsType.Windows windows -> {
+                        try {
+                            var foundKey = WindowsRegistry.local()
+                                    .findKeyForEqualValueMatchRecursive(
+                                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+                                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+                                            "https://keepassxc.org");
+                            if (foundKey.isPresent()) {
+                                var installKey = WindowsRegistry.local()
+                                        .readStringValueIfPresent(
+                                                foundKey.get().getHkey(),
+                                                foundKey.get().getKey(),
+                                                "InstallLocation");
+                                if (installKey.isPresent()) {
+                                    yield installKey
+                                            .map(p -> p + "\\keepassxc-proxy.exe")
+                                            .map(Path::of);
+                                }
+                            }
+                        } catch (Exception e) {
+                            ErrorEventFactory.fromThrowable(e).handle();
+                        }
+                        yield Optional.empty();
+                    }
+                };
         if (found.isEmpty()) {
             return Optional.empty();
         }
 
         // Symlinks don't work with the proxy
-        var real =  found.get().toRealPath();
+        var real = found.get().toRealPath();
         return Optional.of(real);
     }
 

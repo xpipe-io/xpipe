@@ -36,7 +36,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     ExternalRdpClient CUSTOM = new CustomRdpClient();
     List<ExternalRdpClient> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
     List<ExternalRdpClient> LINUX_CLIENTS = List.of(REMMINA, X_FREE_RDP);
-    List<ExternalRdpClient> MACOS_CLIENTS = List.of(MICROSOFT_REMOTE_DESKTOP_MACOS_APP, WINDOWS_APP_MACOS);
+    List<ExternalRdpClient> MACOS_CLIENTS = List.of(X_FREE_RDP, MICROSOFT_REMOTE_DESKTOP_MACOS_APP, WINDOWS_APP_MACOS);
 
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalRdpClient> ALL = ((Supplier<List<ExternalRdpClient>>) () -> {

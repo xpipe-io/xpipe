@@ -80,6 +80,7 @@ public class AppPrefsComp extends SimpleComp {
         sidebar.setMinWidth(260);
         sidebar.setPrefWidth(260);
         sidebar.setMaxWidth(260);
+        sidebar.setMinHeight(0);
 
         var split = new HBox(sidebar, scrollPane);
         HBox.setMargin(sidebar, new Insets(4));

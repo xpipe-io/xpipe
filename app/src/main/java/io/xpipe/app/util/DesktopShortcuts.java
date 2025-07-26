@@ -12,8 +12,15 @@ import java.nio.file.Path;
 public class DesktopShortcuts {
 
     private static Path createWindowsShortcut(String executable, String args, String name) throws Exception {
-        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
+
+        var shell = LocalShell.getLocalPowershell();
+        if (shell.isEmpty()) {
+            Files.createFile(shortcutPath);
+            return shortcutPath;
+        }
+
+        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                         """
                         $TARGET="%s"
@@ -28,7 +35,7 @@ public class DesktopShortcuts {
                         """,
                         executable, shortcutPath, icon, args)
                 .replaceAll("\n", ";");
-        LocalShell.getLocalPowershell().executeSimpleCommand(content);
+        shell.get().command(content).execute();
         return shortcutPath;
     }
 
@@ -53,8 +60,12 @@ public class DesktopShortcuts {
         file.toFile().setExecutable(true);
 
         // Mark shortcuts as trusted on gnome
-        LocalShell.getShell().command(CommandBuilder.of().add("gio", "set")
-                .addFile(file).addQuoted("metadata::trusted").add("true"))
+        LocalShell.getShell()
+                .command(CommandBuilder.of()
+                        .add("gio", "set")
+                        .addFile(file)
+                        .addQuoted("metadata::trusted")
+                        .add("true"))
                 .executeAndCheck();
 
         return file;

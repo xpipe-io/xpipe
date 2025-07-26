@@ -14,11 +14,14 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.vnc.ExternalVncClient;
 import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -210,6 +213,19 @@ public class AppPrefs {
     final ObjectProperty<SupportedLocale> language =
             mapLocal(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class, false);
 
+    final ObjectProperty<FilePath> sshAgentSocket =
+            mapLocal(new SimpleObjectProperty<>(), "sshAgentSocket", FilePath.class, false);
+
+    final ObjectProperty<FilePath> defaultSshAgentSocket = new SimpleObjectProperty<>();
+
+    public ObservableValue<FilePath> sshAgentSocket() {
+        return sshAgentSocket;
+    }
+
+    public ObservableValue<FilePath> defaultSshAgentSocket() {
+        return defaultSshAgentSocket;
+    }
+
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new SimpleBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
 
@@ -339,7 +355,7 @@ public class AppPrefs {
         this.selectedCategory = new SimpleObjectProperty<>(categories.getFirst());
     }
 
-    public static void initLocal() {
+    public static void initLocal() throws Exception {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
@@ -347,7 +363,7 @@ public class AppPrefs {
                 new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
     }
 
-    public static void initSharedRemote() {
+    public static void initWithShell() throws Exception {
         INSTANCE.loadSharedRemote();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
@@ -601,7 +617,7 @@ public class AppPrefs {
         }
     }
 
-    private void loadSharedRemote() {
+    private void loadSharedRemote() throws Exception {
         for (Mapping value : mapping) {
             if (!value.isVaultSpecific()) {
                 continue;
@@ -615,6 +631,15 @@ public class AppPrefs {
             if (isDefault) {
                 loadValue(globalStorageHandler, value);
             }
+        }
+
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            // On Linux and macOS, we prefer the shell variable compared to any global env variable
+            // as the one is set by default and might not be the right one
+            // This happens for example with homebrew ssh
+            var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
+            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
+            defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
         }
     }
 

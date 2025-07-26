@@ -120,6 +120,10 @@ public final class BrowserFileListModel {
             return old;
         }
 
+        if (newName.isEmpty() || !newName.strip().equals(newName)) {
+            return old;
+        }
+
         var newFullPath = fileSystemModel.getCurrentPath().get().join(newName);
 
         // This check will fail on case-insensitive file systems when changing the case of the file

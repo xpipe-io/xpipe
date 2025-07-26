@@ -1,6 +1,8 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
 import io.xpipe.beacon.BeaconClientException;
@@ -57,7 +59,9 @@ public class AskpassExchangeImpl extends AskpassExchange {
         var p = found.get();
         var secret = p.process(msg.getPrompt());
         if (p.getState() != SecretQueryState.NORMAL) {
-            throw new BeaconClientException(SecretQueryState.toErrorMessage(p.getState()));
+            var ex = new BeaconClientException(SecretQueryState.toErrorMessage(p.getState()));
+            ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex).ignore());
+            throw ex;
         }
         focusTerminalIfNeeded(msg.getPid());
         return Response.builder().value(secret.inPlace()).build();

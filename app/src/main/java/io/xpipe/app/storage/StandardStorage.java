@@ -99,7 +99,9 @@ public class StandardStorage extends DataStorage {
     private void startSyncWatcher() {
         GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
             ThreadHelper.runAsync(() -> {
-                busyIo.lock();
+                if (!busyIo.tryLock()) {
+                    return;
+                }
                 dataStorageSyncHandler.refreshRemoteData();
                 busyIo.unlock();
             });
@@ -281,8 +283,6 @@ public class StandardStorage extends DataStorage {
             local.setColor(DataStoreColor.BLUE);
         }
 
-        // Remove per user entries early if possible. Doesn't cover all, so do it later again
-        filterPerUserEntries(storeEntries.keySet());
         // Reload stores, this time with all entry refs present
         // These do however not have a completed validity yet
         refreshEntries();

@@ -38,7 +38,11 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                                 return summaryValue;
                             } else {
                                 var provider = getWrapper().getEntry().getProvider();
-                                return AppI18n.get(provider.getId() + ".displayName");
+                                if (provider != null) {
+                                    return AppI18n.get(provider.getId() + ".displayName");
+                                } else {
+                                    return null;
+                                }
                             }
                         },
                         getWrapper().getShownSummary()));
@@ -108,6 +112,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         var custom = new ColumnConstraints(0, customSize, customSize);
         custom.setHalignment(HPos.RIGHT);
         var cr = content != null ? content.createRegion() : new Region();
+        cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);
         controls.setFillHeight(true);

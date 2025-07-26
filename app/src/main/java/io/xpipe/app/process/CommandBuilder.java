@@ -3,8 +3,8 @@ package io.xpipe.app.process;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
-
 import io.xpipe.core.OsType;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 

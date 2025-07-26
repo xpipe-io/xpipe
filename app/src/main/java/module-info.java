@@ -122,7 +122,7 @@ open module io.xpipe.app {
 
     provides ActionProvider with
             XPipeUrlProvider,
-            OpenTerminalHubMenuLeafProvider,
+            OpenHubMenuLeafProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,
             DownloadMenuProvider,
