@@ -2,11 +2,14 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -22,7 +25,10 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
@@ -37,6 +43,21 @@ import java.util.List;
     @JsonSubTypes.Type(value = SshIdentityStrategy.OtherExternal.class)
 })
 public interface SshIdentityStrategy {
+
+    static Optional<FilePath> getPublicKeyPath(String publicKey) throws Exception {
+        if (publicKey == null || publicKey.isBlank()) {
+            return Optional.empty();
+        }
+
+        var isFile = OsFileSystem.ofLocal().isProbableFilePath(publicKey);
+        if (isFile && Files.exists(Paths.get(publicKey))) {
+            return Optional.ofNullable(FilePath.parse(publicKey));
+        }
+
+        var base = LocalShell.getShell().getSystemTemporaryDirectory().join("key.pub");
+        var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
+        return Optional.of(file);
+    }
 
     default void checkComplete() throws ValidationException {}
 
@@ -78,6 +99,7 @@ public interface SshIdentityStrategy {
     class SshAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
+        String publicKey;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -89,34 +111,15 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public void buildCommand(CommandBuilder builder) {
-            // Use desktop session agent socket
-            // This is useful when people have misconfigured their init files to always source ssh-agent -s
-            // even if it is already set
-            builder.environment("SSH_AUTH_SOCK", sc -> {
-                if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
-                    return null;
-                }
-
-                var socketEnvVariable = System.getenv("SSH_AUTH_SOCK");
-                return socketEnvVariable;
-            });
-            builder.environment("SSH_AGENT_PID", sc -> {
-                if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
-                    return null;
-                }
-
-                var pidEnvVariable = System.getenv("SSH_AGENT_PID");
-                return pidEnvVariable;
-            });
-        }
+        public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) {
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            var file = getPublicKeyPath(publicKey);
             return List.of(
-                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                     new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -128,6 +131,7 @@ public interface SshIdentityStrategy {
     class Pageant implements SshIdentityStrategy {
 
         boolean forwardAgent;
+        String publicKey;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -138,10 +142,11 @@ public interface SshIdentityStrategy {
                             new IllegalStateException("Pageant is not running or has no identities"));
                 }
 
-                var systemAgent = parent.command(
-                                parent.getShellDialect().getPrintEnvironmentVariableCommand("SSH_AUTH_SOCK"))
-                        .readStdoutOrThrow();
-                if (!systemAgent.contains("pageant")) {
+                var socket = AppPrefs.get().sshAgentSocket().getValue();
+                if (socket == null) {
+                    socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+                }
+                if (!socket.toString().contains("pageant")) {
                     throw ErrorEventFactory.expected(new IllegalStateException(
                             "Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
                 }
@@ -160,11 +165,12 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) {
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            var file = getPublicKeyPath(publicKey);
             return List.of(
-                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                     new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
 
@@ -203,6 +209,7 @@ public interface SshIdentityStrategy {
     class PasswordManagerAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
+        String publicKey;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -217,11 +224,12 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) {
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            var file = getPublicKeyPath(publicKey);
             return List.of(
-                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                     new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -233,6 +241,7 @@ public interface SshIdentityStrategy {
     class GpgAgent implements SshIdentityStrategy {
 
         boolean forwardAgent;
+        String publicKey;
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
@@ -257,11 +266,12 @@ public interface SshIdentityStrategy {
         }
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) {
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            var file = getPublicKeyPath(publicKey);
             return List.of(
-                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                     new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
     }
@@ -494,6 +504,7 @@ public interface SshIdentityStrategy {
     class OtherExternal implements SshIdentityStrategy {
 
         boolean forwardAgent;
+        String publicKey;
 
         @Override
         public void prepareParent(ShellControl parent) {}
@@ -502,11 +513,12 @@ public interface SshIdentityStrategy {
         public void buildCommand(CommandBuilder builder) {}
 
         @Override
-        public List<KeyValue> configOptions(ShellControl parent) {
+        public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+            var file = getPublicKeyPath(publicKey);
             return List.of(
-                    new KeyValue("IdentitiesOnly", "no"),
+                    new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                     new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                    new KeyValue("IdentityFile", "none"),
+                    new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                     new KeyValue("PKCS11Provider", "none"));
         }
     }
