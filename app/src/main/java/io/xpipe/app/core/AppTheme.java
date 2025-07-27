@@ -499,15 +499,6 @@ public class AppTheme {
             return s;
         }
 
-        public List<String> getAdditionalStylesheets() {
-            var r = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "theme/" + getId() + ".css");
-            if (r.isEmpty()) {
-                return List.of();
-            } else {
-                return List.of(r.get().toString());
-            }
-        }
-
         @Override
         public ObservableValue<String> toTranslatedString() {
             return new SimpleStringProperty(theme.getName());
