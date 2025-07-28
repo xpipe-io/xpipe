@@ -311,7 +311,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
+    WindowsType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
 
         @Override
         public String getWebsite() {
