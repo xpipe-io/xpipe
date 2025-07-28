@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.OptionsBuilder;
@@ -64,6 +65,7 @@ public class VaultCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
+                        .longDescription(DocumentationLink.TEAM_VAULTS)
                         .addComp(Comp.empty())
                         .name("userManagement")
                         .description(

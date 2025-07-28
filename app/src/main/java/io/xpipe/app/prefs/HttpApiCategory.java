@@ -28,10 +28,6 @@ public class HttpApiCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableHttpApi)
                         .addToggle(prefs.enableHttpApi)
-                        .nameAndDescription("openApiDocs")
-                        .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"), () -> {
-                            DocumentationLink.API.open();
-                        }))
                         .pref(prefs.apiKey)
                         .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.disableApiAuthentication)

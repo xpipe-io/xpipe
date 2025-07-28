@@ -18,6 +18,11 @@ public abstract class RealVncClient implements ExternalVncClient {
         return false;
     }
 
+    @Override
+    public String getWebsite() {
+        return "https://www.realvnc.com/";
+    }
+
     protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
         var builder = CommandBuilder.of()
                 .addQuoted(configuration.getHost() + ":" + configuration.getPort())

@@ -10,7 +10,9 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 
 public class UpdateCheckComp extends SimpleComp {
 

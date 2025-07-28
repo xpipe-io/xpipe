@@ -15,6 +15,11 @@ public class RemminaRdpClient implements ExternalApplicationType.PathApplication
     }
 
     @Override
+    public String getWebsite() {
+        return "https://remmina.org/";
+    }
+
+    @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         RdpConfig c = configuration.getConfig();
         var l = new HashSet<>(c.getContent().keySet());

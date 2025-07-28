@@ -214,6 +214,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
     }
 
     @Override
+    public String getWebsite() {
+        return "https://keepassxc.org/";
+    }
+
+    @Override
     public String getKeyPlaceholder() {
         return AppI18n.get("keePassXcPlaceholder");
     }

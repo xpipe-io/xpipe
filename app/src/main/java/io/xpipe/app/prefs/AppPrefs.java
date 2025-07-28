@@ -14,6 +14,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformThread;
@@ -60,8 +61,13 @@ public class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(true)
             .build());
-    final BooleanProperty enableHttpApi =
-            mapVaultShared(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class, false);
+    final BooleanProperty enableHttpApi = map(Mapping.builder()
+            .property(new SimpleBooleanProperty(false))
+            .key("enableHttpApi")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .documentationLink(DocumentationLink.API)
+            .build());
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultShared(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
@@ -77,10 +83,20 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
     final BooleanProperty preferTerminalTabs =
             mapLocal(new SimpleBooleanProperty(true), "preferTerminalTabs", Boolean.class, false);
-    final ObjectProperty<ExternalTerminalType> terminalType =
-            mapLocal(new SimpleObjectProperty<>(), "terminalType", ExternalTerminalType.class, false);
-    final ObjectProperty<ExternalRdpClient> rdpClientType =
-            mapLocal(new SimpleObjectProperty<>(), "rdpClientType", ExternalRdpClient.class, false);
+    final ObjectProperty<ExternalTerminalType> terminalType = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>())
+            .key("terminalType")
+            .valueClass(ExternalTerminalType.class)
+            .requiresRestart(false)
+            .documentationLink(DocumentationLink.TERMINAL)
+            .build());
+    final ObjectProperty<ExternalRdpClient> rdpClientType = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>())
+            .key("rdpClientType")
+            .valueClass(ExternalRdpClient.class)
+            .requiresRestart(false)
+            .documentationLink(DocumentationLink.RDP)
+            .build());
     final DoubleProperty windowOpacity = mapLocal(new SimpleDoubleProperty(1.0), "windowOpacity", Double.class, false);
     final StringProperty customRdpClientCommand =
             mapLocal(new SimpleStringProperty(null), "customRdpClientCommand", String.class, false);
@@ -118,12 +134,14 @@ public class AppPrefs {
             .property(new SimpleObjectProperty<>(InternalVncClient.builder().build()))
             .key("vncClient")
             .valueClass(ExternalVncClient.class)
+            .documentationLink(DocumentationLink.VNC)
             .build());
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new SimpleObjectProperty<>())
             .key("passwordManager")
             .valueClass(PasswordManager.class)
             .log(false)
+            .documentationLink(DocumentationLink.PASSWORD_MANAGER)
             .build());
     final Property<ShellScript> terminalInitScript = map(Mapping.builder()
             .property(new SimpleObjectProperty<>(null))
@@ -131,12 +149,18 @@ public class AppPrefs {
             .valueClass(ShellScript.class)
             .log(false)
             .build());
-    final Property<UUID> terminalProxy = mapLocal(new SimpleObjectProperty<>(), "terminalProxy", UUID.class, false);
+    final Property<UUID> terminalProxy = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>())
+            .key("terminalProxy")
+            .valueClass(UUID.class)
+            .requiresRestart(false)
+            .build());
     final Property<TerminalMultiplexer> terminalMultiplexer = map(Mapping.builder()
             .property(new SimpleObjectProperty<>(null))
             .key("terminalMultiplexer")
             .valueClass(TerminalMultiplexer.class)
             .log(false)
+            .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
             .build());
     final Property<Boolean> terminalAlwaysPauseOnExit =
             mapLocal(new SimpleBooleanProperty(true), "terminalAlwaysPauseOnExit", Boolean.class, false);
@@ -145,6 +169,7 @@ public class AppPrefs {
             .key("terminalPrompt")
             .valueClass(TerminalPrompt.class)
             .log(false)
+            .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
 
     public ObservableValue<TerminalPrompt> terminalPrompt() {
@@ -161,10 +186,20 @@ public class AppPrefs {
 
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new SimpleObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
-    public final BooleanProperty enableGitStorage =
-            mapLocal(new SimpleBooleanProperty(false), "enableGitStorage", Boolean.class, true);
-    final StringProperty storageGitRemote =
-            mapLocal(new SimpleStringProperty(""), "storageGitRemote", String.class, true);
+    public final BooleanProperty enableGitStorage = map(Mapping.builder()
+            .property(new SimpleBooleanProperty(false))
+            .key("enableGitStorage")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .documentationLink(DocumentationLink.SYNC)
+            .build());
+    final StringProperty storageGitRemote = map(Mapping.builder()
+            .property(new SimpleStringProperty(""))
+            .key("storageGitRemote")
+            .valueClass(String.class)
+            .requiresRestart(true)
+            .documentationLink(DocumentationLink.SYNC)
+            .build());
     final ObjectProperty<CloseBehaviour> closeBehaviour =
             mapLocal(new SimpleObjectProperty<>(CloseBehaviour.QUIT), "closeBehaviour", CloseBehaviour.class, false);
     final ObjectProperty<ExternalEditorType> externalEditor =
@@ -182,6 +217,7 @@ public class AppPrefs {
             .key("enableTerminalLogging")
             .valueClass(Boolean.class)
             .licenseFeatureId("logging")
+            .documentationLink(DocumentationLink.TERMINAL_LOGGING)
             .build());
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new SimpleBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
@@ -195,8 +231,8 @@ public class AppPrefs {
             mapLocal(new SimpleBooleanProperty(false), "lockVaultOnHibernation", Boolean.class, false);
     final BooleanProperty openConnectionSearchWindowOnConnectionCreation = mapLocal(
             new SimpleBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
-    final ObjectProperty<String> downloadsDirectory =
-            mapLocal(new SimpleObjectProperty<>(), "downloadsDirectory", String.class, false);
+    final ObjectProperty<FilePath> downloadsDirectory =
+            mapLocal(new SimpleObjectProperty<>(), "downloadsDirectory", FilePath.class, false);
     final BooleanProperty developerMode =
             mapLocal(new SimpleBooleanProperty(false), "developerMode", Boolean.class, true);
     final BooleanProperty developerDisableUpdateVersionCheck =
@@ -213,8 +249,12 @@ public class AppPrefs {
     final ObjectProperty<SupportedLocale> language =
             mapLocal(new SimpleObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class, false);
 
-    final ObjectProperty<FilePath> sshAgentSocket =
-            mapLocal(new SimpleObjectProperty<>(), "sshAgentSocket", FilePath.class, false);
+    final ObjectProperty<FilePath> sshAgentSocket = map(Mapping.builder()
+            .property(new SimpleObjectProperty<>())
+            .key("sshAgentSocket")
+            .valueClass(FilePath.class)
+            .requiresRestart(false)
+            .build());
 
     final ObjectProperty<FilePath> defaultSshAgentSocket = new SimpleObjectProperty<>();
 
@@ -241,8 +281,12 @@ public class AppPrefs {
 
     final BooleanProperty censorMode = mapLocal(new SimpleBooleanProperty(false), "censorMode", Boolean.class, false);
 
-    final BooleanProperty sshVerboseOutput =
-            mapLocal(new SimpleBooleanProperty(false), "sshVerboseOutput", Boolean.class, false);
+    final BooleanProperty sshVerboseOutput = map(Mapping.builder()
+            .property(new SimpleBooleanProperty(false))
+            .key("sshVerboseOutput")
+            .valueClass(Boolean.class)
+            .documentationLink(DocumentationLink.SSH_TROUBLESHOOT)
+            .build());
 
     public ObservableBooleanValue sshVerboseOutput() {
         return sshVerboseOutput;
@@ -528,7 +572,7 @@ public class AppPrefs {
         return customRdpClientCommand;
     }
 
-    public ObservableValue<String> downloadsDirectory() {
+    public ObservableValue<FilePath> downloadsDirectory() {
         return downloadsDirectory;
     }
 
@@ -571,11 +615,11 @@ public class AppPrefs {
     }
 
     private <T> T mapLocal(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        return map(new Mapping(name, o, clazz, false, requiresRestart, true));
+        return map(new Mapping(name, o, clazz, false, requiresRestart, true, null));
     }
 
     private <T> T mapVaultShared(Property<?> o, String name, Class<?> clazz, boolean requiresRestart) {
-        return map(new Mapping(name, o, clazz, true, requiresRestart, true));
+        return map(new Mapping(name, o, clazz, true, requiresRestart, true, null));
     }
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
@@ -703,6 +747,7 @@ public class AppPrefs {
         boolean requiresRestart;
         String licenseFeatureId;
         boolean log;
+        DocumentationLink documentationLink;
 
         public Mapping(
                 String key,
@@ -710,13 +755,15 @@ public class AppPrefs {
                 Class<?> valueType,
                 boolean vaultSpecific,
                 boolean requiresRestart,
-                boolean log) {
+                boolean log, DocumentationLink documentationLink
+        ) {
             this.key = key;
             this.property = property;
             this.valueType = SimpleType.constructUnsafe(valueType);
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.log = log;
+            this.documentationLink = documentationLink;
             this.licenseFeatureId = null;
         }
 
@@ -726,13 +773,15 @@ public class AppPrefs {
                 JavaType valueType,
                 boolean vaultSpecific,
                 boolean requiresRestart,
-                boolean log) {
+                boolean log, DocumentationLink documentationLink
+        ) {
             this.key = key;
             this.property = property;
             this.valueType = valueType;
             this.vaultSpecific = vaultSpecific;
             this.requiresRestart = requiresRestart;
             this.log = log;
+            this.documentationLink = documentationLink;
             this.licenseFeatureId = null;
         }
 
@@ -756,7 +805,7 @@ public class AppPrefs {
                 OptionsBuilder builder,
                 boolean requiresRestart,
                 boolean log) {
-            var m = new Mapping(id, property, t, false, requiresRestart, log);
+            var m = new Mapping(id, property, t, false, requiresRestart, log, null);
             customEntries.put(m, builder);
             map(m);
         }

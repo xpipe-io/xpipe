@@ -62,6 +62,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                         .pref(prefs.censorMode)
                         .addToggle(prefs.censorMode))
                 .sub(new OptionsBuilder()
+                        .addTitle("windowOptions")
                         .pref(prefs.windowOpacity)
                         .addComp(
                                 Comp.of(() -> {
@@ -74,7 +75,9 @@ public class AppearanceCategory extends AppPrefsCategory {
                                         .maxWidth(getCompWidth()),
                                 prefs.windowOpacity)
                         .pref(prefs.saveWindowLocation)
-                        .addToggle(prefs.saveWindowLocation))
+                        .addToggle(prefs.saveWindowLocation)
+                        .pref(prefs.focusWindowOnNotifications)
+                        .addToggle(prefs.focusWindowOnNotifications))
                 .buildComp();
     }
 
@@ -118,14 +121,14 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.minWidth(600 / 2.0);
+        c.maxWidth(600 / 2);
         return new OptionsBuilder().pref(prefs.theme).addComp(c, prefs.theme);
     }
 
     public static OptionsBuilder languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
-        c.prefWidth(600 / 2);
+        c.maxWidth(600 / 2);
         c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);

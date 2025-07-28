@@ -21,8 +21,11 @@
     -fx-font-size: 1.2em;
 }
 
-.prefs-container .options-comp .description {
+.prefs-container .options-comp .description-box {
     -fx-padding: 0.5em 0 0.5em 0;
+}
+
+.prefs-container .options-comp .description {
     -fx-opacity: 0.9;
     -fx-font-size: 1.0em;
 }

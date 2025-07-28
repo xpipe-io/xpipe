@@ -26,6 +26,11 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
+    public String getWebsite() {
+        return "https://www.dashlane.com/";
+    }
+
+    @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");

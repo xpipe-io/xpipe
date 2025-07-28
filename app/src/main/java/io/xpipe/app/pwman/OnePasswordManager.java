@@ -64,4 +64,9 @@ public class OnePasswordManager implements PasswordManager {
     public String getKeyPlaceholder() {
         return AppI18n.get("onePasswordPlaceholder");
     }
+
+    @Override
+    public String getWebsite() {
+        return "https://1password.com/";
+    }
 }

@@ -55,4 +55,6 @@ public interface ExternalVncClient {
     void launch(VncLaunchConfig configuration) throws Exception;
 
     boolean supportsPasswords();
+
+    String getWebsite();
 }
