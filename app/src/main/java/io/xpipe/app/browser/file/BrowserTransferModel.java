@@ -135,6 +135,10 @@ public class BrowserTransferModel {
             return;
         }
 
+        if (DataStorage.get() == null) {
+            return;
+        }
+
         try {
             transferring.setValue(true);
             var op = new BrowserFileTransferOperation(
