@@ -42,6 +42,11 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
     }
 
     @Override
+    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+        return o.get().getProvider().canConfigure();
+    }
+
+    @Override
     public String getId() {
         return "editStore";
     }

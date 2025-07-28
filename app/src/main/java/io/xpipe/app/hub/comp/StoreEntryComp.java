@@ -239,6 +239,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.tooltipKey("personalConnection");
         button.apply(struc -> {
             AppFontSizes.base(struc.get());
+            struc.get().setDisable(true);
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
@@ -394,7 +395,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 rename.setOnAction(event -> {
                     name.requestFocus();
                 });
-                items.add(1, rename);
+                items.add(items.size() > 0 ? 1 : 0, rename);
 
                 var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2c-comment-text-outline"));
                 notes.setOnAction(event -> {
@@ -402,7 +403,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     event.consume();
                 });
                 notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
-                items.add(2, notes);
+                items.add(items.size() > 1 ? 2 : 1, notes);
 
                 var freeze = new MenuItem();
                 freeze.graphicProperty()
