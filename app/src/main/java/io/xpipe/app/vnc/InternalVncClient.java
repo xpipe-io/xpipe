@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.DocumentationLink;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -13,6 +14,11 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeName("integratedXPipeVncClient")
 public class InternalVncClient implements ExternalVncClient {
+
+    @Override
+    public String getWebsite() {
+        return DocumentationLink.VNC_CLIENTS.getLink();
+    }
 
     @Override
     public boolean supportsPasswords() {

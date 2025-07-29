@@ -147,8 +147,6 @@ public abstract class AbstractAction {
             synchronized (active) {
                 active.remove(this);
             }
-
-            TrackEvent.withTrace("Finished action execution").tag("id", getId()).handle();
         }
     }
 

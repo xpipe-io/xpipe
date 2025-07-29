@@ -128,7 +128,6 @@ public class TerminalCategory extends AppPrefsCategory {
                 };
             });
         });
-        c.prefWidth(300);
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
             var t = prefs.terminalType().getValue();
@@ -150,7 +149,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 prefs.terminalType());
         visit.visible(visitVisible);
 
-        var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
+        var h = new HorizontalComp(List.of(c.hgrow(), visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
@@ -279,6 +278,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         OsType.getLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
+                .longDescription(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
@@ -316,6 +316,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
-        return new OptionsBuilder().nameAndDescription("terminalPrompt").addComp(choice, prefs.terminalPrompt);
+        return new OptionsBuilder().nameAndDescription("terminalPrompt")
+                .longDescription(DocumentationLink.TERMINAL_PROMPT).addComp(choice, prefs.terminalPrompt);
     }
 }

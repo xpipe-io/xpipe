@@ -204,7 +204,9 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
             };
         });
-        combo.setPrompt(prompt);
+        combo.setPrompt(Bindings.createStringBinding(() -> {
+            return filePath.getValue() != null ? filePath.getValue().toString() : null;
+        }, filePath));
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);

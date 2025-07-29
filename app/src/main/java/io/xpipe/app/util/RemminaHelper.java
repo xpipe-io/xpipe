@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
@@ -48,6 +49,7 @@ public class RemminaHelper {
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
+        // Use window size as remmina's autosize is broken
         var string =
                 """
                      [remmina]
@@ -58,7 +60,8 @@ public class RemminaHelper {
                      password=%s
                      cert_ignore=1
                      scale=2
-                     window_maximize=1
+                     window_width=%s
+                     window_height=%s
                      """
                         .formatted(
                                 configuration.getTitle(),
@@ -72,7 +75,9 @@ public class RemminaHelper {
                                         .get("full address")
                                         .orElseThrow()
                                         .getValue(),
-                                password != null ? password : "");
+                                password != null ? password : "",
+                                Math.round(AppMainWindow.getInstance().getStage().getWidth()),
+                                Math.round(AppMainWindow.getInstance().getStage().getHeight()));
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
@@ -90,9 +95,6 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      colordepth=32
-                     scale=2
-                     resolution_mode=1
-                     window_maximize=1
                      """
                         .formatted(
                                 configuration.getTitle(),

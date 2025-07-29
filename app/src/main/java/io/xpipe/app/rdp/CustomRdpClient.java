@@ -28,6 +28,11 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
     }
 
     @Override
+    public String getWebsite() {
+        return null;
+    }
+
+    @Override
     public boolean supportsPasswordPassing() {
         return false;
     }

@@ -113,4 +113,9 @@ public class PasswordManagerCommand implements PasswordManager {
     public String getKeyPlaceholder() {
         return "$KEY";
     }
+
+    @Override
+    public String getWebsite() {
+        return null;
+    }
 }

@@ -74,7 +74,13 @@ public enum DocumentationLink {
     SERIAL("guide/serial"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
-    SERIAL_PORTS("guide/serial#serial-ports");
+    SERIAL_PORTS("guide/serial#serial-ports"),
+    TERMINAL("guide/terminals#noteworthy-integrations"),
+    TERMINAL_LOGGING("guide/terminals#logging"),
+    TERMINAL_MULTIPLEXER("guide/terminals#multiplexers"),
+    TERMINAL_PROMPT("guide/terminals#prompts"),
+    TEAM_VAULTS("guide/sync#team-vaults"),
+    SSH_TROUBLESHOOT("guide/ssh#troubleshooting");
 
     private final String page;
 

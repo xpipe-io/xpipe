@@ -51,6 +51,8 @@ public interface OsFileSystem {
         return FilePath.of(replaced);
     }
 
+    boolean isProbableFilePath(String s);
+
     String makeFileSystemCompatible(String name);
 
     List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception;
@@ -62,6 +64,14 @@ public interface OsFileSystem {
     boolean hasMultipleRoots();
 
     final class Windows implements OsFileSystem {
+
+        public boolean isProbableFilePath(String s) {
+            if (s.length() >= 2 && s.charAt(1) == ':') {
+                return true;
+            }
+
+            return false;
+        }
 
         @Override
         public String makeFileSystemCompatible(String name) {
@@ -103,6 +113,10 @@ public interface OsFileSystem {
     }
 
     class Unix implements OsFileSystem {
+
+        public boolean isProbableFilePath(String s) {
+            return s.startsWith("/");
+        }
 
         @Override
         public String makeFileSystemCompatible(String name) {
@@ -159,6 +173,10 @@ public interface OsFileSystem {
     }
 
     final class MacOs implements OsFileSystem {
+
+        public boolean isProbableFilePath(String s) {
+            return s.startsWith("/");
+        }
 
         @Override
         public String makeFileSystemCompatible(String name) {

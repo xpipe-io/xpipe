@@ -29,6 +29,11 @@ public class LastpassPasswordManager implements PasswordManager {
     }
 
     @Override
+    public String getWebsite() {
+        return "https://www.lastpass.com/";
+    }
+
+    @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
