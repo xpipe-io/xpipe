@@ -38,7 +38,11 @@ public class StandardStoreEntryComp extends StoreEntryComp {
                                 return summaryValue;
                             } else {
                                 var provider = getWrapper().getEntry().getProvider();
-                                return AppI18n.get(provider.getId() + ".displayName");
+                                if (provider != null) {
+                                    return AppI18n.get(provider.getId() + ".displayName");
+                                } else {
+                                    return null;
+                                }
                             }
                         },
                         getWrapper().getShownSummary()));
