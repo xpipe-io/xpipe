@@ -83,6 +83,13 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
         var combo = new ComboTextFieldComp(prop, allAddresses, () -> {
             return new ListCell<>() {
 
+                {
+                    setOnMouseClicked(event -> {
+                        getScene().getWindow().hide();
+                        event.consume();
+                    });
+                }
+
                 @Override
                 protected void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);

@@ -80,7 +80,8 @@ public enum DocumentationLink {
     TERMINAL_MULTIPLEXER("guide/terminals#multiplexers"),
     TERMINAL_PROMPT("guide/terminals#prompts"),
     TEAM_VAULTS("guide/sync#team-vaults"),
-    SSH_TROUBLESHOOT("guide/ssh#troubleshooting");
+    SSH_TROUBLESHOOT("guide/ssh#troubleshooting"),
+    NO_EXEC("troubleshooting/noexec");
 
     private final String page;
 

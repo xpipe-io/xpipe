@@ -75,7 +75,8 @@ public interface OsFileSystem {
 
         @Override
         public String makeFileSystemCompatible(String name) {
-            return name.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
+            var r = name.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
+            return r.strip();
         }
 
         @Override
