@@ -399,6 +399,12 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder longDescription(String link) {
+        finishCurrent();
+        longDescription = link;
+        return this;
+    }
+
     public OptionsBuilder longDescription(DocumentationLink link) {
         finishCurrent();
         longDescription = link.getLink();
@@ -421,8 +427,8 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop) {
-        var comp = new SecretFieldComp(prop, true);
+    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
+        var comp = new SecretFieldComp(prop, copy);
         pushComp(comp);
         props.add(prop);
         return this;
