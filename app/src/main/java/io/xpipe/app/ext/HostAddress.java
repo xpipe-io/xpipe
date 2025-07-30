@@ -9,6 +9,10 @@ import java.util.List;
 @EqualsAndHashCode
 public class HostAddress {
 
+    public static HostAddress empty() {
+        return new HostAddress("unknown", List.of("unknown"));
+    }
+
     public static HostAddress of(String host) {
         if (host == null) {
             return null;
