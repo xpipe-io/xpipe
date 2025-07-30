@@ -37,7 +37,7 @@ public class GithubReleaseDownloader {
 
     public static void extractTarEntry(Path tarFile, String path, Path target) throws Exception {
         var c = CommandBuilder.of().add("tar");
-        c.add("-C").addFile(target);
+        c.add("-C").addFile(target.getParent());
         var gz = tarFile.getFileName().toString().endsWith(".gz");
         c.add("-x").addIf(gz, "-z").add("-f");
         c.addFile(tarFile);
