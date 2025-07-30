@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.core.JacksonMapper;
 
 import java.io.IOException;
@@ -32,6 +33,18 @@ public class GithubReleaseDownloader {
         Files.createDirectories(tempDir);
         Files.write(temp, r.body());
         return temp;
+    }
+
+    public static void extractTarEntry(Path tarFile, String path, Path target) throws Exception {
+        var c = CommandBuilder.of().add("tar");
+        c.add("-C").addFile(target);
+        var gz = tarFile.getFileName().toString().endsWith(".gz");
+        c.add("-x").addIf(gz, "-z").add("-f");
+        c.addFile(tarFile);
+        c.addFile(path);
+
+        Files.createDirectories(target.getParent());
+        LocalShell.getShell().command(c).execute();
     }
 
     private static String getDownloadUrl(String repository, Predicate<String> filter) throws Exception {

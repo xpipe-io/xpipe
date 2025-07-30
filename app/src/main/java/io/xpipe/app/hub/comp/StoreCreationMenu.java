@@ -5,6 +5,8 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
+import io.xpipe.app.ext.SetupProvider;
+import io.xpipe.app.ext.SetupToolActionProvider;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
@@ -93,6 +95,8 @@ public class StoreCreationMenu {
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
         menu.getItems().add(actionMenu);
+
+        menu.getItems().add(setupMenu());
     }
 
     private static Menu categoryMenu(
@@ -138,6 +142,26 @@ public class StoreCreationMenu {
                     .createRegion());
             item.setOnAction(event -> {
                 StoreCreationDialog.showCreation(dataStoreProvider, category);
+                event.consume();
+            });
+            menu.getItems().add(item);
+        }
+        return menu;
+    }
+
+
+    private static Menu setupMenu() {
+        var menu = new Menu();
+        menu.setGraphic(new FontIcon("mdi2t-toy-brick-plus-outline"));
+        menu.textProperty().bind(AppI18n.observable("addCloud"));
+
+        for (var p : SetupProvider.ALL) {
+            var item = new MenuItem();
+            item.textProperty().bind(AppI18n.observable(p.getNameKey()));
+            item.setGraphic(p.getGraphic().createGraphicNode());
+            item.setOnAction(event -> {
+                var action = SetupToolActionProvider.Action.builder().type(p.getId()).build();
+                action.executeAsync();
                 event.consume();
             });
             menu.getItems().add(item);

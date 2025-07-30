@@ -119,8 +119,10 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
     uses ShellDialect;
+    uses SetupProvider;
 
     provides ActionProvider with
+            SetupToolActionProvider,
             XPipeUrlProvider,
             OpenHubMenuLeafProvider,
             EditHubLeafProvider,
@@ -198,7 +200,8 @@ open module io.xpipe.app {
             PrefsProvider.Loader,
             LicenseProvider.Loader,
             ScanProvider.Loader,
-            ShellDialects.Loader;
+            ShellDialects.Loader,
+            SetupProvider.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with
