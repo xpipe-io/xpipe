@@ -11,6 +11,8 @@ import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.util.regex.Pattern;
+
 @JsonTypeName("onePassword")
 public class OnePasswordManager implements PasswordManager {
 
@@ -36,12 +38,28 @@ public class OnePasswordManager implements PasswordManager {
             return null;
         }
 
+        String vault = null;
+        String name = key;
+
+        if (key.startsWith("op://")) {
+            var match = Pattern.compile("op://(\\w+)/(\\w+)").matcher(key);
+            if (match.find()) {
+                vault = match.group(1);
+                name = match.group(2);
+            }
+        }
+
         try {
+            var b = CommandBuilder.of()
+                    .add("op", "item", "get")
+                    .addLiteral(name)
+                    .add("--format", "json", "--fields", "username,password");
+            if (vault != null) {
+                b.add("--vault").addLiteral(vault);
+            }
+
             var r = getOrStartShell()
-                    .command(CommandBuilder.of()
-                            .add("op", "item", "get")
-                            .addLiteral(key)
-                            .add("--format", "json", "--fields", "username,password"))
+                    .command(b)
                     .sensitive()
                     .readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(r);

@@ -43,7 +43,8 @@ public class BitwardenPasswordManager implements PasswordManager {
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login");
+                        "bw login",
+                        sc.getShellDialect().getPauseCommand());
                 TerminalLauncher.openDirect("Bitwarden login", script);
                 return null;
             }
