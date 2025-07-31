@@ -29,7 +29,7 @@ public class WorkspaceCreationDialog {
         var path = new SimpleObjectProperty<>(base + "-new-workspace");
         name.subscribe((v) -> {
             if (v != null && path.get() != null && path.get().startsWith(base)) {
-                var newPath = path.get().substring(0, base.length()) + "-" + v;
+                var newPath = path.get().substring(0, base.length()) + "-" + v.replaceAll(" ", "-").toLowerCase();
                 path.set(newPath);
             }
         });
