@@ -45,7 +45,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         }
 
         if (msg.getRequest() == null) {
-            var r = AskpassAlert.queryRaw(msg.getPrompt(), null);
+            var r = AskpassAlert.queryRaw(msg.getPrompt(), null, true);
             return Response.builder().value(r.getSecret()).build();
         }
 
