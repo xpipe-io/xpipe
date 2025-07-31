@@ -2,6 +2,7 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.mcp.McpServer;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
@@ -148,6 +149,15 @@ public class AppBeaconServer {
 
         server.createContext("/", exchange -> {
             handleCatchAll(exchange);
+        });
+
+        server.createContext("/mcp", exchange -> {
+            if (exchange.getRequestMethod().equals("GET")) {
+                McpServer.HANDLER.doGet(exchange);
+            } else {
+                McpServer.HANDLER.doPost(exchange);
+            }
+            exchange.close();
         });
 
         server.start();

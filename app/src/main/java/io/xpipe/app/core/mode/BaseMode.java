@@ -17,6 +17,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.mcp.McpServer;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
@@ -64,6 +65,7 @@ public class BaseMode extends OperationMode {
         AppJavaOptionsCheck.check();
         AppSid.init();
         AppBeaconServer.init();
+        McpServer.init();
         AppLayoutModel.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {

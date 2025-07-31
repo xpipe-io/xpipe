@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "start": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "The starting path to search, required."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "The name of the target file or directory to search, supports fuzzy matching, required."
+    }
+  },
+  "required": [
+    "start",
+    "name"
+  ]
+}

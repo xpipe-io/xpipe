@@ -64,3 +64,46 @@ extraJavaModuleInfo {
         exportAllPackages()
     }
 }
+
+extraJavaModuleInfo {
+    module("io.modelcontextprotocol.sdk:mcp", "io.modelcontextprotocol.sdk.mcp") {
+        exportAllPackages()
+        requires("com.fasterxml.jackson.core")
+        requires("com.fasterxml.jackson.databind")
+        requires("com.fasterxml.jackson.annotation")
+        requires("org.slf4j")
+        requires("reactor.core")
+        requires("org.reactivestreams")
+        requires("com.networknt.schema")
+    }
+}
+
+extraJavaModuleInfo {
+    module("io.projectreactor:reactor-core", "reactor.core") {
+        requires("context.propagation")
+        requires("reactor.blockhound")
+        requires("org.reactivestreams")
+        exportAllPackages()
+    }
+}
+
+extraJavaModuleInfo {
+    module("io.micrometer:context-propagation", "context.propagation") {
+        exportAllPackages()
+        uses("io.micrometer.context.ContextAccessor")
+        uses("io.micrometer.context.ThreadLocalAccessor")
+    }
+}
+
+extraJavaModuleInfo {
+    module("io.projectreactor.tools:blockhound", "reactor.blockhound") {
+        exportAllPackages()
+        uses("reactor.blockhound.integration.BlockHoundIntegration")
+    }
+}
+
+extraJavaModuleInfo {
+    module("org.reactivestreams:reactive-streams", "org.reactivestreams") {
+        exportAllPackages()
+    }
+}

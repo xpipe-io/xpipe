@@ -48,7 +48,14 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api("com.github.weisj:jsvg:1.7.1")
+    api 'io.modelcontextprotocol.sdk:mcp:0.11.0'
+    api "io.projectreactor:reactor-core:3.7.0"
+    api "io.micrometer:context-propagation:1.1.3"
+    api "io.projectreactor.tools:blockhound:1.0.13.RELEASE"
+    api "org.reactivestreams:reactive-streams:1.0.4"
+    api "com.networknt:json-schema-validator:1.5.8"
+
+    api "com.github.weisj:jsvg:1.7.1"
     api 'io.xpipe:vernacular:1.15'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.6'
