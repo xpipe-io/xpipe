@@ -12,6 +12,8 @@ import io.xpipe.core.XPipeInstallation;
 
 import javafx.beans.property.SimpleObjectProperty;
 
+import java.nio.file.Path;
+
 public class WorkspaceCreationDialog {
 
     public static void showAsync() {
@@ -22,13 +24,20 @@ public class WorkspaceCreationDialog {
     }
 
     private static void show() {
-        var name = new SimpleObjectProperty<>("New workspace");
-        var path = new SimpleObjectProperty<>(AppProperties.get().getDataDir());
+        var base = AppProperties.get().getDataDir().toString();
+        var name = new SimpleObjectProperty<>("new-workspace");
+        var path = new SimpleObjectProperty<>(base + "-new-workspace");
+        name.subscribe((v) -> {
+            if (v != null && path.get() != null && path.get().startsWith(base)) {
+                var newPath = path.get().substring(0, base.length()) + "-" + v;
+                path.set(newPath);
+            }
+        });
         var content = new OptionsBuilder()
                 .nameAndDescription("workspaceName")
                 .addString(name)
                 .nameAndDescription("workspacePath")
-                .addPath(path)
+                .addString(path)
                 .buildComp()
                 .prefWidth(500)
                 .apply(struc -> AppFontSizes.xs(struc.get()));

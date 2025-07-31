@@ -340,28 +340,6 @@ public class OptionsBuilder {
         return addString(prop, false);
     }
 
-    public OptionsBuilder addPath(Property<Path> prop) {
-        var string = new SimpleStringProperty(
-                prop.getValue() != null ? prop.getValue().toString() : null);
-        var comp = new TextFieldComp(string, true);
-        string.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                prop.setValue(null);
-                return;
-            }
-
-            try {
-                var p = Path.of(newValue);
-                prop.setValue(p);
-            } catch (InvalidPathException ignored) {
-
-            }
-        });
-        pushComp(comp);
-        props.add(prop);
-        return this;
-    }
-
     public OptionsBuilder addString(Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
         pushComp(comp);
