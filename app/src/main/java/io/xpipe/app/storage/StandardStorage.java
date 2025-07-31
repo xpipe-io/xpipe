@@ -5,6 +5,7 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
@@ -581,8 +582,9 @@ public class StandardStorage extends DataStorage {
             if (!OsType.getLocal().getName().equals(read)) {
                 ErrorEventFactory.fromMessage(
                                 "This vault was originally created on a different system running " + read
-                                        + ". Sharing connection information between systems directly might cause some problems."
-                                        + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings.")
+                                        + ". Sharing the same data directory between systems directly will cause some problems."
+                                        + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings. It also supports local directory git repositories.")
+                        .documentationLink(DocumentationLink.SYNC_LOCAL)
                         .expected()
                         .handle();
                 var s = OsType.getLocal().getName();
