@@ -1,6 +1,6 @@
 {
-  "name": "get_file_info",
-  "description": "Retrieves information about a file",
+  "name": "create_file",
+  "description": "Creates a new file",
   "input_schema": {
     "type": "object",
     "properties": {
@@ -11,6 +11,10 @@
       "path": {
         "type": "string",
         "description": "The file path"
+      },
+      "content": {
+        "type": "string",
+        "description": "The optional file content as text"
       }
     },
     "required": [
@@ -19,7 +23,7 @@
     ]
   },
   "annotations": {
-    "readOnlyHint": true,
+    "destructiveHint": true,
     "openWorldHint": true
   }
 }

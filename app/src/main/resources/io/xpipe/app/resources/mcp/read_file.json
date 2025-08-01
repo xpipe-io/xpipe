@@ -17,5 +17,9 @@
       "path",
       "system"
     ]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": true
   }
 }

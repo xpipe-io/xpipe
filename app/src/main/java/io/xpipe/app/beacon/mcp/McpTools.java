@@ -96,4 +96,30 @@ public final class McpTools {
         })).build();
     }
 
+    public static McpServerFeatures.SyncToolSpecification createFile() throws IOException {
+        var tool = McpSchemaFiles.loadTool("create_file.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var path = req.getFilePath("path");
+            var system = req.getStringArgument("system");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+            var fs = new ConnectionFileSystem(shellSession.getControl());
+
+            if (fs.fileExists(path)) {
+                throw new BeaconClientException("File " + path + " does already exist");
+            }
+
+            fs.touch(path);
+
+            if (req.getRawRequest().arguments().containsKey("content")) {
+                var s = req.getRawRequest().arguments().get("content").toString();
+                var b = s.getBytes(StandardCharsets.UTF_8);
+                try (var out = fs.openOutput(path, b.length)) {
+                    out.write(b);
+                }
+            }
+
+            return McpSchema.CallToolResult.builder().addTextContent("File created successfully").build();
+        })).build();
+    }
 }

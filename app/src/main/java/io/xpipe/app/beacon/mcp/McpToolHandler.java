@@ -29,6 +29,10 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             this.exchange = exchange;
             this.request = request;}
 
+        public McpSchema.CallToolRequest getRawRequest() {
+            return request;
+        }
+
         public String getStringArgument(String key) throws BeaconClientException {
             var o = request.arguments().get(key);
             if (o == null) {
