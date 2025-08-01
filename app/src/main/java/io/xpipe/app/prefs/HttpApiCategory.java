@@ -32,10 +32,13 @@ public class HttpApiCategory extends AppPrefsCategory {
                         .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"), () -> {
                             DocumentationLink.API.open();
                         }))
+                        .pref(prefs.enableMcpServer)
+                        .addToggle(prefs.enableMcpServer)
                         .pref(prefs.apiKey)
                         .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.disableApiAuthentication)
-                        .addToggle(prefs.disableApiAuthentication))
+                        .addToggle(prefs.disableApiAuthentication)
+                )
                 .buildComp();
     }
 }

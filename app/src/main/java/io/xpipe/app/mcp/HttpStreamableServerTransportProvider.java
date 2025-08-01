@@ -13,13 +13,13 @@ import io.modelcontextprotocol.server.McpTransportContextExtractor;
 import io.modelcontextprotocol.spec.*;
 import io.modelcontextprotocol.util.Assert;
 import io.modelcontextprotocol.util.KeepAliveScheduler;
+import io.xpipe.app.issue.TrackEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.*;
-import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 	 */
 	private final ConcurrentHashMap<String, McpStreamableServerSession> sessions = new ConcurrentHashMap<>();
 
-	private McpTransportContextExtractor<HttpExchange> contextExtractor;
+	private final McpTransportContextExtractor<HttpExchange> contextExtractor;
 
 	/**
 	 * Flag indicating if the transport is shutting down.
@@ -261,13 +261,15 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		}
 	}
 
-	private void sendError(HttpExchange exchange, int code, String message) throws IOException {
+	public void sendError(HttpExchange exchange, int code, String message) throws IOException {
 		var b = message != null ? message.getBytes(StandardCharsets.UTF_8) : new byte[0];
 		exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
 		exchange.sendResponseHeaders(code, b.length != 0 ? b.length : -1);
 		try (OutputStream os = exchange.getResponseBody()) {
 			os.write(b);
 		}
+
+		TrackEvent.error("MCP server error: " + message);
 	}
 
 	public void doPost(HttpExchange exchange)
