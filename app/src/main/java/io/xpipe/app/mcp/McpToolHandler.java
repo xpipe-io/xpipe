@@ -2,7 +2,12 @@ package io.xpipe.app.mcp;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageQuery;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FilePath;
 import lombok.SneakyThrows;
@@ -15,7 +20,7 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
         return t;
     }
 
-    class ToolRequest implements  McpRequestHandler  {
+    class ToolRequest  {
 
         protected final McpSyncServerExchange exchange;
         protected final McpSchema.CallToolRequest request;
@@ -57,6 +62,27 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
                 throw new BeaconClientException("Invalid argument for key " + key);
             }
             return path;
+        }
+
+        public DataStoreEntryRef<ShellStore> getShellStoreRef(String name) throws BeaconClientException {
+            var found = DataStorageQuery.queryUserInput(name);
+            if (found.isEmpty()) {
+                throw new BeaconClientException("No connection found for input " + name);
+            }
+
+            if (found.size() > 1) {
+                throw new BeaconClientException("Multiple connections found: "
+                        + found.stream().map(DataStoreEntry::getName).toList());
+            }
+
+            var e = found.getFirst();
+            var isShell = e.getStore() instanceof ShellStore;
+            if (!isShell) {
+                throw new BeaconClientException(
+                        "Connection " + DataStorage.get().getStorePath(e).toString() + " is not a shell connection");
+            }
+
+            return e.ref();
         }
     }
 

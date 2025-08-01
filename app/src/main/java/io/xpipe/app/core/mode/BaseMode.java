@@ -65,7 +65,6 @@ public class BaseMode extends OperationMode {
         AppJavaOptionsCheck.check();
         AppSid.init();
         AppBeaconServer.init();
-        McpServer.init();
         AppLayoutModel.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
@@ -113,6 +112,7 @@ public class BaseMode extends OperationMode {
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
                     storageLoaded.countDown();
+                    McpServer.init();
                     StoreViewState.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");

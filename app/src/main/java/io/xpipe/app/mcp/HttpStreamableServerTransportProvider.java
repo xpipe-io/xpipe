@@ -219,7 +219,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
 		if (!badRequestErrors.isEmpty()) {
 			String combinedMessage = String.join("; ", badRequestErrors);
-			this.sendMcpError(exchange, 400, new McpError(combinedMessage));
+			this.sendError(exchange, 400, combinedMessage);
 			return;
 		}
 
@@ -323,7 +323,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 					&& jsonrpcRequest.method().equals(McpSchema.METHOD_INITIALIZE)) {
 				if (!badRequestErrors.isEmpty()) {
 					String combinedMessage = String.join("; ", badRequestErrors);
-					this.sendMcpError(exchange, 400, new McpError(combinedMessage));
+					this.sendError(exchange, 400, combinedMessage);
 					return;
 				}
 
@@ -350,8 +350,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 				}
 				catch (Exception e) {
 					logger.error("Failed to initialize session: {}", e.getMessage());
-					this.sendMcpError(exchange, 500,
-							new McpError("Failed to initialize session: " + e.getMessage()));
+					this.sendError(exchange, 500, "Failed to initialize session: " + e.getMessage());
 					return;
 				}
 			}
@@ -364,15 +363,14 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
 			if (!badRequestErrors.isEmpty()) {
 				String combinedMessage = String.join("; ", badRequestErrors);
-				this.sendMcpError(exchange, 400, new McpError(combinedMessage));
+				this.sendError(exchange, 400, combinedMessage);
 				return;
 			}
 
 			McpStreamableServerSession session = this.sessions.get(sessionId);
 
 			if (session == null) {
-				this.sendMcpError(exchange, 404,
-						new McpError("Session not found: " + sessionId));
+				this.sendError(exchange, 404, "Session not found: " + sessionId + ". Was the session not refreshed?");
 				return;
 			}
 
@@ -413,25 +411,29 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 				}
 			}
 			else {
-				this.sendMcpError(exchange, 500, new McpError("Unknown message type"));
+				this.sendError(exchange, 500, "Unknown message type");
 			}
 		}
 		catch (IllegalArgumentException | IOException e) {
 			logger.error("Failed to deserialize message: {}", e.getMessage());
-			this.sendMcpError(exchange, 400,
-					new McpError("Invalid message format: " + e.getMessage()));
+			this.sendError(exchange, 400, "Invalid message format: " + e.getMessage());
 		}
 		catch (Exception e) {
 			logger.error("Error handling message: {}", e.getMessage());
 			try {
-				this.sendMcpError(exchange, 500,
-						new McpError("Error processing message: " + e.getMessage()));
+				this.sendError(exchange, 500, "Error processing message: " + e.getMessage());
 			}
 			catch (IOException ex) {
 				logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
 				sendError(exchange, 500, "Error processing message");
 			}
 		}
+	}
+
+
+	public void doOther(HttpExchange exchange)
+			throws IOException {
+		sendError(exchange, 405, "Unsupported HTTP method: " + exchange.getRequestMethod());
 	}
 //
 //	/**
@@ -494,17 +496,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 //			}
 //		}
 //	}
-
-	public void sendMcpError(HttpExchange exchange, int httpCode, McpError mcpError) throws IOException {
-		var jsonError = objectMapper.writeValueAsString(mcpError);
-		var bytes = jsonError.getBytes(StandardCharsets.UTF_8);
-		exchange.getResponseHeaders().set("Content-Type", APPLICATION_JSON);
-		exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
-		exchange.sendResponseHeaders(httpCode, bytes.length);
-		try (OutputStream os = exchange.getResponseBody()) {
-			os.write(bytes);
-		}
-	}
 
 	/**
 	 * Sends an SSE event to a client with a specific ID.

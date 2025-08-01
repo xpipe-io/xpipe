@@ -159,12 +159,10 @@ public class AppBeaconServer {
         });
 
         server.createContext("/mcp", exchange -> {
-            if (exchange.getRequestMethod().equals("GET")) {
-                McpServer.HANDLER.doGet(exchange);
-            } else {
-                McpServer.HANDLER.doPost(exchange);
+            var mcpServer = McpServer.get();
+            if (mcpServer != null) {
+                mcpServer.createHttpHandler().handle(exchange);
             }
-            exchange.close();
         });
 
         server.start();
