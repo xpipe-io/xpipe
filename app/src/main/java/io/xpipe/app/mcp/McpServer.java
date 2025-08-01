@@ -29,15 +29,16 @@ public class McpServer {
 
     @SneakyThrows
     public static void init() {
-        var transportProvider = HttpStreamableServerTransportProvider.builder().mcpEndpoint("/mcp").objectMapper(new ObjectMapper()).build();
+        var transportProvider = new HttpStreamableServerTransportProvider(
+                new ObjectMapper(), "/mcp", false, (req, context) -> context, null);
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo("XPipe", AppProperties.get().getVersion())
                 .capabilities(McpSchema.ServerCapabilities.builder()
-                        .resources(true, true)  // Enable resource support
-                        .tools(true)             // Enable tool support
-                        .prompts(false)           // Enable prompt support
-                        .completions()           // Enable completions support
+                        .resources(true, true)
+                        .tools(true)
+                        .prompts(false)
+                        .completions()
                         .build())
                 .build();
 

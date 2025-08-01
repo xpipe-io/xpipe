@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.*;
+import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -86,17 +87,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 	 */
 	private KeepAliveScheduler keepAliveScheduler;
 
-	/**
-	 * Constructs a new HttpServletStreamableServerTransportProvider instance.
-	 * @param objectMapper The ObjectMapper to use for JSON serialization/deserialization
-	 * of messages.
-	 * @param mcpEndpoint The endpoint URI where clients should send their JSON-RPC
-	 * messages via HTTP. This endpoint will handle GET, POST, and DELETE requests.
-	 * @param disallowDelete Whether to disallow DELETE requests on the endpoint.
-	 * @param contextExtractor The extractor for transport context from the request.
-	 * @throws IllegalArgumentException if any parameter is null
-	 */
-	private HttpStreamableServerTransportProvider(ObjectMapper objectMapper, String mcpEndpoint,
+	HttpStreamableServerTransportProvider(ObjectMapper objectMapper, String mcpEndpoint,
 												  boolean disallowDelete, McpTransportContextExtractor<HttpExchange> contextExtractor,
 												  Duration keepAliveInterval) {
 		Assert.notNull(objectMapper, "ObjectMapper must not be null");
@@ -131,14 +122,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		this.sessionFactory = sessionFactory;
 	}
 
-	/**
-	 * Broadcasts a notification to all connected clients through their SSE connections.
-	 * If any errors occur during sending to a particular client, they are logged but
-	 * don't prevent sending to other clients.
-	 * @param method The method name for the notification
-	 * @param params The parameters for the notification
-	 * @return A Mono that completes when the broadcast attempt is finished
-	 */
 	@Override
 	public Mono<Void> notifyClients(String method, Object params) {
 		if (this.sessions.isEmpty()) {
@@ -435,67 +418,57 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 			throws IOException {
 		sendError(exchange, 405, "Unsupported HTTP method: " + exchange.getRequestMethod());
 	}
-//
-//	/**
-//	 * Handles DELETE requests for session deletion.
-//	 * @param request The HTTP servlet request
-//	 * @param response The HTTP servlet response
-//	 * @throws ServletException If a servlet-specific error occurs
-//	 * @throws IOException If an I/O error occurs
-//	 */
-//	@Override
-//	protected void doDelete(HttpRequest request, HttpServletResponse response)
-//			throws IOException {
-//
-//		String requestURI = request.getRequestURI();
-//		if (!requestURI.endsWith(mcpEndpoint)) {
-//			response.sendError(404);
-//			return;
-//		}
-//
-//		if (this.isClosing) {
-//			response.sendError(503, "Server is shutting down");
-//			return;
-//		}
-//
-//		if (this.disallowDelete) {
-//			response.sendError(405);
-//			return;
-//		}
-//
-//		McpTransportContext transportContext = this.contextExtractor.extract(request, new DefaultMcpTransportContext());
-//
-//		if (request.headers().firstValue(HttpHeaders.MCP_SESSION_ID).orElse(null) == null) {
-//			this.responseError(response, 400,
-//					new McpError("Session ID required in mcp-session-id header"));
-//			return;
-//		}
-//
-//		String sessionId = request.headers().firstValue(HttpHeaders.MCP_SESSION_ID).orElse(null);
-//		McpStreamableServerSession session = this.sessions.get(sessionId);
-//
-//		if (session == null) {
-//			response.sendError(404);
-//			return;
-//		}
-//
-//		try {
-//			session.delete().contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext)).block();
-//			this.sessions.remove(sessionId);
-//			response.setStatus(200);
-//		}
-//		catch (Exception e) {
-//			logger.error("Failed to delete session {}: {}", sessionId, e.getMessage());
-//			try {
-//				this.responseError(response, 500,
-//						new McpError(e.getMessage()));
-//			}
-//			catch (IOException ex) {
-//				logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
-//				response.sendError(500, "Error deleting session");
-//			}
-//		}
-//	}
+
+	protected void doDelete(HttpExchange exchange)
+			throws IOException {
+
+		String requestURI = exchange.getRequestURI().toString();
+		if (!requestURI.endsWith(mcpEndpoint)) {
+			sendError(exchange, 404, null);
+			return;
+		}
+
+		if (this.isClosing) {
+			sendError(exchange, 503, "Server is shutting down");
+			return;
+		}
+
+		if (this.disallowDelete) {
+			sendError(exchange, 405, null);
+			return;
+		}
+
+		McpTransportContext transportContext = this.contextExtractor.extract(exchange, new DefaultMcpTransportContext());
+
+		if (exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
+			sendError(exchange, 400, "Session ID required in mcp-session-id header");
+			return;
+		}
+
+		String sessionId = exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID);
+		McpStreamableServerSession session = this.sessions.get(sessionId);
+
+		if (session == null) {
+			sendError(exchange, 404, null);
+			return;
+		}
+
+		try {
+			session.delete().contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext)).block();
+			this.sessions.remove(sessionId);
+			exchange.sendResponseHeaders(200, -1);
+		}
+		catch (Exception e) {
+			logger.error("Failed to delete session {}: {}", sessionId, e.getMessage());
+			try {
+				sendError(exchange, 500, e.getMessage());
+			}
+			catch (IOException ex) {
+				logger.error(FAILED_TO_SEND_ERROR_RESPONSE, ex.getMessage());
+				sendError(exchange, 500, "Error deleting session");
+			}
+		}
+	}
 
 	/**
 	 * Sends an SSE event to a client with a specific ID.
@@ -645,100 +618,4 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		}
 
 	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	/**
-	 * Builder for creating instances of
-	 * {@link HttpStreamableServerTransportProvider}.
-	 */
-	public static class Builder {
-
-		private ObjectMapper objectMapper;
-
-		private String mcpEndpoint = "/mcp";
-
-		private boolean disallowDelete = false;
-
-		private McpTransportContextExtractor<HttpExchange> contextExtractor = (serverRequest, context) -> context;
-
-		private Duration keepAliveInterval;
-
-		/**
-		 * Sets the ObjectMapper to use for JSON serialization/deserialization of MCP
-		 * messages.
-		 * @param objectMapper The ObjectMapper instance. Must not be null.
-		 * @return this builder instance
-		 * @throws IllegalArgumentException if objectMapper is null
-		 */
-		public Builder objectMapper(ObjectMapper objectMapper) {
-			Assert.notNull(objectMapper, "ObjectMapper must not be null");
-			this.objectMapper = objectMapper;
-			return this;
-		}
-
-		/**
-		 * Sets the endpoint URI where clients should send their JSON-RPC messages.
-		 * @param mcpEndpoint The MCP endpoint URI. Must not be null.
-		 * @return this builder instance
-		 * @throws IllegalArgumentException if mcpEndpoint is null
-		 */
-		public Builder mcpEndpoint(String mcpEndpoint) {
-			Assert.notNull(mcpEndpoint, "MCP endpoint must not be null");
-			this.mcpEndpoint = mcpEndpoint;
-			return this;
-		}
-
-		/**
-		 * Sets whether to disallow DELETE requests on the endpoint.
-		 * @param disallowDelete true to disallow DELETE requests, false otherwise
-		 * @return this builder instance
-		 */
-		public Builder disallowDelete(boolean disallowDelete) {
-			this.disallowDelete = disallowDelete;
-			return this;
-		}
-
-		/**
-		 * Sets the context extractor for extracting transport context from the request.
-		 * @param contextExtractor The context extractor to use. Must not be null.
-		 * @return this builder instance
-		 * @throws IllegalArgumentException if contextExtractor is null
-		 */
-		public Builder contextExtractor(McpTransportContextExtractor<HttpExchange> contextExtractor) {
-			Assert.notNull(contextExtractor, "Context extractor must not be null");
-			this.contextExtractor = contextExtractor;
-			return this;
-		}
-
-		/**
-		 * Sets the keep-alive interval for the transport. If set, a keep-alive scheduler
-		 * will be activated to periodically ping active sessions.
-		 * @param keepAliveInterval The interval for keep-alive pings. If null, no
-		 * keep-alive will be scheduled.
-		 * @return this builder instance
-		 */
-		public Builder keepAliveInterval(Duration keepAliveInterval) {
-			this.keepAliveInterval = keepAliveInterval;
-			return this;
-		}
-
-		/**
-		 * Builds a new instance of {@link HttpStreamableServerTransportProvider}
-		 * with the configured settings.
-		 * @return A new HttpServletStreamableServerTransportProvider instance
-		 * @throws IllegalStateException if required parameters are not set
-		 */
-		public HttpStreamableServerTransportProvider build() {
-			Assert.notNull(this.objectMapper, "ObjectMapper must be set");
-			Assert.notNull(this.mcpEndpoint, "MCP endpoint must be set");
-
-			return new HttpStreamableServerTransportProvider(this.objectMapper, this.mcpEndpoint,
-					this.disallowDelete, this.contextExtractor, this.keepAliveInterval);
-		}
-
-	}
-
 }
