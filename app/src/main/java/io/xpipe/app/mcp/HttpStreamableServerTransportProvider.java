@@ -316,29 +316,29 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		try {
 			var body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
 
-			McpSchemaFiles.JSONRPCMessage message = McpSchemaFiles.deserializeJsonRpcMessage(objectMapper, body);
+			McpSchema.JSONRPCMessage message = McpSchema.deserializeJsonRpcMessage(objectMapper, body);
 
 			// Handle initialization request
-			if (message instanceof McpSchemaFiles.JSONRPCRequest jsonrpcRequest
-					&& jsonrpcRequest.method().equals(McpSchemaFiles.METHOD_INITIALIZE)) {
+			if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest
+					&& jsonrpcRequest.method().equals(McpSchema.METHOD_INITIALIZE)) {
 				if (!badRequestErrors.isEmpty()) {
 					String combinedMessage = String.join("; ", badRequestErrors);
 					this.sendMcpError(exchange, 400, new McpError(combinedMessage));
 					return;
 				}
 
-				McpSchemaFiles.InitializeRequest initializeRequest = objectMapper.convertValue(jsonrpcRequest.params(),
-						new TypeReference<McpSchemaFiles.InitializeRequest>() {
+				McpSchema.InitializeRequest initializeRequest = objectMapper.convertValue(jsonrpcRequest.params(),
+						new TypeReference<McpSchema.InitializeRequest>() {
 						});
 				McpStreamableServerSession.McpStreamableServerSessionInit init = this.sessionFactory
 					.startSession(initializeRequest);
 				this.sessions.put(init.session().getId(), init.session());
 
 				try {
-					McpSchemaFiles.InitializeResult initResult = init.initResult().block();
+					McpSchema.InitializeResult initResult = init.initResult().block();
 
-					String jsonResponse = objectMapper.writeValueAsString(new McpSchemaFiles.JSONRPCResponse(
-							McpSchemaFiles.JSONRPC_VERSION, jsonrpcRequest.id(), initResult, null));
+					String jsonResponse = objectMapper.writeValueAsString(new McpSchema.JSONRPCResponse(
+							McpSchema.JSONRPC_VERSION, jsonrpcRequest.id(), initResult, null));
 					var jsonBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
 
 					exchange.getResponseHeaders().add("Content-Type", APPLICATION_JSON);
@@ -376,19 +376,19 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 				return;
 			}
 
-			if (message instanceof McpSchemaFiles.JSONRPCResponse jsonrpcResponse) {
+			if (message instanceof McpSchema.JSONRPCResponse jsonrpcResponse) {
 				session.accept(jsonrpcResponse)
 					.contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
 					.block();
 				exchange.sendResponseHeaders(200, -1);
 			}
-			else if (message instanceof McpSchemaFiles.JSONRPCNotification jsonrpcNotification) {
+			else if (message instanceof McpSchema.JSONRPCNotification jsonrpcNotification) {
 				session.accept(jsonrpcNotification)
 					.contextWrite(ctx -> ctx.put(McpTransportContext.KEY, transportContext))
 					.block();
 				exchange.sendResponseHeaders(202, -1);
 			}
-			else if (message instanceof McpSchemaFiles.JSONRPCRequest jsonrpcRequest) {
+			else if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest) {
 				// For streaming responses, we need to return SSE
 				exchange.getResponseHeaders().add("Content-Type", TEXT_EVENT_STREAM);
 				exchange.getResponseHeaders().add("Content-Encoding", UTF_8);
@@ -562,7 +562,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		 * @return A Mono that completes when the message has been sent
 		 */
 		@Override
-		public Mono<Void> sendMessage(McpSchemaFiles.JSONRPCMessage message) {
+		public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
 			return sendMessage(message, null);
 		}
 
@@ -574,7 +574,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 		 * @return A Mono that completes when the message has been sent
 		 */
 		@Override
-		public Mono<Void> sendMessage(McpSchemaFiles.JSONRPCMessage message, String messageId) {
+		public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message, String messageId) {
 			return Mono.fromRunnable(() -> {
 				if (this.closed) {
 					logger.debug("Attempted to send message to closed session: {}", this.sessionId);

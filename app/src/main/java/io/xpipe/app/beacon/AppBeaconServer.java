@@ -86,6 +86,13 @@ public class AppBeaconServer {
         if (INSTANCE != null) {
             INSTANCE.stop();
             INSTANCE.deleteAuthSecret();
+            for (BeaconShellSession ss : INSTANCE.getCache().getShellSessions()) {
+                try {
+                    ss.getControl().close();
+                } catch (Exception ex) {
+                    ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
+                }
+            }
             INSTANCE = null;
         }
     }

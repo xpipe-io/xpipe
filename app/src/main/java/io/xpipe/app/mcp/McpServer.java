@@ -1,22 +1,18 @@
 package io.xpipe.app.mcp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
-import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.core.JacksonMapper;
+import lombok.SneakyThrows;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public class McpServer {
 
     public static final HttpStreamableServerTransportProvider HANDLER = HttpStreamableServerTransportProvider.builder().mcpEndpoint("/mcp").objectMapper(new ObjectMapper()).build();
 
+    @SneakyThrows
     public static void init() {
         var transportProvider = HANDLER;
 
@@ -36,31 +32,6 @@ public class McpServer {
                 .logger("custom-logger")
                 .data("Custom log message")
                 .build());
-
-        var schema = """
-            {
-              "type" : "object",
-              "id" : "urn:jsonschema:Operation",
-              "properties" : {
-                "operation" : {
-                  "type" : "string"
-                },
-                "a" : {
-                  "type" : "number"
-                },
-                "b" : {
-                  "type" : "number"
-                }
-              }
-            }
-            """;
-        var syncToolSpecification = new McpServerFeatures.SyncToolSpecification(
-                new McpSchema.Tool("calculator", "Basic calculator", schema),
-                (exchange, arguments) -> {
-                    // Tool implementation
-                    return new McpSchema.CallToolResult("test", false);
-                }
-        );
 
         var syncResourceSpecification = new McpServerFeatures.SyncResourceSpecification(
                 new McpSchema.Resource("custom://resource", "name", "description", "mime-type", null),
@@ -82,7 +53,9 @@ public class McpServer {
         );
 
         // Register tools, resources, and prompts
-        syncServer.addTool(syncToolSpecification);
+        syncServer.addTool(McpTools.readFile());
+        syncServer.addTool(McpTools.listFiles());
+        syncServer.addTool(McpTools.getFileInfo());
         syncServer.addResource(syncResourceSpecification);
         syncServer.addPrompt(syncPromptSpecification);
     }

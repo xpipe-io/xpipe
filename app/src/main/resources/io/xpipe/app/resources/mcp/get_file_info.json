@@ -1,0 +1,21 @@
+{
+  "name": "get_file_info",
+  "description": "Retrieves information about a file",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "path": {
+        "type": "string",
+        "description": "The file path"
+      }
+    },
+    "required": [
+      "system",
+      "path"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "read_file",
+  "description": "Reads file",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "string",
+        "description": "The file path to read"
+      },
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      }
+    },
+    "required": [
+      "path",
+      "system"
+    ]
+  }
+}
