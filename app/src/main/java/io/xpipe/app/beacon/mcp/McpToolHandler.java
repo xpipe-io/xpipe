@@ -1,4 +1,4 @@
-package io.xpipe.app.mcp;
+package io.xpipe.app.beacon.mcp;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;

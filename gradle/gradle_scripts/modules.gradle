@@ -80,25 +80,10 @@ extraJavaModuleInfo {
 
 extraJavaModuleInfo {
     module("io.projectreactor:reactor-core", "reactor.core") {
-        requires("context.propagation")
-        requires("reactor.blockhound")
         requires("org.reactivestreams")
         exportAllPackages()
-    }
-}
-
-extraJavaModuleInfo {
-    module("io.micrometer:context-propagation", "context.propagation") {
-        exportAllPackages()
-        uses("io.micrometer.context.ContextAccessor")
-        uses("io.micrometer.context.ThreadLocalAccessor")
-    }
-}
-
-extraJavaModuleInfo {
-    module("io.projectreactor.tools:blockhound", "reactor.blockhound") {
-        exportAllPackages()
-        uses("reactor.blockhound.integration.BlockHoundIntegration")
+        ignoreServiceProvider("io.micrometer.context.ContextAccessor", "reactor.util.context.ReactorContextAccessor")
+        ignoreServiceProvider("reactor.blockhound.integration.BlockHoundIntegration", "reactor.core.scheduler.ReactorBlockHoundIntegration")
     }
 }
 

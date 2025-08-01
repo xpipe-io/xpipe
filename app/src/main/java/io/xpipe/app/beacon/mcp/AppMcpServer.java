@@ -1,11 +1,10 @@
-package io.xpipe.app.mcp;
+package io.xpipe.app.beacon.mcp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -14,18 +13,17 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.beacon.BeaconServerException;
 import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.io.IOException;
 
 @Value
-public class McpServer {
+public class AppMcpServer {
 
-    private static McpServer INSTANCE;
+    private static AppMcpServer INSTANCE;
 
-    public static McpServer get() {
+    public static AppMcpServer get() {
         return INSTANCE;
     }
 
@@ -86,7 +84,7 @@ public class McpServer {
             }
         });
 
-        INSTANCE = new McpServer(syncServer, transportProvider);
+        INSTANCE = new AppMcpServer(syncServer, transportProvider);
     }
 
     public HttpHandler createHttpHandler() {

@@ -1,4 +1,4 @@
-package io.xpipe.app.mcp;
+package io.xpipe.app.beacon.mcp;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

@@ -8,11 +8,11 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
-public class HttpApiCategory extends AppPrefsCategory {
+public class ApiCategory extends AppPrefsCategory {
 
     @Override
     protected String getId() {
-        return "httpApi";
+        return "api";
     }
 
     @Override
