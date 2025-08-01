@@ -60,8 +60,11 @@ public class ErrorEventFactory {
             b = ErrorEvent.builder().throwable(t);
         }
 
-        if (t instanceof SSLHandshakeException && b.getLink() == null) {
-            b.documentationLink(DocumentationLink.TLS_DECRYPTION);
+        if (t instanceof SSLHandshakeException) {
+            if (b.getLink() == null) {
+                b.documentationLink(DocumentationLink.TLS_DECRYPTION);
+            }
+            b.expected();
         }
 
         // Indicates that the session is scheduled to end and new processes won't be started
