@@ -73,7 +73,8 @@ public enum DocumentationLink {
     SERIAL("guide/serial"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
-    SERIAL_PORTS("guide/serial#serial-ports");
+    SERIAL_PORTS("guide/serial#serial-ports"),
+    NO_EXEC("troubleshooting/noexec");
 
     private final String page;
 
