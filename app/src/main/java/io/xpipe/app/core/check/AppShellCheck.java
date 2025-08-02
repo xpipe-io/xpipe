@@ -48,6 +48,11 @@ public class AppShellCheck {
 
                             @Override
                             protected boolean fallBackInstantly() {
+                                var coreutils = AppHomebrewCoreutilsCheck.checkCoreutils();
+                                if (coreutils.isPresent()) {
+                                    return true;
+                                }
+
                                 return false;
                             }
                         };
