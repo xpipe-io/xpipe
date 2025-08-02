@@ -49,7 +49,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 return null;
             }
 
-            if (r[1].contains("Vault is locked")) {
+            if (!sc.view().getEnvironmentVariable("BW_SESSION").isEmpty() && r[1].contains("Vault is locked")) {
                 var pw = AskpassAlert.queryRaw("Unlock vault with your Bitwarden master password", null, false);
                 if (pw.getSecret() == null) {
                     return null;
@@ -57,15 +57,14 @@ public class BitwardenPasswordManager implements PasswordManager {
                 var cmd = sc.command(CommandBuilder.of()
                         .add("bw", "unlock", "--raw", "--passwordenv", "BW_PASSWORD")
                         .fixedEnvironment("BW_PASSWORD", pw.getSecret().getSecretValue()));
-                // cmd.sensitive();
+                cmd.sensitive();
                 var out = cmd.readStdoutOrThrow();
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
-            var cmd =
-                    CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
+            var cmd = CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
-                    .readTree(sc.command(cmd).readStdoutOrThrow());
+                    .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.required("login");
             var user = login.required("username");
             var password = login.required("password");

@@ -138,6 +138,10 @@ public class BrowserFileTransferOperation {
     }
 
     public boolean isMove() {
+        if (files.isEmpty()) {
+            return false;
+        }
+
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         var doesMove = transferMode == BrowserFileTransferMode.MOVE
                 || (same && transferMode == BrowserFileTransferMode.NORMAL);
