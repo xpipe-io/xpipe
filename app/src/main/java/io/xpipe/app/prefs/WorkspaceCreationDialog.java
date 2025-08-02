@@ -59,7 +59,7 @@ public class WorkspaceCreationDialog {
                                     yield DesktopShortcuts.create(
                                             exec,
                                             "-Dio.xpipe.app.dataDir=\""
-                                                    + path.get().toString() + "\" -Dio.xpipe.app.acceptEula=true",
+                                                    + path.get() + "\" -Dio.xpipe.app.acceptEula=true",
                                             shortcutName);
                                 }
                                 default -> {
@@ -68,7 +68,7 @@ public class WorkspaceCreationDialog {
                                             .toString();
                                     yield DesktopShortcuts.create(
                                             exec,
-                                            "open -d \"" + path.get().toString() + "\" --accept-eula",
+                                            "open -d \"" + path.get() + "\" --accept-eula",
                                             shortcutName);
                                 }
                             };
