@@ -93,6 +93,7 @@ public class ErrorHandlerComp extends SimpleComp {
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
+        descriptionField.getStyleClass().add("description");
         AppFontSizes.xs(descriptionField);
         var text = new VBox(descriptionField);
         text.setFillWidth(true);

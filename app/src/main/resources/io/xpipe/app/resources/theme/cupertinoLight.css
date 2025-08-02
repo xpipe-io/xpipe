@@ -17,3 +17,7 @@
 .root:light * {
     -color-foreground-base: derive(-color-bg-default, -3%);
 }
+
+.root * {
+    -color-fg-default: #24292f;
+}
