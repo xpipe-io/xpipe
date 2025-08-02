@@ -7,6 +7,7 @@ import io.xpipe.core.SecretValue;
 
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SecretManager {
 
@@ -100,6 +101,18 @@ public class SecretManager {
         secrets.entrySet()
                 .removeIf(secretReferenceSecretValueEntry ->
                         secretReferenceSecretValueEntry.getKey().getSecretId().equals(id));
+    }
+
+    public static synchronized void moveReferences(UUID oldId, UUID newId) {
+        var oldSecrets = secrets.entrySet().stream()
+                .filter(e -> e.getKey().getSecretId().equals(oldId))
+                .collect(Collectors.toSet());
+        secrets.entrySet().removeAll(oldSecrets);
+
+        for (Map.Entry<SecretReference, SecretValue> e : oldSecrets) {
+            var newRef = new SecretReference(newId, e.getKey().getSubId());
+            secrets.put(newRef, e.getValue());
+        }
     }
 
     public static synchronized void clear(SecretReference ref) {

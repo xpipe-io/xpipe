@@ -9,6 +9,7 @@ import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.StorePath;
 
@@ -391,6 +392,8 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         }
+
+        SecretManager.moveReferences(newEntry.getUuid(), entry.getUuid());
 
         refreshEntries();
         saveAsync();
