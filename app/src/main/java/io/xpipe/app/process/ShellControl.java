@@ -2,6 +2,7 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FailableFunction;
@@ -101,7 +102,7 @@ public interface ShellControl extends ProcessControl {
 
     ReentrantLock getLock();
 
-    void requireLicensedFeature(String id);
+    void requireLicensedFeature(LicensedFeature f);
 
     ShellDialect getOriginalShellDialect();
 

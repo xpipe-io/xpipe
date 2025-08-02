@@ -10,6 +10,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 
 import lombok.experimental.SuperBuilder;
@@ -121,6 +122,8 @@ public abstract class AbstractAction {
             return false;
         }
 
+        checkLicense();
+
         synchronized (active) {
             active.add(this);
         }
@@ -187,6 +190,17 @@ public abstract class AbstractAction {
 
     public boolean forceConfirmation() {
         return false;
+    }
+
+    public LicensedFeature getLicensedFeature() {
+        return null;
+    }
+
+    protected void checkLicense() {
+        var feature = getLicensedFeature();
+        if (feature != null) {
+            feature.throwIfUnsupported();
+        }
     }
 
     protected void afterExecute() {}

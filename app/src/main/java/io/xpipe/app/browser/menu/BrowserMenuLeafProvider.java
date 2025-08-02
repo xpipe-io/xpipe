@@ -106,24 +106,13 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
             b.setDisable(!isActive(model, selected));
         });
 
-        if (getLicensedFeatureId() != null
-                && !LicenseProvider.get().getFeature(getLicensedFeatureId()).isSupported()) {
-            b.setDisable(true);
-            b.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
-        }
-
         return b;
     }
 
     default MenuItem toMenuItem(BrowserFileSystemTabModel model, List<BrowserEntry> selected) {
         var name = getName(model, selected);
         var mi = new MenuItem();
-        mi.textProperty().bind(BindingsHelper.map(name, s -> {
-            if (getLicensedFeatureId() != null) {
-                return LicenseProvider.get().getFeature(getLicensedFeatureId()).suffix(s);
-            }
-            return s;
-        }));
+        mi.textProperty().bind(name);
         mi.setOnAction(event -> {
             try {
                 execute(model, selected);
@@ -141,11 +130,6 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         }
         mi.setMnemonicParsing(false);
         mi.setDisable(!isActive(model, selected));
-
-        if (getLicensedFeatureId() != null
-                && !LicenseProvider.get().getFeature(getLicensedFeatureId()).isSupported()) {
-            mi.setDisable(true);
-        }
 
         return mi;
     }

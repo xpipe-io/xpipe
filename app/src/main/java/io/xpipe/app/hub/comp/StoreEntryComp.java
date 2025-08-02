@@ -640,18 +640,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         var item = branch != null
                 ? new Menu(null, icon.createGraphicNode())
                 : new MenuItem(null, icon.createGraphicNode());
+        item.textProperty().bind(name);
 
-        var proRequired = p.getLicensedFeatureId() != null
-                && !LicenseProvider.get().getFeature(p.getLicensedFeatureId()).isSupported();
-        if (proRequired) {
-            item.setDisable(true);
-            item.textProperty()
-                    .bind(LicenseProvider.get()
-                            .getFeature(p.getLicensedFeatureId())
-                            .suffixObservable(name.getValue()));
-        } else {
-            item.textProperty().bind(name);
-        }
         Menu menu = item instanceof Menu m ? m : null;
 
         if (branch != null) {

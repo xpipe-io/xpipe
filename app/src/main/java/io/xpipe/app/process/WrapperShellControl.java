@@ -1,6 +1,7 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -131,7 +132,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public void requireLicensedFeature(String id) {
+    public void requireLicensedFeature(LicensedFeature id) {
         parent.requireLicensedFeature(id);
     }
 
