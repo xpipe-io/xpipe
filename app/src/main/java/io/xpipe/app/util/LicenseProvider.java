@@ -40,6 +40,8 @@ public abstract class LicenseProvider {
 
     public abstract boolean hasPaidLicense();
 
+    public abstract boolean shouldReportError();
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override
