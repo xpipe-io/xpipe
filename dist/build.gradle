@@ -116,6 +116,7 @@ if (rootProject.fullVersion) {
     apply from: 'aur.gradle'
     apply from: 'nix.gradle'
     apply from: 'choco.gradle'
+    apply from: 'homebrew.gradle'
     apply from: 'winget.gradle'
     apply from: 'install.gradle'
     apply from: 'i18n.gradle'
