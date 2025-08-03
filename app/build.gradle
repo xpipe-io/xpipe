@@ -135,7 +135,7 @@ processResources {
         cssFiles.include "**/*.css"
         cssFiles.each { css ->
             providers.javaexec {
-                workingDir = project.projectDir
+                workingDir = projectDir
                 getJvmArguments().addAll("--module-path=${configurations.javafx.asFileTree.asPath},", "--add-modules=javafx.graphics")
                 mainClass = "com.sun.javafx.css.parser.Css2Bin"
                 args css

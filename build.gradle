@@ -227,14 +227,10 @@ def getWindowsSchemaCanonicalVersion() {
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
     jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
 }
-if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.MAC_OS) {
-    jvmRunArgs.addAll("--add-exports", "java.desktop/com.apple.eawt=io.xpipe.app")
-}
 
 if (isFullRelease && rawVersion.contains("-")) {
     throw new IllegalArgumentException("Releases must have canonical versions")
 }
-
 
 if (isStage && !rawVersion.contains("-")) {
     throw new IllegalArgumentException("Stage releases must have release numbers")
