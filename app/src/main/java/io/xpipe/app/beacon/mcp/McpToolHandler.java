@@ -12,6 +12,7 @@ import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FilePath;
 import lombok.SneakyThrows;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSchema.CallToolRequest, McpSchema.CallToolResult>{
@@ -31,6 +32,19 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
 
         public McpSchema.CallToolRequest getRawRequest() {
             return request;
+        }
+
+        public Optional<String> getOptionalStringArgument(String key) throws BeaconClientException {
+            var o = request.arguments().get(key);
+            if (o == null) {
+                return Optional.empty();
+            }
+
+            if (!(o instanceof String s) || s.isBlank()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(s);
         }
 
         public String getStringArgument(String key) throws BeaconClientException {
@@ -68,7 +82,7 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             return path;
         }
 
-        public DataStoreEntryRef<ShellStore> getShellStoreRef(String name) throws BeaconClientException {
+        public DataStoreEntryRef<?> getDataStoreRef(String name) throws BeaconClientException {
             var found = DataStorageQuery.queryUserInput(name);
             if (found.isEmpty()) {
                 throw new BeaconClientException("No connection found for input " + name);
@@ -80,13 +94,18 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             }
 
             var e = found.getFirst();
-            var isShell = e.getStore() instanceof ShellStore;
+            return e.ref();
+        }
+
+        public DataStoreEntryRef<ShellStore> getShellStoreRef(String name) throws BeaconClientException {
+            var ref = getDataStoreRef(name);
+            var isShell = ref.getStore() instanceof ShellStore;
             if (!isShell) {
                 throw new BeaconClientException(
-                        "Connection " + DataStorage.get().getStorePath(e).toString() + " is not a shell connection");
+                        "Connection " + DataStorage.get().getStorePath(ref.get()).toString() + " is not a shell connection");
             }
 
-            return e.ref();
+            return ref.asNeeded();
         }
     }
 

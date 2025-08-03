@@ -1,0 +1,36 @@
+{
+  "name": "run_script",
+  "description": "Runs a predefined script",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "script": {
+        "type": "string",
+        "description": "The script identifier"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The working directory"
+      },
+      "arguments": {
+        "type": "array",
+        "properties": {
+          "type": "string",
+          "description": "A script argument"
+        }
+      }
+    },
+    "required": [
+      "system",
+      "script"
+    ]
+  },
+  "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": true
+  }
+}

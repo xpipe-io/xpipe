@@ -49,6 +49,11 @@ public class AppMcpServer {
         syncServer.addTool(McpTools.listFiles());
         syncServer.addTool(McpTools.getFileInfo());
         syncServer.addTool(McpTools.createFile());
+        syncServer.addTool(McpTools.createDirectory());
+        syncServer.addTool(McpTools.runCommand());
+        syncServer.addTool(McpTools.runScript());
+        syncServer.addTool(McpTools.openTerminal());
+        syncServer.addTool(McpTools.toggleState());
 
         syncServer.addResource(McpResources.connections());
         syncServer.addResource(McpResources.categories());

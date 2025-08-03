@@ -1,0 +1,24 @@
+{
+  "name": "open_terminal",
+  "description": "Open a new terminal session",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The working directory"
+      }
+    },
+    "required": [
+      "system"
+    ]
+  },
+  "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": true
+  }
+}

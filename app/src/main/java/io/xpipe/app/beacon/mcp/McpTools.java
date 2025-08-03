@@ -3,14 +3,25 @@ package io.xpipe.app.beacon.mcp;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.beacon.BlobManager;
+import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.util.CommandDialog;
+import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FileInfo;
+import io.xpipe.core.FilePath;
+import io.xpipe.core.ModuleLayerLoader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 
 public final class McpTools {
 
@@ -120,6 +131,102 @@ public final class McpTools {
             }
 
             return McpSchema.CallToolResult.builder().addTextContent("File created successfully").build();
+        })).build();
+    }
+
+    public static McpServerFeatures.SyncToolSpecification createDirectory() throws IOException {
+        var tool = McpSchemaFiles.loadTool("create_directory.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var path = req.getFilePath("path");
+            var system = req.getStringArgument("system");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+            var fs = new ConnectionFileSystem(shellSession.getControl());
+
+            if (fs.fileExists(path)) {
+                throw new BeaconClientException("Directory " + path + " does already exist");
+            }
+
+            fs.mkdirs(path);
+
+            return McpSchema.CallToolResult.builder().addTextContent("Directory created successfully").build();
+        })).build();
+    }
+
+    public static McpServerFeatures.SyncToolSpecification runCommand() throws IOException {
+        var tool = McpSchemaFiles.loadTool("run_command.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var command = req.getStringArgument("command");
+            var system = req.getStringArgument("system");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+
+            var out = shellSession.getControl().command(command).readStdoutOrThrow();
+            var formatted = CommandDialog.formatOutput(out);
+
+            return McpSchema.CallToolResult.builder().addTextContent(formatted).build();
+        })).build();
+    }
+
+
+    public static McpServerFeatures.SyncToolSpecification runScript() throws IOException {
+        var tool = McpSchemaFiles.loadTool("run_script.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var system = req.getStringArgument("system");
+            var script = req.getDataStoreRef("script");
+            var directory = req.getFilePath("directory");
+            var arguments = req.getStringArgument("arguments");
+
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+
+            var clazz = Class.forName(AppExtensionManager.getInstance().getExtendedLayer().findModule("io.xpipe.ext.base").orElseThrow(),
+                    "io.xpipe.ext.base.script.SimpleScriptStore");
+            var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class);
+            var command = (String) method.invoke(script.getStore(), shellSession.getControl());
+            var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);
+            var out = shellSession.getControl()
+                    .command(shellSession.getControl().getShellDialect()
+                            .runScriptCommand(shellSession.getControl(), scriptFile.toString()) + arguments)
+                    .withWorkingDirectory(directory).readStdoutOrThrow();
+            var formatted = CommandDialog.formatOutput(out);
+
+            return McpSchema.CallToolResult.builder().addTextContent(formatted).build();
+        })).build();
+    }
+
+    public static McpServerFeatures.SyncToolSpecification openTerminal() throws IOException {
+        var tool = McpSchemaFiles.loadTool("open_terminal.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var system = req.getStringArgument("system");
+            var directory = req.getOptionalStringArgument("directory");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+
+            TerminalLauncher.open(shellStore.get(), shellStore.get().getName(), FilePath.of(directory.orElse(null)), shellSession.getControl());
+
+            return McpSchema.CallToolResult.builder().addTextContent("Terminal is launching").build();
+        })).build();
+    }
+
+
+    public static McpServerFeatures.SyncToolSpecification toggleState() throws IOException {
+        var tool = McpSchemaFiles.loadTool("toggle_state.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var system = req.getStringArgument("system");
+            var state = req.getBooleanArgument("state");
+            var ref = req.getDataStoreRef(system);
+
+            if (!(ref.getStore() instanceof SingletonSessionStore<?> singletonSessionStore)) {
+                throw new BeaconClientException("Not a toggleable connection");
+            }
+            if (state) {
+                singletonSessionStore.startSessionIfNeeded();
+            } else {
+                singletonSessionStore.stopSessionIfNeeded();
+            }
+
+            return McpSchema.CallToolResult.builder().addTextContent("Connection state set to " + state).build();
         })).build();
     }
 }

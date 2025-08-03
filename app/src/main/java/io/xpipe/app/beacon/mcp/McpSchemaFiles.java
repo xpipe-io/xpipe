@@ -17,6 +17,7 @@ public class McpSchemaFiles {
     public static McpSchema.Tool loadTool(String name) throws IOException {
         var s = load(name);
         s = s.replaceFirst("\"input_schema\"", "\"inputSchema\"");
+        s = s.replaceFirst("\"output_schema\"", "\"outputSchema\"");
         return JacksonMapper.getDefault().readValue(s, McpSchema.Tool.class);
     }
 }
