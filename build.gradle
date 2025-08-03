@@ -14,7 +14,7 @@ buildscript {
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.12' apply false
+    id 'org.gradlex.extra-java-module-info' version '1.13' apply false
     id("com.diffplug.spotless") version "7.1.0" apply false
 }
 
@@ -46,7 +46,7 @@ subprojects {subproject ->
 def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
 def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
 
-tasks.withType(GenerateModuleMetadata) {
+tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
 }
 
@@ -85,7 +85,7 @@ def getArchName() {
 }
 
 def getPlatformName() {
-    def currentOS = DefaultNativePlatform.currentOperatingSystem;
+    def currentOS = DefaultNativePlatform.currentOperatingSystem
     def platform
     if (currentOS.isWindows()) {
         platform = 'windows'
@@ -94,7 +94,7 @@ def getPlatformName() {
     } else {
         platform = 'linux'
     }
-    return platform;
+    return platform
 }
 
 project.ext {
@@ -102,7 +102,7 @@ project.ext {
     os = org.gradle.internal.os.OperatingSystem.current()
     allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
             .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
-            .filter(s -> !s.equals('base'))
+            .filter(s -> s != 'base')
             .map(l -> project(":$l"))).toList()
     fullVersion = file("$rootDir/private_files.txt").exists()
     arch = getArchName()
@@ -216,12 +216,12 @@ project.ext {
 }
 
 def getWindowsSchemaCanonicalVersion() {
-    def v = canonicalVersionString;
+    def v = canonicalVersionString
     def last = isStage ? versionReleaseNumber : 0
     if (v.split("\\.").length == 2) {
         v = v + ".0"
     }
-    return v + "." + last;
+    return v + "." + last
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
@@ -241,7 +241,6 @@ if (isStage && !rawVersion.contains("-")) {
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
-    def fileName = file(f).getName()
     def text = file(f).text
     def replaced = text.replace(replacements)
     return replaced
@@ -277,13 +276,13 @@ tasks.register('testReport', TestReport) {
     }.toList())
 }
 
-task testAll(type: DefaultTask) {
+tasks.register('testAll', DefaultTask) {
     for (final def t in testTasks) {
-        t.forEach {dependsOn(it.getTaskDependencies())}
+        t.forEach { dependsOn(it.getTaskDependencies()) }
     }
     doFirst {
         for (final def t in testTasks) {
-            t.forEach {it.executeTests()}
+            t.forEach { it.executeTests() }
         }
     }
     finalizedBy(testReport)

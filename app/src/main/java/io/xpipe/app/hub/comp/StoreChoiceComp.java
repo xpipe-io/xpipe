@@ -40,16 +40,42 @@ import java.util.function.Predicate;
 public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
 
     private final Mode mode;
-    private final DataStoreEntry self;
     private final Property<DataStoreEntryRef<T>> selected;
-    private final Class<T> storeClass;
-    private final Predicate<DataStoreEntryRef<T>> applicableCheck;
-    private final StoreCategoryWrapper initialCategory;
-    private Popover popover;
+
+
+
+    private final StoreChoicePopover<T> popover;
+
+
+
+
+
+    public StoreChoiceComp(
+
+
+            Mode mode, DataStoreEntry self, Property<DataStoreEntryRef<T>> selected, Class<?> storeClass,
+
+
+            Predicate<DataStoreEntryRef<T>> applicableCheck, StoreCategoryWrapper initialCategory
+
+
+    ) {
+
+
+        this.mode = mode;
+
+
+        this.selected = selected;
+
+
+        this.popover = new StoreChoicePopover<>(self,selected,storeClass, applicableCheck, initialCategory, "selectConnection");
+
+
+    }
 
     public static <T extends DataStore> StoreChoiceComp<T> other(
             Property<DataStoreEntryRef<T>> selected,
-            Class<T> clazz,
+            Class<?> clazz,
             Predicate<DataStoreEntryRef<T>> filter,
             StoreCategoryWrapper initialCategory) {
         return new StoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
@@ -63,157 +89,6 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
     public static StoreChoiceComp<ShellStore> host(
             Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
         return new StoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
-    }
-
-    private Popover getPopover() {
-        // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
-        // changed
-        if (popover == null || applicableCheck != null) {
-            var cur = StoreViewState.get().getActiveCategory().getValue();
-            var selectedCategory = new SimpleObjectProperty<>(
-                    initialCategory != null
-                            ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory)
-                            : cur);
-            var filterText = new SimpleStringProperty();
-            popover = new Popover();
-            Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
-                var e = storeEntryWrapper.getEntry();
-
-                if (e.equals(self)
-                        || DataStorage.get().getStoreParentHierarchy(e).contains(self)) {
-                    return false;
-                }
-
-                // Check if load failed
-                if (e.getStore() == null) {
-                    return false;
-                }
-
-                return storeClass.isAssignableFrom(e.getStore().getClass())
-                        && e.getValidity().isUsable()
-                        && (applicableCheck == null || applicableCheck.test(e.ref()));
-            };
-
-            var applicableMatch =
-                    StoreViewState.get().getCurrentTopLevelSection().anyMatches(applicable);
-            if (!applicableMatch) {
-                selectedCategory.set(initialCategory);
-            }
-
-            var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
-                    .filter(applicable)
-                    .count();
-            var initialExpanded = applicableCount < 20;
-
-            var section = new StoreSectionMiniComp(
-                    StoreSection.createTopLevel(
-                            StoreViewState.get().getAllEntries(),
-                            Set.of(),
-                            applicable,
-                            filterText,
-                            selectedCategory,
-                            StoreViewState.get().getEntriesListVisibilityObservable(),
-                            StoreViewState.get().getEntriesListUpdateObservable(),
-                            popover.showingProperty()),
-                    (s, comp) -> {
-                        if (!applicable.test(s.getWrapper())) {
-                            comp.disable(new SimpleBooleanProperty(true));
-                        }
-                    },
-                    sec -> {
-                        if (applicable.test(sec.getWrapper())) {
-                            this.selected.setValue(sec.getWrapper().getEntry().ref());
-                            popover.hide();
-                        }
-                    },
-                    initialExpanded);
-
-            var category = new DataStoreCategoryChoiceComp(
-                            initialCategory != null ? initialCategory.getRoot() : null,
-                            StoreViewState.get().getActiveCategory(),
-                            selectedCategory)
-                    .styleClass(Styles.LEFT_PILL);
-            var filter =
-                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
-
-            var addButton = Comp.of(() -> {
-                        MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
-                        m.setMaxHeight(100);
-                        m.setMinHeight(0);
-                        StoreCreationMenu.addButtons(m, false);
-                        return m;
-                    })
-                    .accessibleTextKey("addConnection")
-                    .padding(new Insets(-5))
-                    .styleClass(Styles.RIGHT_PILL);
-
-            var top = new HorizontalComp(List.of(category, filter, addButton))
-                    .styleClass("top")
-                    .apply(struc -> struc.get().setFillHeight(true))
-                    .apply(struc -> {
-                        var first = ((Region) struc.get().getChildren().get(0));
-                        var second = ((Region) struc.get().getChildren().get(1));
-                        var third = ((Region) struc.get().getChildren().get(1));
-                        second.prefHeightProperty().bind(first.heightProperty());
-                        second.minHeightProperty().bind(first.heightProperty());
-                        second.maxHeightProperty().bind(first.heightProperty());
-                        third.prefHeightProperty().bind(first.heightProperty());
-                    })
-                    .apply(struc -> {
-                        // Ugly solution to focus the text field
-                        // Somehow this does not work through the normal on shown listeners
-                        struc.get()
-                                .getChildren()
-                                .get(0)
-                                .focusedProperty()
-                                .addListener((observable, oldValue, newValue) -> {
-                                    if (newValue) {
-                                        struc.get().getChildren().get(1).requestFocus();
-                                    }
-                                });
-                    })
-                    .createStructure()
-                    .get();
-
-            var emptyText = Bindings.createStringBinding(
-                    () -> {
-                        var count = StoreViewState.get().getAllEntries().getList().stream()
-                                .filter(applicable)
-                                .count();
-                        return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
-                    },
-                    StoreViewState.get().getAllEntries().getList());
-            var emptyLabel =
-                    new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
-            emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
-            emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
-            emptyLabel.minHeight(80);
-
-            var listStack = new StackComp(List.of(emptyLabel, section));
-            listStack.vgrow();
-
-            var r = listStack.createRegion();
-            var content = new VBox(top, r);
-            content.setFillWidth(true);
-            content.getStyleClass().add("choice-comp-content");
-            content.setPrefWidth(480);
-            content.setMaxHeight(550);
-
-            popover.setContentNode(content);
-            popover.setCloseButtonEnabled(true);
-            popover.setArrowLocation(Popover.ArrowLocation.TOP_CENTER);
-            popover.setHeaderAlwaysVisible(true);
-            popover.setDetachable(true);
-            popover.setTitle(AppI18n.get("selectConnection"));
-            AppFontSizes.xs(popover.getContentNode());
-
-            // Hide on connection creation dialog
-            AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-                popover.hide();
-            });
-        }
-
-        return popover;
     }
 
     private String toName(DataStoreEntry entry) {
@@ -256,12 +131,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             16);
                     struc.get().setGraphic(graphic.createRegion());
                     struc.get().setOnAction(event -> {
-                        if (popover == null || !popover.isShowing()) {
-                            var p = getPopover();
-                            p.show(struc.get());
-                        } else {
-                            popover.hide();
-                        }
+                        popover.show(struc.get());
                         event.consume();
                     });
                     struc.get().setOnMouseClicked(event -> {

@@ -9,6 +9,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -127,7 +128,6 @@ public class TerminalCategory extends AppPrefsCategory {
                 };
             });
         });
-        c.prefWidth(300);
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
             var t = prefs.terminalType().getValue();
@@ -149,7 +149,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 prefs.terminalType());
         visit.visible(visitVisible);
 
-        var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
+        var h = new HorizontalComp(List.of(c.hgrow(), visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);
             struc.get().setSpacing(10);
         });
@@ -160,19 +160,16 @@ public class TerminalCategory extends AppPrefsCategory {
                         var term = AppPrefs.get().terminalType().getValue();
                         if (term != null) {
                             // Don't use tabs to not use multiplexer stuff
-                            TerminalLauncher.open(
-                                    null,
-                                    "Test",
-                                    null,
-                                    ProcessControlProvider.get()
-                                            .createLocalProcessControl(true)
-                                            .command(ProcessControlProvider.get()
-                                                    .getEffectiveLocalDialect()
-                                                    .getEchoCommand(
-                                                            "If you can read this, the terminal integration works",
-                                                            false)),
-                                    UUID.randomUUID(),
-                                    false);
+                            TerminalLaunch.builder()
+                                    .title("Test")
+                                    .localScript(new ShellScript(ProcessControlProvider.get()
+                                            .getEffectiveLocalDialect()
+                                            .getEchoCommand(
+                                                    "If you can read this, the terminal integration works",
+                                                    false)))
+                                    .preferTabs(false)
+                                    .logIfEnabled(false)
+                                    .launch();
                         }
                     });
                 })
@@ -281,6 +278,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         OsType.getLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
+                .longDescription(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
@@ -318,6 +316,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
-        return new OptionsBuilder().nameAndDescription("terminalPrompt").addComp(choice, prefs.terminalPrompt);
+        return new OptionsBuilder().nameAndDescription("terminalPrompt")
+                .longDescription(DocumentationLink.TERMINAL_PROMPT).addComp(choice, prefs.terminalPrompt);
     }
 }

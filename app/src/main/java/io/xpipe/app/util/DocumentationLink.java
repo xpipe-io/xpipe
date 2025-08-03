@@ -36,6 +36,7 @@ public enum DocumentationLink {
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     KVM_VNC("guide/kvm#vnc-access"),
+    HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
@@ -74,6 +75,12 @@ public enum DocumentationLink {
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
     SERIAL_PORTS("guide/serial#serial-ports"),
+    TERMINAL("guide/terminals#noteworthy-integrations"),
+    TERMINAL_LOGGING("guide/terminals#logging"),
+    TERMINAL_MULTIPLEXER("guide/terminals#multiplexers"),
+    TERMINAL_PROMPT("guide/terminals#prompts"),
+    TEAM_VAULTS("guide/sync#team-vaults"),
+    SSH_TROUBLESHOOT("guide/ssh#troubleshooting"),
     NO_EXEC("troubleshooting/noexec");
 
     private final String page;

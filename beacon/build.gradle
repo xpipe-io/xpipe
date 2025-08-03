@@ -22,7 +22,7 @@ dependencies {
     api project(':core')
 }
 
-task dist(type: Copy) {
+tasks.register('dist', Copy) {
     from jar.archiveFile
     into "${project(':dist').buildDir}/dist/libraries"
 }

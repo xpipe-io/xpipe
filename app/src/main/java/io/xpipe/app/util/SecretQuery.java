@@ -32,7 +32,7 @@ public interface SecretQuery {
                 }
 
                 var inPlace = found.get().getSecret().inPlace();
-                var r = AskpassAlert.queryRaw(prompt, inPlace, true);
+                var r = AskpassAlert.queryRaw(prompt, inPlace);
                 return r.getState() != SecretQueryState.NORMAL ? Optional.of(r) : found;
             }
 
@@ -50,7 +50,7 @@ public interface SecretQuery {
                 }
 
                 var inPlace = r.getSecret().inPlace();
-                return AskpassAlert.queryRaw(prompt, inPlace, true);
+                return AskpassAlert.queryRaw(prompt, inPlace);
             }
 
             @Override
@@ -75,7 +75,7 @@ public interface SecretQuery {
         return new SecretQuery() {
             @Override
             public SecretQueryResult query(String prompt) {
-                return AskpassAlert.queryRaw(prompt, null, true);
+                return AskpassAlert.queryRaw(prompt, null);
             }
 
             @Override

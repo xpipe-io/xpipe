@@ -6,6 +6,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
@@ -53,17 +54,6 @@ public class AppInstaller {
     })
     public abstract static class InstallerAssetType {
 
-        protected void runAndClose(FailableRunnable<Exception> r) {
-            OperationMode.executeAfterShutdown(() -> {
-                r.run();
-
-                // In case we perform any operations such as opening a terminal
-                // give it some time to open while this process is still alive
-                // Otherwise it might quit because the parent process is dead already
-                ThreadHelper.sleep(100);
-            });
-        }
-
         public abstract void installLocal(Path file);
 
         public abstract String getExtension();
@@ -85,7 +75,7 @@ public class AppInstaller {
                         ? getCmdCommand(file.toString(), logFile.toString())
                         : getPowershellCommand(file.toString(), logFile.toString(), systemWide);
 
-                runAndClose(() -> {
+                OperationMode.executeAfterShutdown(() -> {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
@@ -181,8 +171,8 @@ public class AppInstaller {
                                              fi
                                              """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                runAndClose(() -> {
-                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
+                OperationMode.executeAfterShutdown(() -> {
+                    TerminalLaunch.builder().title("XPipe Updater").localScript(command).launch();
                 });
             }
 
@@ -214,9 +204,8 @@ public class AppInstaller {
                                              fi
                                              """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-
-                runAndClose(() -> {
-                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
+                OperationMode.executeAfterShutdown(() -> {
+                    TerminalLaunch.builder().title("XPipe Updater").localScript(command).launch();
                 });
             }
 
@@ -248,9 +237,8 @@ public class AppInstaller {
                                            fi
                                            """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-
-                runAndClose(() -> {
-                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
+                OperationMode.executeAfterShutdown(() -> {
+                    TerminalLaunch.builder().title("XPipe Updater").localScript(command).launch();
                 });
             }
 

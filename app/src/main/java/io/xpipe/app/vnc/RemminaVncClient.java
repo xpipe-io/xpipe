@@ -18,6 +18,11 @@ import java.util.Optional;
 public class RemminaVncClient implements ExternalApplicationType.PathApplication, ExternalVncClient {
 
     @Override
+    public String getWebsite() {
+        return "https://remmina.org/";
+    }
+
+    @Override
     public boolean supportsPasswords() {
         return true;
     }

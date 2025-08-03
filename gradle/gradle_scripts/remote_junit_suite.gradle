@@ -12,7 +12,7 @@ testing {
             }
 
             targets {
-                all {
+                configureEach {
                     testTask.configure {
                         workingDir = projectDir
 

@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.SecretManager;
@@ -54,7 +55,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
                         getExecutable(sc) + " login");
-                TerminalLauncher.openDirect("Keeper login", script);
+                TerminalLaunch.builder().title("Keeper login").localScript(script).logIfEnabled(false).launch();
                 return null;
             }
 
@@ -105,6 +106,11 @@ public class KeeperPasswordManager implements PasswordManager {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.keepersecurity.com";
     }
 
     @Override

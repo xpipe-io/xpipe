@@ -19,7 +19,7 @@ import javafx.stage.Window;
 
 public class AskpassAlert {
 
-    public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue, boolean stealFocus) {
+    public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue) {
         var prop = new SimpleObjectProperty<>(secretValue);
         var r = AppWindowHelper.showBlockingAlert(alert -> {
                     alert.initModality(Modality.NONE);
@@ -88,9 +88,7 @@ public class AskpassAlert {
 
                     alert.setOnShown(event -> {
                         stage.requestFocus();
-                        if (stealFocus) {
-                            anim.start();
-                        }
+                        anim.start();
                         // Wait 1 pulse before focus so that the scene can be assigned to text
                         Platform.runLater(() -> {
                             text.getField().requestFocus();

@@ -51,4 +51,9 @@ public class CustomVncClient implements ExternalVncClient {
     public boolean supportsPasswords() {
         return false;
     }
+
+    @Override
+    public String getWebsite() {
+        return null;
+    }
 }

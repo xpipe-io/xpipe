@@ -18,6 +18,11 @@ import java.util.Optional;
 public class TightVncClient implements ExternalApplicationType.InstallLocationType, ExternalVncClient {
 
     @Override
+    public String getWebsite() {
+        return "https://www.tightvnc.com";
+    }
+
+    @Override
     public boolean supportsPasswords() {
         return true;
     }

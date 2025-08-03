@@ -12,6 +12,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
@@ -64,10 +65,11 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 XPipeInstallation.getCurrentInstallationBasePath()
                                                         .toString(),
                                                 XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                        TerminalLauncher.openDirectFallback(
-                                                "XPipe Debug",
-                                                sc -> new ShellScript(
-                                                        sc.getShellDialect().runScriptCommand(sc, script.toString())));
+                                        TerminalLaunch.builder()
+                                                .title("XPipe Debug")
+                                                .localScript(sc -> new ShellScript(
+                                                        sc.getShellDialect().runScriptCommand(sc, script.toString())))
+                                                .launch();
                                     });
                                     e.consume();
                                 })
@@ -169,14 +171,15 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 .resolve("scripts")
                                                 .resolve("uninstall.sh");
                                         OperationMode.executeAfterShutdown(() -> {
-                                            TerminalLauncher.openDirectFallback(
-                                                    "Uninstall",
-                                                    sc -> ShellScript.lines(
+                                            TerminalLaunch.builder()
+                                                    .title("Uninstall")
+                                                    .localScript(sc -> ShellScript.lines(
                                                             "echo \"+ sudo " + file + "\"",
                                                             "sudo " + file,
                                                             ProcessControlProvider.get()
                                                                     .getEffectiveLocalDialect()
-                                                                    .getPauseCommand()));
+                                                                    .getPauseCommand()))
+                                                    .launch();
                                         });
                                         e.consume();
                                     })

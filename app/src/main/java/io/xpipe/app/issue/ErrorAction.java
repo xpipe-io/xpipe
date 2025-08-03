@@ -2,7 +2,6 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.FailableSupplier;
 
 public interface ErrorAction {
@@ -69,7 +68,7 @@ public interface ErrorAction {
 
         @Override
         public boolean handle(ErrorEvent event) {
-            if (!event.isReportable() || (LicenseProvider.get() != null && !LicenseProvider.get().shouldReportError())) {
+            if (!event.isReportable()) {
                 return true;
             }
 

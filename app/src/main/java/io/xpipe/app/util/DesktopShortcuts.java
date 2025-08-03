@@ -55,13 +55,7 @@ public class DesktopShortcuts {
                         Categories=Utility;Development;
                         """,
                 fixedName, executable, args, icon);
-
-        var osFile = Path.of("/etc/os-release");
-        var ubuntu = Files.exists(osFile) && Files.readString(osFile).toLowerCase().contains("ubuntu");
-        var file = ubuntu ?
-                DesktopHelper.getDesktopDirectory().resolve(name + ".desktop") :
-                Path.of(System.getProperty("user.home"), ".local", "share", "applications", name + ".desktop");
-        Files.createDirectories(file.getParent());
+        var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
 

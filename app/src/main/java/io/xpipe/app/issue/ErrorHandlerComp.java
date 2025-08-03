@@ -85,15 +85,11 @@ public class ErrorHandlerComp extends SimpleComp {
             desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
         }
 
-        // Account for line wrapping of long lines
-        var estimatedLineCount = desc.lines().mapToInt(s -> Math.max(1, (int) Math.ceil(s.length() / 80.0))).sum();
-
         var descriptionField = new TextArea(desc);
-        descriptionField.setPrefRowCount(Math.max(5, Math.min(estimatedLineCount + 2, 14)));
+        descriptionField.setPrefRowCount(Math.max(5, Math.min((int) desc.lines().count() + 2, 14)));
         descriptionField.setWrapText(true);
         descriptionField.setEditable(false);
         descriptionField.setPadding(Insets.EMPTY);
-        descriptionField.getStyleClass().add("description");
         AppFontSizes.xs(descriptionField);
         var text = new VBox(descriptionField);
         text.setFillWidth(true);

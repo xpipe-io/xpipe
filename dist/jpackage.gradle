@@ -87,7 +87,7 @@ jlink {
 
     launcher {
         moduleName = 'io.xpipe.app'
-        mainClassName = 'io.xpipe.app.Main'
+        mainClass = 'io.xpipe.app.Main'
         name = 'xpiped'
         jvmArgs = releaseArguments
     }
@@ -106,8 +106,8 @@ jlink {
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
+        vendor = publisher
         skipInstaller = true
-        applicationName = 'XPipe'
     }
 }
 
@@ -115,7 +115,8 @@ tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
+tasks.register('copyBundledExtensions', DefaultTask) {
+    dependsOn extLibrariesTasks
     doLast {
         for (def extProject : extModules) {
             def dir = "${extProject.buildDir}/libs_ext"
@@ -130,7 +131,7 @@ task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
     }
 }
 
-task prepareMacOSResources(type: DefaultTask) {
+tasks.register('prepareMacOSResources', DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
@@ -146,7 +147,7 @@ task prepareMacOSResources(type: DefaultTask) {
     }
 }
 
-task finalizeMacOSResources(type: DefaultTask) {
+tasks.register('finalizeMacOSResources', DefaultTask) {
     doLast {
         copy {
             from file("$projectDir/logo/Assets.car")

@@ -82,6 +82,8 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
 
     boolean supportsPasswordPassing();
 
+    String getWebsite();
+
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
         var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");

@@ -71,7 +71,7 @@ dependencies {
 
 apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
-def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
+def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList()
 jar {
     finalizedBy(extensionJarDepList)
 }
@@ -103,13 +103,13 @@ run {
     workingDir = rootDir
     jvmArgs += ['-XX:+EnableDynamicAgentLoading']
 
-    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
+    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
 
     dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 }
 
-task runAttachedDebugger(type: JavaExec) {
+tasks.register('runAttachedDebugger', JavaExec) {
     workingDir = rootDir
     classpath = run.classpath
     mainModule = 'io.xpipe.app'
@@ -123,7 +123,7 @@ task runAttachedDebugger(type: JavaExec) {
     jvmArgs += ['-XX:+EnableDynamicAgentLoading']
     systemProperties run.systemProperties
 
-    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
+    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
     dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 
@@ -134,13 +134,10 @@ processResources {
         def cssFiles = fileTree(dir: "$sourceSets.main.output.resourcesDir/io/xpipe/app/resources/style")
         cssFiles.include "**/*.css"
         cssFiles.each { css ->
-            logger.info("converting CSS to BSS ${css}");
-
-            javaexec {
+            providers.javaexec {
                 workingDir = project.projectDir
-                jvmArgs += "--module-path=${configurations.javafx.asFileTree.asPath},"
-                jvmArgs += "--add-modules=javafx.graphics"
-                main = "com.sun.javafx.css.parser.Css2Bin"
+                getJvmArguments().addAll("--module-path=${configurations.javafx.asFileTree.asPath},", "--add-modules=javafx.graphics")
+                mainClass = "com.sun.javafx.css.parser.Css2Bin"
                 args css
             }
 
@@ -159,13 +156,13 @@ processResources {
 }
 
 distTar {
-    enabled = false;
+    enabled = false
 }
 
 distZip {
-    enabled = false;
+    enabled = false
 }
 
 assembleDist {
-    enabled = false;
+    enabled = false
 }
