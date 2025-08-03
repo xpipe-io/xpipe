@@ -21,8 +21,8 @@ public class HostAddressChoice {
 
     public OptionsBuilder build() {
         var existing = value.getValue();
-        var val = new SimpleObjectProperty<>(existing.get());
-        var list = FXCollections.observableArrayList(existing.getAvailable());
+        var val = new SimpleObjectProperty<>(existing != null ? existing.get() : null);
+        var list = FXCollections.observableArrayList(existing != null ? existing.getAvailable() : new ArrayList<>());
         var options = new OptionsBuilder();
         if (includeDescription) {
             options.nameAndDescription(this.translationKey);
@@ -33,6 +33,10 @@ public class HostAddressChoice {
                 .addProperty(val);
         options.bind(
                 () -> {
+                    if (val.getValue() == null) {
+                        return null;
+                    }
+
                     return HostAddress.of(val.get(), list);
                 },
                 value);

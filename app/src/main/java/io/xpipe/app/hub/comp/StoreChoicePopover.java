@@ -55,7 +55,13 @@ public class StoreChoicePopover<T extends DataStore> {
         }
     }
 
-    private Popover getPopover() {
+    public void hide() {
+        if (popover != null) {
+            popover.hide();
+        }
+    }
+
+    public Popover getPopover() {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
         // changed
         if (popover == null || applicableCheck != null) {
