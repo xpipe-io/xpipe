@@ -1,6 +1,6 @@
 {
-  "name": "list_files",
-  "description": "Lists files in a directory",
+  "name": "find_file",
+  "description": "Finds files in a directory",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -10,11 +10,15 @@
       },
       "path": {
         "type": "string",
-        "description": "The directory to list the contents of"
+        "description": "The directory to search in"
       },
       "recursive": {
         "type": "boolean",
         "description": "Whether to traverse subdirectories recursively or not"
+      },
+      "name": {
+        "type": "boolean",
+        "description": "The name of the file. Supports globs"
       }
     },
     "required": [

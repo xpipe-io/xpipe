@@ -1,7 +1,7 @@
 {
   "name": "get_file_info",
   "description": "Retrieves information about a file",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {

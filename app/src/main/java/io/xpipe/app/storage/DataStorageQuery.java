@@ -81,7 +81,7 @@ public class DataStorageQuery {
         return found;
     }
 
-    private static String toRegex(String pattern) {
+    public static String toRegex(String pattern) {
         pattern = pattern.replaceAll("\\*\\*", "#");
         // https://stackoverflow.com/a/17369948/6477761
         StringBuilder sb = new StringBuilder(pattern.length());

@@ -1,7 +1,7 @@
 {
   "name": "run_command",
   "description": "Runs a shell command",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {

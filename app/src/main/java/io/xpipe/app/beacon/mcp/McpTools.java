@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.beacon.AppBeaconServer;
@@ -9,6 +10,10 @@ import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.process.TerminalInitScriptConfig;
+import io.xpipe.app.process.WorkingDirectoryFunction;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.CommandSupport;
@@ -16,12 +21,14 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.ModuleLayerLoader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public final class McpTools {
 
@@ -51,7 +58,7 @@ public final class McpTools {
         return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
             var path = req.getFilePath("path");
             var system = req.getStringArgument("system");
-            var recursive = req.getBooleanArgument("recursive");
+            var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
             var shellStore = req.getShellStoreRef(system);
             var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
             var fs = new ConnectionFileSystem(shellSession.getControl());
@@ -66,6 +73,33 @@ public final class McpTools {
                 for (FileEntry e : list) {
                     builder.addTextContent(e.getPath().toString());
                 }
+                return builder.build();
+            }
+        })).build();
+    }
+
+    public static McpServerFeatures.SyncToolSpecification findFile() throws IOException {
+        var tool = McpSchemaFiles.loadTool("find_file.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var path = req.getFilePath("path");
+            var system = req.getStringArgument("system");
+            var recursive = req.getOptionalBooleanArgument("recursive").orElse(false);
+            var pattern = req.getStringArgument("name");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+            var fs = new ConnectionFileSystem(shellSession.getControl());
+
+            if (!fs.directoryExists(path)) {
+                throw new BeaconClientException("Directory " + path + " does not exist");
+            }
+
+            var regex = Pattern.compile(DataStorageQuery.toRegex(pattern));
+            try (var stream = recursive ? fs.listFilesRecursively(fs, path) : fs.listFiles(fs, path)) {
+                var list = stream.toList();
+                var builder = McpSchema.CallToolResult.builder();
+                list.stream().filter(fileEntry -> regex.matcher(fileEntry.getPath().toString()).find()).forEach(fileEntry -> {
+                    builder.addTextContent(fileEntry.getPath().toString());
+                });
                 return builder.build();
             }
         })).build();
@@ -131,6 +165,25 @@ public final class McpTools {
             }
 
             return McpSchema.CallToolResult.builder().addTextContent("File created successfully").build();
+        })).build();
+    }
+
+    public static McpServerFeatures.SyncToolSpecification writeFile() throws IOException {
+        var tool = McpSchemaFiles.loadTool("write_file.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var path = req.getFilePath("path");
+            var system = req.getStringArgument("system");
+            var content = req.getStringArgument("content");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+            var fs = new ConnectionFileSystem(shellSession.getControl());
+
+            var b = content.getBytes(StandardCharsets.UTF_8);
+            try (var out = fs.openOutput(path, b.length)) {
+                out.write(b);
+            }
+
+            return McpSchema.CallToolResult.builder().addTextContent("File written successfully").build();
         })).build();
     }
 
@@ -209,6 +262,23 @@ public final class McpTools {
         })).build();
     }
 
+
+    public static McpServerFeatures.SyncToolSpecification openTerminalInline() throws IOException {
+        var tool = McpSchemaFiles.loadTool("open_terminal_inline.json");
+        return McpServerFeatures.SyncToolSpecification.builder().tool(tool).callHandler(McpToolHandler.of((req) -> {
+            var system = req.getStringArgument("system");
+            var directory = req.getOptionalStringArgument("directory");
+            var shellStore = req.getShellStoreRef(system);
+            var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
+
+            var script = shellSession.getControl().prepareTerminalOpen(TerminalInitScriptConfig.ofName(shellStore.get().getName()), directory.isPresent() ?
+                    WorkingDirectoryFunction.fixed(FilePath.parse(directory.get())) : WorkingDirectoryFunction.none());
+
+            var json = JsonNodeFactory.instance.objectNode();
+            json.put("command", script);
+            return McpSchema.CallToolResult.builder().structuredContent(JacksonMapper.getDefault().writeValueAsString(json)).build();
+        })).build();
+    }
 
     public static McpServerFeatures.SyncToolSpecification toggleState() throws IOException {
         var tool = McpSchemaFiles.loadTool("toggle_state.json");

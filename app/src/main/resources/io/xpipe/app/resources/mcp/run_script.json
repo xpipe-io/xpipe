@@ -1,7 +1,7 @@
 {
   "name": "run_script",
   "description": "Runs a predefined script",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {

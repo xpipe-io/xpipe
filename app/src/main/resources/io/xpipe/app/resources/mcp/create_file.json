@@ -1,7 +1,7 @@
 {
   "name": "create_file",
   "description": "Creates a new file",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {

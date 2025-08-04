@@ -1,6 +1,6 @@
 {
-  "name": "open_terminal",
-  "description": "Open a new terminal session in a new window",
+  "name": "write_file",
+  "description": "Writes text to a file",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -8,13 +8,19 @@
         "type": "string",
         "description": "The system identifier"
       },
-      "directory": {
+      "path": {
         "type": "string",
-        "description": "The working directory"
+        "description": "The file path"
+      },
+      "content": {
+        "type": "string",
+        "description": "The file content as text"
       }
     },
     "required": [
-      "system"
+      "system",
+      "path",
+      "content"
     ]
   },
   "annotations": {

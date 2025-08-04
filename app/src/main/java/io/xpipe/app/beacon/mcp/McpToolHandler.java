@@ -60,6 +60,19 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             return s;
         }
 
+        public Optional<Boolean> getOptionalBooleanArgument(String key) throws BeaconClientException {
+            var o = request.arguments().get(key);
+            if (o == null) {
+                return Optional.empty();
+            }
+
+            if (!(o instanceof Boolean b)) {
+                return Optional.empty();
+            }
+
+            return Optional.of(b);
+        }
+
         public boolean getBooleanArgument(String key) throws BeaconClientException {
             var o = request.arguments().get(key);
             if (o == null) {

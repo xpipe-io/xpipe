@@ -1,7 +1,7 @@
 {
   "name": "read_file",
   "description": "Reads file",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "path": {

@@ -1,7 +1,7 @@
 {
-  "name": "open_terminal",
+  "name": "open_terminal_inline",
   "description": "Returns a command to open a new terminal session in the client",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {
@@ -21,12 +21,12 @@
     "destructiveHint": true,
     "openWorldHint": true
   },
-  "output_schema": {
+  "outputSchema": {
     "type": "object",
     "properties": {
       "command": {
         "type": "string",
-        "description": "The local command to execute to open a terminal"
+        "description": "Run this command in the MCP client's local shell directly"
       }
     },
     "required": [

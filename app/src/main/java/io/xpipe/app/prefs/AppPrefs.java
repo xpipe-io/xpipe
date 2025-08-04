@@ -62,6 +62,8 @@ public class AppPrefs {
             .build());
     final BooleanProperty enableMcpServer =
             mapVaultShared(new SimpleBooleanProperty(false), "enableMcpServer", Boolean.class, false);
+    final BooleanProperty enableMcpMutationTools =
+            mapVaultShared(new SimpleBooleanProperty(false), "enableMcpMutationTools", Boolean.class, false);
     final BooleanProperty enableHttpApi =
             mapVaultShared(new SimpleBooleanProperty(false), "enableHttpApi", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
@@ -309,6 +311,10 @@ public class AppPrefs {
 
     public ObservableBooleanValue enableMcpServer() {
         return enableMcpServer;
+    }
+
+    public ObservableBooleanValue enableMcpMutationTools() {
+        return enableMcpMutationTools;
     }
 
     public ObservableBooleanValue pinLocalMachineOnStartup() {

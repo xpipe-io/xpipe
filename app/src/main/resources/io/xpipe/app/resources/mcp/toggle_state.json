@@ -1,7 +1,7 @@
 {
   "name": "toggle_state",
   "description": "Toggles the state of a connection",
-  "input_schema": {
+  "inputSchema": {
     "type": "object",
     "properties": {
       "system": {

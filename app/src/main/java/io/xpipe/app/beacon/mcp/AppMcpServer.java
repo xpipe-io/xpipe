@@ -3,6 +3,7 @@ package io.xpipe.app.beacon.mcp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.core.AppProperties;
@@ -17,6 +18,8 @@ import lombok.SneakyThrows;
 import lombok.Value;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Value
 public class AppMcpServer {
@@ -47,13 +50,33 @@ public class AppMcpServer {
 
         syncServer.addTool(McpTools.readFile());
         syncServer.addTool(McpTools.listFiles());
+        syncServer.addTool(McpTools.findFile());
         syncServer.addTool(McpTools.getFileInfo());
-        syncServer.addTool(McpTools.createFile());
-        syncServer.addTool(McpTools.createDirectory());
-        syncServer.addTool(McpTools.runCommand());
-        syncServer.addTool(McpTools.runScript());
-        syncServer.addTool(McpTools.openTerminal());
-        syncServer.addTool(McpTools.toggleState());
+
+        var mutationTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
+        mutationTools.add(McpTools.createFile());
+        mutationTools.add(McpTools.writeFile());
+        mutationTools.add(McpTools.createDirectory());
+        mutationTools.add(McpTools.runCommand());
+        mutationTools.add(McpTools.runScript());
+        mutationTools.add(McpTools.openTerminal());
+        mutationTools.add(McpTools.openTerminalInline());
+        mutationTools.add(McpTools.toggleState());
+
+        var toolsAdded = new AtomicBoolean();
+        AppPrefs.get().enableMcpMutationTools().subscribe(value -> {
+            for (var mutationTool : mutationTools) {
+                if (value) {
+                    syncServer.addTool(mutationTool);
+                } else if (toolsAdded.get()) {
+                    syncServer.removeTool(mutationTool.tool().name());
+                }
+            }
+            if (value) {
+                toolsAdded.set(true);
+            }
+            syncServer.notifyToolsListChanged();
+        });
 
         syncServer.addResource(McpResources.connections());
         syncServer.addResource(McpResources.categories());
