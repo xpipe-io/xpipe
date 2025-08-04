@@ -13,6 +13,7 @@ allprojects { subproject ->
     apply plugin: 'org.gradlex.extra-java-module-info'
     extraJavaModuleInfo {
         failOnMissingModuleInfo.set(false)
+        skipLocalJars.set(true)
     }
     apply from: "$rootDir/gradle/gradle_scripts/modules.gradle"
 }

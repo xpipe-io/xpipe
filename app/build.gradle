@@ -137,14 +137,15 @@ tasks.register('runAttachedDebugger', JavaExec) {
 processResources {
     doLast {
         def cssFiles = fileTree(dir: "$sourceSets.main.output.resourcesDir/io/xpipe/app/resources/style")
+        println(cssFiles)
         cssFiles.include "**/*.css"
         cssFiles.each { css ->
             providers.javaexec {
                 workingDir = projectDir
-                getJvmArguments().addAll("--module-path=${configurations.javafx.asFileTree.asPath},", "--add-modules=javafx.graphics")
+                jvmArgs += ["--module-path=${configurations.javafx.asFileTree.asPath},", "--add-modules=javafx.graphics"]
                 mainClass = "com.sun.javafx.css.parser.Css2Bin"
                 args css
-            }
+            }.result.get()
 
             delete css
         }
