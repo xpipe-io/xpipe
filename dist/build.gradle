@@ -112,6 +112,7 @@ if (rootProject.fullVersion) {
         apply from: 'pkg.gradle'
     }
 
+    apply from: 'github.gradle'
     apply from: 'aur.gradle'
     apply from: 'nix.gradle'
     apply from: 'choco.gradle'
@@ -147,3 +148,4 @@ assembleDist {
     enabled = false
     dependsOn.clear()
 }
+
