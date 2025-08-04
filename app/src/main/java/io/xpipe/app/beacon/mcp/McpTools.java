@@ -14,6 +14,7 @@ import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandDialog;
 import io.xpipe.app.util.CommandSupport;
@@ -256,7 +257,11 @@ public final class McpTools {
             var shellStore = req.getShellStoreRef(system);
             var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
-            TerminalLauncher.open(shellStore.get(), shellStore.get().getName(), FilePath.of(directory.orElse(null)), shellSession.getControl());
+            TerminalLaunch.builder()
+                    .entry(shellStore.get())
+                    .directory(FilePath.of(directory.orElse(null)))
+                    .command(shellSession.getControl())
+                    .launch();
 
             return McpSchema.CallToolResult.builder().addTextContent("Terminal is launching").build();
         })).build();

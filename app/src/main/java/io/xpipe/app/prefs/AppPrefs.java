@@ -14,6 +14,7 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformThread;
