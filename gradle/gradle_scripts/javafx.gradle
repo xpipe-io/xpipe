@@ -1,6 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
-def currentOS = DefaultNativePlatform.currentOperatingSystem;
+def currentOS = DefaultNativePlatform.currentOperatingSystem
 def platform = null
 if (currentOS.isWindows()) {
     platform = 'win'
