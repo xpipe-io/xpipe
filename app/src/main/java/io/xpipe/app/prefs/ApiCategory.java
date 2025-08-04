@@ -58,26 +58,22 @@ public class ApiCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableHttpApi)
                         .addToggle(prefs.enableHttpApi)
-                        .nameAndDescription("openApiDocs")
-                        .addComp(new ButtonComp(AppI18n.observable("openApiDocsButton"), () -> {
-                            DocumentationLink.API.open();
-                        }))
+                        .pref(prefs.apiKey)
+                        .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
+                        .pref(prefs.disableApiAuthentication)
+                        .addToggle(prefs.disableApiAuthentication)
                 )
                 .addTitle("mcpServer").sub(new OptionsBuilder()
                         .pref(prefs.enableMcpServer)
                         .addToggle(prefs.enableMcpServer)
                         .pref(prefs.enableMcpMutationTools)
                         .addToggle(prefs.enableMcpMutationTools)
-                        .pref(prefs.apiKey)
-                        .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(new TextAreaComp(mcpConfigProp).apply(struc -> {
                             struc.getTextArea().setEditable(false);
                             struc.getTextArea().setPrefRowCount(11);
                         }))
                         .hide(prefs.enableMcpServer.not())
-                        .pref(prefs.disableApiAuthentication)
-                        .addToggle(prefs.disableApiAuthentication)
                 )
                 .buildComp();
     }
