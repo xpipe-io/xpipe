@@ -3,15 +3,6 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.lang.module.ModuleFinder
 import java.util.stream.Stream
 
-buildscript {
-    configurations.classpath {
-        resolutionStrategy {
-            // Fix https://github.com/jreleaser/jreleaser/issues/1643
-            force 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
-        }
-    }
-}
-
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id 'org.gradlex.extra-java-module-info' version '1.13' apply false
