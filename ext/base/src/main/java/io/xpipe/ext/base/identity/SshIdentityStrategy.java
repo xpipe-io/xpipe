@@ -9,7 +9,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;

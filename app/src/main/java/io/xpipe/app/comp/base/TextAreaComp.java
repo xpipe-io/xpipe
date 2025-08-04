@@ -55,7 +55,7 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
         });
 
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
+            if (!newValue && !Objects.equals(currentValue.getValue(), lastAppliedValue.getValue())) {
                 lastAppliedValue.setValue(currentValue.getValue());
             }
         });

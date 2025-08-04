@@ -1,0 +1,30 @@
+{
+  "name": "write_file",
+  "description": "Writes text to a file",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "path": {
+        "type": "string",
+        "description": "The file path"
+      },
+      "content": {
+        "type": "string",
+        "description": "The file content as text"
+      }
+    },
+    "required": [
+      "system",
+      "path",
+      "content"
+    ]
+  },
+  "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": true
+  }
+}

@@ -14,7 +14,6 @@ import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.PlatformThread;
@@ -68,6 +67,10 @@ public class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.API)
             .build());
+    final BooleanProperty enableMcpServer =
+            mapVaultShared(new SimpleBooleanProperty(false), "enableMcpServer", Boolean.class, false);
+    final BooleanProperty enableMcpMutationTools =
+            mapVaultShared(new SimpleBooleanProperty(false), "enableMcpMutationTools", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultShared(new SimpleBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
@@ -349,6 +352,14 @@ public class AppPrefs {
         return enableHttpApi;
     }
 
+    public ObservableBooleanValue enableMcpServer() {
+        return enableMcpServer;
+    }
+
+    public ObservableBooleanValue enableMcpMutationTools() {
+        return enableMcpMutationTools;
+    }
+
     public ObservableBooleanValue pinLocalMachineOnStartup() {
         return pinLocalMachineOnStartup;
     }
@@ -388,9 +399,9 @@ public class AppPrefs {
                         new FileBrowserCategory(),
                         new IconsCategory(),
                         new SystemCategory(),
+                        new ApiCategory(),
                         new UpdatesCategory(),
                         new SecurityCategory(),
-                        new HttpApiCategory(),
                         new WorkspacesCategory(),
                         new DeveloperCategory(),
                         new TroubleshootCategory(),

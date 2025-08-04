@@ -95,6 +95,9 @@ open module io.xpipe.app {
     requires java.net.http;
     requires org.bouncycastle.provider;
     requires org.jetbrains.annotations;
+    requires io.modelcontextprotocol.sdk.mcp;
+    requires reactor.core;
+    requires org.reactivestreams;
 
     // Required runtime modules
     requires jdk.charsets;

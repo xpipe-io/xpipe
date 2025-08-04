@@ -1,0 +1,33 @@
+{
+  "name": "find_file",
+  "description": "Finds files in a directory",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "path": {
+        "type": "string",
+        "description": "The directory to search in"
+      },
+      "recursive": {
+        "type": "boolean",
+        "description": "Whether to traverse subdirectories recursively or not"
+      },
+      "name": {
+        "type": "boolean",
+        "description": "The name of the file. Supports globs"
+      }
+    },
+    "required": [
+      "system",
+      "path"
+    ]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": true
+  }
+}

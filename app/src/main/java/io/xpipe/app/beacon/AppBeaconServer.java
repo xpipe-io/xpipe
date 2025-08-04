@@ -2,6 +2,7 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
@@ -85,6 +86,13 @@ public class AppBeaconServer {
         if (INSTANCE != null) {
             INSTANCE.stop();
             INSTANCE.deleteAuthSecret();
+            for (BeaconShellSession ss : INSTANCE.getCache().getShellSessions()) {
+                try {
+                    ss.getControl().close();
+                } catch (Exception ex) {
+                    ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
+                }
+            }
             INSTANCE = null;
         }
     }
@@ -148,6 +156,13 @@ public class AppBeaconServer {
 
         server.createContext("/", exchange -> {
             handleCatchAll(exchange);
+        });
+
+        server.createContext("/mcp", exchange -> {
+            var mcpServer = AppMcpServer.get();
+            if (mcpServer != null) {
+                mcpServer.createHttpHandler().handle(exchange);
+            }
         });
 
         server.start();

@@ -1,0 +1,36 @@
+{
+  "name": "open_terminal_inline",
+  "description": "Returns a command to open a new terminal session in the client",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "directory": {
+        "type": "string",
+        "description": "The working directory"
+      }
+    },
+    "required": [
+      "system"
+    ]
+  },
+  "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": true
+  },
+  "outputSchema": {
+    "type": "object",
+    "properties": {
+      "command": {
+        "type": "string",
+        "description": "Run this command in the MCP client's local shell directly"
+      }
+    },
+    "required": [
+      "command"
+    ]
+  }
+}
