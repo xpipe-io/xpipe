@@ -5,17 +5,15 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Value;
-import lombok.val;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @Value
 public class HostAddressChoice {
 
     Property<HostAddress> value;
-    boolean allowAdd;
+    boolean allowMutation;
     String translationKey;
     boolean includeDescription;
 
@@ -29,7 +27,7 @@ public class HostAddressChoice {
         } else {
             options.name(translationKey);
         }
-        options.addComp(new HostAddressChoiceComp(val, list, allowAdd))
+        options.addComp(new HostAddressChoiceComp(val, list, allowMutation))
                 .addProperty(val);
         options.bind(
                 () -> {

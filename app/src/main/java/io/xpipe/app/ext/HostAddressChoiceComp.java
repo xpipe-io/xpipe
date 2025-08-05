@@ -56,13 +56,14 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
 
             currentAddress.setValue(null);
         });
-        addButton.disable(!mutable);
         addButton.styleClass(Styles.CENTER_PILL).grow(false, true);
         addButton.tooltipKey("addAnotherHostName");
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(combo);
-        nodes.add(addButton);
+        if  (mutable) {
+            nodes.add(addButton);
+        }
 
         var layout = new InputGroupComp(nodes).apply(struc -> struc.get().setFillHeight(true));
         layout.apply(struc -> {
@@ -103,9 +104,11 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                     var hbox = new HBox();
                     hbox.getChildren().add(new Label(item));
                     hbox.getChildren().add(new Spacer());
-                    hbox.getChildren().add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
-                        allAddresses.remove(item);
-                    }).createRegion());
+                    if (mutable) {
+                        hbox.getChildren().add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
+                            allAddresses.remove(item);
+                        }).createRegion());
+                    }
 
                     setGraphic(hbox);
                     setText(null);
@@ -133,7 +136,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             });
             struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
 
-            struc.get().disarm();
+            struc.get().setEditable(mutable);
         });
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
