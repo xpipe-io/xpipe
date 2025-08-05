@@ -127,6 +127,7 @@ open module io.xpipe.app {
     provides ActionProvider with
             SetupToolActionProvider,
             XPipeUrlProvider,
+            HostAddressSwitchBranchProvider,
             OpenHubMenuLeafProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,

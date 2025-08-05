@@ -75,8 +75,8 @@ public class StoreChoicePopover<T extends DataStore> {
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
                 var e = storeEntryWrapper.getEntry();
 
-                if (e.equals(self)
-                        || DataStorage.get().getStoreParentHierarchy(e).contains(self)) {
+                if (self != null && (e.equals(self)
+                        || DataStorage.get().getStoreParentHierarchy(e).contains(self))) {
                     return false;
                 }
 
@@ -101,6 +101,7 @@ public class StoreChoicePopover<T extends DataStore> {
                     .count();
             var initialExpanded = applicableCount < 20;
 
+            var enabled = popover.showingProperty();
             var section = new StoreSectionMiniComp(
                     StoreSection.createTopLevel(
                             StoreViewState.get().getAllEntries(),
@@ -110,7 +111,7 @@ public class StoreChoicePopover<T extends DataStore> {
                             selectedCategory,
                             StoreViewState.get().getEntriesListVisibilityObservable(),
                             StoreViewState.get().getEntriesListUpdateObservable(),
-                            popover.showingProperty()),
+                            enabled),
                     (s, comp) -> {
                         if (!applicable.test(s.getWrapper())) {
                             comp.disable(new SimpleBooleanProperty(true));

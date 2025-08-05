@@ -50,6 +50,8 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
     public CompStructure<Button> createBase() {
         var button = new Button();
         button.getStyleClass().add(Styles.FLAT);
+        // AtlantaFX sets underline to true. This bugs out ikonli: https://github.com/kordamp/ikonli/issues/175
+        button.setUnderline(false);
         icon.subscribe(labelGraphic -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 button.setGraphic(labelGraphic.createGraphicNode());

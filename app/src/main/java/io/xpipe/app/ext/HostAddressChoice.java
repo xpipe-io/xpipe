@@ -33,11 +33,13 @@ public class HostAddressChoice {
                 .addProperty(val);
         options.bind(
                 () -> {
-                    if (val.getValue() == null) {
-                        return null;
+                    var fullList = new ArrayList<>(list);
+                    if (val.getValue() != null) {
+                        fullList.add(val.getValue());
                     }
 
-                    return HostAddress.of(val.get(), list);
+                    var effectiveValue = val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
+                    return HostAddress.of(effectiveValue, fullList);
                 },
                 value);
         return options;

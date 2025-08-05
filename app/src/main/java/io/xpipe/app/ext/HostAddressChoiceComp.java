@@ -14,7 +14,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
@@ -42,20 +44,21 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
     public CompStructure<HBox> createBase() {
         var combo = createComboBox();
 
-        var addButton = new ButtonComp(null, new FontIcon("mdi2l-link-plus"), () -> {
+        var addButton = new ButtonComp(null, new FontIcon("mdi2f-format-list-group-plus"), () -> {
             var toAdd = currentAddress.getValue();
             if (toAdd == null) {
                 return;
             }
 
-            if (allAddresses.contains(toAdd)) {
-                return;
+            if (!allAddresses.contains(toAdd)) {
+                allAddresses.addFirst(toAdd);
             }
 
-            allAddresses.add(toAdd);
+            currentAddress.setValue(null);
         });
         addButton.disable(!mutable);
         addButton.styleClass(Styles.CENTER_PILL).grow(false, true);
+        addButton.tooltipKey("addAnotherHostName");
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(combo);
@@ -100,8 +103,8 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                     var hbox = new HBox();
                     hbox.getChildren().add(new Label(item));
                     hbox.getChildren().add(new Spacer());
-                    hbox.getChildren().add(new IconButtonComp("mdi2l-link-plus", () -> {
-
+                    hbox.getChildren().add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
+                        allAddresses.remove(item);
                     }).createRegion());
 
                     setGraphic(hbox);
@@ -113,9 +116,28 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             var skin = new ComboBoxListViewSkin<>(struc.get());
             struc.get().setSkin(skin);
             skin.setHideOnClick(false);
+            struc.get().setVisibleRowCount(10);
+
+            allAddresses.addListener((ListChangeListener<? super String>) change -> {
+                if (struc.get().isShowing()) {
+                    struc.get().hide();
+                    if (allAddresses.size() > 0) {
+                        struc.get().show();
+                    }
+                } else {
+                    struc.get().requestFocus();
+                    struc.get().show();
+                }
+
+                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
+            });
+            struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
+
+            struc.get().disarm();
         });
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
+        combo.styleClass("host-address-choice-comp");
         combo.grow(false, true);
         return combo;
     }

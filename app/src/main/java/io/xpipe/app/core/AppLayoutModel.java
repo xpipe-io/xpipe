@@ -150,7 +150,7 @@ public class AppLayoutModel {
                         null),
                 new Entry(
                         AppI18n.observable("discord"),
-                        new LabelGraphic.IconGraphic("mdi2d-discord"),
+                        new LabelGraphic.IconGraphic("bi-discord"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null)));
@@ -164,7 +164,7 @@ public class AppLayoutModel {
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
                     AppI18n.observable("webtop"),
-                    new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                    new LabelGraphic.IconGraphic("mdal-desktop_mac"),
                     null,
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));

@@ -21,7 +21,11 @@ public class HostAddress {
         return new HostAddress(host.strip(), List.of(host));
     }
 
-    public static HostAddress of(@NonNull String host, @NonNull List<String> addresses) {
+    public static HostAddress of(String host, @NonNull List<String> addresses) {
+        if (host == null) {
+            return null;
+        }
+
         return new HostAddress(host.strip(), addresses.stream().map(s -> s.strip()).toList());
     }
 
@@ -30,6 +34,14 @@ public class HostAddress {
 
     private HostAddress(String value, List<String> available) {this.value = value;
         this.available = available;
+    }
+
+    public HostAddress withValue(String value) {
+        if (value == null || !available.contains(value)) {
+            return this;
+        }
+
+        return new HostAddress(value, this.available);
     }
 
     public boolean isSingle() {

@@ -55,6 +55,10 @@ public class PasswordManagerIdentityStore extends IdentityStore
             }
         }
 
+        if (AppPrefs.get() == null || AppPrefs.get().passwordManager().getValue() == null) {
+            return null;
+        }
+
         var r = AppPrefs.get().passwordManager().getValue().retrieveCredentials(key);
         if (r == null) {
             throw ErrorEventFactory.expected(
