@@ -171,7 +171,7 @@ public class StoreCreationMenu {
 
     private static MenuItem networkScanMenu() {
         var menu = new MenuItem();
-        menu.setGraphic(new FontIcon("mdi2t-toy-brick-plus-outline"));
+        menu.setGraphic(new FontIcon("mdi2a-access-point-plus"));
         menu.textProperty().bind(AppI18n.observable("addNetwork"));
         menu.setOnAction(event -> {
             ProcessControlProvider.get().createNetworkScanModal().show();
