@@ -87,7 +87,7 @@ public class FileBridge {
         // Wait for edit to finish in case external editor has write lock
         if (!Files.exists(changed)) {
             event("File " + TEMP.relativize(e.file) + " is probably still writing ...");
-            ThreadHelper.sleep(AppPrefs.get().editorReloadTimeout().getValue());
+            ThreadHelper.sleep(1000);
 
             // If still no read lock after some time, just don't parse it
             if (!Files.exists(changed)) {

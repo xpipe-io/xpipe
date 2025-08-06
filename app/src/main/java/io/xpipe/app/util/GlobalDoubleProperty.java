@@ -1,15 +1,16 @@
 package io.xpipe.app.util;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 
-public class GlobalObjectProperty<T> extends SimpleObjectProperty<T> {
+public class GlobalDoubleProperty extends SimpleDoubleProperty {
 
-    public GlobalObjectProperty() {
+    public GlobalDoubleProperty() {
     }
 
-    public GlobalObjectProperty(T initialValue) {
+    public GlobalDoubleProperty(Double initialValue) {
         super(initialValue);
     }
 
@@ -24,12 +25,12 @@ public class GlobalObjectProperty<T> extends SimpleObjectProperty<T> {
     }
 
     @Override
-    public synchronized void addListener(ChangeListener<? super T> listener) {
+    public synchronized void addListener(ChangeListener<? super Number> listener) {
         super.addListener(listener);
     }
 
     @Override
-    public synchronized void removeListener(ChangeListener<? super T> listener) {
+    public synchronized void removeListener(ChangeListener<? super Number> listener) {
         super.removeListener(listener);
     }
 }

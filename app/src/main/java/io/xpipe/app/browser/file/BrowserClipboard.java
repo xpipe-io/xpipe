@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.GlobalClipboard;
 
+import io.xpipe.app.util.GlobalObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.ClipboardContent;

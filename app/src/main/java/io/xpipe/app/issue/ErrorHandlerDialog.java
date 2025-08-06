@@ -32,7 +32,7 @@ public class ErrorHandlerDialog {
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
-                graphic.setIconColor(Color.RED);
+                graphic.setStyle(graphic.getStyle() + ";-fx-icon-color: red;");
                 return graphic;
             }));
             if (event.getThrowable() != null && event.isReportable()) {

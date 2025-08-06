@@ -5,6 +5,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.util.GlobalObjectProperty;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 
@@ -18,16 +19,20 @@ import java.util.*;
 public class AppI18n {
 
     private static AppI18n INSTANCE;
-    private final Property<AppI18nData> currentLanguage = new SimpleObjectProperty<>();
-    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(
-            currentLanguage,
-            appI18nData -> appI18nData != null ? appI18nData.getLocale() : SupportedLocale.getEnglish());
+    private final Property<AppI18nData> currentLanguage = new GlobalObjectProperty<>();
+    private final Property<SupportedLocale> currentLocale = new GlobalObjectProperty<>();
     private final Map<String, ObservableValue<String>> observableCache = new HashMap<>();
     private AppI18nData english;
 
+    public AppI18n() {
+        currentLocale.bind(BindingsHelper.map(
+                currentLanguage,
+                appI18nData -> appI18nData != null ? appI18nData.getLocale() : SupportedLocale.getEnglish()));
+    }
+
     public static ObservableValue<SupportedLocale> activeLanguage() {
         if (INSTANCE == null) {
-            return new SimpleObjectProperty<>(SupportedLocale.getEnglish());
+            return new GlobalObjectProperty<>(SupportedLocale.getEnglish());
         }
 
         return INSTANCE.currentLocale;
