@@ -30,6 +30,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -286,11 +287,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         // Evaluate optional expressions
         String evaluatedPath;
-        try {
-            evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).handle();
-            return Optional.ofNullable(cps);
+        if (customInput) {
+            try {
+                evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).handle();
+                return Optional.ofNullable(cps);
+            }
+        } else {
+            evaluatedPath = adjustedPath;
         }
 
         if (evaluatedPath == null) {
