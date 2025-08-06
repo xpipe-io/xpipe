@@ -2,6 +2,8 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ShellControl;
@@ -52,4 +54,6 @@ public abstract class ProcessControlProvider {
     public abstract ShellDialect getFallbackDialect();
 
     public abstract <T extends DataStore> DataStoreEntryRef<T> replace(DataStoreEntryRef<T> ref);
+
+    public abstract ModalOverlay createNetworkScanModal();
 }

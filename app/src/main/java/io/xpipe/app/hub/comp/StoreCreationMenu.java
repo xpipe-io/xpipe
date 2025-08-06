@@ -3,10 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.DataStoreProviders;
-import io.xpipe.app.ext.SetupProvider;
-import io.xpipe.app.ext.SetupToolActionProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
@@ -94,9 +91,12 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
-        menu.getItems().add(actionMenu);
+        menu.getItems().add(networkScanMenu());
 
         menu.getItems().add(setupMenu());
+
+        menu.getItems().add(actionMenu);
+
     }
 
     private static Menu categoryMenu(
@@ -166,6 +166,17 @@ public class StoreCreationMenu {
             });
             menu.getItems().add(item);
         }
+        return menu;
+    }
+
+    private static MenuItem networkScanMenu() {
+        var menu = new MenuItem();
+        menu.setGraphic(new FontIcon("mdi2t-toy-brick-plus-outline"));
+        menu.textProperty().bind(AppI18n.observable("addNetwork"));
+        menu.setOnAction(event -> {
+            ProcessControlProvider.get().createNetworkScanModal().show();
+            event.consume();
+        });
         return menu;
     }
 }
