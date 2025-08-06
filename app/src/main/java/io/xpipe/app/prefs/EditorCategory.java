@@ -9,6 +9,7 @@ import io.xpipe.app.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
+import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class EditorCategory extends AppPrefsCategory {
             }
 
             Hyperlinks.open(t.getWebsite());
-        });
+        }).minWidth(Region.USE_PREF_SIZE);
 
         var h = new HorizontalComp(List.of(choice.hgrow(), visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);

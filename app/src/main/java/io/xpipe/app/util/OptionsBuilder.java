@@ -407,7 +407,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder longDescription(DocumentationLink link) {
         finishCurrent();
-        longDescription = link.getLink();
+        longDescription = link != null ? link.getLink() : null;
         return this;
     }
 

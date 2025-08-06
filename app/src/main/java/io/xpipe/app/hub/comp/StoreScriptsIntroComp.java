@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -41,7 +42,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
         introDesc.setMaxWidth(470);
 
         var img = new FontIcon("mdi2s-script-text");
-        img.setIconSize(80);
+        img.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
@@ -84,7 +85,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
         importPane.setAlignment(Pos.CENTER);
 
         var fi = new FontIcon("mdi2t-tooltip-edit");
-        fi.setIconSize(80);
+        fi.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
         var img = new StackPane(fi);
         img.setPrefWidth(100);
         img.setPrefHeight(150);

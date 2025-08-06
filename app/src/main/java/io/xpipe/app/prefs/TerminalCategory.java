@@ -72,7 +72,7 @@ public class TerminalCategory extends AppPrefsCategory {
 
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
-                .sub(terminalChoice())
+                .sub(terminalChoice(true))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
@@ -92,7 +92,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    public static OptionsBuilder terminalChoice() {
+    public static OptionsBuilder terminalChoice(boolean docsLink) {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(
                 prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
@@ -176,10 +176,12 @@ public class TerminalCategory extends AppPrefsCategory {
                 .padding(new Insets(6, 11, 6, 5))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
-        var builder = new OptionsBuilder()
-                .pref(prefs.terminalType)
-                .addComp(h, prefs.terminalType)
-                .pref(prefs.customTerminalCommand)
+        var builder = new OptionsBuilder().pref(prefs.terminalType);
+        if (!docsLink) {
+             builder.longDescription((DocumentationLink) null);
+        }
+        builder.addComp(h, prefs.terminalType);
+        builder.pref(prefs.customTerminalCommand)
                 .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
                         .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
                         .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))

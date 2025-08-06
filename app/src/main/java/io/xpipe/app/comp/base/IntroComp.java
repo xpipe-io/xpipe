@@ -6,6 +6,9 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.OsType;
 
+import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.css.Size;
+import javafx.css.SizeUnits;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -52,7 +55,7 @@ public class IntroComp extends SimpleComp {
 
         var img = graphic.createGraphicNode();
         if (img instanceof FontIcon fontIcon) {
-            fontIcon.setIconSize(80);
+            fontIcon.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
         }
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
