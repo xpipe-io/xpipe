@@ -67,7 +67,6 @@ open module io.xpipe.app {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
     requires net.synedra.validatorfx;
-    requires org.kordamp.ikonli.feather;
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;
@@ -80,7 +79,6 @@ open module io.xpipe.app {
     requires javafx.web;
     requires javafx.graphics;
     requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.ikonli.material;
     requires io.sentry;
     requires io.xpipe.beacon;
     requires info.picocli;
@@ -106,6 +104,7 @@ open module io.xpipe.app {
     requires jdk.accessibility;
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.materialdesign2;
+    requires org.kordamp.ikonli.bootstrapicons;
     requires jdk.zipfs;
 
     uses TerminalLauncher;

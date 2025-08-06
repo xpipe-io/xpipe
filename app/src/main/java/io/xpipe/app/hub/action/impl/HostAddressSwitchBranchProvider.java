@@ -44,7 +44,7 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
 
         @Override
         public LabelGraphic getIcon(DataStoreEntryRef<HostAddressSwitchStore> store) {
-            return active ? new LabelGraphic.IconGraphic("fth-arrow-right") : LabelGraphic.none();
+            return active ? new LabelGraphic.IconGraphic("mdi2a-arrow-right") : LabelGraphic.none();
         }
 
         @Override

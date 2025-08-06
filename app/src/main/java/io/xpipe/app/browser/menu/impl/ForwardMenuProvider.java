@@ -29,7 +29,7 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("fth-arrow-right");
+        return new LabelGraphic.IconGraphic("mdi2a-arrow-right");
     }
 
     @Override
