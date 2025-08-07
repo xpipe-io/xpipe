@@ -94,6 +94,14 @@ public abstract class OperationMode {
                     return;
                 }
 
+                // There are some accessibility exceptions on macOS, nothing we can do about that
+                if (Platform.isFxApplicationThread() && ex instanceof NullPointerException && ex.getMessage() != null && ex.getMessage().contains("Accessible")) {
+                    ErrorEventFactory.fromThrowable(ex).expected()
+                            .descriptionPrefix("An error occurred with the Accessibility implementation. A screen reader might not be supported right now")
+                            .build().handle();
+                    return;
+                }
+
                 // Handle any startup uncaught errors
                 if (OperationMode.isInStartup() && thread.threadId() == 1) {
                     ex.printStackTrace();
