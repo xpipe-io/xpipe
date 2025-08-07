@@ -42,7 +42,7 @@ public class OnePasswordManager implements PasswordManager {
         String name = key;
 
         if (key.startsWith("op://")) {
-            var match = Pattern.compile("op://(\\w+)/(\\w+)").matcher(key);
+            var match = Pattern.compile("op://([^/]+)/([^/]+)").matcher(key);
             if (match.find()) {
                 vault = match.group(1);
                 name = match.group(2);
