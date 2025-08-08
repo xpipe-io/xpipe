@@ -29,7 +29,7 @@ public class AppTempCheck {
     }
 
     public static void check() {
-        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() != OsType.WINDOWS) {
             return;
         }
 

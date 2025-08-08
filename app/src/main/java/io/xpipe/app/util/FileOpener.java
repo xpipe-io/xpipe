@@ -74,14 +74,14 @@ public class FileOpener {
 
     public static void openInDefaultApplication(String localFile) {
         try (var pc = LocalShell.getShell().start()) {
-            if (pc.getOsType().equals(OsType.WINDOWS)) {
+            if (pc.getOsType() == OsType.WINDOWS) {
                 if (pc.getShellDialect() == ShellDialects.POWERSHELL) {
                     pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
                             .execute();
                 } else {
                     pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
                 }
-            } else if (pc.getOsType().equals(OsType.LINUX)) {
+            } else if (pc.getOsType() == OsType.LINUX) {
                 pc.executeSimpleCommand("xdg-open \"" + localFile + "\"");
             } else {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");

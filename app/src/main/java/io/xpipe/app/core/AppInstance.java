@@ -93,7 +93,7 @@ public class AppInstance {
                     .handle();
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             Desktop.getDesktop().setOpenURIHandler(e -> {
                 try {
                     client.get()

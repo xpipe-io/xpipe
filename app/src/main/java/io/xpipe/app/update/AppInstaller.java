@@ -28,17 +28,17 @@ import java.nio.file.Path;
 public class AppInstaller {
 
     public static InstallerAssetType getSuitablePlatformAsset() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return new InstallerAssetType.Msi();
         }
 
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             return Files.exists(Path.of("/etc/debian_version"))
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             return new InstallerAssetType.Pkg();
         }
 
@@ -70,7 +70,7 @@ public class AppInstaller {
                         FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var cmdScript =
-                        ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
+                        ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
                                 && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString())

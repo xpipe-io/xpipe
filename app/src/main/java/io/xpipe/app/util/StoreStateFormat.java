@@ -50,7 +50,7 @@ public class StoreStateFormat {
                             .format();
                 }
 
-                if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
+                if (s.getShellDialect() == ShellDialects.NO_INTERACTION) {
                     return new StoreStateFormat(null, null, info).format();
                 }
 

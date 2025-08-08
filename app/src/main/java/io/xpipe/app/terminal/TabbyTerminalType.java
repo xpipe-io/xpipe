@@ -66,7 +66,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
-            if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
+            if (configuration.getScriptDialect() == ShellDialects.CMD) {
                 // It also freezes with any other input than .bat files, why?
                 launch(CommandBuilder.of()
                         .add("run")

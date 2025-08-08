@@ -26,7 +26,7 @@ public class AppCertutilCheck {
             return;
         }
 
-        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() != OsType.WINDOWS) {
             return;
         }
 

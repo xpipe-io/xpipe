@@ -129,7 +129,7 @@ public enum AppDistributionType implements Translatable {
 
     public static AppDistributionType determine() {
         var base = AppInstallation.ofCurrent().getBaseInstallationPath();
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
@@ -161,7 +161,7 @@ public enum AppDistributionType implements Translatable {
             return WEBTOP;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
+        if (OsType.getLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
                 if (chocoOut.get().contains("xpipe")
@@ -180,7 +180,7 @@ public enum AppDistributionType implements Translatable {
             //            }
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {

@@ -606,13 +606,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
-        if (osType == null || osType.equals(OsType.WINDOWS)) {
+        if (osType == null || osType == OsType.WINDOWS) {
             all.addAll(WINDOWS_TERMINALS);
         }
-        if (osType == null || osType.equals(OsType.LINUX)) {
+        if (osType == null || osType == OsType.LINUX) {
             all.addAll(LINUX_TERMINALS);
         }
-        if (osType == null || osType.equals(OsType.MACOS)) {
+        if (osType == null || osType == OsType.MACOS) {
             all.addAll(MACOS_TERMINALS);
         }
         // Prefer recommended
@@ -626,7 +626,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
         if (ExternalTerminalType.CMD.equals(existing)
-                && !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)) {
+                && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
             return ExternalTerminalType.POWERSHELL;
         }
 

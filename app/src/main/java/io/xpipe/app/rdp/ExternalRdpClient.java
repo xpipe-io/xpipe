@@ -41,13 +41,13 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalRdpClient> ALL = ((Supplier<List<ExternalRdpClient>>) () -> {
                 var all = new ArrayList<ExternalRdpClient>();
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                if (OsType.getLocal() == OsType.WINDOWS) {
                     all.addAll(WINDOWS_CLIENTS);
                 }
-                if (OsType.getLocal().equals(OsType.LINUX)) {
+                if (OsType.getLocal() == OsType.LINUX) {
                     all.addAll(LINUX_CLIENTS);
                 }
-                if (OsType.getLocal().equals(OsType.MACOS)) {
+                if (OsType.getLocal() == OsType.MACOS) {
                     all.addAll(MACOS_CLIENTS);
                 }
                 all.add(CUSTOM);

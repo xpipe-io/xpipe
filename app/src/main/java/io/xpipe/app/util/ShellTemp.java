@@ -19,7 +19,7 @@ public class ShellTemp {
         var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
 
@@ -39,7 +39,7 @@ public class ShellTemp {
         FilePath base;
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root it is technically unique as only root will use /tmp
-        if (!proc.getOsType().equals(OsType.WINDOWS) && !proc.getOsType().equals(OsType.MACOS)) {
+        if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
             proc.command(proc.getShellDialect().getMkdirsCommand(base.toString()))
@@ -84,7 +84,7 @@ public class ShellTemp {
     }
 
     private static boolean checkDirectoryPermissions(ShellControl proc, String dir) throws Exception {
-        if (proc.getOsType().equals(OsType.WINDOWS)) {
+        if (proc.getOsType() == OsType.WINDOWS) {
             return true;
         }
 

@@ -35,7 +35,7 @@ public class CmdTerminalType
     }
 
     private CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-        if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
+        if (configuration.getScriptDialect() == ShellDialects.CMD) {
             return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
         }
 

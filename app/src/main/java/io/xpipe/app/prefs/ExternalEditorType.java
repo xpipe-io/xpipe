@@ -515,13 +515,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                if (OsType.getLocal() == OsType.WINDOWS) {
                     all.addAll(WINDOWS_EDITORS);
                 }
-                if (OsType.getLocal().equals(OsType.LINUX)) {
+                if (OsType.getLocal() == OsType.LINUX) {
                     all.addAll(LINUX_EDITORS);
                 }
-                if (OsType.getLocal().equals(OsType.MACOS)) {
+                if (OsType.getLocal() == OsType.MACOS) {
                     all.addAll(MACOS_EDITORS);
                 }
                 all.addAll(CROSS_PLATFORM_EDITORS);
@@ -536,21 +536,21 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return existing;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return WINDOWS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
                     .orElse(NOTEPAD);
         }
 
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             return LINUX_EDITORS.stream()
                     .filter(ExternalApplicationType.PathApplication::isAvailable)
                     .findFirst()
                     .orElse(null);
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             return MACOS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
@@ -655,7 +655,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.LINUX);
+            return OsType.getLocal() == OsType.LINUX;
         }
     }
 

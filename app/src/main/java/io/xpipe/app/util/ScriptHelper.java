@@ -65,7 +65,7 @@ public class ScriptHelper {
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
         if (forceExecutable && ShellDialects.isPowershell(parent)) {
-            scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
+            scriptType = parent.getOsType() == OsType.WINDOWS ? ShellDialects.CMD : ShellDialects.SH;
         }
 
         return createTerminalPreparedAskpassScript(pass, parent, scriptType);

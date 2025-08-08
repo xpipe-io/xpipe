@@ -16,10 +16,10 @@ public class AppRestart {
                 ? AppInstallation.ofDefault()
                 : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
-        } else if (OsType.getLocal().equals(OsType.MACOS)) {
+        } else if (OsType.getLocal() == OsType.MACOS) {
             var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
         } else {
@@ -41,9 +41,9 @@ public class AppRestart {
                 ? AppInstallation.ofDefault()
                 : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
-        } else if (OsType.getLocal().equals(OsType.MACOS)) {
+        } else if (OsType.getLocal() == OsType.MACOS) {
             return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix + " </dev/null &>/dev/null) & disown";
         } else {
             var exe = loc.getDaemonExecutablePath();

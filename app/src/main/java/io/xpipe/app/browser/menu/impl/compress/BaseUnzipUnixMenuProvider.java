@@ -66,6 +66,6 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
         return entries.stream()
                         .allMatch(entry ->
                                 entry.getRawFileEntry().getPath().toString().endsWith(".zip"))
-                && !model.getFileSystem().getShell().orElseThrow().getOsType().equals(OsType.WINDOWS);
+                && model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
     }
 }

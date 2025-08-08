@@ -34,7 +34,7 @@ public class OpenFileWithActionProvider implements BrowserActionProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return OsType.getLocal().equals(OsType.WINDOWS)
+        return OsType.getLocal() == OsType.WINDOWS
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }

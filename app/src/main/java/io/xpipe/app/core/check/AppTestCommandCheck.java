@@ -8,7 +8,7 @@ import io.xpipe.core.OsType;
 public class AppTestCommandCheck {
 
     public static void check() throws Exception {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return;
         }
 
