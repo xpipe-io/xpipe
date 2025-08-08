@@ -103,7 +103,7 @@ public class AppTrayIcon {
     }
 
     public void showErrorMessage(String title, String message) {
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             showMacAlert(title, message, "Error");
         } else {
             EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));

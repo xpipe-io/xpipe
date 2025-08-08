@@ -7,7 +7,7 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
+
 
 import javafx.beans.value.ObservableValue;
 
@@ -110,9 +110,7 @@ public enum AppDistributionType implements Translatable {
 
     private static boolean isDifferentDaemonExecutable() {
         var cached = AppCache.getNonNull("daemonExecutable", String.class, () -> null);
-        var current = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                .toString();
+        var current = AppInstallation.ofCurrent().getDaemonExecutablePath().toString();
         if (current.equals(cached)) {
             return false;
         }
@@ -130,9 +128,9 @@ public enum AppDistributionType implements Translatable {
     }
 
     public static AppDistributionType determine() {
-        var base = XPipeInstallation.getCurrentInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+        var base = AppInstallation.ofCurrent().getBaseInstallationPath();
+        if (OsType.getLocal() == OsType.MACOS) {
+            if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
 
@@ -163,7 +161,7 @@ public enum AppDistributionType implements Translatable {
             return WEBTOP;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
+        if (OsType.getLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
                 if (chocoOut.get().contains("xpipe")
@@ -182,7 +180,7 @@ public enum AppDistributionType implements Translatable {
             //            }
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -18,7 +19,6 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
@@ -61,10 +61,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
-                                        var script = FilePath.of(
-                                                XPipeInstallation.getCurrentInstallationBasePath()
-                                                        .toString(),
-                                                XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
+                                        var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
                                                 .title("XPipe Debug")
                                                 .localScript(sc -> new ShellScript(
@@ -98,8 +95,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
                                         e -> {
-                                            DesktopHelper.browsePathLocal(
-                                                    XPipeInstallation.getCurrentInstallationBasePath());
+                                            DesktopHelper.browsePathLocal(AppInstallation.ofCurrent().getBaseInstallationPath());
                                             e.consume();
                                         })
                                 .grow(true, false),
@@ -165,7 +161,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     "uninstallApplicationDescription",
                                     "mdi2d-dump-truck",
                                     e -> {
-                                        var file = XPipeInstallation.getCurrentInstallationBasePath()
+                                        var file = AppInstallation.ofCurrent().getBaseInstallationPath()
                                                 .resolve("Contents")
                                                 .resolve("Resources")
                                                 .resolve("scripts")

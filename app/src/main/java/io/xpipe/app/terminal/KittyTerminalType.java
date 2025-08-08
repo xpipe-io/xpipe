@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -11,7 +12,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.XPipeInstallation;
+
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -38,7 +39,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             payload.put("type", "tab");
             payload.put("logo_alpha", 0.01);
             payload.put(
-                    "logo", XPipeInstallation.getLocalDefaultInstallationIcon().toString());
+                    "logo", AppInstallation.ofCurrent().getLogoPath().toString());
 
             var json = JsonNodeFactory.instance.objectNode();
             json.put("cmd", "launch");

@@ -35,7 +35,7 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
         }
 
         var os = shell.get().getOsType();
-        if (os.equals(OsType.WINDOWS)
+        if (os == OsType.WINDOWS
                 && Stream.of("exe", "bat", "ps1", "cmd")
                         .anyMatch(s -> e.getPath().toString().endsWith(s))) {
             return true;

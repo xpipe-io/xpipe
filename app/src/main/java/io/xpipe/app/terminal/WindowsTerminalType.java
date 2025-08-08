@@ -1,13 +1,14 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.XPipeInstallation;
+
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -91,8 +92,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("suppressApplicationTitle", true);
         newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {
-            var dir = XPipeInstallation.getLocalDefaultInstallationIcon();
-            newProfile.put("icon", dir.toString());
+            var logoFile = AppInstallation.ofCurrent().getLogoPath();
+            newProfile.put("icon", logoFile.toString());
         }
         profiles.add(newProfile);
         JacksonMapper.getDefault().writeValue(getConfigFile().toFile(), config);

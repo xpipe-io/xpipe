@@ -298,7 +298,7 @@ public class AppMainWindow {
             }
         });
 
-        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.LINUX || OsType.getLocal() == OsType.MACOS) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     OperationMode.onWindowClose();

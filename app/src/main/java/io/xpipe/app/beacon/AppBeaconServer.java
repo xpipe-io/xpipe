@@ -7,7 +7,6 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -54,7 +53,7 @@ public class AppBeaconServer {
             port = BeaconConfig.getUsedPort();
             propertyPort = true;
         } else {
-            port = XPipeInstallation.getDefaultBeaconPort();
+            port = BeaconConfig.getDefaultBeaconPort();
             propertyPort = false;
         }
         INSTANCE = new AppBeaconServer(port, propertyPort);
@@ -120,7 +119,7 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var file = BeaconConfig.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.getLocal() != OsType.WINDOWS) {
@@ -130,7 +129,7 @@ public class AppBeaconServer {
     }
 
     private void deleteAuthSecret() {
-        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var file = BeaconConfig.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
         } catch (IOException ignored) {

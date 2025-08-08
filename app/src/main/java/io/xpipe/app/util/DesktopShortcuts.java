@@ -1,10 +1,11 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
+
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +21,7 @@ public class DesktopShortcuts {
             return shortcutPath;
         }
 
-        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
+        var icon = AppInstallation.ofCurrent().getLogoPath();
         var content = String.format(
                         """
                         $TARGET="%s"
@@ -42,7 +43,7 @@ public class DesktopShortcuts {
     private static Path createLinuxShortcut(String executable, String args, String name) throws Exception {
         // Linux .desktop names are very restrictive
         var fixedName = name.replaceAll("[^\\w _]", "");
-        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
+        var icon = AppInstallation.ofCurrent().getLogoPath();
         var content = String.format(
                 """
                         [Desktop Entry]
@@ -72,7 +73,7 @@ public class DesktopShortcuts {
     }
 
     private static Path createMacOSShortcut(String executable, String args, String name) throws Exception {
-        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
+        var icon = AppInstallation.ofCurrent().getLogoPath();
         var assets = icon.getParent().resolve("Assets.car");
         var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
@@ -116,15 +117,15 @@ public class DesktopShortcuts {
     }
 
     public static Path createCliOpen(String action, String name) throws Exception {
-        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
+        var exec = AppInstallation.ofCurrent().getCliExecutablePath().toString();
         return create(exec, "open " + action, name);
     }
 
     public static Path create(String executable, String args, String name) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return createWindowsShortcut(executable, args, compat);
-        } else if (OsType.getLocal().equals(OsType.LINUX)) {
+        } else if (OsType.getLocal() == OsType.LINUX) {
             return createLinuxShortcut(executable, args, compat);
         } else {
             return createMacOSShortcut(executable, args, compat);

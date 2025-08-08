@@ -2,7 +2,6 @@ package io.xpipe.beacon;
 
 import io.xpipe.beacon.api.HandshakeExchange;
 import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
@@ -26,7 +25,7 @@ public class BeaconClient {
 
     public static BeaconClient establishConnection(int port, BeaconClientInformation information) throws Exception {
         var client = new BeaconClient(port);
-        var auth = Files.readString(XPipeInstallation.getLocalBeaconAuthFile());
+        var auth = Files.readString(BeaconConfig.getLocalBeaconAuthFile());
         HandshakeExchange.Response response = client.performRequest(HandshakeExchange.Request.builder()
                 .client(information)
                 .auth(BeaconAuthMethod.Local.builder().authFileContent(auth).build())

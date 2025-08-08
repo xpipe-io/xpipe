@@ -35,9 +35,7 @@ testing {
                                                " -Dio.xpipe.beacon.printMessages=true" +
                                                " -Dio.xpipe.app.logLevel=trace"
 
-                        systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
                         systemProperty "io.xpipe.beacon.port", "21723"
-                        systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
                     }
                 }
             }

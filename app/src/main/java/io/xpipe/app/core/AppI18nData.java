@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.core.XPipeInstallation;
 
 import lombok.Value;
 import org.apache.commons.io.FilenameUtils;
@@ -59,7 +58,7 @@ public class AppI18nData {
 
         var translations = new HashMap<String, String>();
         {
-            var basePath = XPipeInstallation.getLangPath().resolve("strings");
+            var basePath = AppInstallation.ofCurrent().getLangPath().resolve("strings");
             AtomicInteger fileCounter = new AtomicInteger();
             AtomicInteger lineCounter = new AtomicInteger();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
@@ -94,7 +93,7 @@ public class AppI18nData {
 
         var markdownDocumentations = new HashMap<String, String>();
         {
-            var basePath = XPipeInstallation.getLangPath().resolve("texts");
+            var basePath = AppInstallation.ofCurrent().getLangPath().resolve("texts");
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

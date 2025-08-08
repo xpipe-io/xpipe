@@ -6,8 +6,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.ModuleLayerLoader;
-import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;
 
@@ -70,15 +68,16 @@ public class AppExtensionManager {
 
     private void determineExtensionDirectories() throws Exception {
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(
-                    AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
-            Path p = localInstallation;
+            var localInstallation = !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb() ?
+                    AppInstallation.ofDefault(true)
+                    : AppInstallation.ofCurrent();
+            Path p = localInstallation.getBaseInstallationPath();
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
                         "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
-            var iv = getLocalInstallVersion();
+            var iv = getLocalInstallVersion(localInstallation);
             var installVersion = AppVersion.parse(iv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
             var sv = !AppProperties.get().isImage()
@@ -92,14 +91,13 @@ public class AppExtensionManager {
                                 + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
-            var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
+            var extensions = localInstallation.getExtensionsPath();
             extensionBaseDirectories.add(extensions);
         }
     }
 
-    private static String getLocalInstallVersion() throws Exception {
-        var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
-        var exec = localInstallation.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+    private static String getLocalInstallVersion(AppInstallation localInstallation) throws Exception {
+        var exec = localInstallation.getDaemonExecutablePath();
         var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
         var proc = fc.start();
         var out = new String(proc.getInputStream().readAllBytes());

@@ -42,7 +42,7 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
     }
 
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-        if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
+        if (configuration.getScriptDialect() == ShellDialects.POWERSHELL) {
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")
                     .add("-File")

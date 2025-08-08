@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -11,7 +12,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.XPipeInstallation;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -192,7 +193,7 @@ public class TerminalLauncher {
     }
 
     private static String getTerminalRegisterCommand(UUID request) throws Exception {
-        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
+        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
         return CommandBuilder.of()
                 .addFile(exec)
                 .add("terminal-register", "--request", request.toString())

@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
@@ -14,7 +15,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableRunnable;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
+
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -27,17 +28,17 @@ import java.nio.file.Path;
 public class AppInstaller {
 
     public static InstallerAssetType getSuitablePlatformAsset() {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return new InstallerAssetType.Msi();
         }
 
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             return Files.exists(Path.of("/etc/debian_version"))
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             return new InstallerAssetType.Pkg();
         }
 
@@ -69,7 +70,7 @@ public class AppInstaller {
                         FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var cmdScript =
-                        ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
+                        ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
                                 && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString())
@@ -101,8 +102,7 @@ public class AppInstaller {
             }
 
             private boolean isSystemWide() {
-                return Files.exists(
-                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                return Files.exists(AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
             }
 
             private String getCmdCommand(String file, String logFile) {

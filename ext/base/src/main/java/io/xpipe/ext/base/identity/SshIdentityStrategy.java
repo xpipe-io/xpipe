@@ -136,7 +136,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            if (!parent.getOsType().equals(OsType.WINDOWS)) {
+            if (parent.getOsType() != OsType.WINDOWS) {
                 var out = parent.executeSimpleStringCommand("pageant -l");
                 if (out.isBlank()) {
                     throw ErrorEventFactory.expected(
@@ -157,7 +157,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.environment("SSH_AUTH_SOCK", parent -> {
-                if (parent.getOsType().equals(OsType.WINDOWS)) {
+                if (parent.getOsType() == OsType.WINDOWS) {
                     return getPageantWindowsPipe(parent);
                 }
 
@@ -332,7 +332,7 @@ public interface SshIdentityStrategy {
                         + " is marked to be a public key file, SSH authentication requires the private key"));
             }
 
-            if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
+            if ((parent.getOsType() == OsType.LINUX || parent.getOsType() == OsType.MACOS)) {
                 // Try to preserve the same permission set
                 parent.command(CommandBuilder.of()
                                 .add("test", "-w")
