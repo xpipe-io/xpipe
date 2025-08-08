@@ -1,6 +1,8 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.icon.SystemIconManager;
+import io.xpipe.app.icon.SystemIconSourceData;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
@@ -198,7 +200,12 @@ public class DataStoreEntry extends StorageElement {
             return getProvider().getDisplayIconFileName(getStore());
         }
 
-        return "icons/" + icon + ".svg";
+        var found = SystemIconManager.getIcon(icon);
+        if (found.isPresent()) {
+            return SystemIconManager.getIconFile(found.get());
+        } else {
+            return "disabled_icon.png";
+        }
     }
 
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws IOException {

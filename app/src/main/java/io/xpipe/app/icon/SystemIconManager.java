@@ -71,6 +71,23 @@ public class SystemIconManager {
         return "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
     }
 
+    public static Optional<SystemIcon> getIcon(String id) {
+        var split = id.split("/");
+        if (split.length == 2) {
+            var source = split[0];
+            var foundSource = getAllSources().stream().filter(systemIconSource -> systemIconSource.getId().equals(source)).findFirst();
+            if (foundSource.isEmpty()) {
+                return Optional.empty();
+            }
+
+            var icon = new SystemIcon(foundSource.get(), split[1]);
+            var foundIcon = ICONS.contains(icon);
+            return foundIcon ? Optional.of(icon) : Optional.empty();
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public static void init() throws Exception {
         reloadSources();
         SystemIconCache.refreshBuilt();
