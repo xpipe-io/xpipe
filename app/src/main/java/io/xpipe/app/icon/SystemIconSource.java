@@ -42,9 +42,7 @@ public interface SystemIconSource {
         }
 
         @Override
-        public void refresh() throws Exception {
-            Files.createDirectories(path);
-        }
+        public void refresh() throws Exception {}
 
         @Override
         public Path getPath() {
@@ -68,8 +66,9 @@ public interface SystemIconSource {
 
         @Override
         public void open() throws Exception {
-            Files.createDirectories(path);
-            DesktopHelper.browsePathLocal(path);
+            if (Files.exists(path)) {
+                DesktopHelper.browsePathLocal(path);
+            }
         }
     }
 

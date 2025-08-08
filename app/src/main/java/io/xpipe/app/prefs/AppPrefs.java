@@ -109,6 +109,7 @@ public class AppPrefs {
             .property(new GlobalObjectProperty<>(new ArrayList<>(SystemIconManager.getIcons())))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
+            .vaultSpecific(true)
             .build());
 
     public final ObservableBooleanValue preferTerminalTabs() {

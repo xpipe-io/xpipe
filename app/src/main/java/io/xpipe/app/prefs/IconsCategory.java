@@ -44,6 +44,7 @@ public class IconsCategory extends AppPrefsCategory {
                 .addTitle("customIcons")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("iconSources")
+                        .longDescription(DocumentationLink.ICONS)
                         .addComp(createOverview().maxWidth(getCompWidth())))
                 .buildComp();
     }
