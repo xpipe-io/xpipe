@@ -13,6 +13,11 @@ import lombok.extern.jackson.Jacksonized;
 public class ScreenSharingVncClient implements ExternalApplicationType.MacApplication, ExternalVncClient {
 
     @Override
+    public String getWebsite() {
+        return "https://support.apple.com/en-is/guide/mac-help/mh14066/15.0/mac/15.0";
+    }
+
+    @Override
     public boolean supportsPasswords() {
         return true;
     }

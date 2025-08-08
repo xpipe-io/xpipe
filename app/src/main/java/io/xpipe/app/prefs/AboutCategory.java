@@ -15,6 +15,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 
 import atlantafx.base.theme.Styles;
+import javafx.scene.layout.Background;
+import javafx.scene.paint.Color;
 
 import java.util.List;
 
@@ -36,15 +38,14 @@ public class AboutCategory extends AppPrefsCategory {
         var update = new UpdateCheckComp().prefWidth(600);
         return new VerticalComp(List.of(
                         props,
-                        Comp.hspacer(3),
+                        Comp.vspacer(1),
                         update,
-                        Comp.hspacer(13),
+                        Comp.vspacer(5),
                         Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(12))
                 .styleClass("information")
-                .styleClass("about-tab")
-                .apply(struc -> struc.get().maxWidth(600));
+                .styleClass("about-tab");
     }
 
     private Comp<?> createProperties() {

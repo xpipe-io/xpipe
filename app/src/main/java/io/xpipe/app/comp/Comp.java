@@ -8,6 +8,7 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -160,6 +161,10 @@ public abstract class Comp<S extends CompStructure<?>> {
                 });
             });
         });
+    }
+
+    public Comp<S> disable(boolean o) {
+        return disable(new ReadOnlyBooleanWrapper(o));
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {

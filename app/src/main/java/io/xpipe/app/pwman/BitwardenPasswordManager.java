@@ -5,6 +5,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
@@ -26,6 +27,11 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
+    public String getWebsite() {
+        return "https://bitwarden.com/";
+    }
+
+    @Override
     public CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
@@ -43,14 +49,13 @@ public class BitwardenPasswordManager implements PasswordManager {
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login",
-                        sc.getShellDialect().getPauseCommand());
-                TerminalLauncher.openDirect("Bitwarden login", script);
+                        "bw login");
+                TerminalLaunch.builder().title("Bitwarden login").localScript(script).logIfEnabled(false).launch();
                 return null;
             }
 
-            if (!sc.view().getEnvironmentVariable("BW_SESSION").isEmpty() && r[1].contains("Vault is locked")) {
-                var pw = AskpassAlert.queryRaw("Unlock vault with your Bitwarden master password", null, false);
+            if (r[1].contains("Vault is locked")) {
+                var pw = AskpassAlert.queryRaw("Unlock vault with your Bitwarden master password", null);
                 if (pw.getSecret() == null) {
                     return null;
                 }
@@ -62,7 +67,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
-            var cmd = CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
+            var cmd =
+                    CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.required("login");

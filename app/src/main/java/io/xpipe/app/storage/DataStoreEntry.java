@@ -126,12 +126,10 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
-        var storage = DataStorage.get();
-        var cat = storage != null ? storage.getSelectedCategory().getUuid() : UUID.randomUUID();
         return new DataStoreEntry(
                 null,
                 UUID.randomUUID(),
-                cat,
+                DataStorage.get().getSelectedCategory().getUuid(),
                 UUID.randomUUID().toString(),
                 Instant.now(),
                 Instant.now(),

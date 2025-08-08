@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -102,7 +103,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.getIcon().setIconSize((int) (size * iconSize));
+            fi.getIcon().iconSizeProperty().bind(new ReadOnlyDoubleWrapper(size * iconSize));
         });
         bt.setGraphic(hbox);
         return Structure.builder()

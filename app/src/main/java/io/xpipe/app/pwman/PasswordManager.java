@@ -41,4 +41,6 @@ public interface PasswordManager {
     CredentialResult retrieveCredentials(String key);
 
     String getKeyPlaceholder();
+
+    String getWebsite();
 }

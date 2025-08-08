@@ -17,6 +17,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
@@ -111,6 +112,7 @@ public class BaseMode extends OperationMode {
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
                     storageLoaded.countDown();
+                    AppMcpServer.init();
                     StoreViewState.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");

@@ -1,10 +1,11 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.XPipeInstallation;
+
 
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -65,7 +66,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                                 .formatted(
                                         inPath
                                                 ? "xpipe open"
-                                                : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
+                                                : "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\" open");
                 throw ErrorEventFactory.expected(new IllegalStateException(msg));
             }
 

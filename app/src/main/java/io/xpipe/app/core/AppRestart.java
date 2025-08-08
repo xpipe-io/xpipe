@@ -6,7 +6,6 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import java.util.List;
 
@@ -14,17 +13,17 @@ public class AppRestart {
 
     private static String createTerminalLaunchCommand(List<String> arguments, ShellDialect dialect) {
         var loc = AppProperties.get().isDevelopmentEnvironment()
-                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                : XPipeInstallation.getCurrentInstallationBasePath();
+                ? AppInstallation.ofDefault()
+                : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            var exec = loc.resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()));
+            var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            var exec = loc.resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()));
+            var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
         } else {
-            var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+            var exe = loc.getDaemonDebugScriptPath();
             if (ShellDialects.isPowershell(dialect)) {
                 var escapedList =
                         arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
@@ -39,15 +38,15 @@ public class AppRestart {
 
     private static String createBackgroundLaunchCommand(List<String> arguments, ShellDialect dialect) {
         var loc = AppProperties.get().isDevelopmentEnvironment()
-                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                : XPipeInstallation.getCurrentInstallationBasePath();
+                ? AppInstallation.ofDefault()
+                : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
         if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + loc + "/bin/xpiped\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+            return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            return "(sleep 1;open \"" + loc + "\" --args" + suffix + " </dev/null &>/dev/null) & disown";
+            return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix + " </dev/null &>/dev/null) & disown";
         } else {
-            var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+            var exe = loc.getDaemonExecutablePath();
             if (ShellDialects.isPowershell(dialect)) {
                 var escapedList =
                         arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();

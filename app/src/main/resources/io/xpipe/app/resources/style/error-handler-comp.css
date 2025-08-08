@@ -10,7 +10,3 @@
     -fx-border-width: 1;
     -fx-background-color: -color-context-menu;
 }
-
-.root:macos .error-handler-comp .description {
-    -fx-font-family: Roboto;
-}

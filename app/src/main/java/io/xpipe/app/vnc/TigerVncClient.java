@@ -22,6 +22,11 @@ public abstract class TigerVncClient implements ExternalVncClient {
         return builder;
     }
 
+    @Override
+    public String getWebsite() {
+        return "https://tigervnc.org/";
+    }
+
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")

@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.core.XPipeInstallation;
+import io.xpipe.app.core.AppInstallation;
 
 public class ExtensionException extends RuntimeException {
 
@@ -24,7 +24,7 @@ public class ExtensionException extends RuntimeException {
 
     public static ExtensionException corrupt(String message, Throwable cause) {
         try {
-            var loc = XPipeInstallation.getCurrentInstallationBasePath();
+            var loc = AppInstallation.ofCurrent().getBaseInstallationPath();
             var full =
                     message + ".\n\n" + "Please check whether the XPipe installation data at " + loc + " is corrupted.";
             return new ExtensionException(full, cause);

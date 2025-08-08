@@ -2,11 +2,11 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -53,7 +53,7 @@ public class AppBeaconServer {
             port = BeaconConfig.getUsedPort();
             propertyPort = true;
         } else {
-            port = XPipeInstallation.getDefaultBeaconPort();
+            port = BeaconConfig.getDefaultBeaconPort();
             propertyPort = false;
         }
         INSTANCE = new AppBeaconServer(port, propertyPort);
@@ -85,6 +85,13 @@ public class AppBeaconServer {
         if (INSTANCE != null) {
             INSTANCE.stop();
             INSTANCE.deleteAuthSecret();
+            for (BeaconShellSession ss : INSTANCE.getCache().getShellSessions()) {
+                try {
+                    ss.getControl().close();
+                } catch (Exception ex) {
+                    ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
+                }
+            }
             INSTANCE = null;
         }
     }
@@ -112,7 +119,7 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var file = BeaconConfig.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.getLocal() != OsType.WINDOWS) {
@@ -122,7 +129,7 @@ public class AppBeaconServer {
     }
 
     private void deleteAuthSecret() {
-        var file = XPipeInstallation.getLocalBeaconAuthFile();
+        var file = BeaconConfig.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
         } catch (IOException ignored) {
@@ -148,6 +155,13 @@ public class AppBeaconServer {
 
         server.createContext("/", exchange -> {
             handleCatchAll(exchange);
+        });
+
+        server.createContext("/mcp", exchange -> {
+            var mcpServer = AppMcpServer.get();
+            if (mcpServer != null) {
+                mcpServer.createHttpHandler().handle(exchange);
+            }
         });
 
         server.start();

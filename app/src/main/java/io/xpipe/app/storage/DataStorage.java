@@ -9,6 +9,7 @@ import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.FixedHierarchyStore;
+import io.xpipe.app.util.SecretManager;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.StorePath;
 
@@ -392,6 +393,8 @@ public abstract class DataStorage {
             listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         }
 
+        SecretManager.moveReferences(newEntry.getUuid(), entry.getUuid());
+
         refreshEntries();
         saveAsync();
     }
@@ -717,6 +720,10 @@ public abstract class DataStorage {
             var s = pair.getKey().getStorePersistentState();
             var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
             pair.getKey().setStorePersistentState(mergedState);
+
+            if (pair.getKey().getOrderIndex() == 0 && pair.getValue().get().getOrderIndex() != 0) {
+                pair.getKey().setOrderIndex(pair.getValue().get().getOrderIndex());
+            }
         });
         refreshEntries();
         saveAsync();

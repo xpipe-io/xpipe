@@ -7,7 +7,7 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
+
 
 import javafx.beans.value.ObservableValue;
 
@@ -110,9 +110,7 @@ public enum AppDistributionType implements Translatable {
 
     private static boolean isDifferentDaemonExecutable() {
         var cached = AppCache.getNonNull("daemonExecutable", String.class, () -> null);
-        var current = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                .toString();
+        var current = AppInstallation.ofCurrent().getDaemonExecutablePath().toString();
         if (current.equals(cached)) {
             return false;
         }
@@ -130,9 +128,9 @@ public enum AppDistributionType implements Translatable {
     }
 
     public static AppDistributionType determine() {
-        var base = XPipeInstallation.getCurrentInstallationBasePath();
+        var base = AppInstallation.ofCurrent().getBaseInstallationPath();
         if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+            if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
 

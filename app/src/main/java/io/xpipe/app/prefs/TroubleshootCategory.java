@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
@@ -12,12 +13,12 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import lombok.SneakyThrows;
@@ -60,14 +61,12 @@ public class TroubleshootCategory extends AppPrefsCategory {
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
                                     OperationMode.executeAfterShutdown(() -> {
-                                        var script = FilePath.of(
-                                                XPipeInstallation.getCurrentInstallationBasePath()
-                                                        .toString(),
-                                                XPipeInstallation.getDaemonDebugScriptPath(OsType.getLocal()));
-                                        TerminalLauncher.openDirectFallback(
-                                                "XPipe Debug",
-                                                sc -> new ShellScript(
-                                                        sc.getShellDialect().runScriptCommand(sc, script.toString())));
+                                        var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
+                                        TerminalLaunch.builder()
+                                                .title("XPipe Debug")
+                                                .localScript(sc -> new ShellScript(
+                                                        sc.getShellDialect().runScriptCommand(sc, script.toString())))
+                                                .launch();
                                     });
                                     e.consume();
                                 })
@@ -96,8 +95,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
                                         e -> {
-                                            DesktopHelper.browsePathLocal(
-                                                    XPipeInstallation.getCurrentInstallationBasePath());
+                                            DesktopHelper.browsePathLocal(AppInstallation.ofCurrent().getBaseInstallationPath());
                                             e.consume();
                                         })
                                 .grow(true, false),
@@ -163,20 +161,21 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     "uninstallApplicationDescription",
                                     "mdi2d-dump-truck",
                                     e -> {
-                                        var file = XPipeInstallation.getCurrentInstallationBasePath()
+                                        var file = AppInstallation.ofCurrent().getBaseInstallationPath()
                                                 .resolve("Contents")
                                                 .resolve("Resources")
                                                 .resolve("scripts")
                                                 .resolve("uninstall.sh");
                                         OperationMode.executeAfterShutdown(() -> {
-                                            TerminalLauncher.openDirectFallback(
-                                                    "Uninstall",
-                                                    sc -> ShellScript.lines(
+                                            TerminalLaunch.builder()
+                                                    .title("Uninstall")
+                                                    .localScript(sc -> ShellScript.lines(
                                                             "echo \"+ sudo " + file + "\"",
                                                             "sudo " + file,
                                                             ProcessControlProvider.get()
                                                                     .getEffectiveLocalDialect()
-                                                                    .getPauseCommand()));
+                                                                    .getPauseCommand()))
+                                                    .launch();
                                         });
                                         e.consume();
                                     })

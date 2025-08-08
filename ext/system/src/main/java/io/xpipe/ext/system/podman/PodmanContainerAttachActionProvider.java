@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LabelGraphic;
 
@@ -47,7 +48,7 @@ public class PodmanContainerAttachActionProvider implements HubLeafProvider<Podm
         public void executeImpl() throws Exception {
             var d = ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLauncher.open(ref.get().getName(), view.attach(d.getContainerName()));
+            TerminalLaunch.builder().entry(ref.get()).title("Attach").command(view.attach(d.getContainerName())).launch();
         }
     }
 }

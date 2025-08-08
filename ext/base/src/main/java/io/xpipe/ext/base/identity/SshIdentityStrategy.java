@@ -9,6 +9,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
@@ -245,7 +246,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("gpgAgent");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
             if (parent.isLocal()) {
                 SshIdentityStateManager.prepareLocalGpgAgent();
             } else {
@@ -424,7 +425,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("pkcs11Identity");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
 
             var file = getFile(parent);
             if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
@@ -466,7 +467,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("pkcs11Identity");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
 
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, file.toString())

@@ -19,6 +19,8 @@ public interface CommandControl extends ProcessControl {
     int INTERNAL_ERROR_EXIT_CODE = 163;
     int ELEVATION_FAILED_EXIT_CODE = 164;
 
+    CommandBuilder getTerminalCommand();
+
     CommandControl sensitive();
 
     CommandControl withExceptionConverter(ExceptionConverter converter);

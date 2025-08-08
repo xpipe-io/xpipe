@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -17,7 +18,6 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -127,7 +127,7 @@ public class TerminalLaunchConfiguration {
             var cliExecutable = TerminalProxyManager.getProxy()
                     .orElse(LocalShell.getShell())
                     .getLocalSystemAccess()
-                    .translateFromLocalSystemPath(FilePath.of(XPipeInstallation.getLocalDefaultCliExecutable()));
+                    .translateFromLocalSystemPath(FilePath.of(AppInstallation.ofCurrent().getCliExecutablePath()));
             var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                     ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);

@@ -38,6 +38,7 @@ public class AppProperties {
     boolean debugThreads;
     Path dataDir;
     Path defaultDataDir;
+    Path dataBinDir;
     boolean showcase;
     AppVersion canonicalVersion;
     boolean locatePtb;
@@ -124,6 +125,7 @@ public class AppProperties {
                     return p;
                 })
                 .orElse(defaultDataDir);
+        dataBinDir = dataDir.resolve("bin");
         showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);

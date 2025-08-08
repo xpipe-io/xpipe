@@ -183,17 +183,20 @@ public class OptionsBuilder {
 
     public OptionsBuilder pref(Object property) {
         var mapping = AppPrefs.get().getMapping(property);
-        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId());
+        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId(), mapping.getDocumentationLink());
         return this;
     }
 
-    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId) {
+    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId, DocumentationLink documentationLink) {
         var name = key;
         name(name);
         if (requiresRestart) {
             description(AppI18n.observable(name + "Description").map(s -> s + "\n\n" + AppI18n.get("requiresRestart")));
         } else {
             description(AppI18n.observable(name + "Description"));
+        }
+        if (documentationLink != null) {
+            longDescription(documentationLink);
         }
         if (licenseFeatureId != null) {
             licenseRequirement(licenseFeatureId);
@@ -340,6 +343,28 @@ public class OptionsBuilder {
         return addString(prop, false);
     }
 
+    public OptionsBuilder addPath(Property<Path> prop) {
+        var string = new SimpleStringProperty(
+                prop.getValue() != null ? prop.getValue().toString() : null);
+        var comp = new TextFieldComp(string, true);
+        string.addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                prop.setValue(null);
+                return;
+            }
+
+            try {
+                var p = Path.of(newValue);
+                prop.setValue(p);
+            } catch (InvalidPathException ignored) {
+
+            }
+        });
+        pushComp(comp);
+        props.add(prop);
+        return this;
+    }
+
     public OptionsBuilder addString(Property<String> prop, boolean lazy) {
         var comp = new TextFieldComp(prop, lazy);
         pushComp(comp);
@@ -374,9 +399,15 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder longDescription(String link) {
+        finishCurrent();
+        longDescription = link;
+        return this;
+    }
+
     public OptionsBuilder longDescription(DocumentationLink link) {
         finishCurrent();
-        longDescription = link.getLink();
+        longDescription = link != null ? link.getLink() : null;
         return this;
     }
 
@@ -396,8 +427,8 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop) {
-        var comp = new SecretFieldComp(prop, true);
+    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
+        var comp = new SecretFieldComp(prop, copy);
         pushComp(comp);
         props.add(prop);
         return this;

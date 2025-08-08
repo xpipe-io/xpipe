@@ -78,6 +78,11 @@ public class EnpassPasswordManager implements PasswordManager {
     private final FilePath vaultPath;
 
     @Override
+    public String getWebsite() {
+        return "https://www.enpass.io/";
+    }
+
+    @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Enpass CLI", "enpass-cli");

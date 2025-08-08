@@ -1,0 +1,25 @@
+{
+  "name": "toggle_state",
+  "description": "Toggles the state of a connection",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "state": {
+        "type": "boolean",
+        "description": "The new state"
+      }
+    },
+    "required": [
+      "system",
+      "state"
+    ]
+  },
+  "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": true
+  }
+}

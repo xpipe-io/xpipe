@@ -138,10 +138,6 @@ public class BrowserFileTransferOperation {
     }
 
     public boolean isMove() {
-        if (files.isEmpty()) {
-            return false;
-        }
-
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         var doesMove = transferMode == BrowserFileTransferMode.MOVE
                 || (same && transferMode == BrowserFileTransferMode.NORMAL);
@@ -284,19 +280,20 @@ public class BrowserFileTransferOperation {
             flatFiles.put(source, directoryName);
 
             var baseRelative = source.getPath().getParent().toDirectory();
-            List<FileEntry> list =
-                    source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath());
-            for (FileEntry fileEntry : list) {
-                if (cancelled()) {
-                    return;
-                }
+            try (var stream = source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath())) {
+                List<FileEntry> list = stream.toList();
+                for (FileEntry fileEntry : list) {
+                    if (cancelled()) {
+                        return;
+                    }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
-                flatFiles.put(fileEntry, rel);
-                if (fileEntry.getKind() == FileKind.FILE) {
-                    // This one is up-to-date and does not need to be recalculated
-                    // If we don't have a size, it doesn't matter that much as the total size is only for display
-                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                    flatFiles.put(fileEntry, rel);
+                    if (fileEntry.getKind() == FileKind.FILE) {
+                        // This one is up-to-date and does not need to be recalculated
+                        // If we don't have a size, it doesn't matter that much as the total size is only for display
+                        totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    }
                 }
             }
         } else {

@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
@@ -9,10 +10,11 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.XPipeInstallation;
+
 
 import java.nio.file.Files;
 import java.time.Instant;
@@ -119,10 +121,9 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                var systemWide = Files.exists(
-                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                var systemWide = Files.exists(AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
-                TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
+                TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
                     var pkg = "xpipe";
                     var commandToRun = "Start-Process -Wait -Verb runAs -FilePath choco -ArgumentList upgrade, " + pkg
                             + ", -y" + propertiesArguments;

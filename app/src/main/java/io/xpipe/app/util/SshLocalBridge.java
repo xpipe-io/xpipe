@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -8,7 +9,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.XPipeInstallation;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -173,7 +174,7 @@ public class SshLocalBridge {
     }
 
     private String getRemoteCommand(ShellControl sc) {
-        var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
+        var command = "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\" ssh-launch "
                 + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
         var p = Pattern.compile("\".+?\\\\Users\\\\([^\\\\]+)\\\\(.+)\"");
         var matcher = p.matcher(command);

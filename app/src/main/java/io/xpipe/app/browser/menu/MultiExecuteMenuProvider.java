@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvider {
 
     protected abstract CommandBuilder createCommand(
-            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
+            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) throws Exception;
 
     @Override
     public List<BrowserMenuLeafProvider> getBranchingActions(
@@ -26,22 +26,19 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        var sc = model.getFileSystem().getShell().orElseThrow();
-                        for (BrowserEntry entry : entries) {
-                            var c = createCommand(sc, model, entry);
-                            if (c == null) {
-                                continue;
-                            }
+                        ThreadHelper.runFailableAsync(() -> {
+                            var sc = model.getFileSystem().getShell().orElseThrow();
+                            for (BrowserEntry entry : entries) {
+                                var c = createCommand(sc, model, entry);
+                                if (c == null) {
+                                    continue;
+                                }
 
-                            var cmd = sc.command(c);
-                            model.openTerminalAsync(
-                                    entry.getRawFileEntry().getName(),
-                                    model.getCurrentDirectory() != null
-                                            ? model.getCurrentDirectory().getPath()
-                                            : null,
-                                    cmd,
-                                    entries.size() == 1);
-                        }
+                                var cmd = sc.command(c);
+                                model.openTerminalAsync(entry.getRawFileEntry().getName(),
+                                        model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null, cmd, entries.size() == 1);
+                            }
+                        });
                     }
 
                     @Override
@@ -62,7 +59,7 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
 
                     @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        ThreadHelper.runAsync(() -> {
+                        ThreadHelper.runFailableAsync(() -> {
                             var sc = model.getFileSystem().getShell().orElseThrow();
                             for (BrowserEntry entry : entries) {
                                 var c = createCommand(sc, model, entry);

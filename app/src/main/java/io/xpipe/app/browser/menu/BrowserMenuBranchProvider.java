@@ -36,12 +36,6 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
         }
         m.setDisable(!isActive(model, selected));
 
-        if (getLicensedFeatureId() != null
-                && !LicenseProvider.get().getFeature(getLicensedFeatureId()).isSupported()) {
-            m.setDisable(true);
-            m.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
-        }
-
         return m;
     }
 

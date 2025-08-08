@@ -112,4 +112,9 @@ public class PsonoPasswordManager implements PasswordManager {
     public String getKeyPlaceholder() {
         return AppI18n.get("psonoPlaceholder");
     }
+
+    @Override
+    public String getWebsite() {
+        return "https://psono.com/";
+    }
 }

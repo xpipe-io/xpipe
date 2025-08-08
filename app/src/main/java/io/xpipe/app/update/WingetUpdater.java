@@ -2,16 +2,18 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.XPipeInstallation;
+
 
 import java.nio.file.Files;
 import java.time.Instant;
@@ -119,9 +121,8 @@ public class WingetUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                TerminalLauncher.openDirectFallback("XPipe Updater", sc -> {
-                    var systemWide = Files.exists(
-                            XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
+                TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
+                    var systemWide = Files.exists(AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
                     var pkgId = "xpipe-io.xpipe";
                     if (systemWide) {
                         return ShellScript.lines(

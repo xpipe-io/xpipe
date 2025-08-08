@@ -8,7 +8,7 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jvmArgs += ["-Xmx2g"]
     useJUnitPlatform()
     testLogging {
@@ -17,7 +17,7 @@ tasks.withType(Test) {
                TestLogEvent.SKIPPED,
                TestLogEvent.STANDARD_OUT,
                TestLogEvent.STANDARD_ERROR,
-                TestLogEvent.STARTED
+               TestLogEvent.STARTED
 
         exceptionFormat = 'full'
         showExceptions = true
@@ -25,7 +25,7 @@ tasks.withType(Test) {
         showStandardStreams = true
     }
 
-    outputs.upToDateWhen {false}
+    outputs.upToDateWhen { false }
 
     afterSuite { desc, result ->
         if (!desc.parent) { // will match the outermost suite

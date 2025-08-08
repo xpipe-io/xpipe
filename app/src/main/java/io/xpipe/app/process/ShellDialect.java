@@ -134,7 +134,7 @@ public interface ShellDialect {
 
     String runScriptCommand(ShellControl parent, String file);
 
-    String sourceScriptCommand(String file);
+    String sourceScriptCommand(ShellControl sc, String file);
 
     String executeCommandWithShell(String cmd);
 
@@ -170,7 +170,7 @@ public interface ShellDialect {
 
     ShellDumbMode getDumbMode();
 
-    CommandControl createFileExistsCommand(ShellControl sc, String file);
+    CommandControl createFileExistsCommand(ShellControl sc, String file) throws Exception;
 
     CommandControl symbolicLink(ShellControl sc, String linkFile, String targetFile);
 

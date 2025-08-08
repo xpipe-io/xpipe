@@ -30,6 +30,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -286,11 +287,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         // Evaluate optional expressions
         String evaluatedPath;
-        try {
-            evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).handle();
-            return Optional.ofNullable(cps);
+        if (customInput) {
+            try {
+                evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).handle();
+                return Optional.ofNullable(cps);
+            }
+        } else {
+            evaluatedPath = adjustedPath;
         }
 
         if (evaluatedPath == null) {
@@ -470,7 +475,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
             fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
-        TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
+        TerminalLaunch.builder().entry(entry.get()).title(name).directory(directory).command(processControl).request(uuid).preferTabs(!dock).launch();
 
         // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
         startIfNeeded();

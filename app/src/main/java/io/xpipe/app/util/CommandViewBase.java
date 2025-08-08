@@ -17,5 +17,5 @@ public abstract class CommandViewBase extends CommandView {
         this.shellControl = shellControl;
     }
 
-    protected abstract CommandControl build(Consumer<CommandBuilder> builder);
+    protected abstract CommandControl build(Consumer<CommandBuilder> builder) throws Exception;
 }

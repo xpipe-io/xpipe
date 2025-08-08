@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsCategory;
 import io.xpipe.app.util.*;
 
+import javafx.beans.binding.Bindings;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -33,20 +34,22 @@ public class VncCategory extends AppPrefsCategory {
                 .subclasses(ExternalVncClient.getClasses())
                 .allowNull(false)
                 .transformer(entryComboBox -> {
-                    var docsLinkButton = new ButtonComp(
-                            AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
-                                Hyperlinks.open(DocumentationLink.VNC_CLIENTS.getLink());
+                    var websiteLinkButton =
+                            new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
+                                var c = prefs.vncClient.getValue();
+                                if (c != null && c.getWebsite() != null) {
+                                    Hyperlinks.open(c.getWebsite());
+                                }
                             });
-                    docsLinkButton.minWidth(Region.USE_PREF_SIZE);
+                    websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-                    var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
-                    hbox.setMaxWidth(getCompWidth());
                     return hbox;
                 })
                 .build();
-        var choice = choiceBuilder.build().buildComp();
+        var choice = choiceBuilder.build().buildComp().maxWidth(600);
         return new OptionsBuilder()
                 .addTitle("vncClient")
                 .sub(new OptionsBuilder().pref(prefs.vncClient).addComp(choice))

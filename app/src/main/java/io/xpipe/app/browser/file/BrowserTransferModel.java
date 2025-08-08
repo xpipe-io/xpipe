@@ -215,12 +215,12 @@ public class BrowserTransferModel {
     private Path getDownloadsTargetDirectory() throws Exception {
         var def = DesktopHelper.getDownloadsDirectory();
         var custom = AppPrefs.get().downloadsDirectory().getValue();
-        if (custom == null || custom.isBlank()) {
+        if (custom == null) {
             return def;
         }
 
         try {
-            var path = Path.of(custom);
+            var path = custom.asLocalPath();
             if (Files.isDirectory(path)) {
                 return path;
             }
