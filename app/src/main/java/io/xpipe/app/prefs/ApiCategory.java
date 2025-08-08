@@ -37,6 +37,7 @@ public class ApiCategory extends AppPrefsCategory {
                        {
                          "mcpServers": {
                            "%s": {
+                             "type": "streamable-http",
                              "url": "http://localhost:%s/mcp",
                              "headers": {
                                "Authorization": "Bearer %s"
