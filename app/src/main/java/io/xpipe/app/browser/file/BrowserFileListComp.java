@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.util.*;
@@ -126,7 +127,16 @@ public final class BrowserFileListComp extends SimpleComp {
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
         table.setAccessibleText("Directory contents");
-        table.setPlaceholder(new Region());
+
+        var placeholder = new Label();
+        fileList.getFileSystemModel().getBusy().subscribe(busy -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                placeholder.setText(busy ? null : AppI18n.get("emptyDirectory"));
+            });
+        });
+        table.setPlaceholder(placeholder);
+        AppFontSizes.base(placeholder);
+
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         table.getSortOrder().add(filenameCol);

@@ -14,14 +14,20 @@ public enum DataStoreColor {
     @JsonProperty("red")
     RED("red", "\uD83D\uDD34", Color.DARKRED),
 
-    @JsonProperty("green")
-    GREEN("green", "\uD83D\uDFE2", Color.DARKGREEN),
-
     @JsonProperty("yellow")
     YELLOW("yellow", "\uD83D\uDFE1", Color.web("#999922")),
 
+    @JsonProperty("green")
+    GREEN("green", "\uD83D\uDFE2", Color.DARKGREEN),
+
+    @JsonProperty("cyan")
+    CYAN("cyan", "\uD83D\uDFE9", Color.CYAN),
+
     @JsonProperty("blue")
-    BLUE("blue", "\uD83D\uDD35", Color.DARKBLUE);
+    BLUE("blue", "\uD83D\uDD35", Color.DARKBLUE),
+
+    @JsonProperty("purple")
+    VIOLET("purple", "\uD83D\uDFE3", Color.VIOLET);
 
     private final String id;
     private final String emoji;

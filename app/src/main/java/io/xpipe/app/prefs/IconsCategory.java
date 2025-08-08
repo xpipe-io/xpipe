@@ -93,7 +93,7 @@ public class IconsCategory extends AppPrefsCategory {
                                 .remote(remote.get())
                                 .id(UUID.randomUUID().toString())
                                 .build();
-                        if (!sources.contains(source)) {
+                        if (sources.stream().noneMatch(s -> s instanceof SystemIconSource.GitRepository g && g.getRemote().equals(remote.get()))) {
                             sources.add(source);
                             var nl = new ArrayList<>(
                                     AppPrefs.get().getIconSources().getValue());
@@ -134,7 +134,7 @@ public class IconsCategory extends AppPrefsCategory {
                                 .path(path)
                                 .id(UUID.randomUUID().toString())
                                 .build();
-                        if (!sources.contains(source)) {
+                        if (sources.stream().noneMatch(s -> s instanceof SystemIconSource.Directory d && d.getPath().equals(path))) {
                             sources.add(source);
                             var nl = new ArrayList<>(
                                     AppPrefs.get().getIconSources().getValue());
