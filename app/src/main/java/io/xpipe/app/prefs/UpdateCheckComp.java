@@ -94,7 +94,7 @@ public class UpdateCheckComp extends SimpleComp {
         var graphic = Bindings.createObjectBinding(
                 () -> {
                     if (updateReady.getValue()) {
-                        return "mdi2a-apple-airplay";
+                        return "mdi2b-button-cursor";
                     }
 
                     return "mdi2r-refresh";
