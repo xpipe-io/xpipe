@@ -31,10 +31,7 @@ public class SystemIconManager {
         // For chinese users, GitHub link might be unreliable
         // So use an alternative chinese mirror they can use
         all.add(SystemIconSource.GitRepository.builder()
-                .remote(
-                        AppPrefs.get().language().getValue() == SupportedLocale.CHINESE
-                                ? "https://gitcode.com/gh_mirrors/icons13/icons"
-                                : "https://github.com/selfhst/icons")
+                .remote("https://github.com/selfhst/icons")
                 .id("selfhst")
                 .build());
         for (var pref : prefs) {
