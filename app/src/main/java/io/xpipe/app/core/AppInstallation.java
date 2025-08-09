@@ -8,9 +8,15 @@ import java.nio.file.Path;
 
 public abstract class AppInstallation {
 
-    private static final Windows WINDOWS = new Windows(determineCurrentInstallationBasePath(AppProperties.get().isStaging()));
-    private static final Linux LINUX = new Linux(determineCurrentInstallationBasePath(AppProperties.get().isStaging()));
-    private static final MacOs MACOS = new MacOs(determineCurrentInstallationBasePath(AppProperties.get().isStaging()));
+    private static final Windows WINDOWS = AppProperties.get().isImage() ?
+            new Windows(determineCurrentInstallationBasePath()) :
+            new WindowsDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
+    private static final Linux LINUX = AppProperties.get().isImage() ?
+            new Linux(determineCurrentInstallationBasePath()) :
+            new LinuxDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
+    private static final MacOs MACOS = AppProperties.get().isImage() ?
+            new MacOs(determineCurrentInstallationBasePath()) :
+            new MacOsDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
 
     private AppInstallation(Path base) {this.base = base;}
 
@@ -23,7 +29,7 @@ public abstract class AppInstallation {
         };
     }
 
-        public static AppInstallation ofDefault() {
+    public static AppInstallation ofDefault() {
         return ofDefault(AppProperties.get().isStaging());
     }
 
@@ -58,7 +64,7 @@ public abstract class AppInstallation {
         };
     }
 
-    private static Path determineCurrentInstallationBasePath(boolean stage) {
+    private static Path determineCurrentInstallationBasePath() {
         var command = ProcessHandle.current().info().command();
         // We should always have a command associated with the current process, otherwise something went seriously wrong
         if (command.isEmpty()) {
@@ -169,10 +175,6 @@ public abstract class AppInstallation {
 
         @Override
         public Path getBundledFontsPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist", "fonts");
-            }
-
             return getBaseInstallationPath().resolve("fonts");
         }
 
@@ -198,11 +200,32 @@ public abstract class AppInstallation {
 
         @Override
         public Path getLogoPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist").resolve("logo").resolve("logo.ico");
-            }
-
             return getBaseInstallationPath().resolve("logo.ico");
+        }
+    }
+
+    public static class WindowsDev extends Windows {
+
+        private final Path devBase;
+
+        private WindowsDev(Path base, Path devBase) {
+            super(base);
+            this.devBase = devBase;
+        }
+
+        @Override
+        public Path getLangPath() {
+            return devBase.resolve("lang");
+        }
+
+        @Override
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
+        }
+
+        @Override
+        public Path getLogoPath() {
+            return devBase.resolve("dist").resolve("logo").resolve("logo.ico");
         }
     }
 
@@ -253,6 +276,27 @@ public abstract class AppInstallation {
             }
 
             return getBaseInstallationPath().resolve("logo.png");
+        }
+    }
+
+
+    public static class LinuxDev extends Linux {
+
+        private final Path devBase;
+
+        private LinuxDev(Path base, Path devBase) {
+            super(base);
+            this.devBase = devBase;
+        }
+
+        @Override
+        public Path getLangPath() {
+            return devBase.resolve("lang");
+        }
+
+        @Override
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
         }
     }
 
@@ -307,6 +351,31 @@ public abstract class AppInstallation {
             }
 
             return getBaseInstallationPath().resolve("Contents").resolve("Resources").resolve("xpipe.icns");
+        }
+    }
+
+    public static class MacOsDev extends MacOs {
+
+        private final Path devBase;
+
+        private MacOsDev(Path base, Path devBase) {
+            super(base);
+            this.devBase = devBase;
+        }
+
+        @Override
+        public Path getLangPath() {
+            return devBase.resolve("lang");
+        }
+
+        @Override
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
+        }
+
+        @Override
+        public Path getLogoPath() {
+            return devBase.resolve("dist").resolve("logo").resolve("logo.icns");
         }
     }
 }
