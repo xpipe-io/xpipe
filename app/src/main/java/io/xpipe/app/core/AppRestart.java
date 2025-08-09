@@ -41,7 +41,7 @@ public class AppRestart {
                 : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
         if (OsType.getLocal() == OsType.LINUX) {
-            return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+            return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " 2>&1 & disown";
         } else if (OsType.getLocal() == OsType.MACOS) {
             return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix
                     + " </dev/null &>/dev/null) & disown";
