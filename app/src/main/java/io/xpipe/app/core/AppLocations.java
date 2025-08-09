@@ -22,7 +22,7 @@ public interface AppLocations {
     }
 
     private static Path parsePath(String path) {
-        if (path == null) {
+        if (path == null || path.isEmpty()) {
             return null;
         }
 
@@ -36,6 +36,24 @@ public interface AppLocations {
     final class Windows implements AppLocations {
 
         private Path userHome;
+
+        public Path getTemp() {
+            var env = AppLocations.parsePath(System.getenv("TEMP"));
+            if (env == null) {
+                env = AppLocations.parsePath(System.getenv("TMP"));
+            }
+
+            if (env == null) {
+                return getLocalAppData().resolve("Temp");
+            }
+
+            // Don't use system temp dir
+            if (env.startsWith(Path.of("C:\\Windows"))) {
+                return getLocalAppData().resolve("Temp");
+            }
+
+            return env;
+        }
 
         public Path getProgramFiles() {
             var env = AppLocations.parsePath(System.getenv("ProgramFiles"));

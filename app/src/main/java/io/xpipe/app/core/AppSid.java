@@ -42,6 +42,8 @@ public class AppSid {
             return;
         }
 
+        if (true) return;
+
         try {
             // If there is no setsid command, we can't fully prevent commands from accessing any potential parent tty
             // We can however set the pid to prevent this happening when launched from the cli command

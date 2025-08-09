@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppLocations;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -29,19 +30,12 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
 
     @Override
     public Optional<Path> determineInstallation() {
-        try (var sc = LocalShell.getShell().start()) {
-            var env = sc.executeSimpleStringCommand(
-                    sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
-            var file = Path.of(env, "VanDyke Software\\SecureCRT\\SecureCRT.exe");
-            if (!Files.exists(file)) {
-                return Optional.empty();
-            }
-
-            return Optional.of(file);
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).omit().handle();
+        var file = AppLocations.getWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
+        if (!Files.exists(file)) {
             return Optional.empty();
         }
+
+        return Optional.of(file);
     }
 
     @Override
