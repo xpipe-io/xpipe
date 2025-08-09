@@ -1,8 +1,8 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,7 @@ public class AppCertutilCheck {
             return;
         }
 
-        if (ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+        if (LocalShell.getDialect() != ShellDialects.CMD) {
             return;
         }
 

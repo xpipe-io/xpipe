@@ -1,7 +1,6 @@
 package io.xpipe.app.util;
 
 import javafx.beans.InvalidationListener;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 

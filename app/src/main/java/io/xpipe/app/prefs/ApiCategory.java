@@ -2,18 +2,12 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class ApiCategory extends AppPrefsCategory {

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.beacon.BlobManager;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
@@ -12,23 +11,18 @@ import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.ModuleLayerLoader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 public final class McpTools {

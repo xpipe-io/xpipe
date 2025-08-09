@@ -1,13 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import lombok.Getter;
@@ -71,17 +71,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         // Fallback to an available default
         switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 // This should not be termius or wave as all others take precedence
                 var def = determineDefault(null);
                 // If there's no other terminal available, use a fallback which won't work
                 return def != TERMIUS && def != WaveTerminalType.WAVE_LINUX ? def : XTERM;
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 return MACOS_TERMINAL;
             }
-            case OsType.Windows windows -> {
-                return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
+            case OsType.Windows ignored -> {
+                return LocalShell.getDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
             }
         }
     }
@@ -515,7 +515,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public int getProcessHierarchyOffset() {
-            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
+            return LocalShell.getDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         @Override
@@ -626,7 +626,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
         if (ExternalTerminalType.CMD.equals(existing)
-                && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+                && LocalShell.getDialect() != ShellDialects.CMD) {
             return ExternalTerminalType.POWERSHELL;
         }
 
@@ -648,7 +648,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         // Check if detection failed for some reason
         if (r == null) {
             var def = OsType.getLocal() == OsType.WINDOWS
-                    ? (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
+                    ? (LocalShell.getDialect() == ShellDialects.CMD
                             ? ExternalTerminalType.CMD
                             : ExternalTerminalType.POWERSHELL)
                     : OsType.getLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;

@@ -92,11 +92,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public List<ShellTerminalInitCommand> getTerminalInitCommands() {
-        return parent.getTerminalInitCommands();
-    }
-
-    @Override
     public ParentSystemAccess getParentSystemAccess() {
         return parent.getParentSystemAccess();
     }
@@ -114,11 +109,6 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public boolean isLocal() {
         return parent.isLocal();
-    }
-
-    @Override
-    public ShellControl getMachineRootSession() throws Exception {
-        return parent.getMachineRootSession();
     }
 
     @Override
@@ -245,11 +235,6 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public void writeLine(String line, boolean log) throws IOException {
         parent.writeLine(line, log);
-    }
-
-    @Override
-    public void write(byte[] b) throws IOException {
-        parent.write(b);
     }
 
     @Override

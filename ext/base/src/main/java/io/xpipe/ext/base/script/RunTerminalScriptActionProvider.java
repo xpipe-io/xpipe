@@ -5,7 +5,6 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.terminal.TerminalLauncher;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

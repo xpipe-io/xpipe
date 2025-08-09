@@ -71,12 +71,6 @@ public class RdpConfig {
                 .collect(Collectors.joining("\n"));
     }
 
-    public RdpConfig withRemoved(String key) {
-        var map = new LinkedHashMap<>(content);
-        map.remove(key);
-        return new RdpConfig(map);
-    }
-
     public Optional<TypedValue> get(String key) {
         return Optional.ofNullable(content.get(key));
     }

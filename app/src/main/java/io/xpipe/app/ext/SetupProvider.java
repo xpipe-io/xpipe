@@ -30,7 +30,7 @@ public interface SetupProvider {
 
     LabelGraphic getGraphic();
 
-    boolean checkInstalled() throws Exception;
+    boolean checkInstalled();
 
     void execute() throws Exception;
 

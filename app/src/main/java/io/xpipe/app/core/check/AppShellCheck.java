@@ -7,7 +7,7 @@ public class AppShellCheck {
     public static void check() throws Exception {
         var checker =
                 switch (OsType.getLocal()) {
-                    case OsType.Linux linux ->
+                    case OsType.Linux ignored ->
                         new AppShellChecker() {
 
                             @Override
@@ -25,7 +25,7 @@ public class AppShellCheck {
                                 return false;
                             }
                         };
-                    case OsType.MacOs macOs ->
+                    case OsType.MacOs ignored ->
                         new AppShellChecker() {
 
                             @Override
@@ -51,7 +51,7 @@ public class AppShellCheck {
                                 return false;
                             }
                         };
-                    case OsType.Windows windows ->
+                    case OsType.Windows ignored ->
                         new AppShellChecker() {
 
                             @Override

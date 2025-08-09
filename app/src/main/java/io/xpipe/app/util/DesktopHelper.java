@@ -96,9 +96,8 @@ public class DesktopHelper {
     }
 
     public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {
-        var d = sc.getShellDialect();
         switch (sc.getOsType()) {
-            case OsType.Windows windows -> {
+            case OsType.Windows ignored -> {
                 // Explorer does not support single quotes, so use normal quotes
                 if (kind == FileKind.DIRECTORY) {
                     sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString()))
@@ -108,7 +107,7 @@ public class DesktopHelper {
                             .execute();
                 }
             }
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 var action = kind == FileKind.DIRECTORY
                         ? "org.freedesktop.FileManager1.ShowFolders"
                         : "org.freedesktop.FileManager1.ShowItems";
@@ -127,15 +126,15 @@ public class DesktopHelper {
                                 .addFile(kind == FileKind.DIRECTORY ? path : path.getParent()))
                         .execute();
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 sc.command(CommandBuilder.of()
                                 .add("open")
                                 .addIf(kind == FileKind.DIRECTORY, "-R")
                                 .addFile(path))
                         .execute();
             }
-            case OsType.Bsd bsd -> {}
-            case OsType.Solaris solaris -> {}
+            case OsType.Bsd ignored -> {}
+            case OsType.Solaris ignored -> {}
         }
     }
 

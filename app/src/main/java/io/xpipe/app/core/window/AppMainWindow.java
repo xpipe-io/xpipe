@@ -9,6 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
@@ -101,7 +102,7 @@ public class AppMainWindow {
         content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
 
-        ModifiedStage.prepareStage(stage);
+        AppModifiedStage.prepareStage(stage);
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));

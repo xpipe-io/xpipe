@@ -4,15 +4,11 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
-import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableRunnable;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -70,7 +66,7 @@ public class AppInstaller {
                         FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
                 var cmdScript =
-                        ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
+                        LocalShell.getDialect() == ShellDialects.CMD
                                 && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString())

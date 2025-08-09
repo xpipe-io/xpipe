@@ -15,8 +15,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 
 import atlantafx.base.theme.Styles;
-import javafx.scene.layout.Background;
-import javafx.scene.paint.Color;
 
 import java.util.List;
 

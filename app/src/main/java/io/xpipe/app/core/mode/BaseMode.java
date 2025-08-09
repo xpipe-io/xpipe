@@ -175,6 +175,7 @@ public class BaseMode extends OperationMode {
     public void finalTeardown() throws Exception {
         TrackEvent.withInfo("Base mode shutdown started").build();
         AbstractAction.reset();
+        AppMcpServer.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
@@ -195,6 +196,7 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
+        AppFileWatcher.reset();
         GlobalTimer.reset();
         TrackEvent.info("Base mode shutdown finished");
     }

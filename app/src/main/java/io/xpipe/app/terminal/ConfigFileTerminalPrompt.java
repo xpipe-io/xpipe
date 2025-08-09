@@ -46,10 +46,6 @@ public abstract class ConfigFileTerminalPrompt implements TerminalPrompt {
 
     protected String configuration;
 
-    protected void prepareCustomConfigFile(ShellControl sc, FilePath file) throws Exception {
-        sc.view().writeTextFile(file, configuration);
-    }
-
     @Override
     public ShellTerminalInitCommand terminalCommand() throws Exception {
         return new ShellTerminalInitCommand() {

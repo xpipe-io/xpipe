@@ -158,18 +158,18 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
         Optional<Path> found =
                 switch (OsType.getLocal()) {
-                    case OsType.Linux linux -> {
+                    case OsType.Linux ignored -> {
                         var paths = List.of(
                                 Path.of("/usr/bin/keepassxc-proxy"),
                                 Path.of("/usr/local/bin/keepassxc-proxy"),
                                 Path.of("/snap/keepassxc/current/usr/bin/keepassxc-proxy"));
                         yield paths.stream().filter(path -> Files.exists(path)).findFirst();
                     }
-                    case OsType.MacOs macOs -> {
+                    case OsType.MacOs ignored -> {
                         var paths = List.of(Path.of("/Applications/KeePassXC.app/Contents/MacOS/keepassxc-proxy"));
                         yield paths.stream().filter(path -> Files.exists(path)).findFirst();
                     }
-                    case OsType.Windows windows -> {
+                    case OsType.Windows ignored -> {
                         try {
                             var foundKey = WindowsRegistry.local()
                                     .findKeyForEqualValueMatchRecursive(

@@ -6,7 +6,6 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;

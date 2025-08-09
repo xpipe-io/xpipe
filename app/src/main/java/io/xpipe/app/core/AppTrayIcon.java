@@ -21,9 +21,9 @@ public class AppTrayIcon {
 
         var image =
                 switch (OsType.getLocal()) {
-                    case OsType.Windows windows -> "img/logo/full/logo_16x16.png";
-                    case OsType.Linux linux -> "img/logo/full/logo_24x24.png";
-                    case OsType.MacOs macOs -> "img/logo/padded/logo_24x24.png";
+                    case OsType.Windows ignored -> "img/logo/full/logo_16x16.png";
+                    case OsType.Linux ignored -> "img/logo/full/logo_24x24.png";
+                    case OsType.MacOs ignored -> "img/logo/padded/logo_24x24.png";
                 };
         var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
@@ -66,14 +66,6 @@ public class AppTrayIcon {
             ErrorEventFactory.fromThrowable(e).handle();
             return AppImages.toAwtImage(AppImages.DEFAULT_IMAGE);
         }
-    }
-
-    public static boolean isSupported() {
-        return Desktop.isDesktopSupported() && SystemTray.isSupported();
-    }
-
-    public final TrayIcon getAwtTrayIcon() {
-        return trayIcon;
     }
 
     private void ensureSystemTraySupported() {

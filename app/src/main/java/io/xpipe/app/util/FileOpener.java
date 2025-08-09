@@ -46,7 +46,7 @@ public class FileOpener {
     public static void openWithAnyApplication(String localFile) {
         try {
             switch (OsType.getLocal()) {
-                case OsType.Windows windows -> {
+                case OsType.Windows ignored -> {
                     // See https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shellexecuteinfoa
                     var struct = new ShellAPI.SHELLEXECUTEINFO();
                     struct.fMask = 0x100 | 0xC;
@@ -59,10 +59,10 @@ public class FileOpener {
                     // var cmd = CommandBuilder.of().add("rundll32.exe", "shell32.dll,OpenAs_RunDLL", localFile);
                     // LocalShell.getShell().executeSimpleCommand(cmd);
                 }
-                case OsType.Linux linux -> {
+                case OsType.Linux ignored -> {
                     throw new UnsupportedOperationException();
                 }
-                case OsType.MacOs macOs -> {
+                case OsType.MacOs ignored -> {
                     throw new UnsupportedOperationException();
                 }
             }

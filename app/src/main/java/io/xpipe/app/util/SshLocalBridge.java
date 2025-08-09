@@ -51,10 +51,6 @@ public class SshLocalBridge {
         return "127.0.0.1";
     }
 
-    public Path getPubHostKey() {
-        return directory.resolve(getName() + "_host_key.pub");
-    }
-
     public Path getHostKey() {
         return directory.resolve(getName() + "_host_key");
     }

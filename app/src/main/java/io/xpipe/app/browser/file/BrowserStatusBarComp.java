@@ -21,8 +21,6 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Value

@@ -2,7 +2,6 @@ package io.xpipe.app.util;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 
 public class GlobalBooleanProperty extends SimpleBooleanProperty {

@@ -39,11 +39,6 @@ public class DataStoreFormatter {
         return name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
     }
 
-    public static String split(String left, String separator, String right, int length) {
-        var half = (length / 2) - separator.length();
-        return cut(left, half) + separator + cut(right, length - half);
-    }
-
     public static String cut(String input, int length) {
         if (input == null) {
             return "";

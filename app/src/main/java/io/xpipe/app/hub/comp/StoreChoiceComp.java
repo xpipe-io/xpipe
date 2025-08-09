@@ -5,35 +5,24 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreCategoryChoiceComp;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.MenuButton;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor

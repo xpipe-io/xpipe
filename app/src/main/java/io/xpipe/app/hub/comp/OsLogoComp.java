@@ -8,7 +8,6 @@ import io.xpipe.app.process.SystemState;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
@@ -23,10 +22,6 @@ public class OsLogoComp extends SimpleComp {
     private static final String LINUX_DEFAULT_24 = "linux-24.png";
     private final StoreEntryWrapper wrapper;
     private final ObservableValue<SystemStateComp.State> state;
-
-    public OsLogoComp(StoreEntryWrapper wrapper) {
-        this(wrapper, new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
 
     public OsLogoComp(StoreEntryWrapper wrapper, ObservableValue<SystemStateComp.State> state) {
         this.wrapper = wrapper;

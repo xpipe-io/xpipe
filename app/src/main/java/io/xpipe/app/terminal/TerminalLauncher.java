@@ -1,8 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -164,9 +162,9 @@ public class TerminalLauncher {
         }
 
         var changedDialect =
-                config.getScriptDialect() != ProcessControlProvider.get().getEffectiveLocalDialect();
+                config.getScriptDialect() != LocalShell.getDialect();
         config = config.withScript(
-                ProcessControlProvider.get().getEffectiveLocalDialect(),
+                LocalShell.getDialect(),
                 getTerminalRegisterCommand(request) + "\n"
                         + (changedDialect
                                 ? config.getDialectLaunchCommand().buildSimple()
@@ -265,7 +263,7 @@ public class TerminalLauncher {
                     "XPipe",
                     false,
                     fullLocalCommand,
-                    ProcessControlProvider.get().getEffectiveLocalDialect()));
+                    LocalShell.getDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -283,7 +281,7 @@ public class TerminalLauncher {
                     "XPipe",
                     false,
                     fullLocalCommand,
-                    ProcessControlProvider.get().getEffectiveLocalDialect()));
+                    LocalShell.getDialect()));
         }
     }
 
@@ -305,6 +303,6 @@ public class TerminalLauncher {
         proxyControl.get().start();
         var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
         return Optional.ofNullable(launchConfiguration.withScript(
-                ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
+                LocalShell.getDialect(), fullLocalCommand));
     }
 }

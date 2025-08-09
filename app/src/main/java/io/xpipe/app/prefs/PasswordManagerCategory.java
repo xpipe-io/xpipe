@@ -2,21 +2,17 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.List;
 
 public class PasswordManagerCategory extends AppPrefsCategory {
 

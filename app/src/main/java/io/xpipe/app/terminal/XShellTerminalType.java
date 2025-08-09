@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 import io.xpipe.app.util.WindowsRegistry;
 
@@ -68,15 +67,13 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
             return;
         }
 
-        try (var sc = LocalShell.getShell()) {
-            var b = SshLocalBridge.get();
-            var keyName = b.getIdentityKey().getFileName().toString();
-            var command = CommandBuilder.of()
-                    .add("-url")
-                    .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
-                    .add("-i", keyName);
-            launch(command);
-        }
+        var b = SshLocalBridge.get();
+        var keyName = b.getIdentityKey().getFileName().toString();
+        var command = CommandBuilder.of()
+                .add("-url")
+                .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
+                .add("-i", keyName);
+        launch(command);
     }
 
     private boolean showInfo() {

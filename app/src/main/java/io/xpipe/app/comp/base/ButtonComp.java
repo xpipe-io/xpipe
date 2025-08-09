@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;

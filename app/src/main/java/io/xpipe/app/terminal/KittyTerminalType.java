@@ -1,7 +1,6 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -99,7 +98,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
+            return LocalShell.getDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         public boolean isAvailable() {
@@ -160,7 +159,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.ZSH ? 1 : 0;
+            return LocalShell.getDialect() == ShellDialects.ZSH ? 1 : 0;
         }
 
         @Override

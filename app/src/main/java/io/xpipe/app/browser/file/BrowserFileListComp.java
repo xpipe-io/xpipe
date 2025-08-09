@@ -37,7 +37,6 @@ import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
 public final class BrowserFileListComp extends SimpleComp {
 
-    private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
     private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");

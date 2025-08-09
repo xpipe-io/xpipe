@@ -20,8 +20,6 @@ public interface TerminalMultiplexer {
         return l;
     }
 
-    default void checkComplete() {}
-
     String getDocsLink();
 
     void checkSupported(ShellControl sc) throws Exception;

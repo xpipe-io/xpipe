@@ -2,7 +2,6 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -56,7 +55,7 @@ public class TerminalLaunchConfiguration {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
-            var d = ProcessControlProvider.get().getEffectiveLocalDialect();
+            var d = LocalShell.getDialect();
             var launcherScript = d.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, launcherScript, d);

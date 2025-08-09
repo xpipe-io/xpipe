@@ -73,7 +73,7 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
         return entries.stream().allMatch(entry -> isExecutable(entry.getRawFileEntry()));
     }
 
-    protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) throws Exception {
+    protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) {
         return CommandBuilder.of()
                 .add(sc.getShellDialect()
                         .runScriptCommand(sc, entry.getRawFileEntry().getPath().toString()));

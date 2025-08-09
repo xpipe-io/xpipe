@@ -2,7 +2,6 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.*;
 import io.xpipe.app.icon.SystemIconManager;
-import io.xpipe.app.icon.SystemIconSourceData;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;

@@ -7,7 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsCategory;
 import io.xpipe.app.util.*;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;

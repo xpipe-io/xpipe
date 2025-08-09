@@ -31,13 +31,13 @@ public class TermiusTerminalType implements ExternalTerminalType {
     public boolean isAvailable() {
         try (var sc = LocalShell.getShell()) {
             return switch (OsType.getLocal()) {
-                case OsType.Linux linux -> {
+                case OsType.Linux ignored -> {
                     yield Files.exists(Path.of("/opt/Termius"));
                 }
-                case OsType.MacOs macOs -> {
+                case OsType.MacOs ignored -> {
                     yield Files.exists(Path.of("/Applications/Termius.app"));
                 }
-                case OsType.Windows windows -> {
+                case OsType.Windows ignored -> {
                     var r = WindowsRegistry.local()
                             .readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
                     yield r.isPresent();

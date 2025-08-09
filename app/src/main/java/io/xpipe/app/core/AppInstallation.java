@@ -45,13 +45,13 @@ public abstract class AppInstallation {
 
     private static Path determineDefaultInstallationBasePath(boolean stage) {
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 yield Path.of(stage ? "/opt/xpipe-ptb" : "/opt/xpipe");
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 yield Path.of(stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app");
             }
-            case OsType.Windows windows -> {
+            case OsType.Windows ignored -> {
                 var pg = AppLocations.getWindows().getProgramFiles();
                 var systemPath = pg.resolve(stage ? "XPipe PTB" : "XPipe");
                 if (Files.exists(systemPath)) {
@@ -99,13 +99,13 @@ public abstract class AppInstallation {
     private static Path getInstallationBasePathForDaemonExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 yield  executable.getParent().getParent();
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 yield  executable.getParent().getParent().getParent();
             }
-            case OsType.Windows windows -> {
+            case OsType.Windows ignored -> {
                 yield  executable.getParent();
             }
         };
@@ -114,10 +114,10 @@ public abstract class AppInstallation {
     private static Path getInstallationBasePathForJavaExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 yield executable.getParent().getParent().getParent().getParent();
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 yield executable
                         .getParent()
                         .getParent()
@@ -126,7 +126,7 @@ public abstract class AppInstallation {
                         .getParent()
                         .getParent();
             }
-            case OsType.Windows windows -> {
+            case OsType.Windows ignored -> {
                 yield  executable.getParent().getParent();
             }
         };

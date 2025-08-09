@@ -35,8 +35,6 @@ public interface ShellControl extends ProcessControl {
 
     void writeLine(String line, boolean log) throws IOException;
 
-    void write(byte[] b) throws IOException;
-
     void setSubShellActive(boolean active);
 
     boolean isSubShellActive();
@@ -82,8 +80,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withSourceStore(DataStore store);
 
-    List<ShellTerminalInitCommand> getTerminalInitCommands();
-
     ParentSystemAccess getParentSystemAccess();
 
     void setParentSystemAccess(ParentSystemAccess access);
@@ -95,8 +91,6 @@ public interface ShellControl extends ProcessControl {
     default boolean canHaveSubshells() {
         return true;
     }
-
-    ShellControl getMachineRootSession() throws Exception;
 
     String getOsName();
 

@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import lombok.val;
 
 import java.io.CharArrayReader;
 import java.io.IOException;

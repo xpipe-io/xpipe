@@ -7,7 +7,6 @@ import io.xpipe.core.FilePath;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;

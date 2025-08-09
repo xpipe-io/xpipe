@@ -4,15 +4,10 @@ import io.xpipe.beacon.api.DaemonStopExchange;
 
 import lombok.SneakyThrows;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 
 public class BeaconServer {
 

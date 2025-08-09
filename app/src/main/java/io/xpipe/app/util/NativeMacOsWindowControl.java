@@ -1,8 +1,7 @@
-package io.xpipe.app.core.window;
+package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.NativeBridge;
 
 import javafx.stage.Window;
 

@@ -30,7 +30,6 @@ import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
-import java.util.UUID;
 
 public class TerminalCategory extends AppPrefsCategory {
 

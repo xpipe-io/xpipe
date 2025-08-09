@@ -34,7 +34,7 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             return request;
         }
 
-        public Optional<String> getOptionalStringArgument(String key) throws BeaconClientException {
+        public Optional<String> getOptionalStringArgument(String key) {
             var o = request.arguments().get(key);
             if (o == null) {
                 return Optional.empty();
@@ -60,7 +60,7 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             return s;
         }
 
-        public Optional<Boolean> getOptionalBooleanArgument(String key) throws BeaconClientException {
+        public Optional<Boolean> getOptionalBooleanArgument(String key) {
             var o = request.arguments().get(key);
             if (o == null) {
                 return Optional.empty();

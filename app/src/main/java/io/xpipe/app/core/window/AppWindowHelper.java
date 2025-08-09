@@ -51,9 +51,9 @@ public class AppWindowHelper {
         AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
             var size =
                     switch (OsType.getLocal()) {
-                        case OsType.Linux linux -> 128;
-                        case OsType.MacOs macOs -> 128;
-                        case OsType.Windows windows -> 32;
+                        case OsType.Linux ignored -> 128;
+                        case OsType.MacOs ignored -> 128;
+                        case OsType.Windows ignored -> 32;
                     };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
@@ -128,7 +128,7 @@ public class AppWindowHelper {
         }
         alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        ModifiedStage.prepareStage(stage);
+        AppModifiedStage.prepareStage(stage);
         addIcons(stage);
         setupStylesheets(alert.getDialogPane().getScene());
         return alert;

@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppProperties;
 
 public enum DocumentationLink {
-    INDEX(""),
     API("api"),
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("guide/ssh#windows-ssh-servers"),

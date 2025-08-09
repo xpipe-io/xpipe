@@ -4,7 +4,6 @@ import atlantafx.base.controls.Popover;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
@@ -27,7 +26,6 @@ import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 

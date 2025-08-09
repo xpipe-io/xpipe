@@ -2,6 +2,8 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.NativeMacOsWindowControl;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.OsType;
 
@@ -18,7 +20,7 @@ import javafx.util.Duration;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
-public class ModifiedStage extends Stage {
+public class AppModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
         return SystemUtils.IS_OS_WINDOWS_10 || SystemUtils.IS_OS_WINDOWS_11 || SystemUtils.IS_OS_MAC;
@@ -76,8 +78,8 @@ public class ModifiedStage extends Stage {
 
         try {
             switch (OsType.getLocal()) {
-                case OsType.Linux linux -> {}
-                case OsType.MacOs macOs -> {
+                case OsType.Linux ignored -> {}
+                case OsType.MacOs ignored -> {
                     var ctrl = new NativeMacOsWindowControl(stage);
                     var seamlessFrame = AppMainWindow.getInstance() != null
                             && AppMainWindow.getInstance().getStage() == stage
@@ -96,7 +98,7 @@ public class ModifiedStage extends Stage {
                             .pseudoClassStateChanged(
                                     PseudoClass.getPseudoClass("separate-frame"), !seamlessFrameApplied);
                 }
-                case OsType.Windows windows -> {
+                case OsType.Windows ignored -> {
                     var ctrl = new NativeWinWindowControl(stage);
                     ctrl.setWindowAttribute(
                             NativeWinWindowControl.DmwaWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE.get(),

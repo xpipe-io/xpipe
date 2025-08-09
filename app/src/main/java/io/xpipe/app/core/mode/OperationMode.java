@@ -50,22 +50,6 @@ public abstract class OperationMode {
         };
     }
 
-    public static XPipeDaemonMode map(OperationMode mode) {
-        if (mode == BACKGROUND) {
-            return XPipeDaemonMode.BACKGROUND;
-        }
-
-        if (mode == TRAY) {
-            return XPipeDaemonMode.TRAY;
-        }
-
-        if (mode == GUI) {
-            return XPipeDaemonMode.GUI;
-        }
-
-        return null;
-    }
-
     public static void externalShutdown() {
         // If we used System.exit(), we don't want to do this
         if (OperationMode.isInShutdown()) {

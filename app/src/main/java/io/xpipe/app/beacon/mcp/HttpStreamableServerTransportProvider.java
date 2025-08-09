@@ -312,9 +312,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 					return;
 				}
 
-				McpSchema.InitializeRequest initializeRequest = objectMapper.convertValue(jsonrpcRequest.params(),
-						new TypeReference<McpSchema.InitializeRequest>() {
-						});
+				McpSchema.InitializeRequest initializeRequest = objectMapper.convertValue(jsonrpcRequest.params(), new TypeReference<>() {});
 				McpStreamableServerSession.McpStreamableServerSessionInit init = this.sessionFactory
 					.startSession(initializeRequest);
 				this.sessions.put(init.session().getId(), init.session());

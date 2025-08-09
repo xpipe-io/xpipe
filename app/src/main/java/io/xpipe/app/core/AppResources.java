@@ -80,16 +80,6 @@ public class AppResources {
         withResource(module, file, con);
     }
 
-    public static void withResourceInLayer(
-            String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con) {
-        try (var fs = FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer))) {
-            var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
-            con.accept(f);
-        } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
-        }
-    }
-
     private static void withResource(String module, String file, FailableConsumer<Path, IOException> con) {
         var path = module.startsWith("io.xpipe") ? module.replace('.', '/') + "/resources/" + file : file;
         try {

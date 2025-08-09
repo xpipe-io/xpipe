@@ -1,6 +1,4 @@
-package io.xpipe.app.core.window;
-
-import io.xpipe.app.util.Rect;
+package io.xpipe.app.util;
 
 import javafx.stage.Window;
 

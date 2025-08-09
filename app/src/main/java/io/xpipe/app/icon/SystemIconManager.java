@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.storage.DataStorage;
 
 import java.nio.file.Files;
@@ -54,10 +53,6 @@ public class SystemIconManager {
         var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
         all.removeIf(systemIconSource -> disabled.contains(systemIconSource.getId()));
         return all;
-    }
-
-    public static Map<SystemIconSource, SystemIconSourceData> getSources() {
-        return LOADED;
     }
 
     public static Set<SystemIcon> getIcons() {

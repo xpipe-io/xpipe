@@ -12,9 +12,9 @@ public class AppRelease {
         var type = AppInstaller.getSuitablePlatformAsset();
         var os =
                 switch (OsType.getLocal()) {
-                    case OsType.Linux linux -> "linux";
-                    case OsType.MacOs macOs -> "macos";
-                    case OsType.Windows windows -> "windows";
+                    case OsType.Linux ignored -> "linux";
+                    case OsType.MacOs ignored -> "macos";
+                    case OsType.Windows ignored -> "windows";
                 };
         var arch = AppProperties.get().getArch();
         var name = "xpipe-installer-%s-%s.%s".formatted(os, arch, type.getExtension());

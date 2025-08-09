@@ -89,7 +89,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         ThreadHelper.runFailableAsync(() -> {
             BrowserFileSystemTabModel model;
 
-            try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+            try (var ignored = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
                 model = new BrowserFileSystemTabModel(this, store, selectionMode);
                 model.init();
                 // Prevent multiple calls from interfering with each other

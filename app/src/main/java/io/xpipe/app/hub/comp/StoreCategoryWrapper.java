@@ -235,8 +235,4 @@ public class StoreCategoryWrapper {
     public Property<String> nameProperty() {
         return name;
     }
-
-    public Property<Instant> lastAccessProperty() {
-        return lastAccess;
-    }
 }

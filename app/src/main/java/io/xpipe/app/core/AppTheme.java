@@ -293,10 +293,6 @@ public class AppTheme {
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
         }
 
-        public List<String> getAdditionalStylesheets() {
-            return List.of();
-        }
-
         @Override
         public ObservableValue<String> toTranslatedString() {
             return new SimpleStringProperty(name);
@@ -470,17 +466,17 @@ public class AppTheme {
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
-                case OsType.Windows windows -> PRIMER_LIGHT;
-                case OsType.Linux linux -> PRIMER_LIGHT;
-                case OsType.MacOs macOs -> CUPERTINO_LIGHT;
+                case OsType.Windows ignored -> PRIMER_LIGHT;
+                case OsType.Linux ignored -> PRIMER_LIGHT;
+                case OsType.MacOs ignored -> CUPERTINO_LIGHT;
             };
         }
 
         static Theme getDefaultDarkTheme() {
             return switch (OsType.getLocal()) {
-                case OsType.Windows windows -> PRIMER_DARK;
-                case OsType.Linux linux -> PRIMER_DARK;
-                case OsType.MacOs macOs -> CUPERTINO_DARK;
+                case OsType.Windows ignored -> PRIMER_DARK;
+                case OsType.Linux ignored -> PRIMER_DARK;
+                case OsType.MacOs ignored -> CUPERTINO_DARK;
             };
         }
 

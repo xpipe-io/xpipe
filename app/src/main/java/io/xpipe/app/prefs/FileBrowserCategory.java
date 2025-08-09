@@ -2,7 +2,6 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;

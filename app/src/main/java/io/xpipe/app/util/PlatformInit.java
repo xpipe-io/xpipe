@@ -2,7 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppGpuCheck;
-import io.xpipe.app.core.window.ModifiedStage;
+import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.OsType;
 
@@ -74,7 +74,7 @@ public class PlatformInit {
 
         try {
             TrackEvent.info("Platform init started");
-            ModifiedStage.init();
+            AppModifiedStage.init();
             PlatformState.initPlatformOrThrow();
             AppGpuCheck.check();
             AppFont.init();

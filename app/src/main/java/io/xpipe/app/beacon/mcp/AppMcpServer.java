@@ -9,10 +9,6 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
-import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.storage.StorageListener;
 import io.xpipe.app.util.ThreadHelper;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -178,8 +174,6 @@ public class AppMcpServer {
                     } else {
                         transportProvider.doOther(exchange);
                     }
-                } finally {
-                    exchange.close();
                 }
             }
         };

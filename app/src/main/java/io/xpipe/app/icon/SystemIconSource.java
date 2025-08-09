@@ -42,7 +42,7 @@ public interface SystemIconSource {
         }
 
         @Override
-        public void refresh() throws Exception {}
+        public void refresh() {}
 
         @Override
         public Path getPath() {
@@ -65,7 +65,7 @@ public interface SystemIconSource {
         }
 
         @Override
-        public void open() throws Exception {
+        public void open() {
             if (Files.exists(path)) {
                 DesktopHelper.browsePathLocal(path);
             }
@@ -154,5 +154,5 @@ public interface SystemIconSource {
 
     String getDescription();
 
-    void open() throws Exception;
+    void open();
 }

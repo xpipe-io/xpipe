@@ -1,8 +1,8 @@
 package io.xpipe.app.ext;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.Value;
 
 import java.util.List;
 
@@ -30,6 +30,7 @@ public class HostAddress {
     }
 
     private final String value;
+    @Getter
     private final List<String> available;
 
     private HostAddress(String value, List<String> available) {this.value = value;
@@ -57,7 +58,4 @@ public class HostAddress {
         return value;
     }
 
-    public List<String> getAvailable() {
-        return available;
-    }
 }

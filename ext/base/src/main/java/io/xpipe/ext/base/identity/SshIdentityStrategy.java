@@ -385,9 +385,9 @@ public interface SshIdentityStrategy {
         public static String getDefaultSharedLibrary() {
             var file =
                     switch (OsType.getLocal()) {
-                        case OsType.Linux linux -> "/usr/local/lib/libykcs11.so";
-                        case OsType.MacOs macOs -> "/usr/local/lib/libykcs11.dylib";
-                        case OsType.Windows windows -> {
+                        case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
+                        case OsType.Windows ignored -> {
                             var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
                             yield x64;
                         }
@@ -398,11 +398,11 @@ public interface SshIdentityStrategy {
         private String getFile(ShellControl parent) throws Exception {
             var file =
                     switch (parent.getOsType()) {
-                        case OsType.Linux linux -> "/usr/local/lib/libykcs11.so";
-                        case OsType.Bsd bsd -> "/usr/local/lib/libykcs11.so";
-                        case OsType.Solaris solaris -> "/usr/local/lib/libykcs11.so";
-                        case OsType.MacOs macOs -> "/usr/local/lib/libykcs11.dylib";
-                        case OsType.Windows windows -> {
+                        case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.Bsd ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.Solaris ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
+                        case OsType.Windows ignored -> {
                             var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
                             if (parent.getShellDialect()
                                     .directoryExists(parent, x64)

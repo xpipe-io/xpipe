@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvider {
 
     protected abstract CommandBuilder createCommand(
-            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) throws Exception;
+            ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry);
 
     @Override
     public List<BrowserMenuLeafProvider> getBranchingActions(

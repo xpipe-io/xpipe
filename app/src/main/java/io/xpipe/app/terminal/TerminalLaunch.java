@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.UUID;
-import java.util.function.Function;
 
 @Value
 @Builder
@@ -61,7 +60,7 @@ public class TerminalLaunch {
             l.launch();
         }
 
-        public TerminalLaunchBuilder localScript(ShellScript script) throws Exception {
+        public TerminalLaunchBuilder localScript(ShellScript script) {
             var c = LocalShell.getShell().command(script);
             return command(c);
         }

@@ -6,7 +6,6 @@ import io.xpipe.core.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Logger;
@@ -362,7 +361,6 @@ public class AppLogs {
         @Override
         protected void handleNormalizedLoggingCall(
                 Level level, Marker marker, String msg, Object[] arguments, Throwable throwable) {
-            var formatted = msg;
             if (arguments != null) {
                 for (var arg : arguments) {
                     msg = msg.replaceFirst("\\{}", Objects.toString(arg));

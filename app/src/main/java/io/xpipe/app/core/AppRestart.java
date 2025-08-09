@@ -1,7 +1,6 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
@@ -72,7 +71,7 @@ public class AppRestart {
     }
 
     public static String getBackgroundRestartCommand() {
-        return getBackgroundRestartCommand(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return getBackgroundRestartCommand(LocalShell.getDialect());
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {
@@ -88,7 +87,7 @@ public class AppRestart {
     }
 
     public static String getTerminalRestartCommand() {
-        return getTerminalRestartCommand(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return getTerminalRestartCommand(LocalShell.getDialect());
     }
 
     public static void restart() {

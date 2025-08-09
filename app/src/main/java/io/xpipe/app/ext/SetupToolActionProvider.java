@@ -2,12 +2,8 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import lombok.SneakyThrows;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -30,7 +26,7 @@ public class SetupToolActionProvider implements ActionProvider {
 
         @Override
         @SneakyThrows
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             var provider = SetupProvider.byId(type);
             if (provider.isEmpty()) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Setup action not found: " + type));

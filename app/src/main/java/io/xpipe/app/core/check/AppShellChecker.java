@@ -76,7 +76,7 @@ public abstract class AppShellChecker {
                 %s
                 """
                 .formatted(
-                        ProcessControlProvider.get().getEffectiveLocalDialect().getDisplayName(),
+                        LocalShell.getDialect().getDisplayName(),
                         modifyOutput(output),
                         listReasons(),
                         fallback);

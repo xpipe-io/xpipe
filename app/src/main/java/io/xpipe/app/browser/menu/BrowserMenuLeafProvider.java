@@ -9,8 +9,6 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.LicenseProvider;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
@@ -19,7 +17,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 
 import lombok.SneakyThrows;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 

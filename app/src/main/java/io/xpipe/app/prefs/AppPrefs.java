@@ -362,10 +362,6 @@ public class AppPrefs {
     public ObservableBooleanValue pinLocalMachineOnStartup() {
         return pinLocalMachineOnStartup;
     }
-
-    private final BooleanProperty confirmDeletions =
-            mapLocal(new GlobalBooleanProperty(true), "confirmDeletions", Boolean.class, false);
-
     @Getter
     private final List<AppPrefsCategory> categories;
 
@@ -407,7 +403,7 @@ public class AppPrefs {
         this.selectedCategory = new GlobalObjectProperty<>(categories.getFirst());
     }
 
-    public static void initLocal() throws Exception {
+    public static void initLocal() {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();
@@ -554,10 +550,6 @@ public class AppPrefs {
 
     public ReadOnlyBooleanProperty automaticallyUpdate() {
         return automaticallyCheckForUpdates;
-    }
-
-    public ReadOnlyBooleanProperty confirmDeletions() {
-        return confirmDeletions;
     }
 
     public ObservableValue<ExternalTerminalType> terminalType() {

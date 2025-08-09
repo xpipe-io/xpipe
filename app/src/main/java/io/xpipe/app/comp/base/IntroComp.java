@@ -7,8 +7,6 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.css.Size;
-import javafx.css.SizeUnits;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;

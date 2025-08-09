@@ -22,7 +22,7 @@ public class DaemonModeExchangeImpl extends DaemonModeExchange {
 
         OperationMode.switchToSyncIfPossible(mode);
         return DaemonModeExchange.Response.builder()
-                .usedMode(OperationMode.map(OperationMode.get()))
+                .usedMode(msg.getMode())
                 .build();
     }
 

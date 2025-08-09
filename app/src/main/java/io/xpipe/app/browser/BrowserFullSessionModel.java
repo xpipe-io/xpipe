@@ -221,8 +221,8 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             boolean select)
             throws Exception {
         BrowserFileSystemTabModel model;
-        try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-            try (var sessionBusy = new BooleanScope(busy).exclusive().start()) {
+        try (var ignored = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+            try (var ignored2 = new BooleanScope(busy).exclusive().start()) {
                 model = new BrowserFileSystemTabModel(this, store, BrowserFileSystemTabModel.SelectionMode.ALL);
                 model.init();
                 // Prevent multiple calls from interfering with each other

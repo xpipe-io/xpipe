@@ -14,10 +14,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import com.sun.management.HotSpotDiagnosticMXBean;

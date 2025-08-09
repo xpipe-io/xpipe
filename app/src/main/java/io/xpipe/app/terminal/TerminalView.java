@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.window.NativeWinWindowControl;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -143,9 +143,9 @@ public class TerminalView {
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> Optional.of(new TerminalSession(terminalProcess));
-            case OsType.MacOs macOs -> Optional.of(new TerminalSession(terminalProcess));
-            case OsType.Windows windows -> {
+            case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.Windows ignored -> {
                 var controls = NativeWinWindowControl.byPid(terminalProcess.pid());
                 if (controls.isEmpty()) {
                     yield Optional.empty();

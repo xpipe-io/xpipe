@@ -1,7 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;

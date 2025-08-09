@@ -56,19 +56,17 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        try (var sc = LocalShell.getShell()) {
-            SshLocalBridge.init();
-            var b = SshLocalBridge.get();
-            var command = CommandBuilder.of()
-                    .add("/T")
-                    .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
-                    .addFile(b.getIdentityKey().toString())
-                    .add("/P", "" + b.getPort())
-                    .add("/L")
-                    .addQuoted(b.getUser())
-                    .add("localhost");
-            launch(command);
-        }
+        SshLocalBridge.init();
+        var b = SshLocalBridge.get();
+        var command = CommandBuilder.of()
+                .add("/T")
+                .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
+                .addFile(b.getIdentityKey().toString())
+                .add("/P", "" + b.getPort())
+                .add("/L")
+                .addQuoted(b.getUser())
+                .add("localhost");
+        launch(command);
     }
 
     @Override

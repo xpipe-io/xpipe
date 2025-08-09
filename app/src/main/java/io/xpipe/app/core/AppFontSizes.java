@@ -88,9 +88,9 @@ public class AppFontSizes {
 
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux1 -> linux;
-            case OsType.MacOs macOs -> mac;
-            case OsType.Windows windows1 -> windows;
+            case OsType.Linux ignored -> linux;
+            case OsType.MacOs ignored -> mac;
+            case OsType.Windows ignored -> windows;
         };
     }
 

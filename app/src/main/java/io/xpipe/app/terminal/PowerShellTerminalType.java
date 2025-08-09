@@ -1,9 +1,9 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.LocalShell;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -27,7 +27,7 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
 
     @Override
     public int getProcessHierarchyOffset() {
-        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
+        var powershell = ShellDialects.isPowershell(LocalShell.getDialect());
         return powershell ? -1 : 0;
     }
 

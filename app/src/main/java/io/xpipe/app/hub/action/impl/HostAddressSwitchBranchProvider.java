@@ -1,21 +1,17 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.HostAddressSwitchStore;
 import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.StoreActionCategory;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAddressSwitchStore> {

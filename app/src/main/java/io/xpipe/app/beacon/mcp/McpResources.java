@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.beacon.api.CategoryInfoExchange;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.StorePath;
 import lombok.Builder;
@@ -15,7 +13,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.ClassUtils;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -72,7 +69,7 @@ public final class McpResources {
         JsonNode config;
     }
 
-    public static McpServerFeatures.SyncResourceSpecification connections() throws IOException {
+    public static McpServerFeatures.SyncResourceSpecification connections() {
         McpSchema.Annotations annotations = new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 1.0);
         var resource = McpSchema.Resource.builder()
                 .uri("xpipe://connections")
@@ -115,7 +112,7 @@ public final class McpResources {
     }
 
 
-    public static McpServerFeatures.SyncResourceSpecification categories() throws IOException {
+    public static McpServerFeatures.SyncResourceSpecification categories() {
         McpSchema.Annotations annotations = new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 0.3);
         var resource = McpSchema.Resource.builder()
                 .uri("xpipe://categories")

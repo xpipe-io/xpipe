@@ -28,7 +28,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
                 switch (OsType.getLocal()) {
-                    case OsType.Windows windows -> {
+                    case OsType.Windows ignored -> {
                         var shell = LocalShell.getLocalPowershell();
                         if (shell.isEmpty()) {
                             return;
@@ -50,7 +50,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // So let's keep one process running
                         shell.get().command(content).notComplex().execute();
                     }
-                    case OsType.Linux linux -> {
+                    case OsType.Linux ignored -> {
                         var dbus = String.format(
                                 """
                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
@@ -69,7 +69,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                                                         : e.getParent()))
                                 .execute();
                     }
-                    case OsType.MacOs macOs -> {
+                    case OsType.MacOs ignored -> {
                         sc.osascriptCommand(String.format(
                                         """
                                  set fileEntry to (POSIX file "%s") as text

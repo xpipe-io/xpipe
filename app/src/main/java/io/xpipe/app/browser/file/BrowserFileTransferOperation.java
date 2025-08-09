@@ -17,7 +17,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -318,7 +317,6 @@ public class BrowserFileTransferOperation {
         var targetFs = target.getFileSystem().createTransferOptimizedFileSystem();
 
         try {
-            var start = Instant.now();
             AtomicLong transferred = new AtomicLong();
             for (var e : flatFiles.entrySet()) {
                 if (cancelled()) {
@@ -355,8 +353,7 @@ public class BrowserFileTransferOperation {
                             targetFile,
                             targetFs,
                             transferred,
-                            totalSize,
-                            start);
+                            totalSize);
                 }
             }
         } finally {
@@ -377,8 +374,7 @@ public class BrowserFileTransferOperation {
             FilePath targetFile,
             FileSystem targetFs,
             AtomicLong transferred,
-            AtomicLong totalSize,
-            Instant start)
+            AtomicLong totalSize)
             throws Exception {
         if (cancelled()) {
             return;
