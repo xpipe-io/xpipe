@@ -42,6 +42,10 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     @Value
     public static class PreviousFileReference {
 
+        public static PreviousFileReference of(Path file) {
+            return new PreviousFileReference(file.toString(), file);
+        }
+
         String displayName;
         Path path;
     }

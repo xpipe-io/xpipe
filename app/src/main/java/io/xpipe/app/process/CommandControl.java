@@ -23,7 +23,7 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl sensitive();
 
-    CommandControl withExceptionConverter(ExceptionConverter converter);
+    CommandControl withExceptionConverter(ProcessExceptionConverter converter);
 
     @Override
     CommandControl start() throws Exception;

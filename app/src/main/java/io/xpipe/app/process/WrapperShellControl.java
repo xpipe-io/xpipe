@@ -172,7 +172,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withExceptionConverter(ExceptionConverter converter) {
+    public ShellControl withExceptionConverter(ProcessExceptionConverter converter) {
         return parent.withExceptionConverter(converter);
     }
 

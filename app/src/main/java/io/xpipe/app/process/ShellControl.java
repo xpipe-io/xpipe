@@ -141,7 +141,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl onStartupFail(Consumer<Throwable> t);
 
-    ShellControl withExceptionConverter(ExceptionConverter converter);
+    ShellControl withExceptionConverter(ProcessExceptionConverter converter);
 
     @Override
     ShellControl start() throws Exception;
