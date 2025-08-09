@@ -164,8 +164,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                     .localScript(new ShellScript(ProcessControlProvider.get()
                                             .getEffectiveLocalDialect()
                                             .getEchoCommand(
-                                                    "If you can read this, the terminal integration works",
-                                                    false)))
+                                                    "If you can read this, the terminal integration works", false)))
                                     .preferTabs(false)
                                     .logIfEnabled(false)
                                     .launch();
@@ -177,7 +176,7 @@ public class TerminalCategory extends AppPrefsCategory {
 
         var builder = new OptionsBuilder().pref(prefs.terminalType);
         if (!docsLink) {
-             builder.longDescription((DocumentationLink) null);
+            builder.longDescription((DocumentationLink) null);
         }
         builder.addComp(h, prefs.terminalType);
         builder.pref(prefs.customTerminalCommand)
@@ -317,7 +316,9 @@ public class TerminalCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
-        return new OptionsBuilder().nameAndDescription("terminalPrompt")
-                .longDescription(DocumentationLink.TERMINAL_PROMPT).addComp(choice, prefs.terminalPrompt);
+        return new OptionsBuilder()
+                .nameAndDescription("terminalPrompt")
+                .longDescription(DocumentationLink.TERMINAL_PROMPT)
+                .addComp(choice, prefs.terminalPrompt);
     }
 }

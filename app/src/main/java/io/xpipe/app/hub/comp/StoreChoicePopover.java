@@ -1,20 +1,18 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.controls.Popover;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.DataStoreCategoryChoiceComp;
 import io.xpipe.app.util.LabelGraphic;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,6 +24,9 @@ import javafx.scene.Node;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+
+import atlantafx.base.controls.Popover;
+import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -73,8 +74,9 @@ public class StoreChoicePopover<T extends DataStore> {
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
                 var e = storeEntryWrapper.getEntry();
 
-                if (self != null && (e.equals(self)
-                        || DataStorage.get().getStoreParentHierarchy(e).contains(self))) {
+                if (self != null
+                        && (e.equals(self)
+                                || DataStorage.get().getStoreParentHierarchy(e).contains(self))) {
                     return false;
                 }
 
@@ -124,9 +126,9 @@ public class StoreChoicePopover<T extends DataStore> {
                     initialExpanded);
 
             var category = new DataStoreCategoryChoiceComp(
-                    initialCategory != null ? initialCategory.getRoot() : null,
-                    StoreViewState.get().getActiveCategory(),
-                    selectedCategory)
+                            initialCategory != null ? initialCategory.getRoot() : null,
+                            StoreViewState.get().getActiveCategory(),
+                            selectedCategory)
                     .styleClass(Styles.LEFT_PILL);
             var filter =
                     new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();

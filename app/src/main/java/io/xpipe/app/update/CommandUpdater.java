@@ -57,7 +57,10 @@ public class CommandUpdater extends PortableUpdater {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                TerminalLaunch.builder().title("XPipe Updater").localScript(script).launch();
+                TerminalLaunch.builder()
+                        .title("XPipe Updater")
+                        .localScript(script)
+                        .launch();
             });
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();

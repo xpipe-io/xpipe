@@ -9,7 +9,6 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
-
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 import java.io.IOException;

@@ -6,7 +6,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
 
-
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType WAVE_WINDOWS = new Windows();
@@ -66,7 +65,9 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                                 .formatted(
                                         inPath
                                                 ? "xpipe open"
-                                                : "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\" open");
+                                                : "\""
+                                                        + AppInstallation.ofCurrent()
+                                                                .getCliExecutablePath() + "\" open");
                 throw ErrorEventFactory.expected(new IllegalStateException(msg));
             }
 

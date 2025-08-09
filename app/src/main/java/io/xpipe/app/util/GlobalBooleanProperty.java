@@ -6,8 +6,7 @@ import javafx.beans.value.ChangeListener;
 
 public class GlobalBooleanProperty extends SimpleBooleanProperty {
 
-    public GlobalBooleanProperty() {
-    }
+    public GlobalBooleanProperty() {}
 
     public GlobalBooleanProperty(boolean initialValue) {
         super(initialValue);

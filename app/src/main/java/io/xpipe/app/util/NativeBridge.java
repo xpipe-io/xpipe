@@ -35,7 +35,8 @@ public class NativeBridge {
             try {
                 System.setProperty(
                         "jna.library.path",
-                        AppInstallation.ofCurrent().getBaseInstallationPath()
+                        AppInstallation.ofCurrent()
+                                .getBaseInstallationPath()
                                 .resolve("Contents")
                                 .resolve("runtime")
                                 .resolve("Contents")

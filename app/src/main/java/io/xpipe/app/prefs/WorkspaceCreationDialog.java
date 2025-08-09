@@ -10,7 +10,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
-
 import javafx.beans.property.SimpleObjectProperty;
 
 public class WorkspaceCreationDialog {
@@ -45,7 +44,9 @@ public class WorkspaceCreationDialog {
                     var file =
                             switch (OsType.getLocal()) {
                                 case OsType.Windows ignored -> {
-                                    var exec = AppInstallation.ofCurrent().getDaemonExecutablePath().toString();
+                                    var exec = AppInstallation.ofCurrent()
+                                            .getDaemonExecutablePath()
+                                            .toString();
                                     yield DesktopShortcuts.create(
                                             exec,
                                             "-Dio.xpipe.app.dataDir=\""
@@ -53,7 +54,8 @@ public class WorkspaceCreationDialog {
                                             shortcutName);
                                 }
                                 default -> {
-                                    var exec = AppInstallation.ofCurrent().getCliExecutablePath()
+                                    var exec = AppInstallation.ofCurrent()
+                                            .getCliExecutablePath()
                                             .toString();
                                     yield DesktopShortcuts.create(
                                             exec,

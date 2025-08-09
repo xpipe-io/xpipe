@@ -1,15 +1,16 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.ThreadHelper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ThreadHelper;
 import lombok.SneakyThrows;
 import lombok.Value;
 
@@ -74,40 +75,40 @@ public class AppMcpServer {
             syncServer.notifyToolsListChanged();
         });
 
-//        syncServer.addResource(McpResources.connections());
-//        syncServer.addResource(McpResources.categories());
-//
-//        DataStorage.get().addListener(new StorageListener() {
-//            @Override
-//            public void onStoreListUpdate() {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//
-//            @Override
-//            public void onStoreAdd(DataStoreEntry... entry) {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//
-//            @Override
-//            public void onStoreRemove(DataStoreEntry... entry) {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//
-//            @Override
-//            public void onCategoryAdd(DataStoreCategory category) {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//
-//            @Override
-//            public void onCategoryRemove(DataStoreCategory category) {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//
-//            @Override
-//            public void onEntryCategoryChange() {
-//                syncServer.notifyResourcesListChanged();
-//            }
-//        });
+        //        syncServer.addResource(McpResources.connections());
+        //        syncServer.addResource(McpResources.categories());
+        //
+        //        DataStorage.get().addListener(new StorageListener() {
+        //            @Override
+        //            public void onStoreListUpdate() {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //
+        //            @Override
+        //            public void onStoreAdd(DataStoreEntry... entry) {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //
+        //            @Override
+        //            public void onStoreRemove(DataStoreEntry... entry) {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //
+        //            @Override
+        //            public void onCategoryAdd(DataStoreCategory category) {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //
+        //            @Override
+        //            public void onCategoryRemove(DataStoreCategory category) {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //
+        //            @Override
+        //            public void onEntryCategoryChange() {
+        //                syncServer.notifyResourcesListChanged();
+        //            }
+        //        });
 
         INSTANCE = new AppMcpServer(syncServer, transportProvider);
     }
@@ -124,7 +125,8 @@ public class AppMcpServer {
                     }
 
                     if (!AppPrefs.get().enableMcpServer().get()) {
-                        transportProvider.sendError(exchange, 403, "MCP server is not enabled in the API settings menu");
+                        transportProvider.sendError(
+                                exchange, 403, "MCP server is not enabled in the API settings menu");
                         if (exchange.getRequestMethod().equals("POST")) {
                             ThreadHelper.runAsync(() -> {
                                 ErrorEventFactory.fromMessage(
@@ -151,12 +153,14 @@ public class AppMcpServer {
                             return;
                         }
 
-                        var correct = apiKey.replace("Bearer ", "").equals(AppPrefs.get().apiKey().get());
+                        var correct = apiKey.replace("Bearer ", "")
+                                .equals(AppPrefs.get().apiKey().get());
                         if (!correct) {
                             transportProvider.sendError(exchange, 403, "Invalid API key");
                             if (exchange.getRequestMethod().equals("POST")) {
                                 ThreadHelper.runAsync(() -> {
-                                    ErrorEventFactory.fromMessage("The Authorization header sent by the MCP client is not correct")
+                                    ErrorEventFactory.fromMessage(
+                                                    "The Authorization header sent by the MCP client is not correct")
                                             .expected()
                                             .handle();
                                 });

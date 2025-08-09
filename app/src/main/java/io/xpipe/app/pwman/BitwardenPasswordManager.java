@@ -49,7 +49,11 @@ public class BitwardenPasswordManager implements PasswordManager {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
                         "bw login");
-                TerminalLaunch.builder().title("Bitwarden login").localScript(script).logIfEnabled(false).launch();
+                TerminalLaunch.builder()
+                        .title("Bitwarden login")
+                        .localScript(script)
+                        .logIfEnabled(false)
+                        .launch();
                 return null;
             }
 

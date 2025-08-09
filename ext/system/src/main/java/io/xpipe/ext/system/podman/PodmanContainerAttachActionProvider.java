@@ -47,7 +47,11 @@ public class PodmanContainerAttachActionProvider implements HubLeafProvider<Podm
         public void executeImpl() throws Exception {
             var d = ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Attach").command(view.attach(d.getContainerName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Attach")
+                    .command(view.attach(d.getContainerName()))
+                    .launch();
         }
     }
 }

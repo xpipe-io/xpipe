@@ -362,6 +362,7 @@ public class AppPrefs {
     public ObservableBooleanValue pinLocalMachineOnStartup() {
         return pinLocalMachineOnStartup;
     }
+
     @Getter
     private final List<AppPrefsCategory> categories;
 
@@ -751,8 +752,8 @@ public class AppPrefs {
                 Class<?> valueType,
                 boolean vaultSpecific,
                 boolean requiresRestart,
-                boolean log, DocumentationLink documentationLink
-        ) {
+                boolean log,
+                DocumentationLink documentationLink) {
             this.key = key;
             this.property = property;
             this.valueType = SimpleType.constructUnsafe(valueType);
@@ -769,8 +770,8 @@ public class AppPrefs {
                 JavaType valueType,
                 boolean vaultSpecific,
                 boolean requiresRestart,
-                boolean log, DocumentationLink documentationLink
-        ) {
+                boolean log,
+                DocumentationLink documentationLink) {
             this.key = key;
             this.property = property;
             this.valueType = valueType;

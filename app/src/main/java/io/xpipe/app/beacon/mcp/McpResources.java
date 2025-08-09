@@ -1,12 +1,13 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.StorePath;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.StorePath;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -51,7 +52,6 @@ public final class McpResources {
         Map<String, Object> internalCache;
     }
 
-
     @Jacksonized
     @Builder
     @Value
@@ -85,21 +85,40 @@ public final class McpResources {
                     continue;
                 }
 
-                var names = DataStorage.get().getStorePath(DataStorage.get().getStoreCategoryIfPresent(e.getCategoryUuid()).orElseThrow()).getNames();
+                var names = DataStorage.get()
+                        .getStorePath(DataStorage.get()
+                                .getStoreCategoryIfPresent(e.getCategoryUuid())
+                                .orElseThrow())
+                        .getNames();
                 var cat = new StorePath(names.subList(1, names.size()));
-                var cache = e.getStoreCache().entrySet().stream().filter(stringObjectEntry -> {
-                    return stringObjectEntry.getValue() != null && (ClassUtils.isPrimitiveOrWrapper(stringObjectEntry.getValue().getClass()) ||
-                            stringObjectEntry.getValue() instanceof String);
-                }).collect(Collectors.toMap(stringObjectEntry -> stringObjectEntry.getKey(), stringObjectEntry -> stringObjectEntry.getValue()));
+                var cache = e.getStoreCache().entrySet().stream()
+                        .filter(stringObjectEntry -> {
+                            return stringObjectEntry.getValue() != null
+                                    && (ClassUtils.isPrimitiveOrWrapper(
+                                                    stringObjectEntry.getValue().getClass())
+                                            || stringObjectEntry.getValue() instanceof String);
+                        })
+                        .collect(Collectors.toMap(
+                                stringObjectEntry -> stringObjectEntry.getKey(),
+                                stringObjectEntry -> stringObjectEntry.getValue()));
 
-                var resourceData = ConnectionResource.builder().lastModified(e.getLastModified()).lastUsed(e.getLastUsed())
-                        .category(cat).name(DataStorage.get().getStorePath(e)).connectionData(e.getStore()).usageCategory(
-                        e.getProvider().getUsageCategory()).type(e.getProvider().getId()).internalState(
-                        e.getStorePersistentState() != null ? e.getStorePersistentState() : new Object()).internalCache(cache).build();
+                var resourceData = ConnectionResource.builder()
+                        .lastModified(e.getLastModified())
+                        .lastUsed(e.getLastUsed())
+                        .category(cat)
+                        .name(DataStorage.get().getStorePath(e))
+                        .connectionData(e.getStore())
+                        .usageCategory(e.getProvider().getUsageCategory())
+                        .type(e.getProvider().getId())
+                        .internalState(e.getStorePersistentState() != null ? e.getStorePersistentState() : new Object())
+                        .internalCache(cache)
+                        .build();
 
                 McpSchema.TextResourceContents c;
                 try {
-                    c = new McpSchema.TextResourceContents("xpipe://connections/" + e.getUuid(), "application/json",
+                    c = new McpSchema.TextResourceContents(
+                            "xpipe://connections/" + e.getUuid(),
+                            "application/json",
                             JacksonMapper.getDefault().writeValueAsString(resourceData));
                 } catch (JsonProcessingException ex) {
                     throw new RuntimeException(ex);
@@ -110,7 +129,6 @@ public final class McpResources {
             return new McpSchema.ReadResourceResult(list);
         });
     }
-
 
     public static McpServerFeatures.SyncResourceSpecification categories() {
         McpSchema.Annotations annotations = new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 0.3);
@@ -134,7 +152,9 @@ public final class McpResources {
 
                 McpSchema.TextResourceContents c;
                 try {
-                    c = new McpSchema.TextResourceContents("xpipe://categories/" + cat.getUuid(), "application/json",
+                    c = new McpSchema.TextResourceContents(
+                            "xpipe://categories/" + cat.getUuid(),
+                            "application/json",
                             JacksonMapper.getDefault().writeValueAsString(jsonData));
                 } catch (JsonProcessingException ex) {
                     throw new RuntimeException(ex);

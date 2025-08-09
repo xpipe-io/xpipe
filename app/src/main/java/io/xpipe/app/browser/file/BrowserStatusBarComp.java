@@ -79,23 +79,28 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private Comp<?> createProgressEstimateStatus() {
-        var text = Bindings.createStringBinding(() -> {
-            var p = model.getProgress().getValue();
-            var expected = model.getProgressRemaining().getValue();
-            if (p == null || expected == null) {
-                return null;
-            }
+        var text = Bindings.createStringBinding(
+                () -> {
+                    var p = model.getProgress().getValue();
+                    var expected = model.getProgressRemaining().getValue();
+                    if (p == null || expected == null) {
+                        return null;
+                    }
 
-            var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
-            var show = elapsed > 3000;
-            if (!show) {
-                return "...";
-            }
+                    var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
+                    var show = elapsed > 3000;
+                    if (!show) {
+                        return "...";
+                    }
 
-            var time = HumanReadableFormat.duration(expected) + " @ ";
-            var progress = HumanReadableFormat.transferSpeed(model.getProgressTransferSpeed().getValue());
-            return time + progress;
-        }, model.getProgressRemaining(), model.getProgressTransferSpeed(), model.getProgress());
+                    var time = HumanReadableFormat.duration(expected) + " @ ";
+                    var progress = HumanReadableFormat.transferSpeed(
+                            model.getProgressTransferSpeed().getValue());
+                    return time + progress;
+                },
+                model.getProgressRemaining(),
+                model.getProgressTransferSpeed(),
+                model.getProgress());
 
         var progressComp = new LabelComp(text)
                 .styleClass("progress")

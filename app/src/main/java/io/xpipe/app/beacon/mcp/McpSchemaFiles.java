@@ -1,7 +1,8 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.core.JacksonMapper;
+
+import io.modelcontextprotocol.spec.McpSchema;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

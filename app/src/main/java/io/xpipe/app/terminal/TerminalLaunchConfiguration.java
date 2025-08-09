@@ -126,7 +126,8 @@ public class TerminalLaunchConfiguration {
             var cliExecutable = TerminalProxyManager.getProxy()
                     .orElse(LocalShell.getShell())
                     .getLocalSystemAccess()
-                    .translateFromLocalSystemPath(FilePath.of(AppInstallation.ofCurrent().getCliExecutablePath()));
+                    .translateFromLocalSystemPath(
+                            FilePath.of(AppInstallation.ofCurrent().getCliExecutablePath()));
             var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                     ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);

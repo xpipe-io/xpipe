@@ -59,7 +59,11 @@ public class LxdContainerEditConfigActionProvider implements HubLeafProvider<Lxd
             var d = ref.getStore();
             var view = new LxdCommandView(
                     d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Config").command(view.configEdit(d.getName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Config")
+                    .command(view.configEdit(d.getName()))
+                    .launch();
         }
     }
 }

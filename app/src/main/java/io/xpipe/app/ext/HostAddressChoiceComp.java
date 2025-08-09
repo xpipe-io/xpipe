@@ -1,11 +1,10 @@
 package io.xpipe.app.ext;
 
-import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
@@ -15,6 +14,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.layout.HBox;
+
+import atlantafx.base.controls.Spacer;
+import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -25,7 +27,8 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
     private final ObservableList<String> allAddresses;
     private final boolean mutable;
 
-    public HostAddressChoiceComp(ObjectProperty<String> currentAddress, ObservableList<String> allAddresses, boolean mutable) {
+    public HostAddressChoiceComp(
+            ObjectProperty<String> currentAddress, ObservableList<String> allAddresses, boolean mutable) {
         this.currentAddress = currentAddress;
         this.allAddresses = allAddresses;
         this.mutable = mutable;
@@ -52,7 +55,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(combo);
-        if  (mutable) {
+        if (mutable) {
             nodes.add(addButton);
         }
 
@@ -96,9 +99,11 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                     hbox.getChildren().add(new Label(item));
                     hbox.getChildren().add(new Spacer());
                     if (mutable) {
-                        hbox.getChildren().add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
-                            allAddresses.remove(item);
-                        }).createRegion());
+                        hbox.getChildren()
+                                .add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
+                                            allAddresses.remove(item);
+                                        })
+                                        .createRegion());
                     }
 
                     setGraphic(hbox);

@@ -54,7 +54,11 @@ public class KeeperPasswordManager implements PasswordManager {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
                         getExecutable(sc) + " login");
-                TerminalLaunch.builder().title("Keeper login").localScript(script).logIfEnabled(false).launch();
+                TerminalLaunch.builder()
+                        .title("Keeper login")
+                        .localScript(script)
+                        .logIfEnabled(false)
+                        .launch();
                 return null;
             }
 

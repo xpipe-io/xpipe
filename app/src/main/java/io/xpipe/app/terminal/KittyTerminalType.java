@@ -12,7 +12,6 @@ import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 
-
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public interface KittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -37,8 +36,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             payload.put("tab_title", configuration.getColoredTitle());
             payload.put("type", "tab");
             payload.put("logo_alpha", 0.01);
-            payload.put(
-                    "logo", AppInstallation.ofCurrent().getLogoPath().toString());
+            payload.put("logo", AppInstallation.ofCurrent().getLogoPath().toString());
 
             var json = JsonNodeFactory.instance.objectNode();
             json.put("cmd", "launch");

@@ -317,13 +317,14 @@ public class AppLogs {
                 // Only change this when debugging the logs of other libraries
                 return NOPLogger.NOP_LOGGER;
 
-//                                // Don't use fully qualified class names
-//                                var normalizedName = FilenameUtils.getExtension(name);
-//                                if (normalizedName == null || normalizedName.isEmpty()) {
-//                                    normalizedName = name;
-//                                }
-//
-//                                return loggers.computeIfAbsent(normalizedName, s -> new Slf4jLogger());
+                //                                // Don't use fully qualified class names
+                //                                var normalizedName = FilenameUtils.getExtension(name);
+                //                                if (normalizedName == null || normalizedName.isEmpty()) {
+                //                                    normalizedName = name;
+                //                                }
+                //
+                //                                return loggers.computeIfAbsent(normalizedName, s -> new
+                // Slf4jLogger());
             }
         };
 

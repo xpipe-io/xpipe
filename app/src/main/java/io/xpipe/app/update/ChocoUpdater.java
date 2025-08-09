@@ -14,7 +14,6 @@ import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LocalShell;
 
-
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -120,7 +119,8 @@ public class ChocoUpdater extends UpdateHandler {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                var systemWide = Files.exists(AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
+                var systemWide = Files.exists(
+                        AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";
                 TerminalLaunch.builder().title("XPipe Updater").localScript(sc -> {
                     var pkg = "xpipe";

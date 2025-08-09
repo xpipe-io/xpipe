@@ -7,9 +7,7 @@ import java.nio.file.Path;
 
 public class AppSystemInfo {
 
-    public static class Windows {
-
-    }
+    public static class Windows {}
 
     public static Linux linux() {
         if (OsType.getLocal() != OsType.LINUX) {
@@ -26,7 +24,5 @@ public class AppSystemInfo {
         }
     }
 
-    public static class MacOS {
-
-    }
+    public static class MacOS {}
 }

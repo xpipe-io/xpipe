@@ -286,7 +286,11 @@ public class BrowserFileTransferOperation {
                         return;
                     }
 
-                    var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                    var rel = fileEntry
+                            .getPath()
+                            .relativize(baseRelative)
+                            .toUnix()
+                            .toString();
                     flatFiles.put(fileEntry, rel);
                     if (fileEntry.getKind() == FileKind.FILE) {
                         // This one is up-to-date and does not need to be recalculated
@@ -347,13 +351,7 @@ public class BrowserFileTransferOperation {
                         }
                     }
 
-                    transfer(
-                            sourceFile.getPath(),
-                            optimizedSourceFs,
-                            targetFile,
-                            targetFs,
-                            transferred,
-                            totalSize);
+                    transfer(sourceFile.getPath(), optimizedSourceFs, targetFile, targetFs, transferred, totalSize);
                 }
             }
         } finally {
@@ -503,8 +501,8 @@ public class BrowserFileTransferOperation {
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
                     readCount.addAndGet(read);
-                    updateProgress(new BrowserTransferProgress(
-                            sourceFile.getFileName(), transferred.get(), total.get()));
+                    updateProgress(
+                            new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
                 }
 
                 outputStream.flush();

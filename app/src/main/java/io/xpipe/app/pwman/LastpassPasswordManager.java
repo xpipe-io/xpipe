@@ -54,7 +54,11 @@ public class LastpassPasswordManager implements PasswordManager {
                             sc.getShellDialect()
                                     .getEchoCommand("Log in into your LastPass account from the CLI:", false),
                             "lpass login --trust \"" + email.get() + "\"");
-                    TerminalLaunch.builder().title("LastPass login").localScript(script).logIfEnabled(false).launch();
+                    TerminalLaunch.builder()
+                            .title("LastPass login")
+                            .localScript(script)
+                            .logIfEnabled(false)
+                            .launch();
                 }
                 return null;
             }

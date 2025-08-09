@@ -625,8 +625,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
-        if (ExternalTerminalType.CMD.equals(existing)
-                && LocalShell.getDialect() != ShellDialects.CMD) {
+        if (ExternalTerminalType.CMD.equals(existing) && LocalShell.getDialect() != ShellDialects.CMD) {
             return ExternalTerminalType.POWERSHELL;
         }
 

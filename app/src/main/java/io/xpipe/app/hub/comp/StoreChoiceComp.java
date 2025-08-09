@@ -31,35 +31,22 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
     private final Mode mode;
     private final Property<DataStoreEntryRef<T>> selected;
 
-
-
     private final StoreChoicePopover<T> popover;
 
-
-
-
-
     public StoreChoiceComp(
-
-
-            Mode mode, DataStoreEntry self, Property<DataStoreEntryRef<T>> selected, Class<?> storeClass,
-
-
-            Predicate<DataStoreEntryRef<T>> applicableCheck, StoreCategoryWrapper initialCategory
-
-
-    ) {
-
+            Mode mode,
+            DataStoreEntry self,
+            Property<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper initialCategory) {
 
         this.mode = mode;
 
-
         this.selected = selected;
 
-
-        this.popover = new StoreChoicePopover<>(self,selected,storeClass, applicableCheck, initialCategory, "selectConnection");
-
-
+        this.popover = new StoreChoicePopover<>(
+                self, selected, storeClass, applicableCheck, initialCategory, "selectConnection");
     }
 
     public static <T extends DataStore> StoreChoiceComp<T> other(

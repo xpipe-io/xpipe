@@ -8,7 +8,6 @@ import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
 
-
 import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;

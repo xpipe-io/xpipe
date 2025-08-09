@@ -415,10 +415,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
-    ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit", "https://support.apple.com/en-gb/guide/textedit/welcome/mac");
+    ExternalEditorType TEXT_EDIT =
+            new MacOsEditor("app.textEdit", "TextEdit", "https://support.apple.com/en-gb/guide/textedit/welcome/mac");
     ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit", "https://www.barebones.com/products/bbedit/");
     ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text", "https://www.sublimetext.com/");
-    ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
+    ExternalEditorType VSCODE_MACOS =
+            new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium", "https://vscodium.com/");
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor", "https://cursor.com/");
     ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void", "https://voideditor.com/");
@@ -456,8 +458,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             var command = CommandBuilder.of()
                     .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
             if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLaunch.builder().title(file.toString()).localScript(sc -> new ShellScript(command.buildFull(sc)))
-                        .logIfEnabled(false).preferTabs(false).launch();
+                TerminalLaunch.builder()
+                        .title(file.toString())
+                        .localScript(sc -> new ShellScript(command.buildFull(sc)))
+                        .logIfEnabled(false)
+                        .preferTabs(false)
+                        .launch();
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }
@@ -470,8 +476,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
     ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet", false, "https://www.jetbrains.com/fleet/");
     ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea", false, "https://www.jetbrains.com/idea/");
-    ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm", false, "https://www.jetbrains.com/pycharm/");
-    ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false, "https://www.jetbrains.com/webstorm/");
+    ExternalEditorType PYCHARM =
+            new GenericPathType("app.pycharm", "pycharm", false, "https://www.jetbrains.com/pycharm/");
+    ExternalEditorType WEBSTORM =
+            new GenericPathType("app.webstorm", "webstorm", false, "https://www.jetbrains.com/webstorm/");
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false, "https://www.jetbrains.com/clion/");
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(
             VOID_WINDOWS,

@@ -1,8 +1,10 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.util.OptionsBuilder;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -27,8 +29,7 @@ public class HostAddressChoice {
         } else {
             options.name(translationKey);
         }
-        options.addComp(new HostAddressChoiceComp(val, list, allowMutation))
-                .addProperty(val);
+        options.addComp(new HostAddressChoiceComp(val, list, allowMutation)).addProperty(val);
         options.bind(
                 () -> {
                     var fullList = new ArrayList<>(list);
@@ -36,7 +37,8 @@ public class HostAddressChoice {
                         fullList.add(val.getValue());
                     }
 
-                    var effectiveValue = val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
+                    var effectiveValue =
+                            val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
                     return HostAddress.of(effectiveValue, fullList);
                 },
                 value);

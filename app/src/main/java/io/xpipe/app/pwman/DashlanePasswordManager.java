@@ -49,7 +49,11 @@ public class DashlanePasswordManager implements PasswordManager {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Dashlane account from the CLI:", false),
                         "dcli accounts whoami");
-                TerminalLaunch.builder().title("Dashlane login").localScript(script).logIfEnabled(false).launch();
+                TerminalLaunch.builder()
+                        .title("Dashlane login")
+                        .localScript(script)
+                        .logIfEnabled(false)
+                        .launch();
                 return null;
             }
 

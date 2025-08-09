@@ -59,7 +59,7 @@ public class AppPrefsComp extends SimpleComp {
             });
         });
 
-        AppPrefs.get().getSelectedCategory().addListener((observable, oldValue, val)  -> {
+        AppPrefs.get().getSelectedCategory().addListener((observable, oldValue, val) -> {
             if (val == null) {
                 return;
             }

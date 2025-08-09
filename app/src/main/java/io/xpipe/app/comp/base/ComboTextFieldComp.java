@@ -29,7 +29,9 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     private ObservableValue<String> prompt;
 
     public ComboTextFieldComp(
-            Property<String> value, ObservableList<String> predefinedValues, Supplier<ListCell<String>> customCellFactory) {
+            Property<String> value,
+            ObservableList<String> predefinedValues,
+            Supplier<ListCell<String>> customCellFactory) {
         this.value = value;
         this.predefinedValues = predefinedValues;
         this.customCellFactory = customCellFactory;

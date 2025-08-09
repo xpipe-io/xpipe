@@ -183,11 +183,16 @@ public class OptionsBuilder {
 
     public OptionsBuilder pref(Object property) {
         var mapping = AppPrefs.get().getMapping(property);
-        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId(), mapping.getDocumentationLink());
+        pref(
+                mapping.getKey(),
+                mapping.isRequiresRestart(),
+                mapping.getLicenseFeatureId(),
+                mapping.getDocumentationLink());
         return this;
     }
 
-    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId, DocumentationLink documentationLink) {
+    public OptionsBuilder pref(
+            String key, boolean requiresRestart, String licenseFeatureId, DocumentationLink documentationLink) {
         var name = key;
         name(name);
         if (requiresRestart) {

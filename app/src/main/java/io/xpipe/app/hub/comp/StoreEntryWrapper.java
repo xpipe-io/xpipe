@@ -269,7 +269,8 @@ public class StoreEntryWrapper {
                         .or(() -> {
                             if (entry.getStore() instanceof GroupStore<?>) {
                                 return Optional.empty();
-                            } else if (entry.getProvider() != null && entry.getProvider().canConfigure()) {
+                            } else if (entry.getProvider() != null
+                                    && entry.getProvider().canConfigure()) {
                                 return Optional.of(new EditHubLeafProvider());
                             } else {
                                 return Optional.empty();

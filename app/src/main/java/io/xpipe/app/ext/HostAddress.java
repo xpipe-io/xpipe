@@ -26,14 +26,17 @@ public class HostAddress {
             return null;
         }
 
-        return new HostAddress(host.strip(), addresses.stream().map(s -> s.strip()).toList());
+        return new HostAddress(
+                host.strip(), addresses.stream().map(s -> s.strip()).toList());
     }
 
     private final String value;
+
     @Getter
     private final List<String> available;
 
-    private HostAddress(String value, List<String> available) {this.value = value;
+    private HostAddress(String value, List<String> available) {
+        this.value = value;
         this.available = available;
     }
 
@@ -57,5 +60,4 @@ public class HostAddress {
     public String get() {
         return value;
     }
-
 }

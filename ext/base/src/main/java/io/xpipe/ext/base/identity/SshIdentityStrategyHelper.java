@@ -23,14 +23,18 @@ public class SshIdentityStrategyHelper {
     private static OptionsBuilder agent(Property<SshIdentityStrategy.SshAgent> p, boolean allowForward) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!allowForward)
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
                 .bind(
                         () -> {
                             return new SshIdentityStrategy.SshAgent(forward.get(), publicKey.get());
@@ -41,14 +45,18 @@ public class SshIdentityStrategyHelper {
     private static OptionsBuilder gpgAgent(Property<SshIdentityStrategy.GpgAgent> p, boolean allowForward) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!allowForward)
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
                 .bind(
                         () -> {
                             return new SshIdentityStrategy.GpgAgent(forward.get(), publicKey.get());
@@ -59,14 +67,18 @@ public class SshIdentityStrategyHelper {
     private static OptionsBuilder pageant(Property<SshIdentityStrategy.Pageant> p, boolean allowForward) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!allowForward)
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
                 .bind(
                         () -> {
                             return new SshIdentityStrategy.Pageant(forward.get(), publicKey.get());
@@ -78,14 +90,18 @@ public class SshIdentityStrategyHelper {
             Property<SshIdentityStrategy.PasswordManagerAgent> p, boolean allowForward) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!allowForward)
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
                 .bind(
                         () -> {
                             return new SshIdentityStrategy.PasswordManagerAgent(forward.get(), publicKey.get());
@@ -96,14 +112,18 @@ public class SshIdentityStrategyHelper {
     private static OptionsBuilder otherExternal(Property<SshIdentityStrategy.OtherExternal> p, boolean allowForward) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!allowForward)
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
                 .bind(
                         () -> {
                             return new SshIdentityStrategy.OtherExternal(forward.get(), publicKey.get());

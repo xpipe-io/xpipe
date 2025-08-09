@@ -43,7 +43,8 @@ public class AppRestart {
         if (OsType.getLocal() == OsType.LINUX) {
             return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
         } else if (OsType.getLocal() == OsType.MACOS) {
-            return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix + " </dev/null &>/dev/null) & disown";
+            return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix
+                    + " </dev/null &>/dev/null) & disown";
         } else {
             var exe = loc.getDaemonExecutablePath();
             if (ShellDialects.isPowershell(dialect)) {

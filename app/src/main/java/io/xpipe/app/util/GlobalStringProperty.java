@@ -6,8 +6,7 @@ import javafx.beans.value.ChangeListener;
 
 public class GlobalStringProperty extends SimpleStringProperty {
 
-    public GlobalStringProperty() {
-    }
+    public GlobalStringProperty() {}
 
     public GlobalStringProperty(String initialValue) {
         super(initialValue);

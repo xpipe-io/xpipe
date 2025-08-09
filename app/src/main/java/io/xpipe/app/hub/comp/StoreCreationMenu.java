@@ -96,7 +96,6 @@ public class StoreCreationMenu {
         menu.getItems().add(setupMenu());
 
         menu.getItems().add(actionMenu);
-
     }
 
     private static Menu categoryMenu(
@@ -149,7 +148,6 @@ public class StoreCreationMenu {
         return menu;
     }
 
-
     private static Menu setupMenu() {
         var menu = new Menu();
         menu.setGraphic(new FontIcon("mdi2t-toy-brick-plus-outline"));
@@ -160,7 +158,8 @@ public class StoreCreationMenu {
             item.textProperty().bind(AppI18n.observable(p.getNameKey()));
             item.setGraphic(p.getGraphic().createGraphicNode());
             item.setOnAction(event -> {
-                var action = SetupToolActionProvider.Action.builder().type(p.getId()).build();
+                var action =
+                        SetupToolActionProvider.Action.builder().type(p.getId()).build();
                 action.executeAsync();
                 event.consume();
             });

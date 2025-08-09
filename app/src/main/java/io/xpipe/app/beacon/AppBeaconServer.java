@@ -1,8 +1,8 @@
 package io.xpipe.app.beacon;
 
+import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;

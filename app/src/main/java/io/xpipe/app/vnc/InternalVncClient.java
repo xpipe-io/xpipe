@@ -4,9 +4,9 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.util.DocumentationLink;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.DocumentationLink;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 

@@ -54,7 +54,8 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
 
         var graphic = new FontIcon("mdi2c-chevron-double-down");
         button.fontProperty().subscribe(c -> {
-            graphic.iconSizeProperty().bind(new ReadOnlyIntegerWrapper((int) new Size(c.getSize(), SizeUnits.PT).pixels()));
+            graphic.iconSizeProperty()
+                    .bind(new ReadOnlyIntegerWrapper((int) new Size(c.getSize(), SizeUnits.PT).pixels()));
         });
 
         button.setGraphic(graphic);

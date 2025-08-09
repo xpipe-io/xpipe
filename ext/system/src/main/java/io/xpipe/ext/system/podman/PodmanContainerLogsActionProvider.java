@@ -48,7 +48,11 @@ public class PodmanContainerLogsActionProvider implements HubLeafProvider<Podman
         public void executeImpl() throws Exception {
             var d = (PodmanContainerStore) ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Logs").command(view.logs(d.getContainerName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Logs")
+                    .command(view.logs(d.getContainerName()))
+                    .launch();
         }
     }
 }

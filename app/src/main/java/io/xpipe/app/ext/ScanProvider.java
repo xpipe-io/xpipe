@@ -6,6 +6,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.ModuleLayerLoader;
 
 import javafx.beans.value.ObservableValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Value;
 

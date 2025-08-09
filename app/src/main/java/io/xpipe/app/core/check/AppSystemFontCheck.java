@@ -17,7 +17,8 @@ public class AppSystemFontCheck {
         }
 
         System.setProperty(
-                "prism.fontdir", AppInstallation.ofCurrent().getBundledFontsPath().toString());
+                "prism.fontdir",
+                AppInstallation.ofCurrent().getBundledFontsPath().toString());
         System.setProperty("prism.embeddedfonts", "true");
     }
 

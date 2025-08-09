@@ -8,17 +8,25 @@ import java.nio.file.Path;
 
 public abstract class AppInstallation {
 
-    private static final Windows WINDOWS = AppProperties.get().isImage() ?
-            new Windows(determineCurrentInstallationBasePath()) :
-            new WindowsDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
-    private static final Linux LINUX = AppProperties.get().isImage() ?
-            new Linux(determineCurrentInstallationBasePath()) :
-            new LinuxDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
-    private static final MacOs MACOS = AppProperties.get().isImage() ?
-            new MacOs(determineCurrentInstallationBasePath()) :
-            new MacOsDev(determineDefaultInstallationBasePath(AppProperties.get().isStaging()), determineCurrentInstallationBasePath());
+    private static final Windows WINDOWS = AppProperties.get().isImage()
+            ? new Windows(determineCurrentInstallationBasePath())
+            : new WindowsDev(
+                    determineDefaultInstallationBasePath(AppProperties.get().isStaging()),
+                    determineCurrentInstallationBasePath());
+    private static final Linux LINUX = AppProperties.get().isImage()
+            ? new Linux(determineCurrentInstallationBasePath())
+            : new LinuxDev(
+                    determineDefaultInstallationBasePath(AppProperties.get().isStaging()),
+                    determineCurrentInstallationBasePath());
+    private static final MacOs MACOS = AppProperties.get().isImage()
+            ? new MacOs(determineCurrentInstallationBasePath())
+            : new MacOsDev(
+                    determineDefaultInstallationBasePath(AppProperties.get().isStaging()),
+                    determineCurrentInstallationBasePath());
 
-    private AppInstallation(Path base) {this.base = base;}
+    private AppInstallation(Path base) {
+        this.base = base;
+    }
 
     public static AppInstallation ofCurrent() {
         return switch (OsType.getLocal()) {
@@ -100,13 +108,13 @@ public abstract class AppInstallation {
         // Resolve root path of installation relative to executable in a JPackage installation
         return switch (OsType.getLocal()) {
             case OsType.Linux ignored -> {
-                yield  executable.getParent().getParent();
+                yield executable.getParent().getParent();
             }
             case OsType.MacOs ignored -> {
-                yield  executable.getParent().getParent().getParent();
+                yield executable.getParent().getParent().getParent();
             }
             case OsType.Windows ignored -> {
-                yield  executable.getParent();
+                yield executable.getParent();
             }
         };
     }
@@ -127,7 +135,7 @@ public abstract class AppInstallation {
                         .getParent();
             }
             case OsType.Windows ignored -> {
-                yield  executable.getParent().getParent();
+                yield executable.getParent().getParent();
             }
         };
     }
@@ -150,15 +158,15 @@ public abstract class AppInstallation {
 
     public abstract Path getDaemonDebugScriptPath();
 
-    public abstract Path  getBundledFontsPath();
+    public abstract Path getBundledFontsPath();
 
-    public abstract Path  getLangPath();
+    public abstract Path getLangPath();
 
-    public abstract Path  getCliExecutablePath();
+    public abstract Path getCliExecutablePath();
 
-    public abstract Path  getDaemonExecutablePath();
+    public abstract Path getDaemonExecutablePath();
 
-    public abstract Path  getExtensionsPath();
+    public abstract Path getExtensionsPath();
 
     public abstract Path getLogoPath();
 
@@ -279,7 +287,6 @@ public abstract class AppInstallation {
         }
     }
 
-
     public static class LinuxDev extends Linux {
 
         private final Path devBase;
@@ -300,7 +307,7 @@ public abstract class AppInstallation {
         }
     }
 
-    public static  class MacOs extends AppInstallation {
+    public static class MacOs extends AppInstallation {
 
         private MacOs(Path base) {
             super(base);
@@ -350,7 +357,10 @@ public abstract class AppInstallation {
                 return getBaseInstallationPath().resolve("dist").resolve("logo").resolve("logo.icns");
             }
 
-            return getBaseInstallationPath().resolve("Contents").resolve("Resources").resolve("xpipe.icns");
+            return getBaseInstallationPath()
+                    .resolve("Contents")
+                    .resolve("Resources")
+                    .resolve("xpipe.icns");
         }
     }
 

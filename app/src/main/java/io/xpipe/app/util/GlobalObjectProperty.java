@@ -6,8 +6,7 @@ import javafx.beans.value.ChangeListener;
 
 public class GlobalObjectProperty<T> extends SimpleObjectProperty<T> {
 
-    public GlobalObjectProperty() {
-    }
+    public GlobalObjectProperty() {}
 
     public GlobalObjectProperty(T initialValue) {
         super(initialValue);

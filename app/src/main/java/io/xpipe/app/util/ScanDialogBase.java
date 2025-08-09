@@ -47,8 +47,7 @@ public class ScanDialogBase {
             Runnable closeAction,
             ScanDialogAction action,
             ObservableList<DataStoreEntryRef<ShellStore>> entries,
-            boolean showButton
-    ) {
+            boolean showButton) {
         this.expand = expand;
         this.closeAction = closeAction;
         this.action = action;

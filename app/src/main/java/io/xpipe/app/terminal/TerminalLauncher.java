@@ -11,7 +11,6 @@ import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -115,7 +114,8 @@ public class TerminalLauncher {
             UUID request,
             boolean preferTabs,
             boolean enableLogging,
-            ExternalTerminalType type) throws Exception {
+            ExternalTerminalType type)
+            throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
@@ -161,8 +161,7 @@ public class TerminalLauncher {
             return;
         }
 
-        var changedDialect =
-                config.getScriptDialect() != LocalShell.getDialect();
+        var changedDialect = config.getScriptDialect() != LocalShell.getDialect();
         config = config.withScript(
                 LocalShell.getDialect(),
                 getTerminalRegisterCommand(request) + "\n"
@@ -258,12 +257,7 @@ public class TerminalLauncher {
             proxyControl.get().start();
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + proxyLaunchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null,
-                    "XPipe",
-                    "XPipe",
-                    false,
-                    fullLocalCommand,
-                    LocalShell.getDialect()));
+                    null, "XPipe", "XPipe", false, fullLocalCommand, LocalShell.getDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -276,12 +270,7 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null,
-                    "XPipe",
-                    "XPipe",
-                    false,
-                    fullLocalCommand,
-                    LocalShell.getDialect()));
+                    null, "XPipe", "XPipe", false, fullLocalCommand, LocalShell.getDialect()));
         }
     }
 
@@ -302,7 +291,6 @@ public class TerminalLauncher {
         // Restart for the next time
         proxyControl.get().start();
         var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-        return Optional.ofNullable(launchConfiguration.withScript(
-                LocalShell.getDialect(), fullLocalCommand));
+        return Optional.ofNullable(launchConfiguration.withScript(LocalShell.getDialect(), fullLocalCommand));
     }
 }

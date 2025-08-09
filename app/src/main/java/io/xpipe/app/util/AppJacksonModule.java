@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
@@ -370,15 +370,8 @@ public class AppJacksonModule extends SimpleModule {
 
     public static class HostAddressSerializer extends JsonSerializer<HostAddress> {
 
-
-
-
-
         @Override
-
-
-        public void serialize(HostAddress value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException {
+        public void serialize(HostAddress value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
             if (value.isSingle()) {
                 jgen.writeString(value.get());
             } else {
@@ -390,19 +383,9 @@ public class AppJacksonModule extends SimpleModule {
         }
     }
 
-
-
-
-
     public static class HostAddressDeserializer extends JsonDeserializer<HostAddress> {
 
-
-
-
-
         @Override
-
-
         public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var tree = (JsonNode) p.getCodec().readTree(p);
             if (tree.isTextual()) {

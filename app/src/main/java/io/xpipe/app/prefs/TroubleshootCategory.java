@@ -93,7 +93,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
                                         e -> {
-                                            DesktopHelper.browsePathLocal(AppInstallation.ofCurrent().getBaseInstallationPath());
+                                            DesktopHelper.browsePathLocal(
+                                                    AppInstallation.ofCurrent().getBaseInstallationPath());
                                             e.consume();
                                         })
                                 .grow(true, false),
@@ -159,7 +160,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     "uninstallApplicationDescription",
                                     "mdi2d-dump-truck",
                                     e -> {
-                                        var file = AppInstallation.ofCurrent().getBaseInstallationPath()
+                                        var file = AppInstallation.ofCurrent()
+                                                .getBaseInstallationPath()
                                                 .resolve("Contents")
                                                 .resolve("Resources")
                                                 .resolve("scripts")

@@ -54,7 +54,11 @@ public class LxdContainerConsoleActionProvider implements HubLeafProvider<LxdCon
             var d = ref.getStore();
             var view = new LxdCommandView(
                     d.getCmd().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Console").command(view.console(d.getName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Console")
+                    .command(view.console(d.getName()))
+                    .launch();
         }
     }
 }

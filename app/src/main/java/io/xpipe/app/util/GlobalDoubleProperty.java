@@ -6,8 +6,7 @@ import javafx.beans.value.ChangeListener;
 
 public class GlobalDoubleProperty extends SimpleDoubleProperty {
 
-    public GlobalDoubleProperty() {
-    }
+    public GlobalDoubleProperty() {}
 
     public GlobalDoubleProperty(Double initialValue) {
         super(initialValue);

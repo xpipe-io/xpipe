@@ -57,7 +57,7 @@ dependencies {
     api 'io.xpipe:vernacular:1.15'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.6'
-    api 'org.apache.commons:commons-lang3:3.17.0'
+    api 'org.apache.commons:commons-lang3:3.18.0'
     api 'io.sentry:sentry:8.13.3'
     api 'commons-io:commons-io:2.19.0'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.1"

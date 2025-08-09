@@ -10,7 +10,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 
-
 import lombok.Getter;
 import lombok.Setter;
 

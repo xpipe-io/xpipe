@@ -8,6 +8,7 @@ import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 
@@ -23,7 +24,8 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
 
         private HostAddressProvider(boolean active, String address) {
             this.active = active;
-            this.address = address;}
+            this.address = address;
+        }
 
         @Override
         public void execute(DataStoreEntryRef<HostAddressSwitchStore> ref) {
@@ -51,9 +53,12 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
 
     @Override
     public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<HostAddressSwitchStore> store) {
-        return store.getStore().getHostAddress().getAvailable().stream().map(s -> {
-            return new HostAddressProvider(s.equals(store.getStore().getHostAddress().get()), s);
-        }).collect(Collectors.toList());
+        return store.getStore().getHostAddress().getAvailable().stream()
+                .map(s -> {
+                    return new HostAddressProvider(
+                            s.equals(store.getStore().getHostAddress().get()), s);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

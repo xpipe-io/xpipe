@@ -15,5 +15,4 @@ public interface ShellLaunchCommand {
     }
 
     List<String> loginCommand(OsType.Any os);
-
 }

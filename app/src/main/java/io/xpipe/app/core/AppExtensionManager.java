@@ -68,9 +68,10 @@ public class AppExtensionManager {
 
     private void determineExtensionDirectories() throws Exception {
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation = !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb() ?
-                    AppInstallation.ofDefault(true)
-                    : AppInstallation.ofCurrent();
+            var localInstallation =
+                    !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb()
+                            ? AppInstallation.ofDefault(true)
+                            : AppInstallation.ofCurrent();
             Path p = localInstallation.getBaseInstallationPath();
             if (!Files.exists(p)) {
                 throw new IllegalStateException(

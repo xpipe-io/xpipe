@@ -59,7 +59,11 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
             var d = (IncusContainerStore) ref.getStore();
             var view = new IncusCommandView(
                     d.getInstall().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Config").command(view.configEdit(d.getName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Config")
+                    .command(view.configEdit(d.getName()))
+                    .launch();
         }
     }
 }

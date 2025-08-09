@@ -17,7 +17,8 @@ public class AppTestCommandCheck {
                 sc.getShellDialect()
                         .directoryExists(
                                 sc,
-                                AppInstallation.ofCurrent().getBaseInstallationPath()
+                                AppInstallation.ofCurrent()
+                                        .getBaseInstallationPath()
                                         .toString())
                         .execute();
             } catch (ProcessOutputException ex) {

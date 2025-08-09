@@ -62,9 +62,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private BrowserFileSystemCache cache;
 
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
-    private final ObservableList<BrowserTransferProgress> progressesIntervalHistory = FXCollections.observableArrayList();
-    private final LongProperty progressTransferSpeed =  new SimpleLongProperty();
-    private final Property<Duration> progressRemaining =  new SimpleObjectProperty<>();
+    private final ObservableList<BrowserTransferProgress> progressesIntervalHistory =
+            FXCollections.observableArrayList();
+    private final LongProperty progressTransferSpeed = new SimpleLongProperty();
+    private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
@@ -89,7 +90,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         var changedHistory = false;
         if (progress.getValue() != null) {
-            var last = progressesIntervalHistory.isEmpty() ? Instant.EPOCH : progressesIntervalHistory.getLast().getTimestamp();
+            var last = progressesIntervalHistory.isEmpty()
+                    ? Instant.EPOCH
+                    : progressesIntervalHistory.getLast().getTimestamp();
             var elapsed = Duration.between(last, n.getTimestamp());
             if (elapsed.toMillis() >= 1000) {
                 progressesIntervalHistory.add(progress.getValue());
@@ -109,7 +112,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             var estimate = remaining / (double) speed;
 
             var newDuration = Duration.ofMillis((long) (estimate * 1000.0));
-            var smooth = progressRemaining.getValue() != null && progressRemaining.getValue().toSeconds() + 1 == newDuration.toSeconds();
+            var smooth = progressRemaining.getValue() != null
+                    && progressRemaining.getValue().toSeconds() + 1 == newDuration.toSeconds();
             if (!smooth) {
                 progressRemaining.setValue(newDuration);
             }
@@ -522,7 +526,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
             fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
-        TerminalLaunch.builder().entry(entry.get()).title(name).directory(directory).command(processControl).request(uuid).preferTabs(!dock).launch();
+        TerminalLaunch.builder()
+                .entry(entry.get())
+                .title(name)
+                .directory(directory)
+                .command(processControl)
+                .request(uuid)
+                .preferTabs(!dock)
+                .launch();
 
         // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
         startIfNeeded();

@@ -1,7 +1,5 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.server.McpSyncServerExchange;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
@@ -10,25 +8,30 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.core.FilePath;
+
+import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpSchema;
 import lombok.SneakyThrows;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSchema.CallToolRequest, McpSchema.CallToolResult>{
+public interface McpToolHandler
+        extends BiFunction<McpSyncServerExchange, McpSchema.CallToolRequest, McpSchema.CallToolResult> {
 
     static McpToolHandler of(McpToolHandler t) {
         return t;
     }
 
-    class ToolRequest  {
+    class ToolRequest {
 
         protected final McpSyncServerExchange exchange;
         protected final McpSchema.CallToolRequest request;
 
         public ToolRequest(McpSyncServerExchange exchange, McpSchema.CallToolRequest request) {
             this.exchange = exchange;
-            this.request = request;}
+            this.request = request;
+        }
 
         public McpSchema.CallToolRequest getRawRequest() {
             return request;
@@ -114,8 +117,8 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
             var ref = getDataStoreRef(name);
             var isShell = ref.getStore() instanceof ShellStore;
             if (!isShell) {
-                throw new BeaconClientException(
-                        "Connection " + DataStorage.get().getStorePath(ref.get()).toString() + " is not a shell connection");
+                throw new BeaconClientException("Connection "
+                        + DataStorage.get().getStorePath(ref.get()).toString() + " is not a shell connection");
             }
 
             return ref.asNeeded();
@@ -124,16 +127,23 @@ public interface McpToolHandler extends BiFunction<McpSyncServerExchange, McpSch
 
     @Override
     @SneakyThrows
-    default McpSchema.CallToolResult apply(McpSyncServerExchange mcpSyncServerExchange, McpSchema.CallToolRequest callToolRequest) {
+    default McpSchema.CallToolResult apply(
+            McpSyncServerExchange mcpSyncServerExchange, McpSchema.CallToolRequest callToolRequest) {
         var req = new ToolRequest(mcpSyncServerExchange, callToolRequest);
         try {
             return handle(req);
         } catch (BeaconClientException e) {
             ErrorEventFactory.fromThrowable(e).expected().omit().handle();
-            return McpSchema.CallToolResult.builder().addTextContent(e.getMessage()).isError(true).build();
+            return McpSchema.CallToolResult.builder()
+                    .addTextContent(e.getMessage())
+                    .isError(true)
+                    .build();
         } catch (Throwable e) {
             ErrorEventFactory.fromThrowable(e).handle();
-            return McpSchema.CallToolResult.builder().addTextContent(e.getMessage()).isError(true).build();
+            return McpSchema.CallToolResult.builder()
+                    .addTextContent(e.getMessage())
+                    .isError(true)
+                    .build();
         }
     }
 

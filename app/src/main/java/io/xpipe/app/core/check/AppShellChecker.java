@@ -75,11 +75,7 @@ public abstract class AppShellChecker {
 
                 %s
                 """
-                .formatted(
-                        LocalShell.getDialect().getDisplayName(),
-                        modifyOutput(output),
-                        listReasons(),
-                        fallback);
+                .formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), listReasons(), fallback);
     }
 
     protected abstract String listReasons();

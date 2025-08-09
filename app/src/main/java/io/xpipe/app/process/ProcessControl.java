@@ -45,5 +45,4 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
-
 }

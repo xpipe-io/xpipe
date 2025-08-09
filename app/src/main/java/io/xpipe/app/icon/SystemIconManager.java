@@ -67,7 +67,9 @@ public class SystemIconManager {
         var split = id.split("/");
         if (split.length == 2) {
             var source = split[0];
-            var foundSource = getAllSources().stream().filter(systemIconSource -> systemIconSource.getId().equals(source)).findFirst();
+            var foundSource = getAllSources().stream()
+                    .filter(systemIconSource -> systemIconSource.getId().equals(source))
+                    .findFirst();
             if (foundSource.isEmpty()) {
                 return Optional.empty();
             }

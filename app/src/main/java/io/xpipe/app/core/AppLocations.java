@@ -87,11 +87,7 @@ public interface AppLocations {
         }
     }
 
-    class Linux implements AppLocations {
+    class Linux implements AppLocations {}
 
-    }
-
-    final class MacOs implements AppLocations {
-
-    }
+    final class MacOs implements AppLocations {}
 }

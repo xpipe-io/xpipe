@@ -8,8 +8,8 @@ import io.xpipe.app.util.*;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -48,16 +48,17 @@ public class EditorCategory extends AppPrefsCategory {
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
 
         var choice = ChoiceComp.ofTranslatable(
-                        prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false);
+                prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false);
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.externalEditor().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
+                    var t = prefs.externalEditor().getValue();
+                    if (t == null || t.getWebsite() == null) {
+                        return;
+                    }
 
-            Hyperlinks.open(t.getWebsite());
-        }).minWidth(Region.USE_PREF_SIZE);
+                    Hyperlinks.open(t.getWebsite());
+                })
+                .minWidth(Region.USE_PREF_SIZE);
 
         var h = new HorizontalComp(List.of(choice.hgrow(), visit)).apply(struc -> {
             struc.get().setAlignment(Pos.CENTER_LEFT);

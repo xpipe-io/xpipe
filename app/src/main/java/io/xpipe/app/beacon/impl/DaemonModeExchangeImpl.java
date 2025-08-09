@@ -21,9 +21,7 @@ public class DaemonModeExchangeImpl extends DaemonModeExchange {
         }
 
         OperationMode.switchToSyncIfPossible(mode);
-        return DaemonModeExchange.Response.builder()
-                .usedMode(msg.getMode())
-                .build();
+        return DaemonModeExchange.Response.builder().usedMode(msg.getMode()).build();
     }
 
     @Override

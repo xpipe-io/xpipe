@@ -35,8 +35,13 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                                 }
 
                                 var cmd = sc.command(c);
-                                model.openTerminalAsync(entry.getRawFileEntry().getName(),
-                                        model.getCurrentDirectory() != null ? model.getCurrentDirectory().getPath() : null, cmd, entries.size() == 1);
+                                model.openTerminalAsync(
+                                        entry.getRawFileEntry().getName(),
+                                        model.getCurrentDirectory() != null
+                                                ? model.getCurrentDirectory().getPath()
+                                                : null,
+                                        cmd,
+                                        entries.size() == 1);
                             }
                         });
                     }

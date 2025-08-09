@@ -12,7 +12,9 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
+
 import javafx.geometry.Pos;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -58,10 +60,12 @@ public class RdpCategory extends AppPrefsCategory {
                         .longDescription(DocumentationLink.RDP)
                         .addComp(h, prefs.rdpClientType)
                         .nameAndDescription("customRdpClientCommand")
-                        .addComp(new TextFieldComp(prefs.customRdpClientCommand, true)
-                                .apply(struc -> struc.get().setPromptText("myrdpclient -c $FILE"))
-                                .hide(prefs.rdpClientType.isNotEqualTo(ExternalRdpClient.CUSTOM))
-                                .prefWidth(600), prefs.customRdpClientCommand))
+                        .addComp(
+                                new TextFieldComp(prefs.customRdpClientCommand, true)
+                                        .apply(struc -> struc.get().setPromptText("myrdpclient -c $FILE"))
+                                        .hide(prefs.rdpClientType.isNotEqualTo(ExternalRdpClient.CUSTOM))
+                                        .prefWidth(600),
+                                prefs.customRdpClientCommand))
                 .buildComp();
     }
 }

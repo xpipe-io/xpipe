@@ -54,7 +54,11 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
             var d = (IncusContainerStore) ref.getStore();
             var view = new IncusCommandView(
                     d.getInstall().getStore().getHost().getStore().getOrStartSession());
-            TerminalLaunch.builder().entry(ref.get()).title("Console").command(view.console(d.getName())).launch();
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Console")
+                    .command(view.console(d.getName()))
+                    .launch();
         }
     }
 }

@@ -6,7 +6,6 @@ import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 

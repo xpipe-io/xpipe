@@ -46,7 +46,8 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                     websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
                     websiteLinkButton.disable(Bindings.createBooleanBinding(
                             () -> {
-                                return prefs.passwordManager.getValue() == null || prefs.passwordManager.getValue().getWebsite() == null;
+                                return prefs.passwordManager.getValue() == null
+                                        || prefs.passwordManager.getValue().getWebsite() == null;
                             },
                             prefs.passwordManager));
 
