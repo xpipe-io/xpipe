@@ -77,9 +77,9 @@ public final class HumanReadableFormat {
         return date + " " + time;
     }
 
-    private static int getWeekNumber(LocalDateTime date) {
-        return date.get(
-                WeekFields.of(AppI18n.activeLanguage().getValue().getLocale()).weekOfYear());
+    public static String transferSpeed(long bps) {
+        var s = progressByteCount(bps);
+        return s + "/s";
     }
 
     public static String duration(Duration duration) {

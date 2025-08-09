@@ -149,14 +149,14 @@ public class BrowserTransferModel {
                     progress -> {
                         // Don't update item progress to keep it as finished
                         if (progress == null) {
-                            itemModel.getProgress().setValue(null);
+                            itemModel.updateProgress(null);
                             return;
                         }
 
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
-                        itemModel.getProgress().setValue(progress);
+                        itemModel.updateProgress(progress);
                     },
                     itemModel.getTransferCancelled());
             var action = TransferFilesActionProvider.Action.builder()

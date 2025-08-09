@@ -81,21 +81,28 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private Comp<?> createProgressEstimateStatus() {
-        var text = BindingsHelper.map(model.getProgress(), p -> {
-            if (p == null) {
+        var text = Bindings.createStringBinding(() -> {
+            var p = model.getProgress().getValue();
+            var expected = model.getProgressRemaining().getValue();
+            if (p == null || expected == null) {
                 return null;
-            } else {
-                var expected = p.expectedTimeRemaining();
-                var show = p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
-                        && (!p.hasKnownTotalSize() || p.getTotal() > 50_000_000 || expected.toMillis() > 5000);
-                var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "";
-                return time;
             }
-        });
+
+            var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
+            var show = elapsed > 3000;
+            if (!show) {
+                return "...";
+            }
+
+            var time = HumanReadableFormat.duration(expected) + " @ ";
+            var progress = HumanReadableFormat.transferSpeed(model.getProgressTransferSpeed().getValue());
+            return time + progress;
+        }, model.getProgressRemaining(), model.getProgressTransferSpeed(), model.getProgress());
+
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(90)
+                .prefWidth(140)
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
@@ -106,10 +113,6 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return null;
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
-                if (!p.hasKnownTotalSize()) {
-                    return transferred;
-                }
-
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 return transferred + " / " + all;
             }

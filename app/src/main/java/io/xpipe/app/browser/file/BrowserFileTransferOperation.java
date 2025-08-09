@@ -404,7 +404,7 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
-            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start, fileSize);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize);
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
@@ -480,11 +480,10 @@ public class BrowserFileTransferOperation {
             OutputStream outputStream,
             AtomicLong transferred,
             AtomicLong total,
-            Instant start,
             long expectedFileSize)
             throws Exception {
         // Initialize progress immediately prior to reading anything
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get(), start));
+        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
 
         var killStreams = new AtomicBoolean(false);
         var exception = new AtomicReference<Exception>();
@@ -509,7 +508,7 @@ public class BrowserFileTransferOperation {
                     transferred.addAndGet(read);
                     readCount.addAndGet(read);
                     updateProgress(new BrowserTransferProgress(
-                            sourceFile.getFileName(), transferred.get(), total.get(), start));
+                            sourceFile.getFileName(), transferred.get(), total.get()));
                 }
 
                 outputStream.flush();

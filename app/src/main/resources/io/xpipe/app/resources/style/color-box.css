@@ -100,7 +100,7 @@
 
 .root:performance:light .color-box.purple {
     -fx-background-color: rgb(250, 90, 250, 0.06);
-    -fx-border-color: rgba(230, 80, 230, 0.6);
+    -fx-border-color: rgba(230, 80, 230, 0.4);
 }
 
 .root:light .color-box.purple > .separator .line {

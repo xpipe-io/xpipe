@@ -25,8 +25,11 @@ import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -36,6 +39,8 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,7 +56,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
-    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
 
@@ -59,6 +63,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
+
+    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
+    private final ObservableList<BrowserTransferProgress> progressesIntervalHistory = FXCollections.observableArrayList();
+    private final LongProperty progressTransferSpeed =  new SimpleLongProperty();
+    private final Property<Duration> progressRemaining =  new SimpleObjectProperty<>();
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
@@ -71,6 +80,47 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 },
                 currentPath));
         fileList = new BrowserFileListModel(selectionMode, this);
+    }
+
+    public void updateProgress(BrowserTransferProgress n) {
+        if (n == null) {
+            progress.setValue(null);
+            progressesIntervalHistory.clear();
+            progressTransferSpeed.setValue(0);
+            return;
+        }
+
+        var changedHistory = false;
+        if (progress.getValue() != null) {
+            var last = progressesIntervalHistory.isEmpty() ? Instant.EPOCH : progressesIntervalHistory.getLast().getTimestamp();
+            var elapsed = Duration.between(last, n.getTimestamp());
+            if (elapsed.toMillis() >= 1000) {
+                progressesIntervalHistory.add(progress.getValue());
+                changedHistory = true;
+            }
+        }
+
+        progress.setValue(n);
+        if (progressesIntervalHistory.isEmpty()) {
+            return;
+        }
+
+        if (changedHistory && progressesIntervalHistory.size() >= 2) {
+            var speed = BrowserTransferProgress.estimateTransferSpeed(progressesIntervalHistory, n);
+            progressTransferSpeed.setValue(speed);
+            var remaining = n.getTotal() - n.getTransferred();
+            var estimate = remaining / (double) speed;
+
+            var newDuration = Duration.ofMillis((long) (estimate * 1000.0));
+            var smooth = progressRemaining.getValue() != null && progressRemaining.getValue().toSeconds() + 1 == newDuration.toSeconds();
+            if (!smooth) {
+                progressRemaining.setValue(newDuration);
+            }
+        }
+    }
+
+    public ObservableValue<BrowserTransferProgress> getProgress() {
+        return progress;
     }
 
     public Optional<FileEntry> findFile(FilePath path) {
@@ -432,7 +482,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             BooleanScope.executeExclusive(busy, () -> {
                 startIfNeeded();
                 var op = new BrowserFileTransferOperation(
-                        target, files, mode, true, progress::setValue, transferCancelled);
+                        target, files, mode, true, this::updateProgress, transferCancelled);
                 var action = TransferFilesActionProvider.Action.builder()
                         .operation(op)
                         .target(entry.asNeeded())
