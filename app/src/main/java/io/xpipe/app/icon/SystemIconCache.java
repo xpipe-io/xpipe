@@ -8,6 +8,7 @@ import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
+import io.xpipe.app.prefs.AppPrefs;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -108,7 +109,13 @@ public class SystemIconCache {
                         .toList();
                 for (var icon : darkAvailableIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK;
+                    var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK || AppPrefs.get().preferMonochromeIcons().get();
+
+                    if (!generateDarkIcon && !AppPrefs.get().preferMonochromeIcons().get()) {
+                        delete(target, icon.getName(), true);
+                        continue;
+                    }
+
                     if (generateDarkIcon) {
                         if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
                             continue;
@@ -128,10 +135,10 @@ public class SystemIconCache {
                     }
                 }
 
+                // Generate dark icons manually if there is none provided by inverting the colors
                 for (var icon : baseIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkModeInverse =
-                            existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
+                    var generateDarkModeInverse = existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
                     if (generateDarkModeInverse) {
                         if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
                             continue;
@@ -139,6 +146,18 @@ public class SystemIconCache {
 
                         rasterizeSizesInverted(icon.getFile(), target, icon.getName(), true);
                         continue;
+                    }
+                }
+
+                if (AppPrefs.get().preferMonochromeIcons().get()) {
+                    var lightAvailableIcons = e.getValue().getIcons().stream().filter(
+                            f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.LIGHT).toList();
+                    for (var icon : lightAvailableIcons) {
+                        if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
+                            continue;
+                        }
+
+                        rasterizeSizes(icon.getFile(), target, icon.getName(), false);
                     }
                 }
             }
@@ -152,6 +171,7 @@ public class SystemIconCache {
         var bytes = Files.readAllBytes(source);
         var md = MessageDigest.getInstance("MD5");
         md.update(bytes);
+        md.update(String.valueOf(AppPrefs.get().preferMonochromeIcons().get()).getBytes());
         var digest = md.digest();
         var md5File = dir.resolve(md5Name);
         if (Files.exists(md5File) && Arrays.equals(Files.readAllBytes(md5File), digest)) {
@@ -235,6 +255,15 @@ public class SystemIconCache {
         var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
         ImageIO.write(image, "png", out.toFile());
         return image;
+    }
+
+
+    private static void delete(Path dir, String name, boolean dark)
+            throws IOException {
+        for (var px : sizes) {
+            var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
+            Files.deleteIfExists(out);
+        }
     }
 
     private static BufferedImage invert(BufferedImage image) {

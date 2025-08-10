@@ -52,6 +52,12 @@ public class AppPrefs {
     @Getter
     private final BooleanProperty requiresRestart = new GlobalBooleanProperty(false);
 
+    final BooleanProperty preferMonochromeIcons = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("preferMonochromeIcons")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("pinLocalMachineOnStartup")
@@ -266,6 +272,10 @@ public class AppPrefs {
 
     public ObservableValue<FilePath> defaultSshAgentSocket() {
         return defaultSshAgentSocket;
+    }
+
+    public ObservableBooleanValue preferMonochromeIcons() {
+        return preferMonochromeIcons;
     }
 
     final BooleanProperty requireDoubleClickForConnections =

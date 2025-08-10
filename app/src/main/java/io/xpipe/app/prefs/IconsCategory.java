@@ -45,7 +45,9 @@ public class IconsCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .nameAndDescription("iconSources")
                         .longDescription(DocumentationLink.ICONS)
-                        .addComp(createOverview().maxWidth(getCompWidth())))
+                        .addComp(createOverview().maxWidth(getCompWidth()))
+                        .nameAndDescription("preferMonochromeIcons")
+                        .addToggle(AppPrefs.get().preferMonochromeIcons))
                 .buildComp();
     }
 
