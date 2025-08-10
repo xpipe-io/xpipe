@@ -668,7 +668,7 @@ public abstract class StoreEntryComp extends SimpleComp {
 
     private static String getDefaultNotes() {
         if (DEFAULT_NOTES == null) {
-            AppResources.with(AppResources.XPIPE_MODULE, "misc/notes_default.md", f -> {
+            AppResources.with(AppResources.MAIN_MODULE, "misc/notes_default.md", f -> {
                 DEFAULT_NOTES = Files.readString(f);
             });
         }

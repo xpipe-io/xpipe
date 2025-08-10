@@ -41,17 +41,12 @@ public class AppProperties {
     boolean initialLaunch;
     boolean restarted;
     UUID sessionId;
-
+    boolean developerMode;
     boolean newBuildSession;
-
     boolean aotTrainMode;
-
     boolean debugPlatformThreadAccess;
-
     AppArguments arguments;
-
     XPipeDaemonMode explicitMode;
-
     String devLoginPassword;
 
     public AppProperties(String[] args) {
@@ -131,6 +126,9 @@ public class AppProperties {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         restarted = Optional.ofNullable(System.getProperty("io.xpipe.app.restarted"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        developerMode = Optional.ofNullable(System.getProperty("io.xpipe.app.developerMode"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
 
@@ -215,15 +213,7 @@ public class AppProperties {
     }
 
     public boolean isDevelopmentEnvironment() {
-        return !AppProperties.get().isImage() && AppProperties.get().isDeveloperMode();
-    }
-
-    public boolean isDeveloperMode() {
-        if (AppPrefs.get() == null) {
-            return false;
-        }
-
-        return AppPrefs.get().developerMode().getValue();
+        return !isImage() && isDeveloperMode();
     }
 
     public Optional<AppVersion> getCanonicalVersion() {

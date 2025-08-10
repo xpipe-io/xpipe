@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -219,7 +220,7 @@ public class StandardStorage extends DataStorage {
 
                         // We only keep invalid entries in developer mode as there's no point in keeping them in
                         // production.
-                        if (AppPrefs.get().isDevelopmentEnvironment()) {
+                        if (AppProperties.get().isDevelopmentEnvironment()) {
                             directoriesToKeep.add(path);
                         }
 

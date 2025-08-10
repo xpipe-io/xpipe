@@ -40,7 +40,7 @@ public abstract class BrowserIconDirectoryType {
             }
         });
 
-        AppResources.with(AppResources.XPIPE_MODULE, "folder_list.txt", path -> {
+        AppResources.with(AppResources.MAIN_MODULE, "folder_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;

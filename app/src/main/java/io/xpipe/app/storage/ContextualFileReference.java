@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
@@ -26,7 +27,7 @@ public class ContextualFileReference {
         if (DataStorage.get() == null) {
             return lastDataDir != null
                     ? lastDataDir
-                    : FilePath.of(AppPrefs.DEFAULT_STORAGE_DIR.resolve("data")).toUnix();
+                    : FilePath.of(AppProperties.get().getDataDir().resolve("storage").resolve("data")).toUnix();
         }
 
         return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();

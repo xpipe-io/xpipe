@@ -43,9 +43,6 @@ import java.util.stream.Stream;
 
 public class AppPrefs {
 
-    public static final Path DEFAULT_STORAGE_DIR =
-            AppProperties.get() != null ? AppProperties.get().getDataDir().resolve("storage") : null;
-    private static final String DEVELOPER_MODE_PROP = "io.xpipe.app.developerMode";
     private static AppPrefs INSTANCE;
     private final List<Mapping> mapping = new ArrayList<>();
 
@@ -447,10 +444,6 @@ public class AppPrefs {
         return INSTANCE;
     }
 
-    public boolean isDevelopmentEnvironment() {
-        return developerMode().getValue() && !AppProperties.get().isImage();
-    }
-
     public ObservableValue<PasswordManager> passwordManager() {
         return passwordManager;
     }
@@ -584,8 +577,8 @@ public class AppPrefs {
     }
 
     public ObservableValue<Boolean> developerMode() {
-        return System.getProperty(DEVELOPER_MODE_PROP) != null
-                ? new GlobalBooleanProperty(Boolean.parseBoolean(System.getProperty(DEVELOPER_MODE_PROP)))
+        return AppProperties.get().isDeveloperMode()
+                ? new ReadOnlyBooleanWrapper(true)
                 : developerMode;
     }
 

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppResources {
 
-    public static final String XPIPE_MODULE = "io.xpipe.app";
+    public static final String MAIN_MODULE = "io." + AppNames.ofMain().getSnakeName() + ".app";
 
     private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
 
@@ -25,10 +25,11 @@ public class AppResources {
         fileSystems.forEach((s, moduleFileSystem) -> {
             try {
                 moduleFileSystem.close();
-            } catch (IOException ignored) {
-                // Usually when updating, a SIGTERM is sent to this application.
+            } catch (IOException ex) {
+                // Usually when updating, an exit signal is sent to this application.
                 // However, it takes a while to shut down but the installer is deleting files meanwhile.
-                // It can happen that the jar it does not exist anymore
+                // It can happen that the jar does not exist anymore
+                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
             }
         });
         fileSystems.clear();
@@ -69,8 +70,7 @@ public class AppResources {
 
     public static void with(String module, String file, FailableConsumer<Path, IOException> con) {
         if (AppProperties.get() != null
-                && !AppProperties.get().isImage()
-                && AppProperties.get().isDeveloperMode()) {
+                && AppProperties.get().isDevelopmentEnvironment()) {
             // Check if resource was found. If we use external processed resources, we can't use local dev resources
             if (withLocalDevResource(module, file, con)) {
                 return;

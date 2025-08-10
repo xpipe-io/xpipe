@@ -74,7 +74,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             // This allows for assigning logos even if AppImages has not been initialized yet
             var dir = "img/logo/";
-            AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
+            AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
                 var image = AppPrefs.get() != null
                                 && AppPrefs.get().theme().getValue().isDark()
                         ? path.resolve("loading-160-dark.png")

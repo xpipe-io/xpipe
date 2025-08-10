@@ -25,7 +25,7 @@ public class AppTrayIcon {
                     case OsType.Linux ignored -> "img/logo/full/logo_24x24.png";
                     case OsType.MacOs ignored -> "img/logo/padded/logo_24x24.png";
                 };
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
+        var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, image).orElseThrow();
 
         PopupMenu popupMenu = new PopupMenu();
         this.trayIcon =

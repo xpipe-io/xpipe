@@ -102,7 +102,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                         && AppPrefs.get().theme().getValue().isDark()
                 ? "misc/github-markdown-dark.css"
                 : "misc/github-markdown-light.css";
-        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme).orElseThrow();
+        var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         PlatformThread.sync(markdown).subscribe(val -> {

@@ -278,7 +278,7 @@ public class AppTheme {
         @SneakyThrows
         public void apply() {
             var builder = new StringBuilder();
-            AppResources.with(AppResources.XPIPE_MODULE, "theme/" + id + ".css", path -> {
+            AppResources.with(AppResources.MAIN_MODULE, "theme/" + id + ".css", path -> {
                 var content = Files.readString(path);
                 builder.append(content);
             });
