@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
@@ -11,6 +12,7 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.OsType;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 
@@ -49,7 +51,7 @@ public class AboutCategory extends AppPrefsCategory {
     private Comp<?> createProperties() {
         var title = Comp.of(() -> {
             return JfxHelper.createNamedEntry(
-                    AppI18n.observable("xPipeClient"),
+                    new ReadOnlyStringWrapper(AppNames.ofCurrent().getName() + " Desktop"),
                     new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
                             + AppProperties.get().getArch() + ")"),
                     "logo/logo.png");

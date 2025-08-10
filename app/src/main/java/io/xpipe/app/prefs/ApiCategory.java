@@ -4,7 +4,7 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -44,7 +44,7 @@ public class ApiCategory extends AppPrefsCategory {
                        }
                        """;
                     return template.formatted(
-                                    AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe",
+                                    AppNames.ofCurrent().getKebapName(),
                                     AppBeaconServer.get().getPort(),
                                     prefs.apiKey().get() != null
                                             ? prefs.apiKey().get()

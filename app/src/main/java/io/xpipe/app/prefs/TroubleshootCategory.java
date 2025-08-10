@@ -3,10 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -61,7 +58,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                     OperationMode.executeAfterShutdown(() -> {
                                         var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
-                                                .title("XPipe Debug")
+                                                .title(AppNames.ofCurrent().getName() + " Debug")
                                                 .localScript(sc -> new ShellScript(
                                                         sc.getShellDialect().runScriptCommand(sc, script.toString())))
                                                 .launch();

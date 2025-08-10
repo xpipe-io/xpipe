@@ -1,6 +1,6 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.core.AppLocations;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 
@@ -57,7 +57,7 @@ public abstract class RealVncClient implements ExternalVncClient {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getProgramFiles()
+            return Optional.of(AppSystemInfo.getWindows().getProgramFiles()
                             .resolve("RealVNC")
                             .resolve("VNC Viewer")
                             .resolve("vncviewer.exe"))

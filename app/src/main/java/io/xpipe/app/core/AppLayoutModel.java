@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
@@ -25,6 +26,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.print.Doc;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -154,13 +156,6 @@ public class AppLayoutModel {
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null)));
-        //                new Entry(
-        //                        AppI18n.observable("api"),
-        //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-        //                        null,
-        //                        () -> Hyperlinks.open(
-        //                                "http://localhost:" + AppBeaconServer.get().getPort()),
-        //                        null),);
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
                     AppI18n.observable("webtop"),
@@ -169,6 +164,12 @@ public class AppLayoutModel {
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
         }
+        l.add(new Entry(
+                AppI18n.observable("mcp"),
+                new LabelGraphic.IconGraphic("mdi2c-code-json"),
+                null,
+                () -> DocumentationLink.MCP.open(),
+                null));
         return l;
     }
 

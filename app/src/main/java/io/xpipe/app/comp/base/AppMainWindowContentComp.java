@@ -82,7 +82,7 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
-            var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
+            var version = new LabelComp((AppNames.ofCurrent().getName()) + " "
                     + AppProperties.get().getVersion());
             version.apply(struc -> {
                 AppFontSizes.apply(struc.get(), appFontSizes -> "15");

@@ -81,7 +81,8 @@ public enum DocumentationLink {
     TERMINAL_PROMPT("guide/terminals#prompts"),
     TEAM_VAULTS("guide/sync#team-vaults"),
     SSH_TROUBLESHOOT("guide/ssh#troubleshooting"),
-    NO_EXEC("troubleshooting/noexec");
+    NO_EXEC("troubleshooting/noexec"),
+    MCP("guide/mcp");
 
     private final String page;
 

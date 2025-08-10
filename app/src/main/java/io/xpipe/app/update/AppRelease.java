@@ -1,5 +1,6 @@
 package io.xpipe.app.update;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.core.OsType;
 
@@ -19,9 +20,9 @@ public class AppRelease {
         var arch = AppProperties.get().getArch();
         var name = "xpipe-installer-%s-%s.%s".formatted(os, arch, type.getExtension());
         var url = "https://github.com/xpipe-io/%s/releases/download/%s/%s"
-                .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag, name);
+                .formatted(AppNames.ofCurrent().getKebapName(), tag, name);
         var browser = "https://github.com/xpipe-io/%s/releases/%s"
-                .formatted(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe", tag);
+                .formatted(AppNames.ofCurrent().getKebapName(), tag);
         return new AppRelease(tag, url, browser, name);
     }
 

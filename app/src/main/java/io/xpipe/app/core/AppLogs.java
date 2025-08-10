@@ -138,7 +138,7 @@ public class AppLogs {
         if (shouldLogToFile) {
             try {
                 FileUtils.forceMkdir(usedLogsDir.toFile());
-                var file = usedLogsDir.resolve("xpipe.log");
+                var file = usedLogsDir.resolve(AppNames.ofMain().getName() + "xpipe.log");
                 var fos = new FileOutputStream(file.toFile(), true);
                 var buf = new BufferedOutputStream(fos);
                 outFileStream = new PrintStream(buf, false);

@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -23,7 +24,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         try (var sc = LocalShell.getShell().start()) {
             var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);
             sc.executeSimpleCommand(sc.getShellDialect().getMkdirsCommand(temp.toString()));
-            return temp.join("xpipe_kitty");
+            return temp.join(AppNames.ofCurrent().getSnakeName() + "_kitty");
         }
     }
 

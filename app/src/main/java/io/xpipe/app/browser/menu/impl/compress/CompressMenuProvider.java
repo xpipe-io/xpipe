@@ -73,17 +73,17 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         return List.of(
                 new ZipActionProvider(false),
-                new TarBasedActionProvider(false, false) {
-                    @Override
-                    protected String getExtension() {
-                        return "tar";
-                    }
-                },
                 new TarBasedActionProvider(false, true) {
 
                     @Override
                     protected String getExtension() {
                         return "tar.gz";
+                    }
+                },
+                new TarBasedActionProvider(false, false) {
+                    @Override
+                    protected String getExtension() {
+                        return "tar";
                     }
                 });
     }
@@ -113,17 +113,17 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
                 BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return List.of(
                     new ZipActionProvider(directory),
-                    new TarBasedActionProvider(directory, false) {
-                        @Override
-                        protected String getExtension() {
-                            return "tar";
-                        }
-                    },
                     new TarBasedActionProvider(directory, true) {
 
                         @Override
                         protected String getExtension() {
                             return "tar.gz";
+                        }
+                    },
+                    new TarBasedActionProvider(directory, false) {
+                        @Override
+                        protected String getExtension() {
+                            return "tar";
                         }
                     });
         }

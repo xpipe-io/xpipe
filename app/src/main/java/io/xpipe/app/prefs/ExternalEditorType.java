@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppLocations;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -47,7 +47,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
+            return Optional.of(AppSystemInfo.getWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
         }
     };
 
@@ -75,7 +75,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("VSCodium")
                             .resolve("bin")
@@ -108,7 +108,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("cursor")
                             .resolve("Cursor.exe"))
@@ -140,7 +140,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getProgramFiles()
+            return Optional.of(AppSystemInfo.getWindows().getProgramFiles()
                             .resolve("Void")
                             .resolve("Void.exe"))
                     .filter(path -> Files.exists(path));
@@ -171,7 +171,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("Windsurf")
                             .resolve("bin")
@@ -204,7 +204,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("Kiro")
                             .resolve("bin")
@@ -238,7 +238,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("TheiaIDE")
                             .resolve("TheiaIDE.exe"))
@@ -270,7 +270,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("Trae")
                             .resolve("bin")
@@ -303,7 +303,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code")
                             .resolve("bin")
@@ -336,7 +336,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppLocations.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code Insiders")
                             .resolve("bin")

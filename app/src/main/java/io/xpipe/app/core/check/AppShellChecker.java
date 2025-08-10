@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessOutputException;
@@ -62,7 +63,7 @@ public abstract class AppShellChecker {
         var fallback = !ProcessControlProvider.get()
                         .getEffectiveLocalDialect()
                         .equals(ProcessControlProvider.get().getFallbackDialect())
-                ? "XPipe will now attempt to fall back to another shell."
+                ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
                 : "";
         return """
                 Shell self-test failed for %s:

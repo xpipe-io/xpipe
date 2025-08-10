@@ -1,6 +1,6 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.core.AppLocations;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.OsType;
 
@@ -34,6 +34,6 @@ public class AppTempCheck {
             return;
         }
 
-        checkTemp(AppLocations.getWindows().getTemp().toString());
+        checkTemp(AppSystemInfo.getWindows().getTemp().toString());
     }
 }

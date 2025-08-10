@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -36,7 +37,7 @@ public class AppMcpServer {
                 new ObjectMapper(), "/mcp", false, (req, context) -> context, null);
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
-                .serverInfo("XPipe", AppProperties.get().getVersion())
+                .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())
                 .capabilities(McpSchema.ServerCapabilities.builder()
                         .resources(true, true)
                         .tools(true)

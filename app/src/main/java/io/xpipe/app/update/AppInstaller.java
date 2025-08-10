@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.process.ShellDialects;
@@ -73,14 +74,14 @@ public class AppInstaller {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
-                            toRun = "start \"XPipe Updater\" /min cmd /c \""
+                            toRun = "start \"" + AppNames.ofCurrent().getName() + " Updater\" /min cmd /c \""
                                     + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
                             toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
                                     ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "`\"\""
-                                    : "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \""
+                                    : "start \"" + AppNames.ofCurrent().getName() + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "\"";
                         }
@@ -167,7 +168,7 @@ public class AppInstaller {
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
-                            .title("XPipe Updater")
+                            .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
                             .launch();
                 });
@@ -203,7 +204,7 @@ public class AppInstaller {
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
-                            .title("XPipe Updater")
+                            .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
                             .launch();
                 });
@@ -239,7 +240,7 @@ public class AppInstaller {
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
-                            .title("XPipe Updater")
+                            .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
                             .launch();
                 });

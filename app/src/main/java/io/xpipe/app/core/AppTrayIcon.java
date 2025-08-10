@@ -30,7 +30,7 @@ public class AppTrayIcon {
         PopupMenu popupMenu = new PopupMenu();
         this.trayIcon =
                 new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
-        this.trayIcon.setToolTip("XPipe");
+        this.trayIcon.setToolTip(AppNames.ofCurrent().getName());
         this.trayIcon.setImageAutoSize(true);
 
         {

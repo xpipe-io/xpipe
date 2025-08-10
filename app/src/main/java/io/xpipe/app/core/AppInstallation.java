@@ -60,14 +60,14 @@ public abstract class AppInstallation {
                 yield Path.of(stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app");
             }
             case OsType.Windows ignored -> {
-                var pg = AppLocations.getWindows().getProgramFiles();
-                var systemPath = pg.resolve(stage ? "XPipe PTB" : "XPipe");
+                var pg = AppSystemInfo.getWindows().getProgramFiles();
+                var systemPath = pg.resolve(AppNames.ofCurrent().getName());
                 if (Files.exists(systemPath)) {
                     yield systemPath;
                 }
 
-                var ad = AppLocations.getWindows().getLocalAppData();
-                yield ad.resolve(stage ? "XPipe PTB" : "XPipe");
+                var ad = AppSystemInfo.getWindows().getLocalAppData();
+                yield ad.resolve(AppNames.ofCurrent().getName());
             }
         };
     }
@@ -135,7 +135,7 @@ public abstract class AppInstallation {
                         .getParent();
             }
             case OsType.Windows ignored -> {
-                yield executable.getParent().getParent();
+                yield executable.getParent().getParent().getParent();
             }
         };
     }

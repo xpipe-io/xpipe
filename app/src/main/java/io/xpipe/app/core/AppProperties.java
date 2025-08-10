@@ -19,20 +19,12 @@ public class AppProperties {
 
     private static AppProperties INSTANCE;
     boolean fullVersion;
-
-    @Getter
     String version;
-
-    @Getter
     String build;
-
     UUID buildUuid;
     String sentryUrl;
     String arch;
-
-    @Getter
     boolean image;
-
     boolean staging;
     boolean useVirtualThreads;
     boolean debugThreads;
@@ -48,9 +40,6 @@ public class AppProperties {
     UUID uuid;
     boolean initialLaunch;
     boolean restarted;
-    /**
-     * Unique identifier that resets on every XPipe restart.
-     */
     UUID sessionId;
 
     boolean newBuildSession;

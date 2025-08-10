@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -251,13 +252,13 @@ public class TerminalLauncher {
                     .get()
                     .prepareIntermediateTerminalOpen(
                             TerminalInitFunction.fixed(proxyMultiplexerCommand),
-                            TerminalInitScriptConfig.ofName("XPipe"),
+                            TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + proxyLaunchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, "XPipe", "XPipe", false, fullLocalCommand, LocalShell.getDialect()));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, fullLocalCommand, LocalShell.getDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -266,11 +267,11 @@ public class TerminalLauncher {
             var launchCommand = LocalShell.getShell()
                     .prepareIntermediateTerminalOpen(
                             TerminalInitFunction.fixed(multiplexerCommand),
-                            TerminalInitScriptConfig.ofName("XPipe"),
+                            TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, "XPipe", "XPipe", false, fullLocalCommand, LocalShell.getDialect()));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, fullLocalCommand, LocalShell.getDialect()));
         }
     }
 
@@ -286,7 +287,7 @@ public class TerminalLauncher {
                 .get()
                 .prepareIntermediateTerminalOpen(
                         TerminalInitFunction.fixed(openCommand),
-                        TerminalInitScriptConfig.ofName("XPipe"),
+                        TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                         WorkingDirectoryFunction.none());
         // Restart for the next time
         proxyControl.get().start();
