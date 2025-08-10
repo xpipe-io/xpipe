@@ -37,6 +37,14 @@ public interface AppLocations {
 
         private Path userHome;
 
+        public Path getSystemRoot() {
+            var root = AppLocations.parsePath(System.getenv("SystemRoot"));
+            if (root == null) {
+                return Path.of("C:\\Windows");
+            }
+            return root;
+        }
+
         public Path getTemp() {
             var env = AppLocations.parsePath(System.getenv("TEMP"));
             if (env == null) {

@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppLocations;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class AppCertutilCheck {
 
     private static boolean getResult() {
-        var fc = new ProcessBuilder(System.getenv("WINDIR") + "\\System32\\certutil").redirectErrorStream(true);
+        var fc = new ProcessBuilder(AppLocations.getWindows().getSystemRoot().resolve("\\System32\\certutil").toString()).redirectErrorStream(true);
         try {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());

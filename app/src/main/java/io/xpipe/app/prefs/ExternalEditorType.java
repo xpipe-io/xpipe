@@ -47,7 +47,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
+            return Optional.of(AppLocations.getWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
         }
     };
 
