@@ -73,7 +73,7 @@ public class ScriptHelper {
 
     private static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
-        var fileName = "xpipe-" + new Random().nextInt();
+        var fileName = "xpipe-" + Math.abs(new Random().nextInt());
         var temp = parent.getSystemTemporaryDirectory();
         var fileBase = temp.join(fileName);
         if (type != parent.getShellDialect()) {
@@ -86,7 +86,11 @@ public class ScriptHelper {
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
-                return createExecScript(sub.getShellDialect(), sub, content);
+                content = sub.getShellDialect().prepareScriptContent(sub, content);
+                return createExecScriptRaw(
+                        sub,
+                        sub.getSystemTemporaryDirectory().join(fileName + "." + sub.getShellDialect().getScriptFileEnding()),
+                        content);
             }
         } else {
             var content = parent.getShellDialect()
@@ -97,7 +101,11 @@ public class ScriptHelper {
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
-            return createExecScript(parent.getShellDialect(), parent, content);
+            content = parent.getShellDialect().prepareScriptContent(parent, content);
+            return createExecScriptRaw(
+                    parent,
+                    parent.getSystemTemporaryDirectory().join(fileName + "." + parent.getShellDialect().getScriptFileEnding()),
+                    content);
         }
     }
 }
