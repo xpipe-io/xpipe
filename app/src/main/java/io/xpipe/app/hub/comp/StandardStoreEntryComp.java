@@ -28,29 +28,6 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         return 57;
     }
 
-    private Label createSummary() {
-        var summary = new Label();
-        summary.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            var summaryValue = getWrapper().getShownSummary().getValue();
-                            if (summaryValue != null) {
-                                return summaryValue;
-                            } else {
-                                var provider = getWrapper().getEntry().getProvider();
-                                if (provider != null) {
-                                    return AppI18n.get(provider.getId() + ".displayName");
-                                } else {
-                                    return null;
-                                }
-                            }
-                        },
-                        getWrapper().getShownSummary()));
-        summary.getStyleClass().add("summary");
-        AppFontSizes.xs(summary);
-        return summary;
-    }
-
     protected Region createContent() {
         var name = createName().createRegion();
         var index = createOrderIndex().createRegion();
@@ -128,6 +105,29 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         applyState(grid);
 
         return grid;
+    }
+
+    private Label createSummary() {
+        var summary = new Label();
+        summary.textProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            var summaryValue = getWrapper().getShownSummary().getValue();
+                            if (summaryValue != null) {
+                                return summaryValue;
+                            } else {
+                                var provider = getWrapper().getEntry().getProvider();
+                                if (provider != null) {
+                                    return AppI18n.get(provider.getId() + ".displayName");
+                                } else {
+                                    return null;
+                                }
+                            }
+                        },
+                        getWrapper().getShownSummary()));
+        summary.getStyleClass().add("summary");
+        AppFontSizes.xs(summary);
+        return summary;
     }
 
     private Label createInformation() {

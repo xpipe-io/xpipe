@@ -14,11 +14,6 @@ import java.util.Optional;
 public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType, ExternalRdpClient {
 
     @Override
-    public String getWebsite() {
-        return "https://devolutions.net/remote-desktop-manager/";
-    }
-
-    @Override
     public boolean detach() {
         return true;
     }
@@ -55,6 +50,11 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
     @Override
     public boolean supportsPasswordPassing() {
         return false;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://devolutions.net/remote-desktop-manager/";
     }
 
     @Override

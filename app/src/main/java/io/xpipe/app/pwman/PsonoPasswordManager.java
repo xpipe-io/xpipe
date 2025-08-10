@@ -28,6 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 @JsonTypeName("psono")
 public class PsonoPasswordManager implements PasswordManager {
 
+    private static ShellControl SHELL;
     private final InPlaceSecretValue apiKey;
     private final InPlaceSecretValue apiSecretKey;
     private final String serverUrl;
@@ -59,8 +60,6 @@ public class PsonoPasswordManager implements PasswordManager {
                         },
                         p);
     }
-
-    private static ShellControl SHELL;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {

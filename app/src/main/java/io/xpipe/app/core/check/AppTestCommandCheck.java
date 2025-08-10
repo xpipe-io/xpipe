@@ -23,7 +23,8 @@ public class AppTestCommandCheck {
                         .execute();
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix(
-                        "Installation self test failed. Is your \"test\" shell command working as expected and is the XPipe installation directory accessible?",
+                        "Installation self test failed. Is your \"test\" shell command working as expected and is the XPipe installation directory "
+                                + "accessible?",
                         ex);
             }
         }

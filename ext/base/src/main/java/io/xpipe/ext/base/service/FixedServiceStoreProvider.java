@@ -29,16 +29,6 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
     }
 
     @Override
-    public String getId() {
-        return "fixedService";
-    }
-
-    @Override
-    public List<Class<?>> getStoreClasses() {
-        return List.of(FixedServiceStore.class);
-    }
-
-    @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         FixedServiceStore st = store.getValue().asNeeded();
         var host = new SimpleObjectProperty<>(st.getHost());
@@ -70,5 +60,15 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                         },
                         store);
         return q.buildDialog();
+    }
+
+    @Override
+    public String getId() {
+        return "fixedService";
+    }
+
+    @Override
+    public List<Class<?>> getStoreClasses() {
+        return List.of(FixedServiceStore.class);
     }
 }

@@ -19,23 +19,14 @@ import java.util.Optional;
 public class TightVncClient implements ExternalApplicationType.InstallLocationType, ExternalVncClient {
 
     @Override
-    public String getWebsite() {
-        return "https://www.tightvnc.com";
-    }
-
-    @Override
-    public boolean supportsPasswords() {
-        return true;
-    }
-
-    @Override
     public String getExecutable() {
         return "tvnviewer.exe";
     }
 
     @Override
     public Optional<Path> determineInstallation() {
-        return Optional.of(AppSystemInfo.getWindows().getProgramFiles()
+        return Optional.of(AppSystemInfo.getWindows()
+                        .getProgramFiles()
                         .resolve("TightVNC")
                         .resolve("tvnviewer.exe"))
                 .filter(path -> Files.exists(path));
@@ -54,5 +45,15 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
             command.sensitive();
         }
         command.execute();
+    }
+
+    @Override
+    public boolean supportsPasswords() {
+        return true;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.tightvnc.com";
     }
 }

@@ -27,6 +27,15 @@ public class DownloadMenuProvider implements BrowserMenuLeafProvider {
         fullSessionModel.getLocalTransfersStage().drop(model, entries);
     }
 
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var transfer = model.getBrowserModel();
+        if (!(transfer instanceof BrowserFullSessionModel)) {
+            return false;
+        }
+        return true;
+    }
+
     public String getId() {
         return "download";
     }
@@ -49,14 +58,5 @@ public class DownloadMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("download");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var transfer = model.getBrowserModel();
-        if (!(transfer instanceof BrowserFullSessionModel)) {
-            return false;
-        }
-        return true;
     }
 }

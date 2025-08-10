@@ -67,16 +67,13 @@ public abstract class StoreEntryComp extends SimpleComp {
                 }
             },
             App.getApp().getStage().widthProperty());
+    private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
     protected final Comp<?> content;
 
     public StoreEntryComp(StoreSection section, Comp<?> content) {
         this.section = section;
         this.content = content;
-    }
-
-    public StoreEntryWrapper getWrapper() {
-        return section.getWrapper();
     }
 
     public static StoreEntryComp create(StoreSection section, Comp<?> content, boolean preferLarge) {
@@ -98,6 +95,19 @@ public abstract class StoreEntryComp extends SimpleComp {
                     && AppPrefs.get().condenseConnectionDisplay().get();
             return forceCondensed ? new DenseStoreEntryComp(e, null) : new StandardStoreEntryComp(e, null);
         }
+    }
+
+    private static String getDefaultNotes() {
+        if (DEFAULT_NOTES == null) {
+            AppResources.with(AppResources.MAIN_MODULE, "misc/notes_default.md", f -> {
+                DEFAULT_NOTES = Files.readString(f);
+            });
+        }
+        return DEFAULT_NOTES;
+    }
+
+    public StoreEntryWrapper getWrapper() {
+        return section.getWrapper();
     }
 
     public abstract boolean isFullSize();
@@ -662,16 +672,5 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
 
         return item;
-    }
-
-    private static String DEFAULT_NOTES = null;
-
-    private static String getDefaultNotes() {
-        if (DEFAULT_NOTES == null) {
-            AppResources.with(AppResources.MAIN_MODULE, "misc/notes_default.md", f -> {
-                DEFAULT_NOTES = Files.readString(f);
-            });
-        }
-        return DEFAULT_NOTES;
     }
 }

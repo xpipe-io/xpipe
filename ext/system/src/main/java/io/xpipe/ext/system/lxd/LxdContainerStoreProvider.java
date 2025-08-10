@@ -33,6 +33,14 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
+                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
+    }
+
+    @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.LXC;
     }
@@ -83,14 +91,6 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
                         store)
                 .buildDialog();
         return q;
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
-        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
-                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 
     @Override

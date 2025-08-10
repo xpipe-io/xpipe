@@ -45,9 +45,9 @@ public class AppInstaller {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes({
         @JsonSubTypes.Type(value = InstallerAssetType.Msi.class),
-        @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
+                @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
         @JsonSubTypes.Type(value = InstallerAssetType.Rpm.class),
-        @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
+                @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
     })
     public abstract static class InstallerAssetType {
 
@@ -78,10 +78,12 @@ public class AppInstaller {
                                     + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
                             toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
-                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
+                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", "
+                                            + "\"-File\", \"`\""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "`\"\""
-                                    : "start \"" + AppNames.ofCurrent().getName() + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
+                                    : "start \"" + AppNames.ofCurrent().getName()
+                                            + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "\"";
                         }
@@ -104,12 +106,12 @@ public class AppInstaller {
                 var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
                         """
-                        echo Installing %s ...
-                        cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                        echo + msiexec /i "%s" /lv "%s" /qb %s
-                        start "" /wait msiexec /i "%s" /lv "%s" /qb %s
-                        %s
-                        """,
+                                     echo Installing %s ...
+                                     cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                                     echo + msiexec /i "%s" /lv "%s" /qb %s
+                                     start "" /wait msiexec /i "%s" /lv "%s" /qb %s
+                                     %s
+                                     """,
                         file,
                         file,
                         logFile,
@@ -126,12 +128,12 @@ public class AppInstaller {
                 var runas = systemWide ? "-Verb runAs" : "";
                 return String.format(
                         """
-                        echo Installing %s ...
-                        cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                        echo '+ msiexec /i "%s" /lv "%s" /qb%s'
-                        Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
-                        %s
-                        """,
+                                     echo Installing %s ...
+                                     cd "$env:HOMEDRIVE\\$env:HOMEPATH"
+                                     echo '+ msiexec /i "%s" /lv "%s" /qb%s'
+                                     Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
+                                     %s
+                                     """,
                         file,
                         file,
                         logFile,
@@ -151,20 +153,20 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                             runinstaller() {
-                                                 echo "Installing downloaded .deb installer ..."
-                                                 echo "+ sudo apt install \\"%s\\""
-                                                 DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
-                                                 %s || return 1
-                                             }
+                                                            runinstaller() {
+                                                                echo "Installing downloaded .deb installer ..."
+                                                                echo "+ sudo apt install \\"%s\\""
+                                                                DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
+                                                                %s || return 1
+                                                            }
 
-                                             cd ~
-                                             runinstaller
-                                             if [ "$?" != 0 ]; then
-                                               echo "Update failed ..."
-                                               read key
-                                             fi
-                                             """,
+                                                            cd ~
+                                                            runinstaller
+                                                            if [ "$?" != 0 ]; then
+                                                              echo "Update failed ..."
+                                                              read key
+                                                            fi
+                                                            """,
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
@@ -187,20 +189,20 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                             runinstaller() {
-                                                 echo "Installing downloaded .rpm installer ..."
-                                                 echo "+ sudo rpm -U -v --force \\"%s\\""
-                                                 sudo rpm -U -v --force "%s" || return 1
-                                                 %s || return 1
-                                             }
+                                                            runinstaller() {
+                                                                echo "Installing downloaded .rpm installer ..."
+                                                                echo "+ sudo rpm -U -v --force \\"%s\\""
+                                                                sudo rpm -U -v --force "%s" || return 1
+                                                                %s || return 1
+                                                            }
 
-                                             cd ~
-                                             runinstaller
-                                             if [ "$?" != 0 ]; then
-                                               echo "Update failed ..."
-                                               read key
-                                             fi
-                                             """,
+                                                            cd ~
+                                                            runinstaller
+                                                            if [ "$?" != 0 ]; then
+                                                              echo "Update failed ..."
+                                                              read key
+                                                            fi
+                                                            """,
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
@@ -223,20 +225,20 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                           runinstaller() {
-                                               echo "Installing downloaded .pkg installer ..."
-                                               echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
-                                               sudo installer -verboseR -pkg "%s" -target / || return 1
-                                               %s || return 1
-                                           }
+                                                            runinstaller() {
+                                                                echo "Installing downloaded .pkg installer ..."
+                                                                echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
+                                                                sudo installer -verboseR -pkg "%s" -target / || return 1
+                                                                %s || return 1
+                                                            }
 
-                                           cd ~
-                                           runinstaller
-                                           if [ "$?" != 0 ]; then
-                                             echo "Update failed ..."
-                                             read -rs -k 1 key
-                                           fi
-                                           """,
+                                                            cd ~
+                                                            runinstaller
+                                                            if [ "$?" != 0 ]; then
+                                                              echo "Update failed ..."
+                                                              read -rs -k 1 key
+                                                            fi
+                                                            """,
                         file, file, AppRestart.getTerminalRestartCommand()));
                 OperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()

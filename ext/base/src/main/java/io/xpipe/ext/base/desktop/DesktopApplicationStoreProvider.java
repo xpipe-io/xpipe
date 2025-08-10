@@ -25,17 +25,6 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataStoreUsageCategory getUsageCategory() {
-        return DataStoreUsageCategory.DESKTOP;
-    }
-
-    @Override
-    public FailableRunnable<Exception> launchBrowser(
-            BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
-        return launch(store);
-    }
-
-    @Override
     public FailableRunnable<Exception> launch(DataStoreEntry store) {
         return () -> {
             DesktopApplicationStore s = store.getStore().asNeeded();
@@ -49,8 +38,19 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public FailableRunnable<Exception> launchBrowser(
+            BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
+        return launch(store);
+    }
+
+    @Override
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.DESKTOP;
+    }
+
+    @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.DESKTOP;
     }
 
     @Override

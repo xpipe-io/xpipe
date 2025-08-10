@@ -30,6 +30,9 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 public class PasswordManagerCommand implements PasswordManager {
 
+    private static ShellControl SHELL;
+    ShellScript script;
+
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
         var template = new SimpleObjectProperty<PasswordManagerCommandTemplate>();
         var script = new SimpleObjectProperty<>(
@@ -65,8 +68,6 @@ public class PasswordManagerCommand implements PasswordManager {
                 .bind(() -> new PasswordManagerCommand(script.get()), property);
     }
 
-    private static ShellControl SHELL;
-
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
@@ -95,8 +96,6 @@ public class PasswordManagerCommand implements PasswordManager {
             return null;
         }
     }
-
-    ShellScript script;
 
     @Override
     public CredentialResult retrieveCredentials(String key) {

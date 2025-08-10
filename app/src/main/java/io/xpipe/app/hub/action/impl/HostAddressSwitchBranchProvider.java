@@ -17,6 +17,41 @@ import java.util.stream.Collectors;
 
 public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAddressSwitchStore> {
 
+    @Override
+    public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<HostAddressSwitchStore> store) {
+        return store.getStore().getHostAddress().getAvailable().stream()
+                .map(s -> {
+                    return new HostAddressProvider(
+                            s.equals(store.getStore().getHostAddress().get()), s);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public StoreActionCategory getCategory() {
+        return StoreActionCategory.CONFIGURATION;
+    }
+
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<HostAddressSwitchStore> o) {
+        return !o.getStore().getHostAddress().isSingle();
+    }
+
+    @Override
+    public ObservableValue<String> getName(DataStoreEntryRef<HostAddressSwitchStore> store) {
+        return AppI18n.observable("switchHostAddress");
+    }
+
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<HostAddressSwitchStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2f-format-list-group");
+    }
+
+    @Override
+    public Class<HostAddressSwitchStore> getApplicableClass() {
+        return HostAddressSwitchStore.class;
+    }
+
     private static class HostAddressProvider implements HubLeafProvider<HostAddressSwitchStore> {
 
         private final boolean active;
@@ -49,40 +84,5 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
         public Class<HostAddressSwitchStore> getApplicableClass() {
             return HostAddressSwitchStore.class;
         }
-    }
-
-    @Override
-    public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<HostAddressSwitchStore> store) {
-        return store.getStore().getHostAddress().getAvailable().stream()
-                .map(s -> {
-                    return new HostAddressProvider(
-                            s.equals(store.getStore().getHostAddress().get()), s);
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Class<HostAddressSwitchStore> getApplicableClass() {
-        return HostAddressSwitchStore.class;
-    }
-
-    @Override
-    public boolean isApplicable(DataStoreEntryRef<HostAddressSwitchStore> o) {
-        return !o.getStore().getHostAddress().isSingle();
-    }
-
-    @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<HostAddressSwitchStore> store) {
-        return AppI18n.observable("switchHostAddress");
-    }
-
-    @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<HostAddressSwitchStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2f-format-list-group");
-    }
-
-    @Override
-    public StoreActionCategory getCategory() {
-        return StoreActionCategory.CONFIGURATION;
     }
 }

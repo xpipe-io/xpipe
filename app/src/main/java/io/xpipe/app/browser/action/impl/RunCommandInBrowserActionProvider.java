@@ -25,11 +25,6 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
         String command;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() {
             var builder = CommandBuilder.of().add(command);
             for (BrowserEntry entry : getEntries()) {
@@ -39,6 +34,11 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
             var cmd = model.getFileSystem().getShell().orElseThrow().command(builder);
             CommandDialog.runAndShow(cmd);
             model.refreshBrowserEntriesSync(getEntries());
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

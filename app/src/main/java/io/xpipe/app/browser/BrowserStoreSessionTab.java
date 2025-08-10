@@ -23,11 +23,6 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
         this.name = DataStorage.get().getStoreEntryDisplayName(entry.get());
     }
 
-    @Override
-    public ObservableValue<String> getName() {
-        return new SimpleStringProperty(name);
-    }
-
     public abstract Comp<?> comp();
 
     public abstract boolean canImmediatelyClose();
@@ -35,6 +30,11 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
     public abstract void init() throws Exception;
 
     public abstract void close();
+
+    @Override
+    public ObservableValue<String> getName() {
+        return new SimpleStringProperty(name);
+    }
 
     @Override
     public String getIcon() {

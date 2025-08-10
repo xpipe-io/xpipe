@@ -28,28 +28,6 @@ public class TermiusTerminalType implements ExternalTerminalType {
     }
 
     @Override
-    public boolean isAvailable() {
-        try (var sc = LocalShell.getShell()) {
-            return switch (OsType.getLocal()) {
-                case OsType.Linux ignored -> {
-                    yield Files.exists(Path.of("/opt/Termius"));
-                }
-                case OsType.MacOs ignored -> {
-                    yield Files.exists(Path.of("/Applications/Termius.app"));
-                }
-                case OsType.Windows ignored -> {
-                    var r = WindowsRegistry.local()
-                            .readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
-                    yield r.isPresent();
-                }
-            };
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).omit().handle();
-            return false;
-        }
-    }
-
-    @Override
     public String getWebsite() {
         return "https://termius.com/";
     }
@@ -78,6 +56,28 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var name = b.getName();
         Hyperlinks.open("termius://app/host-sharing#label=" + name + "&ip=" + host + "&port=" + port + "&username="
                 + user + "&os=undefined");
+    }
+
+    @Override
+    public boolean isAvailable() {
+        try (var sc = LocalShell.getShell()) {
+            return switch (OsType.getLocal()) {
+                case OsType.Linux ignored -> {
+                    yield Files.exists(Path.of("/opt/Termius"));
+                }
+                case OsType.MacOs ignored -> {
+                    yield Files.exists(Path.of("/Applications/Termius.app"));
+                }
+                case OsType.Windows ignored -> {
+                    var r = WindowsRegistry.local()
+                            .readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "SOFTWARE\\Classes\\termius");
+                    yield r.isPresent();
+                }
+            };
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().handle();
+            return false;
+        }
     }
 
     private boolean showInfo() throws IOException {

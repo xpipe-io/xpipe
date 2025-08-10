@@ -69,9 +69,8 @@ public class StoreEntryWrapper {
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
-
-    private boolean effectiveBusyProviderBound = false;
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
+    private boolean effectiveBusyProviderBound = false;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;

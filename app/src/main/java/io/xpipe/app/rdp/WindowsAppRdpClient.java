@@ -7,11 +7,6 @@ import io.xpipe.app.util.LocalShell;
 public class WindowsAppRdpClient implements ExternalApplicationType.MacApplication, ExternalRdpClient {
 
     @Override
-    public String getWebsite() {
-        return "https://learn.microsoft.com/en-us/windows-app/get-started-connect-devices-desktops-apps?tabs=windows-avd%2Cwindows-w365%2Cwindows-devbox%2Cmacos-rds%2Cmacos-pc&pivots=remote-pc";
-    }
-
-    @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
         LocalShell.getShell()
@@ -24,6 +19,12 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
     @Override
     public boolean supportsPasswordPassing() {
         return false;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://learn.microsoft.com/en-us/windows-app/get-started-connect-devices-desktops-apps?tabs=windows-avd%2Cwindows-w365%2Cwindows"
+                + "-devbox%2Cmacos-rds%2Cmacos-pc&pivots=remote-pc";
     }
 
     @Override

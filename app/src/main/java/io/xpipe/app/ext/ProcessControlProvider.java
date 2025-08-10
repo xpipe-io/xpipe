@@ -23,12 +23,12 @@ public abstract class ProcessControlProvider {
                 .orElseThrow();
     }
 
-    public abstract BrowserStoreSessionTab<?> createVncSession(
-            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
-
     public static ProcessControlProvider get() {
         return INSTANCE;
     }
+
+    public abstract BrowserStoreSessionTab<?> createVncSession(
+            BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
 
     public abstract DataStoreEntryRef<ShellStore> elevated(DataStoreEntryRef<ShellStore> e);
 

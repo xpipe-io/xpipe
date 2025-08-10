@@ -11,24 +11,8 @@ import java.util.Base64;
 public class PowerShellTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
-    public boolean supportsEscapes() {
-        return false;
-    }
-
-    @Override
-    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        launch(toCommand(configuration));
-    }
-
-    @Override
     public TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW;
-    }
-
-    @Override
-    public int getProcessHierarchyOffset() {
-        var powershell = ShellDialects.isPowershell(LocalShell.getDialect());
-        return powershell ? -1 : 0;
     }
 
     @Override
@@ -39,6 +23,22 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
     @Override
     public boolean useColoredTitle() {
         return false;
+    }
+
+    @Override
+    public boolean supportsEscapes() {
+        return false;
+    }
+
+    @Override
+    public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        launch(toCommand(configuration));
+    }
+
+    @Override
+    public int getProcessHierarchyOffset() {
+        var powershell = ShellDialects.isPowershell(LocalShell.getDialect());
+        return powershell ? -1 : 0;
     }
 
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {

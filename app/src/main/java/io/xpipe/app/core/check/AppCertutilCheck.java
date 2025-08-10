@@ -11,7 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class AppCertutilCheck {
 
     private static boolean getResult() {
-        var fc = new ProcessBuilder(AppSystemInfo.getWindows().getSystemRoot().resolve("\\System32\\certutil").toString()).redirectErrorStream(true);
+        var fc = new ProcessBuilder(AppSystemInfo.getWindows()
+                        .getSystemRoot()
+                        .resolve("\\System32\\certutil")
+                        .toString())
+                .redirectErrorStream(true);
         try {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());

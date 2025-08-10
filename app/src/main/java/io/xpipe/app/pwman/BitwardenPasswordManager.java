@@ -26,11 +26,6 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://bitwarden.com/";
-    }
-
-    @Override
     public CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
@@ -87,5 +82,10 @@ public class BitwardenPasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return "Item name";
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://bitwarden.com/";
     }
 }

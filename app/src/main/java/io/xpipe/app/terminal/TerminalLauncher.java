@@ -258,7 +258,12 @@ public class TerminalLauncher {
             proxyControl.get().start();
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + proxyLaunchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, fullLocalCommand, LocalShell.getDialect()));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    fullLocalCommand,
+                    LocalShell.getDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -271,7 +276,12 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
-                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, fullLocalCommand, LocalShell.getDialect()));
+                    null,
+                    AppNames.ofCurrent().getName(),
+                    AppNames.ofCurrent().getName(),
+                    false,
+                    fullLocalCommand,
+                    LocalShell.getDialect()));
         }
     }
 

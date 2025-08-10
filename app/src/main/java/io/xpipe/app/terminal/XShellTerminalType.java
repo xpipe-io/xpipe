@@ -22,30 +22,6 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
     }
 
     @Override
-    public boolean detach() {
-        return false;
-    }
-
-    @Override
-    public String getExecutable() {
-        return "Xshell";
-    }
-
-    @Override
-    public Optional<Path> determineInstallation() {
-        try {
-            var r = WindowsRegistry.local()
-                    .readStringValueIfPresent(
-                            WindowsRegistry.HKEY_LOCAL_MACHINE,
-                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
-            return r.map(Path::of);
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).omit().handle();
-            return Optional.empty();
-        }
-    }
-
-    @Override
     public String getWebsite() {
         return "https://www.netsarang.com/en/xshell/";
     }
@@ -74,6 +50,30 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
                 .addQuoted("ssh://" + b.getUser() + "@localhost:" + b.getPort())
                 .add("-i", keyName);
         launch(command);
+    }
+
+    @Override
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
+    public String getExecutable() {
+        return "Xshell";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
+        try {
+            var r = WindowsRegistry.local()
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE,
+                            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\Xshell.exe");
+            return r.map(Path::of);
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().handle();
+            return Optional.empty();
+        }
     }
 
     private boolean showInfo() {

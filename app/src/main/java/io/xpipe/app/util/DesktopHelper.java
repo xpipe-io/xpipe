@@ -113,8 +113,8 @@ public class DesktopHelper {
                         : "org.freedesktop.FileManager1.ShowItems";
                 var dbus = String.format(
                         """
-                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
-                                                 """,
+                                         dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
+                                         """,
                         action, path);
                 var success = sc.executeSimpleBooleanCommand(dbus);
                 if (success) {

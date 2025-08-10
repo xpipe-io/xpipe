@@ -25,11 +25,6 @@ public abstract class AbstractAction {
     private static boolean closed;
     private static Consumer<AbstractAction> pick;
 
-    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
-                cancelPick();
-            });
-
     public static synchronized void expectPick() {
         if (pick != null) {
             return;
@@ -50,6 +45,11 @@ public abstract class AbstractAction {
             modal.show();
         };
     }
+
+    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
+            AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
+                cancelPick();
+            });
 
     public static synchronized void cancelPick() {
         AppLayoutModel.get().getQueueEntries().remove(queueEntry);

@@ -32,9 +32,9 @@ public class SshIdentityStateManager {
             var opensshRunning = opensshList.contains("ssh-agent.exe");
 
             if (external && !gpgRunning && !opensshRunning) {
-                throw ErrorEventFactory.expected(
-                        new IllegalStateException(
-                                "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the password manager agent first."));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "An external password manager agent is running, but XPipe requested to use another SSH agent. You have to disable the "
+                                + "password manager agent first."));
             }
 
             if (gpg && gpgRunning) {
@@ -44,7 +44,8 @@ public class SshIdentityStateManager {
 
             if (openssh && opensshRunning) {
                 var msg =
-                        "The Windows OpenSSH agent is running. This will cause it to interfere with other agents. You have to manually stop the running ssh-agent service to allow other agents to work";
+                        "The Windows OpenSSH agent is running. This will cause it to interfere with other agents. You have to manually stop the "
+                                + "running ssh-agent service to allow other agents to work";
                 var r = new AtomicBoolean();
                 var event = ErrorEventFactory.fromMessage(msg).expected();
                 var shutdown = new ErrorAction() {
@@ -114,7 +115,8 @@ public class SshIdentityStateManager {
         } catch (ProcessOutputException ex) {
             if (sc.getOsType() == OsType.WINDOWS && ex.getOutput().contains("No such file or directory")) {
                 throw ProcessOutputException.withPrefix(
-                        "Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication Agent service running?",
+                        "Failed to connect to the OpenSSH agent service. Is the Windows OpenSSH feature enabled and the OpenSSH Authentication "
+                                + "Agent service running?",
                         ex);
             } else {
                 throw ex;
@@ -134,9 +136,9 @@ public class SshIdentityStateManager {
             var pipeExists = Files.exists(pipePath);
             if (!pipeExists) {
                 // No agent is running
-                throw ErrorEventFactory.expected(
-                        new IllegalStateException(
-                                "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the agent is started in your password manager"));
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "An external password manager agent is set for this connection, but no external SSH agent is running. Make sure that the "
+                                + "agent is started in your password manager"));
             }
         }
 

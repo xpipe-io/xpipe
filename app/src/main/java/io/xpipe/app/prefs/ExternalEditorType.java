@@ -75,7 +75,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("VSCodium")
                             .resolve("bin")
@@ -108,7 +109,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("cursor")
                             .resolve("Cursor.exe"))
@@ -140,7 +142,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getProgramFiles()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getProgramFiles()
                             .resolve("Void")
                             .resolve("Void.exe"))
                     .filter(path -> Files.exists(path));
@@ -171,7 +174,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Windsurf")
                             .resolve("bin")
@@ -204,7 +208,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Kiro")
                             .resolve("bin")
@@ -238,7 +243,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("TheiaIDE")
                             .resolve("TheiaIDE.exe"))
@@ -270,7 +276,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Trae")
                             .resolve("bin")
@@ -303,7 +310,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code")
                             .resolve("bin")
@@ -336,7 +344,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getLocalAppData()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code Insiders")
                             .resolve("bin")
@@ -436,18 +445,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        public ObservableValue<String> toTranslatedString() {
-            var customCommand = AppPrefs.get().customEditorCommand().getValue();
-            if (customCommand == null
-                    || customCommand.isBlank()
-                    || customCommand.replace("$FILE", "").strip().contains(" ")) {
-                return ExternalEditorType.super.toTranslatedString();
-            }
-
-            return new SimpleStringProperty(customCommand);
-        }
-
-        @Override
         public void launch(Path file) throws Exception {
             var customCommand = AppPrefs.get().customEditorCommand().getValue();
             if (customCommand == null || customCommand.isBlank()) {
@@ -468,6 +465,18 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             } else {
                 ExternalApplicationHelper.startAsync(command);
             }
+        }
+
+        @Override
+        public ObservableValue<String> toTranslatedString() {
+            var customCommand = AppPrefs.get().customEditorCommand().getValue();
+            if (customCommand == null
+                    || customCommand.isBlank()
+                    || customCommand.replace("$FILE", "").strip().contains(" ")) {
+                return ExternalEditorType.super.toTranslatedString();
+            }
+
+            return new SimpleStringProperty(customCommand);
         }
 
         @Override
@@ -572,6 +581,20 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     void launch(Path file) throws Exception;
 
+    interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
+
+        @Override
+        default void launch(Path file) throws Exception {
+            var location = findExecutable();
+            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
+            if (detach()) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
+        }
+    }
+
     class MacOsEditor implements ExternalApplicationType.MacApplication, ExternalEditorType {
 
         private final String id;
@@ -664,20 +687,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public boolean isSelectable() {
             return OsType.getLocal() == OsType.LINUX;
-        }
-    }
-
-    interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
-
-        @Override
-        default void launch(Path file) throws Exception {
-            var location = findExecutable();
-            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
-            if (detach()) {
-                ExternalApplicationHelper.startAsync(builder);
-            } else {
-                LocalShell.getShell().executeSimpleCommand(builder);
-            }
         }
     }
 }

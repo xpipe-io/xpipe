@@ -21,11 +21,6 @@ public class StorePauseActionProvider implements HubLeafProvider<PauseableStore>
     }
 
     @Override
-    public Class<PauseableStore> getApplicableClass() {
-        return PauseableStore.class;
-    }
-
-    @Override
     public boolean isApplicable(DataStoreEntryRef<PauseableStore> o) {
         return true;
     }
@@ -38,6 +33,11 @@ public class StorePauseActionProvider implements HubLeafProvider<PauseableStore>
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<PauseableStore> store) {
         return new LabelGraphic.IconGraphic("mdi2p-pause");
+    }
+
+    @Override
+    public Class<PauseableStore> getApplicableClass() {
+        return PauseableStore.class;
     }
 
     @Override
@@ -65,13 +65,13 @@ public class StorePauseActionProvider implements HubLeafProvider<PauseableStore>
     public static class Action extends StoreAction<PauseableStore> {
 
         @Override
-        public boolean isMutation() {
-            return true;
+        public void executeImpl() throws Exception {
+            ref.getStore().pause();
         }
 
         @Override
-        public void executeImpl() throws Exception {
-            ref.getStore().pause();
+        public boolean isMutation() {
+            return true;
         }
     }
 }

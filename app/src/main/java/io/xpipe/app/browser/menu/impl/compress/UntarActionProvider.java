@@ -12,17 +12,17 @@ import lombok.extern.jackson.Jacksonized;
 
 public class UntarActionProvider implements BrowserActionProvider {
 
+    @Override
+    public String getId() {
+        return "untar";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
 
         private final boolean gz;
         private final boolean toDirectory;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -45,16 +45,16 @@ public class UntarActionProvider implements BrowserActionProvider {
             model.refreshSync();
         }
 
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
+
         private FilePath getTarget(FilePath name) {
             return FilePath.of(name.toString()
                     .replaceAll("\\.tar$", "")
                     .replaceAll("\\.tar.gz$", "")
                     .replaceAll("\\.tgz$", ""));
         }
-    }
-
-    @Override
-    public String getId() {
-        return "untar";
     }
 }

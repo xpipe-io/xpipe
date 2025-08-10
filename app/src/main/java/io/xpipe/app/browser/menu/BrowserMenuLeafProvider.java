@@ -30,16 +30,6 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         return null;
     }
 
-    @Override
-    default boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (getDelegateActionProvider() != null) {
-            var provider = BrowserActionProviders.forClass(getDelegateActionProvider());
-            return provider.isApplicable(model, entries);
-        } else {
-            return true;
-        }
-    }
-
     @SneakyThrows
     default AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var c = getDelegateActionProvider() != null
@@ -129,5 +119,15 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         mi.setDisable(!isActive(model, selected));
 
         return mi;
+    }
+
+    @Override
+    default boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (getDelegateActionProvider() != null) {
+            var provider = BrowserActionProviders.forClass(getDelegateActionProvider());
+            return provider.isApplicable(model, entries);
+        } else {
+            return true;
+        }
     }
 }

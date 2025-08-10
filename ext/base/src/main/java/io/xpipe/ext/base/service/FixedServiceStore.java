@@ -27,6 +27,11 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     private final DataStoreEntryRef<? extends DataStore> displayParent;
 
     @Override
+    public DataStoreEntryRef<NetworkTunnelStore> getHost() {
+        return host;
+    }
+
+    @Override
     public boolean licenseRequired() {
         return false;
     }
@@ -36,11 +41,6 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
         super.checkComplete();
         Validators.nonNull(displayParent);
         Validators.nonNull(displayParent.getStore());
-    }
-
-    @Override
-    public DataStoreEntryRef<NetworkTunnelStore> getHost() {
-        return host;
     }
 
     @Override

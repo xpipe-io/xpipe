@@ -39,12 +39,6 @@ public class IncusContainerStore
     IdentityValue identity;
 
     @Override
-    public FixedChildStore merge(FixedChildStore other) {
-        var o = (IncusContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).build();
-    }
-
-    @Override
     public Class<ContainerStoreState> getStateClass() {
         return ContainerStoreState.class;
     }
@@ -66,13 +60,14 @@ public class IncusContainerStore
     }
 
     @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (IncusContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
+
+    @Override
     public ShellControlFunction shellFunction() {
         return new ShellControlParentStoreFunction() {
-
-            @Override
-            public ShellStore getParentStore() {
-                return getInstall().getStore().getHost().getStore();
-            }
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
@@ -106,6 +101,11 @@ public class IncusContainerStore
                 });
 
                 return sc;
+            }
+
+            @Override
+            public ShellStore getParentStore() {
+                return getInstall().getStore().getHost().getStore();
             }
         };
     }

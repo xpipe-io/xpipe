@@ -27,16 +27,6 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<SimpleScriptStore> o) {
-        return true;
-    }
-
-    @Override
-    public AbstractAction createAction(DataStoreEntryRef<SimpleScriptStore> store) {
-        return Action.builder().ref(store).build();
-    }
-
-    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<SimpleScriptStore> store) {
         return AppI18n.observable("base.edit");
     }
@@ -49,6 +39,16 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     @Override
     public Class<SimpleScriptStore> getApplicableClass() {
         return SimpleScriptStore.class;
+    }
+
+    @Override
+    public boolean isDefault(DataStoreEntryRef<SimpleScriptStore> o) {
+        return true;
+    }
+
+    @Override
+    public AbstractAction createAction(DataStoreEntryRef<SimpleScriptStore> store) {
+        return Action.builder().ref(store).build();
     }
 
     @Override

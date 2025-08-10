@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 public class BrowserClipboard {
 
     public static final Property<Instance> currentCopyClipboard = new GlobalObjectProperty<>();
-    public static Instance currentDragClipboard;
     private static final DataFormat DATA_FORMAT = new DataFormat("application/xpipe-file-list");
+    public static Instance currentDragClipboard;
 
     static {
         GlobalClipboard.addListener(new Consumer<>() {

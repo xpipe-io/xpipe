@@ -16,21 +16,6 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     ExternalTerminalType TABBY_MAC_OS = new MacOs();
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
-    }
-
-    @Override
-    default String getWebsite() {
-        return "https://tabby.sh";
-    }
-
-    @Override
-    default boolean useColoredTitle() {
-        return true;
-    }
-
-    @Override
     default TerminalInitFunction additionalInitCommands() {
         //        return TerminalInitFunction.of(sc -> {
         //            if (sc.getShellDialect() == ShellDialects.ZSH) {
@@ -49,6 +34,21 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         //            return null;
         //        });
         return TerminalInitFunction.none();
+    }
+
+    @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
+    }
+
+    @Override
+    default String getWebsite() {
+        return "https://tabby.sh";
+    }
+
+    @Override
+    default boolean useColoredTitle() {
+        return true;
     }
 
     class Windows implements ExternalApplicationType.WindowsType, TabbyTerminalType {

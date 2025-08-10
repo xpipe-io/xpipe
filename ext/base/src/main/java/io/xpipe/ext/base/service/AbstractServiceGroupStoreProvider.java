@@ -24,14 +24,50 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     }
 
     @Override
+    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
+        var t = createToggleComp(sec);
+        return StoreEntryComp.create(sec, t, preferLarge);
+    }
+
+    @Override
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
+    }
+
+    @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.GROUP;
     }
 
     @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var t = createToggleComp(sec);
-        return StoreEntryComp.create(sec, t, preferLarge);
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        AbstractServiceGroupStore<?> s = store.getStore().asNeeded();
+        return s.getParent().get();
+    }
+
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        return Bindings.createStringBinding(
+                () -> {
+                    var all = section.getAllChildren().getList();
+                    var shown = section.getShownChildren().getList();
+                    if (shown.size() == 0) {
+                        return null;
+                    }
+
+                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
+                    return all.size() > 0
+                            ? (all.size() == 1 ? AppI18n.get("hasService", string) : AppI18n.get("hasServices", string))
+                            : AppI18n.get("noServices");
+                },
+                section.getShownChildren().getList(),
+                section.getAllChildren().getList(),
+                AppI18n.activeLanguage());
+    }
+
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        return "base:serviceGroup_icon.svg";
     }
 
     private StoreToggleComp createToggleComp(StoreSection sec) {
@@ -67,41 +103,5 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
                 },
                 StoreViewState.get().getAllEntries().getList()));
         return t;
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(
-                () -> {
-                    var all = section.getAllChildren().getList();
-                    var shown = section.getShownChildren().getList();
-                    if (shown.size() == 0) {
-                        return null;
-                    }
-
-                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
-                    return all.size() > 0
-                            ? (all.size() == 1 ? AppI18n.get("hasService", string) : AppI18n.get("hasServices", string))
-                            : AppI18n.get("noServices");
-                },
-                section.getShownChildren().getList(),
-                section.getAllChildren().getList(),
-                AppI18n.activeLanguage());
-    }
-
-    @Override
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
-    }
-
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "base:serviceGroup_icon.svg";
-    }
-
-    @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        AbstractServiceGroupStore<?> s = store.getStore().asNeeded();
-        return s.getParent().get();
     }
 }

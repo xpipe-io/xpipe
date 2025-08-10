@@ -25,11 +25,6 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public DataStoreUsageCategory getUsageCategory() {
-        return DataStoreUsageCategory.GROUP;
-    }
-
-    @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var nonRunning = StoreToggleComp.<PodmanCmdStore>childrenToggle(
                 null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
@@ -47,6 +42,11 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
 
             return SystemStateComp.State.FAILURE;
         }));
+    }
+
+    @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.GROUP;
     }
 
     @Override

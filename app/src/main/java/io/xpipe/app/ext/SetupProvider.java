@@ -13,17 +13,6 @@ public interface SetupProvider {
         return ALL.stream().filter(d -> d.getId().equalsIgnoreCase(id)).findAny();
     }
 
-    class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            ALL.addAll(ServiceLoader.load(layer, SetupProvider.class).stream()
-                    .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
-                    .map(p -> p.get())
-                    .toList());
-        }
-    }
-
     String getId();
 
     String getNameKey();
@@ -35,4 +24,15 @@ public interface SetupProvider {
     void execute() throws Exception;
 
     ScanProvider getScan();
+
+    class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            ALL.addAll(ServiceLoader.load(layer, SetupProvider.class).stream()
+                    .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
+                    .map(p -> p.get())
+                    .toList());
+        }
+    }
 }

@@ -32,6 +32,30 @@ import java.util.*;
 public class BrowserFullSessionModel extends BrowserAbstractSessionModel<BrowserSessionTab> {
 
     public static final BrowserFullSessionModel DEFAULT = new BrowserFullSessionModel();
+    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
+    private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();
+    private final Property<BrowserSessionTab> globalPinnedTab = new SimpleObjectProperty<>();
+    private final ObservableMap<BrowserSessionTab, BrowserSessionTab> splits = FXCollections.observableHashMap();
+    private final ObservableValue<BrowserSessionTab> effectiveRightTab = createEffectiveRightTab();
+    private final SequencedSet<BrowserSessionTab> previousTabs = new LinkedHashSet<>();
+
+    public BrowserFullSessionModel() {
+        sessionEntries.addListener((ListChangeListener<? super BrowserSessionTab>) c -> {
+            var v = globalPinnedTab.getValue();
+            if (v != null && !c.getList().contains(v)) {
+                globalPinnedTab.setValue(null);
+            }
+
+            splits.keySet().removeIf(browserSessionTab -> !c.getList().contains(browserSessionTab));
+        });
+
+        selectedEntry.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                previousTabs.remove(newValue);
+                previousTabs.add(newValue);
+            }
+        });
+    }
 
     public static void init() throws Exception {
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
@@ -47,13 +71,6 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             }
         }
     }
-
-    private final BrowserTransferModel localTransfersStage = new BrowserTransferModel(this);
-    private final Property<Boolean> draggingFiles = new SimpleBooleanProperty();
-    private final Property<BrowserSessionTab> globalPinnedTab = new SimpleObjectProperty<>();
-    private final ObservableMap<BrowserSessionTab, BrowserSessionTab> splits = FXCollections.observableHashMap();
-    private final ObservableValue<BrowserSessionTab> effectiveRightTab = createEffectiveRightTab();
-    private final SequencedSet<BrowserSessionTab> previousTabs = new LinkedHashSet<>();
 
     private ObservableValue<BrowserSessionTab> createEffectiveRightTab() {
         return Bindings.createObjectBinding(
@@ -86,24 +103,6 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
                 globalPinnedTab,
                 selectedEntry,
                 splits);
-    }
-
-    public BrowserFullSessionModel() {
-        sessionEntries.addListener((ListChangeListener<? super BrowserSessionTab>) c -> {
-            var v = globalPinnedTab.getValue();
-            if (v != null && !c.getList().contains(v)) {
-                globalPinnedTab.setValue(null);
-            }
-
-            splits.keySet().removeIf(browserSessionTab -> !c.getList().contains(browserSessionTab));
-        });
-
-        selectedEntry.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                previousTabs.remove(newValue);
-                previousTabs.add(newValue);
-            }
-        });
     }
 
     public Set<BrowserSessionTab> getAllTabs() {

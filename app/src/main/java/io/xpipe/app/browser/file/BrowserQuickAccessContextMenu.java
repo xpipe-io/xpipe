@@ -138,8 +138,8 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
     class QuickAccessMenu {
         private final BrowserEntry browserEntry;
         private final Menu menu;
-        private ContextMenu browserActionMenu;
         private final MenuItem empty;
+        private ContextMenu browserActionMenu;
 
         public QuickAccessMenu(BrowserEntry browserEntry) {
             empty = new Menu("...");

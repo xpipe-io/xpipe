@@ -82,8 +82,8 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
-            var version = new LabelComp((AppNames.ofCurrent().getName()) + " "
-                    + AppProperties.get().getVersion());
+            var version = new LabelComp(
+                    (AppNames.ofCurrent().getName()) + " " + AppProperties.get().getVersion());
             version.apply(struc -> {
                 AppFontSizes.apply(struc.get(), appFontSizes -> "15");
                 struc.get().setOpacity(0.65);

@@ -26,20 +26,6 @@ import java.util.Objects;
 
 public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
-    @AllArgsConstructor
-    public static class Structure implements CompStructure<InputGroup> {
-
-        private final InputGroup inputGroup;
-
-        @Getter
-        private final TextField field;
-
-        @Override
-        public InputGroup get() {
-            return inputGroup;
-        }
-    }
-
     private final Property<InPlaceSecretValue> value;
     private final boolean allowCopy;
     private final List<Comp<?>> additionalButtons = new ArrayList<>();
@@ -47,10 +33,6 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
     public SecretFieldComp(Property<InPlaceSecretValue> value, boolean allowCopy) {
         this.value = value;
         this.allowCopy = allowCopy;
-    }
-
-    public void addButton(Comp<?> button) {
-        this.additionalButtons.add(button);
     }
 
     public static SecretFieldComp ofString(Property<String> s) {
@@ -62,6 +44,10 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
             prop.set(t1 != null ? InPlaceSecretValue.of(t1) : null);
         });
         return new SecretFieldComp(prop, false);
+    }
+
+    public void addButton(Comp<?> button) {
+        this.additionalButtons.add(button);
     }
 
     protected InPlaceSecretValue encrypt(char[] c) {
@@ -119,5 +105,19 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         });
 
         return new Structure(ig, field);
+    }
+
+    @AllArgsConstructor
+    public static class Structure implements CompStructure<InputGroup> {
+
+        private final InputGroup inputGroup;
+
+        @Getter
+        private final TextField field;
+
+        @Override
+        public InputGroup get() {
+            return inputGroup;
+        }
     }
 }

@@ -14,11 +14,6 @@ import java.util.Map;
 public class MstscRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
 
     @Override
-    public String getWebsite() {
-        return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
-    }
-
-    @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var adaptedRdpConfig = getAdaptedConfig(configuration);
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
@@ -33,6 +28,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     @Override
     public boolean supportsPasswordPassing() {
         return LocalShell.getLocalPowershell().isPresent();
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
     }
 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {

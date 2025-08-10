@@ -17,15 +17,14 @@ import java.util.OptionalLong;
 public class FileEntry {
     FileSystem fileSystem;
     Instant date;
-
-    @NonFinal
-    @Setter
-    String size;
-
     FileInfo info;
 
     @NonNull
     FileKind kind;
+
+    @NonFinal
+    @Setter
+    String size;
 
     @NonNull
     @NonFinal

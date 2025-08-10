@@ -69,8 +69,7 @@ public class AppResources {
     }
 
     public static void with(String module, String file, FailableConsumer<Path, IOException> con) {
-        if (AppProperties.get() != null
-                && AppProperties.get().isDevelopmentEnvironment()) {
+        if (AppProperties.get() != null && AppProperties.get().isDevelopmentEnvironment()) {
             // Check if resource was found. If we use external processed resources, we can't use local dev resources
             if (withLocalDevResource(module, file, con)) {
                 return;

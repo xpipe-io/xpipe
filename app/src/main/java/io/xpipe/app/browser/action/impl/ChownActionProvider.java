@@ -36,11 +36,6 @@ public class ChownActionProvider implements BrowserActionProvider {
         private final boolean recursive;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() throws Exception {
             model.getFileSystem()
                     .getShell()
@@ -56,6 +51,11 @@ public class ChownActionProvider implements BrowserActionProvider {
                                             .toString())
                                     .toList()));
             model.refreshBrowserEntriesSync(getEntries());
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

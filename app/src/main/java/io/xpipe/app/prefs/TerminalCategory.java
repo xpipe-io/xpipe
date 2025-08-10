@@ -33,64 +33,6 @@ import java.util.List;
 
 public class TerminalCategory extends AppPrefsCategory {
 
-    @Override
-    protected String getId() {
-        return "terminal";
-    }
-
-    @Override
-    protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2c-console");
-    }
-
-    @Override
-    protected Comp<?> create() {
-        var prefs = AppPrefs.get();
-        prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
-            var feature = LicenseProvider.get().getFeature("logging");
-            if (newValue && !feature.isSupported()) {
-                try {
-                    // Disable it again so people don't forget that they left it on
-                    Platform.runLater(() -> {
-                        prefs.enableTerminalLogging.set(false);
-                    });
-                    feature.throwIfUnsupported();
-                } catch (LicenseRequiredException ex) {
-                    ErrorEventFactory.fromThrowable(ex).handle();
-                }
-            }
-        });
-
-        var tabsSettingSupported = Bindings.createBooleanBinding(
-                () -> {
-                    return prefs.terminalType().getValue() != null
-                            && prefs.terminalType().getValue().getOpenFormat()
-                                    == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-                },
-                prefs.terminalType());
-
-        return new OptionsBuilder()
-                .addTitle("terminalConfiguration")
-                .sub(terminalChoice(true))
-                .sub(terminalPrompt())
-                .sub(terminalProxy())
-                .sub(terminalMultiplexer())
-                // .sub(terminalInitScript())
-                .sub(
-                        new OptionsBuilder()
-                                .pref(prefs.terminalAlwaysPauseOnExit)
-                                .addToggle(prefs.terminalAlwaysPauseOnExit)
-                                .pref(prefs.clearTerminalOnInit)
-                                .addToggle(prefs.clearTerminalOnInit)
-                                .pref(prefs.preferTerminalTabs)
-                                .addToggle(prefs.preferTerminalTabs)
-                                .hide(tabsSettingSupported.not())
-                        //                        .pref(prefs.terminalPromptForRestart)
-                        //                        .addToggle(prefs.terminalPromptForRestart)
-                        )
-                .buildComp();
-    }
-
     public static OptionsBuilder terminalChoice(boolean docsLink) {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(
@@ -185,6 +127,64 @@ public class TerminalCategory extends AppPrefsCategory {
                         .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                 .addComp(terminalTest);
         return builder;
+    }
+
+    @Override
+    protected String getId() {
+        return "terminal";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2c-console");
+    }
+
+    @Override
+    protected Comp<?> create() {
+        var prefs = AppPrefs.get();
+        prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
+            var feature = LicenseProvider.get().getFeature("logging");
+            if (newValue && !feature.isSupported()) {
+                try {
+                    // Disable it again so people don't forget that they left it on
+                    Platform.runLater(() -> {
+                        prefs.enableTerminalLogging.set(false);
+                    });
+                    feature.throwIfUnsupported();
+                } catch (LicenseRequiredException ex) {
+                    ErrorEventFactory.fromThrowable(ex).handle();
+                }
+            }
+        });
+
+        var tabsSettingSupported = Bindings.createBooleanBinding(
+                () -> {
+                    return prefs.terminalType().getValue() != null
+                            && prefs.terminalType().getValue().getOpenFormat()
+                                    == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+                },
+                prefs.terminalType());
+
+        return new OptionsBuilder()
+                .addTitle("terminalConfiguration")
+                .sub(terminalChoice(true))
+                .sub(terminalPrompt())
+                .sub(terminalProxy())
+                .sub(terminalMultiplexer())
+                // .sub(terminalInitScript())
+                .sub(
+                        new OptionsBuilder()
+                                .pref(prefs.terminalAlwaysPauseOnExit)
+                                .addToggle(prefs.terminalAlwaysPauseOnExit)
+                                .pref(prefs.clearTerminalOnInit)
+                                .addToggle(prefs.clearTerminalOnInit)
+                                .pref(prefs.preferTerminalTabs)
+                                .addToggle(prefs.preferTerminalTabs)
+                                .hide(tabsSettingSupported.not())
+                        //                        .pref(prefs.terminalPromptForRestart)
+                        //                        .addToggle(prefs.terminalPromptForRestart)
+                        )
+                .buildComp();
     }
 
     private OptionsBuilder terminalProxy() {

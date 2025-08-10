@@ -3,7 +3,6 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
@@ -71,8 +70,10 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
                 .name("virtualMachine")
                 .addComp(
-                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")
-                                + " " + System.getProperty("java.vm.version")),
+                        new LabelComp(System.getProperty("java.vm.vendor") + " "
+                                + System.getProperty("java.vm.name")
+                                + " "
+                                + System.getProperty("java.vm.version")),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");

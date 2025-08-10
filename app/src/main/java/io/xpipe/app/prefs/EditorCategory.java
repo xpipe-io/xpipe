@@ -16,24 +16,6 @@ import java.util.List;
 
 public class EditorCategory extends AppPrefsCategory {
 
-    @Override
-    protected String getId() {
-        return "editor";
-    }
-
-    @Override
-    protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2f-file-document-edit-outline");
-    }
-
-    @Override
-    protected Comp<?> create() {
-        return new OptionsBuilder()
-                .addTitle("editorConfiguration")
-                .sub(editorChoice())
-                .buildComp();
-    }
-
     public static OptionsBuilder editorChoice() {
         var prefs = AppPrefs.get();
         var editorTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
@@ -78,5 +60,23 @@ public class EditorCategory extends AppPrefsCategory {
                 .addToggle(prefs.customEditorCommandInTerminal)
                 .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM));
         return builder;
+    }
+
+    @Override
+    protected String getId() {
+        return "editor";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2f-file-document-edit-outline");
+    }
+
+    @Override
+    protected Comp<?> create() {
+        return new OptionsBuilder()
+                .addTitle("editorConfiguration")
+                .sub(editorChoice())
+                .buildComp();
     }
 }

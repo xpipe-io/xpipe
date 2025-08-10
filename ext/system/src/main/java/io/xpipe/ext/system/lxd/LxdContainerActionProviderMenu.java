@@ -17,11 +17,6 @@ import java.util.List;
 public class LxdContainerActionProviderMenu implements HubBranchProvider<LxdContainerStore> {
 
     @Override
-    public Class<LxdContainerStore> getApplicableClass() {
-        return LxdContainerStore.class;
-    }
-
-    @Override
     public boolean isMajor(DataStoreEntryRef<LxdContainerStore> o) {
         return true;
     }
@@ -34,6 +29,11 @@ public class LxdContainerActionProviderMenu implements HubBranchProvider<LxdCont
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<LxdContainerStore> store) {
         return new LabelGraphic.IconGraphic("mdi2p-package-variant-closed");
+    }
+
+    @Override
+    public Class<LxdContainerStore> getApplicableClass() {
+        return LxdContainerStore.class;
     }
 
     @Override

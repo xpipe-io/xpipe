@@ -21,6 +21,8 @@ import java.util.Locale;
 @Builder
 public class CustomVncClient implements ExternalVncClient {
 
+    String command;
+
     static OptionsBuilder createOptions(Property<CustomVncClient> property) {
         var command = new SimpleObjectProperty<>(property.getValue().getCommand());
         return new OptionsBuilder()
@@ -32,8 +34,6 @@ public class CustomVncClient implements ExternalVncClient {
                         command)
                 .bind(() -> CustomVncClient.builder().command(command.get()).build(), property);
     }
-
-    String command;
 
     @Override
     public void launch(VncLaunchConfig configuration) throws Exception {

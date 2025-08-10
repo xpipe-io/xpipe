@@ -3,12 +3,12 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
 import com.github.weisj.jsvg.attributes.ViewBox;
 import com.github.weisj.jsvg.parser.SVGLoader;
-import io.xpipe.app.prefs.AppPrefs;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -23,13 +23,6 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 public class SystemIconCache {
-
-    private enum ImageColorScheme {
-        TRANSPARENT,
-        MIXED,
-        LIGHT,
-        DARK
-    }
 
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
@@ -109,9 +102,12 @@ public class SystemIconCache {
                         .toList();
                 for (var icon : darkAvailableIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK || AppPrefs.get().preferMonochromeIcons().get();
+                    var generateDarkIcon = existingBaseScheme == null
+                            || existingBaseScheme == ImageColorScheme.DARK
+                            || AppPrefs.get().preferMonochromeIcons().get();
 
-                    if (!generateDarkIcon && !AppPrefs.get().preferMonochromeIcons().get()) {
+                    if (!generateDarkIcon
+                            && !AppPrefs.get().preferMonochromeIcons().get()) {
                         delete(target, icon.getName(), true);
                         continue;
                     }
@@ -138,7 +134,8 @@ public class SystemIconCache {
                 // Generate dark icons manually if there is none provided by inverting the colors
                 for (var icon : baseIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkModeInverse = existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
+                    var generateDarkModeInverse =
+                            existingBaseScheme == ImageColorScheme.DARK && !darkIconNames.contains(icon.getName());
                     if (generateDarkModeInverse) {
                         if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
                             continue;
@@ -150,8 +147,9 @@ public class SystemIconCache {
                 }
 
                 if (AppPrefs.get().preferMonochromeIcons().get()) {
-                    var lightAvailableIcons = e.getValue().getIcons().stream().filter(
-                            f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.LIGHT).toList();
+                    var lightAvailableIcons = e.getValue().getIcons().stream()
+                            .filter(f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.LIGHT)
+                            .toList();
                     for (var icon : lightAvailableIcons) {
                         if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
                             continue;
@@ -257,9 +255,7 @@ public class SystemIconCache {
         return image;
     }
 
-
-    private static void delete(Path dir, String name, boolean dark)
-            throws IOException {
+    private static void delete(Path dir, String name, boolean dark) throws IOException {
         for (var px : sizes) {
             var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
             Files.deleteIfExists(out);
@@ -322,5 +318,12 @@ public class SystemIconCache {
         } else {
             return ImageColorScheme.MIXED;
         }
+    }
+
+    private enum ImageColorScheme {
+        TRANSPARENT,
+        MIXED,
+        LIGHT,
+        DARK
     }
 }

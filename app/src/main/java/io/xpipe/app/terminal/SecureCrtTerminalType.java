@@ -17,23 +17,8 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
-    public boolean detach() {
-        return false;
-    }
-
-    @Override
-    public String getExecutable() {
-        return "SecureCRT";
-    }
-
-    @Override
-    public Optional<Path> determineInstallation() {
-        var file = AppSystemInfo.getWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
-        if (!Files.exists(file)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(file);
+    public String getWebsite() {
+        return "https://www.vandyke.com/products/securecrt/";
     }
 
     @Override
@@ -62,8 +47,23 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
-    public String getWebsite() {
-        return "https://www.vandyke.com/products/securecrt/";
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
+    public String getExecutable() {
+        return "SecureCRT";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
+        var file = AppSystemInfo.getWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
+        if (!Files.exists(file)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(file);
     }
 
     @Override

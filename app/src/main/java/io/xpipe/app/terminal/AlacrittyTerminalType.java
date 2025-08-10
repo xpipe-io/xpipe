@@ -12,13 +12,13 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
     ExternalTerminalType ALACRITTY_MAC_OS = new MacOs();
 
     @Override
-    default String getWebsite() {
-        return "https://github.com/alacritty/alacritty";
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
+    default String getWebsite() {
+        return "https://github.com/alacritty/alacritty";
     }
 
     @Override

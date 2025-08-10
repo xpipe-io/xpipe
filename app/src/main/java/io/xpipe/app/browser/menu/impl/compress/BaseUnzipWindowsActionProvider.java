@@ -48,18 +48,18 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
     }
 
     @Override
-    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var builder = UnzipActionProvider.Action.builder();
-        builder.initEntries(model, entries);
-        builder.toDirectory(toDirectory);
-        return builder.build();
-    }
-
-    @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.stream()
                         .allMatch(entry ->
                                 entry.getRawFileEntry().getPath().toString().endsWith(".zip"))
                 && model.getFileSystem().getShell().orElseThrow().getOsType() == OsType.WINDOWS;
+    }
+
+    @Override
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = UnzipActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        builder.toDirectory(toDirectory);
+        return builder.build();
     }
 }

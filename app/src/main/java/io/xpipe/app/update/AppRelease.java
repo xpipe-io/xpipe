@@ -9,6 +9,11 @@ import lombok.Value;
 @Value
 public class AppRelease {
 
+    String tag;
+    String url;
+    String browserUrl;
+    String file;
+
     public static AppRelease of(String tag) {
         var type = AppInstaller.getSuitablePlatformAsset();
         var os =
@@ -25,9 +30,4 @@ public class AppRelease {
                 .formatted(AppNames.ofCurrent().getKebapName(), tag);
         return new AppRelease(tag, url, browser, name);
     }
-
-    String tag;
-    String url;
-    String browserUrl;
-    String file;
 }

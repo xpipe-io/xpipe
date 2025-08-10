@@ -17,26 +17,8 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
-    public boolean detach() {
-        return false;
-    }
-
-    @Override
-    public String getExecutable() {
-        return "MobaXterm";
-    }
-
-    @Override
-    public Optional<Path> determineInstallation() {
-        try {
-            var r = WindowsRegistry.local()
-                    .readStringValueIfPresent(
-                            WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
-            return r.map(Path::of);
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).omit().handle();
-            return Optional.empty();
-        }
+    public String getWebsite() {
+        return "https://mobaxterm.mobatek.net/";
     }
 
     @Override
@@ -76,8 +58,26 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
-    public String getWebsite() {
-        return "https://mobaxterm.mobatek.net/";
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
+    public String getExecutable() {
+        return "MobaXterm";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
+        try {
+            var r = WindowsRegistry.local()
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_LOCAL_MACHINE, "SOFTWARE\\Classes\\mobaxterm\\DefaultIcon");
+            return r.map(Path::of);
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().handle();
+            return Optional.empty();
+        }
     }
 
     @Override

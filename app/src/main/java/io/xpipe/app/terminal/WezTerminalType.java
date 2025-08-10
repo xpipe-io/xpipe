@@ -99,6 +99,20 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
             return TerminalOpenFormat.TABBED;
         }
 
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var spawn = LocalShell.getShell()
+                    .command(CommandBuilder.of()
+                            .addFile("wezterm")
+                            .add("cli", "spawn")
+                            .addFile(configuration.getScriptFile()))
+                    .executeAndCheck();
+            if (!spawn) {
+                ExternalApplicationHelper.startAsync(
+                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
+            }
+        }
+
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
                 return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
@@ -112,20 +126,6 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         @Override
         public String getId() {
             return "app.wezterm";
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            var spawn = LocalShell.getShell()
-                    .command(CommandBuilder.of()
-                            .addFile("wezterm")
-                            .add("cli", "spawn")
-                            .addFile(configuration.getScriptFile()))
-                    .executeAndCheck();
-            if (!spawn) {
-                ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
-            }
         }
     }
 

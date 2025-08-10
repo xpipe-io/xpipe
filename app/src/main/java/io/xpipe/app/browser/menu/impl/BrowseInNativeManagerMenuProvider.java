@@ -26,16 +26,16 @@ public class BrowseInNativeManagerMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
-    }
-
-    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return switch (OsType.getLocal()) {
             case OsType.Windows ignored -> AppI18n.observable("browseInWindowsExplorer");
             case OsType.Linux ignored -> AppI18n.observable("browseInDefaultFileManager");
             case OsType.MacOs ignored -> AppI18n.observable("browseInFinder");
         };
+    }
+
+    @Override
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 }

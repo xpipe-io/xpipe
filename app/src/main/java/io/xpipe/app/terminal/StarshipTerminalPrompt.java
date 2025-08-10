@@ -35,26 +35,56 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
         return StarshipTerminalPrompt.builder()
                 .configuration(
                         """
-# Get editor completions based on the config schema
-"$schema" = 'https://starship.rs/config-schema.json'
+                                                              # Get editor completions based on the config schema
+                                                              "$schema" = 'https://starship.rs/config-schema.json'
 
-# Inserts a blank line between shell prompts
-add_newline = true
+                                                              # Inserts a blank line between shell prompts
+                                                              add_newline = true
 
-# Replace the '❯' symbol in the prompt with '➜'
-[character] # The name of the module we are configuring is 'character'
-success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+                                                              # Replace the '❯' symbol in the prompt with '➜'
+                                                              [character] # The name of the module we are configuring is 'character'
+                                                              success_symbol = '[➜](bold green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
 
-# Disable the package module, hiding it from the prompt completely
-[package]
-disabled = true
-                """)
+                                                              # Disable the package module, hiding it from the prompt completely
+                                                              [package]
+                                                              disabled = true
+                                                              """)
                 .build();
     }
 
     @Override
     protected String getConfigFileExtension() {
         return "toml";
+    }
+
+    @Override
+    protected ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception {
+        var lines = new ArrayList<String>();
+        var dialect = shellControl.getOriginalShellDialect();
+        if (config != null) {
+            lines.add(dialect.getSetEnvironmentVariableCommand("STARSHIP_CONFIG", config.toString()));
+        }
+        if (dialect == ShellDialects.CMD) {
+            var configDir = getConfigurationDirectory(shellControl);
+            shellControl.view().mkdir(configDir);
+            var configFile = configDir.join("starship.lua");
+            if (!shellControl.view().fileExists(configFile)) {
+                shellControl.view().writeTextFile(configFile, "load(io.popen('starship init cmd'):read(\"*a\"))()");
+            }
+
+            lines.add(dialect.addToPathVariableCommand(
+                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
+            lines.add("clink inject --quiet --profile \"" + configDir + "\"");
+        } else {
+            if (ShellDialects.isPowershell(shellControl)) {
+                lines.add("Invoke-Expression (&starship init powershell)");
+            } else if (dialect == ShellDialects.FISH) {
+                lines.add("starship init fish | source");
+            } else {
+                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
+            }
+        }
+        return ShellScript.lines(lines);
     }
 
     @Override
@@ -109,36 +139,6 @@ disabled = true
             sc.command("curl -sS https://starship.rs/install.sh | sh /dev/stdin -y --bin-dir \"" + dir + "\"")
                     .execute();
         }
-    }
-
-    @Override
-    protected ShellScript setupTerminalCommand(ShellControl shellControl, FilePath config) throws Exception {
-        var lines = new ArrayList<String>();
-        var dialect = shellControl.getOriginalShellDialect();
-        if (config != null) {
-            lines.add(dialect.getSetEnvironmentVariableCommand("STARSHIP_CONFIG", config.toString()));
-        }
-        if (dialect == ShellDialects.CMD) {
-            var configDir = getConfigurationDirectory(shellControl);
-            shellControl.view().mkdir(configDir);
-            var configFile = configDir.join("starship.lua");
-            if (!shellControl.view().fileExists(configFile)) {
-                shellControl.view().writeTextFile(configFile, "load(io.popen('starship init cmd'):read(\"*a\"))()");
-            }
-
-            lines.add(dialect.addToPathVariableCommand(
-                    List.of(ClinkHelper.getTargetDir(shellControl).toString()), false));
-            lines.add("clink inject --quiet --profile \"" + configDir + "\"");
-        } else {
-            if (ShellDialects.isPowershell(shellControl)) {
-                lines.add("Invoke-Expression (&starship init powershell)");
-            } else if (dialect == ShellDialects.FISH) {
-                lines.add("starship init fish | source");
-            } else {
-                lines.add("eval \"$(starship init " + dialect.getId() + ")\"");
-            }
-        }
-        return ShellScript.lines(lines);
     }
 
     @Override

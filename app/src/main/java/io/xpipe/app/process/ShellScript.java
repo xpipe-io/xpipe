@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 @Value
 public class ShellScript {
 
+    String value;
+
     public static ShellScript lines(String... lines) {
         return new ShellScript(Arrays.stream(lines).collect(Collectors.joining("\n")));
     }
@@ -16,8 +18,6 @@ public class ShellScript {
     public static ShellScript lines(List<String> lines) {
         return new ShellScript(lines.stream().collect(Collectors.joining("\n")));
     }
-
-    String value;
 
     @Override
     public String toString() {

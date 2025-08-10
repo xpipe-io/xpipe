@@ -51,16 +51,6 @@ public class JacksonMapper {
         mapper.accept(INSTANCE);
     }
 
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            List<Module> modules = findModules(layer);
-            INSTANCE.registerModules(modules);
-            init = true;
-        }
-    }
-
     private static List<Module> findModules(ModuleLayer layer) {
         ArrayList<Module> modules = new ArrayList<>();
         ServiceLoader<Module> loader =
@@ -120,5 +110,15 @@ public class JacksonMapper {
             }
         });
         return c;
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            List<Module> modules = findModules(layer);
+            INSTANCE.registerModules(modules);
+            init = true;
+        }
     }
 }

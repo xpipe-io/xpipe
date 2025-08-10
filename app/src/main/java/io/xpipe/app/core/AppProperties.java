@@ -3,10 +3,8 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.XPipeDaemonMode;
 
-import lombok.Getter;
 import lombok.Value;
 
 import java.io.IOException;
@@ -154,10 +152,6 @@ public class AppProperties {
                 .orElse(null);
     }
 
-    public void resetInitialLaunch() {
-        AppCache.clear("lastBuildId");
-    }
-
     private static boolean isJUnitTest() {
         for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
             if (element.getClassName().startsWith("org.junit.")) {
@@ -167,12 +161,24 @@ public class AppProperties {
         return false;
     }
 
-    public static void logSystemProperties() {
-        for (var e : System.getProperties().entrySet()) {
-            if (List.of("user.dir").contains(e.getKey())) {
-                TrackEvent.info("Detected system property " + e.getKey() + "=" + e.getValue());
-            }
+    public static void init() {
+        init(new String[0]);
+    }
+
+    public static void init(String[] args) {
+        if (INSTANCE != null) {
+            return;
         }
+
+        INSTANCE = new AppProperties(args);
+    }
+
+    public static AppProperties get() {
+        return INSTANCE;
+    }
+
+    public void resetInitialLaunch() {
+        AppCache.clear("lastBuildId");
     }
 
     public void logArguments() {
@@ -194,22 +200,6 @@ public class AppProperties {
                 TrackEvent.info("Detected xpipe property " + e.getKey() + "=" + e.getValue());
             }
         }
-    }
-
-    public static void init() {
-        init(new String[0]);
-    }
-
-    public static void init(String[] args) {
-        if (INSTANCE != null) {
-            return;
-        }
-
-        INSTANCE = new AppProperties(args);
-    }
-
-    public static AppProperties get() {
-        return INSTANCE;
     }
 
     public boolean isDevelopmentEnvironment() {

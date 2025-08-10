@@ -20,55 +20,6 @@ import java.util.stream.Collectors;
 
 public final class McpResources {
 
-    @Jacksonized
-    @Builder
-    @Value
-    public static class ConnectionResource {
-        @NonNull
-        StorePath name;
-
-        @NonNull
-        StorePath category;
-
-        @NonNull
-        String type;
-
-        @NonNull
-        Object connectionData;
-
-        @NonNull
-        Object usageCategory;
-
-        @NonNull
-        Instant lastUsed;
-
-        @NonNull
-        Instant lastModified;
-
-        @NonNull
-        Object internalState;
-
-        @NonNull
-        Map<String, Object> internalCache;
-    }
-
-    @Jacksonized
-    @Builder
-    @Value
-    public static class CategoryResource {
-        @NonNull
-        StorePath name;
-
-        @NonNull
-        Instant lastUsed;
-
-        @NonNull
-        Instant lastModified;
-
-        @NonNull
-        JsonNode config;
-    }
-
     public static McpServerFeatures.SyncResourceSpecification connections() {
         McpSchema.Annotations annotations = new McpSchema.Annotations(List.of(McpSchema.Role.ASSISTANT), 1.0);
         var resource = McpSchema.Resource.builder()
@@ -164,5 +115,54 @@ public final class McpResources {
 
             return new McpSchema.ReadResourceResult(list);
         });
+    }
+
+    @Jacksonized
+    @Builder
+    @Value
+    public static class ConnectionResource {
+        @NonNull
+        StorePath name;
+
+        @NonNull
+        StorePath category;
+
+        @NonNull
+        String type;
+
+        @NonNull
+        Object connectionData;
+
+        @NonNull
+        Object usageCategory;
+
+        @NonNull
+        Instant lastUsed;
+
+        @NonNull
+        Instant lastModified;
+
+        @NonNull
+        Object internalState;
+
+        @NonNull
+        Map<String, Object> internalCache;
+    }
+
+    @Jacksonized
+    @Builder
+    @Value
+    public static class CategoryResource {
+        @NonNull
+        StorePath name;
+
+        @NonNull
+        Instant lastUsed;
+
+        @NonNull
+        Instant lastModified;
+
+        @NonNull
+        JsonNode config;
     }
 }

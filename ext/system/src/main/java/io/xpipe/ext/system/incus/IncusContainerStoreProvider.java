@@ -33,13 +33,16 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public DocumentationLink getHelpLink() {
-        return DocumentationLink.LXC;
+    public ObservableValue<String> informationString(StoreSection section) {
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
+                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
     }
 
     @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "system:lxd_icon.svg";
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.LXC;
     }
 
     @Override
@@ -91,11 +94,8 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
-        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
-                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
+    public String getDisplayIconFileName(DataStore store) {
+        return "system:lxd_icon.svg";
     }
 
     @Override

@@ -7,6 +7,19 @@ import java.util.*;
 
 public final class FilePath {
 
+    @NonNull
+    private final String value;
+
+    private FilePath normalized;
+    private List<String> split;
+
+    private FilePath(@NonNull String value) {
+        this.value = value;
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("File path is empty");
+        }
+    }
+
     public static FilePath parse(String path) {
         return path != null && path.equals(path.strip()) && !path.isBlank() ? new FilePath(path) : null;
     }
@@ -28,17 +41,9 @@ public final class FilePath {
         return path != null ? new FilePath(path.toString()) : null;
     }
 
-    @NonNull
-    private final String value;
-
-    private FilePath normalized;
-    private List<String> split;
-
-    private FilePath(@NonNull String value) {
-        this.value = value;
-        if (value.isEmpty()) {
-            throw new IllegalArgumentException("File path is empty");
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 
     @Override
@@ -51,9 +56,8 @@ public final class FilePath {
                 normalize().removeTrailingSlash().value, filePath.normalize().removeTrailingSlash().value);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(value);
+    public String toString() {
+        return value;
     }
 
     public FilePath getRoot() {
@@ -74,10 +78,6 @@ public final class FilePath {
 
     public Path toLocalPath() {
         return Path.of(value);
-    }
-
-    public String toString() {
-        return value;
     }
 
     public FilePath toDirectory() {

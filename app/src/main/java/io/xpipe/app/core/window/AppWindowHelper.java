@@ -2,7 +2,6 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformInit;
 import io.xpipe.core.OsType;
@@ -139,7 +138,8 @@ public class AppWindowHelper {
         AppStyle.addStylesheets(scene);
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDevelopmentEnvironment() && event.getCode().equals(KeyCode.F3)) {
+            if (AppProperties.get().isDevelopmentEnvironment()
+                    && event.getCode().equals(KeyCode.F3)) {
                 AppStyle.reloadStylesheets(scene);
                 TrackEvent.debug("Reloaded stylesheets");
                 event.consume();

@@ -30,394 +30,21 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         return StoreActionCategory.CUSTOM;
     }
 
-    @Value
-    private static class TerminalRunActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        ScriptHierarchy hierarchy;
-
-        @Override
-        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunTerminalScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunTerminalScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            var t = AppPrefs.get().terminalType().getValue();
-            return AppI18n.observable(
-                    "executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            var t = AppPrefs.get().terminalType().getValue();
-            return AppI18n.observable(
-                    "executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
-        }
-    }
-
-    @Value
-    private static class HubRunActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        ScriptHierarchy hierarchy;
-
-        @Override
-        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunHubScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunHubScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> stores) {
-            return RunHubBatchScriptActionProvider.Action.builder()
-                    .refs(stores)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return AppI18n.observable("runInConnectionHub");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            return AppI18n.observable("runInConnectionHub");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
-        }
-    }
-
-    @Value
-    private static class BackgroundRunActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        ScriptHierarchy hierarchy;
-
-        @Override
-        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunBackgroundScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
-            return RunBackgroundScriptActionProvider.Action.builder()
-                    .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
-                    .build();
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return AppI18n.observable("executeInBackground");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            return AppI18n.observable("executeInBackground");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
-        }
-
-        @Override
-        public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
-            return List.of();
-        }
-    }
-
-    @Value
-    private static class ScriptActionProvider implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        ScriptHierarchy hierarchy;
-
-        @Override
-        public ObservableValue<String> getName() {
-            return new SimpleStringProperty(hierarchy.getBase().get().getName());
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            if (hierarchy.isLeaf()) {
-                return new LabelGraphic.ImageGraphic(hierarchy.getBase().get().getEffectiveIconFile(), 16);
-            }
-
-            return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
-        }
-
-        @Override
-        public Class<ShellStore> getApplicableClass() {
-            return ShellStore.class;
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return getName();
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return getIcon();
-        }
-
-        @Override
-        public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
-            return getChildren();
-        }
-
-        @Override
-        public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
-            return getChildren();
-        }
-
-        private List<HubMenuItemProvider<?>> getChildren() {
-            if (hierarchy.isLeaf()) {
-                return List.of(
-                        new TerminalRunActionProvider(hierarchy),
-                        new HubRunActionProvider(hierarchy),
-                        new BackgroundRunActionProvider(hierarchy));
-            }
-
-            return hierarchy.getChildren().stream()
-                    .map(c -> new ScriptActionProvider(c))
-                    .collect(Collectors.toList());
-        }
-    }
-
-    private static class NoScriptsActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        @Override
-        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) {
-            var cat = StoreViewState.get().getAllScriptsCategory();
-            cat.select();
-        }
-
-        @Override
-        public void execute(DataStoreEntryRef<ShellStore> ref) {
-            var cat = StoreViewState.get().getAllScriptsCategory();
-            cat.select();
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return AppI18n.observable("noScriptsAvailable");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            return AppI18n.observable("noScriptsAvailable");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-    }
-
-    private static class ScriptsDisabledActionProvider
-            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        @Override
-        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) {
-            var cat = StoreViewState.get()
-                    .getCategoryWrapper(DataStorage.get()
-                            .getStoreCategory(dataStoreEntryRefs.getFirst().get()));
-            StoreCategoryConfigComp.show(cat);
-        }
-
-        @Override
-        public void execute(DataStoreEntryRef<ShellStore> ref) {
-            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
-            StoreCategoryConfigComp.show(cat);
-        }
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return AppI18n.observable("scriptsDisabled");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2b-block-helper");
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            return AppI18n.observable("scriptsDisabled");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2b-block-helper");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-    }
-
-    private static class NoStateActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
-
-        @Override
-        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-            return true;
-        }
-
-        @Override
-        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
-            return AppI18n.observable("noScriptStateAvailable");
-        }
-
-        @Override
-        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
-        }
-
-        @Override
-        public Class<?> getApplicableClass() {
-            return ShellStore.class;
-        }
-
-        @Override
-        public ObservableValue<String> getName() {
-            return AppI18n.observable("noScriptStateAvailable");
-        }
-
-        @Override
-        public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
-        }
-
-        @Override
-        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
-            return RefreshActionProvider.Action.builder()
-                    .ref(ref.asNeeded())
-                    .build()
-                    .asNeeded();
-        }
-
-        @Override
-        public StoreAction<ShellStore> createBatchAction(DataStoreEntryRef<ShellStore> ref) {
-            return RefreshActionProvider.Action.builder()
-                    .ref(ref.asNeeded())
-                    .build()
-                    .asNeeded();
-        }
-    }
-
-    @Override
-    public Class<ShellStore> getApplicableClass() {
-        return ShellStore.class;
-    }
-
     @Override
     public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
         return true;
+    }
+
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+        var state = o.get().getStorePersistentState();
+        if (state instanceof SystemState systemState) {
+            return (systemState.getShellDialect() == null
+                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
+                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -431,15 +58,8 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-        var state = o.get().getStorePersistentState();
-        if (state instanceof SystemState systemState) {
-            return (systemState.getShellDialect() == null
-                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
-                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
-        } else {
-            return false;
-        }
+    public Class<ShellStore> getApplicableClass() {
+        return ShellStore.class;
     }
 
     @Override
@@ -539,6 +159,386 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
             return List.of(new NoScriptsActionProvider());
         } else {
             return list;
+        }
+    }
+
+    @Value
+    private static class TerminalRunActionProvider
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        ScriptHierarchy hierarchy;
+
+        @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunTerminalScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            var t = AppPrefs.get().terminalType().getValue();
+            return AppI18n.observable(
+                    "executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            var t = AppPrefs.get().terminalType().getValue();
+            return AppI18n.observable(
+                    "executeInTerminal", t != null ? t.toTranslatedString().getValue() : "?");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
+        }
+
+        @Override
+        public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunTerminalScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+    }
+
+    @Value
+    private static class HubRunActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        ScriptHierarchy hierarchy;
+
+        @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunHubScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return AppI18n.observable("runInConnectionHub");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            return AppI18n.observable("runInConnectionHub");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+        }
+
+        @Override
+        public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> stores) {
+            return RunHubBatchScriptActionProvider.Action.builder()
+                    .refs(stores)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
+        public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunHubScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+    }
+
+    @Value
+    private static class BackgroundRunActionProvider
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        ScriptHierarchy hierarchy;
+
+        @Override
+        public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunBackgroundScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return AppI18n.observable("executeInBackground");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            return AppI18n.observable("executeInBackground");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2f-flip-to-back");
+        }
+
+        @Override
+        public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
+            return RunBackgroundScriptActionProvider.Action.builder()
+                    .ref(ref)
+                    .scriptStore(hierarchy.getLeafBase())
+                    .build();
+        }
+
+        @Override
+        public List<ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+            return List.of();
+        }
+    }
+
+    @Value
+    private static class ScriptActionProvider implements HubBranchProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        ScriptHierarchy hierarchy;
+
+        @Override
+        public ObservableValue<String> getName() {
+            return new SimpleStringProperty(hierarchy.getBase().get().getName());
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            if (hierarchy.isLeaf()) {
+                return new LabelGraphic.ImageGraphic(hierarchy.getBase().get().getEffectiveIconFile(), 16);
+            }
+
+            return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
+        }
+
+        @Override
+        public List<? extends ActionProvider> getChildren(List<DataStoreEntryRef<ShellStore>> batch) {
+            return getChildren();
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return getName();
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return getIcon();
+        }
+
+        @Override
+        public Class<ShellStore> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public List<HubMenuItemProvider<?>> getChildren(DataStoreEntryRef<ShellStore> store) {
+            return getChildren();
+        }
+
+        private List<HubMenuItemProvider<?>> getChildren() {
+            if (hierarchy.isLeaf()) {
+                return List.of(
+                        new TerminalRunActionProvider(hierarchy),
+                        new HubRunActionProvider(hierarchy),
+                        new BackgroundRunActionProvider(hierarchy));
+            }
+
+            return hierarchy.getChildren().stream()
+                    .map(c -> new ScriptActionProvider(c))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private static class NoScriptsActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        @Override
+        public void execute(DataStoreEntryRef<ShellStore> ref) {
+            var cat = StoreViewState.get().getAllScriptsCategory();
+            cat.select();
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return AppI18n.observable("noScriptsAvailable");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            return AppI18n.observable("noScriptsAvailable");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+        }
+
+        @Override
+        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) {
+            var cat = StoreViewState.get().getAllScriptsCategory();
+            cat.select();
+        }
+    }
+
+    private static class ScriptsDisabledActionProvider
+            implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        @Override
+        public void execute(DataStoreEntryRef<ShellStore> ref) {
+            var cat = StoreViewState.get().getCategoryWrapper(DataStorage.get().getStoreCategory(ref.get()));
+            StoreCategoryConfigComp.show(cat);
+        }
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return AppI18n.observable("scriptsDisabled");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            return AppI18n.observable("scriptsDisabled");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2b-block-helper");
+        }
+
+        @Override
+        public void execute(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) {
+            var cat = StoreViewState.get()
+                    .getCategoryWrapper(DataStorage.get()
+                            .getStoreCategory(dataStoreEntryRefs.getFirst().get()));
+            StoreCategoryConfigComp.show(cat);
+        }
+    }
+
+    private static class NoStateActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        @Override
+        public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+            return true;
+        }
+
+        @Override
+        public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
+            return AppI18n.observable("noScriptStateAvailable");
+        }
+
+        @Override
+        public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
+            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+        }
+
+        @Override
+        public Class<?> getApplicableClass() {
+            return ShellStore.class;
+        }
+
+        @Override
+        public ObservableValue<String> getName() {
+            return AppI18n.observable("noScriptStateAvailable");
+        }
+
+        @Override
+        public LabelGraphic getIcon() {
+            return new LabelGraphic.IconGraphic("mdi2i-image-filter-none");
+        }
+
+        @Override
+        public StoreAction<ShellStore> createBatchAction(DataStoreEntryRef<ShellStore> ref) {
+            return RefreshActionProvider.Action.builder()
+                    .ref(ref.asNeeded())
+                    .build()
+                    .asNeeded();
+        }
+
+        @Override
+        public StoreAction<ShellStore> createAction(DataStoreEntryRef<ShellStore> ref) {
+            return RefreshActionProvider.Action.builder()
+                    .ref(ref.asNeeded())
+                    .build()
+                    .asNeeded();
         }
     }
 }

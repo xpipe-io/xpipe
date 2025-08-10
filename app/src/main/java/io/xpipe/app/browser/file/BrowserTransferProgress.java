@@ -18,10 +18,6 @@ public class BrowserTransferProgress {
         return new BrowserTransferProgress(name, size, size);
     }
 
-    public boolean done() {
-        return transferred >= total;
-    }
-
     public static long estimateTransferSpeed(BrowserTransferProgress start, BrowserTransferProgress end) {
         var diff = end.transferred - start.transferred;
         var duration = Duration.between(start.timestamp, end.timestamp);
@@ -45,5 +41,9 @@ public class BrowserTransferProgress {
             sum += r[r.length - i - 1];
         }
         return (long) (sum / lookBack);
+    }
+
+    public boolean done() {
+        return transferred >= total;
     }
 }

@@ -318,9 +318,9 @@ public interface SshIdentityStrategy {
             }
 
             if (resolved.endsWith(".ppk")) {
-                var ex = new IllegalArgumentException(
-                        "Identity file " + resolved
-                                + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY");
+                var ex = new IllegalArgumentException("Identity file " + resolved
+                        + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a "
+                        + "standard format like .pem via PuTTY");
                 ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex)
                         .expected()
                         .link("https://www.puttygen.com/convert-pem-to-ppk"));
@@ -357,6 +357,12 @@ public interface SshIdentityStrategy {
                     new KeyValue("PKCS11Provider", "none"));
         }
 
+        @Override
+        public SecretRetrievalStrategy getAskpassStrategy() {
+            // Always try to cache passphrase
+            return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
+        }
+
         private FilePath resolveFilePath(ShellControl sc) throws Exception {
             var s = file.toAbsoluteFilePath(sc);
             // The ~ is supported on all platforms, so manually replace it here for Windows
@@ -366,12 +372,6 @@ public interface SshIdentityStrategy {
             var resolved =
                     sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
             return FilePath.of(resolved);
-        }
-
-        @Override
-        public SecretRetrievalStrategy getAskpassStrategy() {
-            // Always try to cache passphrase
-            return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
         }
     }
 

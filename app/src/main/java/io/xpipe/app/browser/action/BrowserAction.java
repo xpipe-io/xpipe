@@ -62,6 +62,11 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
         return true;
     }
 
+    @Override
+    protected void afterExecute() {
+        model.getBusy().set(false);
+    }
+
     private void validateAutomatedAction() throws Exception {
         var bap = (BrowserActionProvider) getProvider();
         if (!bap.isApplicable(getModel(), getEntries())) {
@@ -91,11 +96,6 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
             }
             return dir;
         }
-    }
-
-    @Override
-    protected void afterExecute() {
-        model.getBusy().set(false);
     }
 
     public List<BrowserEntry> getEntries() {

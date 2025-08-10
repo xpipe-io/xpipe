@@ -30,10 +30,11 @@ public class AppHomebrewCoreutilsCheck {
 
         var loc = checkCoreutils();
         if (loc.isPresent()) {
-            ErrorEventFactory.fromMessage("You have the homebrew coreutils package installed and added to your PATH at "
-                            + loc.get() + "."
-                            + " The coreutils commands overwrite and are incompatible to the native macOS commands, which XPipe expects."
-                            + " Please remove the coreutils commands from your PATH prior to launching XPipe.")
+            ErrorEventFactory.fromMessage(
+                            "You have the homebrew coreutils package installed and added to your PATH at " + loc.get()
+                                    + "."
+                                    + " The coreutils commands overwrite and are incompatible to the native macOS commands, which XPipe expects."
+                                    + " Please remove the coreutils commands from your PATH prior to launching XPipe.")
                     .term()
                     .handle();
         }

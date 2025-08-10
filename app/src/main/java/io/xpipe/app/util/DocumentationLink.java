@@ -90,17 +90,17 @@ public enum DocumentationLink {
         this.page = page;
     }
 
+    public static String getRoot() {
+        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
+                || AppProperties.get().isStaging();
+        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
+    }
+
     public void open() {
         Hyperlinks.open(getLink());
     }
 
     public String getLink() {
         return getRoot() + "/" + page;
-    }
-
-    public static String getRoot() {
-        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
-                || AppProperties.get().isStaging();
-        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }

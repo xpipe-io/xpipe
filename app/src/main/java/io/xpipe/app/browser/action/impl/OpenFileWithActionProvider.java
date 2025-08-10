@@ -15,18 +15,6 @@ import java.util.List;
 
 public class OpenFileWithActionProvider implements BrowserActionProvider {
 
-    @Jacksonized
-    @SuperBuilder
-    public static class Action extends BrowserAction {
-
-        @Override
-        public void executeImpl() {
-            for (var entry : getEntries()) {
-                BrowserFileOpener.openWithAnyApplication(model, entry.getRawFileEntry());
-            }
-        }
-    }
-
     @Override
     public String getId() {
         return "openFileWith";
@@ -37,5 +25,17 @@ public class OpenFileWithActionProvider implements BrowserActionProvider {
         return OsType.getLocal() == OsType.WINDOWS
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+    }
+
+    @Jacksonized
+    @SuperBuilder
+    public static class Action extends BrowserAction {
+
+        @Override
+        public void executeImpl() {
+            for (var entry : getEntries()) {
+                BrowserFileOpener.openWithAnyApplication(model, entry.getRawFileEntry());
+            }
+        }
     }
 }

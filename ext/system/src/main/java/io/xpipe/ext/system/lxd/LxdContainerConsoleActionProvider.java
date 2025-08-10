@@ -21,8 +21,8 @@ public class LxdContainerConsoleActionProvider implements HubLeafProvider<LxdCon
     }
 
     @Override
-    public Class<LxdContainerStore> getApplicableClass() {
-        return LxdContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class LxdContainerConsoleActionProvider implements HubLeafProvider<LxdCon
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<LxdContainerStore> getApplicableClass() {
+        return LxdContainerStore.class;
     }
 
     @Override

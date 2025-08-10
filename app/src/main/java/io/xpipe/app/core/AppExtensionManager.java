@@ -56,6 +56,15 @@ public class AppExtensionManager {
         return INSTANCE;
     }
 
+    private static String getLocalInstallVersion(AppInstallation localInstallation) throws Exception {
+        var exec = localInstallation.getDaemonExecutablePath();
+        var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
+        var proc = fc.start();
+        var out = new String(proc.getInputStream().readAllBytes());
+        proc.waitFor(1, TimeUnit.SECONDS);
+        return out.strip();
+    }
+
     private void loadBaseExtension() {
         var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
@@ -75,7 +84,8 @@ public class AppExtensionManager {
             Path p = localInstallation.getBaseInstallationPath();
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                        "Required local XPipe installation was not found but is required for development. See https://github"
+                                + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
             var iv = getLocalInstallVersion(localInstallation);
@@ -87,23 +97,16 @@ public class AppExtensionManager {
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException(
-                        "Incompatible development version. Source: " + sv + ", Installation: " + iv
-                                + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                throw new IllegalStateException("Incompatible development version. Source: " + sv
+                        + ", Installation: "
+                        + iv
+                        + "\n\nPlease try to check out the matching release version in the repository. See https://github"
+                        + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
             var extensions = localInstallation.getExtensionsPath();
             extensionBaseDirectories.add(extensions);
         }
-    }
-
-    private static String getLocalInstallVersion(AppInstallation localInstallation) throws Exception {
-        var exec = localInstallation.getDaemonExecutablePath();
-        var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
-        var proc = fc.start();
-        var out = new String(proc.getInputStream().readAllBytes());
-        proc.waitFor(1, TimeUnit.SECONDS);
-        return out.strip();
     }
 
     public Set<Module> getContentModules() {

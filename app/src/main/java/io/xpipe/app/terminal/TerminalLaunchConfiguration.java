@@ -31,6 +31,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class TerminalLaunchConfiguration {
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
     DataStoreColor color;
     String coloredTitle;
     String cleanTitle;
@@ -40,9 +42,6 @@ public class TerminalLaunchConfiguration {
 
     @NonFinal
     FilePath scriptFile = null;
-
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
             UUID request,
@@ -133,11 +132,11 @@ public class TerminalLaunchConfiguration {
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
             var content =
                     """
-                   echo "Transcript started, output file is sessions/%s"
-                   %s
-                   echo "Transcript stopped, output file is sessions/%s"
-                   cat "%s" | "%s" terminal-clean > "%s.txt"
-                   """
+                          echo "Transcript started, output file is sessions/%s"
+                          %s
+                          echo "Transcript stopped, output file is sessions/%s"
+                          cat "%s" | "%s" terminal-clean > "%s.txt"
+                          """
                             .formatted(
                                     logFile.getFileName(),
                                     scriptCommand,

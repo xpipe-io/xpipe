@@ -39,16 +39,6 @@ public enum DataStoreColor {
         this.terminalColor = terminalColor;
     }
 
-    private String format(double val) {
-        String in = Integer.toHexString((int) Math.round(val * 255));
-        return in.length() == 1 ? "0" + in : in;
-    }
-
-    public String toHexString() {
-        var value = terminalColor;
-        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
-    }
-
     public static void applyStyleClasses(DataStoreColor color, Node node) {
         var newList = new ArrayList<>(node.getStyleClass());
         newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
@@ -60,5 +50,15 @@ public enum DataStoreColor {
             newList.add("gray");
         }
         node.getStyleClass().setAll(newList);
+    }
+
+    private String format(double val) {
+        String in = Integer.toHexString((int) Math.round(val * 255));
+        return in.length() == 1 ? "0" + in : in;
+    }
+
+    public String toHexString() {
+        var value = terminalColor;
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 }

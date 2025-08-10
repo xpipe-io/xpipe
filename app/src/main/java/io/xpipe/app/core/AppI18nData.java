@@ -28,31 +28,6 @@ public class AppI18nData {
     Map<String, String> translations;
     Map<String, String> markdownDocumentations;
 
-    Optional<String> getLocalised(String s, Object... vars) {
-        if (getTranslations().containsKey(s)) {
-            var localisedString = getTranslations().get(s);
-            return Optional.ofNullable(getValue(localisedString, vars));
-        }
-        return Optional.empty();
-    }
-
-    private String getValue(String s, Object... vars) {
-        s = s.replace("\\n", "\n");
-        if (vars.length > 0) {
-            var matcher = VAR_PATTERN.matcher(s);
-            for (var v : vars) {
-                v = v != null ? v : "null";
-                if (matcher.find()) {
-                    var group = matcher.group();
-                    s = s.replace(group, v.toString());
-                } else {
-                    TrackEvent.warn("No match found for value " + v + " in string " + s);
-                }
-            }
-        }
-        return s;
-    }
-
     static AppI18nData load(SupportedLocale l) throws Exception {
         TrackEvent.info("Loading translations ...");
 
@@ -128,5 +103,30 @@ public class AppI18nData {
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
         var ending = "_" + l.toLanguageTag();
         return name.endsWith(ending);
+    }
+
+    Optional<String> getLocalised(String s, Object... vars) {
+        if (getTranslations().containsKey(s)) {
+            var localisedString = getTranslations().get(s);
+            return Optional.ofNullable(getValue(localisedString, vars));
+        }
+        return Optional.empty();
+    }
+
+    private String getValue(String s, Object... vars) {
+        s = s.replace("\\n", "\n");
+        if (vars.length > 0) {
+            var matcher = VAR_PATTERN.matcher(s);
+            for (var v : vars) {
+                v = v != null ? v : "null";
+                if (matcher.find()) {
+                    var group = matcher.group();
+                    s = s.replace(group, v.toString());
+                } else {
+                    TrackEvent.warn("No match found for value " + v + " in string " + s);
+                }
+            }
+        }
+        return s;
     }
 }

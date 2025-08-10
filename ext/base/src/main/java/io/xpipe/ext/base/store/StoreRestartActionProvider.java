@@ -22,6 +22,11 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
     }
 
     @Override
+    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+        return o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore;
+    }
+
+    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
         return AppI18n.observable("restart");
     }
@@ -29,6 +34,11 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
         return new LabelGraphic.IconGraphic("mdi2r-restart");
+    }
+
+    @Override
+    public Class<?> getApplicableClass() {
+        return DataStore.class;
     }
 
     @Override
@@ -47,16 +57,6 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
     }
 
     @Override
-    public Class<?> getApplicableClass() {
-        return DataStore.class;
-    }
-
-    @Override
-    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.getStore() instanceof StartableStore && o.getStore() instanceof StoppableStore;
-    }
-
-    @Override
     public String getId() {
         return "restartStore";
     }
@@ -66,14 +66,14 @@ public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, B
     public static class Action extends StoreAction<DataStore> {
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() throws Exception {
             ((StoppableStore) ref.getStore()).stop();
             ((StartableStore) ref.getStore()).start();
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

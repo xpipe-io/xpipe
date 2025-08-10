@@ -83,7 +83,9 @@ public class AppAvCheck {
         MALWAREBYTES("Malwarebytes") {
             @Override
             public String getDescription() {
-                return "The free Malwarebytes version performs less invasive scans, so it shouldn't be a problem. If you are running the paid Malwarebytes Pro version, you will have access to the `Exploit Protection` under the `Real-time Protection` mode. When this setting is active, any shell access is slowed down, resulting in XPipe becoming very slow.";
+                return "The free Malwarebytes version performs less invasive scans, so it shouldn't be a problem. If you are running the paid "
+                        + "Malwarebytes Pro version, you will have access to the `Exploit Protection` under the `Real-time Protection` mode. When "
+                        + "this setting is active, any shell access is slowed down, resulting in XPipe becoming very slow.";
             }
 
             @Override
@@ -95,7 +97,8 @@ public class AppAvCheck {
         MCAFEE("McAfee") {
             @Override
             public String getDescription() {
-                return "McAfee slows down XPipe considerably. It also sometimes preemptively disables some Win32 commands that XPipe depends on, leading to errors.";
+                return "McAfee slows down XPipe considerably. It also sometimes preemptively disables some Win32 commands that XPipe depends on, "
+                        + "leading to errors.";
             }
 
             @Override

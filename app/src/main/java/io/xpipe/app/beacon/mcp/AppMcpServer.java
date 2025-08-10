@@ -23,13 +23,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AppMcpServer {
 
     private static AppMcpServer INSTANCE;
+    McpSyncServer mcpSyncServer;
+    HttpStreamableServerTransportProvider transportProvider;
 
     public static AppMcpServer get() {
         return INSTANCE;
     }
-
-    McpSyncServer mcpSyncServer;
-    HttpStreamableServerTransportProvider transportProvider;
 
     @SneakyThrows
     public static void init() {
@@ -114,6 +113,11 @@ public class AppMcpServer {
         INSTANCE = new AppMcpServer(syncServer, transportProvider);
     }
 
+    public static void reset() {
+        INSTANCE.mcpSyncServer.close();
+        INSTANCE = null;
+    }
+
     public HttpHandler createHttpHandler() {
         return new HttpHandler() {
 
@@ -131,7 +135,8 @@ public class AppMcpServer {
                         if (exchange.getRequestMethod().equals("POST")) {
                             ThreadHelper.runAsync(() -> {
                                 ErrorEventFactory.fromMessage(
-                                                "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the API settings menu")
+                                                "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the"
+                                                        + " API settings menu")
                                         .expected()
                                         .handle();
                             });
@@ -146,7 +151,9 @@ public class AppMcpServer {
                             if (exchange.getRequestMethod().equals("POST")) {
                                 ThreadHelper.runAsync(() -> {
                                     ErrorEventFactory.fromMessage(
-                                                    "An external request was made to the XPipe MCP server without the header Authorization set. Please configure your MCP client with the Bearer API token you can find the API settings menu")
+                                                    "An external request was made to the XPipe MCP server without the header Authorization set. "
+                                                            + "Please configure your MCP client with the Bearer API token you can find the API "
+                                                            + "settings menu")
                                             .expected()
                                             .handle();
                                 });
@@ -182,10 +189,5 @@ public class AppMcpServer {
                 }
             }
         };
-    }
-
-    public static void reset() {
-        INSTANCE.mcpSyncServer.close();
-        INSTANCE = null;
     }
 }

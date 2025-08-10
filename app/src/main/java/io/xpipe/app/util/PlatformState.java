@@ -65,11 +65,11 @@ public enum PlatformState {
 
     private static String getErrorMessage(String message) {
         var header = message != null ? message + "\n\n" : "Failed to load graphics support\n\n";
-        var msg = header
-                + "Please note that XPipe is a desktop application that should be run on your local workstation."
-                + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
-                + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
-                + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
+        var msg =
+                header + "Please note that XPipe is a desktop application that should be run on your local workstation."
+                        + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
+                        + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
+                        + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
         return msg;
     }
 

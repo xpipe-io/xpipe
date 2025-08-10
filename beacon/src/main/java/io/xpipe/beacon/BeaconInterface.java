@@ -28,24 +28,6 @@ public abstract class BeaconInterface<T> {
                 .findAny();
     }
 
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            var services = layer != null
-                    ? ServiceLoader.load(layer, BeaconInterface.class)
-                    : ServiceLoader.load(BeaconInterface.class);
-            ALL = services.stream()
-                    .map(ServiceLoader.Provider::get)
-                    .map(beaconInterface -> (BeaconInterface<?>) beaconInterface)
-                    .collect(Collectors.toList());
-            // Remove parent classes
-            ALL.removeIf(beaconInterface -> ALL.stream()
-                    .anyMatch(other -> !other.equals(beaconInterface)
-                            && beaconInterface.getClass().isAssignableFrom(other.getClass())));
-        }
-    }
-
     @SuppressWarnings("unchecked")
     @SneakyThrows
     public Class<T> getRequestClass() {
@@ -90,5 +72,23 @@ public abstract class BeaconInterface<T> {
 
     public Object getSynchronizationObject() {
         return null;
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            var services = layer != null
+                    ? ServiceLoader.load(layer, BeaconInterface.class)
+                    : ServiceLoader.load(BeaconInterface.class);
+            ALL = services.stream()
+                    .map(ServiceLoader.Provider::get)
+                    .map(beaconInterface -> (BeaconInterface<?>) beaconInterface)
+                    .collect(Collectors.toList());
+            // Remove parent classes
+            ALL.removeIf(beaconInterface -> ALL.stream()
+                    .anyMatch(other -> !other.equals(beaconInterface)
+                            && beaconInterface.getClass().isAssignableFrom(other.getClass())));
+        }
     }
 }

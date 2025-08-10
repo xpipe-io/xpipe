@@ -14,12 +14,6 @@ public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStorePr
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        CustomServiceGroupStore s = store.getStore().asNeeded();
-        return s.getParent().get();
-    }
-
-    @Override
     public String getId() {
         return "customServiceGroup";
     }
@@ -27,5 +21,11 @@ public class CustomServiceGroupStoreProvider extends AbstractServiceGroupStorePr
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(CustomServiceGroupStore.class);
+    }
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        CustomServiceGroupStore s = store.getStore().asNeeded();
+        return s.getParent().get();
     }
 }

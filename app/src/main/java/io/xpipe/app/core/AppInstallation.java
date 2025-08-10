@@ -23,6 +23,7 @@ public abstract class AppInstallation {
             : new MacOsDev(
                     determineDefaultInstallationBasePath(AppProperties.get().isStaging()),
                     determineCurrentInstallationBasePath());
+    private final Path base;
 
     private AppInstallation(Path base) {
         this.base = base;
@@ -140,12 +141,6 @@ public abstract class AppInstallation {
         };
     }
 
-    private final Path base;
-
-    public Path getBaseInstallationPath() {
-        return base;
-    }
-
     private static Path toRealPathIfPossible(Path p) {
         try {
             // Under certain conditions, e.g. when running on a ramdisk, path resolution might fail.
@@ -154,6 +149,10 @@ public abstract class AppInstallation {
         } catch (IOException e) {
             return p;
         }
+    }
+
+    public Path getBaseInstallationPath() {
+        return base;
     }
 
     public abstract Path getDaemonDebugScriptPath();
@@ -222,13 +221,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return devBase.resolve("lang");
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
+        public Path getLangPath() {
+            return devBase.resolve("lang");
         }
 
         @Override
@@ -297,13 +296,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return devBase.resolve("lang");
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
+        public Path getLangPath() {
+            return devBase.resolve("lang");
         }
     }
 
@@ -374,13 +373,13 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getLangPath() {
-            return devBase.resolve("lang");
+        public Path getBundledFontsPath() {
+            return devBase.resolve("dist").resolve("fonts");
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
+        public Path getLangPath() {
+            return devBase.resolve("lang");
         }
 
         @Override

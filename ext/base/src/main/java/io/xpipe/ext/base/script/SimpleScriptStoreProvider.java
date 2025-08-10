@@ -38,17 +38,17 @@ import java.util.stream.Stream;
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
-    public boolean showProviderChoice() {
-        return false;
-    }
-
-    @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SCRIPTING;
     }
 
     @Override
     public boolean canMoveCategories() {
+        return false;
+    }
+
+    @Override
+    public boolean showProviderChoice() {
         return false;
     }
 
@@ -222,6 +222,27 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 + st.getMinimumDialect().getScriptFileEnding();
     }
 
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        SimpleScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
+        var init = st.isInitScript() ? AppI18n.get("init") : null;
+        var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
+        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
+        var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
+        var type = st.getMinimumDialect() != null
+                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
+                : AppI18n.get("genericScript");
+        var suffix = String.join(
+                " / ",
+                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
+        if (!suffix.isEmpty()) {
+            suffix = "(" + suffix + ")";
+        } else {
+            suffix = null;
+        }
+        return new SimpleStringProperty(DataStoreFormatter.join(type, suffix));
+    }
+
     @SneakyThrows
     @Override
     public String getDisplayIconFileName(DataStore store) {
@@ -253,26 +274,5 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(SimpleScriptStore.class);
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        SimpleScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
-        var init = st.isInitScript() ? AppI18n.get("init") : null;
-        var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
-        var shell = st.isShellScript() ? AppI18n.get("shell") : null;
-        var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
-        var type = st.getMinimumDialect() != null
-                ? st.getMinimumDialect().getDisplayName() + " " + AppI18n.get("script")
-                : AppI18n.get("genericScript");
-        var suffix = String.join(
-                " / ",
-                Stream.of(init, shell, file, runnable).filter(s -> s != null).toList());
-        if (!suffix.isEmpty()) {
-            suffix = "(" + suffix + ")";
-        } else {
-            suffix = null;
-        }
-        return new SimpleStringProperty(DataStoreFormatter.join(type, suffix));
     }
 }

@@ -5,8 +5,8 @@ import java.io.InputStream;
 
 public class FixedSizeInputStream extends SimpleFilterInputStream {
 
-    private long count;
     private final long size;
+    private long count;
 
     public FixedSizeInputStream(InputStream in, long size) {
         super(in);

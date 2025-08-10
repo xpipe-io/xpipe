@@ -25,8 +25,8 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
     }
 
     @Override
-    public Class<LxdContainerStore> getApplicableClass() {
-        return LxdContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<LxdContainerStore> getApplicableClass() {
+        return LxdContainerStore.class;
     }
 
     @Override
@@ -52,11 +52,6 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<LxdContainerStore> {
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -72,6 +67,11 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
             }
             AppLayoutModel.get().selectBrowser();
             BrowserFileOpener.openInTextEditor(model, found.get());
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

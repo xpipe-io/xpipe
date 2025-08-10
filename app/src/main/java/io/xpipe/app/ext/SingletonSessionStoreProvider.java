@@ -28,6 +28,19 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return StoreEntryComp.create(sec, t, preferLarge);
     }
 
+    default Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(Bindings.createObjectBinding(
+                () -> {
+                    SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
+                    if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
+                        return SystemStateComp.State.OTHER;
+                    }
+
+                    return s.isSessionRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
+                },
+                w.getCache()));
+    }
+
     default StoreToggleComp createToggleComp(StoreSection sec) {
         var enabled = new SimpleBooleanProperty();
         sec.getWrapper().getCache().subscribe((newValue) -> {
@@ -50,18 +63,5 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         });
         t.tooltipKey("enabled");
         return t;
-    }
-
-    default Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new SystemStateComp(Bindings.createObjectBinding(
-                () -> {
-                    SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
-                    if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
-                        return SystemStateComp.State.OTHER;
-                    }
-
-                    return s.isSessionRunning() ? SystemStateComp.State.SUCCESS : SystemStateComp.State.FAILURE;
-                },
-                w.getCache()));
     }
 }

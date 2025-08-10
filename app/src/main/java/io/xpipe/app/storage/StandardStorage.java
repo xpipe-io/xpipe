@@ -5,7 +5,6 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
@@ -35,66 +34,17 @@ public class StandardStorage extends DataStorage {
     @Getter
     private final DataStorageUserHandler dataStorageUserHandler;
 
+    private final ReentrantLock busyIo = new ReentrantLock();
     private SecretKey vaultKey;
 
     @Getter
     private boolean disposed;
 
     private boolean saveQueued;
-    private final ReentrantLock busyIo = new ReentrantLock();
 
     StandardStorage() {
         this.dataStorageSyncHandler = DataStorageSyncHandler.getInstance();
         this.dataStorageUserHandler = DataStorageUserHandler.getInstance();
-    }
-
-    @Override
-    public SecretKey getVaultKey() {
-        return vaultKey;
-    }
-
-    public void load() {
-        if (!busyIo.tryLock()) {
-            return;
-        }
-
-        try {
-            FileUtils.forceMkdir(dir.toFile());
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
-                    .terminal(true)
-                    .build()
-                    .handle();
-        }
-
-        try {
-            initSystemInfo();
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable("Unable to load vault system info", e)
-                    .build()
-                    .handle();
-        }
-
-        initVaultKey();
-
-        try {
-            dataStorageUserHandler.init();
-        } catch (IOException e) {
-            ErrorEventFactory.fromThrowable("Unable to load vault users", e)
-                    .terminal(true)
-                    .build()
-                    .handle();
-        }
-        dataStorageUserHandler.login();
-
-        reloadContent();
-
-        busyIo.unlock();
-
-        startSyncWatcher();
-
-        // Full save on initial load
-        saveAsync();
     }
 
     private void startSyncWatcher() {
@@ -321,40 +271,53 @@ public class StandardStorage extends DataStorage {
         busyIo.unlock();
     }
 
-    private void filterPerUserEntries(Collection<DataStoreEntry> entries) {
-        var toRemove = getStoreEntries().stream()
-                .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
-                .toList();
-        directoriesToKeep.addAll(toRemove.stream()
-                .map(dataStoreEntry -> dataStoreEntry.getDirectory())
-                .toList());
-        toRemove.forEach(entries::remove);
+    @Override
+    public SecretKey getVaultKey() {
+        return vaultKey;
     }
 
-    private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
-        var current = entry;
-        while (true) {
-            if (!current.getStoreNode().hasAccess()) {
-                return true;
-            }
-
-            var parent = getDefaultDisplayParent(current);
-            if (parent.isEmpty()) {
-                return false;
-            } else {
-                current = parent.get();
-            }
+    public void load() {
+        if (!busyIo.tryLock()) {
+            return;
         }
-    }
 
-    private void callProviders() {
-        DataStorageExtensionProvider.getAll().forEach(p -> {
-            try {
-                p.storageInit();
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).omit().handle();
-            }
-        });
+        try {
+            FileUtils.forceMkdir(dir.toFile());
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
+
+        try {
+            initSystemInfo();
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable("Unable to load vault system info", e)
+                    .build()
+                    .handle();
+        }
+
+        initVaultKey();
+
+        try {
+            dataStorageUserHandler.init();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable("Unable to load vault users", e)
+                    .terminal(true)
+                    .build()
+                    .handle();
+        }
+        dataStorageUserHandler.login();
+
+        reloadContent();
+
+        busyIo.unlock();
+
+        startSyncWatcher();
+
+        // Full save on initial load
+        saveAsync();
     }
 
     public void saveAsync() {
@@ -474,6 +437,42 @@ public class StandardStorage extends DataStorage {
         return dataStorageSyncHandler.supportsSync();
     }
 
+    private void filterPerUserEntries(Collection<DataStoreEntry> entries) {
+        var toRemove = getStoreEntries().stream()
+                .filter(dataStoreEntry -> shouldRemoveOtherUserEntry(dataStoreEntry))
+                .toList();
+        directoriesToKeep.addAll(toRemove.stream()
+                .map(dataStoreEntry -> dataStoreEntry.getDirectory())
+                .toList());
+        toRemove.forEach(entries::remove);
+    }
+
+    private boolean shouldRemoveOtherUserEntry(DataStoreEntry entry) {
+        var current = entry;
+        while (true) {
+            if (!current.getStoreNode().hasAccess()) {
+                return true;
+            }
+
+            var parent = getDefaultDisplayParent(current);
+            if (parent.isEmpty()) {
+                return false;
+            } else {
+                current = parent.get();
+            }
+        }
+    }
+
+    private void callProviders() {
+        DataStorageExtensionProvider.getAll().forEach(p -> {
+            try {
+                p.storageInit();
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).omit().handle();
+            }
+        });
+    }
+
     private void deleteLeftovers() {
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
@@ -580,10 +579,10 @@ public class StandardStorage extends DataStorage {
         if (Files.exists(file)) {
             var read = Files.readString(file);
             if (!OsType.getLocal().getName().equals(read)) {
-                ErrorEventFactory.fromMessage(
-                                "This vault was originally created on a different system running " + read
-                                        + ". Sharing connection information between systems directly might cause some problems."
-                                        + " If you want to properly synchronize connection information across many systems, you can take a look into the git vault synchronization functionality in the settings.")
+                ErrorEventFactory.fromMessage("This vault was originally created on a different system running " + read
+                                + ". Sharing connection information between systems directly might cause some problems."
+                                + " If you want to properly synchronize connection information across many systems, you can take a look into the git "
+                                + "vault synchronization functionality in the settings.")
                         .expected()
                         .handle();
                 var s = OsType.getLocal().getName();

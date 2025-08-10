@@ -34,17 +34,17 @@ public abstract class MultiExecuteSelectionMenuProvider implements BrowserMenuBr
                     }
 
                     @Override
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return AppPrefs.get().terminalType().getValue() != null;
+                    }
+
+                    @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var t = AppPrefs.get().terminalType().getValue();
                         return AppI18n.observable(
                                 "executeInTerminal",
                                 t != null ? t.toTranslatedString().getValue() : "?");
-                    }
-
-                    @Override
-                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return AppPrefs.get().terminalType().getValue() != null;
                     }
                 },
                 new BrowserMenuLeafProvider() {

@@ -25,6 +25,17 @@ import javax.management.MBeanServer;
 
 public class TroubleshootCategory extends AppPrefsCategory {
 
+    @SneakyThrows
+    private static void heapDump() {
+        var file = DesktopHelper.getDesktopDirectory().resolve("xpipe.hprof");
+        FileUtils.deleteQuietly(file.toFile());
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(
+                server, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class);
+        mxBean.dumpHeap(file.toString(), true);
+        DesktopHelper.browseFileInDirectory(file);
+    }
+
     @Override
     protected String getId() {
         return "troubleshoot";
@@ -181,16 +192,5 @@ public class TroubleshootCategory extends AppPrefsCategory {
         }
 
         return b.buildComp();
-    }
-
-    @SneakyThrows
-    private static void heapDump() {
-        var file = DesktopHelper.getDesktopDirectory().resolve("xpipe.hprof");
-        FileUtils.deleteQuietly(file.toFile());
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(
-                server, "com.sun.management:type=HotSpotDiagnostic", HotSpotDiagnosticMXBean.class);
-        mxBean.dumpHeap(file.toString(), true);
-        DesktopHelper.browseFileInDirectory(file);
     }
 }

@@ -31,18 +31,18 @@ public class ApiCategory extends AppPrefsCategory {
                 () -> {
                     var template =
                             """
-                       {
-                         "mcpServers": {
-                           "%s": {
-                             "type": "streamable-http",
-                             "url": "http://localhost:%s/mcp",
-                             "headers": {
-                               "Authorization": "Bearer %s"
+                           {
+                             "mcpServers": {
+                               "%s": {
+                                 "type": "streamable-http",
+                                 "url": "http://localhost:%s/mcp",
+                                 "headers": {
+                                   "Authorization": "Bearer %s"
+                                 }
+                               }
                              }
                            }
-                         }
-                       }
-                       """;
+                           """;
                     return template.formatted(
                                     AppNames.ofCurrent().getKebapName(),
                                     AppBeaconServer.get().getPort(),

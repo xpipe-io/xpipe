@@ -28,11 +28,6 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
         String command;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() throws Exception {
             var cmd = CommandBuilder.of().add(command);
             for (BrowserEntry entry : getEntries()) {
@@ -60,6 +55,11 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
             if (exitCode != 0) {
                 throw ErrorEventFactory.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
             }
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

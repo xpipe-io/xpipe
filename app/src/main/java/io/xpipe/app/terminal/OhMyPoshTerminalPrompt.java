@@ -34,93 +34,93 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
         return OhMyPoshTerminalPrompt.builder()
                 .configuration(
                         """
-{
-  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
-  "blocks": [
-    {
-      "segments": [
-        {
-          "foreground": "#007ACC",
-          "template": " {{ .CurrentDate | date .Format }} ",
-          "properties": {
-            "time_format": "15:04:05"
-          },
-          "style": "plain",
-          "type": "time"
-        }
-      ],
-      "type": "rprompt"
-    },
-    {
-      "alignment": "left",
-      "newline": true,
-      "segments": [
-        {
-          "background": "#ffb300",
-          "foreground": "#ffffff",
-          "leading_diamond": "",
-          "template": " {{ .UserName }} ",
-          "style": "diamond",
-          "trailing_diamond": "",
-          "type": "session"
-        },
-        {
-          "background": "#61AFEF",
-          "foreground": "#ffffff",
-          "powerline_symbol": "",
-          "template": " {{ .Path }} ",
-          "properties": {
-            "style": "folder"
-          },
-          "exclude_folders": [
-            "/super/secret/project"
-          ],
-          "style": "powerline",
-          "type": "path"
-        },
-        {
-          "background": "#2e9599",
-          "background_templates": [
-            "{{ if or (.Working.Changed) (.Staging.Changed) }}#f36943{{ end }}",
-            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#a8216b{{ end }}",
-            "{{ if gt .Ahead 0 }}#35b5ff{{ end }}",
-            "{{ if gt .Behind 0 }}#f89cfa{{ end }}"
-          ],
-          "foreground": "#193549",
-          "foreground_templates": [
-            "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#ffffff{{ end }}"
-          ],
-          "powerline_symbol": "",
-          "template": " {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }} ",
-          "properties": {
-            "branch_template": "{{ trunc 25 .Branch }}",
-            "fetch_status": true
-          },
-          "style": "powerline",
-          "type": "git"
-        },
-        {
-          "background": "#00897b",
-          "background_templates": [
-            "{{ if gt .Code 0 }}#e91e63{{ end }}"
-          ],
-          "foreground": "#ffffff",
-          "template": "<parentBackground></>  ",
-          "properties": {
-            "always_enabled": true
-          },
-          "style": "diamond",
-          "trailing_diamond": "",
-          "type": "status"
-        }
-      ],
-      "type": "prompt"
-    }
-  ],
-  "final_space": true,
-  "version": 3
-}
-                """)
+                                                              {
+                                                                "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+                                                                "blocks": [
+                                                                  {
+                                                                    "segments": [
+                                                                      {
+                                                                        "foreground": "#007ACC",
+                                                                        "template": " {{ .CurrentDate | date .Format }} ",
+                                                                        "properties": {
+                                                                          "time_format": "15:04:05"
+                                                                        },
+                                                                        "style": "plain",
+                                                                        "type": "time"
+                                                                      }
+                                                                    ],
+                                                                    "type": "rprompt"
+                                                                  },
+                                                                  {
+                                                                    "alignment": "left",
+                                                                    "newline": true,
+                                                                    "segments": [
+                                                                      {
+                                                                        "background": "#ffb300",
+                                                                        "foreground": "#ffffff",
+                                                                        "leading_diamond": "",
+                                                                        "template": " {{ .UserName }} ",
+                                                                        "style": "diamond",
+                                                                        "trailing_diamond": "",
+                                                                        "type": "session"
+                                                                      },
+                                                                      {
+                                                                        "background": "#61AFEF",
+                                                                        "foreground": "#ffffff",
+                                                                        "powerline_symbol": "",
+                                                                        "template": " {{ .Path }} ",
+                                                                        "properties": {
+                                                                          "style": "folder"
+                                                                        },
+                                                                        "exclude_folders": [
+                                                                          "/super/secret/project"
+                                                                        ],
+                                                                        "style": "powerline",
+                                                                        "type": "path"
+                                                                      },
+                                                                      {
+                                                                        "background": "#2e9599",
+                                                                        "background_templates": [
+                                                                          "{{ if or (.Working.Changed) (.Staging.Changed) }}#f36943{{ end }}",
+                                                                          "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#a8216b{{ end }}",
+                                                                          "{{ if gt .Ahead 0 }}#35b5ff{{ end }}",
+                                                                          "{{ if gt .Behind 0 }}#f89cfa{{ end }}"
+                                                                        ],
+                                                                        "foreground": "#193549",
+                                                                        "foreground_templates": [
+                                                                          "{{ if and (gt .Ahead 0) (gt .Behind 0) }}#ffffff{{ end }}"
+                                                                        ],
+                                                                        "powerline_symbol": "",
+                                                                        "template": " {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }} ",
+                                                                        "properties": {
+                                                                          "branch_template": "{{ trunc 25 .Branch }}",
+                                                                          "fetch_status": true
+                                                                        },
+                                                                        "style": "powerline",
+                                                                        "type": "git"
+                                                                      },
+                                                                      {
+                                                                        "background": "#00897b",
+                                                                        "background_templates": [
+                                                                          "{{ if gt .Code 0 }}#e91e63{{ end }}"
+                                                                        ],
+                                                                        "foreground": "#ffffff",
+                                                                        "template": "<parentBackground></>  ",
+                                                                        "properties": {
+                                                                          "always_enabled": true
+                                                                        },
+                                                                        "style": "diamond",
+                                                                        "trailing_diamond": "",
+                                                                        "type": "status"
+                                                                      }
+                                                                    ],
+                                                                    "type": "prompt"
+                                                                  }
+                                                                ],
+                                                                "final_space": true,
+                                                                "version": 3
+                                                              }
+                                                              """)
                 .build();
     }
 
@@ -176,6 +176,17 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
     }
 
     @Override
+    public List<ShellDialect> getSupportedDialects() {
+        return List.of(
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
+    }
+
+    @Override
     protected String getConfigFileExtension() {
         return "json";
     }
@@ -207,16 +218,5 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
             }
         }
         return ShellScript.lines(lines);
-    }
-
-    @Override
-    public List<ShellDialect> getSupportedDialects() {
-        return List.of(
-                ShellDialects.BASH,
-                ShellDialects.ZSH,
-                ShellDialects.FISH,
-                ShellDialects.CMD,
-                ShellDialects.POWERSHELL,
-                ShellDialects.POWERSHELL_CORE);
     }
 }

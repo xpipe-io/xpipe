@@ -27,6 +27,8 @@ import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
 
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
+
     @Getter
     private final FileEntry target;
 
@@ -37,7 +39,6 @@ public class BrowserFileTransferOperation {
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
     private final BooleanProperty cancelled;
-
     BrowserAlerts.FileConflictChoice lastConflictChoice;
 
     public BrowserFileTransferOperation(
@@ -465,8 +466,6 @@ public class BrowserFileTransferOperation {
     private void deleteSingle(FileEntry source) throws Exception {
         source.getFileSystem().delete(source.getPath());
     }
-
-    private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     private void transferFile(
             FilePath sourceFile,

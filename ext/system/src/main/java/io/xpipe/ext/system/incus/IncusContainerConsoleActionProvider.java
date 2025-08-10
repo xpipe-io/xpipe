@@ -21,8 +21,8 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
     }
 
     @Override
-    public Class<IncusContainerStore> getApplicableClass() {
-        return IncusContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
     }
 
     @Override

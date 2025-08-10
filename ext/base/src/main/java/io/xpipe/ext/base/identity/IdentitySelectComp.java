@@ -40,6 +40,12 @@ import java.util.List;
 
 public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
+    private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
+    private final Property<String> inPlaceUser;
+    private final ObservableValue<SecretRetrievalStrategy> password;
+    private final ObservableValue<SshIdentityStrategy> identityStrategy;
+    private final boolean allowUserInput;
+
     public IdentitySelectComp(
             ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference,
             Property<String> inPlaceUser,
@@ -52,12 +58,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         this.identityStrategy = identityStrategy;
         this.allowUserInput = allowUserInput;
     }
-
-    private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
-    private final Property<String> inPlaceUser;
-    private final ObservableValue<SecretRetrievalStrategy> password;
-    private final ObservableValue<SshIdentityStrategy> identityStrategy;
-    private final boolean allowUserInput;
 
     private void addNamedIdentity() {
         var pass = EncryptedValue.CurrentKey.of(password.getValue());

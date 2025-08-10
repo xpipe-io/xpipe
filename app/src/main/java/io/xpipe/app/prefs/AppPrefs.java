@@ -37,13 +37,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class AppPrefs {
 
     private static AppPrefs INSTANCE;
+    final ObjectProperty<FilePath> defaultSshAgentSocket = new GlobalObjectProperty<>();
     private final List<Mapping> mapping = new ArrayList<>();
 
     @Getter
@@ -114,15 +114,6 @@ public class AppPrefs {
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .vaultSpecific(true)
             .build());
-
-    public final ObservableBooleanValue preferTerminalTabs() {
-        return preferTerminalTabs;
-    }
-
-    public final ObservableValue<List<SystemIconSource>> getIconSources() {
-        return iconSources;
-    }
-
     public final BooleanProperty disableCertutilUse =
             mapLocal(new GlobalBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
@@ -176,19 +167,6 @@ public class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
-
-    public ObservableValue<TerminalPrompt> terminalPrompt() {
-        return terminalPrompt;
-    }
-
-    public ObservableValue<UUID> terminalProxy() {
-        return terminalProxy;
-    }
-
-    public ObservableValue<Boolean> terminalAlwaysPauseOnExit() {
-        return terminalAlwaysPauseOnExit;
-    }
-
     final ObjectProperty<StartupBehaviour> startupBehaviour = mapLocal(
             new GlobalObjectProperty<>(StartupBehaviour.GUI), "startupBehaviour", StartupBehaviour.class, true);
     public final BooleanProperty enableGitStorage = map(Mapping.builder()
@@ -250,125 +228,35 @@ public class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
     final BooleanProperty disableSshPinCaching =
             mapLocal(new GlobalBooleanProperty(false), "disableSshPinCaching", Boolean.class, false);
-
     final ObjectProperty<SupportedLocale> language =
             mapLocal(new GlobalObjectProperty<>(SupportedLocale.ENGLISH), "language", SupportedLocale.class, false);
-
     final ObjectProperty<FilePath> sshAgentSocket = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("sshAgentSocket")
             .valueClass(FilePath.class)
             .requiresRestart(false)
             .build());
-
-    final ObjectProperty<FilePath> defaultSshAgentSocket = new GlobalObjectProperty<>();
-
-    public ObservableValue<FilePath> sshAgentSocket() {
-        return sshAgentSocket;
-    }
-
-    public ObservableValue<FilePath> defaultSshAgentSocket() {
-        return defaultSshAgentSocket;
-    }
-
-    public ObservableBooleanValue preferMonochromeIcons() {
-        return preferMonochromeIcons;
-    }
-
     final BooleanProperty requireDoubleClickForConnections =
             mapLocal(new GlobalBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
-
     final BooleanProperty editFilesWithDoubleClick =
             mapLocal(new GlobalBooleanProperty(false), "editFilesWithDoubleClick", Boolean.class, false);
-
     final BooleanProperty enableTerminalDocking =
             mapLocal(new GlobalBooleanProperty(true), "enableTerminalDocking", Boolean.class, false);
-
-    public ObservableBooleanValue editFilesWithDoubleClick() {
-        return editFilesWithDoubleClick;
-    }
-
     final BooleanProperty censorMode = mapLocal(new GlobalBooleanProperty(false), "censorMode", Boolean.class, false);
-
     final BooleanProperty sshVerboseOutput = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("sshVerboseOutput")
             .valueClass(Boolean.class)
             .documentationLink(DocumentationLink.SSH_TROUBLESHOOT)
             .build());
-
-    public ObservableBooleanValue sshVerboseOutput() {
-        return sshVerboseOutput;
-    }
-
-    public ObservableBooleanValue censorMode() {
-        return censorMode;
-    }
-
-    public ObservableBooleanValue requireDoubleClickForConnections() {
-        return requireDoubleClickForConnections;
-    }
-
-    public ObservableBooleanValue enableTerminalDocking() {
-        return enableTerminalDocking;
-    }
-
-    public ObservableBooleanValue disableSshPinCaching() {
-        return disableSshPinCaching;
-    }
-
-    public ObservableBooleanValue focusWindowOnNotifications() {
-        return focusWindowOnNotifications;
-    }
-
-    @Getter
-    private final StringProperty lockCrypt =
-            mapVaultShared(new GlobalStringProperty(), "workspaceLock", String.class, true);
-
     final StringProperty apiKey =
             mapVaultShared(new GlobalStringProperty(UUID.randomUUID().toString()), "apiKey", String.class, true);
     final BooleanProperty disableApiAuthentication =
             mapLocal(new GlobalBooleanProperty(false), "disableApiAuthentication", Boolean.class, false);
 
-    public ObservableValue<AppTheme.Theme> theme() {
-        return theme;
-    }
-
-    public ObservableBooleanValue developerPrintInitFiles() {
-        return developerPrintInitFiles;
-    }
-
-    public ObservableBooleanValue checkForSecurityUpdates() {
-        return checkForSecurityUpdates;
-    }
-
-    public ObservableBooleanValue enableTerminalLogging() {
-        return enableTerminalLogging;
-    }
-
-    public ObservableStringValue apiKey() {
-        return apiKey;
-    }
-
-    public ObservableBooleanValue disableApiAuthentication() {
-        return disableApiAuthentication;
-    }
-
-    public ObservableBooleanValue enableHttpApi() {
-        return enableHttpApi;
-    }
-
-    public ObservableBooleanValue enableMcpServer() {
-        return enableMcpServer;
-    }
-
-    public ObservableBooleanValue enableMcpMutationTools() {
-        return enableMcpMutationTools;
-    }
-
-    public ObservableBooleanValue pinLocalMachineOnStartup() {
-        return pinLocalMachineOnStartup;
-    }
+    @Getter
+    private final StringProperty lockCrypt =
+            mapVaultShared(new GlobalStringProperty(), "workspaceLock", String.class, true);
 
     @Getter
     private final List<AppPrefsCategory> categories;
@@ -442,6 +330,106 @@ public class AppPrefs {
 
     public static AppPrefs get() {
         return INSTANCE;
+    }
+
+    public final ObservableBooleanValue preferTerminalTabs() {
+        return preferTerminalTabs;
+    }
+
+    public final ObservableValue<List<SystemIconSource>> getIconSources() {
+        return iconSources;
+    }
+
+    public ObservableValue<TerminalPrompt> terminalPrompt() {
+        return terminalPrompt;
+    }
+
+    public ObservableValue<UUID> terminalProxy() {
+        return terminalProxy;
+    }
+
+    public ObservableValue<Boolean> terminalAlwaysPauseOnExit() {
+        return terminalAlwaysPauseOnExit;
+    }
+
+    public ObservableValue<FilePath> sshAgentSocket() {
+        return sshAgentSocket;
+    }
+
+    public ObservableValue<FilePath> defaultSshAgentSocket() {
+        return defaultSshAgentSocket;
+    }
+
+    public ObservableBooleanValue preferMonochromeIcons() {
+        return preferMonochromeIcons;
+    }
+
+    public ObservableBooleanValue editFilesWithDoubleClick() {
+        return editFilesWithDoubleClick;
+    }
+
+    public ObservableBooleanValue sshVerboseOutput() {
+        return sshVerboseOutput;
+    }
+
+    public ObservableBooleanValue censorMode() {
+        return censorMode;
+    }
+
+    public ObservableBooleanValue requireDoubleClickForConnections() {
+        return requireDoubleClickForConnections;
+    }
+
+    public ObservableBooleanValue enableTerminalDocking() {
+        return enableTerminalDocking;
+    }
+
+    public ObservableBooleanValue disableSshPinCaching() {
+        return disableSshPinCaching;
+    }
+
+    public ObservableBooleanValue focusWindowOnNotifications() {
+        return focusWindowOnNotifications;
+    }
+
+    public ObservableValue<AppTheme.Theme> theme() {
+        return theme;
+    }
+
+    public ObservableBooleanValue developerPrintInitFiles() {
+        return developerPrintInitFiles;
+    }
+
+    public ObservableBooleanValue checkForSecurityUpdates() {
+        return checkForSecurityUpdates;
+    }
+
+    public ObservableBooleanValue enableTerminalLogging() {
+        return enableTerminalLogging;
+    }
+
+    public ObservableStringValue apiKey() {
+        return apiKey;
+    }
+
+    public ObservableBooleanValue disableApiAuthentication() {
+        return disableApiAuthentication;
+    }
+
+    public ObservableBooleanValue enableHttpApi() {
+        return enableHttpApi;
+    }
+
+    public ObservableBooleanValue enableMcpServer() {
+        return enableMcpServer;
+    }
+
+    public ObservableBooleanValue enableMcpMutationTools() {
+        return enableMcpMutationTools;
+    }
+
+    public ObservableBooleanValue pinLocalMachineOnStartup() {
+        return pinLocalMachineOnStartup;
     }
 
     public ObservableValue<PasswordManager> passwordManager() {
@@ -577,9 +565,7 @@ public class AppPrefs {
     }
 
     public ObservableValue<Boolean> developerMode() {
-        return AppProperties.get().isDeveloperMode()
-                ? new ReadOnlyBooleanWrapper(true)
-                : developerMode;
+        return AppProperties.get().isDeveloperMode() ? new ReadOnlyBooleanWrapper(true) : developerMode;
     }
 
     public ObservableDoubleValue windowOpacity() {

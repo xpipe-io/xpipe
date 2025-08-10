@@ -26,6 +26,22 @@ import java.nio.file.Path;
 })
 public interface SystemIconSource {
 
+    void checkComplete() throws ValidationException;
+
+    void refresh() throws Exception;
+
+    String getId();
+
+    Path getPath();
+
+    String getIcon();
+
+    String getDisplayName();
+
+    String getDescription();
+
+    void open();
+
     @Value
     @Builder
     @Jacksonized
@@ -94,7 +110,8 @@ public interface SystemIconSource {
                 var present = sc.view().findProgram("git").isPresent();
                 if (!present) {
                     var msg =
-                            "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more details, see https://git-scm.com/downloads.";
+                            "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more "
+                                    + "details, see https://git-scm.com/downloads.";
                     ErrorEventFactory.fromMessage(msg).expected().handle();
                     return;
                 }
@@ -139,20 +156,4 @@ public interface SystemIconSource {
             Hyperlinks.open(remote);
         }
     }
-
-    void checkComplete() throws ValidationException;
-
-    void refresh() throws Exception;
-
-    String getId();
-
-    Path getPath();
-
-    String getIcon();
-
-    String getDisplayName();
-
-    String getDescription();
-
-    void open();
 }

@@ -14,12 +14,6 @@ public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStorePro
     }
 
     @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        FixedServiceGroupStore s = store.getStore().asNeeded();
-        return s.getParent().get();
-    }
-
-    @Override
     public String getId() {
         return "fixedServiceGroup";
     }
@@ -27,5 +21,11 @@ public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStorePro
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(FixedServiceGroupStore.class);
+    }
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        FixedServiceGroupStore s = store.getStore().asNeeded();
+        return s.getParent().get();
     }
 }

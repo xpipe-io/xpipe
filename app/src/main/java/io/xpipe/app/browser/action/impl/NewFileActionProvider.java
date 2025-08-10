@@ -11,17 +11,17 @@ import lombok.extern.jackson.Jacksonized;
 
 public class NewFileActionProvider implements BrowserActionProvider {
 
+    @Override
+    public String getId() {
+        return "newFile";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
 
         @NonNull
         String name;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -35,10 +35,10 @@ public class NewFileActionProvider implements BrowserActionProvider {
             }
             model.refreshSync();
         }
-    }
 
-    @Override
-    public String getId() {
-        return "newFile";
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
     }
 }

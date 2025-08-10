@@ -23,6 +23,16 @@ public class RenameMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
+    }
+
+    @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
+    }
+
+    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2r-rename-box");
     }
@@ -40,16 +50,6 @@ public class RenameMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("rename");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.size() == 1 && entries.getFirst().getRawFileEntry().getKind() != FileKind.LINK;
-    }
-
-    @Override
-    public boolean automaticallyResolveLinks() {
-        return false;
     }
 
     @Override

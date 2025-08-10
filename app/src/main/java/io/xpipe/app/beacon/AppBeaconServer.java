@@ -33,18 +33,23 @@ public class AppBeaconServer {
     @Getter
     private final boolean propertyPort;
 
-    private boolean running;
-    private ExecutorService executor;
-    private HttpServer server;
-
     @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
 
     @Getter
     private final AppBeaconCache cache = new AppBeaconCache();
 
+    private boolean running;
+    private ExecutorService executor;
+    private HttpServer server;
+
     @Getter
     private String localAuthSecret;
+
+    private AppBeaconServer(int port, boolean propertyPort) {
+        this.port = port;
+        this.propertyPort = propertyPort;
+    }
 
     public static void setupPort() {
         int port;
@@ -57,11 +62,6 @@ public class AppBeaconServer {
             propertyPort = false;
         }
         INSTANCE = new AppBeaconServer(port, propertyPort);
-    }
-
-    private AppBeaconServer(int port, boolean propertyPort) {
-        this.port = port;
-        this.propertyPort = propertyPort;
     }
 
     public static void init() {
@@ -96,12 +96,12 @@ public class AppBeaconServer {
         }
     }
 
-    public void addSession(BeaconSession session) {
-        this.sessions.add(session);
-    }
-
     public static AppBeaconServer get() {
         return INSTANCE;
+    }
+
+    public void addSession(BeaconSession session) {
+        this.sessions.add(session);
     }
 
     private void stop() {

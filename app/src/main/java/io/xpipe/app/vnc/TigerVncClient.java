@@ -34,11 +34,6 @@ public abstract class TigerVncClient implements ExternalVncClient {
     public static class Windows extends TigerVncClient implements ExternalApplicationType.WindowsType {
 
         @Override
-        public boolean supportsPasswords() {
-            return false;
-        }
-
-        @Override
         public boolean detach() {
             return false;
         }
@@ -49,23 +44,29 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public Optional<Path> determineFromPath() {
-            var found = WindowsType.super.determineFromPath();
-            return found.filter(path -> path.toString().contains("TigerVNC"));
-        }
-
-        @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getProgramFiles()
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getProgramFiles()
                             .resolve("TigerVNC")
                             .resolve("vncviewer.exe"))
                     .filter(path -> Files.exists(path));
         }
 
         @Override
+        public Optional<Path> determineFromPath() {
+            var found = WindowsType.super.determineFromPath();
+            return found.filter(path -> path.toString().contains("TigerVNC"));
+        }
+
+        @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
+        }
+
+        @Override
+        public boolean supportsPasswords() {
+            return false;
         }
     }
 

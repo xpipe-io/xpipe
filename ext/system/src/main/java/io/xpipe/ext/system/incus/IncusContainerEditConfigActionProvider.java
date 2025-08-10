@@ -21,8 +21,8 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
     }
 
     @Override
-    public Class<IncusContainerStore> getApplicableClass() {
-        return IncusContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
     }
 
     @Override
@@ -50,11 +50,6 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
     public static class Action extends StoreAction<IncusContainerStore> {
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() throws Exception {
             var d = (IncusContainerStore) ref.getStore();
             var view = new IncusCommandView(
@@ -64,6 +59,11 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
                     .title("Config")
                     .command(view.configEdit(d.getName()))
                     .launch();
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

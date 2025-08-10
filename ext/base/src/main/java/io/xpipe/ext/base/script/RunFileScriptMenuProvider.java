@@ -105,15 +105,15 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
             }
 
             @Override
-            public List<? extends BrowserMenuItemProvider> getBranchingActions(
-                    BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                return list;
-            }
-
-            @Override
             public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 var b = hierarchy.getBase();
                 return new SimpleStringProperty(b != null ? b.get().getName() : null);
+            }
+
+            @Override
+            public List<? extends BrowserMenuItemProvider> getBranchingActions(
+                    BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                return list;
             }
         };
     }

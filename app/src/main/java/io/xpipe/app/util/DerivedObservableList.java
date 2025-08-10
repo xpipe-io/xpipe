@@ -19,6 +19,16 @@ import java.util.stream.Stream;
 @Getter
 public class DerivedObservableList<T> {
 
+    private final List<T> backingList;
+    private final ObservableList<T> list;
+    private final boolean unique;
+
+    public DerivedObservableList(List<T> backingList, ObservableList<T> list, boolean unique) {
+        this.backingList = backingList;
+        this.list = list;
+        this.unique = unique;
+    }
+
     public static <T> DerivedObservableList<T> synchronizedArrayList(boolean unique) {
         var list = new ArrayList<T>();
         return new DerivedObservableList<>(
@@ -32,16 +42,6 @@ public class DerivedObservableList<T> {
 
     public static <T> DerivedObservableList<T> wrap(ObservableList<T> list, boolean unique) {
         return new DerivedObservableList<>(null, list, unique);
-    }
-
-    private final List<T> backingList;
-    private final ObservableList<T> list;
-    private final boolean unique;
-
-    public DerivedObservableList(List<T> backingList, ObservableList<T> list, boolean unique) {
-        this.backingList = backingList;
-        this.list = list;
-        this.unique = unique;
     }
 
     private <V> DerivedObservableList<V> createNewDerived() {

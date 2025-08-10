@@ -28,6 +28,11 @@ public class ServiceRefreshHubProvider
     }
 
     @Override
+    public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+        return o.getStore().allowManualServicesRefresh();
+    }
+
+    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<FixedServiceCreatorStore> store) {
         return AppI18n.observable("refreshServices");
     }
@@ -38,8 +43,8 @@ public class ServiceRefreshHubProvider
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<FixedServiceCreatorStore> o) {
-        return o.getStore().allowManualServicesRefresh();
+    public Class<?> getApplicableClass() {
+        return FixedServiceCreatorStore.class;
     }
 
     @Override
@@ -50,11 +55,6 @@ public class ServiceRefreshHubProvider
     @Override
     public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2w-web");
-    }
-
-    @Override
-    public Class<?> getApplicableClass() {
-        return FixedServiceCreatorStore.class;
     }
 
     @Override

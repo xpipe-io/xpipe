@@ -13,17 +13,6 @@ import java.util.List;
 
 public class OpenDirectoryActionProvider implements BrowserActionProvider {
 
-    @Jacksonized
-    @SuperBuilder
-    public static class Action extends BrowserAction {
-
-        @Override
-        public void executeImpl() {
-            var first = getEntries().getFirst();
-            model.cdSync(first.getRawFileEntry().getPath().toString());
-        }
-    }
-
     @Override
     public String getId() {
         return "openDirectory";
@@ -33,5 +22,16 @@ public class OpenDirectoryActionProvider implements BrowserActionProvider {
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    }
+
+    @Jacksonized
+    @SuperBuilder
+    public static class Action extends BrowserAction {
+
+        @Override
+        public void executeImpl() {
+            var first = getEntries().getFirst();
+            model.cdSync(first.getRawFileEntry().getPath().toString());
+        }
     }
 }

@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private static Boolean WEB_VIEW_SUPPORTED;
-
+    private static Path TEMP;
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
     private final boolean bodyPadding;
@@ -51,8 +51,6 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         this.htmlTransformation = htmlTransformation;
         this.bodyPadding = bodyPadding;
     }
-
-    private static Path TEMP;
 
     private Path getHtmlFile(String markdown) {
         if (TEMP == null) {

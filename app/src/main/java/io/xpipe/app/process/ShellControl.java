@@ -35,24 +35,15 @@ public interface ShellControl extends ProcessControl {
 
     void writeLine(String line, boolean log) throws IOException;
 
-    void setSubShellActive(boolean active);
-
     boolean isSubShellActive();
+
+    void setSubShellActive(boolean active);
 
     default void waitForSubShellExit() {
         while (isSubShellActive()) {
             ThreadHelper.sleep(10);
         }
     }
-
-    @Override
-    LocalProcessInputStream getStdout();
-
-    @Override
-    LocalProcessOutputStream getStdin();
-
-    @Override
-    LocalProcessInputStream getStderr();
 
     ShellView view();
 
@@ -140,6 +131,15 @@ public interface ShellControl extends ProcessControl {
     @Override
     ShellControl start() throws Exception;
 
+    @Override
+    LocalProcessInputStream getStdout();
+
+    @Override
+    LocalProcessOutputStream getStdin();
+
+    @Override
+    LocalProcessInputStream getStderr();
+
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
     void checkLicenseOrThrow();
@@ -153,10 +153,10 @@ public interface ShellControl extends ProcessControl {
     default CommandControl osascriptCommand(String script) {
         return command(String.format(
                 """
-                osascript - "$@" <<EOF
-                %s
-                EOF
-                """,
+                                     osascript - "$@" <<EOF
+                                     %s
+                                     EOF
+                                     """,
                 script));
     }
 

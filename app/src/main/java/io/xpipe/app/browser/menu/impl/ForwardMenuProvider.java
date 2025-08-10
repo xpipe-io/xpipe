@@ -23,6 +23,11 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
         });
     }
 
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
     public String getId() {
         return "forward";
     }
@@ -40,11 +45,6 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("goForward");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return false;
     }
 
     @Override

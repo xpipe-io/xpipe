@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
@@ -26,7 +25,6 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.print.Doc;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,23 +51,6 @@ public class AppLayoutModel {
         this.queueEntries = FXCollections.observableArrayList();
     }
 
-    public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
-        if (!allowDuplicates && queueEntries.contains(entry)) {
-            return;
-        }
-
-        queueEntries.add(entry);
-        if (duration != null) {
-            GlobalTimer.delay(
-                    () -> {
-                        synchronized (this) {
-                            queueEntries.remove(entry);
-                        }
-                    },
-                    duration);
-        }
-    }
-
     public static AppLayoutModel get() {
         return INSTANCE;
     }
@@ -86,6 +67,23 @@ public class AppLayoutModel {
 
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
+    }
+
+    public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
+        if (!allowDuplicates && queueEntries.contains(entry)) {
+            return;
+        }
+
+        queueEntries.add(entry);
+        if (duration != null) {
+            GlobalTimer.delay(
+                    () -> {
+                        synchronized (this) {
+                            queueEntries.remove(entry);
+                        }
+                    },
+                    duration);
+        }
     }
 
     public void selectBrowser() {

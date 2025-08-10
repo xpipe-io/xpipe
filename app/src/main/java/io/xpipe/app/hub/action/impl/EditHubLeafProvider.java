@@ -22,8 +22,8 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
     }
 
     @Override
-    public Class<DataStore> getApplicableClass() {
-        return DataStore.class;
+    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+        return o.get().getProvider().canConfigure();
     }
 
     @Override
@@ -37,13 +37,13 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<DataStore> getApplicableClass() {
+        return DataStore.class;
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.get().getProvider().canConfigure();
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override

@@ -41,7 +41,8 @@ public class AppWindowTitle {
         var t = LicenseProvider.get() != null
                 ? " " + LicenseProvider.get().licenseTitle().getValue()
                 : "";
-        var base = String.format(AppNames.ofMain().getName() + "%s (%s)", t, AppProperties.get().getVersion());
+        var base = String.format(
+                AppNames.ofMain().getName() + "%s (%s)", t, AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
         var dist = AppDistributionType.get();
         if (dist != AppDistributionType.UNKNOWN) {

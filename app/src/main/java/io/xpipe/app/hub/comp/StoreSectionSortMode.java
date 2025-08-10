@@ -114,8 +114,8 @@ public interface StoreSectionSortMode {
 
     abstract class DateSortMode implements StoreSectionSortMode {
 
-        private int entriesListObservableIndex = -1;
         private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
+        private int entriesListObservableIndex = -1;
 
         public StoreSection computeRepresentative(StoreSection s) {
             return Stream.concat(

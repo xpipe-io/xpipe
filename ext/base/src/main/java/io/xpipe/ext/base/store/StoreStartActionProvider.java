@@ -21,16 +21,6 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
     }
 
     @Override
-    public Action createBatchAction(DataStoreEntryRef<StartableStore> ref) {
-        return Action.builder().ref(ref).build();
-    }
-
-    @Override
-    public Class<StartableStore> getApplicableClass() {
-        return StartableStore.class;
-    }
-
-    @Override
     public boolean isApplicable(DataStoreEntryRef<StartableStore> o) {
         return true;
     }
@@ -43,6 +33,11 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<StartableStore> store) {
         return new LabelGraphic.IconGraphic("mdi2p-play");
+    }
+
+    @Override
+    public Class<StartableStore> getApplicableClass() {
+        return StartableStore.class;
     }
 
     @Override
@@ -61,6 +56,11 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
     }
 
     @Override
+    public Action createBatchAction(DataStoreEntryRef<StartableStore> ref) {
+        return Action.builder().ref(ref).build();
+    }
+
+    @Override
     public String getId() {
         return "startStore";
     }
@@ -70,13 +70,13 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
     public static class Action extends StoreAction<StartableStore> {
 
         @Override
-        public boolean isMutation() {
-            return true;
+        public void executeImpl() throws Exception {
+            ref.getStore().start();
         }
 
         @Override
-        public void executeImpl() throws Exception {
-            ref.getStore().start();
+        public boolean isMutation() {
+            return true;
         }
     }
 }

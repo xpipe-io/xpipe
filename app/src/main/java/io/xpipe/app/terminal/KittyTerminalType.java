@@ -73,6 +73,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
+    }
+
+    @Override
     default String getWebsite() {
         return "https://github.com/kovidgoyal/kitty";
     }
@@ -81,11 +86,6 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     default boolean isRecommended() {
         // There are some race conditions with the socket, although that should be fixed to some degree
         return true;
-    }
-
-    @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
     }
 
     @Override

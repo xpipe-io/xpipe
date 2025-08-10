@@ -29,6 +29,18 @@ public abstract class ScanProvider {
 
     public abstract void scan(DataStoreEntry entry, ShellControl sc) throws Throwable;
 
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            ALL = ServiceLoader.load(layer, ScanProvider.class).stream()
+                    .map(ServiceLoader.Provider::get)
+                    .sorted(Comparator.comparing(
+                            scanProvider -> scanProvider.getClass().getName()))
+                    .collect(Collectors.toList());
+        }
+    }
+
     @Value
     @AllArgsConstructor
     public class ScanOpportunity {
@@ -60,18 +72,6 @@ public abstract class ScanProvider {
 
         public ScanProvider getProvider() {
             return ScanProvider.this;
-        }
-    }
-
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            ALL = ServiceLoader.load(layer, ScanProvider.class).stream()
-                    .map(ServiceLoader.Provider::get)
-                    .sorted(Comparator.comparing(
-                            scanProvider -> scanProvider.getClass().getName()))
-                    .collect(Collectors.toList());
         }
     }
 }

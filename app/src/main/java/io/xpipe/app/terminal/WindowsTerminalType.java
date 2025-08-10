@@ -2,8 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
@@ -139,22 +139,25 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         @Override
-        public String getWebsite() {
-            return "https://aka.ms/terminal";
-        }
-
-        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return WindowsTerminalType.toCommand(configuration);
         }
 
+        @Override
+        public String getWebsite() {
+            return "https://aka.ms/terminal";
+        }
+
         private Path getPath() {
-            return AppSystemInfo.getWindows().getLocalAppData().resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
+                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows().getLocalAppData()
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
@@ -180,7 +183,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         private Path getPath() {
-            return AppSystemInfo.getWindows().getLocalAppData()
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe");
         }
 
@@ -197,7 +201,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows().getLocalAppData()
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
@@ -223,7 +228,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         private Path getPath() {
-            return AppSystemInfo.getWindows().getLocalAppData()
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\wt.exe");
         }
 
@@ -240,7 +246,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows().getLocalAppData()
+            return AppSystemInfo.getWindows()
+                    .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }

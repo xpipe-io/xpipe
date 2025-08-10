@@ -112,12 +112,12 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://www.keepersecurity.com";
+    public String getKeyPlaceholder() {
+        return "Record UID";
     }
 
     @Override
-    public String getKeyPlaceholder() {
-        return "Record UID";
+    public String getWebsite() {
+        return "https://www.keepersecurity.com";
     }
 }

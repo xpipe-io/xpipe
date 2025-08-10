@@ -16,16 +16,6 @@ import lombok.extern.jackson.Jacksonized;
 public class InternalVncClient implements ExternalVncClient {
 
     @Override
-    public String getWebsite() {
-        return DocumentationLink.VNC_CLIENTS.getLink();
-    }
-
-    @Override
-    public boolean supportsPasswords() {
-        return true;
-    }
-
-    @Override
     public void launch(VncLaunchConfig configuration) throws Exception {
         var open = BrowserFullSessionModel.DEFAULT.getSessionEntriesSnapshot().stream()
                 .filter(browserSessionTab -> browserSessionTab instanceof BrowserStoreSessionTab<?> st
@@ -43,5 +33,15 @@ public class InternalVncClient implements ExternalVncClient {
                         .createVncSession(BrowserFullSessionModel.DEFAULT, configuration.getEntry()),
                 null);
         AppLayoutModel.get().selectBrowser();
+    }
+
+    @Override
+    public boolean supportsPasswords() {
+        return true;
+    }
+
+    @Override
+    public String getWebsite() {
+        return DocumentationLink.VNC_CLIENTS.getLink();
     }
 }

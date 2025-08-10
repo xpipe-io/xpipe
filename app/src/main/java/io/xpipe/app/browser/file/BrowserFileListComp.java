@@ -51,6 +51,18 @@ public final class BrowserFileListComp extends SimpleComp {
         this.fileList = fileList;
     }
 
+    private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
+        table.lookupAll(".scroll-bar").stream()
+                .filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal")))
+                .findFirst()
+                .ifPresent(node -> {
+                    Region region = (Region) node;
+                    region.setMinHeight(0);
+                    region.setPrefHeight(0);
+                    region.setMaxHeight(0);
+                });
+    }
+
     @Override
     protected Region createSimple() {
         return createTable();
@@ -76,9 +88,15 @@ public final class BrowserFileListComp extends SimpleComp {
         sizeCol.setCellValueFactory(param -> new ReadOnlyStringWrapper(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setComparator((size1, size2) -> {
-            if (size1 == null && size2 == null) return 0;
-            if (size1 == null) return -1;
-            if (size2 == null) return 1;
+            if (size1 == null && size2 == null) {
+                return 0;
+            }
+            if (size1 == null) {
+                return -1;
+            }
+            if (size2 == null) {
+                return 1;
+            }
 
             try {
                 long long1 = Long.parseLong(size1);
@@ -155,18 +173,6 @@ public final class BrowserFileListComp extends SimpleComp {
         prepareTypedSelectionModel(table);
         table.setMinWidth(0);
         return table;
-    }
-
-    private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
-        table.lookupAll(".scroll-bar").stream()
-                .filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal")))
-                .findFirst()
-                .ifPresent(node -> {
-                    Region region = (Region) node;
-                    region.setMinHeight(0);
-                    region.setPrefHeight(0);
-                    region.setMaxHeight(0);
-                });
     }
 
     private void prepareColumnVisibility(

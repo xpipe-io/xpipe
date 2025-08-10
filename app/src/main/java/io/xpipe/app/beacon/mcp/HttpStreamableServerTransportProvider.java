@@ -30,62 +30,31 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class HttpStreamableServerTransportProvider implements McpStreamableServerTransportProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpStreamableServerTransportProvider.class);
-
-    /**
-     * Event type for JSON-RPC messages sent through the SSE connection.
-     */
     public static final String MESSAGE_EVENT_TYPE = "message";
 
-    /**
-     * Event type for sending the message endpoint URI to clients.
-     */
     public static final String ENDPOINT_EVENT_TYPE = "endpoint";
 
-    /**
-     * Header name for the response media types accepted by the requester.
-     */
+    public static final String UTF_8 = "UTF-8";
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String TEXT_EVENT_STREAM = "text/event-stream";
+    public static final String FAILED_TO_SEND_ERROR_RESPONSE = "Failed to send error response: {}";
+    private static final Logger logger = LoggerFactory.getLogger(HttpStreamableServerTransportProvider.class);
+
     private static final String ACCEPT = "Accept";
 
-    public static final String UTF_8 = "UTF-8";
-
-    public static final String APPLICATION_JSON = "application/json";
-
-    public static final String TEXT_EVENT_STREAM = "text/event-stream";
-
-    public static final String FAILED_TO_SEND_ERROR_RESPONSE = "Failed to send error response: {}";
-
-    /**
-     * The endpoint URI where clients should send their JSON-RPC messages. Defaults to
-     * "/mcp".
-     */
     private final String mcpEndpoint;
 
-    /**
-     * Flag indicating whether DELETE requests are disallowed on the endpoint.
-     */
     private final boolean disallowDelete;
 
     private final ObjectMapper objectMapper;
 
-    private McpStreamableServerSession.Factory sessionFactory;
-
-    /**
-     * Map of active client sessions, keyed by mcp-session-id.
-     */
     private final ConcurrentHashMap<String, McpStreamableServerSession> sessions = new ConcurrentHashMap<>();
 
     private final McpTransportContextExtractor<HttpExchange> contextExtractor;
+    private McpStreamableServerSession.Factory sessionFactory;
 
-    /**
-     * Flag indicating if the transport is shutting down.
-     */
     private volatile boolean isClosing = false;
 
-    /**
-     * Keep-alive scheduler for managing session pings. Activated if keepAliveInterval is
-     * set. Disabled by default.
-     */
     private KeepAliveScheduler keepAliveScheduler;
 
     HttpStreamableServerTransportProvider(
@@ -147,6 +116,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
     /**
      * Initiates a graceful shutdown of the transport.
+     *
      * @return A Mono that completes when all cleanup operations are finished
      */
     @Override
@@ -463,14 +433,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         }
     }
 
-    /**
-     * Sends an SSE event to a client with a specific ID.
-     * @param writer The writer to send the event through
-     * @param eventType The type of event (message or endpoint)
-     * @param data The event data
-     * @param id The event ID
-     * @throws IOException If an error occurs while writing the event
-     */
     private void sendEvent(PrintWriter writer, String eventType, String data, String id) throws IOException {
         if (id != null) {
             writer.write("id: " + id + "\n");
@@ -484,15 +446,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         }
     }
 
-    /**
-     * Implementation of McpStreamableServerTransport for HttpServlet SSE sessions. This
-     * class handles the transport-level communication for a specific client session.
-     *
-     * <p>
-     * This class is thread-safe and uses a ReentrantLock to synchronize access to the
-     * underlying PrintWriter to prevent race conditions when multiple threads attempt to
-     * send messages concurrently.
-     */
     private class HttpServletStreamableMcpSessionTransport implements McpStreamableServerTransport {
 
         private final String sessionId;
@@ -500,10 +453,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         private final HttpExchange exchange;
 
         private final PrintWriter writer;
-
-        private volatile boolean closed = false;
-
         private final ReentrantLock lock = new ReentrantLock();
+        private volatile boolean closed = false;
 
         HttpServletStreamableMcpSessionTransport(String sessionId, HttpExchange exchange, PrintWriter writer) {
             this.sessionId = sessionId;
@@ -512,23 +463,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             logger.debug("Streamable session transport {} initialized with SSE writer", sessionId);
         }
 
-        /**
-         * Sends a JSON-RPC message to the client through the SSE connection.
-         * @param message The JSON-RPC message to send
-         * @return A Mono that completes when the message has been sent
-         */
-        @Override
-        public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
-            return sendMessage(message, null);
-        }
-
-        /**
-         * Sends a JSON-RPC message to the client through the SSE connection with a
-         * specific message ID.
-         * @param message The JSON-RPC message to send
-         * @param messageId The message ID for SSE event identification
-         * @return A Mono that completes when the message has been sent
-         */
         @Override
         public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message, String messageId) {
             return Mono.fromRunnable(() -> {
@@ -558,32 +492,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             });
         }
 
-        /**
-         * Converts data from one type to another using the configured ObjectMapper.
-         * @param data The source data object to convert
-         * @param typeRef The target type reference
-         * @return The converted object of type T
-         * @param <T> The target type
-         */
-        @Override
-        public <T> T unmarshalFrom(Object data, TypeReference<T> typeRef) {
-            return objectMapper.convertValue(data, typeRef);
-        }
-
-        /**
-         * Initiates a graceful shutdown of the transport.
-         * @return A Mono that completes when the shutdown is complete
-         */
-        @Override
-        public Mono<Void> closeGracefully() {
-            return Mono.fromRunnable(() -> {
-                HttpServletStreamableMcpSessionTransport.this.close();
-            });
-        }
-
-        /**
-         * Closes the transport immediately.
-         */
         @Override
         public void close() {
             lock.lock();
@@ -603,6 +511,23 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             } finally {
                 lock.unlock();
             }
+        }
+
+        @Override
+        public Mono<Void> closeGracefully() {
+            return Mono.fromRunnable(() -> {
+                HttpServletStreamableMcpSessionTransport.this.close();
+            });
+        }
+
+        @Override
+        public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
+            return sendMessage(message, null);
+        }
+
+        @Override
+        public <T> T unmarshalFrom(Object data, TypeReference<T> typeRef) {
+            return objectMapper.convertValue(data, typeRef);
         }
     }
 }

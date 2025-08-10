@@ -61,9 +61,6 @@ public class StoreViewState {
     private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
 
     @Getter
-    private boolean initialized = false;
-
-    @Getter
     private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
             storeEntryWrapper -> {
                 if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
@@ -97,6 +94,9 @@ public class StoreViewState {
             },
             globalSortMode,
             tieSortMode);
+
+    @Getter
+    private boolean initialized = false;
 
     @Getter
     private StoreSection currentTopLevelSection;

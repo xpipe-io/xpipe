@@ -15,7 +15,27 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 public class AppFontSizes {
 
+    public static final AppFontSizes BASE_10 = ofBase("10");
+    public static final AppFontSizes BASE_10_5 = ofBase("10.5");
+    public static final AppFontSizes BASE_11 = ofBase("11");
+    public static final AppFontSizes DEFAULT = getDefault();
     private static final Pattern FONT_SIZE_PATTERN = Pattern.compile("-fx-font-size: \\d+(\\.\\d+)?pt;");
+    // -1.0pt
+    String xs;
+    // -0.5pt
+    String sm;
+    // 0pt
+    String base;
+    // +0.5pt
+    String lg;
+    // +1.0pt
+    String xl;
+    // +2.0pt
+    String xxl;
+    // +3.0pt
+    String xxxl;
+    // +7.0pt
+    String title;
 
     public static void xs(Node node) {
         apply(node, AppFontSizes::getXs);
@@ -68,11 +88,6 @@ public class AppFontSizes {
         node.setStyle("-fx-font-size: " + fontSize + "pt;" + s);
     }
 
-    public static final AppFontSizes DEFAULT = getDefault();
-    public static final AppFontSizes BASE_10 = ofBase("10");
-    public static final AppFontSizes BASE_10_5 = ofBase("10.5");
-    public static final AppFontSizes BASE_11 = ofBase("11");
-
     public static AppFontSizes ofBase(String base) {
         if (base.contains(".")) {
             var l = Integer.parseInt(base.split("\\.")[0]);
@@ -97,28 +112,4 @@ public class AppFontSizes {
     public static AppFontSizes getDefault() {
         return forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11);
     }
-
-    // -1.0pt
-    String xs;
-
-    // -0.5pt
-    String sm;
-
-    // 0pt
-    String base;
-
-    // +0.5pt
-    String lg;
-
-    // +1.0pt
-    String xl;
-
-    // +2.0pt
-    String xxl;
-
-    // +3.0pt
-    String xxxl;
-
-    // +7.0pt
-    String title;
 }

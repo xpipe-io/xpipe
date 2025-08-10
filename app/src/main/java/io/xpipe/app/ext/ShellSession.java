@@ -18,32 +18,6 @@ public class ShellSession extends Session {
         this.shellControl = createControl();
     }
 
-    public void start() throws Exception {
-        if (shellControl.isRunning(true)) {
-            return;
-        } else {
-            stop();
-        }
-
-        try {
-            shellControl.start();
-
-            var shouldAliveCheck = !shellControl.isLocal();
-            var supportsAliveCheck =
-                    shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
-            if (shouldAliveCheck && supportsAliveCheck) {
-                startAliveListener();
-            }
-        } catch (Exception ex) {
-            try {
-                stop();
-            } catch (Exception stopEx) {
-                ex.addSuppressed(stopEx);
-            }
-            throw ex;
-        }
-    }
-
     private ShellControl createControl() throws Exception {
         var pc = supplier.get();
         pc.onStartupFail(shellControl -> {
@@ -70,6 +44,32 @@ public class ShellSession extends Session {
 
     public boolean isRunning() {
         return shellControl.isRunning(true);
+    }
+
+    public void start() throws Exception {
+        if (shellControl.isRunning(true)) {
+            return;
+        } else {
+            stop();
+        }
+
+        try {
+            shellControl.start();
+
+            var shouldAliveCheck = !shellControl.isLocal();
+            var supportsAliveCheck =
+                    shellControl.getShellDialect().getDumbMode().supportsAnyPossibleInteraction();
+            if (shouldAliveCheck && supportsAliveCheck) {
+                startAliveListener();
+            }
+        } catch (Exception ex) {
+            try {
+                stop();
+            } catch (Exception stopEx) {
+                ex.addSuppressed(stopEx);
+            }
+            throw ex;
+        }
     }
 
     public void stop() throws Exception {

@@ -9,6 +9,16 @@ import java.util.List;
 @EqualsAndHashCode
 public class HostAddress {
 
+    private final String value;
+
+    @Getter
+    private final List<String> available;
+
+    private HostAddress(String value, List<String> available) {
+        this.value = value;
+        this.available = available;
+    }
+
     public static HostAddress empty() {
         return new HostAddress("unknown", List.of("unknown"));
     }
@@ -28,16 +38,6 @@ public class HostAddress {
 
         return new HostAddress(
                 host.strip(), addresses.stream().map(s -> s.strip()).toList());
-    }
-
-    private final String value;
-
-    @Getter
-    private final List<String> available;
-
-    private HostAddress(String value, List<String> available) {
-        this.value = value;
-        this.available = available;
     }
 
     public HostAddress withValue(String value) {

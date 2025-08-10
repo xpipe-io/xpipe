@@ -11,7 +11,8 @@ public class DaemonModeExchangeImpl extends DaemonModeExchange {
     public Object handle(HttpExchange exchange, Request msg) throws BeaconClientException {
         var mode = OperationMode.map(msg.getMode());
         if (!mode.isSupported()) {
-            throw new BeaconClientException("Unsupported mode: " + msg.getMode().getDisplayName() + ". Supported: "
+            throw new BeaconClientException("Unsupported mode: " + msg.getMode().getDisplayName()
+                    + ". Supported: "
                     + String.join(
                             ", ",
                             OperationMode.getAll().stream()

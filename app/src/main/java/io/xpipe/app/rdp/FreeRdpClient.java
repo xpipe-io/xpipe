@@ -10,11 +10,6 @@ import io.xpipe.core.OsType;
 public class FreeRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
 
     @Override
-    public String getWebsite() {
-        return "https://www.freerdp.com/";
-    }
-
-    @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
         CommandSupport.isInPathOrThrow(
                 LocalShell.getShell(),
@@ -48,6 +43,11 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     @Override
     public boolean supportsPasswordPassing() {
         return true;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.freerdp.com/";
     }
 
     @Override

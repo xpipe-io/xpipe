@@ -23,16 +23,16 @@ public class DesktopShortcuts {
         var icon = AppInstallation.ofCurrent().getLogoPath();
         var content = String.format(
                         """
-                        $TARGET="%s"
-                        $SHORTCUT="%s"
-                        $ws = New-Object -ComObject WScript.Shell
-                        $s = $ws.CreateShortcut("$SHORTCUT")
-                        $S.IconLocation='%s'
-                        $S.WindowStyle=7
-                        $S.TargetPath = "$TARGET"
-                        $S.Arguments = '%s'
-                        $S.Save()
-                        """,
+                                    $TARGET="%s"
+                                    $SHORTCUT="%s"
+                                    $ws = New-Object -ComObject WScript.Shell
+                                    $s = $ws.CreateShortcut("$SHORTCUT")
+                                    $S.IconLocation='%s'
+                                    $S.WindowStyle=7
+                                    $S.TargetPath = "$TARGET"
+                                    $S.Arguments = '%s'
+                                    $S.Save()
+                                    """,
                         executable, shortcutPath, icon, args)
                 .replaceAll("\n", ";");
         shell.get().command(content).execute();
@@ -45,15 +45,15 @@ public class DesktopShortcuts {
         var icon = AppInstallation.ofCurrent().getLogoPath();
         var content = String.format(
                 """
-                        [Desktop Entry]
-                        Type=Application
-                        Name=%s
-                        Comment=Open with XPipe
-                        Exec="%s" %s
-                        Icon=%s
-                        Terminal=false
-                        Categories=Utility;Development;
-                        """,
+                                    [Desktop Entry]
+                                    Type=Application
+                                    Name=%s
+                                    Comment=Open with XPipe
+                                    Exec="%s" %s
+                                    Icon=%s
+                                    Terminal=false
+                                    Categories=Utility;Development;
+                                    """,
                 fixedName, executable, args, icon);
         var file = DesktopHelper.getDesktopDirectory().resolve(name + ".desktop");
         Files.writeString(file, content);
@@ -77,9 +77,9 @@ public class DesktopShortcuts {
         var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
                 """
-                        #!/usr/bin/env sh
-                        "%s" open %s
-                        """,
+                                    #!/usr/bin/env sh
+                                    "%s" open %s
+                                    """,
                 executable, args);
 
         try (var pc = LocalShell.getShell()) {
@@ -96,17 +96,17 @@ public class DesktopShortcuts {
                     .writeTextFile(
                             FilePath.of(base + "/Contents/Info.plist"),
                             """
-                                                    <?xml version="1.0" encoding="UTF-8"?>
-                                                    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-                                                    <plist version="1.0">
-                                                    <dict>
-                                                        <key>CFBundleIconName</key>
-                                                        <string>xpipe</string>
-                                                    	<key>CFBundleIconFile</key>
-                                                    	<string>xpipe</string>
-                                                    </dict>
-                                                    </plist>
-                                                    """);
+                                                                                <?xml version="1.0" encoding="UTF-8"?>
+                                                                                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                                                                                <plist version="1.0">
+                                                                                <dict>
+                                                                                    <key>CFBundleIconName</key>
+                                                                                    <string>xpipe</string>
+                                                                                	<key>CFBundleIconFile</key>
+                                                                                	<string>xpipe</string>
+                                                                                </dict>
+                                                                                </plist>
+                                                                                """);
             pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"")
                     .execute();
             pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"")

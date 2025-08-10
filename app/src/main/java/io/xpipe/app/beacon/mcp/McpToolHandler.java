@@ -23,6 +23,30 @@ public interface McpToolHandler
         return t;
     }
 
+    @Override
+    @SneakyThrows
+    default McpSchema.CallToolResult apply(
+            McpSyncServerExchange mcpSyncServerExchange, McpSchema.CallToolRequest callToolRequest) {
+        var req = new ToolRequest(mcpSyncServerExchange, callToolRequest);
+        try {
+            return handle(req);
+        } catch (BeaconClientException e) {
+            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
+            return McpSchema.CallToolResult.builder()
+                    .addTextContent(e.getMessage())
+                    .isError(true)
+                    .build();
+        } catch (Throwable e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return McpSchema.CallToolResult.builder()
+                    .addTextContent(e.getMessage())
+                    .isError(true)
+                    .build();
+        }
+    }
+
+    McpSchema.CallToolResult handle(ToolRequest request) throws Exception;
+
     class ToolRequest {
 
         protected final McpSyncServerExchange exchange;
@@ -124,28 +148,4 @@ public interface McpToolHandler
             return ref.asNeeded();
         }
     }
-
-    @Override
-    @SneakyThrows
-    default McpSchema.CallToolResult apply(
-            McpSyncServerExchange mcpSyncServerExchange, McpSchema.CallToolRequest callToolRequest) {
-        var req = new ToolRequest(mcpSyncServerExchange, callToolRequest);
-        try {
-            return handle(req);
-        } catch (BeaconClientException e) {
-            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
-            return McpSchema.CallToolResult.builder()
-                    .addTextContent(e.getMessage())
-                    .isError(true)
-                    .build();
-        } catch (Throwable e) {
-            ErrorEventFactory.fromThrowable(e).handle();
-            return McpSchema.CallToolResult.builder()
-                    .addTextContent(e.getMessage())
-                    .isError(true)
-                    .build();
-        }
-    }
-
-    McpSchema.CallToolResult handle(ToolRequest request) throws Exception;
 }

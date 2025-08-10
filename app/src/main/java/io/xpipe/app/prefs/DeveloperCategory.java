@@ -24,13 +24,13 @@ import java.util.List;
 public class DeveloperCategory extends AppPrefsCategory {
 
     @Override
-    protected String getId() {
-        return "developer";
+    protected boolean show() {
+        return AppPrefs.get().developerMode().getValue();
     }
 
     @Override
-    protected boolean show() {
-        return AppPrefs.get().developerMode().getValue();
+    protected String getId() {
+        return "developer";
     }
 
     @Override

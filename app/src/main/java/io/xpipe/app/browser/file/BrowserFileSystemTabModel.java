@@ -55,17 +55,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
-
-    private FileSystem fileSystem;
-
-    private BrowserFileSystemSavedState savedState;
-    private BrowserFileSystemCache cache;
-
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<BrowserTransferProgress> progressesIntervalHistory =
             FXCollections.observableArrayList();
     private final LongProperty progressTransferSpeed = new SimpleLongProperty();
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
+    private FileSystem fileSystem;
+    private BrowserFileSystemSavedState savedState;
+    private BrowserFileSystemCache cache;
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,

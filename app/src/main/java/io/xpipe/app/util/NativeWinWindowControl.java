@@ -22,6 +22,18 @@ import java.util.List;
 @EqualsAndHashCode
 public class NativeWinWindowControl {
 
+    public static NativeWinWindowControl MAIN_WINDOW;
+    private final WinDef.HWND windowHandle;
+
+    @SneakyThrows
+    public NativeWinWindowControl(Window stage) {
+        this.windowHandle = byWindow(stage);
+    }
+
+    public NativeWinWindowControl(WinDef.HWND windowHandle) {
+        this.windowHandle = windowHandle;
+    }
+
     @SneakyThrows
     public static WinDef.HWND byWindow(Window window) {
         Method tkStageGetter = Window.class.getDeclaredMethod("getPeer");
@@ -55,19 +67,6 @@ public class NativeWinWindowControl {
                 },
                 null);
         return refs;
-    }
-
-    public static NativeWinWindowControl MAIN_WINDOW;
-
-    private final WinDef.HWND windowHandle;
-
-    @SneakyThrows
-    public NativeWinWindowControl(Window stage) {
-        this.windowHandle = byWindow(stage);
-    }
-
-    public NativeWinWindowControl(WinDef.HWND windowHandle) {
-        this.windowHandle = windowHandle;
     }
 
     public void removeBorders() {
@@ -140,14 +139,6 @@ public class NativeWinWindowControl {
         return r.longValue() == 0;
     }
 
-    public interface Dwm extends Library {
-
-        Dwm INSTANCE = Native.load("dwmapi", Dwm.class);
-
-        WinNT.HRESULT DwmSetWindowAttribute(
-                WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);
-    }
-
     public enum DmwaWindowAttribute {
         DWMWA_USE_IMMERSIVE_DARK_MODE(20),
         DWMWA_SYSTEMBACKDROP_TYPE(38);
@@ -182,5 +173,13 @@ public class NativeWinWindowControl {
         public int get() {
             return value;
         }
+    }
+
+    public interface Dwm extends Library {
+
+        Dwm INSTANCE = Native.load("dwmapi", Dwm.class);
+
+        WinNT.HRESULT DwmSetWindowAttribute(
+                WinDef.HWND hwnd, int dwAttribute, PointerType pvAttribute, int cbAttribute);
     }
 }

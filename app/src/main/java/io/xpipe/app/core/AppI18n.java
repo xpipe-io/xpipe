@@ -52,6 +52,10 @@ public class AppI18n {
         return INSTANCE.observableImpl(s, vars);
     }
 
+    public static String get(String s, Object... vars) {
+        return INSTANCE.getLocalised(s, vars);
+    }
+
     private ObservableValue<String> observableImpl(String s, Object... vars) {
         if (s == null) {
             return null;
@@ -83,10 +87,6 @@ public class AppI18n {
             observableCache.put(key, binding);
             return binding;
         }
-    }
-
-    public static String get(String s, Object... vars) {
-        return INSTANCE.getLocalised(s, vars);
     }
 
     private void load() throws Exception {
