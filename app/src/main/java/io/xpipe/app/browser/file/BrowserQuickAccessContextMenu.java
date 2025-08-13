@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.util.BooleanAnimationTimer;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FileKind;
@@ -28,6 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BrowserQuickAccessContextMenu extends ContextMenu {
 
@@ -94,9 +96,10 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
 
     private List<MenuItem> updateMenuItems(Menu m, BrowserEntry entry, boolean updateInstantly) throws Exception {
         List<FileEntry> list = new ArrayList<>();
-        model.withFiles(entry.getRawFileEntry().resolved().getPath(), newFiles -> {
-            try (var s = newFiles) {
-                var l = s.map(fileEntry -> fileEntry.resolved()).toList();
+        BooleanScope.executeExclusive(model.getBusy(), () -> {
+            var dir = entry.getRawFileEntry().resolved().getPath();
+            try (var stream = model.getFileSystem().listFiles(model.getFileSystem(), dir)) {
+                var l = stream.map(fileEntry -> fileEntry.resolved()).toList();
                 // Wait until all files are listed, i.e. do not skip the stream elements
                 list.addAll(l.subList(0, Math.min(l.size(), 150)));
             }

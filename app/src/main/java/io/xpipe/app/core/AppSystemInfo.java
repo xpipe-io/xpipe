@@ -51,6 +51,8 @@ public class AppSystemInfo {
     public static final class Windows {
 
         private Path userHome;
+        private Path localAppData;
+        private Path temp;
 
         public Path getSystemRoot() {
             var root = AppSystemInfo.parsePath(System.getenv("SystemRoot"));
@@ -61,21 +63,29 @@ public class AppSystemInfo {
         }
 
         public Path getTemp() {
-            var env = AppSystemInfo.parsePath(System.getenv("TEMP"));
-            if (env == null) {
-                env = AppSystemInfo.parsePath(System.getenv("TMP"));
+            if (temp != null) {
+                return temp;
             }
 
-            if (env == null) {
-                return getLocalAppData().resolve("Temp");
+            var dir = AppSystemInfo.parsePath(System.getenv("TEMP"));
+            if (dir == null) {
+                dir = AppSystemInfo.parsePath(System.getenv("TMP"));
+            }
+
+            if (dir == null) {
+                return (temp = getLocalAppData().resolve("Temp"));
             }
 
             // Don't use system temp dir
-            if (env.startsWith(Path.of("C:\\Windows"))) {
-                return getLocalAppData().resolve("Temp");
+            if (dir.startsWith(Path.of("C:\\Windows"))) {
+                return (temp = getLocalAppData().resolve("Temp"));
             }
 
-            return env;
+            try {
+                // Replace 8.3 filename
+                dir = dir.toRealPath();
+            } catch (Exception ignored) {}
+            return (temp = dir);
         }
 
         public Path getProgramFiles() {
@@ -89,9 +99,17 @@ public class AppSystemInfo {
         }
 
         public Path getLocalAppData() {
-            var env = AppSystemInfo.parsePath(System.getenv("LOCALAPPDATA"));
-            if (env != null) {
-                return env;
+            if (localAppData != null) {
+                return localAppData;
+            }
+
+            var dir = AppSystemInfo.parsePath(System.getenv("LOCALAPPDATA"));
+            if (dir != null) {
+                try {
+                    // Replace 8.3 filename
+                    dir = dir.toRealPath();
+                } catch (Exception ignored) {}
+                return (localAppData = dir);
             }
 
             var def = getUserHome().resolve("AppData").resolve("Local");

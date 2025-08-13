@@ -1,5 +1,7 @@
 package io.xpipe.app.hub.comp;
 
+import io.xpipe.app.storage.DataStoreEntry;
+
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
@@ -123,7 +125,7 @@ public interface StoreSectionSortMode {
                                     .filter(section -> section.getWrapper()
                                             .getEntry()
                                             .getValidity()
-                                            .isUsable())
+                                             != DataStoreEntry.Validity.LOAD_FAILED)
                                     .map(this::getRepresentative),
                             Stream.of(s))
                     .max(Comparator.comparing(section -> date(section)))

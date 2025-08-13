@@ -31,7 +31,7 @@ import java.util.stream.Collectors
 
 tasks.register('createGithubChangelog', DefaultTask) {
     doLast {
-        def template = file("$projectDir/misc/github.md").text
+        def template = file("$projectDir/changelog_format/github.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(argument)
         def dir = layout.buildDirectory.dir("dist/release").get()
@@ -43,7 +43,7 @@ tasks.register('createGithubChangelog', DefaultTask) {
 
 tasks.register('createDiscordChangelog', DefaultTask) {
     doLast {
-        def template = file("$projectDir/misc/discord.md").text
+        def template = file("$projectDir/changelog_format/discord.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(productName, versionString, argument, productName, kebapProductName)
         def dir = layout.buildDirectory.dir("dist/release").get()
@@ -97,7 +97,7 @@ clean {
 apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
-if (rootProject.fullVersion) {
+if (fullVersion) {
     apply from: 'train.gradle'
     apply from: 'base_full.gradle'
     apply from: 'cli.gradle'

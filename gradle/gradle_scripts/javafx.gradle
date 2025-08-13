@@ -18,7 +18,7 @@ configurations {
     javafx
 }
 
-if (rootProject.hasProperty("customJavaFxPath")) {
+if (hasProperty("customJavaFxPath")) {
     repositories {
         flatDir {
             dirs customJavaFxPath

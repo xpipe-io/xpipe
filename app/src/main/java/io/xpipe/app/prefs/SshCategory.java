@@ -52,6 +52,7 @@ public class SshCategory extends AppPrefsCategory {
             options.sub(
                     new OptionsBuilder().nameAndDescription("sshAgentSocket").addComp(choice, prefs.sshAgentSocket));
         }
+        options.sub(new OptionsBuilder().pref(prefs.alwaysShowSshMotd).addToggle(prefs.alwaysShowSshMotd));
         return options.buildComp();
     }
 }

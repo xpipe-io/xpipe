@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.LabelGraphic;
@@ -85,17 +86,16 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
             }
             return true;
         });
-        return createActionForScriptHierarchy(model, hierarchy).getBranchingActions(model, selected);
+        return createActionForScriptHierarchy(hierarchy).getBranchingActions(model, selected);
     }
 
-    private BrowserMenuBranchProvider createActionForScriptHierarchy(
-            BrowserFileSystemTabModel model, ScriptHierarchy hierarchy) {
+    private BrowserMenuBranchProvider createActionForScriptHierarchy(ScriptHierarchy hierarchy) {
         if (hierarchy.isLeaf()) {
-            return createActionForScript(model, hierarchy.getLeafBase());
+            return createActionForScript(hierarchy.getLeafBase());
         }
 
         var list = hierarchy.getChildren().stream()
-                .map(c -> createActionForScriptHierarchy(model, c))
+                .map(c -> createActionForScriptHierarchy(c))
                 .toList();
         return new BrowserMenuBranchProvider() {
             @Override
@@ -118,9 +118,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         };
     }
 
-    private BrowserMenuBranchProvider createActionForScript(
-            BrowserFileSystemTabModel model, DataStoreEntryRef<SimpleScriptStore> ref) {
-        return new MultiExecuteSelectionMenuProvider() {
+    private BrowserMenuBranchProvider createActionForScript(DataStoreEntryRef<SimpleScriptStore> ref) {
+        return new MultiExecuteMenuProvider() {
 
             @Override
             public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -134,16 +133,15 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
             }
 
             @Override
-            protected String createCommand(BrowserFileSystemTabModel model) {
+            protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 var sc = model.getFileSystem().getShell().orElseThrow();
                 var content = ref.getStore().assembleScriptChain(sc);
                 var script = ScriptHelper.createExecScript(sc, content);
-                return sc.getShellDialect().runScriptCommand(sc, script.toString());
-            }
-
-            @Override
-            protected String getTerminalTitle() {
-                return ref.get().getName() + " - " + model.getName().getValue();
+                var builder = CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, script.toString()));
+                for (BrowserEntry entry : entries) {
+                    builder.addFile(entry.getRawFileEntry().getPath());
+                }
+                return List.of(builder);
             }
         };
     }

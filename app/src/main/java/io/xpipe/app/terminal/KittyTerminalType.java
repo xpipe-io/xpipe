@@ -28,14 +28,14 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         }
     }
 
-    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite) throws Exception {
+    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite, boolean preferTab) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
             var argsArray = payload.putArray("args");
             args.forEach(argsArray::add);
             payload.put("tab_title", configuration.getColoredTitle());
-            payload.put("type", "tab");
+            payload.put("type", preferTab ? "tab" : "os-window");
             payload.put("logo_alpha", 0.01);
             payload.put("logo", AppInstallation.ofCurrent().getLogoPath().toString());
 
@@ -74,7 +74,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     @Override
     default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
     }
 
     @Override
@@ -123,7 +123,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
             var toClose = prepare();
             var socketWrite = CommandBuilder.of().add("socat", "-");
-            open(configuration, socketWrite);
+            open(configuration, socketWrite, configuration.isPreferTabs());
             if (toClose) {
                 closeInitial(socketWrite);
             }
@@ -171,7 +171,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
             var toClose = prepare();
             var socketWrite = CommandBuilder.of().add("/usr/bin/nc", "-U");
-            open(configuration, socketWrite);
+            open(configuration, socketWrite, configuration.isPreferTabs());
             if (toClose) {
                 closeInitial(socketWrite);
             }

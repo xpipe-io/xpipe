@@ -117,10 +117,11 @@ public final class FilePath {
     }
 
     public FilePath getBaseName() {
-        var split = value.lastIndexOf(".");
-        if (split == -1) {
+        if (!getFileName().contains(".")) {
             return this;
         }
+
+        var split = value.lastIndexOf(".");
         return FilePath.of(value.substring(0, split));
     }
 

@@ -19,7 +19,7 @@ public class Deobfuscator {
                 return stackTrace;
             }
 
-            var file = Files.createTempFile("xpipe_stacktrace", null);
+            var file = Files.createTempFile("xpipe-stacktrace", null);
             Files.writeString(file, stackTrace);
             var proc = new ProcessBuilder(
                             "retrace." + (OsType.getLocal() == OsType.WINDOWS ? "bat" : "sh"),

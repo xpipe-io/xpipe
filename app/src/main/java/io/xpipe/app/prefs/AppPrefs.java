@@ -40,7 +40,7 @@ import lombok.Value;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class AppPrefs {
+public final class AppPrefs {
 
     private static AppPrefs INSTANCE;
     final ObjectProperty<FilePath> defaultSshAgentSocket = new GlobalObjectProperty<>();
@@ -52,6 +52,12 @@ public class AppPrefs {
     final BooleanProperty preferMonochromeIcons = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("preferMonochromeIcons")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
+    final BooleanProperty alwaysShowSshMotd = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("alwaysShowSshMotd")
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
@@ -289,6 +295,7 @@ public class AppPrefs {
                         new IconsCategory(),
                         new SystemCategory(),
                         new ApiCategory(),
+                        new McpCategory(),
                         new UpdatesCategory(),
                         new SecurityCategory(),
                         new WorkspacesCategory(),
@@ -330,6 +337,10 @@ public class AppPrefs {
 
     public static AppPrefs get() {
         return INSTANCE;
+    }
+
+    public ObservableBooleanValue alwaysShowSshMotd() {
+        return alwaysShowSshMotd;
     }
 
     public final ObservableBooleanValue preferTerminalTabs() {

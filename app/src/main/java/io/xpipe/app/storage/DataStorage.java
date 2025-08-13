@@ -41,7 +41,6 @@ public abstract class DataStorage {
     public static final UUID ALL_MACROS_CATEGORY_UUID = UUID.fromString("f65b769a-cec9-4f30-ad58-95fe68d79c2c");
     public static final UUID LOCAL_IDENTITIES_CATEGORY_UUID = UUID.fromString("e784de4e-abea-4cb8-a839-fc557cd23097");
     public static final UUID SYNCED_IDENTITIES_CATEGORY_UUID = UUID.fromString("69aa5040-28dc-451e-b4ff-1192ce5e1e3c");
-    private static final String PERSIST_PROP = "io.xpipe.storage.persist";
     private static DataStorage INSTANCE;
     protected final Path dir;
 
@@ -76,20 +75,12 @@ public abstract class DataStorage {
         return dir;
     }
 
-    private static boolean shouldPersist() {
-        if (System.getProperty(PERSIST_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(PERSIST_PROP));
-        }
-
-        return true;
-    }
-
     public static void init() {
         if (INSTANCE != null) {
             return;
         }
 
-        INSTANCE = shouldPersist() ? new StandardStorage() : new ImpersistentStorage();
+        INSTANCE = AppProperties.get().isPersistData() ? new StandardStorage() : new ImpersistentStorage();
         INSTANCE.load();
     }
 

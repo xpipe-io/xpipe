@@ -18,6 +18,7 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -60,7 +61,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         if (item != ExternalTerminalType.CUSTOM) {
                             var graphic = new FontIcon(
                                     item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
-                            graphic.setFill(item.isRecommended() ? Color.GREEN : Color.ORANGE);
+                            graphic.iconColorProperty().bind(new ReadOnlyObjectWrapper<>(item.isRecommended() ? Color.GREEN : Color.ORANGE));
                             setGraphic(graphic);
                         } else {
                             setGraphic(new FontIcon("mdi2m-minus-circle"));

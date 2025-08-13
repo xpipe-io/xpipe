@@ -131,12 +131,12 @@ public class AppMcpServer {
 
                     if (!AppPrefs.get().enableMcpServer().get()) {
                         transportProvider.sendError(
-                                exchange, 403, "MCP server is not enabled in the API settings menu");
+                                exchange, 403, "MCP server is not enabled in the settings menu");
                         if (exchange.getRequestMethod().equals("POST")) {
                             ThreadHelper.runAsync(() -> {
                                 ErrorEventFactory.fromMessage(
                                                 "An external request was made to the XPipe MCP server, however the MCP server is not enabled in the"
-                                                        + " API settings menu")
+                                                        + " settings menu")
                                         .expected()
                                         .handle();
                             });

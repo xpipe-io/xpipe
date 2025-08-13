@@ -39,7 +39,7 @@ public class BrowserFileTransferOperation {
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
     private final BooleanProperty cancelled;
-    BrowserAlerts.FileConflictChoice lastConflictChoice;
+    BrowserDialogs.FileConflictChoice lastConflictChoice;
 
     public BrowserFileTransferOperation(
             FileEntry target,
@@ -84,53 +84,53 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
+    private BrowserDialogs.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
             throws Exception {
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
-            return BrowserAlerts.FileConflictChoice.CANCEL;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
+            return BrowserDialogs.FileConflictChoice.CANCEL;
         }
 
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
-            return BrowserAlerts.FileConflictChoice.REPLACE;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.REPLACE_ALL) {
+            return BrowserDialogs.FileConflictChoice.REPLACE;
         }
 
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
-            return BrowserAlerts.FileConflictChoice.RENAME;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
+            return BrowserDialogs.FileConflictChoice.RENAME;
         }
 
         if (fileSystem.fileExists(target)) {
-            if (lastConflictChoice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (lastConflictChoice == BrowserDialogs.FileConflictChoice.SKIP_ALL) {
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            var choice = BrowserAlerts.showFileConflictAlert(target, multiple);
-            if (choice == BrowserAlerts.FileConflictChoice.CANCEL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.CANCEL;
-                return BrowserAlerts.FileConflictChoice.CANCEL;
+            var choice = BrowserDialogs.showFileConflictAlert(target, multiple);
+            if (choice == BrowserDialogs.FileConflictChoice.CANCEL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.CANCEL;
+                return BrowserDialogs.FileConflictChoice.CANCEL;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.SKIP) {
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (choice == BrowserDialogs.FileConflictChoice.SKIP) {
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.SKIP_ALL;
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (choice == BrowserDialogs.FileConflictChoice.SKIP_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.SKIP_ALL;
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.REPLACE_ALL;
-                return BrowserAlerts.FileConflictChoice.REPLACE;
+            if (choice == BrowserDialogs.FileConflictChoice.REPLACE_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.REPLACE_ALL;
+                return BrowserDialogs.FileConflictChoice.REPLACE;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.RENAME_ALL;
-                return BrowserAlerts.FileConflictChoice.RENAME;
+            if (choice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.RENAME_ALL;
+                return BrowserDialogs.FileConflictChoice.RENAME;
             }
 
             return choice;
         }
-        return BrowserAlerts.FileConflictChoice.REPLACE;
+        return BrowserDialogs.FileConflictChoice.REPLACE;
     }
 
     private boolean cancelled() {
@@ -168,7 +168,11 @@ public class BrowserFileTransferOperation {
                     var currentDir =
                             file.getFileSystem().getShell().orElseThrow().view().pwd();
                     handleSingleAcrossFileSystems(file);
-                    file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+
+                    // Expect a kill
+                    if (!file.getFileSystem().getShell().orElseThrow().isAnyStreamClosed()) {
+                        file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+                    }
                 }
             }
 
@@ -209,12 +213,12 @@ public class BrowserFileTransferOperation {
 
         if (checkConflicts) {
             var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1);
-            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
-                    || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+            if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP
+                    || fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
                 return;
             }
 
-            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+            if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
                 targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
             }
         }
@@ -342,12 +346,12 @@ public class BrowserFileTransferOperation {
                     if (checkConflicts) {
                         var fileConflictChoice =
                                 handleChoice(targetFs, targetFile, files.size() > 1 || flatFiles.size() > 1);
-                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
-                                || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP
+                                || fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
                             continue;
                         }
 
-                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
                             targetFile = renameFileLoop(targetFs, targetFile, false);
                         }
                     }

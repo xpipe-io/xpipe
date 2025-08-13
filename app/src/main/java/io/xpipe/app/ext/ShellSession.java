@@ -78,7 +78,13 @@ public class ShellSession extends Session {
 
     @Override
     public boolean checkAlive() throws Exception {
+        // If a subshell is active, then we are alive
         if (shellControl.isSubShellActive()) {
+            return true;
+        }
+
+        // Don't run commands while in exit
+        if (shellControl.isExiting()) {
             return true;
         }
 

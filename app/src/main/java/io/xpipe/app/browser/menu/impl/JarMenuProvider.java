@@ -3,12 +3,8 @@ package io.xpipe.app.browser.menu.impl;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
-import io.xpipe.app.browser.menu.BrowserApplicationPathMenuProvider;
-import io.xpipe.app.browser.menu.BrowserMenuCategory;
-import io.xpipe.app.browser.menu.FileTypeMenuProvider;
-import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
+import io.xpipe.app.browser.menu.*;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -35,13 +31,6 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
     }
 
     @Override
-    protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) {
-        return CommandBuilder.of()
-                .add("java", "-jar")
-                .addFile(entry.getRawFileEntry().getPath());
-    }
-
-    @Override
     public BrowserIconFileType getType() {
         return BrowserIconFileType.byId("jar");
     }
@@ -49,5 +38,14 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
     @Override
     public String getExecutable() {
         return "java";
+    }
+
+    @Override
+    protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return entries.stream().map(browserEntry -> {
+            return CommandBuilder.of()
+                    .add("java", "-jar")
+                    .addFile(browserEntry.getRawFileEntry().getPath());
+        }).toList();
     }
 }

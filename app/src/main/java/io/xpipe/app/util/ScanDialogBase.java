@@ -96,6 +96,11 @@ public class ScanDialogBase {
         closeAction.run();
     }
 
+    public void reset() {
+        available.clear();
+        selected.clear();
+    }
+
     private void onUpdate() {
         available.clear();
         selected.clear();

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -95,9 +96,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()
-                                .findModule("io.xpipe.ext.proc")
+                                .findModule(AppNames.extModuleName("proc"))
                                 .orElseThrow(),
-                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
+                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
                 .getDeclaredConstructor(List.class, Property.class, boolean.class)
                 .newInstance(availableDialects, dialect, true);
 
@@ -254,9 +255,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         return (String) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()
-                                .findModule("io.xpipe.ext.proc")
+                                .findModule(AppNames.extModuleName("proc"))
                                 .orElseThrow(),
-                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
+                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
                 .getDeclaredMethod("getImageName", ShellDialect.class)
                 .invoke(null, st.getMinimumDialect());
     }

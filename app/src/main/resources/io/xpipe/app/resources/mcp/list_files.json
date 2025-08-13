@@ -24,6 +24,7 @@
   },
   "annotations": {
     "readOnlyHint": true,
-    "openWorldHint": true
+    "destructiveHint": false,
+    "openWorldHint": false
   }
 }

@@ -9,6 +9,9 @@ import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class RunCommandInTerminalActionProvider implements BrowserActionProvider {
 
     @Override
@@ -20,7 +23,6 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
     @SuperBuilder
     public static class Action extends BrowserAction {
 
-        @NonNull
         String title;
 
         @NonNull
@@ -28,23 +30,26 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
 
         @Override
         public void executeImpl() throws Exception {
-            var cmd = CommandBuilder.of().add(command);
-            for (BrowserEntry entry : getEntries()) {
-                cmd.addFile(entry.getRawFileEntry().getPath());
-            }
-
+            var wd = files.getFirst();
             model.openTerminalSync(
                     title,
-                    model.getCurrentDirectory() != null
-                            ? model.getCurrentDirectory().getPath()
-                            : null,
-                    model.getFileSystem().getShell().orElseThrow().command(cmd),
+                    wd,
+                    model.getFileSystem().getShell().orElseThrow().command(command).withWorkingDirectory(wd),
                     true);
         }
 
         @Override
         public boolean isMutation() {
             return true;
+        }
+
+        @Override
+        public Map<String, String> toDisplayMap() {
+            var map = new LinkedHashMap<>(super.toDisplayMap());
+            map.remove("Title");
+            map.remove("Files");
+            map.put("Working Directory", files.getFirst().toString());
+            return map;
         }
     }
 }

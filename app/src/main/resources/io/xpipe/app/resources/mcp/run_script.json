@@ -30,7 +30,8 @@
     ]
   },
   "annotations": {
+    "readOnlyHint": false,
     "destructiveHint": true,
-    "openWorldHint": true
+    "openWorldHint": false
   }
 }

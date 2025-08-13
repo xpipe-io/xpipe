@@ -161,27 +161,19 @@ public interface ShellControl extends ProcessControl {
     }
 
     default String executeSimpleStringCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            return c.readStdoutOrThrow();
-        }
+        return command(command).readStdoutOrThrow();
     }
 
     default boolean executeSimpleBooleanCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            return c.discardAndCheckExit();
-        }
+        return command(command).discardAndCheckExit();
     }
 
     default void executeSimpleCommand(CommandBuilder command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        }
+        command(command).discardOrThrow();
     }
 
     default void executeSimpleCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        }
+        command(command).discardOrThrow();
     }
 
     ShellControl withSecurityPolicy(ShellSecurityPolicy policy);

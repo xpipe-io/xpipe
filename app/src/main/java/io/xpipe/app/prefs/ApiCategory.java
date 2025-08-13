@@ -27,34 +27,6 @@ public class ApiCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
 
-        var mcpConfig = Bindings.createStringBinding(
-                () -> {
-                    var template =
-                            """
-                           {
-                             "mcpServers": {
-                               "%s": {
-                                 "type": "streamable-http",
-                                 "url": "http://localhost:%s/mcp",
-                                 "headers": {
-                                   "Authorization": "Bearer %s"
-                                 }
-                               }
-                             }
-                           }
-                           """;
-                    return template.formatted(
-                                    AppNames.ofCurrent().getKebapName(),
-                                    AppBeaconServer.get().getPort(),
-                                    prefs.apiKey().get() != null
-                                            ? prefs.apiKey().get()
-                                            : "?")
-                            .strip();
-                },
-                prefs.apiKey());
-        var mcpConfigProp = new SimpleStringProperty();
-        mcpConfigProp.bind(mcpConfig);
-
         return new OptionsBuilder()
                 .addTitle("httpServer")
                 .sub(new OptionsBuilder()
@@ -64,18 +36,6 @@ public class ApiCategory extends AppPrefsCategory {
                         .addComp(new TextFieldComp(prefs.apiKey).maxWidth(getCompWidth()), prefs.apiKey)
                         .pref(prefs.disableApiAuthentication)
                         .addToggle(prefs.disableApiAuthentication))
-                .addTitle("mcpServer")
-                .sub(new OptionsBuilder()
-                        .pref(prefs.enableMcpServer)
-                        .addToggle(prefs.enableMcpServer)
-                        .pref(prefs.enableMcpMutationTools)
-                        .addToggle(prefs.enableMcpMutationTools)
-                        .nameAndDescription("mcpClientConfigurationDetails")
-                        .addComp(new TextAreaComp(mcpConfigProp).apply(struc -> {
-                            struc.getTextArea().setEditable(false);
-                            struc.getTextArea().setPrefRowCount(11);
-                        }))
-                        .hide(prefs.enableMcpServer.not()))
                 .buildComp();
     }
 }

@@ -81,16 +81,16 @@ public class StoreViewState {
             () -> {
                 var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
                 var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-                var incomplete = Comparator.<StoreSection>comparingInt(value -> {
-                    if (!value.getWrapper().getValidity().getValue().isUsable()) {
+                var failed = Comparator.<StoreSection>comparingInt(value -> {
+                    if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
                         return 1;
                     }
 
                     return 0;
                 });
                 return g != null
-                        ? incomplete.thenComparing(g.comparator().thenComparing(t.comparator()))
-                        : incomplete.thenComparing(t.comparator());
+                        ? failed.thenComparing(g.comparator().thenComparing(t.comparator()))
+                        : failed.thenComparing(t.comparator());
             },
             globalSortMode,
             tieSortMode);

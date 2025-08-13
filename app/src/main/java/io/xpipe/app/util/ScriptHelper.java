@@ -89,7 +89,8 @@ public class ScriptHelper {
                 content = sub.getShellDialect().prepareScriptContent(sub, content);
                 return createExecScriptRaw(
                         sub,
-                        sub.getSystemTemporaryDirectory().join(fileName + "." + sub.getShellDialect().getScriptFileEnding()),
+                        sub.getSystemTemporaryDirectory()
+                                .join(fileName + "." + sub.getShellDialect().getScriptFileEnding()),
                         content);
             }
         } else {
@@ -104,7 +105,8 @@ public class ScriptHelper {
             content = parent.getShellDialect().prepareScriptContent(parent, content);
             return createExecScriptRaw(
                     parent,
-                    parent.getSystemTemporaryDirectory().join(fileName + "." + parent.getShellDialect().getScriptFileEnding()),
+                    parent.getSystemTemporaryDirectory()
+                            .join(fileName + "." + parent.getShellDialect().getScriptFileEnding()),
                     content);
         }
     }

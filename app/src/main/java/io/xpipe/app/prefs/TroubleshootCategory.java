@@ -27,7 +27,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
     @SneakyThrows
     private static void heapDump() {
-        var file = DesktopHelper.getDesktopDirectory().resolve("xpipe.hprof");
+        var file = DesktopHelper.getDesktopDirectory().resolve(AppNames.ofMain().getSnakeName() + ".hprof");
         FileUtils.deleteQuietly(file.toFile());
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(
@@ -87,7 +87,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         ThreadHelper.sleep(100);
                                         FileOpener.openInTextEditor(AppLogs.get()
                                                 .getSessionLogsDirectory()
-                                                .resolve("xpipe.log")
+                                                .resolve(AppNames.ofMain().getKebapName() + ".log")
                                                 .toString());
                                         e.consume();
                                     })

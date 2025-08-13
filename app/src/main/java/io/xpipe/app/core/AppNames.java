@@ -7,11 +7,27 @@ public abstract class AppNames {
     }
 
     public static AppNames ofCurrent() {
-        if (AppProperties.get().isStaging()) {
+        if (AppProperties.get() != null && AppProperties.get().isStaging()) {
             return new Ptb();
         } else {
             return new Main();
         }
+    }
+
+    public static String propertyName(String name) {
+        return ofCurrent().getGroupName() + ".app." + name;
+    }
+
+    public static String packageName(String name) {
+        return ofCurrent().getGroupName() + ".app" + (name != null ? "." + name : "");
+    }
+
+    public static String appModuleName(String name) {
+        return ofCurrent().getGroupName() + name;
+    }
+
+    public static String extModuleName(String name) {
+        return ofCurrent().getGroupName() + ".ext." + name;
     }
 
     public abstract String getName();
@@ -19,6 +35,10 @@ public abstract class AppNames {
     public abstract String getKebapName();
 
     public abstract String getSnakeName();
+
+    public abstract String getUppercaseName();
+
+    public abstract String getGroupName();
 
     private static class Main extends AppNames {
 
@@ -35,6 +55,16 @@ public abstract class AppNames {
         @Override
         public String getSnakeName() {
             return "xpipe";
+        }
+
+        @Override
+        public String getUppercaseName() {
+            return "XPIPE";
+        }
+
+        @Override
+        public String getGroupName() {
+            return "io.xpipe";
         }
     }
 
@@ -53,6 +83,16 @@ public abstract class AppNames {
         @Override
         public String getSnakeName() {
             return "xpipe_ptb";
+        }
+
+        @Override
+        public String getUppercaseName() {
+            return "XPIPE_PTB";
+        }
+
+        @Override
+        public String getGroupName() {
+            return "io.xpipe";
         }
     }
 }

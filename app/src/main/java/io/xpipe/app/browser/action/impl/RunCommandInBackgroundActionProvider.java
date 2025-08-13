@@ -11,6 +11,8 @@ import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class RunCommandInBackgroundActionProvider implements BrowserActionProvider {
@@ -29,27 +31,22 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
 
         @Override
         public void executeImpl() throws Exception {
-            var cmd = CommandBuilder.of().add(command);
-            for (BrowserEntry entry : getEntries()) {
-                cmd.addFile(entry.getRawFileEntry().getPath());
-            }
-
             AtomicReference<String> out = new AtomicReference<>();
             AtomicReference<String> err = new AtomicReference<>();
             long exitCode;
-            try (var command = model.getFileSystem()
+            try (var cc = model.getFileSystem()
                     .getShell()
                     .orElseThrow()
-                    .command(cmd)
-                    .withWorkingDirectory(model.getCurrentDirectory().getPath())
+                    .command(command)
+                    .withWorkingDirectory(files.getFirst())
                     .start()) {
-                var r = command.readStdoutAndStderr();
+                var r = cc.readStdoutAndStderr();
                 out.set(r[0]);
                 err.set(r[1]);
-                exitCode = command.getExitCode();
+                exitCode = cc.getExitCode();
             }
 
-            model.refreshBrowserEntriesSync(getEntries());
+            model.refreshSync();
 
             // Only throw actual error output
             if (exitCode != 0) {
@@ -60,6 +57,15 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
         @Override
         public boolean isMutation() {
             return true;
+        }
+
+        @Override
+        public Map<String, String> toDisplayMap() {
+            var map = new LinkedHashMap<>(super.toDisplayMap());
+            map.remove("Title");
+            map.remove("Files");
+            map.put("Working Directory", files.getFirst().toString());
+            return map;
         }
     }
 }

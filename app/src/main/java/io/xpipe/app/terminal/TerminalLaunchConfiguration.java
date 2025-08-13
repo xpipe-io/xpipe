@@ -87,7 +87,7 @@ public class TerminalLaunchConfiguration {
                     """
                           echo 'Transcript started, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" > $Out-Null
-                          & %s
+                          & "%s"
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """

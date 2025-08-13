@@ -25,12 +25,12 @@ testing {
                         classpath += exts
                         dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 
-                        systemProperty 'io.xpipe.app.fullVersion', "true"
-                        systemProperty 'io.xpipe.app.useVirtualThreads', "false"
-                        systemProperty "io.xpipe.beacon.port", "21723"
-                        systemProperty "io.xpipe.app.dataDir", "$projectDir/local/"
-                        systemProperty "io.xpipe.app.logLevel", "trace"
-                        systemProperty "io.xpipe.app.writeSysOut", "true"
+                        systemProperty propertyName('fullVersion'), "true"
+                        systemProperty propertyName('useVirtualThreads'), "false"
+                        systemProperty propertyName("beacon", "port"), "21723"
+                        systemProperty propertyName("dataDir"), "$projectDir/local/"
+                        systemProperty propertyName("logLevel"), "trace"
+                        systemProperty propertyName("writeSysOut"), "true"
                     }
                 }
             }

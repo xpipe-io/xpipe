@@ -47,7 +47,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
-        cmd.add(configuration.getDialectLaunchCommand());
+        cmd.add(configuration.getScriptDialect().getOpenScriptCommand(configuration.getScriptFile().getFileName()));
         return cmd;
     }
 
@@ -126,15 +126,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             checkProfile();
-
-            var inPath = LocalShell.getShell().view().findProgram("wt").isPresent();
-            if (inPath) {
-                super.launch(configuration);
-            } else {
-                LocalShell.getShell()
-                        .executeSimpleCommand(CommandBuilder.of()
-                                .addFile(getPath().toString())
-                                .add(toCommand(configuration)));
+            try (var sc = LocalShell.getShell().start()) {
+                var inPath = sc.view().findProgram("wt");
+                var exec = inPath.orElse(FilePath.of(getPath()));
+                var wd = sc.view().pwd();
+                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                        .withWorkingDirectory(configuration.getScriptFile().getParent())
+                        .execute();
+                sc.view().cd(wd);
             }
         }
 
@@ -177,9 +176,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             }
 
             checkProfile();
-            LocalShell.getShell()
-                    .executeSimpleCommand(
-                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
+            try (var sc = LocalShell.getShell().start()) {
+                var exec = getPath();
+                var wd = sc.view().pwd();
+                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                        .withWorkingDirectory(configuration.getScriptFile().getParent())
+                        .execute();
+                sc.view().cd(wd);
+            }
         }
 
         private Path getPath() {
@@ -222,9 +226,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             }
 
             checkProfile();
-            LocalShell.getShell()
-                    .executeSimpleCommand(
-                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
+            try (var sc = LocalShell.getShell().start()) {
+                var exec = getPath();
+                var wd = sc.view().pwd();
+                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                        .withWorkingDirectory(configuration.getScriptFile().getParent())
+                        .execute();
+                sc.view().cd(wd);
+            }
         }
 
         private Path getPath() {

@@ -111,7 +111,7 @@ public class AppExtensionManager {
 
     public Set<Module> getContentModules() {
         return Stream.concat(
-                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()), loadedModules.stream())
+                        Stream.of(ModuleLayer.boot().findModule(AppNames.packageName(null)).orElseThrow()), loadedModules.stream())
                 .collect(Collectors.toSet());
     }
 
@@ -134,16 +134,16 @@ public class AppExtensionManager {
             ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
-                    extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
+                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
             ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
-                    extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
+                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
         }
     }
 
     private Optional<Module> findAndParseExtension(String name, ModuleLayer parent) {
-        var inModulePath = ModuleLayer.boot().findModule("io.xpipe.ext." + name);
+        var inModulePath = ModuleLayer.boot().findModule(AppNames.extModuleName(name));
         if (inModulePath.isPresent()) {
             TrackEvent.info("Loaded extension " + name + " from boot module path");
             return inModulePath;

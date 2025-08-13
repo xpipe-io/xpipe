@@ -2,6 +2,7 @@ package io.xpipe.app.beacon.mcp;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.SingletonSessionStore;
@@ -273,9 +274,9 @@ public final class McpTools {
                     var clazz = Class.forName(
                             AppExtensionManager.getInstance()
                                     .getExtendedLayer()
-                                    .findModule("io.xpipe.ext.base")
+                                    .findModule(AppNames.extModuleName("base"))
                                     .orElseThrow(),
-                            "io.xpipe.ext.base.script.SimpleScriptStore");
+                            AppNames.extModuleName("base") + ".script.SimpleScriptStore");
                     var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class);
                     var command = (String) method.invoke(script.getStore(), shellSession.getControl());
                     var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);

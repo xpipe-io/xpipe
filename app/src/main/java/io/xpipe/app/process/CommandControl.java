@@ -41,15 +41,11 @@ public interface CommandControl extends ProcessControl {
     CommandControl withWorkingDirectory(FilePath directory);
 
     default void execute() throws Exception {
-        try (var c = start()) {
-            c.discardOrThrow();
-        }
+        discardOrThrow();
     }
 
     default boolean executeAndCheck() throws Exception {
-        try (var c = start()) {
-            return c.discardAndCheckExit();
-        }
+        return discardAndCheckExit();
     }
 
     ShellControl getParent();

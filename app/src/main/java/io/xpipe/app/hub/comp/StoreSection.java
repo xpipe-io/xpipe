@@ -150,7 +150,7 @@ public class StoreSection {
         }
 
         var allEnabled = all.blockUpdatesIf(Bindings.not(enabled));
-        var allChildren = all.filtered(
+        var allChildren = allEnabled.filtered(
                 other -> {
                     // Legacy implementation that does not use children caches. Use for testing
                     //                                if (true) return DataStorage.get()

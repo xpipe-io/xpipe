@@ -48,10 +48,16 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api 'io.modelcontextprotocol.sdk:mcp:0.11.0'
+    api ('io.modelcontextprotocol.sdk:mcp:0.11.0')  {
+        exclude group: "com.ethlo.time", module: "itu"
+        exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
+    }
     api "io.projectreactor:reactor-core:3.7.0"
     api "org.reactivestreams:reactive-streams:1.0.4"
-    api "com.networknt:json-schema-validator:1.5.8"
+    api ("com.networknt:json-schema-validator:1.5.8") {
+        exclude group: "com.ethlo.time", module: "itu"
+        exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
+    }
 
     api "com.github.weisj:jsvg:1.7.1"
     api 'io.xpipe:vernacular:1.15'
@@ -81,25 +87,24 @@ jar {
 }
 
 application {
-    mainModule = 'io.xpipe.app'
-    mainClass = 'io.xpipe.app.Main'
+    mainModule = groupName + '.app'
+    mainClass = groupName + '.app.Main'
     applicationDefaultJvmArgs = jvmRunArgs
 }
 
 run {
-    systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
-    systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.writeLogs', "true"
-    systemProperty 'io.xpipe.app.writeSysOut', "true"
-    systemProperty 'io.xpipe.app.developerMode', "true"
-    systemProperty 'io.xpipe.app.logLevel', "trace"
-    systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
-    systemProperty 'io.xpipe.app.staging', isStage
-    // systemProperty 'io.xpipe.beacon.port', "30000"
+    systemProperty propertyName('useVirtualThreads'), 'false'
+    systemProperty propertyName('mode'), 'gui'
+    systemProperty propertyName('writeLogs'), "true"
+    systemProperty propertyName('writeSysOut'), "true"
+    systemProperty propertyName('developerMode'), "true"
+    systemProperty propertyName('logLevel'), "trace"
+    systemProperty propertyName('fullVersion'), fullVersion
+    systemProperty propertyName('staging'), isStage
 
     // Apply passed xpipe properties
     for (final def e in System.getProperties().entrySet()) {
-        if (e.getKey().toString().contains("xpipe")) {
+        if (e.getKey().toString().contains(snakeProductName)) {
             systemProperty e.getKey().toString(), e.getValue()
         }
     }
@@ -116,8 +121,8 @@ run {
 tasks.register('runAttachedDebugger', JavaExec) {
     workingDir = rootDir
     classpath = run.classpath
-    mainModule = 'io.xpipe.app'
-    mainClass = 'io.xpipe.app.Main'
+    mainModule = groupName + '.app'
+    mainClass = groupName + '.app.Main'
     modularity.inferModulePath = true
     jvmArgs += jvmRunArgs
     jvmArgs += List.of(

@@ -200,6 +200,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         var s = fileSystem.getShell();
         if (s.isPresent()) {
             s.get().start();
+            if (s.get().isAnyStreamClosed()) {
+                s.get().restart();
+            }
         }
     }
 
@@ -421,20 +424,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         loadFilesSync(path);
     }
 
-    public void withFiles(FilePath dir, FailableConsumer<Stream<FileEntry>, Exception> consumer) throws Exception {
-        BooleanScope.executeExclusive(busy, () -> {
-            if (dir != null) {
-                startIfNeeded();
-                var fs = getFileSystem();
-
-                var stream = fs.listFiles(fs, dir);
-                consumer.accept(stream);
-            } else {
-                consumer.accept(Stream.of());
-            }
-        });
-    }
-
     private boolean loadFilesSync(FilePath dir) {
         try {
             startIfNeeded();
@@ -458,7 +447,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             BooleanScope.executeExclusive(busy, () -> {
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
-                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
+                        entry, files, BrowserFileTransferMode.COPY, true, p -> updateProgress(p), transferCancelled);
                 var action = TransferFilesActionProvider.Action.builder()
                         .operation(op)
                         .target(this.entry.asNeeded())

@@ -6,6 +6,7 @@ import io.xpipe.core.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Logger;
@@ -31,10 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AppLogs {
 
     public static final List<String> LOG_LEVELS = List.of("error", "warn", "info", "debug", "trace");
-    private static final String WRITE_SYSOUT_PROP = "io.xpipe.app.writeSysOut";
-    private static final String WRITE_LOGS_PROP = "io.xpipe.app.writeLogs";
-    private static final String DEBUG_PLATFORM_PROP = "io.xpipe.app.debugPlatform";
-    private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
+    private static final String WRITE_SYSOUT_PROP = AppNames.propertyName("writeSysOut");
+    private static final String WRITE_LOGS_PROP = AppNames.propertyName("writeLogs");
+    private static final String DEBUG_PLATFORM_PROP = AppNames.propertyName("debugPlatform");
+    private static final String LOG_LEVEL_PROP = AppNames.propertyName("logLevel");
     private static final String DEFAULT_LOG_LEVEL = "info";
 
     private static final DateTimeFormatter NAME_FORMATTER =
@@ -138,7 +139,7 @@ public class AppLogs {
         if (shouldLogToFile) {
             try {
                 FileUtils.forceMkdir(usedLogsDir.toFile());
-                var file = usedLogsDir.resolve(AppNames.ofMain().getName() + "xpipe.log");
+                var file = usedLogsDir.resolve(AppNames.ofMain().getName() + ".log");
                 var fos = new FileOutputStream(file.toFile(), true);
                 var buf = new BufferedOutputStream(fos);
                 outFileStream = new PrintStream(buf, false);
@@ -317,14 +318,13 @@ public class AppLogs {
                 // Only change this when debugging the logs of other libraries
                 return NOPLogger.NOP_LOGGER;
 
-                //                                // Don't use fully qualified class names
-                //                                var normalizedName = FilenameUtils.getExtension(name);
-                //                                if (normalizedName == null || normalizedName.isEmpty()) {
-                //                                    normalizedName = name;
-                //                                }
-                //
-                //                                return loggers.computeIfAbsent(normalizedName, s -> new
-                // Slf4jLogger());
+//                // Don't use fully qualified class names
+//                var normalizedName = FilenameUtils.getExtension(name);
+//                if (normalizedName == null || normalizedName.isEmpty()) {
+//                    normalizedName = name;
+//                }
+//
+//                return loggers.computeIfAbsent(normalizedName, s -> new Slf4jLogger());
             }
         };
 
@@ -376,14 +376,18 @@ public class AppLogs {
 
         @Override
         public boolean isTraceEnabled() {
-            return LOG_LEVELS.indexOf("trace")
-                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+
+            // You almost never want trace output, javafx will spam everything
+            return false;
         }
 
         @Override
         public boolean isTraceEnabled(Marker marker) {
-            return LOG_LEVELS.indexOf("trace")
-                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+
+            // You almost never want trace output, javafx will spam everything
+            return false;
         }
 
         @Override

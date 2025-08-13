@@ -17,6 +17,8 @@ public class BrowserLocalFileSystem {
         if (localFileSystem == null) {
             localFileSystem = new LocalStore().createFileSystem();
             localFileSystem.open();
+        } else if (localFileSystem.getShell().orElseThrow().isAnyStreamClosed()) {
+            localFileSystem.getShell().orElseThrow().restart();
         }
     }
 
@@ -28,10 +30,7 @@ public class BrowserLocalFileSystem {
     }
 
     public static FileEntry getLocalFileEntry(Path file) throws Exception {
-        if (localFileSystem == null) {
-            throw new IllegalStateException();
-        }
-
+        init();
         return new FileEntry(
                 localFileSystem.open(),
                 FilePath.of(file),
