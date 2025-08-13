@@ -61,7 +61,9 @@ public class TerminalCategory extends AppPrefsCategory {
                         if (item != ExternalTerminalType.CUSTOM) {
                             var graphic = new FontIcon(
                                     item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
-                            graphic.iconColorProperty().bind(new ReadOnlyObjectWrapper<>(item.isRecommended() ? Color.GREEN : Color.ORANGE));
+                            graphic.iconColorProperty()
+                                    .bind(new ReadOnlyObjectWrapper<>(
+                                            item.isRecommended() ? Color.GREEN : Color.ORANGE));
                             setGraphic(graphic);
                         } else {
                             setGraphic(new FontIcon("mdi2m-minus-circle"));

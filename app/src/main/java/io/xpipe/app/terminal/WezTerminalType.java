@@ -103,10 +103,12 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             boolean runGui = true;
             if (configuration.isPreferTabs()) {
-                runGui = !LocalShell.getShell().command(CommandBuilder.of()
-                        .addFile("wezterm")
-                        .add("cli", "spawn")
-                        .addFile(configuration.getScriptFile())).executeAndCheck();
+                runGui = !LocalShell.getShell()
+                        .command(CommandBuilder.of()
+                                .addFile("wezterm")
+                                .add("cli", "spawn")
+                                .addFile(configuration.getScriptFile()))
+                        .executeAndCheck();
             }
 
             if (runGui) {
@@ -150,9 +152,13 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 boolean runGui = true;
                 if (configuration.isPreferTabs()) {
                     runGui = !sc.command(CommandBuilder.of()
-                            .addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm").toString())
-                            .add("cli", "spawn", "--pane-id", "0")
-                            .addFile(configuration.getScriptFile())).executeAndCheck();
+                                    .addFile(path.resolve("Contents")
+                                            .resolve("MacOS")
+                                            .resolve("wezterm")
+                                            .toString())
+                                    .add("cli", "spawn", "--pane-id", "0")
+                                    .addFile(configuration.getScriptFile()))
+                            .executeAndCheck();
                 }
                 if (runGui) {
                     ExternalApplicationHelper.startAsync(CommandBuilder.of()

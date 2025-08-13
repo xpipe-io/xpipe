@@ -77,9 +77,10 @@ public class AppProperties {
         fullVersion = Optional.ofNullable(System.getProperty(AppNames.propertyName("fullVersion")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        version =
-                Optional.ofNullable(System.getProperty(AppNames.propertyName("version"))).orElse("dev");
-        build = Optional.ofNullable(System.getProperty(AppNames.propertyName("build"))).orElse("unknown");
+        version = Optional.ofNullable(System.getProperty(AppNames.propertyName("version")))
+                .orElse("dev");
+        build = Optional.ofNullable(System.getProperty(AppNames.propertyName("build")))
+                .orElse("unknown");
         buildUuid = Optional.ofNullable(System.getProperty(AppNames.propertyName("buildId")))
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
@@ -95,7 +96,8 @@ public class AppProperties {
         debugThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugThreads")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        debugPlatformThreadAccess = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugPlatformThreadAccess")))
+        debugPlatformThreadAccess = Optional.ofNullable(
+                        System.getProperty(AppNames.propertyName("debugPlatformThreadAccess")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");

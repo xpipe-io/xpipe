@@ -30,7 +30,7 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
         }
         var os = shell.get().getOsType();
 
-        if (e.getInfo() != null && e.getInfo().possiblyExecutable() && os!= OsType.WINDOWS) {
+        if (e.getInfo() != null && e.getInfo().possiblyExecutable() && os != OsType.WINDOWS) {
             return true;
         }
 
@@ -75,10 +75,17 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
     @Override
     protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sc = model.getFileSystem().getShell().orElseThrow();
-        return entries.stream().map(browserEntry -> {
-            return CommandBuilder.of()
-                    .add(sc.getShellDialect()
-                            .runScriptCommand(sc, browserEntry.getRawFileEntry().getPath().toString()));
-        }).toList();
+        return entries.stream()
+                .map(browserEntry -> {
+                    return CommandBuilder.of()
+                            .add(sc.getShellDialect()
+                                    .runScriptCommand(
+                                            sc,
+                                            browserEntry
+                                                    .getRawFileEntry()
+                                                    .getPath()
+                                                    .toString()));
+                })
+                .toList();
     }
 }

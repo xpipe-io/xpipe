@@ -52,7 +52,8 @@ public enum AppDistributionType implements Translatable {
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater()),
-    SCOOP("scoop", false, () -> new PortableUpdater(true)),;
+    SCOOP("scoop", false, () -> new PortableUpdater(true)),
+    ;
 
     private static AppDistributionType type;
 
@@ -138,7 +139,8 @@ public enum AppDistributionType implements Translatable {
                 var r = LocalExec.readStdoutIfPossible(
                         "pkgutil",
                         "--pkg-info",
-                        AppNames.ofCurrent().getGroupName() + "." + AppNames.ofCurrent().getKebapName());
+                        AppNames.ofCurrent().getGroupName() + "."
+                                + AppNames.ofCurrent().getKebapName());
                 if (r.isEmpty()) {
                     return PORTABLE;
                 }
@@ -153,8 +155,11 @@ public enum AppDistributionType implements Translatable {
                     return AUR;
                 }
 
-                if (OsType.getLocal() == OsType.WINDOWS && AppInstallation.ofCurrent().getBaseInstallationPath()
-                        .startsWith(AppSystemInfo.getWindows().getUserHome().resolve("scoop"))) {
+                if (OsType.getLocal() == OsType.WINDOWS
+                        && AppInstallation.ofCurrent()
+                                .getBaseInstallationPath()
+                                .startsWith(
+                                        AppSystemInfo.getWindows().getUserHome().resolve("scoop"))) {
                     return SCOOP;
                 }
 

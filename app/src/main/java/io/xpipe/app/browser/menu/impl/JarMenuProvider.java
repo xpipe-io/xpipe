@@ -42,10 +42,12 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
 
     @Override
     protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().map(browserEntry -> {
-            return CommandBuilder.of()
-                    .add("java", "-jar")
-                    .addFile(browserEntry.getRawFileEntry().getPath());
-        }).toList();
+        return entries.stream()
+                .map(browserEntry -> {
+                    return CommandBuilder.of()
+                            .add("java", "-jar")
+                            .addFile(browserEntry.getRawFileEntry().getPath());
+                })
+                .toList();
     }
 }

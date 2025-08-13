@@ -2,8 +2,6 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.process.CommandBuilder;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
@@ -34,7 +32,11 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
             model.openTerminalSync(
                     title,
                     wd,
-                    model.getFileSystem().getShell().orElseThrow().command(command).withWorkingDirectory(wd),
+                    model.getFileSystem()
+                            .getShell()
+                            .orElseThrow()
+                            .command(command)
+                            .withWorkingDirectory(wd),
                     true);
         }
 

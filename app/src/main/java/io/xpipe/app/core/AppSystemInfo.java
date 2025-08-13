@@ -84,7 +84,8 @@ public class AppSystemInfo {
             try {
                 // Replace 8.3 filename
                 dir = dir.toRealPath();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             return (temp = dir);
         }
 
@@ -108,7 +109,8 @@ public class AppSystemInfo {
                 try {
                     // Replace 8.3 filename
                     dir = dir.toRealPath();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 return (localAppData = dir);
             }
 

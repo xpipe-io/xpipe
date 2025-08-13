@@ -1,15 +1,9 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppNames;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 
 public class ApiCategory extends AppPrefsCategory {
 

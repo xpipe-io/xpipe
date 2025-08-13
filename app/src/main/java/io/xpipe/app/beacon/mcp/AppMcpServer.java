@@ -130,8 +130,7 @@ public class AppMcpServer {
                     }
 
                     if (!AppPrefs.get().enableMcpServer().get()) {
-                        transportProvider.sendError(
-                                exchange, 403, "MCP server is not enabled in the settings menu");
+                        transportProvider.sendError(exchange, 403, "MCP server is not enabled in the settings menu");
                         if (exchange.getRequestMethod().equals("POST")) {
                             ThreadHelper.runAsync(() -> {
                                 ErrorEventFactory.fromMessage(

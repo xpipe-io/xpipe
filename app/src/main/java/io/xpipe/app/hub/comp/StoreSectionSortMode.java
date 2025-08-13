@@ -122,10 +122,9 @@ public interface StoreSectionSortMode {
         public StoreSection computeRepresentative(StoreSection s) {
             return Stream.concat(
                             s.getShownChildren().getList().stream()
-                                    .filter(section -> section.getWrapper()
-                                            .getEntry()
-                                            .getValidity()
-                                             != DataStoreEntry.Validity.LOAD_FAILED)
+                                    .filter(section ->
+                                            section.getWrapper().getEntry().getValidity()
+                                                    != DataStoreEntry.Validity.LOAD_FAILED)
                                     .map(this::getRepresentative),
                             Stream.of(s))
                     .max(Comparator.comparing(section -> date(section)))

@@ -2,8 +2,6 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.app.browser.file.BrowserEntry;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandDialog;
 
 import lombok.NonNull;
@@ -29,7 +27,11 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
 
         @Override
         public void executeImpl() {
-            var cmd = model.getFileSystem().getShell().orElseThrow().command(command).withWorkingDirectory(files.getFirst());
+            var cmd = model.getFileSystem()
+                    .getShell()
+                    .orElseThrow()
+                    .command(command)
+                    .withWorkingDirectory(files.getFirst());
             CommandDialog.runAndShow(cmd);
             model.refreshSync();
         }

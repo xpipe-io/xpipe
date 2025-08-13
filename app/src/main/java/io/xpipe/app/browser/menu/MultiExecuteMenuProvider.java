@@ -7,9 +7,10 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-
 import io.xpipe.app.process.CommandBuilder;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -30,8 +31,10 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                         var commands = createCommand(model, entries);
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInTerminalActionProvider.Action.builder();
-                            builder.initFiles(model, List.of(model.getCurrentPath().getValue()));
-                            builder.command(command.buildFull(model.getFileSystem().getShell().orElseThrow()));
+                            builder.initFiles(
+                                    model, List.of(model.getCurrentPath().getValue()));
+                            builder.command(command.buildFull(
+                                    model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();
                         }
                     }
@@ -58,8 +61,10 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                         var commands = createCommand(model, entries);
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInBrowserActionProvider.Action.builder();
-                            builder.initFiles(model, List.of(model.getCurrentPath().getValue()));
-                            builder.command(command.buildFull(model.getFileSystem().getShell().orElseThrow()));
+                            builder.initFiles(
+                                    model, List.of(model.getCurrentPath().getValue()));
+                            builder.command(command.buildFull(
+                                    model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();
                         }
                     }
@@ -78,8 +83,10 @@ public abstract class MultiExecuteMenuProvider implements BrowserMenuBranchProvi
                         var commands = createCommand(model, entries);
                         for (CommandBuilder command : commands) {
                             var builder = RunCommandInBackgroundActionProvider.Action.builder();
-                            builder.initFiles(model, List.of(model.getCurrentPath().getValue()));
-                            builder.command(command.buildFull(model.getFileSystem().getShell().orElseThrow()));
+                            builder.initFiles(
+                                    model, List.of(model.getCurrentPath().getValue()));
+                            builder.command(command.buildFull(
+                                    model.getFileSystem().getShell().orElseThrow()));
                             builder.build().executeAsync();
                         }
                     }

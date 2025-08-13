@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -74,7 +73,8 @@ public class ShellTemp {
         }
 
         if (hasValidTemp) {
-            var sessionFile = systemTemp.join("xpipe-session-" + AppProperties.get().getSessionId().toString().substring(0, 8));
+            var sessionFile = systemTemp.join("xpipe-session-"
+                    + AppProperties.get().getSessionId().toString().substring(0, 8));
             var newSession = !sc.view().fileExists(sessionFile);
             if (newSession) {
                 clearFiles(sc, systemTemp.join("xpipe-"));
@@ -86,14 +86,23 @@ public class ShellTemp {
     private static void clearFiles(ShellControl sc, FilePath prefix) throws Exception {
         var d = sc.getShellDialect();
         if (d == ShellDialects.CMD) {
-            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addQuoted(prefix.toString() + "*")).executeAndCheck();
+            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addQuoted(prefix.toString() + "*"))
+                    .executeAndCheck();
         } else if (ShellDialects.isPowershell(d)) {
             sc.command(CommandBuilder.of()
-                    .add("Get-ChildItem")
-                    .addFile(prefix.getParent())
-                    .add("|", "Where-Object", "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}", "|", "Remove-Item", "-Force")).executeAndCheck();
+                            .add("Get-ChildItem")
+                            .addFile(prefix.getParent())
+                            .add(
+                                    "|",
+                                    "Where-Object",
+                                    "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}",
+                                    "|",
+                                    "Remove-Item",
+                                    "-Force"))
+                    .executeAndCheck();
         } else {
-            sc.command(CommandBuilder.of().add("rm", "-f").add("\"" + prefix.toString() + "\"*")).executeAndCheck();
+            sc.command(CommandBuilder.of().add("rm", "-f").add("\"" + prefix.toString() + "\"*"))
+                    .executeAndCheck();
         }
     }
 

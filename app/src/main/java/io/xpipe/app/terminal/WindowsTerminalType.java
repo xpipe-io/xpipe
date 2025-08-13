@@ -47,7 +47,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
-        cmd.add(configuration.getScriptDialect().getOpenScriptCommand(configuration.getScriptFile().getFileName()));
+        cmd.add(configuration
+                .getScriptDialect()
+                .getOpenScriptCommand(configuration.getScriptFile().getFileName()));
         return cmd;
     }
 
