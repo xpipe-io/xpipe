@@ -33,10 +33,6 @@ public class SetupToolActionProvider implements ActionProvider {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Setup action not found: " + type));
             }
 
-            if (!provider.get().checkInstalled()) {
-                provider.get().execute();
-            }
-
             var local = DataStorage.get().local();
             var sc = ((ShellStore) local.getStore()).getOrStartSession();
             var op = provider.get().getScan().create(local, sc);

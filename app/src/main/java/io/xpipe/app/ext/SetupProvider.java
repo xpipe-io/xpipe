@@ -19,10 +19,6 @@ public interface SetupProvider {
 
     LabelGraphic getGraphic();
 
-    boolean checkInstalled();
-
-    void execute() throws Exception;
-
     ScanProvider getScan();
 
     class Loader implements ModuleLayerLoader {
