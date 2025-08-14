@@ -76,41 +76,6 @@ public class AppMcpServer {
             syncServer.notifyToolsListChanged();
         });
 
-        //        syncServer.addResource(McpResources.connections());
-        //        syncServer.addResource(McpResources.categories());
-        //
-        //        DataStorage.get().addListener(new StorageListener() {
-        //            @Override
-        //            public void onStoreListUpdate() {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //
-        //            @Override
-        //            public void onStoreAdd(DataStoreEntry... entry) {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //
-        //            @Override
-        //            public void onStoreRemove(DataStoreEntry... entry) {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //
-        //            @Override
-        //            public void onCategoryAdd(DataStoreCategory category) {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //
-        //            @Override
-        //            public void onCategoryRemove(DataStoreCategory category) {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //
-        //            @Override
-        //            public void onEntryCategoryChange() {
-        //                syncServer.notifyResourcesListChanged();
-        //            }
-        //        });
-
         INSTANCE = new AppMcpServer(syncServer, transportProvider);
     }
 

@@ -179,7 +179,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                     .title("Uninstall")
                                                     .localScript(sc -> ShellScript.lines(
                                                             "echo \"+ sudo " + file + "\"",
-                                                            "sudo " + file,
+                                                            "sudo \"" + file + "\"",
                                                             ProcessControlProvider.get()
                                                                     .getEffectiveLocalDialect()
                                                                     .getPauseCommand()))
