@@ -110,7 +110,6 @@ public class AppProperties {
                     return p;
                 })
                 .orElse(defaultDataDir);
-        dataBinDir = dataDir.resolve("bin");
         showcase = Optional.ofNullable(System.getProperty(AppNames.propertyName("showcase")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
@@ -139,6 +138,7 @@ public class AppProperties {
         // We require the user dir from here
         AppUserDirectoryCheck.check(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
+        dataBinDir = dataDir.resolve("cache", "bin");
         UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
         if (id == null) {
             uuid = UUID.randomUUID();

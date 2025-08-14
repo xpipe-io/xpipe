@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.util.WindowsRegistry;
@@ -71,7 +72,7 @@ public class AppAvCheck {
         BITDEFENDER("Bitdefender") {
             @Override
             public String getDescription() {
-                return "Bitdefender sometimes isolates XPipe and some shell programs, effectively making it unusable.";
+                return "Bitdefender sometimes isolates " + AppNames.ofCurrent().getName() + " and some shell programs, effectively making it unusable.";
             }
 
             @Override

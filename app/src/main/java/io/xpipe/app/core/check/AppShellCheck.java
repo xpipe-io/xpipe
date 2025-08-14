@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.core.OsType;
 
 public class AppShellCheck {
@@ -58,7 +59,7 @@ public class AppShellCheck {
                             protected String modifyOutput(String output) {
                                 if (output.contains("is not recognized as an internal or external command")
                                         && output.contains("exec-")) {
-                                    return "Unable to create temporary script files. XPipe needs to be able to create shell script files that can be launched "
+                                    return "Unable to create temporary script files. " + AppNames.ofCurrent().getName() + " needs to be able to create shell script files that can be launched "
                                             + "by a terminal emulator to make terminal launches work.";
                                 }
 

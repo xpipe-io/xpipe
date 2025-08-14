@@ -16,7 +16,7 @@ public class AppDebugModeCheck {
                 """
 
                   ****************************************
-                  * You are running XPipe in debug mode! *
+                  * You are running in debug mode!       *
                   * The debug console output can contain *
                   * sensitive information and secrets.   *
                   * Don't share this output via an       *

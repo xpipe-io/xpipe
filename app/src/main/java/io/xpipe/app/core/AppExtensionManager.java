@@ -56,7 +56,7 @@ public class AppExtensionManager {
         return INSTANCE;
     }
 
-    private static String getLocalInstallVersion(AppInstallation localInstallation) throws Exception {
+    private static String getLocalInstallVersion(AppInstallation localInstallation) {
         var exec = localInstallation.getDaemonExecutablePath();
         var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
         return out.orElseThrow().strip();
@@ -81,7 +81,7 @@ public class AppExtensionManager {
             Path p = localInstallation.getBaseInstallationPath();
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local XPipe installation was not found but is required for development. See https://github"
+                        "Required local " + AppNames.ofCurrent().getName() + " installation was not found but is required for development. See https://github"
                                 + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 

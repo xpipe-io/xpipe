@@ -353,11 +353,11 @@ public final class AppPrefs {
         return alwaysShowSshMotd;
     }
 
-    public final ObservableBooleanValue preferTerminalTabs() {
+    public ObservableBooleanValue preferTerminalTabs() {
         return preferTerminalTabs;
     }
 
-    public final ObservableValue<List<SystemIconSource>> getIconSources() {
+    public ObservableValue<List<SystemIconSource>> getIconSources() {
         return iconSources;
     }
 

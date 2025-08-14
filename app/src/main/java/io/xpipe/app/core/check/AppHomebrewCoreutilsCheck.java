@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -33,7 +34,7 @@ public class AppHomebrewCoreutilsCheck {
             ErrorEventFactory.fromMessage(
                             "You have the homebrew coreutils package installed and added to your PATH at " + loc.get()
                                     + "."
-                                    + " The coreutils commands overwrite and are incompatible to the native macOS commands, which XPipe expects."
+                                    + " The coreutils commands overwrite and are incompatible to the native macOS commands, which " + AppNames.ofCurrent().getName() + " expects."
                                     + " Please remove the coreutils commands from your PATH prior to launching XPipe.")
                     .term()
                     .handle();

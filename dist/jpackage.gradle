@@ -17,7 +17,7 @@ def releaseArguments = distJvmArgs + [
 ]
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    releaseArguments += '-Xdock:name=XPipe'
+    releaseArguments += "-Xdock:name=$productName"
 }
 
 if (isFullRelease || isStage) {

@@ -94,7 +94,7 @@ def getJvmArgs() {
     def jvmRunArgs = [
             "-Dio.xpipe.app.arch=$arch",
             "-Dfile.encoding=UTF-8",
-            "-Dvisualvm.display.name=XPipe",
+            "-Dvisualvm.display.name=$productName",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
