@@ -12,9 +12,14 @@ public class LocalExec {
             TrackEvent.withTrace("Running local command")
                     .tag("command", String.join(" ", command))
                     .handle();
-            var process = new ProcessBuilder(command)
-                    .redirectError(ProcessBuilder.Redirect.DISCARD)
-                    .start();
+
+            var pb = new ProcessBuilder(command)
+                    .redirectError(ProcessBuilder.Redirect.DISCARD);
+            var env = pb.environment();
+            // https://bugs.openjdk.org/browse/JDK-8360500
+            env.remove("_JPACKAGE_LAUNCHER");
+
+            var process = pb.start();
             var out = process.getInputStream().readAllBytes();
             process.waitFor();
             if (process.exitValue() != 0) {

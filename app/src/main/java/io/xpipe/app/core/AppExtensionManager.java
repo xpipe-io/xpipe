@@ -4,6 +4,7 @@ import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.ModuleLayerLoader;
 
@@ -58,11 +59,8 @@ public class AppExtensionManager {
 
     private static String getLocalInstallVersion(AppInstallation localInstallation) throws Exception {
         var exec = localInstallation.getDaemonExecutablePath();
-        var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
-        var proc = fc.start();
-        var out = new String(proc.getInputStream().readAllBytes());
-        proc.waitFor(1, TimeUnit.SECONDS);
-        return out.strip();
+        var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
+        return out.orElseThrow().strip();
     }
 
     private void loadBaseExtension() {
