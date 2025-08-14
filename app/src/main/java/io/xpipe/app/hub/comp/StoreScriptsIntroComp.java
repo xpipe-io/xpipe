@@ -4,7 +4,6 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;

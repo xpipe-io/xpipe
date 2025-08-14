@@ -119,7 +119,8 @@ public enum PlatformState {
             System.setProperty("prism.forceUploadingPainter", "true");
         }
 
-        if (AppPrefs.get() != null && AppPrefs.get().disableHardwareAcceleration().get()) {
+        if (AppPrefs.get() != null
+                && AppPrefs.get().disableHardwareAcceleration().get()) {
             System.setProperty("prism.order", "sw");
         }
 

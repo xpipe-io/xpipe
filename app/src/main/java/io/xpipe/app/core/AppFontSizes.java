@@ -80,9 +80,10 @@ public class AppFontSizes {
             setFont(node, function.apply(effective));
         });
 
-
         AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
-            var effective = AppPrefs.get().theme().getValue() != null ? AppPrefs.get().theme().getValue().getFontSizes().get() : getDefault();
+            var effective = AppPrefs.get().theme().getValue() != null
+                    ? AppPrefs.get().theme().getValue().getFontSizes().get()
+                    : getDefault();
             setFont(node, function.apply(effective));
         });
     }
@@ -121,11 +122,12 @@ public class AppFontSizes {
 
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
         var inter = AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue();
-        var r = switch (OsType.getLocal()) {
-            case OsType.Linux ignored -> linux;
-            case OsType.MacOs ignored -> mac;
-            case OsType.Windows ignored -> windows;
-        };
+        var r =
+                switch (OsType.getLocal()) {
+                    case OsType.Linux ignored -> linux;
+                    case OsType.MacOs ignored -> mac;
+                    case OsType.Windows ignored -> windows;
+                };
         return inter ? interSize(r) : r;
     }
 

@@ -9,7 +9,6 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
