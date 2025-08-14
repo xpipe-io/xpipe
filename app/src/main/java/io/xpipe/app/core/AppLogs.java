@@ -293,8 +293,8 @@ public class AppLogs {
         if (shouldDebugPlatform()) {
             System.setProperty("prism.verbose", "true");
             System.setProperty("prism.debug", "true");
-            System.setProperty("prism.trace", "true");
-            System.setProperty("sun.perflog", "results.log");
+            // System.setProperty("prism.trace", "true");
+            // System.setProperty("sun.perflog", "results.log");
             //            System.setProperty("quantum.verbose", "true");
             //            System.setProperty("quantum.debug", "true");
             //            System.setProperty("quantum.pulse", "true");

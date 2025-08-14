@@ -49,6 +49,12 @@ public final class AppPrefs {
     @Getter
     private final BooleanProperty requiresRestart = new GlobalBooleanProperty(false);
 
+    final BooleanProperty disableHardwareAcceleration = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("disableHardwareAcceleration")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .build());
     final BooleanProperty preferMonochromeIcons = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("preferMonochromeIcons")
@@ -337,6 +343,10 @@ public final class AppPrefs {
 
     public static AppPrefs get() {
         return INSTANCE;
+    }
+
+    public ObservableBooleanValue disableHardwareAcceleration() {
+        return disableHardwareAcceleration;
     }
 
     public ObservableBooleanValue alwaysShowSshMotd() {

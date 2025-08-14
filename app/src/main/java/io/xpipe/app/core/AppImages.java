@@ -79,6 +79,10 @@ public class AppImages {
         Files.walkFileTree(directory, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (!file.toString().endsWith(".png")) {
+                    return FileVisitResult.CONTINUE;
+                }
+
                 var relativeFileName = FilenameUtils.separatorsToUnix(
                         directory.relativize(file).toString());
                 var key = prefix + "/" + relativeFileName;

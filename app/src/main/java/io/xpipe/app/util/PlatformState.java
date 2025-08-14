@@ -36,16 +36,6 @@ public enum PlatformState {
     }
 
     public static void teardown() {
-        // This is bad and can get sometimes stuck
-        //        PlatformThread.runLaterIfNeededBlocking(() -> {
-        //            try {
-        //                // Fix to preserve clipboard contents after shutdown
-        //                var string = Clipboard.getSystemClipboard().getString();
-        //                var s = new StringSelection(string);
-        //                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
-        //            } catch (IllegalStateException ignored) {
-        //            }
-        //        });
         setCurrent(PlatformState.EXITED);
 
         // Give other threads, e.g. windows shutdown hook time to properly signal exit state
@@ -127,6 +117,10 @@ public enum PlatformState {
             // (https://bugs.openjdk.org/browse/JDK-8329382)
             // But apparently it can also occur without a custom stage on Windows
             System.setProperty("prism.forceUploadingPainter", "true");
+        }
+
+        if (AppPrefs.get() != null && AppPrefs.get().disableHardwareAcceleration().get()) {
+            System.setProperty("prism.order", "sw");
         }
 
         try {

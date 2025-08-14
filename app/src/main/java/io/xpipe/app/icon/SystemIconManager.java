@@ -37,7 +37,7 @@ public class SystemIconManager {
             try {
                 pref.checkComplete();
             } catch (ValidationException e) {
-                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+                // This can be expected for synced directory sources
                 continue;
             }
 
