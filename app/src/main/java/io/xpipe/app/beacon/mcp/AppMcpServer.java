@@ -45,6 +45,7 @@ public class AppMcpServer {
                         .build())
                 .build();
 
+        syncServer.addTool(McpTools.listSystems());
         syncServer.addTool(McpTools.readFile());
         syncServer.addTool(McpTools.listFiles());
         syncServer.addTool(McpTools.findFile());

@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
@@ -9,6 +10,7 @@ import io.xpipe.app.ext.SingletonSessionStore;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
@@ -21,13 +23,70 @@ import io.xpipe.core.JacksonMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.xpipe.core.StorePath;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public final class McpTools {
+
+    @Jacksonized
+    @Builder
+    @Value
+    public static class ConnectionResource {
+        @NonNull
+        String name;
+
+        @NonNull
+        String path;
+    }
+
+    public static McpServerFeatures.SyncToolSpecification listSystems() throws IOException {
+        var tool = McpSchemaFiles.loadTool("list_systems.json");
+        return McpServerFeatures.SyncToolSpecification.builder()
+                .tool(tool)
+                .callHandler(McpToolHandler.of((req) -> {
+                    var filter = req.getOptionalStringArgument("filter");
+                    var entries = filter.isPresent() ? DataStorageQuery.queryUserInput(filter.get()) : DataStorage.get().getStoreEntries();
+
+                    var list = new ArrayList<ConnectionResource>();
+                    for (var e : entries) {
+                        if (!e.getValidity().isUsable()) {
+                            continue;
+                        }
+
+                        var r = ConnectionResource.builder()
+                                .name(e.getName())
+                                .path(DataStorage.get().getStorePath(e).toString())
+                                .build();
+                        list.add(r);
+                    }
+
+                    var json = JsonNodeFactory.instance.arrayNode();
+                    for (var e : list) {
+                        json.add(JacksonMapper.getDefault().valueToTree(e));
+                    }
+
+                    var object = JsonNodeFactory.instance.objectNode();
+                    object.set("found", json);
+
+                    return McpSchema.CallToolResult.builder()
+                            .structuredContent(JacksonMapper.getDefault().writeValueAsString(object))
+                            .build();
+                }))
+                .build();
+    }
 
     public static McpServerFeatures.SyncToolSpecification readFile() throws IOException {
         var tool = McpSchemaFiles.loadTool("read_file.json");
