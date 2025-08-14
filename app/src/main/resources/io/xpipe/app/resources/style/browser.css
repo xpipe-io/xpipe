@@ -1,5 +1,5 @@
 .root:macos .browser .browser-content, .root:macos .browser .top-bar {
-    -fx-font-family: "Roboto";
+    -fx-font-family: "Inter";
 }
 
 .browser .visual-display {

@@ -87,7 +87,7 @@ public final class AppPrefs {
     public final ObjectProperty<AppTheme.Theme> theme =
             mapLocal(new GlobalObjectProperty<>(), "theme", AppTheme.Theme.class, false);
     final BooleanProperty useSystemFont =
-            mapLocal(new GlobalBooleanProperty(true), "useSystemFont", Boolean.class, false);
+            mapLocal(new GlobalBooleanProperty(OsType.getLocal() != OsType.MACOS), "useSystemFont", Boolean.class, false);
     final Property<Integer> uiScale = mapLocal(new GlobalObjectProperty<>(null), "uiScale", Integer.class, true);
     final BooleanProperty saveWindowLocation =
             mapLocal(new GlobalBooleanProperty(true), "saveWindowLocation", Boolean.class, false);
@@ -637,6 +637,16 @@ public final class AppPrefs {
             } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
                 performanceMode.setValue(true);
             }
+        }
+
+        if (!AppProperties.get().isDevelopmentEnvironment()) {
+            developerForceSshTty.setValue(false);
+            developerDisableSshTunnelGateways.setValue(false);
+        }
+
+        if (OsType.getLocal() == OsType.MACOS && AppProperties.get().getCanonicalVersion()
+                .map(appVersion -> appVersion.getMajor() == 18 && appVersion.getMinor() == 0).orElse(false)) {
+            useSystemFont.set(false);
         }
     }
 
