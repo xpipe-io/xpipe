@@ -56,9 +56,7 @@ public class AboutCategory extends AppPrefsCategory {
                     "logo/logo.png");
         });
 
-        if (OsType.getLocal() != OsType.MACOS) {
-            title.styleClass(Styles.TEXT_BOLD);
-        }
+        title.styleClass(Styles.TEXT_BOLD);
 
         var section = new OptionsBuilder()
                 .addComp(Comp.vspacer(40))

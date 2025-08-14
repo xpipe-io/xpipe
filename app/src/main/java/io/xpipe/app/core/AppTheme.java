@@ -263,7 +263,7 @@ public class AppTheme {
                 String cssId,
                 String name,
                 atlantafx.base.theme.Theme theme,
-                AppFontSizes sizes,
+                Supplier<AppFontSizes> sizes,
                 Color baseColor,
                 Color borderColor,
                 Supplier<Color> contextMenuColor,
@@ -306,7 +306,7 @@ public class AppTheme {
                 "light",
                 "primer",
                 new PrimerLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.WHITE,
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -321,7 +321,7 @@ public class AppTheme {
                 "dark",
                 "primer",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#0d1117"),
                 Color.web("#c9d1d9"),
                 () -> ColorHelper.withOpacity(
@@ -336,7 +336,7 @@ public class AppTheme {
                 "nordLight",
                 "nord",
                 new NordLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#dadadc"),
                 Color.web("#2E3440"),
                 () -> ColorHelper.withOpacity(
@@ -351,7 +351,7 @@ public class AppTheme {
                 "nordDark",
                 "nord",
                 new NordDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#2d3137"),
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -366,7 +366,7 @@ public class AppTheme {
                 "cupertinoLight",
                 "cupertino",
                 new CupertinoLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.WHITE,
                 Color.BLACK,
                 () -> ColorHelper.withOpacity(
@@ -381,7 +381,7 @@ public class AppTheme {
                 "cupertinoDark",
                 "cupertino",
                 new CupertinoDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.BLACK,
                 Color.WHITE,
                 () -> ColorHelper.withOpacity(
@@ -396,7 +396,7 @@ public class AppTheme {
                 "dracula",
                 "dracula",
                 new Dracula(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#383f49"),
                 Color.web("#9580ff"),
                 () -> ColorHelper.withOpacity(
@@ -412,7 +412,7 @@ public class AppTheme {
                 "mocha",
                 "Mocha",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#2E2E4EFF"),
                 Color.web("#CDD6F4FF"),
                 () -> ColorHelper.withOpacity(
@@ -431,7 +431,7 @@ public class AppTheme {
                 "primer",
                 "Custom",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#0d1117"),
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -450,7 +450,7 @@ public class AppTheme {
         protected final atlantafx.base.theme.Theme theme;
 
         @Getter
-        protected final AppFontSizes fontSizes;
+        protected final Supplier<AppFontSizes> fontSizes;
 
         @Getter
         protected final Color baseColor;

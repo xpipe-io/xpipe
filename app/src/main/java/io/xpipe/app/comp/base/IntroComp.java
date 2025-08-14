@@ -41,9 +41,7 @@ public class IntroComp extends SimpleComp {
     public Region createSimple() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable(translationsKey + "Header"));
-        if (OsType.getLocal() != OsType.MACOS) {
-            title.getStyleClass().add(Styles.TEXT_BOLD);
-        }
+        title.getStyleClass().add(Styles.TEXT_BOLD);
         AppFontSizes.title(title);
 
         var introDesc = new Label();

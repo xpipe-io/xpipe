@@ -27,9 +27,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
     private Region createIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("identitiesIntroTitle"));
-        if (OsType.getLocal() != OsType.MACOS) {
-            title.getStyleClass().add(Styles.TEXT_BOLD);
-        }
+        title.getStyleClass().add(Styles.TEXT_BOLD);
         AppFontSizes.title(title);
 
         var introDesc = new Label();
@@ -74,9 +72,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
     private Region createBottom() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("identitiesIntroBottomTitle"));
-        if (OsType.getLocal() != OsType.MACOS) {
-            title.getStyleClass().add(Styles.TEXT_BOLD);
-        }
+        title.getStyleClass().add(Styles.TEXT_BOLD);
         AppFontSizes.title(title);
 
         var importDesc = new Label();

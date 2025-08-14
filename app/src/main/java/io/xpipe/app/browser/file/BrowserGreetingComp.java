@@ -25,9 +25,7 @@ public class BrowserGreetingComp extends SimpleComp {
             });
         });
         AppFontSizes.title(r);
-        if (OsType.getLocal() != OsType.MACOS) {
-            r.getStyleClass().add(Styles.TEXT_BOLD);
-        }
+        r.getStyleClass().add(Styles.TEXT_BOLD);
         return r;
     }
 

@@ -18,7 +18,7 @@ public class AppFontSizes {
     public static final AppFontSizes BASE_10 = ofBase("10");
     public static final AppFontSizes BASE_10_5 = ofBase("10.5");
     public static final AppFontSizes BASE_11 = ofBase("11");
-    public static final AppFontSizes DEFAULT = getDefault();
+
     private static final Pattern FONT_SIZE_PATTERN = Pattern.compile("-fx-font-size: \\d+(\\.\\d+)?pt;");
     // -1.0pt
     String xs;
@@ -76,7 +76,13 @@ public class AppFontSizes {
         }
 
         AppPrefs.get().theme().subscribe((newValue) -> {
-            var effective = newValue != null ? newValue.getFontSizes() : getDefault();
+            var effective = newValue != null ? newValue.getFontSizes().get() : getDefault();
+            setFont(node, function.apply(effective));
+        });
+
+
+        AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
+            var effective = AppPrefs.get().theme().getValue() != null ? AppPrefs.get().theme().getValue().getFontSizes().get() : getDefault();
             setFont(node, function.apply(effective));
         });
     }
@@ -101,12 +107,26 @@ public class AppFontSizes {
         }
     }
 
+    private static AppFontSizes interSize(AppFontSizes s) {
+        if (s == BASE_10) {
+            return BASE_10;
+        } else if (s == BASE_10_5) {
+            return BASE_10_5;
+        } else if (s == BASE_11) {
+            return BASE_10_5;
+        } else {
+            return s;
+        }
+    }
+
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
-        return switch (OsType.getLocal()) {
+        var inter = AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue();
+        var r = switch (OsType.getLocal()) {
             case OsType.Linux ignored -> linux;
             case OsType.MacOs ignored -> mac;
             case OsType.Windows ignored -> windows;
         };
+        return inter ? interSize(r) : r;
     }
 
     public static AppFontSizes getDefault() {
