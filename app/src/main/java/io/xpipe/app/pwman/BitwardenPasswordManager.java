@@ -1,5 +1,7 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -20,6 +22,8 @@ public class BitwardenPasswordManager implements PasswordManager {
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
+            SHELL.start();
+            SHELL.view().setEnvironmentVariable("BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
         }
         SHELL.start();
         return SHELL;
@@ -42,8 +46,11 @@ public class BitwardenPasswordManager implements PasswordManager {
             var r = command.readStdoutAndStderr();
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
+                        LocalShell.getDialect().getSetEnvironmentVariableCommand("BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString()),
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login");
+                        "bw login --quiet",
+                        sc.getShellDialect().getEchoCommand("XPipe is now successfully connected to your Bitwarden vault. You can close this window", false)
+                );
                 TerminalLaunch.builder()
                         .title("Bitwarden login")
                         .localScript(script)
