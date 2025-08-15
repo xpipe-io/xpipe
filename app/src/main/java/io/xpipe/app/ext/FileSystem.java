@@ -7,7 +7,6 @@ import io.xpipe.core.FilePath;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -50,27 +49,18 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Stream<FileEntry> listFiles(FileSystem system, FilePath file) throws Exception;
 
-    default List<FileEntry> listFilesRecursively(FileSystem system, FilePath file) throws Exception {
-        List<FileEntry> base;
-        try (var filesStream = listFiles(system, file)) {
-            base = filesStream.toList();
-        }
-        return base.stream()
-                .flatMap(fileEntry -> {
-                    if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                        return Stream.of(fileEntry);
-                    }
+    default Stream<FileEntry> listFilesRecursively(FileSystem system, FilePath file) throws Exception {
+        return listFiles(system, file).flatMap(fileEntry -> {
+            if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                return Stream.of(fileEntry);
+            }
 
-                    try {
-                        var list = new ArrayList<FileEntry>();
-                        list.add(fileEntry);
-                        list.addAll(listFilesRecursively(system, fileEntry.getPath()));
-                        return list.stream();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
+            try {
+                return Stream.concat(Stream.of(fileEntry), listFilesRecursively(system, fileEntry.getPath()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     List<FilePath> listRoots() throws Exception;

@@ -30,7 +30,8 @@ class ScanMultiDialogComp extends ModalOverlayContentComp {
                     }
                 },
                 action,
-                list);
+                list,
+                false);
     }
 
     void finish() {

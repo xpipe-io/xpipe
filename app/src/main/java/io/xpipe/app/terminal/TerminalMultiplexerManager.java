@@ -10,9 +10,9 @@ import java.util.*;
 
 public class TerminalMultiplexerManager {
 
+    private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static Instant lastCheck = Instant.now();
-    private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
 
     public static void registerMultiplexerLaunch(UUID uuid) {
         pendingMultiplexerLaunch = uuid;

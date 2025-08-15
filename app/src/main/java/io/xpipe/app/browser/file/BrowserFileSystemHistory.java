@@ -58,10 +58,6 @@ public final class BrowserFileSystemHistory {
         cursor.set(history.size() - 1);
     }
 
-    public FilePath back() {
-        return back(1);
-    }
-
     public FilePath back(int i) {
         if (!canGoBack.get()) {
             return null;

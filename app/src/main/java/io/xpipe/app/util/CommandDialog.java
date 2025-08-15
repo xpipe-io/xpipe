@@ -67,7 +67,7 @@ public class CommandDialog {
         modal.show();
     }
 
-    private static String formatOutput(String out) {
+    public static String formatOutput(String out) {
         if (out.isEmpty()) {
             out = "<empty>";
         }

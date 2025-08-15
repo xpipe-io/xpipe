@@ -27,6 +27,19 @@ import java.nio.file.Files;
 
 public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structure> {
 
+    private final Property<String> value;
+    private final boolean lazy;
+    private final String identifier;
+    private final ObservableValue<String> fileType;
+
+    public IntegratedTextAreaComp(
+            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType) {
+        this.value = value;
+        this.lazy = lazy;
+        this.identifier = identifier;
+        this.fileType = fileType;
+    }
+
     public static IntegratedTextAreaComp script(
             ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
         var string = new SimpleStringProperty();
@@ -54,19 +67,6 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
         i.prefHeight(60);
         i.maxHeight(60);
         return i;
-    }
-
-    private final Property<String> value;
-    private final boolean lazy;
-    private final String identifier;
-    private final ObservableValue<String> fileType;
-
-    public IntegratedTextAreaComp(
-            Property<String> value, boolean lazy, String identifier, ObservableValue<String> fileType) {
-        this.value = value;
-        this.lazy = lazy;
-        this.identifier = identifier;
-        this.fileType = fileType;
     }
 
     private Region createOpenButton() {

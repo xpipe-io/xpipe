@@ -32,7 +32,8 @@ public class BrowserAbstractSessionModel<T extends BrowserSessionTab> {
     }
 
     public void openSync(T e, BooleanProperty externalBusy) throws Exception {
-        try (var b = new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
+        try (var ignored =
+                new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
             e.init();
             // Prevent multiple calls from interfering with each other
             synchronized (this) {

@@ -19,10 +19,20 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public interface DataStoreProvider {
+
+    default boolean includeInConnectionCount() {
+        return getUsageCategory() != DataStoreUsageCategory.GROUP;
+    }
+
+    default boolean canConfigure() {
+        var m = getClass().getDeclaredMethods();
+        return Arrays.stream(m).anyMatch(method -> method.getName().equals("guiDialog"));
+    }
 
     default DocumentationLink getHelpLink() {
         return null;

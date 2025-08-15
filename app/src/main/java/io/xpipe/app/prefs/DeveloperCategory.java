@@ -24,13 +24,13 @@ import java.util.List;
 public class DeveloperCategory extends AppPrefsCategory {
 
     @Override
-    protected String getId() {
-        return "developer";
+    protected boolean show() {
+        return AppPrefs.get().developerMode().getValue();
     }
 
     @Override
-    protected boolean show() {
-        return AppPrefs.get().developerMode().getValue();
+    protected String getId() {
+        return "developer";
     }
 
     @Override
@@ -61,13 +61,15 @@ public class DeveloperCategory extends AppPrefsCategory {
                         new TextFieldComp(localCommand)
                                 .apply(struc -> struc.get().setPromptText("Local command"))
                                 .styleClass(Styles.LEFT_PILL)
-                                .grow(false, true),
+                                .grow(false, true)
+                                .hgrow(),
                         new ButtonComp(null, new FontIcon("mdi2p-play"), test)
                                 .styleClass(Styles.RIGHT_PILL)
                                 .grow(false, true)))
                 .padding(new Insets(15, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .apply(struc -> struc.get().setFillHeight(true));
+                .apply(struc -> struc.get().setFillHeight(true))
+                .maxWidth(600);
         var sub = new OptionsBuilder()
                 .nameAndDescription("developerDisableUpdateVersionCheck")
                 .addToggle(prefs.developerDisableUpdateVersionCheck)

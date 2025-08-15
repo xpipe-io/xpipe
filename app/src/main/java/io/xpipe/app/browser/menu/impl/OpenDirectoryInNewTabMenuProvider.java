@@ -27,6 +27,13 @@ public class OpenDirectoryInNewTabMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return model.getBrowserModel() instanceof BrowserFullSessionModel
+                && entries.size() == 1
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    }
+
+    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2f-folder-open-outline");
     }
@@ -42,19 +49,12 @@ public class OpenDirectoryInNewTabMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
-    }
-
-    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openInNewTab");
     }
 
     @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getBrowserModel() instanceof BrowserFullSessionModel
-                && entries.size() == 1
-                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 }

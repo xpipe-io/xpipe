@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 public class DataStoreEntry extends StorageElement {
 
     Map<String, Object> storeCache = Collections.synchronizedMap(new HashMap<>());
+    AtomicInteger busyCounter = new AtomicInteger();
 
     @NonFinal
     Validity validity;
@@ -39,8 +41,6 @@ public class DataStoreEntry extends StorageElement {
     @Getter
     @NonFinal
     DataStore store;
-
-    AtomicInteger busyCounter = new AtomicInteger();
 
     @Getter
     @NonFinal
@@ -191,18 +191,6 @@ public class DataStoreEntry extends StorageElement {
         return entry;
     }
 
-    public String getEffectiveIconFile() {
-        if (getValidity() == Validity.LOAD_FAILED) {
-            return "disabled_icon.png";
-        }
-
-        if (icon == null) {
-            return getProvider().getDisplayIconFileName(getStore());
-        }
-
-        return "icons/" + icon + ".svg";
-    }
-
     public static Optional<DataStoreEntry> fromDirectory(Path dir) throws IOException {
         ObjectMapper mapper = JacksonMapper.getDefault();
 
@@ -333,6 +321,23 @@ public class DataStoreEntry extends StorageElement {
                 breakOutCategory));
     }
 
+    public String getEffectiveIconFile() {
+        if (getValidity() == Validity.LOAD_FAILED) {
+            return "disabled_icon.png";
+        }
+
+        if (icon == null) {
+            return getProvider().getDisplayIconFileName(getStore());
+        }
+
+        var found = SystemIconManager.getIcon(icon);
+        if (found.isPresent()) {
+            return SystemIconManager.getIconFile(found.get());
+        } else {
+            return "disabled_icon.png";
+        }
+    }
+
     public void setColor(DataStoreColor newColor) {
         var changed = !Objects.equals(color, newColor);
         this.color = newColor;
@@ -425,6 +430,15 @@ public class DataStoreEntry extends StorageElement {
         return (T) storePersistentState;
     }
 
+    public void setStorePersistentState(DataStoreState value) {
+        var changed = !Objects.equals(storePersistentState, value);
+        this.storePersistentState = value;
+        this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
+        if (changed) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setIcon(String icon, boolean force) {
         if (this.icon != null && !force) {
             return;
@@ -440,15 +454,6 @@ public class DataStoreEntry extends StorageElement {
     public void setBreakOutCategory(DataStoreCategory category) {
         var changed = !Objects.equals(breakOutCategory, category != null ? category.getUuid() : null);
         this.breakOutCategory = category != null ? category.getUuid() : null;
-        if (changed) {
-            notifyUpdate(false, true);
-        }
-    }
-
-    public void setStorePersistentState(DataStoreState value) {
-        var changed = !Objects.equals(storePersistentState, value);
-        this.storePersistentState = value;
-        this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
         if (changed) {
             notifyUpdate(false, true);
         }

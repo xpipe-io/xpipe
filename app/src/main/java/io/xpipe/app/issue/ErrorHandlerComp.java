@@ -86,7 +86,9 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         // Account for line wrapping of long lines
-        var estimatedLineCount = desc.lines().mapToInt(s -> Math.max(1, (int) Math.ceil(s.length() / 80.0))).sum();
+        var estimatedLineCount = desc.lines()
+                .mapToInt(s -> Math.max(1, (int) Math.ceil(s.length() / 80.0)))
+                .sum();
 
         var descriptionField = new TextArea(desc);
         descriptionField.setPrefRowCount(Math.max(5, Math.min(estimatedLineCount + 2, 14)));

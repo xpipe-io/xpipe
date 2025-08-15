@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.util.DocumentationLink;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -13,11 +14,6 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 @JsonTypeName("integratedXPipeVncClient")
 public class InternalVncClient implements ExternalVncClient {
-
-    @Override
-    public boolean supportsPasswords() {
-        return true;
-    }
 
     @Override
     public void launch(VncLaunchConfig configuration) throws Exception {
@@ -37,5 +33,15 @@ public class InternalVncClient implements ExternalVncClient {
                         .createVncSession(BrowserFullSessionModel.DEFAULT, configuration.getEntry()),
                 null);
         AppLayoutModel.get().selectBrowser();
+    }
+
+    @Override
+    public boolean supportsPasswords() {
+        return true;
+    }
+
+    @Override
+    public String getWebsite() {
+        return DocumentationLink.VNC_CLIENTS.getLink();
     }
 }

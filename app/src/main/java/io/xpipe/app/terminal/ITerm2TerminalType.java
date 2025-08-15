@@ -12,11 +12,6 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
     }
 
     @Override
-    public int getProcessHierarchyOffset() {
-        return 3;
-    }
-
-    @Override
     public String getWebsite() {
         return "https://iterm2.com/";
     }
@@ -38,6 +33,11 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
                         .add("open", "-a")
                         .addQuoted("iTerm.app")
                         .addFile(configuration.getScriptFile()));
+    }
+
+    @Override
+    public int getProcessHierarchyOffset() {
+        return 3;
     }
 
     @Override

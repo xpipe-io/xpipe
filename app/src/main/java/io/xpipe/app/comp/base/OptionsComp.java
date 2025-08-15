@@ -136,9 +136,10 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
                         var descriptionBox =
                                 new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
+                        descriptionBox.getStyleClass().add("description-box");
                         descriptionBox.setSpacing(5);
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
-                        descriptionBox.setAlignment(Pos.CENTER_LEFT);
+                        descriptionBox.setAlignment(Pos.TOP_LEFT);
                         line.getChildren().add(descriptionBox);
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
 

@@ -1,0 +1,30 @@
+{
+  "name": "list_files",
+  "description": "Lists files in a directory",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "system": {
+        "type": "string",
+        "description": "The system identifier"
+      },
+      "path": {
+        "type": "string",
+        "description": "The directory to list the contents of"
+      },
+      "recursive": {
+        "type": "boolean",
+        "description": "Whether to traverse subdirectories recursively or not"
+      }
+    },
+    "required": [
+      "system",
+      "path"
+    ]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "openWorldHint": false
+  }
+}

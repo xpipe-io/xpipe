@@ -7,6 +7,19 @@ import java.util.*;
 
 public final class FilePath {
 
+    @NonNull
+    private final String value;
+
+    private FilePath normalized;
+    private List<String> split;
+
+    private FilePath(@NonNull String value) {
+        this.value = value;
+        if (value.isEmpty()) {
+            throw new IllegalArgumentException("File path is empty");
+        }
+    }
+
     public static FilePath parse(String path) {
         return path != null && path.equals(path.strip()) && !path.isBlank() ? new FilePath(path) : null;
     }
@@ -28,20 +41,9 @@ public final class FilePath {
         return path != null ? new FilePath(path.toString()) : null;
     }
 
-    @NonNull
-    private final String value;
-
-    private FilePath normalized;
-    private List<String> split;
-
-    private FilePath(@NonNull String value) {
-        this.value = value;
-        if (value.isBlank()) {
-            throw new IllegalArgumentException("File path is empty");
-        }
-        if (!value.equals(value.strip())) {
-            throw new IllegalArgumentException("File path " + value + " has leading or trailing spaces");
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 
     @Override
@@ -54,9 +56,8 @@ public final class FilePath {
                 normalize().removeTrailingSlash().value, filePath.normalize().removeTrailingSlash().value);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(value);
+    public String toString() {
+        return value;
     }
 
     public FilePath getRoot() {
@@ -77,10 +78,6 @@ public final class FilePath {
 
     public Path toLocalPath() {
         return Path.of(value);
-    }
-
-    public String toString() {
-        return value;
     }
 
     public FilePath toDirectory() {
@@ -120,10 +117,11 @@ public final class FilePath {
     }
 
     public FilePath getBaseName() {
-        var split = value.lastIndexOf(".");
-        if (split == -1) {
+        if (!getFileName().contains(".")) {
             return this;
         }
+
+        var split = value.lastIndexOf(".");
         return FilePath.of(value.substring(0, split));
     }
 

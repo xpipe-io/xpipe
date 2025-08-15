@@ -2,6 +2,7 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.StatefulDataStore;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FailableFunction;
@@ -22,6 +23,8 @@ public interface ShellControl extends ProcessControl {
 
     void setUser(String user);
 
+    boolean isExiting();
+
     boolean isInitializing();
 
     void setDumbOpen(ShellOpenFunction openFunction);
@@ -32,26 +35,15 @@ public interface ShellControl extends ProcessControl {
 
     void writeLine(String line, boolean log) throws IOException;
 
-    void write(byte[] b) throws IOException;
+    boolean isSubShellActive();
 
     void setSubShellActive(boolean active);
-
-    boolean isSubShellActive();
 
     default void waitForSubShellExit() {
         while (isSubShellActive()) {
             ThreadHelper.sleep(10);
         }
     }
-
-    @Override
-    LocalProcessInputStream getStdout();
-
-    @Override
-    LocalProcessOutputStream getStdin();
-
-    @Override
-    LocalProcessInputStream getStderr();
 
     ShellView view();
 
@@ -79,8 +71,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withSourceStore(DataStore store);
 
-    List<ShellTerminalInitCommand> getTerminalInitCommands();
-
     ParentSystemAccess getParentSystemAccess();
 
     void setParentSystemAccess(ParentSystemAccess access);
@@ -93,13 +83,11 @@ public interface ShellControl extends ProcessControl {
         return true;
     }
 
-    ShellControl getMachineRootSession() throws Exception;
-
     String getOsName();
 
     ReentrantLock getLock();
 
-    void requireLicensedFeature(String id);
+    void requireLicensedFeature(LicensedFeature f);
 
     ShellDialect getOriginalShellDialect();
 
@@ -138,10 +126,19 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl onStartupFail(Consumer<Throwable> t);
 
-    ShellControl withExceptionConverter(ExceptionConverter converter);
+    ShellControl withExceptionConverter(ProcessExceptionConverter converter);
 
     @Override
     ShellControl start() throws Exception;
+
+    @Override
+    LocalProcessInputStream getStdout();
+
+    @Override
+    LocalProcessOutputStream getStdin();
+
+    @Override
+    LocalProcessInputStream getStderr();
 
     ShellControl withErrorFormatter(Function<String, String> formatter);
 
@@ -156,35 +153,27 @@ public interface ShellControl extends ProcessControl {
     default CommandControl osascriptCommand(String script) {
         return command(String.format(
                 """
-                osascript - "$@" <<EOF
-                %s
-                EOF
-                """,
+                                     osascript - "$@" <<EOF
+                                     %s
+                                     EOF
+                                     """,
                 script));
     }
 
     default String executeSimpleStringCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            return c.readStdoutOrThrow();
-        }
+        return command(command).readStdoutOrThrow();
     }
 
     default boolean executeSimpleBooleanCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            return c.discardAndCheckExit();
-        }
+        return command(command).discardAndCheckExit();
     }
 
     default void executeSimpleCommand(CommandBuilder command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        }
+        command(command).discardOrThrow();
     }
 
     default void executeSimpleCommand(String command) throws Exception {
-        try (CommandControl c = command(command).start()) {
-            c.discardOrThrow();
-        }
+        command(command).discardOrThrow();
     }
 
     ShellControl withSecurityPolicy(ShellSecurityPolicy policy);

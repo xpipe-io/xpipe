@@ -8,6 +8,7 @@ import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -23,7 +24,6 @@ import atlantafx.base.controls.Spacer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public abstract class Comp<S extends CompStructure<?>> {
@@ -69,12 +69,6 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public static Comp<CompStructure<Separator>> vseparator() {
         return of(() -> new Separator(Orientation.VERTICAL));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <IR extends Region, SIN extends CompStructure<IR>, OR extends Region> Comp<CompStructure<OR>> derive(
-            Comp<SIN> comp, Function<IR, OR> r) {
-        return of(() -> r.apply((IR) comp.createRegion()));
     }
 
     @SuppressWarnings("unchecked")
@@ -160,6 +154,10 @@ public abstract class Comp<S extends CompStructure<?>> {
                 });
             });
         });
+    }
+
+    public Comp<S> disable(boolean o) {
+        return disable(new ReadOnlyBooleanWrapper(o));
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {

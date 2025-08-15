@@ -9,6 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
@@ -40,6 +41,12 @@ import javax.imageio.ImageIO;
 
 public class AppMainWindow {
 
+    @Getter
+    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
+
+    @Getter
+    private static final Property<String> loadingText = new SimpleObjectProperty<>();
+
     private static AppMainWindow INSTANCE;
 
     @Getter
@@ -48,13 +55,6 @@ public class AppMainWindow {
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
     private Thread thread;
     private volatile Instant lastUpdate;
-
-    @Getter
-    private static final Property<AppLayoutComp.Structure> loadedContent = new SimpleObjectProperty<>();
-
-    @Getter
-    private static final Property<String> loadingText = new SimpleObjectProperty<>();
-
     private boolean shown = false;
 
     private AppMainWindow(Stage stage) {
@@ -101,7 +101,7 @@ public class AppMainWindow {
         content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
 
-        ModifiedStage.prepareStage(stage);
+        AppModifiedStage.prepareStage(stage);
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
@@ -134,14 +134,6 @@ public class AppMainWindow {
         loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
     }
 
-    public ObservableDoubleValue displayScale() {
-        if (getStage() == null) {
-            return new SimpleDoubleProperty(1.0);
-        }
-
-        return getStage().outputScaleXProperty();
-    }
-
     public static synchronized void initContent() {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             try {
@@ -154,6 +146,18 @@ public class AppMainWindow {
                 ErrorEventFactory.fromThrowable(t).term().handle();
             }
         });
+    }
+
+    public static AppMainWindow getInstance() {
+        return INSTANCE;
+    }
+
+    public ObservableDoubleValue displayScale() {
+        if (getStage() == null) {
+            return new SimpleDoubleProperty(1.0);
+        }
+
+        return getStage().outputScaleXProperty();
     }
 
     public void show() {
@@ -180,10 +184,6 @@ public class AppMainWindow {
             stage.setIconified(false);
             stage.requestFocus();
         });
-    }
-
-    public static AppMainWindow getInstance() {
-        return INSTANCE;
     }
 
     private synchronized void onChange() {
@@ -298,7 +298,7 @@ public class AppMainWindow {
             }
         });
 
-        if (OsType.getLocal().equals(OsType.LINUX) || OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.LINUX || OsType.getLocal() == OsType.MACOS) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     OperationMode.onWindowClose();
@@ -311,7 +311,10 @@ public class AppMainWindow {
             if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
                 var image = stage.getScene().snapshot(null);
                 var awt = AppImages.toAwtImage(image);
-                var file = Path.of(System.getProperty("user.home"), "Desktop", "xpipe-screenshot.png");
+                var file = Path.of(
+                        System.getProperty("user.home"),
+                        "Desktop",
+                        AppNames.ofCurrent().getKebapName() + "-screenshot.png");
                 try {
                     ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {

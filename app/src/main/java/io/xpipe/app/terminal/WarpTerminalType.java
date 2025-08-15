@@ -15,113 +15,20 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
     WarpTerminalType LINUX = new Linux();
     WarpTerminalType MACOS = new MacOs();
 
-    class Windows implements WarpTerminalType {
-
-        @Override
-        public int getProcessHierarchyOffset() {
-            return 1;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            try (var sc = LocalShell.getShell().start()) {
-                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
-                        + "\n"
-                        + configuration
-                                .getScriptDialect()
-                                .runScriptCommand(
-                                        sc, configuration.getScriptFile().toString());
-                var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
-                if (!configuration.isPreferTabs()) {
-                    DesktopHelper.openUrl("warp://action/new_window?path=" + script);
-                } else {
-                    DesktopHelper.openUrl("warp://action/new_tab?path=" + script);
-                }
+    @Override
+    default TerminalInitFunction additionalInitCommands() {
+        return TerminalInitFunction.of(sc -> {
+            if (sc.getShellDialect() == ShellDialects.ZSH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
             }
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp");
-        }
-
-        @Override
-        public String getId() {
-            return "app.warp";
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
-            // Just say that we don't support new windows, that way it doesn't dock
-            return TerminalOpenFormat.TABBED;
-        }
-    }
-
-    class Linux implements WarpTerminalType {
-
-        @Override
-        public int getProcessHierarchyOffset() {
-            return 2;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) {
-            if (!configuration.isPreferTabs()) {
-                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
-            } else {
-                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+            if (sc.getShellDialect() == ShellDialects.BASH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
             }
-        }
-
-        @Override
-        public boolean isAvailable() {
-            return Files.exists(Path.of("/opt/warpdotdev"));
-        }
-
-        @Override
-        public String getId() {
-            return "app.warp";
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
-            // Just say that we don't support new windows, that way it doesn't dock
-            return TerminalOpenFormat.TABBED;
-        }
-    }
-
-    class MacOs implements ExternalApplicationType.MacApplication, WarpTerminalType {
-
-        @Override
-        public int getProcessHierarchyOffset() {
-            return 2;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            LocalShell.getShell()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("open", "-a")
-                            .addQuoted("Warp.app")
-                            .addFile(configuration.getScriptFile()));
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
-        public String getApplicationName() {
-            return "Warp";
-        }
-
-        @Override
-        public String getId() {
-            return "app.warp";
-        }
+            if (sc.getShellDialect() == ShellDialects.FISH) {
+                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
+            }
+            return null;
+        });
     }
 
     @Override
@@ -144,19 +51,112 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         return false;
     }
 
-    @Override
-    default TerminalInitFunction additionalInitCommands() {
-        return TerminalInitFunction.of(sc -> {
-            if (sc.getShellDialect() == ShellDialects.ZSH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"zsh\"}}\\x9c'";
+    class Windows implements WarpTerminalType {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 1;
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp");
+        }
+
+        @Override
+        public String getId() {
+            return "app.warp";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
+            // Just say that we don't support new windows, that way it doesn't dock
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            try (var sc = LocalShell.getShell().start()) {
+                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
+                        + "\n"
+                        + configuration
+                                .getScriptDialect()
+                                .runScriptCommand(
+                                        sc, configuration.getScriptFile().toString());
+                var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
+                if (!configuration.isPreferTabs()) {
+                    DesktopHelper.openUrl("warp://action/new_window?path=" + script);
+                } else {
+                    DesktopHelper.openUrl("warp://action/new_tab?path=" + script);
+                }
             }
-            if (sc.getShellDialect() == ShellDialects.BASH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"bash\"}}\\x9c'";
+        }
+    }
+
+    class Linux implements WarpTerminalType {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 2;
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return Files.exists(Path.of("/opt/warpdotdev"));
+        }
+
+        @Override
+        public String getId() {
+            return "app.warp";
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            // Warp always opens the new separate window, so we don't want to use it in the file browser for docking
+            // Just say that we don't support new windows, that way it doesn't dock
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) {
+            if (!configuration.isPreferTabs()) {
+                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
+            } else {
+                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
             }
-            if (sc.getShellDialect() == ShellDialects.FISH) {
-                return "printf '\\eP$f{\"hook\": \"SourcedRcFileForWarp\", \"value\": { \"shell\": \"fish\"}}\\x9c'";
-            }
-            return null;
-        });
+        }
+    }
+
+    class MacOs implements ExternalApplicationType.MacApplication, WarpTerminalType {
+
+        @Override
+        public int getProcessHierarchyOffset() {
+            return 2;
+        }
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            LocalShell.getShell()
+                    .executeSimpleCommand(CommandBuilder.of()
+                            .add("open", "-a")
+                            .addQuoted("Warp.app")
+                            .addFile(configuration.getScriptFile()));
+        }
+
+        @Override
+        public String getApplicationName() {
+            return "Warp";
+        }
+
+        @Override
+        public String getId() {
+            return "app.warp";
+        }
     }
 }

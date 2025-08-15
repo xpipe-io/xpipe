@@ -3,16 +3,14 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import javafx.beans.property.SimpleObjectProperty;
-
-import java.nio.file.Path;
 
 public class WorkspaceCreationDialog {
 
@@ -29,7 +27,8 @@ public class WorkspaceCreationDialog {
         var path = new SimpleObjectProperty<>(base + "-new-workspace");
         name.subscribe((v) -> {
             if (v != null && path.get() != null && path.get().startsWith(base)) {
-                var newPath = path.get().substring(0, base.length()) + "-" + v.replaceAll(" ", "-").toLowerCase();
+                var newPath = path.get().substring(0, base.length()) + "-"
+                        + v.replaceAll(" ", "-").toLowerCase();
                 path.set(newPath);
             }
         });
@@ -52,23 +51,23 @@ public class WorkspaceCreationDialog {
                     var shortcutName = name.get();
                     var file =
                             switch (OsType.getLocal()) {
-                                case OsType.Windows w -> {
-                                    var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                                            .resolve(XPipeInstallation.getDaemonExecutablePath(w))
+                                case OsType.Windows ignored -> {
+                                    var exec = AppInstallation.ofCurrent()
+                                            .getDaemonExecutablePath()
                                             .toString();
                                     yield DesktopShortcuts.create(
                                             exec,
                                             "-Dio.xpipe.app.dataDir=\""
-                                                    + path.get() + "\" -Dio.xpipe.app.acceptEula=true",
+                                                    + path.get().toString() + "\" -Dio.xpipe.app.acceptEula=true",
                                             shortcutName);
                                 }
                                 default -> {
-                                    var exec = XPipeInstallation.getCurrentInstallationBasePath()
-                                            .resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()))
+                                    var exec = AppInstallation.ofCurrent()
+                                            .getCliExecutablePath()
                                             .toString();
                                     yield DesktopShortcuts.create(
                                             exec,
-                                            "open -d \"" + path.get() + "\" --accept-eula",
+                                            "open -d \"" + path.get().toString() + "\" --accept-eula",
                                             shortcutName);
                                 }
                             };

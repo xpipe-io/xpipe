@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
@@ -21,8 +21,8 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
     }
 
     @Override
-    public Class<IncusContainerStore> getApplicableClass() {
-        return IncusContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -36,8 +36,8 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
     }
 
     @Override
@@ -54,7 +54,11 @@ public class IncusContainerConsoleActionProvider implements HubLeafProvider<Incu
             var d = (IncusContainerStore) ref.getStore();
             var view = new IncusCommandView(
                     d.getInstall().getStore().getHost().getStore().getOrStartSession());
-            TerminalLauncher.open(ref.get().getName(), view.console(d.getContainerName()));
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title("Console")
+                    .command(view.console(d.getName()))
+                    .launch();
         }
     }
 }

@@ -15,12 +15,6 @@ import java.util.UUID;
 
 public class TerminalProxyManager {
 
-    @Value
-    private static class ActiveSession {
-        UUID uuid;
-        ShellControl control;
-    }
-
     private static ActiveSession activeSession;
 
     public static boolean canUseAsProxy(DataStoreEntryRef<ShellStore> ref) {
@@ -98,5 +92,11 @@ public class TerminalProxyManager {
         var store = ss;
         var control = store.standaloneControl();
         return Optional.of(control);
+    }
+
+    @Value
+    private static class ActiveSession {
+        UUID uuid;
+        ShellControl control;
     }
 }

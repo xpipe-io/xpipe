@@ -52,9 +52,12 @@ public class AppDownloads {
     }
 
     public static String downloadChangelog(String version) throws Exception {
-        var uri = URI.create("https://api.xpipe.io/changelog?from="
-                + AppProperties.get().getVersion() + "&to=" + version + "&stage="
-                + AppProperties.get().isStaging());
+        var uri = URI.create(
+                "https://api.xpipe.io/changelog?from=" + AppProperties.get().getVersion()
+                        + "&to="
+                        + version
+                        + "&stage="
+                        + AppProperties.get().isStaging());
         var builder = HttpRequest.newBuilder();
         var httpRequest = builder.uri(uri).GET().build();
         var client = HttpHelper.client();

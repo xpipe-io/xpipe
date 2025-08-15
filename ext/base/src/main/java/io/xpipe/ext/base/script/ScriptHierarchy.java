@@ -13,6 +13,9 @@ import java.util.function.Predicate;
 @Value
 public class ScriptHierarchy {
 
+    DataStoreEntryRef<? extends ScriptStore> base;
+    List<ScriptHierarchy> children;
+
     public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<SimpleScriptStore>> include) {
         var all = new HashSet<>(ScriptStoreSetup.getEnabledScripts());
 
@@ -92,9 +95,6 @@ public class ScriptHierarchy {
             return new ScriptHierarchy(hierarchy.getBase(), children);
         }
     }
-
-    DataStoreEntryRef<? extends ScriptStore> base;
-    List<ScriptHierarchy> children;
 
     public boolean show() {
         return isLeaf() || !isEmptyBranch();

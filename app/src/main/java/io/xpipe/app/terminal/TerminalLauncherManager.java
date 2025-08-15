@@ -124,7 +124,7 @@ public class TerminalLauncherManager {
                         .tag("request", request.toString())
                         .handle();
                 try (var sc = LocalShell.getShell().start()) {
-                    var defaultShell = ProcessControlProvider.get().getEffectiveLocalDialect();
+                    var defaultShell = LocalShell.getDialect();
                     var shellExec = defaultShell.getExecutableName();
                     var script = ScriptHelper.createExecScript(sc, shellExec);
                     return Path.of(script.toString());

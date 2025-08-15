@@ -1,7 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
@@ -67,6 +66,11 @@ public class AskpassExchangeImpl extends AskpassExchange {
         return Response.builder().value(secret.inPlace()).build();
     }
 
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
+
     private void focusTerminalIfNeeded(long pid) {
         if (TerminalView.get() == null) {
             return;
@@ -84,10 +88,5 @@ public class AskpassExchangeImpl extends AskpassExchange {
             return;
         }
         TerminalView.focus(term.get());
-    }
-
-    @Override
-    public boolean requiresEnabledApi() {
-        return false;
     }
 }

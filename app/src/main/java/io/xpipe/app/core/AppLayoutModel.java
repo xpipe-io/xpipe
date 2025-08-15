@@ -51,23 +51,6 @@ public class AppLayoutModel {
         this.queueEntries = FXCollections.observableArrayList();
     }
 
-    public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
-        if (!allowDuplicates && queueEntries.contains(entry)) {
-            return;
-        }
-
-        queueEntries.add(entry);
-        if (duration != null) {
-            GlobalTimer.delay(
-                    () -> {
-                        synchronized (this) {
-                            queueEntries.remove(entry);
-                        }
-                    },
-                    duration);
-        }
-    }
-
     public static AppLayoutModel get() {
         return INSTANCE;
     }
@@ -84,6 +67,23 @@ public class AppLayoutModel {
 
         AppCache.update("layoutState", INSTANCE.savedState);
         INSTANCE = null;
+    }
+
+    public synchronized void showQueueEntry(QueueEntry entry, Duration duration, boolean allowDuplicates) {
+        if (!allowDuplicates && queueEntries.contains(entry)) {
+            return;
+        }
+
+        queueEntries.add(entry);
+        if (duration != null) {
+            GlobalTimer.delay(
+                    () -> {
+                        synchronized (this) {
+                            queueEntries.remove(entry);
+                        }
+                    },
+                    duration);
+        }
     }
 
     public void selectBrowser() {
@@ -150,25 +150,24 @@ public class AppLayoutModel {
                         null),
                 new Entry(
                         AppI18n.observable("discord"),
-                        new LabelGraphic.IconGraphic("mdi2d-discord"),
+                        new LabelGraphic.IconGraphic("bi-discord"),
                         null,
                         () -> Hyperlinks.open(Hyperlinks.DISCORD),
                         null)));
-        //                new Entry(
-        //                        AppI18n.observable("api"),
-        //                        new LabelGraphic.IconGraphic("mdi2c-code-json"),
-        //                        null,
-        //                        () -> Hyperlinks.open(
-        //                                "http://localhost:" + AppBeaconServer.get().getPort()),
-        //                        null),);
         if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
             l.add(new Entry(
                     AppI18n.observable("webtop"),
-                    new LabelGraphic.IconGraphic("mdi2d-desktop-mac"),
+                    new LabelGraphic.IconGraphic("mdal-desktop_mac"),
                     null,
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
         }
+        l.add(new Entry(
+                AppI18n.observable("mcp"),
+                new LabelGraphic.IconGraphic("mdi2c-code-json"),
+                null,
+                () -> DocumentationLink.MCP.open(),
+                null));
         return l;
     }
 

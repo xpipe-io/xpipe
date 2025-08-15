@@ -9,14 +9,14 @@ import lombok.extern.jackson.Jacksonized;
 
 public class DeleteActionProvider implements BrowserActionProvider {
 
+    @Override
+    public String getId() {
+        return "deleteFile";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() {
@@ -25,10 +25,10 @@ public class DeleteActionProvider implements BrowserActionProvider {
             BrowserFileSystemHelper.delete(toDelete);
             model.refreshSync();
         }
-    }
 
-    @Override
-    public String getId() {
-        return "deleteFile";
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
     }
 }

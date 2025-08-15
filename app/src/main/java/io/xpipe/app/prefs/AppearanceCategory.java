@@ -30,54 +30,6 @@ import java.util.function.Supplier;
 
 public class AppearanceCategory extends AppPrefsCategory {
 
-    @Override
-    protected String getId() {
-        return "appearance";
-    }
-
-    @Override
-    protected LabelGraphic getIcon() {
-        return new LabelGraphic.IconGraphic("mdi2b-brush");
-    }
-
-    @Override
-    protected Comp<?> create() {
-        var prefs = AppPrefs.get();
-        return new OptionsBuilder()
-                .addTitle("uiOptions")
-                .sub(new OptionsBuilder()
-                        .sub(languageChoice())
-                        .sub(themeChoice())
-                        .pref(prefs.performanceMode)
-                        .addToggle(prefs.performanceMode)
-                        .pref(prefs.uiScale)
-                        .addComp(
-                                new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
-                                    struc.get().setPromptText("100");
-                                }),
-                                prefs.uiScale)
-                        .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
-                        .pref(prefs.useSystemFont)
-                        .addToggle(prefs.useSystemFont)
-                        .pref(prefs.censorMode)
-                        .addToggle(prefs.censorMode))
-                .sub(new OptionsBuilder()
-                        .pref(prefs.windowOpacity)
-                        .addComp(
-                                Comp.of(() -> {
-                                            var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
-                                            s.getStyleClass().add(Styles.SMALL);
-                                            prefs.windowOpacity.bind(s.valueProperty());
-                                            s.setSkin(new ProgressSliderSkin(s));
-                                            return s;
-                                        })
-                                        .maxWidth(getCompWidth()),
-                                prefs.windowOpacity)
-                        .pref(prefs.saveWindowLocation)
-                        .addToggle(prefs.saveWindowLocation))
-                .buildComp();
-    }
-
     public static OptionsBuilder themeChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
@@ -118,14 +70,14 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.minWidth(600 / 2.0);
+        c.maxWidth(600 / 2);
         return new OptionsBuilder().pref(prefs.theme).addComp(c, prefs.theme);
     }
 
     public static OptionsBuilder languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
-        c.prefWidth(600 / 2);
+        c.maxWidth(600 / 2);
         c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
@@ -135,5 +87,56 @@ public class AppearanceCategory extends AppPrefsCategory {
             struc.get().setSpacing(10);
         });
         return new OptionsBuilder().pref(prefs.language).addComp(h, prefs.language);
+    }
+
+    @Override
+    protected String getId() {
+        return "appearance";
+    }
+
+    @Override
+    protected LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2b-brush");
+    }
+
+    @Override
+    protected Comp<?> create() {
+        var prefs = AppPrefs.get();
+        return new OptionsBuilder()
+                .addTitle("uiOptions")
+                .sub(new OptionsBuilder()
+                        .sub(languageChoice())
+                        .sub(themeChoice())
+                        .pref(prefs.performanceMode)
+                        .addToggle(prefs.performanceMode)
+                        .pref(prefs.uiScale)
+                        .addComp(
+                                new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
+                                    struc.get().setPromptText("100");
+                                }),
+                                prefs.uiScale)
+                        .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
+                        .pref(prefs.useSystemFont)
+                        .addToggle(prefs.useSystemFont)
+                        .pref(prefs.censorMode)
+                        .addToggle(prefs.censorMode))
+                .addTitle("windowOptions")
+                .sub(new OptionsBuilder()
+                        .pref(prefs.windowOpacity)
+                        .addComp(
+                                Comp.of(() -> {
+                                            var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
+                                            s.getStyleClass().add(Styles.SMALL);
+                                            prefs.windowOpacity.bind(s.valueProperty());
+                                            s.setSkin(new ProgressSliderSkin(s));
+                                            return s;
+                                        })
+                                        .maxWidth(getCompWidth()),
+                                prefs.windowOpacity)
+                        .pref(prefs.saveWindowLocation)
+                        .addToggle(prefs.saveWindowLocation)
+                        .pref(prefs.focusWindowOnNotifications)
+                        .addToggle(prefs.focusWindowOnNotifications))
+                .buildComp();
     }
 }

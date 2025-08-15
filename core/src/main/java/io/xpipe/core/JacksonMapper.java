@@ -3,7 +3,6 @@ package io.xpipe.core;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -48,24 +47,8 @@ public class JacksonMapper {
                 .withIsGetterVisibility(JsonAutoDetect.Visibility.NONE));
     }
 
-    public static <T> T parse(String s, Class<T> c) throws JsonProcessingException {
-        var mapper = getDefault();
-        var tree = mapper.readTree(s);
-        return mapper.treeToValue(tree, c);
-    }
-
     public static synchronized void configure(Consumer<ObjectMapper> mapper) {
         mapper.accept(INSTANCE);
-    }
-
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            List<Module> modules = findModules(layer);
-            INSTANCE.registerModules(modules);
-            init = true;
-        }
     }
 
     private static List<Module> findModules(ModuleLayer layer) {
@@ -127,5 +110,15 @@ public class JacksonMapper {
             }
         });
         return c;
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            List<Module> modules = findModules(layer);
+            INSTANCE.registerModules(modules);
+            init = true;
+        }
     }
 }

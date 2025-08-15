@@ -49,7 +49,7 @@ public class AppStyle {
     }
 
     private static void loadStylesheets() {
-        AppResources.with(AppResources.XPIPE_MODULE, "font-config/font.css", path -> {
+        AppResources.with(AppResources.MAIN_MODULE, "font-config/font.css", path -> {
             var bytes = Files.readAllBytes(path);
             FONT_CONTENTS = "data:text/css;base64," + Base64.getEncoder().encodeToString(bytes);
         });
@@ -89,7 +89,7 @@ public class AppStyle {
             });
         }
 
-        AppResources.with(AppResources.XPIPE_MODULE, "theme", path -> {
+        AppResources.with(AppResources.MAIN_MODULE, "theme", path -> {
             if (!Files.exists(path)) {
                 return;
             }

@@ -1,11 +1,12 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -20,6 +21,10 @@ public class BitwardenPasswordManager implements PasswordManager {
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
+            SHELL.start();
+            SHELL.view()
+                    .setEnvironmentVariable(
+                            "BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
         }
         SHELL.start();
         return SHELL;
@@ -42,10 +47,22 @@ public class BitwardenPasswordManager implements PasswordManager {
             var r = command.readStdoutAndStderr();
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
+                        LocalShell.getDialect()
+                                .getSetEnvironmentVariableCommand(
+                                        "BITWARDENCLI_APPDATA_DIR",
+                                        AppCache.getBasePath().toString()),
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login",
+                        "bw login --quiet",
+                        sc.getShellDialect()
+                                .getEchoCommand(
+                                        "XPipe is now successfully connected to your Bitwarden vault. You can close this window",
+                                        false),
                         sc.getShellDialect().getPauseCommand());
-                TerminalLauncher.openDirect("Bitwarden login", script);
+                TerminalLaunch.builder()
+                        .title("Bitwarden login")
+                        .localScript(script)
+                        .logIfEnabled(false)
+                        .launch();
                 return null;
             }
 
@@ -62,7 +79,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 sc.view().setSensitiveEnvironmentVariable("BW_SESSION", out);
             }
 
-            var cmd = CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
+            var cmd =
+                    CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.required("login");
@@ -78,5 +96,10 @@ public class BitwardenPasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return "Item name";
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://bitwarden.com/";
     }
 }

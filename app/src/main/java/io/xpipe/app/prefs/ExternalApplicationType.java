@@ -80,7 +80,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.MACOS);
+            return OsType.getLocal() == OsType.MACOS;
         }
     }
 
@@ -102,10 +102,9 @@ public interface ExternalApplicationType extends PrefsValue {
         default void launch(CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
                 if (!CommandSupport.isInPath(pc, getExecutable())) {
-                    throw ErrorEventFactory.expected(
-                            new IOException(
-                                    "Executable " + getExecutable()
-                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
+                    throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
+                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute "
+                            + "executable path using the custom terminal setting."));
                 }
 
                 args.add(0, getExecutable());
@@ -180,7 +179,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal().equals(OsType.WINDOWS);
+            return OsType.getLocal() == OsType.WINDOWS;
         }
     }
 }

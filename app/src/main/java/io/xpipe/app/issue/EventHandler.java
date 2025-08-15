@@ -6,10 +6,6 @@ public abstract class EventHandler {
 
     private static EventHandler INSTANCE;
 
-    public static void set(EventHandler handler) {
-        INSTANCE = handler;
-    }
-
     private static void init() {
         if (INSTANCE == null) {
             INSTANCE = ServiceLoader.load(EventHandler.class).findFirst().orElseThrow();

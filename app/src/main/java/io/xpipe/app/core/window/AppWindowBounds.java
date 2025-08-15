@@ -1,6 +1,5 @@
 package io.xpipe.app.core.window;
 
-import io.xpipe.app.core.App;
 import io.xpipe.core.OsType;
 
 import javafx.geometry.Rectangle2D;
@@ -50,29 +49,6 @@ public class AppWindowBounds {
                 }
             }
         });
-    }
-
-    public static Stage centerStage() {
-        var stage = new Stage() {
-            @Override
-            public void centerOnScreen() {
-                if (App.getApp() == null) {
-                    super.centerOnScreen();
-                    return;
-                }
-
-                var stage = App.getApp().getStage();
-                this.setX(stage.getX() + stage.getWidth() / 2 - this.getWidth() / 2);
-                this.setY(stage.getY() + stage.getHeight() / 2 - this.getHeight() / 2);
-                clampWindow(this).ifPresent(rectangle2D -> {
-                    this.setX(rectangle2D.getMinX());
-                    this.setY(rectangle2D.getMinY());
-                    this.setWidth(rectangle2D.getWidth());
-                    this.setHeight(rectangle2D.getHeight());
-                });
-            }
-        };
-        return stage;
     }
 
     public static Optional<Rectangle2D> clampWindow(Stage stage) {

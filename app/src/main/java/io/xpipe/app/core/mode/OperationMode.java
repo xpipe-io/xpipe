@@ -30,6 +30,7 @@ public abstract class OperationMode {
     public static final OperationMode TRAY = new TrayMode();
     public static final OperationMode GUI = new GuiMode();
     private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
+    private static final Object HALT_LOCK = new Object();
 
     @Getter
     private static boolean inStartup;
@@ -48,22 +49,6 @@ public abstract class OperationMode {
             case TRAY -> TRAY;
             case GUI -> GUI;
         };
-    }
-
-    public static XPipeDaemonMode map(OperationMode mode) {
-        if (mode == BACKGROUND) {
-            return XPipeDaemonMode.BACKGROUND;
-        }
-
-        if (mode == TRAY) {
-            return XPipeDaemonMode.TRAY;
-        }
-
-        if (mode == GUI) {
-            return XPipeDaemonMode.GUI;
-        }
-
-        return null;
     }
 
     public static void externalShutdown() {
@@ -94,6 +79,20 @@ public abstract class OperationMode {
                     return;
                 }
 
+                // There are some accessibility exceptions on macOS, nothing we can do about that
+                if (Platform.isFxApplicationThread()
+                        && ex instanceof NullPointerException
+                        && ex.getMessage() != null
+                        && ex.getMessage().contains("Accessible")) {
+                    ErrorEventFactory.fromThrowable(ex)
+                            .expected()
+                            .descriptionPrefix(
+                                    "An error occurred with the Accessibility implementation. A screen reader might not be supported right now")
+                            .build()
+                            .handle();
+                    return;
+                }
+
                 // Handle any startup uncaught errors
                 if (OperationMode.isInStartup() && thread.threadId() == 1) {
                     ex.printStackTrace();
@@ -116,7 +115,6 @@ public abstract class OperationMode {
             AppLogs.init();
             AppTempCheck.check();
             AppDebugModeCheck.printIfNeeded();
-            AppProperties.logSystemProperties();
             AppProperties.get().logArguments();
             AppDistributionType.init();
             AppExtensionManager.init();
@@ -283,7 +281,10 @@ public abstract class OperationMode {
                 OperationMode.halt(1);
             }
 
-            ThreadHelper.sleep(50);
+            // In case we perform any operations such as opening a terminal
+            // give it some time to open while this process is still alive
+            // Otherwise it might quit because the parent process is dead already
+            ThreadHelper.sleep(100);
             OperationMode.halt(0);
         };
 
@@ -292,8 +293,6 @@ public abstract class OperationMode {
         t.setDaemon(false);
         t.start();
     }
-
-    private static final Object HALT_LOCK = new Object();
 
     public static void halt(int code) {
         synchronized (HALT_LOCK) {

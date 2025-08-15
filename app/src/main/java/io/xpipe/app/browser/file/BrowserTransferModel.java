@@ -149,14 +149,14 @@ public class BrowserTransferModel {
                     progress -> {
                         // Don't update item progress to keep it as finished
                         if (progress == null) {
-                            itemModel.getProgress().setValue(null);
+                            itemModel.updateProgress(null);
                             return;
                         }
 
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
-                        itemModel.getProgress().setValue(progress);
+                        itemModel.updateProgress(progress);
                     },
                     itemModel.getTransferCancelled());
             var action = TransferFilesActionProvider.Action.builder()
@@ -215,12 +215,12 @@ public class BrowserTransferModel {
     private Path getDownloadsTargetDirectory() throws Exception {
         var def = DesktopHelper.getDownloadsDirectory();
         var custom = AppPrefs.get().downloadsDirectory().getValue();
-        if (custom == null || custom.isBlank()) {
+        if (custom == null) {
             return def;
         }
 
         try {
-            var path = Path.of(custom);
+            var path = custom.asLocalPath();
             if (Files.isDirectory(path)) {
                 return path;
             }

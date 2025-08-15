@@ -25,8 +25,8 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
     }
 
     @Override
-    public Class<IncusContainerStore> getApplicableClass() {
-        return IncusContainerStore.class;
+    public boolean requiresValidStore() {
+        return false;
     }
 
     @Override
@@ -40,8 +40,8 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
     }
 
     @Override
-    public boolean requiresValidStore() {
-        return false;
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
     }
 
     @Override
@@ -52,11 +52,6 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<IncusContainerStore> {
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -72,6 +67,11 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
             }
             AppLayoutModel.get().selectBrowser();
             BrowserFileOpener.openInTextEditor(model, found.get());
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

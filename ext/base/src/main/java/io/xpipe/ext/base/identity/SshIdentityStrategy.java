@@ -9,6 +9,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
@@ -56,6 +57,11 @@ public interface SshIdentityStrategy {
 
         var base = LocalShell.getShell().getSystemTemporaryDirectory().join("key.pub");
         var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
+
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            LocalShell.getShell().command(CommandBuilder.of().add("chmod", "400").addFile(file)).executeAndCheck();
+        }
+
         return Optional.of(file);
     }
 
@@ -135,7 +141,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            if (!parent.getOsType().equals(OsType.WINDOWS)) {
+            if (parent.getOsType() != OsType.WINDOWS) {
                 var out = parent.executeSimpleStringCommand("pageant -l");
                 if (out.isBlank()) {
                     throw ErrorEventFactory.expected(
@@ -156,7 +162,7 @@ public interface SshIdentityStrategy {
         @Override
         public void buildCommand(CommandBuilder builder) {
             builder.environment("SSH_AUTH_SOCK", parent -> {
-                if (parent.getOsType().equals(OsType.WINDOWS)) {
+                if (parent.getOsType() == OsType.WINDOWS) {
                     return getPageantWindowsPipe(parent);
                 }
 
@@ -245,7 +251,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("gpgAgent");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("gpgAgent"));
             if (parent.isLocal()) {
                 SshIdentityStateManager.prepareLocalGpgAgent();
             } else {
@@ -317,9 +323,9 @@ public interface SshIdentityStrategy {
             }
 
             if (resolved.endsWith(".ppk")) {
-                var ex = new IllegalArgumentException(
-                        "Identity file " + resolved
-                                + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a standard format like .pem via PuTTY");
+                var ex = new IllegalArgumentException("Identity file " + resolved
+                        + " is in non-standard PuTTY Private Key format (.ppk), which is not supported by OpenSSH. Please export/convert it to a "
+                        + "standard format like .pem via PuTTY");
                 ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex)
                         .expected()
                         .link("https://www.puttygen.com/convert-pem-to-ppk"));
@@ -331,7 +337,7 @@ public interface SshIdentityStrategy {
                         + " is marked to be a public key file, SSH authentication requires the private key"));
             }
 
-            if ((parent.getOsType().equals(OsType.LINUX) || parent.getOsType().equals(OsType.MACOS))) {
+            if (parent.getOsType() != OsType.WINDOWS) {
                 // Try to preserve the same permission set
                 parent.command(CommandBuilder.of()
                                 .add("test", "-w")
@@ -356,6 +362,12 @@ public interface SshIdentityStrategy {
                     new KeyValue("PKCS11Provider", "none"));
         }
 
+        @Override
+        public SecretRetrievalStrategy getAskpassStrategy() {
+            // Always try to cache passphrase
+            return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
+        }
+
         private FilePath resolveFilePath(ShellControl sc) throws Exception {
             var s = file.toAbsoluteFilePath(sc);
             // The ~ is supported on all platforms, so manually replace it here for Windows
@@ -365,12 +377,6 @@ public interface SshIdentityStrategy {
             var resolved =
                     sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
             return FilePath.of(resolved);
-        }
-
-        @Override
-        public SecretRetrievalStrategy getAskpassStrategy() {
-            // Always try to cache passphrase
-            return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
         }
     }
 
@@ -384,9 +390,9 @@ public interface SshIdentityStrategy {
         public static String getDefaultSharedLibrary() {
             var file =
                     switch (OsType.getLocal()) {
-                        case OsType.Linux linux -> "/usr/local/lib/libykcs11.so";
-                        case OsType.MacOs macOs -> "/usr/local/lib/libykcs11.dylib";
-                        case OsType.Windows windows -> {
+                        case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
+                        case OsType.Windows ignored -> {
                             var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
                             yield x64;
                         }
@@ -397,11 +403,11 @@ public interface SshIdentityStrategy {
         private String getFile(ShellControl parent) throws Exception {
             var file =
                     switch (parent.getOsType()) {
-                        case OsType.Linux linux -> "/usr/local/lib/libykcs11.so";
-                        case OsType.Bsd bsd -> "/usr/local/lib/libykcs11.so";
-                        case OsType.Solaris solaris -> "/usr/local/lib/libykcs11.so";
-                        case OsType.MacOs macOs -> "/usr/local/lib/libykcs11.dylib";
-                        case OsType.Windows windows -> {
+                        case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.Bsd ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.Solaris ignored -> "/usr/local/lib/libykcs11.so";
+                        case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
+                        case OsType.Windows ignored -> {
                             var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
                             if (parent.getShellDialect()
                                     .directoryExists(parent, x64)
@@ -424,7 +430,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("pkcs11Identity");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
 
             var file = getFile(parent);
             if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
@@ -466,7 +472,7 @@ public interface SshIdentityStrategy {
 
         @Override
         public void prepareParent(ShellControl parent) throws Exception {
-            parent.requireLicensedFeature("pkcs11Identity");
+            parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
 
             if (!parent.getShellDialect()
                     .createFileExistsCommand(parent, file.toString())

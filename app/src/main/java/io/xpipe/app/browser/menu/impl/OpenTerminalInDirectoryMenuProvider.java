@@ -23,11 +23,6 @@ import java.util.List;
 public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
-        return OpenTerminalActionProvider.class;
-    }
-
-    @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var dirs = entries.size() > 0
                 ? entries.stream()
@@ -40,6 +35,16 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
             var name = (dir != null ? dir + " - " : "") + model.getName().getValue();
             model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
         }
+    }
+
+    @Override
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
+        return OpenTerminalActionProvider.class;
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     public String getId() {
@@ -64,11 +69,6 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openInTerminal");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

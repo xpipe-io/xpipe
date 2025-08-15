@@ -10,6 +10,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
 import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 
 import lombok.experimental.SuperBuilder;
@@ -23,11 +24,6 @@ public abstract class AbstractAction {
     private static final Set<AbstractAction> active = new HashSet<>();
     private static boolean closed;
     private static Consumer<AbstractAction> pick;
-
-    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
-                cancelPick();
-            });
 
     public static synchronized void expectPick() {
         if (pick != null) {
@@ -49,6 +45,11 @@ public abstract class AbstractAction {
             modal.show();
         };
     }
+
+    private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
+            AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
+                cancelPick();
+            });
 
     public static synchronized void cancelPick() {
         AppLayoutModel.get().getQueueEntries().remove(queueEntry);
@@ -121,6 +122,8 @@ public abstract class AbstractAction {
             return false;
         }
 
+        checkLicense();
+
         synchronized (active) {
             active.add(this);
         }
@@ -147,8 +150,6 @@ public abstract class AbstractAction {
             synchronized (active) {
                 active.remove(this);
             }
-
-            TrackEvent.withTrace("Finished action execution").tag("id", getId()).handle();
         }
     }
 
@@ -189,6 +190,17 @@ public abstract class AbstractAction {
 
     public boolean forceConfirmation() {
         return false;
+    }
+
+    public LicensedFeature getLicensedFeature() {
+        return null;
+    }
+
+    protected void checkLicense() {
+        var feature = getLicensedFeature();
+        if (feature != null) {
+            feature.throwIfUnsupported();
+        }
     }
 
     protected void afterExecute() {}

@@ -21,11 +21,11 @@ import lombok.experimental.SuperBuilder;
 @ToString
 public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
 
-    public abstract DataStoreEntryRef<NetworkTunnelStore> getHost();
-
     private final Integer remotePort;
     private final Integer localPort;
     private final ServiceProtocolType serviceProtocolType;
+
+    public abstract DataStoreEntryRef<NetworkTunnelStore> getHost();
 
     public boolean licenseRequired() {
         return true;

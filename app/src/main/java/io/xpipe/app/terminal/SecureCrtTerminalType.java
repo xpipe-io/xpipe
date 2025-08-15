@@ -1,9 +1,8 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.SshLocalBridge;
 
 import java.nio.file.Files;
@@ -18,30 +17,8 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
     }
 
     @Override
-    public boolean detach() {
-        return false;
-    }
-
-    @Override
-    public String getExecutable() {
-        return "SecureCRT";
-    }
-
-    @Override
-    public Optional<Path> determineInstallation() {
-        try (var sc = LocalShell.getShell().start()) {
-            var env = sc.executeSimpleStringCommand(
-                    sc.getShellDialect().getPrintEnvironmentVariableCommand("ProgramFiles"));
-            var file = Path.of(env, "VanDyke Software\\SecureCRT\\SecureCRT.exe");
-            if (!Files.exists(file)) {
-                return Optional.empty();
-            }
-
-            return Optional.of(file);
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).omit().handle();
-            return Optional.empty();
-        }
+    public String getWebsite() {
+        return "https://www.vandyke.com/products/securecrt/";
     }
 
     @Override
@@ -56,24 +33,37 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        try (var sc = LocalShell.getShell()) {
-            SshLocalBridge.init();
-            var b = SshLocalBridge.get();
-            var command = CommandBuilder.of()
-                    .add("/T")
-                    .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
-                    .addFile(b.getIdentityKey().toString())
-                    .add("/P", "" + b.getPort())
-                    .add("/L")
-                    .addQuoted(b.getUser())
-                    .add("localhost");
-            launch(command);
-        }
+        SshLocalBridge.init();
+        var b = SshLocalBridge.get();
+        var command = CommandBuilder.of()
+                .add("/T")
+                .add("/SSH2", "/ACCEPTHOSTKEYS", "/I")
+                .addFile(b.getIdentityKey().toString())
+                .add("/P", "" + b.getPort())
+                .add("/L")
+                .addQuoted(b.getUser())
+                .add("localhost");
+        launch(command);
     }
 
     @Override
-    public String getWebsite() {
-        return "https://www.vandyke.com/products/securecrt/";
+    public boolean detach() {
+        return false;
+    }
+
+    @Override
+    public String getExecutable() {
+        return "SecureCRT";
+    }
+
+    @Override
+    public Optional<Path> determineInstallation() {
+        var file = AppSystemInfo.getWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
+        if (!Files.exists(file)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(file);
     }
 
     @Override

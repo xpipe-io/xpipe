@@ -152,6 +152,11 @@ public class ShellView {
                 .readStdoutOrThrow());
     }
 
+    public void touch(FilePath path) throws Exception {
+        var c = shellControl.getShellDialect().getFileTouchCommand(shellControl, path.toString());
+        c.execute();
+    }
+
     public void cd(String directory) throws Exception {
         var d = shellControl.getShellDialect();
         var cmd = shellControl.command(d.getCdCommand(directory));

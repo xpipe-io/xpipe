@@ -7,7 +7,6 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import javafx.beans.value.ObservableValue;
 
@@ -24,12 +23,12 @@ public enum AppDistributionType implements Translatable {
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
     HOMEBREW("homebrew", true, () -> {
-        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(
                 ShellScript.lines("brew upgrade --cask xpipe-io/tap/" + pkg, AppRestart.getTerminalRestartCommand()));
     }),
     APT_REPO("apt", true, () -> {
-        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
                 "sudo apt update",
@@ -37,14 +36,14 @@ public enum AppDistributionType implements Translatable {
                 AppRestart.getTerminalRestartCommand()));
     }),
     RPM_REPO("rpm", true, () -> {
-        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ sudo yum upgrade " + pkg + " --refresh -y\"",
                 "sudo yum upgrade " + pkg + " --refresh -y",
                 AppRestart.getTerminalRestartCommand()));
     }),
     AUR("aur", true, () -> {
-        var pkg = AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe";
+        var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si\"",
                 "cd $(mktemp -d) && git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
@@ -52,7 +51,9 @@ public enum AppDistributionType implements Translatable {
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> new ChocoUpdater()),
-    WINGET("winget", true, () -> new WingetUpdater());
+    WINGET("winget", true, () -> new WingetUpdater()),
+    SCOOP("scoop", false, () -> new PortableUpdater(true)),
+    ;
 
     private static AppDistributionType type;
 
@@ -110,9 +111,7 @@ public enum AppDistributionType implements Translatable {
 
     private static boolean isDifferentDaemonExecutable() {
         var cached = AppCache.getNonNull("daemonExecutable", String.class, () -> null);
-        var current = XPipeInstallation.getCurrentInstallationBasePath()
-                .resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()))
-                .toString();
+        var current = AppInstallation.ofCurrent().getDaemonExecutablePath().toString();
         if (current.equals(cached)) {
             return false;
         }
@@ -130,9 +129,9 @@ public enum AppDistributionType implements Translatable {
     }
 
     public static AppDistributionType determine() {
-        var base = XPipeInstallation.getCurrentInstallationBasePath();
-        if (OsType.getLocal().equals(OsType.MACOS)) {
-            if (!base.equals(XPipeInstallation.getLocalDefaultInstallationBasePath())) {
+        var base = AppInstallation.ofCurrent().getBaseInstallationPath();
+        if (OsType.getLocal() == OsType.MACOS) {
+            if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
 
@@ -140,7 +139,8 @@ public enum AppDistributionType implements Translatable {
                 var r = LocalExec.readStdoutIfPossible(
                         "pkgutil",
                         "--pkg-info",
-                        AppProperties.get().isStaging() ? "io.xpipe.xpipe-ptb" : "io.xpipe.xpipe");
+                        AppNames.ofCurrent().getGroupName() + "."
+                                + AppNames.ofCurrent().getKebapName());
                 if (r.isEmpty()) {
                     return PORTABLE;
                 }
@@ -155,6 +155,14 @@ public enum AppDistributionType implements Translatable {
                     return AUR;
                 }
 
+                if (OsType.getLocal() == OsType.WINDOWS
+                        && AppInstallation.ofCurrent()
+                                .getBaseInstallationPath()
+                                .startsWith(
+                                        AppSystemInfo.getWindows().getUserHome().resolve("scoop"))) {
+                    return SCOOP;
+                }
+
                 return PORTABLE;
             }
         }
@@ -163,7 +171,7 @@ public enum AppDistributionType implements Translatable {
             return WEBTOP;
         }
 
-        if (OsType.getLocal().equals(OsType.WINDOWS) && !AppProperties.get().isStaging()) {
+        if (OsType.getLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
                 if (chocoOut.get().contains("xpipe")
@@ -171,24 +179,15 @@ public enum AppDistributionType implements Translatable {
                     return CHOCO;
                 }
             }
-
-            //            var wingetOut = LocalExec.readStdoutIfPossible("winget", "show", "--id", "xpipe-io.xpipe",
-            // "--source", "--winget");
-            //            if (wingetOut.isPresent()) {
-            //                if (wingetOut.get().contains("xpipe-io.xpipe") &&
-            // wingetOut.get().contains(AppProperties.get().getVersion())) {
-            //                    return WINGET;
-            //                }
-            //            }
         }
 
-        if (OsType.getLocal().equals(OsType.MACOS)) {
+        if (OsType.getLocal() == OsType.MACOS) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
                     var split = s.split(" ");
                     return split.length == 2
-                            && split[0].equals(AppProperties.get().isStaging() ? "xpipe-ptb" : "xpipe")
+                            && split[0].equals(AppNames.ofCurrent().getKebapName())
                             && split[1].equals(AppProperties.get().getVersion());
                 })) {
                     return HOMEBREW;

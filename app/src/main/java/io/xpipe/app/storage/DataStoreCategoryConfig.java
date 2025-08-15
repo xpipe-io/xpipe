@@ -12,6 +12,18 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DataStoreCategoryConfig {
 
+    @With
+    DataStoreColor color;
+
+    Boolean dontAllowScripts;
+    Boolean confirmAllModifications;
+
+    @With
+    Boolean sync;
+
+    Boolean freezeConfigurations;
+    UUID defaultIdentityStore;
+
     public static DataStoreCategoryConfig empty() {
         return new DataStoreCategoryConfig(null, null, null, null, null, null);
     }
@@ -47,18 +59,4 @@ public class DataStoreCategoryConfig {
         return new DataStoreCategoryConfig(
                 color, dontAllowScripts, warnOnAllModifications, sync, readOnly, defaultIdentityStore);
     }
-
-    @With
-    DataStoreColor color;
-
-    Boolean dontAllowScripts;
-
-    Boolean confirmAllModifications;
-
-    @With
-    Boolean sync;
-
-    Boolean freezeConfigurations;
-
-    UUID defaultIdentityStore;
 }

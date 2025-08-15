@@ -69,7 +69,8 @@ public interface ErrorAction {
 
         @Override
         public boolean handle(ErrorEvent event) {
-            if (!event.isReportable() || (LicenseProvider.get() != null && !LicenseProvider.get().shouldReportError())) {
+            if (!event.isReportable()
+                    || (LicenseProvider.get() != null && !LicenseProvider.get().shouldReportError())) {
                 return true;
             }
 

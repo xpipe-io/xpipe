@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.util.*;
@@ -36,7 +37,6 @@ import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
 public final class BrowserFileListComp extends SimpleComp {
 
-    private static final PseudoClass HIDDEN = PseudoClass.getPseudoClass("hidden");
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
     private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
     private static final PseudoClass FOLDER = PseudoClass.getPseudoClass("folder");
@@ -49,6 +49,18 @@ public final class BrowserFileListComp extends SimpleComp {
 
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
+    }
+
+    private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
+        table.lookupAll(".scroll-bar").stream()
+                .filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal")))
+                .findFirst()
+                .ifPresent(node -> {
+                    Region region = (Region) node;
+                    region.setMinHeight(0);
+                    region.setPrefHeight(0);
+                    region.setMaxHeight(0);
+                });
     }
 
     @Override
@@ -76,9 +88,15 @@ public final class BrowserFileListComp extends SimpleComp {
         sizeCol.setCellValueFactory(param -> new ReadOnlyStringWrapper(
                 param.getValue().getRawFileEntry().resolved().getSize()));
         sizeCol.setComparator((size1, size2) -> {
-            if (size1 == null && size2 == null) return 0;
-            if (size1 == null) return -1;
-            if (size2 == null) return 1;
+            if (size1 == null && size2 == null) {
+                return 0;
+            }
+            if (size1 == null) {
+                return -1;
+            }
+            if (size2 == null) {
+                return 1;
+            }
 
             try {
                 long long1 = Long.parseLong(size1);
@@ -126,7 +144,16 @@ public final class BrowserFileListComp extends SimpleComp {
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
         table.setAccessibleText("Directory contents");
-        table.setPlaceholder(new Region());
+
+        var placeholder = new Label();
+        fileList.getFileSystemModel().getBusy().subscribe(busy -> {
+            PlatformThread.runLaterIfNeeded(() -> {
+                placeholder.setText(busy ? null : AppI18n.get("emptyDirectory"));
+            });
+        });
+        table.setPlaceholder(placeholder);
+        AppFontSizes.base(placeholder);
+
         table.getStyleClass().add(Styles.STRIPED);
         table.getColumns().setAll(filenameCol, mtimeCol, modeCol, ownerCol, sizeCol);
         table.getSortOrder().add(filenameCol);
@@ -146,18 +173,6 @@ public final class BrowserFileListComp extends SimpleComp {
         prepareTypedSelectionModel(table);
         table.setMinWidth(0);
         return table;
-    }
-
-    private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
-        table.lookupAll(".scroll-bar").stream()
-                .filter(node -> node.getPseudoClassStates().contains(PseudoClass.getPseudoClass("horizontal")))
-                .findFirst()
-                .ifPresent(node -> {
-                    Region region = (Region) node;
-                    region.setMinHeight(0);
-                    region.setPrefHeight(0);
-                    region.setMaxHeight(0);
-                });
     }
 
     private void prepareColumnVisibility(

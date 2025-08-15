@@ -19,9 +19,11 @@ public interface CommandControl extends ProcessControl {
     int INTERNAL_ERROR_EXIT_CODE = 163;
     int ELEVATION_FAILED_EXIT_CODE = 164;
 
+    CommandBuilder getTerminalCommand();
+
     CommandControl sensitive();
 
-    CommandControl withExceptionConverter(ExceptionConverter converter);
+    CommandControl withExceptionConverter(ProcessExceptionConverter converter);
 
     @Override
     CommandControl start() throws Exception;
@@ -39,15 +41,11 @@ public interface CommandControl extends ProcessControl {
     CommandControl withWorkingDirectory(FilePath directory);
 
     default void execute() throws Exception {
-        try (var c = start()) {
-            c.discardOrThrow();
-        }
+        discardOrThrow();
     }
 
     default boolean executeAndCheck() throws Exception {
-        try (var c = start()) {
-            return c.discardAndCheckExit();
-        }
+        return discardAndCheckExit();
     }
 
     ShellControl getParent();

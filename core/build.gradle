@@ -17,8 +17,8 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.19.1"
 }
 
-version = rootProject.versionString
-group = 'io.xpipe'
+version = versionString
+group = groupName
 base.archivesName = 'xpipe-core'
 
 repositories {
@@ -29,7 +29,7 @@ dependencies {
     testImplementation project(':core')
 }
 
-task dist(type: Copy) {
+tasks.register('dist', Copy) {
     from jar.archiveFile
     into "${project(':dist').buildDir}/dist/libraries"
 }

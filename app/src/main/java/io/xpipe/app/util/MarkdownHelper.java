@@ -50,8 +50,11 @@ public class MarkdownHelper {
         var html = renderer.render(document);
         var result = bodyTransformation.apply(html);
         var headContent = headTransformation.apply("<meta charset=\"utf-8\"/>");
-        return "<html><head>" + headContent + "</head><body"
+        return "<html><head>" + headContent
+                + "</head><body"
                 + (bodyStyleClass != null ? " class=\"" + bodyStyleClass + "\"" : "")
-                + "><article class=\"markdown-body\">" + result + "</article></body></html>";
+                + "><article class=\"markdown-body\">"
+                + result
+                + "</article></body></html>";
     }
 }

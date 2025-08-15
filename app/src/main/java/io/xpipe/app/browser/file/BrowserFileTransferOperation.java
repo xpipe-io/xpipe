@@ -17,7 +17,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,6 +26,8 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
+
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     @Getter
     private final FileEntry target;
@@ -38,8 +39,7 @@ public class BrowserFileTransferOperation {
     private final boolean checkConflicts;
     private final Consumer<BrowserTransferProgress> progress;
     private final BooleanProperty cancelled;
-
-    BrowserAlerts.FileConflictChoice lastConflictChoice;
+    BrowserDialogs.FileConflictChoice lastConflictChoice;
 
     public BrowserFileTransferOperation(
             FileEntry target,
@@ -84,53 +84,53 @@ public class BrowserFileTransferOperation {
         this.progress.accept(progress);
     }
 
-    private BrowserAlerts.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
+    private BrowserDialogs.FileConflictChoice handleChoice(FileSystem fileSystem, FilePath target, boolean multiple)
             throws Exception {
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
-            return BrowserAlerts.FileConflictChoice.CANCEL;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
+            return BrowserDialogs.FileConflictChoice.CANCEL;
         }
 
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
-            return BrowserAlerts.FileConflictChoice.REPLACE;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.REPLACE_ALL) {
+            return BrowserDialogs.FileConflictChoice.REPLACE;
         }
 
-        if (lastConflictChoice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
-            return BrowserAlerts.FileConflictChoice.RENAME;
+        if (lastConflictChoice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
+            return BrowserDialogs.FileConflictChoice.RENAME;
         }
 
         if (fileSystem.fileExists(target)) {
-            if (lastConflictChoice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (lastConflictChoice == BrowserDialogs.FileConflictChoice.SKIP_ALL) {
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            var choice = BrowserAlerts.showFileConflictAlert(target, multiple);
-            if (choice == BrowserAlerts.FileConflictChoice.CANCEL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.CANCEL;
-                return BrowserAlerts.FileConflictChoice.CANCEL;
+            var choice = BrowserDialogs.showFileConflictAlert(target, multiple);
+            if (choice == BrowserDialogs.FileConflictChoice.CANCEL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.CANCEL;
+                return BrowserDialogs.FileConflictChoice.CANCEL;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.SKIP) {
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (choice == BrowserDialogs.FileConflictChoice.SKIP) {
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.SKIP_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.SKIP_ALL;
-                return BrowserAlerts.FileConflictChoice.SKIP;
+            if (choice == BrowserDialogs.FileConflictChoice.SKIP_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.SKIP_ALL;
+                return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.REPLACE_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.REPLACE_ALL;
-                return BrowserAlerts.FileConflictChoice.REPLACE;
+            if (choice == BrowserDialogs.FileConflictChoice.REPLACE_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.REPLACE_ALL;
+                return BrowserDialogs.FileConflictChoice.REPLACE;
             }
 
-            if (choice == BrowserAlerts.FileConflictChoice.RENAME_ALL) {
-                lastConflictChoice = BrowserAlerts.FileConflictChoice.RENAME_ALL;
-                return BrowserAlerts.FileConflictChoice.RENAME;
+            if (choice == BrowserDialogs.FileConflictChoice.RENAME_ALL) {
+                lastConflictChoice = BrowserDialogs.FileConflictChoice.RENAME_ALL;
+                return BrowserDialogs.FileConflictChoice.RENAME;
             }
 
             return choice;
         }
-        return BrowserAlerts.FileConflictChoice.REPLACE;
+        return BrowserDialogs.FileConflictChoice.REPLACE;
     }
 
     private boolean cancelled() {
@@ -172,7 +172,11 @@ public class BrowserFileTransferOperation {
                     var currentDir =
                             file.getFileSystem().getShell().orElseThrow().view().pwd();
                     handleSingleAcrossFileSystems(file);
-                    file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+
+                    // Expect a kill
+                    if (!file.getFileSystem().getShell().orElseThrow().isAnyStreamClosed()) {
+                        file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+                    }
                 }
             }
 
@@ -213,12 +217,12 @@ public class BrowserFileTransferOperation {
 
         if (checkConflicts) {
             var fileConflictChoice = handleChoice(target.getFileSystem(), targetFile, files.size() > 1);
-            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
-                    || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+            if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP
+                    || fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
                 return;
             }
 
-            if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+            if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
                 targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
             }
         }
@@ -284,19 +288,24 @@ public class BrowserFileTransferOperation {
             flatFiles.put(source, directoryName);
 
             var baseRelative = source.getPath().getParent().toDirectory();
-            List<FileEntry> list =
-                    source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath());
-            for (FileEntry fileEntry : list) {
-                if (cancelled()) {
-                    return;
-                }
+            try (var stream = source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath())) {
+                List<FileEntry> list = stream.toList();
+                for (FileEntry fileEntry : list) {
+                    if (cancelled()) {
+                        return;
+                    }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
-                flatFiles.put(fileEntry, rel);
-                if (fileEntry.getKind() == FileKind.FILE) {
-                    // This one is up-to-date and does not need to be recalculated
-                    // If we don't have a size, it doesn't matter that much as the total size is only for display
-                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    var rel = fileEntry
+                            .getPath()
+                            .relativize(baseRelative)
+                            .toUnix()
+                            .toString();
+                    flatFiles.put(fileEntry, rel);
+                    if (fileEntry.getKind() == FileKind.FILE) {
+                        // This one is up-to-date and does not need to be recalculated
+                        // If we don't have a size, it doesn't matter that much as the total size is only for display
+                        totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    }
                 }
             }
         } else {
@@ -321,7 +330,6 @@ public class BrowserFileTransferOperation {
         var targetFs = target.getFileSystem().createTransferOptimizedFileSystem();
 
         try {
-            var start = Instant.now();
             AtomicLong transferred = new AtomicLong();
             for (var e : flatFiles.entrySet()) {
                 if (cancelled()) {
@@ -342,24 +350,17 @@ public class BrowserFileTransferOperation {
                     if (checkConflicts) {
                         var fileConflictChoice =
                                 handleChoice(targetFs, targetFile, files.size() > 1 || flatFiles.size() > 1);
-                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.SKIP
-                                || fileConflictChoice == BrowserAlerts.FileConflictChoice.CANCEL) {
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.SKIP
+                                || fileConflictChoice == BrowserDialogs.FileConflictChoice.CANCEL) {
                             continue;
                         }
 
-                        if (fileConflictChoice == BrowserAlerts.FileConflictChoice.RENAME) {
+                        if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
                             targetFile = renameFileLoop(targetFs, targetFile, false);
                         }
                     }
 
-                    transfer(
-                            sourceFile.getPath(),
-                            optimizedSourceFs,
-                            targetFile,
-                            targetFs,
-                            transferred,
-                            totalSize,
-                            start);
+                    transfer(sourceFile.getPath(), optimizedSourceFs, targetFile, targetFs, transferred, totalSize);
                 }
             }
         } finally {
@@ -380,8 +381,7 @@ public class BrowserFileTransferOperation {
             FilePath targetFile,
             FileSystem targetFs,
             AtomicLong transferred,
-            AtomicLong totalSize,
-            Instant start)
+            AtomicLong totalSize)
             throws Exception {
         if (cancelled()) {
             return;
@@ -407,7 +407,7 @@ public class BrowserFileTransferOperation {
             }
 
             outputStream = targetFs.openOutput(targetFile, fileSize);
-            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, start, fileSize);
+            transferFile(sourceFile, inputStream, outputStream, transferred, totalSize, fileSize);
         } catch (Exception ex) {
             // Mark progress as finished to reset any progress display
             updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), transferred.get()));
@@ -475,19 +475,16 @@ public class BrowserFileTransferOperation {
         source.getFileSystem().delete(source.getPath());
     }
 
-    private static final int DEFAULT_BUFFER_SIZE = 1024;
-
     private void transferFile(
             FilePath sourceFile,
             InputStream inputStream,
             OutputStream outputStream,
             AtomicLong transferred,
             AtomicLong total,
-            Instant start,
             long expectedFileSize)
             throws Exception {
         // Initialize progress immediately prior to reading anything
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get(), start));
+        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
 
         var killStreams = new AtomicBoolean(false);
         var exception = new AtomicReference<Exception>();
@@ -511,8 +508,8 @@ public class BrowserFileTransferOperation {
                     outputStream.write(buffer, 0, read);
                     transferred.addAndGet(read);
                     readCount.addAndGet(read);
-                    updateProgress(new BrowserTransferProgress(
-                            sourceFile.getFileName(), transferred.get(), total.get(), start));
+                    updateProgress(
+                            new BrowserTransferProgress(sourceFile.getFileName(), transferred.get(), total.get()));
                 }
 
                 outputStream.flush();

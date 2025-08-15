@@ -130,16 +130,20 @@ public class ActionJacksonMapper {
         }
 
         var tree = (ObjectNode) JacksonMapper.getDefault().valueToTree(value);
+        var treeCopy = JsonNodeFactory.instance.objectNode();
+        treeCopy.put("id", value.getId());
+        tree.properties().forEach(p -> {
+            treeCopy.set(p.getKey(), p.getValue());
+        });
 
         if (value instanceof MultiStoreAction<?> m) {
-            var refs = tree.get("refs");
-            tree.remove("refs");
-            tree.set("ref", refs);
-            tree.put("id", m.getId());
-            return tree;
+            var refs = treeCopy.get("refs");
+            treeCopy.remove("refs");
+            treeCopy.set("ref", refs);
+            treeCopy.put("id", m.getId());
+            return treeCopy;
         }
 
-        tree.put("id", value.getId());
-        return tree;
+        return treeCopy;
     }
 }

@@ -1,7 +1,7 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +17,8 @@ public class AppSystemFontCheck {
         }
 
         System.setProperty(
-                "prism.fontdir", XPipeInstallation.getBundledFontsPath().toString());
+                "prism.fontdir",
+                AppInstallation.ofCurrent().getBundledFontsPath().toString());
         System.setProperty("prism.embeddedfonts", "true");
     }
 

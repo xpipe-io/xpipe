@@ -37,12 +37,6 @@ public class LxdContainerStore
     IdentityValue identity;
 
     @Override
-    public FixedChildStore merge(FixedChildStore other) {
-        var o = (LxdContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).build();
-    }
-
-    @Override
     public String getName() {
         return containerName;
     }
@@ -69,13 +63,14 @@ public class LxdContainerStore
     }
 
     @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (LxdContainerStore) other;
+        return toBuilder().identity(identity != null ? identity : o.identity).build();
+    }
+
+    @Override
     public ShellControlFunction shellFunction() {
         return new ShellControlParentStoreFunction() {
-
-            @Override
-            public ShellStore getParentStore() {
-                return getCmd().getStore().getHost().getStore();
-            }
 
             @Override
             public ShellControl control(ShellControl parent) throws Exception {
@@ -107,6 +102,11 @@ public class LxdContainerStore
                     setState(s);
                 });
                 return sc;
+            }
+
+            @Override
+            public ShellStore getParentStore() {
+                return getCmd().getStore().getHost().getStore();
             }
         };
     }

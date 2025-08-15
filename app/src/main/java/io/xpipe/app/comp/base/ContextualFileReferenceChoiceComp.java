@@ -22,6 +22,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -37,13 +38,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
-
-    @Value
-    public static class PreviousFileReference {
-
-        String displayName;
-        Path path;
-    }
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<FilePath> filePath;
@@ -185,7 +179,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         prop.addListener((observable, oldValue, newValue) -> {
             filePath.setValue(newValue != null ? FilePath.of(newValue) : null);
         });
-        var combo = new ComboTextFieldComp(prop, items, () -> {
+        var combo = new ComboTextFieldComp(prop, FXCollections.observableList(items), () -> {
             return new ListCell<>() {
                 @Override
                 protected void updateItem(String item, boolean empty) {
@@ -203,9 +197,11 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 }
             };
         });
-        combo.setPrompt(Bindings.createStringBinding(() -> {
-            return filePath.getValue() != null ? filePath.getValue().toString() : null;
-        }, filePath));
+        combo.setPrompt(Bindings.createStringBinding(
+                () -> {
+                    return filePath.getValue() != null ? filePath.getValue().toString() : null;
+                },
+                filePath));
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);
@@ -236,5 +232,16 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         }
 
         return fileNameComp;
+    }
+
+    @Value
+    public static class PreviousFileReference {
+
+        String displayName;
+        Path path;
+
+        public static PreviousFileReference of(Path file) {
+            return new PreviousFileReference(file.toString(), file);
+        }
     }
 }

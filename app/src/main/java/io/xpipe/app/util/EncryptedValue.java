@@ -20,6 +20,12 @@ import java.util.Objects;
 })
 public abstract class EncryptedValue<T> {
 
+    @NonNull
+    private final T value;
+
+    @NonNull
+    private final DataStorageSecret secret;
+
     @SneakyThrows
     public static <T> EncryptedValue<T> of(T value) {
         if (value == null) {
@@ -29,15 +35,14 @@ public abstract class EncryptedValue<T> {
         return CurrentKey.of(value);
     }
 
-    @NonNull
-    private final T value;
-
-    @NonNull
-    private final DataStorageSecret secret;
-
     public abstract boolean allowUserSecretKey();
 
     public abstract EncryptedValue<T> withValue(T value);
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -45,11 +50,6 @@ public abstract class EncryptedValue<T> {
             return false;
         }
         return Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(value);
     }
 
     @JsonTypeName("current")
@@ -117,6 +117,11 @@ public abstract class EncryptedValue<T> {
         }
 
         @Override
+        public boolean allowUserSecretKey() {
+            return false;
+        }
+
+        @Override
         public EncryptedValue.VaultKey<T> withValue(T value) {
             if (value == null) {
                 return null;
@@ -127,11 +132,6 @@ public abstract class EncryptedValue<T> {
             }
 
             return of(value);
-        }
-
-        @Override
-        public boolean allowUserSecretKey() {
-            return false;
         }
     }
 }

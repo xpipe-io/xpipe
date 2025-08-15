@@ -23,6 +23,11 @@ import java.io.IOException;
 @Value
 public class DataStorageNode {
 
+    JsonNode contentNode;
+    boolean perUser;
+    boolean readableForUser;
+    boolean encrypted;
+
     private static boolean encryptPerUser(DataStore store) {
         if (DataStorageUserHandler.getInstance().getActiveUser() == null) {
             return false;
@@ -141,9 +146,4 @@ public class DataStorageNode {
 
         return !perUser || readableForUser;
     }
-
-    JsonNode contentNode;
-    boolean perUser;
-    boolean readableForUser;
-    boolean encrypted;
 }

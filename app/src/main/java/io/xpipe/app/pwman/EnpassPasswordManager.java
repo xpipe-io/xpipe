@@ -37,6 +37,7 @@ public class EnpassPasswordManager implements PasswordManager {
 
     private static final UUID MASTER_PASSWORD_UUID = UUID.randomUUID();
     private static ShellControl SHELL;
+    private final FilePath vaultPath;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -74,8 +75,6 @@ public class EnpassPasswordManager implements PasswordManager {
                         },
                         p);
     }
-
-    private final FilePath vaultPath;
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
@@ -164,5 +163,10 @@ public class EnpassPasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return "Item title";
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.enpass.io/";
     }
 }

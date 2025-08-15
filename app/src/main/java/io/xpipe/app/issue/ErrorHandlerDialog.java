@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -32,7 +33,7 @@ public class ErrorHandlerDialog {
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
-                graphic.setIconColor(Color.RED);
+                graphic.iconColorProperty().bind(new ReadOnlyObjectWrapper<>(Color.RED));
                 return graphic;
             }));
             if (event.getThrowable() != null && event.isReportable()) {

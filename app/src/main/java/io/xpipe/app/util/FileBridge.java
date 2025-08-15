@@ -5,10 +5,9 @@ import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FailableSupplier;
-import io.xpipe.core.OsType;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -39,14 +38,6 @@ public class FileBridge {
 
     private static void event(String msg) {
         TrackEvent.builder().type("debug").message(msg).handle();
-    }
-
-    private static String getFileSystemCompatibleName(String name) {
-        if (OsType.getLocal() != OsType.WINDOWS) {
-            return name;
-        }
-
-        return name.replaceAll("[\\\\/:*?\"<>|]", "_");
     }
 
     public static void init() {
@@ -94,7 +85,7 @@ public class FileBridge {
         // Wait for edit to finish in case external editor has write lock
         if (!Files.exists(changed)) {
             event("File " + TEMP.relativize(e.file) + " is probably still writing ...");
-            ThreadHelper.sleep(AppPrefs.get().editorReloadTimeout().getValue());
+            ThreadHelper.sleep(1000);
 
             // If still no read lock after some time, just don't parse it
             if (!Files.exists(changed)) {
@@ -174,7 +165,7 @@ public class FileBridge {
         }
 
         Path file = TEMP.resolve(UUID.randomUUID().toString().substring(0, 6))
-                .resolve(getFileSystemCompatibleName(keyName));
+                .resolve(OsFileSystem.ofLocal().makeFileSystemCompatible(keyName));
         try {
             FileUtils.forceMkdirParent(file.toFile());
             try (var out = Files.newOutputStream(file);

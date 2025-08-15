@@ -78,6 +78,11 @@ public abstract class StorageElement {
         synchronized (listeners) {
             listeners.forEach(l -> l.onUpdate());
         }
+
+        // Save changes instantly
+        if (used || modified) {
+            DataStorage.get().saveAsync();
+        }
     }
 
     public void addListener(Listener l) {

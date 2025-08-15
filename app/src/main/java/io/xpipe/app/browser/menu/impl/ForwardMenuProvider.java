@@ -23,13 +23,18 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
         });
     }
 
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
     public String getId() {
         return "forward";
     }
 
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("fth-arrow-right");
+        return new LabelGraphic.IconGraphic("mdi2a-arrow-right");
     }
 
     @Override
@@ -40,11 +45,6 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("goForward");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return false;
     }
 
     @Override

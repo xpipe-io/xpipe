@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -17,7 +17,6 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import lombok.*;
 import lombok.experimental.NonFinal;
@@ -32,6 +31,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class TerminalLaunchConfiguration {
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
     DataStoreColor color;
     String coloredTitle;
     String cleanTitle;
@@ -41,9 +42,6 @@ public class TerminalLaunchConfiguration {
 
     @NonFinal
     FilePath scriptFile = null;
-
-    private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
 
     public static TerminalLaunchConfiguration create(
             UUID request,
@@ -56,7 +54,7 @@ public class TerminalLaunchConfiguration {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
 
         if (!AppPrefs.get().enableTerminalLogging().get()) {
-            var d = ProcessControlProvider.get().getEffectiveLocalDialect();
+            var d = LocalShell.getDialect();
             var launcherScript = d.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
             var config = new TerminalLaunchConfiguration(
                     entry != null ? color : null, adjustedTitle, cleanTitle, preferTabs, launcherScript, d);
@@ -89,7 +87,7 @@ public class TerminalLaunchConfiguration {
                     """
                           echo 'Transcript started, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" > $Out-Null
-                          & %s
+                          & "%s"
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
@@ -127,17 +125,18 @@ public class TerminalLaunchConfiguration {
             var cliExecutable = TerminalProxyManager.getProxy()
                     .orElse(LocalShell.getShell())
                     .getLocalSystemAccess()
-                    .translateFromLocalSystemPath(FilePath.of(XPipeInstallation.getLocalDefaultCliExecutable()));
+                    .translateFromLocalSystemPath(
+                            FilePath.of(AppInstallation.ofCurrent().getCliExecutablePath()));
             var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                     ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
             var content =
                     """
-                   echo "Transcript started, output file is sessions/%s"
-                   %s
-                   echo "Transcript stopped, output file is sessions/%s"
-                   cat "%s" | "%s" terminal-clean > "%s.txt"
-                   """
+                          echo "Transcript started, output file is sessions/%s"
+                          %s
+                          echo "Transcript stopped, output file is sessions/%s"
+                          cat "%s" | "%s" terminal-clean > "%s.txt"
+                          """
                             .formatted(
                                     logFile.getFileName(),
                                     scriptCommand,

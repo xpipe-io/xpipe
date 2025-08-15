@@ -8,16 +8,16 @@ public interface SingletonSessionStore<T extends Session>
         stopSessionIfNeeded();
     }
 
-    default void setSessionEnabled(boolean value) {
-        setCache("sessionEnabled", value);
-    }
-
     default boolean isSessionRunning() {
         return getCache("sessionRunning", Boolean.class, false);
     }
 
     default boolean isSessionEnabled() {
         return getCache("sessionEnabled", Boolean.class, false);
+    }
+
+    default void setSessionEnabled(boolean value) {
+        setCache("sessionEnabled", value);
     }
 
     @Override

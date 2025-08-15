@@ -30,15 +30,13 @@ public class SystemCategory extends AppPrefsCategory {
                                         prefs.startupBehaviour,
                                         PrefsChoiceValue.getSupported(StartupBehaviour.class),
                                         false)
-                                .minWidth(getCompWidth() / 2.0))
+                                .maxWidth(getCompWidth()))
                         .pref(prefs.closeBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .minWidth(getCompWidth() / 2.0))
-                        .pref(prefs.focusWindowOnNotifications)
-                        .addToggle(prefs.focusWindowOnNotifications));
+                                .maxWidth(getCompWidth())));
         builder.sub(localShellBuilder);
         builder.sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();

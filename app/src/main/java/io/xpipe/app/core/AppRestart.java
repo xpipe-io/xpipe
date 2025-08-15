@@ -1,12 +1,10 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 import java.util.List;
 
@@ -14,17 +12,17 @@ public class AppRestart {
 
     private static String createTerminalLaunchCommand(List<String> arguments, ShellDialect dialect) {
         var loc = AppProperties.get().isDevelopmentEnvironment()
-                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                : XPipeInstallation.getCurrentInstallationBasePath();
+                ? AppInstallation.ofDefault()
+                : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
-        if (OsType.getLocal().equals(OsType.LINUX)) {
-            var exec = loc.resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()));
+        if (OsType.getLocal() == OsType.LINUX) {
+            var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
-        } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            var exec = loc.resolve(XPipeInstallation.getRelativeCliExecutablePath(OsType.getLocal()));
+        } else if (OsType.getLocal() == OsType.MACOS) {
+            var exec = loc.getCliExecutablePath();
             return "\"" + exec + "\" open" + suffix;
         } else {
-            var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+            var exe = loc.getDaemonDebugScriptPath();
             if (ShellDialects.isPowershell(dialect)) {
                 var escapedList =
                         arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
@@ -39,15 +37,16 @@ public class AppRestart {
 
     private static String createBackgroundLaunchCommand(List<String> arguments, ShellDialect dialect) {
         var loc = AppProperties.get().isDevelopmentEnvironment()
-                ? XPipeInstallation.getLocalDefaultInstallationBasePath()
-                : XPipeInstallation.getCurrentInstallationBasePath();
+                ? AppInstallation.ofDefault()
+                : AppInstallation.ofCurrent();
         var suffix = (arguments.size() > 0 ? " " + String.join(" ", arguments) : "");
-        if (OsType.getLocal().equals(OsType.LINUX)) {
-            return "nohup \"" + loc + "/bin/xpiped\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
-        } else if (OsType.getLocal().equals(OsType.MACOS)) {
-            return "(sleep 1;open \"" + loc + "\" --args" + suffix + " </dev/null &>/dev/null) & disown";
+        if (OsType.getLocal() == OsType.LINUX) {
+            return "nohup \"" + loc.getDaemonExecutablePath() + "\"" + suffix + " </dev/null >/dev/null 2>&1 & disown";
+        } else if (OsType.getLocal() == OsType.MACOS) {
+            return "(sleep 1;open \"" + loc.getBaseInstallationPath() + "\" --args" + suffix
+                    + " </dev/null &>/dev/null) & disown";
         } else {
-            var exe = loc.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+            var exe = loc.getDaemonExecutablePath();
             if (ShellDialects.isPowershell(dialect)) {
                 var escapedList =
                         arguments.stream().map(s -> s.replaceAll("\"", "`\"")).toList();
@@ -73,7 +72,7 @@ public class AppRestart {
     }
 
     public static String getBackgroundRestartCommand() {
-        return getBackgroundRestartCommand(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return getBackgroundRestartCommand(LocalShell.getDialect());
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {
@@ -89,7 +88,7 @@ public class AppRestart {
     }
 
     public static String getTerminalRestartCommand() {
-        return getTerminalRestartCommand(ProcessControlProvider.get().getEffectiveLocalDialect());
+        return getTerminalRestartCommand(LocalShell.getDialect());
     }
 
     public static void restart() {

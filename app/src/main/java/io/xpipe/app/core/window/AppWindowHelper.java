@@ -48,12 +48,12 @@ public class AppWindowHelper {
 
         // This allows for assigning logos even if AppImages has not been initialized yet
         var dir = OsType.getLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
-        AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
+        AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
             var size =
                     switch (OsType.getLocal()) {
-                        case OsType.Linux linux -> 128;
-                        case OsType.MacOs macOs -> 128;
-                        case OsType.Windows windows -> 32;
+                        case OsType.Linux ignored -> 128;
+                        case OsType.MacOs ignored -> 128;
+                        case OsType.Windows ignored -> 32;
                     };
             stage.getIcons().add(AppImages.loadImage(path.resolve("logo_" + size + "x" + size + ".png")));
         });
@@ -128,7 +128,7 @@ public class AppWindowHelper {
         }
         alert.getDialogPane().getScene().setFill(Color.TRANSPARENT);
         var stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        ModifiedStage.prepareStage(stage);
+        AppModifiedStage.prepareStage(stage);
         addIcons(stage);
         setupStylesheets(alert.getDialogPane().getScene());
         return alert;
@@ -138,7 +138,8 @@ public class AppWindowHelper {
         AppStyle.addStylesheets(scene);
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (AppProperties.get().isDeveloperMode() && event.getCode().equals(KeyCode.F3)) {
+            if (AppProperties.get().isDevelopmentEnvironment()
+                    && event.getCode().equals(KeyCode.F3)) {
                 AppStyle.reloadStylesheets(scene);
                 TrackEvent.debug("Reloaded stylesheets");
                 event.consume();

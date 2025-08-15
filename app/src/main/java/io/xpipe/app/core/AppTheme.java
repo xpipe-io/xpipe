@@ -263,7 +263,7 @@ public class AppTheme {
                 String cssId,
                 String name,
                 atlantafx.base.theme.Theme theme,
-                AppFontSizes sizes,
+                Supplier<AppFontSizes> sizes,
                 Color baseColor,
                 Color borderColor,
                 Supplier<Color> contextMenuColor,
@@ -278,7 +278,7 @@ public class AppTheme {
         @SneakyThrows
         public void apply() {
             var builder = new StringBuilder();
-            AppResources.with(AppResources.XPIPE_MODULE, "theme/" + id + ".css", path -> {
+            AppResources.with(AppResources.MAIN_MODULE, "theme/" + id + ".css", path -> {
                 var content = Files.readString(path);
                 builder.append(content);
             });
@@ -291,10 +291,6 @@ public class AppTheme {
             });
 
             Application.setUserAgentStylesheet(Styles.toDataURI(builder.toString()));
-        }
-
-        public List<String> getAdditionalStylesheets() {
-            return List.of();
         }
 
         @Override
@@ -310,7 +306,7 @@ public class AppTheme {
                 "light",
                 "primer",
                 new PrimerLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.WHITE,
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -325,7 +321,7 @@ public class AppTheme {
                 "dark",
                 "primer",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#0d1117"),
                 Color.web("#c9d1d9"),
                 () -> ColorHelper.withOpacity(
@@ -340,7 +336,7 @@ public class AppTheme {
                 "nordLight",
                 "nord",
                 new NordLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#dadadc"),
                 Color.web("#2E3440"),
                 () -> ColorHelper.withOpacity(
@@ -355,7 +351,7 @@ public class AppTheme {
                 "nordDark",
                 "nord",
                 new NordDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#2d3137"),
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -370,7 +366,7 @@ public class AppTheme {
                 "cupertinoLight",
                 "cupertino",
                 new CupertinoLight(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.WHITE,
                 Color.BLACK,
                 () -> ColorHelper.withOpacity(
@@ -385,7 +381,7 @@ public class AppTheme {
                 "cupertinoDark",
                 "cupertino",
                 new CupertinoDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.BLACK,
                 Color.WHITE,
                 () -> ColorHelper.withOpacity(
@@ -400,7 +396,7 @@ public class AppTheme {
                 "dracula",
                 "dracula",
                 new Dracula(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#383f49"),
                 Color.web("#9580ff"),
                 () -> ColorHelper.withOpacity(
@@ -416,7 +412,7 @@ public class AppTheme {
                 "mocha",
                 "Mocha",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_11, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#2E2E4EFF"),
                 Color.web("#CDD6F4FF"),
                 () -> ColorHelper.withOpacity(
@@ -435,7 +431,7 @@ public class AppTheme {
                 "primer",
                 "Custom",
                 new PrimerDark(),
-                AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
+                () -> AppFontSizes.forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10_5, AppFontSizes.BASE_11),
                 Color.web("#0d1117"),
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
@@ -454,7 +450,7 @@ public class AppTheme {
         protected final atlantafx.base.theme.Theme theme;
 
         @Getter
-        protected final AppFontSizes fontSizes;
+        protected final Supplier<AppFontSizes> fontSizes;
 
         @Getter
         protected final Color baseColor;
@@ -470,17 +466,17 @@ public class AppTheme {
 
         static Theme getDefaultLightTheme() {
             return switch (OsType.getLocal()) {
-                case OsType.Windows windows -> PRIMER_LIGHT;
-                case OsType.Linux linux -> PRIMER_LIGHT;
-                case OsType.MacOs macOs -> CUPERTINO_LIGHT;
+                case OsType.Windows ignored -> PRIMER_LIGHT;
+                case OsType.Linux ignored -> PRIMER_LIGHT;
+                case OsType.MacOs ignored -> CUPERTINO_LIGHT;
             };
         }
 
         static Theme getDefaultDarkTheme() {
             return switch (OsType.getLocal()) {
-                case OsType.Windows windows -> PRIMER_DARK;
-                case OsType.Linux linux -> PRIMER_DARK;
-                case OsType.MacOs macOs -> CUPERTINO_DARK;
+                case OsType.Windows ignored -> PRIMER_DARK;
+                case OsType.Linux ignored -> PRIMER_DARK;
+                case OsType.MacOs ignored -> CUPERTINO_DARK;
             };
         }
 
@@ -497,15 +493,6 @@ public class AppTheme {
             var hex = ColorHelper.toWeb(c);
             var s = "* { -color-context-menu: " + hex + "; }";
             return s;
-        }
-
-        public List<String> getAdditionalStylesheets() {
-            var r = AppResources.getResourceURL(AppResources.XPIPE_MODULE, "theme/" + getId() + ".css");
-            if (r.isEmpty()) {
-                return List.of();
-            } else {
-                return List.of(r.get().toString());
-            }
         }
 
         @Override

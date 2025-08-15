@@ -46,7 +46,7 @@ public class FileOpener {
     public static void openWithAnyApplication(String localFile) {
         try {
             switch (OsType.getLocal()) {
-                case OsType.Windows windows -> {
+                case OsType.Windows ignored -> {
                     // See https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shellexecuteinfoa
                     var struct = new ShellAPI.SHELLEXECUTEINFO();
                     struct.fMask = 0x100 | 0xC;
@@ -59,10 +59,10 @@ public class FileOpener {
                     // var cmd = CommandBuilder.of().add("rundll32.exe", "shell32.dll,OpenAs_RunDLL", localFile);
                     // LocalShell.getShell().executeSimpleCommand(cmd);
                 }
-                case OsType.Linux linux -> {
+                case OsType.Linux ignored -> {
                     throw new UnsupportedOperationException();
                 }
-                case OsType.MacOs macOs -> {
+                case OsType.MacOs ignored -> {
                     throw new UnsupportedOperationException();
                 }
             }
@@ -74,14 +74,14 @@ public class FileOpener {
 
     public static void openInDefaultApplication(String localFile) {
         try (var pc = LocalShell.getShell().start()) {
-            if (pc.getOsType().equals(OsType.WINDOWS)) {
+            if (pc.getOsType() == OsType.WINDOWS) {
                 if (pc.getShellDialect() == ShellDialects.POWERSHELL) {
                     pc.command(CommandBuilder.of().add("Invoke-Item").addFile(localFile))
                             .execute();
                 } else {
                     pc.executeSimpleCommand("start \"\" \"" + localFile + "\"");
                 }
-            } else if (pc.getOsType().equals(OsType.LINUX)) {
+            } else if (pc.getOsType() == OsType.LINUX) {
                 pc.executeSimpleCommand("xdg-open \"" + localFile + "\"");
             } else {
                 pc.executeSimpleCommand("open \"" + localFile + "\"");
@@ -124,9 +124,6 @@ public class FileOpener {
                         (size) -> {
                             return new BrowserFileOutput() {
                                 @Override
-                                public void beforeTransfer() {}
-
-                                @Override
                                 public Optional<DataStoreEntry> target() {
                                     return Optional.empty();
                                 }
@@ -146,6 +143,9 @@ public class FileOpener {
                                         }
                                     };
                                 }
+
+                                @Override
+                                public void beforeTransfer() {}
 
                                 @Override
                                 public void onFinish() {}

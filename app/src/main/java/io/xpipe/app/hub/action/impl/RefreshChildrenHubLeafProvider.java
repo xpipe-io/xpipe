@@ -22,13 +22,13 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<FixedHierarchyStore> o) {
+    public boolean isMajor(DataStoreEntryRef<FixedHierarchyStore> o) {
         return true;
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<FixedHierarchyStore> o) {
-        return true;
+    public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
+        return o.getStore().canManuallyRefresh();
     }
 
     @Override
@@ -42,13 +42,13 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<FixedHierarchyStore> o) {
-        return o.getStore().canManuallyRefresh();
+    public Class<FixedHierarchyStore> getApplicableClass() {
+        return FixedHierarchyStore.class;
     }
 
     @Override
-    public Class<FixedHierarchyStore> getApplicableClass() {
-        return FixedHierarchyStore.class;
+    public boolean isDefault(DataStoreEntryRef<FixedHierarchyStore> o) {
+        return true;
     }
 
     @Override

@@ -29,12 +29,6 @@ public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
     }
 
     @Override
-    public Class<ShellStore> getApplicableClass() {
-        // For which general type of connection store to make this action available.
-        return ShellStore.class;
-    }
-
-    @Override
     public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
         // Allows you to individually check whether this action should be available for the specific store.
         return true;
@@ -50,6 +44,12 @@ public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
     public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
         // The ikonli icon of the button.
         return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
+    }
+
+    @Override
+    public Class<ShellStore> getApplicableClass() {
+        // For which general type of connection store to make this action available.
+        return ShellStore.class;
     }
 
     @Override
@@ -93,9 +93,9 @@ public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
                 // In this case, XPipe will internally write a command to a script file and then execute the script
                 try (CommandControl cc = sc.command(
                                 """
-                        VAR="value"
-                        echo "$VAR"
-                        """)
+                                                    VAR="value"
+                                                    echo "$VAR"
+                                                    """)
                         .start()) {
                     // Reads stdout, stashes stderr. If the exit code is not 0, it will throw an exception with the
                     // stderr contents.

@@ -10,11 +10,11 @@ import java.util.Set;
 
 public class TerminalDockModel {
 
-    private Rect viewBounds;
-    private boolean viewActive;
-
     @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
+
+    private Rect viewBounds;
+    private boolean viewActive;
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal) {
         terminalInstances.add(terminal);

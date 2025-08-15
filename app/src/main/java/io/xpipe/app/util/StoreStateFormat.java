@@ -20,6 +20,16 @@ import java.util.stream.Stream;
 @Value
 public class StoreStateFormat {
 
+    LicensedFeature licensedFeature;
+    String name;
+    String[] states;
+
+    public StoreStateFormat(LicensedFeature licensedFeature, String name, String... states) {
+        this.licensedFeature = licensedFeature;
+        this.name = name;
+        this.states = states;
+    }
+
     public static ObservableValue<String> shellEnvironment(StoreSection section, boolean includeOsName) {
         return Bindings.createStringBinding(
                 () -> {
@@ -50,7 +60,7 @@ public class StoreStateFormat {
                             .format();
                 }
 
-                if (s.getShellDialect().equals(ShellDialects.NO_INTERACTION)) {
+                if (s.getShellDialect() == ShellDialects.NO_INTERACTION) {
                     return new StoreStateFormat(null, null, info).format();
                 }
 
@@ -72,14 +82,14 @@ public class StoreStateFormat {
         });
     }
 
-    LicensedFeature licensedFeature;
-    String name;
-    String[] states;
+    public static String formattedOsName(String osName) {
+        if (osName == null) {
+            return null;
+        }
 
-    public StoreStateFormat(LicensedFeature licensedFeature, String name, String... states) {
-        this.licensedFeature = licensedFeature;
-        this.name = name;
-        this.states = states;
+        osName = osName.replaceAll("^Microsoft ", "");
+        osName = osName.replaceAll("Enterprise Evaluation", "Enterprise");
+        return osName;
     }
 
     public String format() {
@@ -97,15 +107,5 @@ public class StoreStateFormat {
             state = null;
         }
         return DataStoreFormatter.join(lic, name, state);
-    }
-
-    public static String formattedOsName(String osName) {
-        if (osName == null) {
-            return null;
-        }
-
-        osName = osName.replaceAll("^Microsoft ", "");
-        osName = osName.replaceAll("Enterprise Evaluation", "Enterprise");
-        return osName;
     }
 }

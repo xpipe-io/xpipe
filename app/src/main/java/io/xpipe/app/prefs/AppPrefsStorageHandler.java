@@ -159,8 +159,4 @@ public class AppPrefsStorageHandler {
             return defaultObject;
         }
     }
-
-    public boolean clear() {
-        return FileUtils.deleteQuietly(file.toFile());
-    }
 }

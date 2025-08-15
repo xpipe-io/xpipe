@@ -22,14 +22,14 @@ import java.util.List;
 @JsonDeserialize(using = BrowserHistorySavedStateImpl.Deserializer.class)
 public class BrowserHistorySavedStateImpl implements BrowserHistorySavedState {
 
+    private static BrowserHistorySavedStateImpl INSTANCE;
+
     @JsonSerialize(as = List.class)
     ObservableList<Entry> lastSystems;
 
     public BrowserHistorySavedStateImpl(List<Entry> lastSystems) {
         this.lastSystems = FXCollections.synchronizedObservableList(FXCollections.observableArrayList(lastSystems));
     }
-
-    private static BrowserHistorySavedStateImpl INSTANCE;
 
     public static BrowserHistorySavedState get() {
         if (INSTANCE == null) {

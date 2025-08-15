@@ -4,7 +4,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.util.PlatformThread;
 
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
 
@@ -16,10 +15,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 public class FontIconComp extends Comp<FontIconComp.Structure> {
 
     private final ObservableValue<String> icon;
-
-    public FontIconComp(String icon) {
-        this.icon = new SimpleStringProperty(icon);
-    }
 
     @Override
     public FontIconComp.Structure createBase() {

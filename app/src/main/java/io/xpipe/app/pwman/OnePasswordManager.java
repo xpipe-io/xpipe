@@ -42,7 +42,7 @@ public class OnePasswordManager implements PasswordManager {
         String name = key;
 
         if (key.startsWith("op://")) {
-            var match = Pattern.compile("op://(\\w+)/(\\w+)").matcher(key);
+            var match = Pattern.compile("op://([^/]+)/([^/]+)").matcher(key);
             if (match.find()) {
                 vault = match.group(1);
                 name = match.group(2);
@@ -58,10 +58,7 @@ public class OnePasswordManager implements PasswordManager {
                 b.add("--vault").addLiteral(vault);
             }
 
-            var r = getOrStartShell()
-                    .command(b)
-                    .sensitive()
-                    .readStdoutOrThrow();
+            var r = getOrStartShell().command(b).sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(r);
             if (!tree.isArray() || tree.size() != 2) {
                 return null;
@@ -81,5 +78,10 @@ public class OnePasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return AppI18n.get("onePasswordPlaceholder");
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://1password.com/";
     }
 }

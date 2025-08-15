@@ -1,5 +1,6 @@
 package io.xpipe.app.vnc;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -22,15 +23,15 @@ public abstract class TigerVncClient implements ExternalVncClient {
         return builder;
     }
 
+    @Override
+    public String getWebsite() {
+        return "https://tigervnc.org/";
+    }
+
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")
     public static class Windows extends TigerVncClient implements ExternalApplicationType.WindowsType {
-
-        @Override
-        public boolean supportsPasswords() {
-            return false;
-        }
 
         @Override
         public boolean detach() {
@@ -43,23 +44,29 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public Optional<Path> determineFromPath() {
-            var found = WindowsType.super.determineFromPath();
-            return found.filter(path -> path.toString().contains("TigerVNC"));
-        }
-
-        @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
+            return Optional.of(AppSystemInfo.getWindows()
+                            .getProgramFiles()
                             .resolve("TigerVNC")
                             .resolve("vncviewer.exe"))
                     .filter(path -> Files.exists(path));
         }
 
         @Override
+        public Optional<Path> determineFromPath() {
+            var found = WindowsType.super.determineFromPath();
+            return found.filter(path -> path.toString().contains("TigerVNC"));
+        }
+
+        @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
+        }
+
+        @Override
+        public boolean supportsPasswords() {
+            return false;
         }
     }
 

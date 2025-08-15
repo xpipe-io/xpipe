@@ -13,26 +13,12 @@ import java.util.function.Supplier;
 
 public interface ExternalRdpClient extends PrefsChoiceValue {
 
-    static ExternalRdpClient getApplicationLauncher() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            return MSTSC;
-        } else {
-            return AppPrefs.get().rdpClientType().getValue();
-        }
-    }
-
     ExternalRdpClient MSTSC = new MstscRdpClient();
-
     ExternalRdpClient DEVOLUTIONS = new DevolutionsRdpClient();
-
     ExternalRdpClient REMMINA = new RemminaRdpClient();
-
     ExternalRdpClient X_FREE_RDP = new FreeRdpClient();
-
     ExternalRdpClient MICROSOFT_REMOTE_DESKTOP_MACOS_APP = new RemoteDesktopAppRdpClient();
-
     ExternalRdpClient WINDOWS_APP_MACOS = new WindowsAppRdpClient();
-
     ExternalRdpClient CUSTOM = new CustomRdpClient();
     List<ExternalRdpClient> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
     List<ExternalRdpClient> LINUX_CLIENTS = List.of(REMMINA, X_FREE_RDP);
@@ -41,19 +27,27 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalRdpClient> ALL = ((Supplier<List<ExternalRdpClient>>) () -> {
                 var all = new ArrayList<ExternalRdpClient>();
-                if (OsType.getLocal().equals(OsType.WINDOWS)) {
+                if (OsType.getLocal() == OsType.WINDOWS) {
                     all.addAll(WINDOWS_CLIENTS);
                 }
-                if (OsType.getLocal().equals(OsType.LINUX)) {
+                if (OsType.getLocal() == OsType.LINUX) {
                     all.addAll(LINUX_CLIENTS);
                 }
-                if (OsType.getLocal().equals(OsType.MACOS)) {
+                if (OsType.getLocal() == OsType.MACOS) {
                     all.addAll(MACOS_CLIENTS);
                 }
                 all.add(CUSTOM);
                 return all;
             })
             .get();
+
+    static ExternalRdpClient getApplicationLauncher() {
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            return MSTSC;
+        } else {
+            return AppPrefs.get().rdpClientType().getValue();
+        }
+    }
 
     static ExternalRdpClient determineDefault(ExternalRdpClient existing) {
         // Verify that our selection is still valid
@@ -81,6 +75,8 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     void launch(RdpLaunchConfig configuration) throws Exception;
 
     boolean supportsPasswordPassing();
+
+    String getWebsite();
 
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);

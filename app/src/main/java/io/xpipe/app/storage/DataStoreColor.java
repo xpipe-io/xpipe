@@ -14,14 +14,20 @@ public enum DataStoreColor {
     @JsonProperty("red")
     RED("red", "\uD83D\uDD34", Color.DARKRED),
 
-    @JsonProperty("green")
-    GREEN("green", "\uD83D\uDFE2", Color.DARKGREEN),
-
     @JsonProperty("yellow")
     YELLOW("yellow", "\uD83D\uDFE1", Color.web("#999922")),
 
+    @JsonProperty("green")
+    GREEN("green", "\uD83D\uDFE2", Color.DARKGREEN),
+
+    @JsonProperty("cyan")
+    CYAN("cyan", "\uD83D\uDFE9", Color.CYAN),
+
     @JsonProperty("blue")
-    BLUE("blue", "\uD83D\uDD35", Color.DARKBLUE);
+    BLUE("blue", "\uD83D\uDD35", Color.DARKBLUE),
+
+    @JsonProperty("purple")
+    VIOLET("purple", "\uD83D\uDFE3", Color.VIOLET);
 
     private final String id;
     private final String emoji;
@@ -31,16 +37,6 @@ public enum DataStoreColor {
         this.id = id;
         this.emoji = emoji;
         this.terminalColor = terminalColor;
-    }
-
-    private String format(double val) {
-        String in = Integer.toHexString((int) Math.round(val * 255));
-        return in.length() == 1 ? "0" + in : in;
-    }
-
-    public String toHexString() {
-        var value = terminalColor;
-        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 
     public static void applyStyleClasses(DataStoreColor color, Node node) {
@@ -54,5 +50,15 @@ public enum DataStoreColor {
             newList.add("gray");
         }
         node.getStyleClass().setAll(newList);
+    }
+
+    private String format(double val) {
+        String in = Integer.toHexString((int) Math.round(val * 255));
+        return in.length() == 1 ? "0" + in : in;
+    }
+
+    public String toHexString() {
+        var value = terminalColor;
+        return "#" + (format(value.getRed()) + format(value.getGreen()) + format(value.getBlue())).toUpperCase();
     }
 }

@@ -16,11 +16,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class StoreIconChoiceDialog {
 
-    public static void show(DataStoreEntry entry) {
-        var dialog = new StoreIconChoiceDialog(entry);
-        dialog.getOverlay().show();
-    }
-
     private final ObjectProperty<SystemIcon> selected = new SimpleObjectProperty<>();
     private final DataStoreEntry entry;
 
@@ -30,6 +25,11 @@ public class StoreIconChoiceDialog {
     public StoreIconChoiceDialog(DataStoreEntry entry) {
         this.entry = entry;
         this.overlay = createOverlay();
+    }
+
+    public static void show(DataStoreEntry entry) {
+        var dialog = new StoreIconChoiceDialog(entry);
+        dialog.getOverlay().show();
     }
 
     private ModalOverlay createOverlay() {

@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.util.Locale;
 
@@ -32,5 +33,16 @@ public class HostHelper {
         }
 
         return false;
+    }
+
+    public static boolean isLocalNetworkAddress(String host) {
+        Inet4Address inet4Address;
+        try {
+            inet4Address = Inet4Address.ofLiteral(host);
+        } catch (IllegalArgumentException ignored) {
+            return false;
+        }
+
+        return inet4Address.isSiteLocalAddress();
     }
 }
