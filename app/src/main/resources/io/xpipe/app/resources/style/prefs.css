@@ -16,11 +16,6 @@
     -fx-padding: 0 0 0 1em;
 }
 
-.root:macos .prefs-container .options-comp .name {
-    -fx-font-weight: NORMAL;
-    -fx-font-size: 1.2em;
-}
-
 .prefs-container .options-comp .description-box {
     -fx-padding: 0.5em 0 0.5em 0;
 }
