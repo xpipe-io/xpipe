@@ -52,7 +52,7 @@ dependencies {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
-    api "io.projectreactor:reactor-core:3.7.0"
+    api "io.projectreactor:reactor-core:3.7.9"
     api "org.reactivestreams:reactive-streams:1.0.4"
     api ("com.networknt:json-schema-validator:1.5.8") {
         exclude group: "com.ethlo.time", module: "itu"
