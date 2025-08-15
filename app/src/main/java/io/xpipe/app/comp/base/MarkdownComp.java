@@ -161,6 +161,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         if (!WEB_VIEW_SUPPORTED) {
             var text = new TextArea();
             text.setEditable(false);
+            text.setWrapText(true);
             markdown.subscribe(s -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     text.setText(s);

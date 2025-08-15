@@ -17,11 +17,8 @@
         "description": "The working directory"
       },
       "arguments": {
-        "type": "array",
-        "properties": {
-          "type": "string",
-          "description": "A script argument"
-        }
+        "type": "string",
+        "description": "The optional argument list"
       }
     },
     "required": [

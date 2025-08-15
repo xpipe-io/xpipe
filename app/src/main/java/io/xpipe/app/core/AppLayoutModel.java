@@ -164,7 +164,7 @@ public class AppLayoutModel {
         }
         l.add(new Entry(
                 AppI18n.observable("mcp"),
-                new LabelGraphic.IconGraphic("mdi2c-code-json"),
+                new LabelGraphic.IconGraphic("mdi2r-robot"),
                 null,
                 () -> DocumentationLink.MCP.open(),
                 null));

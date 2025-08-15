@@ -66,6 +66,10 @@ public final class McpTools {
                             continue;
                         }
 
+                        if (!e.getProvider().includeInConnectionCount()) {
+                            continue;
+                        }
+
                         var r = ConnectionResource.builder()
                                 .name(e.getName())
                                 .path(DataStorage.get().getStorePath(e).toString())

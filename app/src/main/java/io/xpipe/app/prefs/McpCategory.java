@@ -64,7 +64,7 @@ public class McpCategory extends AppPrefsCategory {
                         .nameAndDescription("mcpClientConfigurationDetails")
                         .addComp(new TextAreaComp(mcpConfigProp).apply(struc -> {
                             struc.getTextArea().setEditable(false);
-                            struc.getTextArea().setPrefRowCount(11);
+                            struc.getTextArea().setPrefRowCount(12);
                         }))
                         .hide(prefs.enableMcpServer.not()))
                 .buildComp();
