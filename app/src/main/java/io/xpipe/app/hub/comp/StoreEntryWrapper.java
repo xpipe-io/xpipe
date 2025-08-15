@@ -106,6 +106,10 @@ public class StoreEntryWrapper {
         });
     }
 
+    public boolean includeInConnectionCount() {
+        return getEntry().getProvider() != null && getEntry().getProvider().includeInConnectionCount();
+    }
+
     public boolean isInStorage() {
         return DataStorage.get() != null && DataStorage.get().getStoreEntries().contains(entry);
     }

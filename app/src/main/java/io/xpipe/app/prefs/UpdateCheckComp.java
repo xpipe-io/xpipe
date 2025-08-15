@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
+import io.xpipe.app.update.UpdateHandler;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -13,23 +14,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
 public class UpdateCheckComp extends SimpleComp {
-
-    private final ObservableValue<Boolean> updateReady;
-    private final ObservableValue<Boolean> checking;
-
-    public UpdateCheckComp() {
-        updateReady = PlatformThread.sync(Bindings.createBooleanBinding(
-                () -> {
-                    return AppDistributionType.get()
-                                    .getUpdateHandler()
-                                    .getPreparedUpdate()
-                                    .getValue()
-                            != null;
-                },
-                AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
-        checking =
-                PlatformThread.sync(AppDistributionType.get().getUpdateHandler().getBusy());
-    }
 
     private void showAlert() {
         ThreadHelper.runFailableAsync(() -> {
@@ -47,20 +31,27 @@ public class UpdateCheckComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
+        var uh = AppDistributionType.get().getUpdateHandler();
         var name = Bindings.createStringBinding(
                 () -> {
-                    if (checking.getValue()) {
+                    if (uh.getBusy().getValue()) {
+                        var available = uh.getLastUpdateCheckResult().getValue();
+                        if (available != null) {
+                            return AppI18n.get("downloadingUpdate", available.getVersion());
+                        }
+
                         return AppI18n.get("checkingForUpdates");
                     }
 
-                    if (updateReady.getValue()) {
+                    if (uh
+                            .getPreparedUpdate()
+                            .getValue() != null) {
                         var prefix =
-                                !AppDistributionType.get().getUpdateHandler().supportsDirectInstallation()
+                                !uh.supportsDirectInstallation()
                                         ? AppI18n.get("updateReadyPortable")
                                         : AppI18n.get("updateReady");
                         var version = "Version "
-                                + AppDistributionType.get()
-                                        .getUpdateHandler()
+                                + uh
                                         .getPreparedUpdate()
                                         .getValue()
                                         .getVersion();
@@ -70,15 +61,23 @@ public class UpdateCheckComp extends SimpleComp {
                     return AppI18n.get("checkForUpdates");
                 },
                 AppI18n.activeLanguage(),
-                updateReady,
-                checking);
+                uh.getLastUpdateCheckResult(),
+                uh.getPreparedUpdate(),
+                uh.getBusy());
         var description = Bindings.createStringBinding(
                 () -> {
-                    if (checking.getValue()) {
+                    if (uh.getBusy().getValue()) {
+                        var available = uh.getLastUpdateCheckResult().getValue();
+                        if (available != null) {
+                            return AppI18n.get("downloadingUpdateDescription");
+                        }
+
                         return AppI18n.get("checkingForUpdatesDescription");
                     }
 
-                    if (updateReady.getValue()) {
+                    if (uh
+                            .getPreparedUpdate()
+                            .getValue() != null) {
                         return AppDistributionType.get() == AppDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyDescriptionPortable")
                                 : AppI18n.get("updateReadyDescription");
@@ -87,20 +86,31 @@ public class UpdateCheckComp extends SimpleComp {
                     return AppI18n.get("checkForUpdatesDescription");
                 },
                 AppI18n.activeLanguage(),
-                updateReady,
-                checking);
+                uh.getLastUpdateCheckResult(),
+                uh.getPreparedUpdate(),
+                uh.getBusy());
         var graphic = Bindings.createObjectBinding(
                 () -> {
-                    if (updateReady.getValue()) {
+                    if (uh
+                            .getPreparedUpdate()
+                            .getValue() != null) {
                         return "mdi2b-button-cursor";
+                    }
+
+                    if (uh.getBusy().getValue() && uh.getLastUpdateCheckResult().getValue() != null) {
+                        return "mdi2d-download";
                     }
 
                     return "mdi2r-refresh";
                 },
-                updateReady);
+                uh.getPreparedUpdate(),
+                uh.getBusy(),
+                uh.getLastUpdateCheckResult());
         return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
-                    if (updateReady.getValue()) {
+                    if (uh
+                            .getPreparedUpdate()
+                            .getValue() != null) {
                         showAlert();
                         return;
                     }
@@ -108,7 +118,7 @@ public class UpdateCheckComp extends SimpleComp {
                     refresh();
                 })
                 .styleClass("update-button")
-                .disable(checking)
+                .disable(uh.getBusy())
                 .createRegion();
     }
 }

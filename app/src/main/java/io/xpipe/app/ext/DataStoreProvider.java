@@ -25,6 +25,10 @@ import java.util.UUID;
 
 public interface DataStoreProvider {
 
+    default boolean includeInConnectionCount() {
+        return getUsageCategory() != DataStoreUsageCategory.GROUP;
+    }
+
     default boolean canConfigure() {
         var m = getClass().getDeclaredMethods();
         return Arrays.stream(m).anyMatch(method -> method.getName().equals("guiDialog"));

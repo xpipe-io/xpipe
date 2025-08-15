@@ -12,8 +12,10 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -21,6 +23,7 @@ import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -146,6 +149,16 @@ public class StoreViewState {
 
     public static StoreViewState get() {
         return INSTANCE;
+    }
+
+    public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
+        return Bindings.size(allEntries.filtered(storeEntryWrapper -> {
+            if (!storeEntryWrapper.includeInConnectionCount()) {
+                return false;
+            }
+
+            return filter.test(storeEntryWrapper);
+        }, observables).getList());
     }
 
     public boolean isBatchModeSelected(StoreEntryWrapper entry) {

@@ -34,6 +34,12 @@ subprojects {subproject ->
     }
 }
 
+// https://docs.gradle.org/9.0.0/userguide/upgrading_major_version_9.html#reproducible_archives_by_default
+tasks.withType(AbstractArchiveTask).configureEach {
+    reproducibleFileOrder = false
+    preserveFileTimestamps = true
+    useFileSystemPermissions()
+}
 
 def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
 def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
