@@ -57,6 +57,11 @@ public interface SshIdentityStrategy {
 
         var base = LocalShell.getShell().getSystemTemporaryDirectory().join("key.pub");
         var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
+
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            LocalShell.getShell().command(CommandBuilder.of().add("chmod", "400").addFile(file)).executeAndCheck();
+        }
+
         return Optional.of(file);
     }
 
@@ -332,7 +337,7 @@ public interface SshIdentityStrategy {
                         + " is marked to be a public key file, SSH authentication requires the private key"));
             }
 
-            if ((parent.getOsType() == OsType.LINUX || parent.getOsType() == OsType.MACOS)) {
+            if (parent.getOsType() != OsType.WINDOWS) {
                 // Try to preserve the same permission set
                 parent.command(CommandBuilder.of()
                                 .add("test", "-w")
