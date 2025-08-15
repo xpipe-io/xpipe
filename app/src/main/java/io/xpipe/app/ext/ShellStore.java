@@ -82,7 +82,7 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
 
     @Override
     default void validate() throws Exception {
-        try (var sc = tempControl().start()) {}
+        try (var ignored = tempControl().start()) {}
     }
 
     default ShellControl standaloneControl() throws Exception {

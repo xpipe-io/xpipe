@@ -23,13 +23,18 @@ public class BackMenuProvider implements BrowserMenuLeafProvider {
         });
     }
 
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return false;
+    }
+
     public String getId() {
         return "back";
     }
 
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("fth-arrow-left");
+        return new LabelGraphic.IconGraphic("mdi2a-arrow-left");
     }
 
     @Override
@@ -40,11 +45,6 @@ public class BackMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("back");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return false;
     }
 
     @Override

@@ -21,17 +21,17 @@ import java.util.List;
 public class EditFileMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public KeyCombination getShortcut() {
-        return new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN);
-    }
-
-    @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         ThreadHelper.runAsync(() -> {
             for (BrowserEntry entry : entries) {
                 BrowserFileOpener.openInTextEditor(model, entry.getRawFileEntry());
             }
         });
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 
     @Override
@@ -45,15 +45,15 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
+    public KeyCombination getShortcut() {
+        return new KeyCodeCombination(KeyCode.E, KeyCombination.SHORTCUT_DOWN);
+    }
+
+    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var e = AppPrefs.get().externalEditor().getValue();
         return AppI18n.observable(
                 "editWithEditor", e != null ? e.toTranslatedString().getValue() : "?");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 
     @Override

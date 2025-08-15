@@ -52,7 +52,7 @@ public class UserReportComp extends ModalOverlayContentComp {
             var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
             AppFontSizes.xs(dataPolicyButton);
             dataPolicyButton.setOnAction(event1 -> {
-                AppResources.with(AppResources.XPIPE_MODULE, "misc/report_privacy_policy.md", file -> {
+                AppResources.with(AppResources.MAIN_MODULE, "misc/report_privacy_policy.md", file -> {
                     var markDown = new MarkdownComp(Files.readString(file), s -> s, true)
                             .apply(struc -> struc.get().setMaxWidth(500))
                             .apply(struc -> struc.get().setMaxHeight(400));

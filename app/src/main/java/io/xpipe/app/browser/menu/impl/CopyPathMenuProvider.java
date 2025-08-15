@@ -21,14 +21,27 @@ import java.util.stream.Collectors;
 
 public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
 
-    @Override
-    public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.COPY_PASTE;
+    private static String centerEllipsis(String input, int length) {
+        if (input == null) {
+            return "";
+        }
+
+        if (input.length() <= length) {
+            return input;
+        }
+
+        var half = (length / 2) - 5;
+        return input.substring(0, half) + " ... " + input.substring(input.length() - half);
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
+    }
+
+    @Override
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.COPY_PASTE;
     }
 
     @Override
@@ -37,8 +50,8 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 
     @Override
@@ -76,6 +89,11 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                 },
                 new BrowserMenuLeafProvider() {
                     @Override
+                    public boolean automaticallyResolveLinks() {
+                        return false;
+                    }
+
+                    @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
@@ -91,23 +109,18 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream()
-                                .allMatch(browserEntry ->
-                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK);
-                    }
-
-                    @Override
-                    public boolean automaticallyResolveLinks() {
-                        return false;
-                    }
-
-                    @Override
                     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         var s = entries.stream()
                                 .map(entry -> entry.getRawFileEntry().getPath().toString())
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
+                    }
+
+                    @Override
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return entries.stream()
+                                .allMatch(browserEntry ->
+                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK);
                     }
                 },
                 new BrowserMenuLeafProvider() {
@@ -121,19 +134,10 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                                                     .getRawFileEntry()
                                                     .getPath()
                                                     .toString(),
-                                            50)
-                                    + "\"");
+                                            50) + "\"");
                         }
 
                         return AppI18n.observable("absolutePathsQuoted");
-                    }
-
-                    @Override
-                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
-                                .getPath()
-                                .toString()
-                                .contains(" "));
                     }
 
                     @Override
@@ -142,6 +146,14 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                                 .map(entry -> "\"" + entry.getRawFileEntry().getPath() + "\"")
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
+                    }
+
+                    @Override
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .toString()
+                                .contains(" "));
                     }
                 },
                 new BrowserMenuLeafProvider() {
@@ -176,6 +188,11 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                 },
                 new BrowserMenuLeafProvider() {
                     @Override
+                    public boolean automaticallyResolveLinks() {
+                        return false;
+                    }
+
+                    @Override
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         if (entries.size() == 1) {
@@ -191,6 +208,14 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
+                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        var s = entries.stream()
+                                .map(entry -> entry.getRawFileEntry().getPath().getFileName())
+                                .collect(Collectors.joining("\n"));
+                        ClipboardHelper.copyText(s);
+                    }
+
+                    @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return entries.stream()
                                         .allMatch(browserEntry ->
@@ -202,19 +227,6 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                                                 .resolved()
                                                 .getPath()
                                                 .getFileName()));
-                    }
-
-                    @Override
-                    public boolean automaticallyResolveLinks() {
-                        return false;
-                    }
-
-                    @Override
-                    public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        var s = entries.stream()
-                                .map(entry -> entry.getRawFileEntry().getPath().getFileName())
-                                .collect(Collectors.joining("\n"));
-                        ClipboardHelper.copyText(s);
                     }
                 },
                 new BrowserMenuLeafProvider() {
@@ -228,19 +240,10 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                                                     .getRawFileEntry()
                                                     .getPath()
                                                     .getFileName(),
-                                            50)
-                                    + "\"");
+                                            50) + "\"");
                         }
 
                         return AppI18n.observable("fileNamesQuoted");
-                    }
-
-                    @Override
-                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
-                                .getPath()
-                                .getFileName()
-                                .contains(" "));
                     }
 
                     @Override
@@ -251,19 +254,14 @@ public class CopyPathMenuProvider implements BrowserMenuBranchProvider {
                                 .collect(Collectors.joining("\n"));
                         ClipboardHelper.copyText(s);
                     }
+
+                    @Override
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return entries.stream().anyMatch(entry -> entry.getRawFileEntry()
+                                .getPath()
+                                .getFileName()
+                                .contains(" "));
+                    }
                 });
-    }
-
-    private static String centerEllipsis(String input, int length) {
-        if (input == null) {
-            return "";
-        }
-
-        if (input.length() <= length) {
-            return input;
-        }
-
-        var half = (length / 2) - 5;
-        return input.substring(0, half) + " ... " + input.substring(input.length() - half);
     }
 }

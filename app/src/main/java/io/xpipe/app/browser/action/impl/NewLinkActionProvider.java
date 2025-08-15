@@ -12,6 +12,11 @@ import lombok.extern.jackson.Jacksonized;
 
 public class NewLinkActionProvider implements BrowserActionProvider {
 
+    @Override
+    public String getId() {
+        return "newLink";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -21,11 +26,6 @@ public class NewLinkActionProvider implements BrowserActionProvider {
 
         @NonNull
         FilePath target;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -39,10 +39,10 @@ public class NewLinkActionProvider implements BrowserActionProvider {
             }
             model.refreshSync();
         }
-    }
 
-    @Override
-    public String getId() {
-        return "newLink";
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
     }
 }

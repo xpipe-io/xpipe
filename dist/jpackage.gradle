@@ -6,18 +6,18 @@ def distDir = "${project.layout.buildDirectory.get()}/dist"
 def distJvmArgs = new ArrayList<String>(project(':app').jvmRunArgs)
 
 def releaseArguments = distJvmArgs + [
-        "-Dio.xpipe.app.version=$rootProject.versionString",
-        "-Dio.xpipe.app.build=$rootProject.versionString/${new Date().format('yyyy-MM-dd-HH-mm')}",
-        "-Dio.xpipe.app.buildId=$rootProject.buildId",
-        "-Dio.xpipe.app.fullVersion=$rootProject.fullVersion",
-        "-Dio.xpipe.app.staging=$rootProject.isStage",
+        "-Dio.xpipe.app.version=$versionString",
+        "-Dio.xpipe.app.build=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}",
+        "-Dio.xpipe.app.buildId=$buildId",
+        "-Dio.xpipe.app.fullVersion=$fullVersion",
+        "-Dio.xpipe.app.staging=$isStage",
         '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279',
         '-Djna.nosys=false',
         '-Djna.nounpack=true'
 ]
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    releaseArguments += '-Xdock:name=XPipe'
+    releaseArguments += "-Xdock:name=$productName"
 }
 
 if (isFullRelease || isStage) {
@@ -26,8 +26,8 @@ if (isFullRelease || isStage) {
 
 // To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
 application {
-    mainModule = 'io.xpipe.app'
-    mainClass = 'io.xpipe.app.Main'
+    mainModule = packageName(null)
+    mainClass = packageName('Main')
 }
 
 def extModules = project.allExtensions
@@ -48,7 +48,7 @@ dependencies {
 }
 
 // Mac does not like a zero major version
-def macVersion = rootProject.canonicalVersionString
+def macVersion = canonicalVersionString
 if (Integer.parseInt(macVersion.substring(0, 1)) == 0) {
     macVersion = "1" + macVersion.substring(1)
 }
@@ -78,7 +78,7 @@ jlink {
     for (def extProject : extModules) {
         def dir = "${extProject.buildDir}/libs_ext"
         addExtraModulePath(dir)
-        addOptions("--add-modules", "io.xpipe.ext.${extProject.name}")
+        addOptions("--add-modules", groupName + ".ext.${extProject.name}")
     }
 
     if (!ci || (!isStage && !isFullRelease)) {
@@ -86,8 +86,8 @@ jlink {
     }
 
     launcher {
-        moduleName = 'io.xpipe.app'
-        mainClassName = 'io.xpipe.app.Main'
+        moduleName = packageName(null)
+        mainClass = packageName('Main')
         name = 'xpiped'
         jvmArgs = releaseArguments
     }
@@ -97,17 +97,17 @@ jlink {
         imageName = 'xpiped'
         if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             icon = "$rootDir/dist/logo/logo.ico"
-            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : rootProject.canonicalVersionString
+            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : canonicalVersionString
         } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
             icon = "$rootDir/dist/logo/logo.png"
-            appVersion = rootProject.canonicalVersionString
+            appVersion = canonicalVersionString
         } else {
             icon = "$rootDir/dist/logo/logo.icns"
             resourceDir = file("${project.layout.buildDirectory.get()}/macos_resources")
             appVersion = macVersion
         }
+        vendor = publisher
         skipInstaller = true
-        applicationName = 'XPipe'
     }
 }
 
@@ -115,7 +115,8 @@ tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
 def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
-task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
+tasks.register('copyBundledExtensions', DefaultTask) {
+    dependsOn extLibrariesTasks
     doLast {
         for (def extProject : extModules) {
             def dir = "${extProject.buildDir}/libs_ext"
@@ -130,23 +131,23 @@ task copyBundledExtensions(type: DefaultTask, dependsOn: extLibrariesTasks) {
     }
 }
 
-task prepareMacOSResources(type: DefaultTask) {
+tasks.register('prepareMacOSResources', DefaultTask) {
     doLast {
         file("${project.layout.buildDirectory.get()}/macos_resources").mkdirs()
         copy {
             from replaceVariablesInFile("$projectDir/jpackage/Info.plist",
                                         Map.of('__NAME__',
-                                               rootProject.productName,
+                                               productName,
                                                '__VERSION__',
-                                               rootProject.versionString,
+                                               versionString,
                                                '__BUNDLE__',
-                                               rootProject.isStage ? 'io.xpipe.ptb-app' : 'io.xpipe.app'))
+                                               isStage ? groupName + '.ptb-app' : groupName + '.app'))
             into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
     }
 }
 
-task finalizeMacOSResources(type: DefaultTask) {
+tasks.register('finalizeMacOSResources', DefaultTask) {
     doLast {
         copy {
             from file("$projectDir/logo/Assets.car")

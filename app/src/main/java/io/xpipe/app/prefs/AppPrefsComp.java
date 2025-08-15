@@ -59,7 +59,11 @@ public class AppPrefsComp extends SimpleComp {
             });
         });
 
-        AppPrefs.get().getSelectedCategory().subscribe(val -> {
+        AppPrefs.get().getSelectedCategory().addListener((observable, oldValue, val) -> {
+            if (val == null) {
+                return;
+            }
+
             PlatformThread.runLaterIfNeeded(() -> {
                 if (externalUpdate.get()) {
                     return;
@@ -99,7 +103,7 @@ public class AppPrefsComp extends SimpleComp {
                                     ? node.getBoundsInParent().getMinY() + 20
                                     : 0.0)
                     / box.getHeight();
-            var off = (scrollPane.getHeight() * s * 1.05) / box.getHeight();
+            var off = (scrollPane.getHeight() * s * 1.02) / box.getHeight();
             return s + off;
         } else {
             return 0;

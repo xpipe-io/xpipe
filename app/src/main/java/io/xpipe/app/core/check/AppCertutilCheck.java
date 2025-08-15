@@ -1,8 +1,9 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class AppCertutilCheck {
 
     private static boolean getResult() {
-        var fc = new ProcessBuilder(System.getenv("WINDIR") + "\\System32\\certutil").redirectErrorStream(true);
+        var fc = new ProcessBuilder(AppSystemInfo.getWindows()
+                        .getSystemRoot()
+                        .resolve("\\System32\\certutil")
+                        .toString())
+                .redirectErrorStream(true);
         try {
             var proc = fc.start();
             var out = new String(proc.getInputStream().readAllBytes());
@@ -26,11 +31,11 @@ public class AppCertutilCheck {
             return;
         }
 
-        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() != OsType.WINDOWS) {
             return;
         }
 
-        if (ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+        if (LocalShell.getDialect() != ShellDialects.CMD) {
             return;
         }
 

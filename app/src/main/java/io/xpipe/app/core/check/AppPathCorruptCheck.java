@@ -17,7 +17,8 @@ public class AppPathCorruptCheck {
         }
 
         ErrorEventFactory.fromMessage(
-                        "Your system PATH looks to be corrupt, essential system tools are not available. This will cause XPipe to not function correctly. Please make sure to fix your PATH environment variable to include the base Windows tools.")
+                        "Your system PATH looks to be corrupt, essential system tools are not available. This will cause XPipe to not function "
+                                + "correctly. Please make sure to fix your PATH environment variable to include the base Windows tools.")
                 .expected()
                 .handle();
     }

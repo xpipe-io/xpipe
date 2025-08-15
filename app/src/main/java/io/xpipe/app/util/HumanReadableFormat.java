@@ -8,14 +8,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.WeekFields;
 import java.util.Objects;
 
 public final class HumanReadableFormat {
 
     public static final DateTimeFormatter DAY_MONTH_YEAR = DateTimeFormatter.ofPattern("d LLL yyyy");
     public static final DateTimeFormatter DAY_MONTH = DateTimeFormatter.ofPattern("d LLL");
-    public static final DateTimeFormatter DAY_OF_WEEK = DateTimeFormatter.ofPattern("EEE");
     public static final DateTimeFormatter HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String byteCount(long bytes) {
@@ -77,9 +75,9 @@ public final class HumanReadableFormat {
         return date + " " + time;
     }
 
-    private static int getWeekNumber(LocalDateTime date) {
-        return date.get(
-                WeekFields.of(AppI18n.activeLanguage().getValue().getLocale()).weekOfYear());
+    public static String transferSpeed(long bps) {
+        var s = progressByteCount(bps);
+        return s + "/s";
     }
 
     public static String duration(Duration duration) {

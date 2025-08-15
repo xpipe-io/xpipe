@@ -25,11 +25,6 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     }
 
     @Override
-    public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
-        return Action.builder().ref(ref).build();
-    }
-
-    @Override
     public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
         return true;
     }
@@ -59,6 +54,11 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     @Override
     public Class<?> getApplicableClass() {
         return ShellStore.class;
+    }
+
+    @Override
+    public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
+        return Action.builder().ref(ref).build();
     }
 
     @Override

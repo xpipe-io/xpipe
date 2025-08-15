@@ -1,13 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.update.AppDistributionType;
+import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import lombok.Getter;
@@ -59,63 +59,26 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     //        }
     //    };
 
-    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
-        if (type != null
-                && type != XSHELL
-                && type != MOBAXTERM
-                && type != SECURECRT
-                && type != TERMIUS
-                && !(type instanceof WaveTerminalType)) {
-            return type;
-        }
-
-        // Fallback to an available default
-        switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
-                // This should not be termius or wave as all others take precedence
-                var def = determineDefault(null);
-                // If there's no other terminal available, use a fallback which won't work
-                return def != TERMIUS && def != WaveTerminalType.WAVE_LINUX ? def : XTERM;
-            }
-            case OsType.MacOs macOs -> {
-                return MACOS_TERMINAL;
-            }
-            case OsType.Windows windows -> {
-                return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
-            }
-        }
-    }
-
     ExternalTerminalType XSHELL = new XShellTerminalType();
-
     ExternalTerminalType SECURECRT = new SecureCrtTerminalType();
-
     ExternalTerminalType MOBAXTERM = new MobaXTermTerminalType();
-
     ExternalTerminalType TERMIUS = new TermiusTerminalType();
-
     ExternalTerminalType CMD = new CmdTerminalType();
-
     ExternalTerminalType POWERSHELL = new PowerShellTerminalType();
-
     ExternalTerminalType PWSH = new PwshTerminalType();
-
     ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
-
     ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
-
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
-
     ExternalTerminalType KONSOLE = new KonsoleTerminalType();
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
-        public String getWebsite() {
-            return "https://docs.xfce.org/apps/terminal/start";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        public String getWebsite() {
+            return "https://docs.xfce.org/apps/terminal/start";
         }
 
         @Override
@@ -140,13 +103,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType LXTERMINAL = new SimplePathType("app.lxterminal", "lxterminal", true) {
         @Override
-        public String getWebsite() {
-            return "https://github.com/lxde/lxterminal";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://github.com/lxde/lxterminal";
         }
 
         @Override
@@ -170,13 +133,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
         @Override
-        public String getWebsite() {
-            return "https://codeberg.org/dnkl/foot";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://codeberg.org/dnkl/foot";
         }
 
         @Override
@@ -205,13 +168,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
 
         @Override
-        public String getWebsite() {
-            return "https://github.com/elementary/terminal";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        public String getWebsite() {
+            return "https://github.com/elementary/terminal";
         }
 
         @Override
@@ -234,13 +197,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
         @Override
-        public String getWebsite() {
-            return "https://gnunn1.github.io/tilix-web/";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://gnunn1.github.io/tilix-web/";
         }
 
         @Override
@@ -264,6 +227,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator", true) {
         @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        }
+
+        @Override
         public String getWebsite() {
             return "https://gnome-terminator.org/";
         }
@@ -279,11 +247,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
-
-        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-e")
@@ -294,6 +257,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType TERMINOLOGY = new SimplePathType("app.terminology", "terminology", true) {
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+        }
+
         @Override
         public String getWebsite() {
             return "https://github.com/borisfaure/terminology";
@@ -307,11 +275,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         @Override
         public boolean useColoredTitle() {
             return true;
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
 
         @Override
@@ -333,6 +296,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
+        @Override
         public String getWebsite() {
             return "https://github.com/Guake/guake";
         }
@@ -348,11 +316,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-n", "~")
@@ -363,6 +326,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     };
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda", true) {
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.TABBED;
+        }
+
         @Override
         public String getWebsite() {
             return "https://github.com/lanoxx/tilda";
@@ -379,24 +347,19 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.TABBED;
-        }
-
-        @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
         }
     };
     ExternalTerminalType COSMIC_TERM = new SimplePathType("app.cosmicTerm", "cosmic-term", true) {
         @Override
-        public String getWebsite() {
-            return "https://github.com/pop-os/cosmic-term";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://github.com/pop-os/cosmic-term";
         }
 
         @Override
@@ -416,13 +379,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {
         @Override
-        public String getWebsite() {
-            return "https://invisible-island.net/xterm/";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://invisible-island.net/xterm/";
         }
 
         @Override
@@ -446,13 +409,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
         @Override
-        public String getWebsite() {
-            return "https://invisible-island.net/xterm/";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://invisible-island.net/xterm/";
         }
 
         @Override
@@ -487,13 +450,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         @Override
-        public String getWebsite() {
-            return "https://www.deepin.org/en/original/deepin-terminal/";
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
         }
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
+        public String getWebsite() {
+            return "https://www.deepin.org/en/original/deepin-terminal/";
         }
 
         @Override
@@ -515,17 +478,17 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public int getProcessHierarchyOffset() {
-            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://github.com/lxqt/qterminal";
+            return LocalShell.getDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public String getWebsite() {
+            return "https://github.com/lxqt/qterminal";
         }
 
         @Override
@@ -599,20 +562,45 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);
-
     List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
-
     List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
+
+    static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
+        if (type != null
+                && type != XSHELL
+                && type != MOBAXTERM
+                && type != SECURECRT
+                && type != TERMIUS
+                && !(type instanceof WaveTerminalType)) {
+            return type;
+        }
+
+        // Fallback to an available default
+        switch (OsType.getLocal()) {
+            case OsType.Linux ignored -> {
+                // This should not be termius or wave as all others take precedence
+                var def = determineDefault(null);
+                // If there's no other terminal available, use a fallback which won't work
+                return def != TERMIUS && def != WaveTerminalType.WAVE_LINUX ? def : XTERM;
+            }
+            case OsType.MacOs ignored -> {
+                return MACOS_TERMINAL;
+            }
+            case OsType.Windows ignored -> {
+                return LocalShell.getDialect() == ShellDialects.CMD ? CMD : POWERSHELL;
+            }
+        }
+    }
 
     static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
-        if (osType == null || osType.equals(OsType.WINDOWS)) {
+        if (osType == null || osType == OsType.WINDOWS) {
             all.addAll(WINDOWS_TERMINALS);
         }
-        if (osType == null || osType.equals(OsType.LINUX)) {
+        if (osType == null || osType == OsType.LINUX) {
             all.addAll(LINUX_TERMINALS);
         }
-        if (osType == null || osType.equals(OsType.MACOS)) {
+        if (osType == null || osType == OsType.MACOS) {
             all.addAll(MACOS_TERMINALS);
         }
         // Prefer recommended
@@ -625,8 +613,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     static ExternalTerminalType determineDefault(ExternalTerminalType existing) {
         // Check for incompatibility with fallback shell
-        if (ExternalTerminalType.CMD.equals(existing)
-                && !ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)) {
+        if (ExternalTerminalType.CMD.equals(existing) && LocalShell.getDialect() != ShellDialects.CMD) {
             return ExternalTerminalType.POWERSHELL;
         }
 
@@ -648,7 +635,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         // Check if detection failed for some reason
         if (r == null) {
             var def = OsType.getLocal() == OsType.WINDOWS
-                    ? (ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.CMD
+                    ? (LocalShell.getDialect() == ShellDialects.CMD
                             ? ExternalTerminalType.CMD
                             : ExternalTerminalType.POWERSHELL)
                     : OsType.getLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;

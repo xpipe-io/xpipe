@@ -15,14 +15,14 @@ public class AppDebugModeCheck {
         var msg =
                 """
 
-                ****************************************
-                * You are running XPipe in debug mode! *
-                * The debug console output can contain *
-                * sensitive information and secrets.   *
-                * Don't share this output via an       *
-                * untrusted website or service.        *
-                ****************************************
-                """;
+                  ****************************************
+                  * You are running in debug mode!       *
+                  * The debug console output can contain *
+                  * sensitive information and secrets.   *
+                  * Don't share this output via an       *
+                  * untrusted website or service.        *
+                  ****************************************
+                  """;
         out.println(msg);
         ThreadHelper.sleep(1000);
     }

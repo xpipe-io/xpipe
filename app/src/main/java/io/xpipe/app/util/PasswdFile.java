@@ -13,13 +13,13 @@ import java.util.OptionalInt;
 @Getter
 public class PasswdFile {
 
+    private final Map<Integer, String> users = new LinkedHashMap<>();
+
     public static PasswdFile parse(ShellControl sc) throws Exception {
         var passwdFile = new PasswdFile();
         passwdFile.loadUsers(sc);
         return passwdFile;
     }
-
-    private final Map<Integer, String> users = new LinkedHashMap<>();
 
     public OptionalInt getUidForUserIfPresent(String name) {
         var found = users.entrySet().stream()

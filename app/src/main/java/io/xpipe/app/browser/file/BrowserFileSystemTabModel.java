@@ -20,13 +20,13 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -35,6 +35,8 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -50,12 +52,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
     private final BooleanProperty inOverview = new SimpleBooleanProperty();
-    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
-
+    private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
+    private final ObservableList<BrowserTransferProgress> progressesIntervalHistory =
+            FXCollections.observableArrayList();
+    private final LongProperty progressTransferSpeed = new SimpleLongProperty();
+    private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
     private FileSystem fileSystem;
-
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
 
@@ -70,6 +74,50 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 },
                 currentPath));
         fileList = new BrowserFileListModel(selectionMode, this);
+    }
+
+    public void updateProgress(BrowserTransferProgress n) {
+        if (n == null) {
+            progress.setValue(null);
+            progressesIntervalHistory.clear();
+            progressTransferSpeed.setValue(0);
+            return;
+        }
+
+        var changedHistory = false;
+        if (progress.getValue() != null) {
+            var last = progressesIntervalHistory.isEmpty()
+                    ? Instant.EPOCH
+                    : progressesIntervalHistory.getLast().getTimestamp();
+            var elapsed = Duration.between(last, n.getTimestamp());
+            if (elapsed.toMillis() >= 1000) {
+                progressesIntervalHistory.add(progress.getValue());
+                changedHistory = true;
+            }
+        }
+
+        progress.setValue(n);
+        if (progressesIntervalHistory.isEmpty()) {
+            return;
+        }
+
+        if (changedHistory && progressesIntervalHistory.size() >= 2) {
+            var speed = BrowserTransferProgress.estimateTransferSpeed(progressesIntervalHistory, n);
+            progressTransferSpeed.setValue(speed);
+            var remaining = n.getTotal() - n.getTransferred();
+            var estimate = remaining / (double) speed;
+
+            var newDuration = Duration.ofMillis((long) (estimate * 1000.0));
+            var smooth = progressRemaining.getValue() != null
+                    && progressRemaining.getValue().toSeconds() + 1 == newDuration.toSeconds();
+            if (!smooth) {
+                progressRemaining.setValue(newDuration);
+            }
+        }
+    }
+
+    public ObservableValue<BrowserTransferProgress> getProgress() {
+        return progress;
     }
 
     public Optional<FileEntry> findFile(FilePath path) {
@@ -151,6 +199,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         var s = fileSystem.getShell();
         if (s.isPresent()) {
             s.get().start();
+            if (s.get().isAnyStreamClosed()) {
+                s.get().restart();
+            }
         }
     }
 
@@ -286,11 +337,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         // Evaluate optional expressions
         String evaluatedPath;
-        try {
-            evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
-        } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).handle();
-            return Optional.ofNullable(cps);
+        if (customInput) {
+            try {
+                evaluatedPath = BrowserFileSystemHelper.evaluatePath(this, adjustedPath);
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).handle();
+                return Optional.ofNullable(cps);
+            }
+        } else {
+            evaluatedPath = adjustedPath;
         }
 
         if (evaluatedPath == null) {
@@ -368,20 +423,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         loadFilesSync(path);
     }
 
-    public void withFiles(FilePath dir, FailableConsumer<Stream<FileEntry>, Exception> consumer) throws Exception {
-        BooleanScope.executeExclusive(busy, () -> {
-            if (dir != null) {
-                startIfNeeded();
-                var fs = getFileSystem();
-
-                var stream = fs.listFiles(fs, dir);
-                consumer.accept(stream);
-            } else {
-                consumer.accept(Stream.of());
-            }
-        });
-    }
-
     private boolean loadFilesSync(FilePath dir) {
         try {
             startIfNeeded();
@@ -405,7 +446,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             BooleanScope.executeExclusive(busy, () -> {
                 startIfNeeded();
                 var op = BrowserFileTransferOperation.ofLocal(
-                        entry, files, BrowserFileTransferMode.COPY, true, progress::setValue, transferCancelled);
+                        entry, files, BrowserFileTransferMode.COPY, true, p -> updateProgress(p), transferCancelled);
                 var action = TransferFilesActionProvider.Action.builder()
                         .operation(op)
                         .target(this.entry.asNeeded())
@@ -427,7 +468,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             BooleanScope.executeExclusive(busy, () -> {
                 startIfNeeded();
                 var op = new BrowserFileTransferOperation(
-                        target, files, mode, true, progress::setValue, transferCancelled);
+                        target, files, mode, true, this::updateProgress, transferCancelled);
                 var action = TransferFilesActionProvider.Action.builder()
                         .operation(op)
                         .target(entry.asNeeded())
@@ -470,7 +511,14 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
             fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
-        TerminalLauncher.open(entry.get(), name, directory, processControl, uuid, !dock);
+        TerminalLaunch.builder()
+                .entry(entry.get())
+                .title(name)
+                .directory(directory)
+                .command(processControl)
+                .request(uuid)
+                .preferTabs(!dock)
+                .launch();
 
         // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively
         startIfNeeded();

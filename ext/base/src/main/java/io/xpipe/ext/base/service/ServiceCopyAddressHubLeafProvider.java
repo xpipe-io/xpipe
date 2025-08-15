@@ -27,8 +27,13 @@ public class ServiceCopyAddressHubLeafProvider implements HubLeafProvider<Abstra
     }
 
     @Override
-    public AbstractAction createAction(DataStoreEntryRef<AbstractServiceStore> ref) {
-        return Action.builder().ref(ref).build();
+    public ObservableValue<String> getName(DataStoreEntryRef<AbstractServiceStore> store) {
+        return AppI18n.observable("copyAddress");
+    }
+
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
     }
 
     @Override
@@ -37,13 +42,8 @@ public class ServiceCopyAddressHubLeafProvider implements HubLeafProvider<Abstra
     }
 
     @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<AbstractServiceStore> store) {
-        return AppI18n.observable("copyAddress");
-    }
-
-    @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<AbstractServiceStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2c-content-copy");
+    public AbstractAction createAction(DataStoreEntryRef<AbstractServiceStore> ref) {
+        return Action.builder().ref(ref).build();
     }
 
     @Override

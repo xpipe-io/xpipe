@@ -22,6 +22,7 @@ import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.util.Arrays;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 public class SentryErrorHandler implements ErrorHandler {
@@ -89,6 +90,16 @@ public class SentryErrorHandler implements ErrorHandler {
                 var inputField = InvalidPathException.class.getDeclaredField("input");
                 inputField.setAccessible(true);
                 inputField.set(copy, "");
+            }
+
+            if (copy instanceof PatternSyntaxException) {
+                var descField = PatternSyntaxException.class.getDeclaredField("desc");
+                descField.setAccessible(true);
+                descField.set(copy, "");
+
+                var patternField = PatternSyntaxException.class.getDeclaredField("pattern");
+                patternField.setAccessible(true);
+                patternField.set(copy, "");
             }
 
             var causeField = Throwable.class.getDeclaredField("cause");

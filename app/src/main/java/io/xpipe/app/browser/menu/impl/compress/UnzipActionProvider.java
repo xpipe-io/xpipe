@@ -19,16 +19,16 @@ public class UnzipActionProvider implements BrowserActionProvider {
         return FilePath.of(name.toString().replaceAll("\\.zip$", ""));
     }
 
+    @Override
+    public String getId() {
+        return "unzip";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
 
         private final boolean toDirectory;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -64,6 +64,11 @@ public class UnzipActionProvider implements BrowserActionProvider {
             model.refreshSync();
         }
 
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
+
         private void runPowershellCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry)
                 throws Exception {
             var command = CommandBuilder.of().add("Expand-Archive", "-Force");
@@ -76,10 +81,5 @@ public class UnzipActionProvider implements BrowserActionProvider {
                     .withWorkingDirectory(model.getCurrentDirectory().getPath())
                     .execute();
         }
-    }
-
-    @Override
-    public String getId() {
-        return "unzip";
     }
 }

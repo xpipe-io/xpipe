@@ -306,7 +306,7 @@ public class KeePassXcProxyClient {
     /**
      * Sends a request to KeePassXC and waits for a response.
      *
-     * @param action The action being performed (e.g., "associate", "get-logins")
+     * @param action  The action being performed (e.g., "associate", "get-logins")
      * @param message The JSON message to send
      * @param timeout The timeout in milliseconds
      * @return The response JSON, or null if timed out
@@ -402,7 +402,7 @@ public class KeePassXcProxyClient {
      * Encrypts a message for sending to KeePassXC.
      *
      * @param message The message to encrypt
-     * @param nonce The nonce to use for encryption
+     * @param nonce   The nonce to use for encryption
      * @return The encrypted message, or null if encryption failed
      */
     private String encrypt(Map<String, Object> message, String nonce) {
@@ -419,7 +419,7 @@ public class KeePassXcProxyClient {
      * Decrypts a message received from KeePassXC.
      *
      * @param encryptedMessage The encrypted message
-     * @param nonce The nonce used for encryption
+     * @param nonce            The nonce used for encryption
      * @return The decrypted message, or null if decryption failed
      */
     private String decrypt(String encryptedMessage, String nonce) {

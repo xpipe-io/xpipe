@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessOutputException;
@@ -62,24 +63,20 @@ public abstract class AppShellChecker {
         var fallback = !ProcessControlProvider.get()
                         .getEffectiveLocalDialect()
                         .equals(ProcessControlProvider.get().getFallbackDialect())
-                ? "XPipe will now attempt to fall back to another shell."
+                ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
                 : "";
         return """
-                Shell self-test failed for %s:
-                %s
+               Shell self-test failed for %s:
+               %s
 
-                This indicates that something is seriously wrong and certain shell functionality will not work as expected. Some features like the terminal launcher have to create shell scripts for your external terminal emulator to launch.
+               This indicates that something is seriously wrong and certain shell functionality will not work as expected. Some features like the terminal launcher have to create shell scripts for your external terminal emulator to launch.
 
-                The most likely causes are:
-                %s
+               The most likely causes are:
+               %s
 
-                %s
-                """
-                .formatted(
-                        ProcessControlProvider.get().getEffectiveLocalDialect().getDisplayName(),
-                        modifyOutput(output),
-                        listReasons(),
-                        fallback);
+               %s
+               """
+                .formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), listReasons(), fallback);
     }
 
     protected abstract String listReasons();

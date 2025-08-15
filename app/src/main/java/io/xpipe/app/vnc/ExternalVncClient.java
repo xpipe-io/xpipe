@@ -32,17 +32,17 @@ public interface ExternalVncClient {
         var l = new ArrayList<Class<?>>();
         l.add(InternalVncClient.class);
         switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 l.add(RemminaVncClient.class);
                 l.add(TigerVncClient.Linux.class);
                 l.add(RealVncClient.Linux.class);
             }
-            case OsType.MacOs macOs -> {
+            case OsType.MacOs ignored -> {
                 l.add(ScreenSharingVncClient.class);
                 l.add(TigerVncClient.MacOs.class);
                 l.add(RealVncClient.MacOs.class);
             }
-            case OsType.Windows windows -> {
+            case OsType.Windows ignored -> {
                 l.add(TigerVncClient.Windows.class);
                 l.add(RealVncClient.Windows.class);
                 l.add(TightVncClient.class);
@@ -55,4 +55,6 @@ public interface ExternalVncClient {
     void launch(VncLaunchConfig configuration) throws Exception;
 
     boolean supportsPasswords();
+
+    String getWebsite();
 }

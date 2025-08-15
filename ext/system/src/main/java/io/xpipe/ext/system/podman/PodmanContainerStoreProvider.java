@@ -24,18 +24,12 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return DocumentationLink.PODMAN;
     }
 
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
-            var state = (ContainerStoreState) o;
-            var cs = state.getContainerState();
-            if (cs != null && cs.toLowerCase().contains("exited")) {
-                return SystemStateComp.State.FAILURE;
-            } else if (cs != null && cs.toLowerCase().contains("up")) {
-                return SystemStateComp.State.SUCCESS;
-            } else {
-                return SystemStateComp.State.OTHER;
-            }
-        }));
+    @Override
+    public boolean shouldShow(StoreEntryWrapper w) {
+        PodmanContainerStore s = w.getEntry().getStore().asNeeded();
+        var state = s.getState();
+        return Boolean.TRUE.equals(state.getRunning())
+                || s.getCmd().getStore().getState().isShowNonRunning();
     }
 
     public void onParentRefresh(DataStoreEntry entry) {
@@ -44,14 +38,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         if (servicesEntry.isPresent()) {
             DataStorage.get().refreshChildren(servicesEntry.get());
         }
-    }
-
-    @Override
-    public boolean shouldShow(StoreEntryWrapper w) {
-        PodmanContainerStore s = w.getEntry().getStore().asNeeded();
-        var state = s.getState();
-        return Boolean.TRUE.equals(state.getRunning())
-                || s.getCmd().getStore().getState().isShowNonRunning();
     }
 
     @Override
@@ -86,14 +72,6 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
-        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return StoreStateFormat.shellStore(
-                section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
-    }
-
-    @Override
     public String getDisplayIconFileName(DataStore store) {
         return "system:podman_icon.svg";
     }
@@ -106,5 +84,27 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(PodmanContainerStore.class);
+    }
+
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
+            var state = (ContainerStoreState) o;
+            var cs = state.getContainerState();
+            if (cs != null && cs.toLowerCase().contains("exited")) {
+                return SystemStateComp.State.FAILURE;
+            } else if (cs != null && cs.toLowerCase().contains("up")) {
+                return SystemStateComp.State.SUCCESS;
+            } else {
+                return SystemStateComp.State.OTHER;
+            }
+        }));
+    }
+
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
+        var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
+        return StoreStateFormat.shellStore(
+                section, (ContainerStoreState s) -> new String[] {missing, s.getContainerState()});
     }
 }

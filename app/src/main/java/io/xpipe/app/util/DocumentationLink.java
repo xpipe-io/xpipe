@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppProperties;
 
 public enum DocumentationLink {
-    INDEX(""),
     API("api"),
     TTY("troubleshoot/tty"),
     WINDOWS_SSH("guide/ssh#windows-ssh-servers"),
@@ -36,6 +35,7 @@ public enum DocumentationLink {
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     KVM_VNC("guide/kvm#vnc-access"),
+    HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
@@ -71,15 +71,29 @@ public enum DocumentationLink {
     SHELL_ENVIRONMENTS_USER("guide/environments#users"),
     SHELL_ENVIRONMENTS_SCRIPTS("guide/environments#scripts"),
     SERIAL("guide/serial"),
+    ICONS("guide/hub#icons"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
     SERIAL_PORTS("guide/serial#serial-ports"),
-    NO_EXEC("troubleshooting/noexec");
+    TERMINAL("guide/terminals#noteworthy-integrations"),
+    TERMINAL_LOGGING("guide/terminals#logging"),
+    TERMINAL_MULTIPLEXER("guide/terminals#multiplexers"),
+    TERMINAL_PROMPT("guide/terminals#prompts"),
+    TEAM_VAULTS("guide/sync#team-vaults"),
+    SSH_TROUBLESHOOT("guide/ssh#troubleshooting"),
+    NO_EXEC("troubleshooting/noexec"),
+    MCP("guide/mcp");
 
     private final String page;
 
     DocumentationLink(String page) {
         this.page = page;
+    }
+
+    public static String getRoot() {
+        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
+                || AppProperties.get().isStaging();
+        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 
     public void open() {
@@ -88,11 +102,5 @@ public enum DocumentationLink {
 
     public String getLink() {
         return getRoot() + "/" + page;
-    }
-
-    public static String getRoot() {
-        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
-                || AppProperties.get().isStaging();
-        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }

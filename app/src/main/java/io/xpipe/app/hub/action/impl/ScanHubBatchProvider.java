@@ -22,18 +22,6 @@ import java.util.List;
 public class ScanHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-        var state = o.get().getStorePersistentState();
-        if (state instanceof SystemState systemState) {
-            return (systemState.getShellDialect() == null
-                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
-                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
-        } else {
-            return true;
-        }
-    }
-
-    @Override
     public ObservableValue<String> getName() {
         return AppI18n.observable("addConnections");
     }
@@ -49,13 +37,25 @@ public class ScanHubBatchProvider implements BatchHubProvider<ShellStore> {
     }
 
     @Override
-    public String getId() {
-        return "scanStoreBatch";
+    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
+        var state = o.get().getStorePersistentState();
+        if (state instanceof SystemState systemState) {
+            return (systemState.getShellDialect() == null
+                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
+                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
+        } else {
+            return true;
+        }
     }
 
     @Override
     public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> dataStoreEntryRefs) {
         return Action.builder().refs(dataStoreEntryRefs).build();
+    }
+
+    @Override
+    public String getId() {
+        return "scanStoreBatch";
     }
 
     @Jacksonized

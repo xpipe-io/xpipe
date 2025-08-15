@@ -5,7 +5,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
@@ -49,7 +49,11 @@ public class LastpassPasswordManager implements PasswordManager {
                             sc.getShellDialect()
                                     .getEchoCommand("Log in into your LastPass account from the CLI:", false),
                             "lpass login --trust \"" + email.get() + "\"");
-                    TerminalLauncher.openDirect("LastPass login", script);
+                    TerminalLaunch.builder()
+                            .title("LastPass login")
+                            .localScript(script)
+                            .logIfEnabled(false)
+                            .launch();
                 }
                 return null;
             }
@@ -88,5 +92,10 @@ public class LastpassPasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return "Case-sensitive entry name";
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.lastpass.com/";
     }
 }

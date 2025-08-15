@@ -17,6 +17,10 @@ import java.util.stream.Collectors;
 
 public class IncusCommandView extends CommandViewBase {
 
+    public IncusCommandView(ShellControl shellControl) {
+        super(shellControl);
+    }
+
     private static ElevationFunction requiresElevation() {
         return new ElevationFunction() {
             @Override
@@ -42,10 +46,6 @@ public class IncusCommandView extends CommandViewBase {
                         .executeAndCheck();
             }
         };
-    }
-
-    public IncusCommandView(ShellControl shellControl) {
-        super(shellControl);
     }
 
     private static String formatErrorMessage(String s) {

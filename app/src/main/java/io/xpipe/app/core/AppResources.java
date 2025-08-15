@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppResources {
 
-    public static final String XPIPE_MODULE = "io.xpipe.app";
+    public static final String MAIN_MODULE = "io." + AppNames.ofMain().getSnakeName() + ".app";
 
     private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
 
@@ -25,10 +25,11 @@ public class AppResources {
         fileSystems.forEach((s, moduleFileSystem) -> {
             try {
                 moduleFileSystem.close();
-            } catch (IOException ignored) {
-                // Usually when updating, a SIGTERM is sent to this application.
+            } catch (IOException ex) {
+                // Usually when updating, an exit signal is sent to this application.
                 // However, it takes a while to shut down but the installer is deleting files meanwhile.
-                // It can happen that the jar it does not exist anymore
+                // It can happen that the jar does not exist anymore
+                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
             }
         });
         fileSystems.clear();
@@ -68,9 +69,7 @@ public class AppResources {
     }
 
     public static void with(String module, String file, FailableConsumer<Path, IOException> con) {
-        if (AppProperties.get() != null
-                && !AppProperties.get().isImage()
-                && AppProperties.get().isDeveloperMode()) {
+        if (AppProperties.get() != null && AppProperties.get().isDevelopmentEnvironment()) {
             // Check if resource was found. If we use external processed resources, we can't use local dev resources
             if (withLocalDevResource(module, file, con)) {
                 return;
@@ -80,18 +79,10 @@ public class AppResources {
         withResource(module, file, con);
     }
 
-    public static void withResourceInLayer(
-            String module, String file, ModuleLayer layer, FailableConsumer<Path, IOException> con) {
-        try (var fs = FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer))) {
-            var f = fs.getPath(module.replace('.', '/') + "/resources/" + file);
-            con.accept(f);
-        } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).omitted(true).build().handle();
-        }
-    }
-
     private static void withResource(String module, String file, FailableConsumer<Path, IOException> con) {
-        var path = module.startsWith("io.xpipe") ? module.replace('.', '/') + "/resources/" + file : file;
+        var path = module.startsWith(AppNames.ofCurrent().getGroupName())
+                ? module.replace('.', '/') + "/resources/" + file
+                : file;
         try {
             var fs = openFileSystemIfNeeded(module);
             var f = fs.getPath(path);

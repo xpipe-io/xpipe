@@ -26,6 +26,13 @@ public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return OsType.getLocal() == OsType.WINDOWS
+                && entries.size() == 1
+                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
+    }
+
+    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2b-book-open-page-variant-outline");
     }
@@ -43,12 +50,5 @@ public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("openFileWith");
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return OsType.getLocal().equals(OsType.WINDOWS)
-                && entries.size() == 1
-                && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }
 }

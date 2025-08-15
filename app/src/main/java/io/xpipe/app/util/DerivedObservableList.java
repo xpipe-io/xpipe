@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -18,6 +19,16 @@ import java.util.stream.Stream;
 @Getter
 public class DerivedObservableList<T> {
 
+    private final List<T> backingList;
+    private final ObservableList<T> list;
+    private final boolean unique;
+
+    public DerivedObservableList(List<T> backingList, ObservableList<T> list, boolean unique) {
+        this.backingList = backingList;
+        this.list = list;
+        this.unique = unique;
+    }
+
     public static <T> DerivedObservableList<T> synchronizedArrayList(boolean unique) {
         var list = new ArrayList<T>();
         return new DerivedObservableList<>(
@@ -31,16 +42,6 @@ public class DerivedObservableList<T> {
 
     public static <T> DerivedObservableList<T> wrap(ObservableList<T> list, boolean unique) {
         return new DerivedObservableList<>(null, list, unique);
-    }
-
-    private final List<T> backingList;
-    private final ObservableList<T> list;
-    private final boolean unique;
-
-    public DerivedObservableList(List<T> backingList, ObservableList<T> list, boolean unique) {
-        this.backingList = backingList;
-        this.list = list;
-        this.unique = unique;
     }
 
     private <V> DerivedObservableList<V> createNewDerived() {
@@ -271,6 +272,25 @@ public class DerivedObservableList<T> {
         });
         comp.addListener(observable -> {
             d.list.sort(comp.getValue());
+        });
+        return d;
+    }
+
+    public DerivedObservableList<T> blockUpdatesIf(ObservableBooleanValue block) {
+        var d = this.<T>createNewDerived();
+        Runnable runnable = () -> {
+            d.setContent(list);
+        };
+        runnable.run();
+        list.addListener((ListChangeListener<? super T>) c -> {
+            if (!block.getValue()) {
+                runnable.run();
+            }
+        });
+        block.addListener(observable -> {
+            if (!block.getValue()) {
+                runnable.run();
+            }
         });
         return d;
     }

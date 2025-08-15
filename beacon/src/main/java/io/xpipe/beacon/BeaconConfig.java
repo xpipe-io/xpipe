@@ -1,8 +1,9 @@
 package io.xpipe.beacon;
 
-import io.xpipe.core.XPipeInstallation;
-
 import lombok.experimental.UtilityClass;
+
+import java.nio.file.Path;
+import java.util.Optional;
 
 @UtilityClass
 public class BeaconConfig {
@@ -10,35 +11,10 @@ public class BeaconConfig {
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
     public static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
     private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
-    private static final String LAUNCH_DAEMON_IN_DEBUG_PROP = "io.xpipe.beacon.launchDebugDaemon";
-    private static final String ATTACH_DEBUGGER_PROP = "io.xpipe.beacon.attachDebuggerToDaemon";
-    private static final String EXEC_DEBUG_PROP = "io.xpipe.beacon.printDaemonOutput";
-    private static final String EXEC_PROCESS_PROP = "io.xpipe.beacon.customDaemonCommand";
 
     public static boolean printMessages() {
         if (System.getProperty(PRINT_MESSAGES_PROPERTY) != null) {
             return Boolean.parseBoolean(System.getProperty(PRINT_MESSAGES_PROPERTY));
-        }
-        return false;
-    }
-
-    public static boolean launchDaemonInDebugMode() {
-        if (System.getProperty(LAUNCH_DAEMON_IN_DEBUG_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(LAUNCH_DAEMON_IN_DEBUG_PROP));
-        }
-        return false;
-    }
-
-    public static boolean attachDebuggerToDaemon() {
-        if (System.getProperty(ATTACH_DEBUGGER_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(ATTACH_DEBUGGER_PROP));
-        }
-        return false;
-    }
-
-    public static boolean printDaemonOutput() {
-        if (System.getProperty(EXEC_DEBUG_PROP) != null) {
-            return Boolean.parseBoolean(System.getProperty(EXEC_DEBUG_PROP));
         }
         return false;
     }
@@ -53,22 +29,21 @@ public class BeaconConfig {
             return Integer.parseInt(System.getProperty(BEACON_PORT_PROP));
         }
 
-        return XPipeInstallation.getDefaultBeaconPort();
+        return getDefaultBeaconPort();
     }
 
-    public static String getCustomDaemonCommand() {
-        if (System.getProperty(EXEC_PROCESS_PROP) != null) {
-            return System.getProperty(EXEC_PROCESS_PROP);
-        }
-
-        return null;
+    public static int getDefaultBeaconPort() {
+        var staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        var offset = staging ? 1 : 0;
+        return 21721 + offset;
     }
 
-    public static String getDaemonArguments() {
-        if (System.getProperty(DAEMON_ARGUMENTS_PROP) != null) {
-            return System.getProperty(DAEMON_ARGUMENTS_PROP);
-        }
-
-        return null;
+    public static Path getLocalBeaconAuthFile() {
+        var staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe_ptb_auth" : "xpipe_auth");
     }
 }

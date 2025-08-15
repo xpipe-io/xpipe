@@ -35,7 +35,7 @@ public class BrowserFileSystemHelper {
             return path;
         }
 
-        if (shell.get().getOsType().equals(OsType.WINDOWS) && path.length() == 2 && path.endsWith(":")) {
+        if (shell.get().getOsType() == OsType.WINDOWS && path.length() == 2 && path.endsWith(":")) {
             return path + "\\";
         }
 

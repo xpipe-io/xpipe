@@ -30,6 +30,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         return LocalShell.getLocalPowershell().isPresent();
     }
 
+    @Override
+    public String getWebsite() {
+        return "https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/mstsc";
+    }
+
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
         var input = configuration.getConfig();
         if (input.get("password 51").isPresent()) {

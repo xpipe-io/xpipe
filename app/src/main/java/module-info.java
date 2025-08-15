@@ -67,7 +67,6 @@ open module io.xpipe.app {
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.annotation;
     requires net.synedra.validatorfx;
-    requires org.kordamp.ikonli.feather;
     requires io.xpipe.modulefs;
     requires io.xpipe.core;
     requires static lombok;
@@ -80,7 +79,6 @@ open module io.xpipe.app {
     requires javafx.web;
     requires javafx.graphics;
     requires org.kordamp.ikonli.javafx;
-    requires org.kordamp.ikonli.material;
     requires io.sentry;
     requires io.xpipe.beacon;
     requires info.picocli;
@@ -95,6 +93,9 @@ open module io.xpipe.app {
     requires java.net.http;
     requires org.bouncycastle.provider;
     requires org.jetbrains.annotations;
+    requires io.modelcontextprotocol.sdk.mcp;
+    requires reactor.core;
+    requires org.reactivestreams;
 
     // Required runtime modules
     requires jdk.charsets;
@@ -103,6 +104,7 @@ open module io.xpipe.app {
     requires jdk.accessibility;
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.materialdesign2;
+    requires org.kordamp.ikonli.bootstrapicons;
     requires jdk.zipfs;
 
     uses TerminalLauncher;
@@ -119,9 +121,12 @@ open module io.xpipe.app {
     uses DataStorageExtensionProvider;
     uses ProcessControlProvider;
     uses ShellDialect;
+    uses SetupProvider;
 
     provides ActionProvider with
+            SetupToolActionProvider,
             XPipeUrlProvider,
+            HostAddressSwitchBranchProvider,
             OpenHubMenuLeafProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,
@@ -198,7 +203,8 @@ open module io.xpipe.app {
             PrefsProvider.Loader,
             LicenseProvider.Loader,
             ScanProvider.Loader,
-            ShellDialects.Loader;
+            ShellDialects.Loader,
+            SetupProvider.Loader;
     provides SLF4JServiceProvider with
             AppLogs.Slf4jProvider;
     provides EventHandler with

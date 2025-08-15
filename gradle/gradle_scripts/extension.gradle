@@ -17,7 +17,7 @@ tasks.register('createExtOutput', Copy) {
         }
     }
 
-    def shouldObfuscate = rootProject.obfuscate && rootProject.privateExtensions.contains(project.name)
+    def shouldObfuscate = obfuscate && privateExtensions.contains(project.name)
     var source = shouldObfuscate ? "${project.jar.destinationDirectory.get()}_prod" : "${project.jar.destinationDirectory.get()}"
 
     from source
@@ -57,7 +57,7 @@ dependencies {
     compileOnly 'net.synedra:validatorfx:0.4.2'
     compileOnly files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
     compileOnly 'commons-io:commons-io:2.19.0'
-    compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
+    compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.4.0"
 
     if (project != project(':base')) {
         compileOnly project(':base')

@@ -20,11 +20,11 @@ public class AppPtbDialog {
             return;
         }
 
-        var content = AppDialog.dialogText("You are running a PTB build of XPipe."
-                + " This version is unstable and might contain bugs."
-                + " You should not use it as a daily driver."
-                + " It will also not receive regular updates after its testing period."
-                + " You will have to install and launch the normal XPipe release for that.");
+        var content = AppDialog.dialogText(
+                "You are running a PTB build of XPipe." + " This version is unstable and might contain bugs."
+                        + " You should not use it as a daily driver."
+                        + " It will also not receive regular updates after its testing period."
+                        + " You will have to install and launch the normal XPipe release for that.");
         var modal = ModalOverlay.of("ptbNotice", content);
         modal.persist();
         modal.addButton(ModalButton.quit());

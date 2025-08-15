@@ -1,5 +1,6 @@
 package io.xpipe.app.vnc;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
@@ -18,18 +19,14 @@ import java.util.Optional;
 public class TightVncClient implements ExternalApplicationType.InstallLocationType, ExternalVncClient {
 
     @Override
-    public boolean supportsPasswords() {
-        return true;
-    }
-
-    @Override
     public String getExecutable() {
         return "tvnviewer.exe";
     }
 
     @Override
     public Optional<Path> determineInstallation() {
-        return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
+        return Optional.of(AppSystemInfo.getWindows()
+                        .getProgramFiles()
                         .resolve("TightVNC")
                         .resolve("tvnviewer.exe"))
                 .filter(path -> Files.exists(path));
@@ -48,5 +45,15 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
             command.sensitive();
         }
         command.execute();
+    }
+
+    @Override
+    public boolean supportsPasswords() {
+        return true;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://www.tightvnc.com";
     }
 }

@@ -1,14 +1,15 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
-import io.xpipe.core.XPipeInstallation;
 
 public class AppTestCommandCheck {
 
     public static void check() throws Exception {
-        if (OsType.getLocal().equals(OsType.WINDOWS)) {
+        if (OsType.getLocal() == OsType.WINDOWS) {
             return;
         }
 
@@ -17,12 +18,14 @@ public class AppTestCommandCheck {
                 sc.getShellDialect()
                         .directoryExists(
                                 sc,
-                                XPipeInstallation.getCurrentInstallationBasePath()
+                                AppInstallation.ofCurrent()
+                                        .getBaseInstallationPath()
                                         .toString())
                         .execute();
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix(
-                        "Installation self test failed. Is your \"test\" shell command working as expected and is the XPipe installation directory accessible?",
+                        "Installation self test failed. Is your \"test\" shell command working as expected and is the " + AppNames.ofCurrent().getName() + " installation directory "
+                                + "accessible?",
                         ex);
             }
         }

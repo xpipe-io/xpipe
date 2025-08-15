@@ -41,5 +41,7 @@ public interface DataStorageSyncHandler {
 
     List<Path> getSavedDataFiles();
 
+    Path getDataFile(Path rel);
+
     Path addDataFile(Path file, Path target, boolean perUser);
 }

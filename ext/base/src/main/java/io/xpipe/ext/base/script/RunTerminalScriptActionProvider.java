@@ -4,7 +4,7 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.terminal.TerminalLauncher;
+import io.xpipe.app.terminal.TerminalLaunch;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -23,16 +23,19 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
         DataStoreEntryRef<SimpleScriptStore> scriptStore;
 
         @Override
-        public boolean isMutation() {
-            return true;
-        }
-
-        @Override
         public void executeImpl() throws Exception {
             var sc = ref.getStore().getOrStartSession();
             var script = scriptStore.getStore().assembleScriptChain(sc);
-            TerminalLauncher.open(
-                    ref.get(), scriptStore.get().getName() + " - " + ref.get().getName(), null, sc.command(script));
+            TerminalLaunch.builder()
+                    .entry(ref.get())
+                    .title(scriptStore.get().getName())
+                    .command(sc.command(script))
+                    .launch();
+        }
+
+        @Override
+        public boolean isMutation() {
+            return true;
         }
     }
 }

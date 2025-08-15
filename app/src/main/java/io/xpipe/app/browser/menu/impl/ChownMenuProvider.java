@@ -23,6 +23,19 @@ import java.util.stream.Stream;
 
 public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
+    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+        var actions = Stream.<BrowserMenuItemProvider>concat(
+                        model.getCache().getUsers().entrySet().stream()
+                                .filter(e -> !e.getValue().equals("nohome")
+                                        && !e.getValue().equals("nobody")
+                                        && (e.getKey().equals(0) || e.getKey() >= 900))
+                                .map(e -> e.getValue())
+                                .map(s -> (BrowserMenuLeafProvider) new FixedProvider(s, recursive)),
+                        Stream.of(new CustomProvider(recursive)))
+                .toList();
+        return actions;
+    }
+
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2a-account-edit");
@@ -91,19 +104,6 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
                 BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return getLeafActions(model, true);
         }
-    }
-
-    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
-        var actions = Stream.<BrowserMenuItemProvider>concat(
-                        model.getCache().getUsers().entrySet().stream()
-                                .filter(e -> !e.getValue().equals("nohome")
-                                        && !e.getValue().equals("nobody")
-                                        && (e.getKey().equals(0) || e.getKey() >= 900))
-                                .map(e -> e.getValue())
-                                .map(s -> (BrowserMenuLeafProvider) new FixedProvider(s, recursive)),
-                        Stream.of(new CustomProvider(recursive)))
-                .toList();
-        return actions;
     }
 
     private static class FixedProvider implements BrowserMenuLeafProvider {

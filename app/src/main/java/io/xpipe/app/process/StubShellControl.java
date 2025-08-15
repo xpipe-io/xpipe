@@ -11,12 +11,6 @@ public class StubShellControl extends WrapperShellControl {
     }
 
     @Override
-    public ShellControl start() throws Exception {
-        super.start();
-        return this;
-    }
-
-    @Override
     public ShellControl onInit(FailableConsumer<ShellControl, Exception> pc) {
         super.onInit(pc);
         return this;
@@ -41,10 +35,16 @@ public class StubShellControl extends WrapperShellControl {
     }
 
     @Override
-    public boolean canHaveSubshells() {
-        return parent.canHaveSubshells();
+    public void close() {}
+
+    @Override
+    public ShellControl start() throws Exception {
+        super.start();
+        return this;
     }
 
     @Override
-    public void close() {}
+    public boolean canHaveSubshells() {
+        return parent.canHaveSubshells();
+    }
 }

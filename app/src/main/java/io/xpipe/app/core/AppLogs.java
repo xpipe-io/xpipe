@@ -31,10 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AppLogs {
 
     public static final List<String> LOG_LEVELS = List.of("error", "warn", "info", "debug", "trace");
-    private static final String WRITE_SYSOUT_PROP = "io.xpipe.app.writeSysOut";
-    private static final String WRITE_LOGS_PROP = "io.xpipe.app.writeLogs";
-    private static final String DEBUG_PLATFORM_PROP = "io.xpipe.app.debugPlatform";
-    private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
+    private static final String WRITE_SYSOUT_PROP = AppNames.propertyName("writeSysOut");
+    private static final String WRITE_LOGS_PROP = AppNames.propertyName("writeLogs");
+    private static final String DEBUG_PLATFORM_PROP = AppNames.propertyName("debugPlatform");
+    private static final String LOG_LEVEL_PROP = AppNames.propertyName("logLevel");
     private static final String DEFAULT_LOG_LEVEL = "info";
 
     private static final DateTimeFormatter NAME_FORMATTER =
@@ -138,7 +138,7 @@ public class AppLogs {
         if (shouldLogToFile) {
             try {
                 FileUtils.forceMkdir(usedLogsDir.toFile());
-                var file = usedLogsDir.resolve("xpipe.log");
+                var file = usedLogsDir.resolve(AppNames.ofMain().getName() + ".log");
                 var fos = new FileOutputStream(file.toFile(), true);
                 var buf = new BufferedOutputStream(fos);
                 outFileStream = new PrintStream(buf, false);
@@ -293,8 +293,8 @@ public class AppLogs {
         if (shouldDebugPlatform()) {
             System.setProperty("prism.verbose", "true");
             System.setProperty("prism.debug", "true");
-            System.setProperty("prism.trace", "true");
-            System.setProperty("sun.perflog", "results.log");
+            // System.setProperty("prism.trace", "true");
+            // System.setProperty("sun.perflog", "results.log");
             //            System.setProperty("quantum.verbose", "true");
             //            System.setProperty("quantum.debug", "true");
             //            System.setProperty("quantum.pulse", "true");
@@ -361,7 +361,6 @@ public class AppLogs {
         @Override
         protected void handleNormalizedLoggingCall(
                 Level level, Marker marker, String msg, Object[] arguments, Throwable throwable) {
-            var formatted = msg;
             if (arguments != null) {
                 for (var arg : arguments) {
                     msg = msg.replaceFirst("\\{}", Objects.toString(arg));
@@ -376,14 +375,18 @@ public class AppLogs {
 
         @Override
         public boolean isTraceEnabled() {
-            return LOG_LEVELS.indexOf("trace")
-                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+
+            // You almost never want trace output, javafx will spam everything
+            return false;
         }
 
         @Override
         public boolean isTraceEnabled(Marker marker) {
-            return LOG_LEVELS.indexOf("trace")
-                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
+
+            // You almost never want trace output, javafx will spam everything
+            return false;
         }
 
         @Override

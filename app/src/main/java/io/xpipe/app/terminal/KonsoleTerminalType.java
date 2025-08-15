@@ -16,13 +16,13 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
     }
 
     @Override
-    public String getWebsite() {
-        return "https://konsole.kde.org/download.html";
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
     }
 
     @Override
-    public TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+    public String getWebsite() {
+        return "https://konsole.kde.org/download.html";
     }
 
     @Override

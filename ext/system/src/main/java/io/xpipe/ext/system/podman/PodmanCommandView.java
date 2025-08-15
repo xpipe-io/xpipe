@@ -17,12 +17,6 @@ public class PodmanCommandView extends CommandViewBase {
         super(shellControl);
     }
 
-    @Override
-    public PodmanCommandView start() throws Exception {
-        shellControl.start();
-        return this;
-    }
-
     private static String formatErrorMessage(String s) {
         return "Podman connection failed:\n" + s;
     }
@@ -35,6 +29,12 @@ public class PodmanCommandView extends CommandViewBase {
                 "unable to connect to Podman socket",
                 "no such container",
                 "OCI runtime attempted to invoke a command that was not found");
+    }
+
+    @Override
+    public PodmanCommandView start() throws Exception {
+        shellControl.start();
+        return this;
     }
 
     @Override
@@ -69,12 +69,6 @@ public class PodmanCommandView extends CommandViewBase {
 
     public class Container extends CommandView {
 
-        @Override
-        public Container start() throws Exception {
-            shellControl.start();
-            return this;
-        }
-
         public String queryState(String container) throws Exception {
             return build(commandBuilder -> commandBuilder.add(
                             "ls", "-a", "-f", "name=\"^" + container + "$\"", "--format=\"{{.Status}}\""))
@@ -94,11 +88,10 @@ public class PodmanCommandView extends CommandViewBase {
             return PodmanCommandView.this.getShellControl();
         }
 
-        @Value
-        public static class ContainerEntry {
-            String name;
-            String image;
-            String status;
+        @Override
+        public Container start() throws Exception {
+            shellControl.start();
+            return this;
         }
 
         public List<ContainerEntry> listContainersAndStates() throws Exception {
@@ -171,6 +164,13 @@ public class PodmanCommandView extends CommandViewBase {
 
         public CommandControl logs(String container) {
             return build(commandBuilder -> commandBuilder.add("logs").add("-f").addQuoted(container));
+        }
+
+        @Value
+        public static class ContainerEntry {
+            String name;
+            String image;
+            String status;
         }
     }
 }

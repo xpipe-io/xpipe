@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.*;
@@ -36,7 +37,7 @@ public class StoreIconComp extends SimpleComp {
         background.getStyleClass().add("background");
 
         var dots = new FontIcon("mdi2d-dots-horizontal");
-        dots.setIconSize((int) (h * 1.3));
+        dots.iconSizeProperty().bind(new ReadOnlyIntegerWrapper((int) (h * 1.3)));
 
         var stack = new StackPane(background, storeIcon, dots);
         stack.setMinHeight(w + 5);

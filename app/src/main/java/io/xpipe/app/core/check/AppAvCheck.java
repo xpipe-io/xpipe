@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.util.WindowsRegistry;
@@ -41,7 +42,7 @@ public class AppAvCheck {
 
         var modal = ModalOverlay.of(Comp.of(() -> {
             AtomicReference<Region> markdown = new AtomicReference<>();
-            AppResources.with(AppResources.XPIPE_MODULE, "misc/antivirus.md", file -> {
+            AppResources.with(AppResources.MAIN_MODULE, "misc/antivirus.md", file -> {
                 markdown.set(new MarkdownComp(
                                 Files.readString(file),
                                 s -> {
@@ -71,7 +72,7 @@ public class AppAvCheck {
         BITDEFENDER("Bitdefender") {
             @Override
             public String getDescription() {
-                return "Bitdefender sometimes isolates XPipe and some shell programs, effectively making it unusable.";
+                return "Bitdefender sometimes isolates " + AppNames.ofCurrent().getName() + " and some shell programs, effectively making it unusable.";
             }
 
             @Override
@@ -83,7 +84,9 @@ public class AppAvCheck {
         MALWAREBYTES("Malwarebytes") {
             @Override
             public String getDescription() {
-                return "The free Malwarebytes version performs less invasive scans, so it shouldn't be a problem. If you are running the paid Malwarebytes Pro version, you will have access to the `Exploit Protection` under the `Real-time Protection` mode. When this setting is active, any shell access is slowed down, resulting in XPipe becoming very slow.";
+                return "The free Malwarebytes version performs less invasive scans, so it shouldn't be a problem. If you are running the paid "
+                        + "Malwarebytes Pro version, you will have access to the `Exploit Protection` under the `Real-time Protection` mode. When "
+                        + "this setting is active, any shell access is slowed down, resulting in XPipe becoming very slow.";
             }
 
             @Override
@@ -95,7 +98,8 @@ public class AppAvCheck {
         MCAFEE("McAfee") {
             @Override
             public String getDescription() {
-                return "McAfee slows down XPipe considerably. It also sometimes preemptively disables some Win32 commands that XPipe depends on, leading to errors.";
+                return "McAfee slows down XPipe considerably. It also sometimes preemptively disables some Win32 commands that XPipe depends on, "
+                        + "leading to errors.";
             }
 
             @Override

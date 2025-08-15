@@ -23,8 +23,8 @@ dependencies {
     api project(':beacon')
 
     compileOnly 'org.hamcrest:hamcrest:3.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.12.2'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.12.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.13.4'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.13.4'
 
     api 'com.vladsch.flexmark:flexmark:0.64.8'
     api 'com.vladsch.flexmark:flexmark-util:0.64.8'
@@ -48,20 +48,30 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api("com.github.weisj:jsvg:1.7.1")
+    api ('io.modelcontextprotocol.sdk:mcp:0.11.0')  {
+        exclude group: "com.ethlo.time", module: "itu"
+        exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
+    }
+    api "io.projectreactor:reactor-core:3.7.0"
+    api "org.reactivestreams:reactive-streams:1.0.4"
+    api ("com.networknt:json-schema-validator:1.5.8") {
+        exclude group: "com.ethlo.time", module: "itu"
+        exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
+    }
+
+    api "com.github.weisj:jsvg:1.7.1"
     api 'io.xpipe:vernacular:1.15'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.6'
-    api 'org.apache.commons:commons-lang3:3.17.0'
+    api 'org.apache.commons:commons-lang3:3.18.0'
     api 'io.sentry:sentry:8.13.3'
     api 'commons-io:commons-io:2.19.0'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.1"
     api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.19.1"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.2.0"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.2.0"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.2.0"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-material-pack', version: "12.2.0"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-feather-pack', version: "12.2.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.4.0"
+    api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.4.0"
+    api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
+    api group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.4.0"
     api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
     api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.17'
     api 'io.xpipe:modulefs:0.1.6'
@@ -71,31 +81,30 @@ dependencies {
 
 apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"
 
-def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList();
+def extensionJarDepList = project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)).toList()
 jar {
     finalizedBy(extensionJarDepList)
 }
 
 application {
-    mainModule = 'io.xpipe.app'
-    mainClass = 'io.xpipe.app.Main'
+    mainModule = groupName + '.app'
+    mainClass = groupName + '.app.Main'
     applicationDefaultJvmArgs = jvmRunArgs
 }
 
 run {
-    systemProperty 'io.xpipe.app.useVirtualThreads', 'false'
-    systemProperty 'io.xpipe.app.mode', 'gui'
-    systemProperty 'io.xpipe.app.writeLogs', "true"
-    systemProperty 'io.xpipe.app.writeSysOut', "true"
-    systemProperty 'io.xpipe.app.developerMode', "true"
-    systemProperty 'io.xpipe.app.logLevel', "trace"
-    systemProperty 'io.xpipe.app.fullVersion', rootProject.fullVersion
-    systemProperty 'io.xpipe.app.staging', isStage
-    // systemProperty 'io.xpipe.beacon.port', "30000"
+    systemProperty propertyName('useVirtualThreads'), 'false'
+    systemProperty propertyName('mode'), 'gui'
+    systemProperty propertyName('writeLogs'), "true"
+    systemProperty propertyName('writeSysOut'), "true"
+    systemProperty propertyName('developerMode'), "true"
+    systemProperty propertyName('logLevel'), "trace"
+    systemProperty propertyName('fullVersion'), fullVersion
+    systemProperty propertyName('staging'), isStage
 
     // Apply passed xpipe properties
     for (final def e in System.getProperties().entrySet()) {
-        if (e.getKey().toString().contains("xpipe")) {
+        if (e.getKey().toString().contains(snakeProductName)) {
             systemProperty e.getKey().toString(), e.getValue()
         }
     }
@@ -103,17 +112,17 @@ run {
     workingDir = rootDir
     jvmArgs += ['-XX:+EnableDynamicAgentLoading']
 
-    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
+    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
 
     dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 }
 
-task runAttachedDebugger(type: JavaExec) {
+tasks.register('runAttachedDebugger', JavaExec) {
     workingDir = rootDir
     classpath = run.classpath
-    mainModule = 'io.xpipe.app'
-    mainClass = 'io.xpipe.app.Main'
+    mainModule = groupName + '.app'
+    mainClass = groupName + '.app.Main'
     modularity.inferModulePath = true
     jvmArgs += jvmRunArgs
     jvmArgs += List.of(
@@ -123,7 +132,7 @@ task runAttachedDebugger(type: JavaExec) {
     jvmArgs += ['-XX:+EnableDynamicAgentLoading']
     systemProperties run.systemProperties
 
-    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList());
+    def exts = files(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0].outputs.files.singleFile).toList())
     classpath += exts
     dependsOn(project.allExtensions.stream().map(p -> p.getTasksByName('jar', true)[0]).toList())
 
@@ -134,15 +143,12 @@ processResources {
         def cssFiles = fileTree(dir: "$sourceSets.main.output.resourcesDir/io/xpipe/app/resources/style")
         cssFiles.include "**/*.css"
         cssFiles.each { css ->
-            logger.info("converting CSS to BSS ${css}");
-
-            javaexec {
-                workingDir = project.projectDir
-                jvmArgs += "--module-path=${configurations.javafx.asFileTree.asPath},"
-                jvmArgs += "--add-modules=javafx.graphics"
-                main = "com.sun.javafx.css.parser.Css2Bin"
+            providers.javaexec {
+                workingDir = projectDir
+                jvmArgs += ["--module-path=${configurations.javafx.asFileTree.asPath},", "--add-modules=javafx.graphics"]
+                mainClass = "com.sun.javafx.css.parser.Css2Bin"
                 args css
-            }
+            }.result.get()
 
             delete css
         }
@@ -159,13 +165,13 @@ processResources {
 }
 
 distTar {
-    enabled = false;
+    enabled = false
 }
 
 distZip {
-    enabled = false;
+    enabled = false
 }
 
 assembleDist {
-    enabled = false;
+    enabled = false
 }

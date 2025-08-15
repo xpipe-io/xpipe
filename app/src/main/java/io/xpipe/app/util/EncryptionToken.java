@@ -19,6 +19,16 @@ public class EncryptionToken {
 
     private static EncryptionToken vaultToken;
     private static EncryptionToken userToken;
+    private final String token;
+
+    @JsonIgnore
+    private Boolean isVault;
+
+    @JsonIgnore
+    private Boolean isUser;
+
+    @JsonIgnore
+    private EncryptionToken usedUserToken;
 
     public static void invalidateUserToken() {
         userToken = null;
@@ -61,17 +71,6 @@ public class EncryptionToken {
         }
         return vaultToken;
     }
-
-    private final String token;
-
-    @JsonIgnore
-    private Boolean isVault;
-
-    @JsonIgnore
-    private Boolean isUser;
-
-    @JsonIgnore
-    private EncryptionToken usedUserToken;
 
     public boolean canDecrypt() {
         return isVault() || isUser();

@@ -3,25 +3,17 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.lang.module.ModuleFinder
 import java.util.stream.Stream
 
-buildscript {
-    configurations.classpath {
-        resolutionStrategy {
-            // Fix https://github.com/jreleaser/jreleaser/issues/1643
-            force 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
-        }
-    }
-}
-
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.12' apply false
-    id("com.diffplug.spotless") version "7.1.0" apply false
+    id 'org.gradlex.extra-java-module-info' version '1.13' apply false
+    id("com.diffplug.spotless") version "7.2.1" apply false
 }
 
 allprojects { subproject ->
     apply plugin: 'org.gradlex.extra-java-module-info'
     extraJavaModuleInfo {
         failOnMissingModuleInfo.set(false)
+        skipLocalJars.set(true)
     }
     apply from: "$rootDir/gradle/gradle_scripts/modules.gradle"
 }
@@ -42,11 +34,17 @@ subprojects {subproject ->
     }
 }
 
+// https://docs.gradle.org/9.0.0/userguide/upgrading_major_version_9.html#reproducible_archives_by_default
+tasks.withType(AbstractArchiveTask).configureEach {
+    reproducibleFileOrder = false
+    preserveFileTimestamps = true
+    useFileSystemPermissions()
+}
 
 def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
 def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
 
-tasks.withType(GenerateModuleMetadata) {
+tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
 }
 
@@ -85,7 +83,7 @@ def getArchName() {
 }
 
 def getPlatformName() {
-    def currentOS = DefaultNativePlatform.currentOperatingSystem;
+    def currentOS = DefaultNativePlatform.currentOperatingSystem
     def platform
     if (currentOS.isWindows()) {
         platform = 'windows'
@@ -94,43 +92,15 @@ def getPlatformName() {
     } else {
         platform = 'linux'
     }
-    return platform;
+    return platform
 }
 
-project.ext {
-    ci = System.getenv('CI') != null
-    os = org.gradle.internal.os.OperatingSystem.current()
-    allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
-            .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
-            .filter(s -> !s.equals('base'))
-            .map(l -> project(":$l"))).toList()
-    fullVersion = file("$rootDir/private_files.txt").exists()
-    arch = getArchName()
-    privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
-    isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
-    isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
-    rawVersion = file('version').text.strip()
-    versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
-    versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
-    canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
-    buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
-    obfuscate = true
-    changelog = file("dist/changelogs/${canonicalVersionString}.md").exists() ? file("dist/changelogs/${canonicalVersionString}.md").text.strip() + '\n' : ""
-    productName = isStage ? 'XPipe PTB' : 'XPipe'
-    kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
-    flatcaseProductName = isStage ? 'xpipeptb' : 'xpipe'
-    publisher = 'XPipe UG (haftungsbeschränkt)'
-    shortDescription = isStage ? 'XPipe PTB (Public Test Build)' : 'Your entire server infrastructure at your fingertips'
-    longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
-    website = 'https://xpipe.io'
-    sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
-    authors = 'Christopher Schnick'
-    devJavafxVersion = '25-ea+10'
-    platformName = getPlatformName()
-    jvmRunArgs = [
-            "-Dio.xpipe.app.arch=$rootProject.arch",
+def getJvmArgs() {
+    def os = DefaultNativePlatform.currentOperatingSystem
+    def jvmRunArgs = [
+            "-Dio.xpipe.app.arch=$arch",
             "-Dfile.encoding=UTF-8",
-            "-Dvisualvm.display.name=XPipe",
+            "-Dvisualvm.display.name=$productName",
             "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
@@ -193,13 +163,48 @@ project.ext {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
 
+    return jvmRunArgs
+}
+
+project.ext {
+    ci = System.getenv('CI') != null
+    os = org.gradle.internal.os.OperatingSystem.current()
+    allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
+            .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
+            .filter(s -> s != 'base')
+            .map(l -> project(":$l"))).toList()
+    fullVersion = file("$rootDir/private_files.txt").exists()
+    arch = getArchName()
+    privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+    isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
+    isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
+    rawVersion = file('version').text.strip()
+    versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
+    versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
+    canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
+    buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
+    obfuscate = true
+    changelog = file("dist/changelog/${canonicalVersionString}.md").exists() ? file("dist/changelog/${canonicalVersionString}.md").text.strip() + '\n' : ""
+    productName = isStage ? 'XPipe PTB' : 'XPipe'
+    kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
+    flatcaseProductName = isStage ? 'xpipeptb' : 'xpipe'
+    snakeProductName = isStage ? 'xpipe_ptb' : 'xpipe'
+    publisher = 'XPipe UG (haftungsbeschränkt)'
+    shortDescription = isStage ? 'XPipe PTB (Public Test Build)' : 'Your entire server infrastructure at your fingertips'
+    longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
+    website = 'https://xpipe.io'
+    sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
+    authors = 'Christopher Schnick'
+    devJavafxVersion = '25-ea+10'
+    platformName = getPlatformName()
+    jvmRunArgs = getJvmArgs()
     useBundledJavaFx = fullVersion
     useBundledJna = fullVersion
     announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
-    changelogFile = file("$rootDir/dist/changelogs/${versionString}.md").exists() ?
-            file("$rootDir/dist/changelogs/${versionString}.md") :
-            file("$rootDir/dist/changelogs/${canonicalVersionString}.md")
-    incrementalChangelogFile = file("$rootDir/dist/changelogs/${canonicalVersionString}_incremental.md")
+    changelogFile = file("$rootDir/dist/changelog/${versionString}.md").exists() ?
+            file("$rootDir/dist/changelog/${versionString}.md") :
+            file("$rootDir/dist/changelog/${canonicalVersionString}.md")
+    incrementalChangelogFile = file("$rootDir/dist/changelog/${canonicalVersionString}_incremental.md")
     signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : (System.getenv('GPG_KEY_ID') != null ? System.getenv('GPG_KEY_ID') : "")
     signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : (System.getenv('GPG_KEY') != null ? System.getenv('GPG_KEY') : "")
     signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : (System.getenv('GPG_KEY_PASSWORD') != null ? System.getenv('GPG_KEY_PASSWORD') : "")
@@ -213,35 +218,47 @@ project.ext {
     bundleCds = ci && fullVersion
 
     windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
+    groupName = 'io.xpipe'
+}
+
+def propertyName(String s) {
+    return groupName + ".app." + s
+}
+
+def propertyName(String module, String s) {
+    return groupName + "." + module + "." + s
+}
+
+def packageName(String s) {
+    return groupName + ".app" + (s != null ? "." + s : "")
+}
+
+def packageName(String module, String s) {
+    return groupName + "." + module + (s != null ? "." + s : "")
 }
 
 def getWindowsSchemaCanonicalVersion() {
-    def v = canonicalVersionString;
+    def v = canonicalVersionString
     def last = isStage ? versionReleaseNumber : 0
     if (v.split("\\.").length == 2) {
         v = v + ".0"
     }
-    return v + "." + last;
+    return v + "." + last
 }
 
 if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
     jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
-}
-if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.MAC_OS) {
-    jvmRunArgs.addAll("--add-exports", "java.desktop/com.apple.eawt=io.xpipe.app")
 }
 
 if (isFullRelease && rawVersion.contains("-")) {
     throw new IllegalArgumentException("Releases must have canonical versions")
 }
 
-
 if (isStage && !rawVersion.contains("-")) {
     throw new IllegalArgumentException("Stage releases must have release numbers")
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
-    def fileName = file(f).getName()
     def text = file(f).text
     def replaced = text.replace(replacements)
     return replaced
@@ -277,17 +294,17 @@ tasks.register('testReport', TestReport) {
     }.toList())
 }
 
-task testAll(type: DefaultTask) {
+tasks.register('testAll', DefaultTask) {
     for (final def t in testTasks) {
-        t.forEach {dependsOn(it.getTaskDependencies())}
+        t.forEach { dependsOn(it.getTaskDependencies()) }
     }
     doFirst {
         for (final def t in testTasks) {
-            t.forEach {it.executeTests()}
+            t.forEach { it.executeTests() }
         }
     }
     finalizedBy(testReport)
 }
 
-group = 'io.xpipe'
+group = groupName
 version = versionString

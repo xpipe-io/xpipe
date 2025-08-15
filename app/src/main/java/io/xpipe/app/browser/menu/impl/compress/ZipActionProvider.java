@@ -15,6 +15,11 @@ import lombok.extern.jackson.Jacksonized;
 
 public class ZipActionProvider implements BrowserActionProvider {
 
+    @Override
+    public String getId() {
+        return "zip";
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -23,11 +28,6 @@ public class ZipActionProvider implements BrowserActionProvider {
         private final FilePath target;
 
         private final boolean directoryContentOnly;
-
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -91,10 +91,10 @@ public class ZipActionProvider implements BrowserActionProvider {
                 model.refreshSync();
             }
         }
-    }
 
-    @Override
-    public String getId() {
-        return "zip";
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
     }
 }

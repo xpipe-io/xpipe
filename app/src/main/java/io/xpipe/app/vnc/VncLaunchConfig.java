@@ -37,7 +37,8 @@ public class VncLaunchConfig {
             return Optional.empty();
         }
 
-        var secret = SecretManager.retrieve(strat, "VNC login password", entry.get().getUuid(), 1, true);
+        var secret =
+                SecretManager.retrieve(strat, "VNC login password", entry.get().getUuid(), 1, true);
         return Optional.ofNullable(secret);
     }
 }

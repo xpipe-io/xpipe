@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
@@ -19,7 +21,7 @@ public class ShellTemp {
         var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
-        if (OsType.getLocal().equals(OsType.LINUX)) {
+        if (OsType.getLocal() == OsType.LINUX) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
 
@@ -39,7 +41,7 @@ public class ShellTemp {
         FilePath base;
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root it is technically unique as only root will use /tmp
-        if (!proc.getOsType().equals(OsType.WINDOWS) && !proc.getOsType().equals(OsType.MACOS)) {
+        if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
             proc.command(proc.getShellDialect().getMkdirsCommand(base.toString()))
@@ -57,34 +59,55 @@ public class ShellTemp {
         return sub != null ? base.join(sub) : base;
     }
 
-    public static void checkTempDirectory(ShellControl proc) throws Exception {
-        var d = proc.getShellDialect();
+    public static void checkTempDirectory(ShellControl sc) throws Exception {
+        var d = sc.getShellDialect();
+        var systemTemp = sc.getSystemTemporaryDirectory();
+        var hasValidTemp = d.directoryExists(sc, systemTemp.toString()).executeAndCheck()
+                && checkDirectoryPermissions(sc, systemTemp.toString());
 
         // We only really need temp for cmd
-        // On various containers the temp might be not available, but we can make it work
-        if (!proc.isLocal() && proc.getShellDialect() != ShellDialects.CMD) {
-            return;
-        }
-
-        var systemTemp = proc.getSystemTemporaryDirectory();
-        if (!d.directoryExists(proc, systemTemp.toString()).executeAndCheck()
-                || !checkDirectoryPermissions(proc, systemTemp.toString())) {
+        // On various containers temp might be not available, but we can make it work
+        if (!sc.isLocal() && sc.getShellDialect() == ShellDialects.CMD && !hasValidTemp) {
             throw ErrorEventFactory.expected(
                     new IOException("No permissions to access system temporary directory %s".formatted(systemTemp)));
         }
 
-        // We don't do this anymore, we hope that all the legacy directories have been cleared now
+        if (hasValidTemp) {
+            var sessionFile = systemTemp.join("xpipe-session-"
+                    + AppProperties.get().getSessionId().toString().substring(0, 8));
+            var newSession = !sc.view().fileExists(sessionFile);
+            if (newSession) {
+                clearFiles(sc, systemTemp.join("xpipe-"));
+                sc.view().touch(sessionFile);
+            }
+        }
+    }
 
-        // Always delete legacy directory and do not care whether it partially fails
-        // This system xpipe temp directory might contain other files on the local machine, so only clear the exec
-        //        d.deleteFileOrDirectory(proc, systemTemp.join("xpipe", "exec").toString()).executeAndCheck();
-        //        var home = proc.getOsType().getHomeDirectory(proc);
-        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "temp")).executeAndCheck();
-        //        d.deleteFileOrDirectory(proc, FilePath.of(home, ".xpipe", "system_id")).executeAndCheck();
+    private static void clearFiles(ShellControl sc, FilePath prefix) throws Exception {
+        var d = sc.getShellDialect();
+        if (d == ShellDialects.CMD) {
+            sc.command(CommandBuilder.of().add("DEL", "/Q", "/F").addQuoted(prefix.toString() + "*"))
+                    .executeAndCheck();
+        } else if (ShellDialects.isPowershell(d)) {
+            sc.command(CommandBuilder.of()
+                            .add("Get-ChildItem")
+                            .addFile(prefix.getParent())
+                            .add(
+                                    "|",
+                                    "Where-Object",
+                                    "{$_.Name.StartsWith(\"" + prefix.getFileName() + "\")}",
+                                    "|",
+                                    "Remove-Item",
+                                    "-Force"))
+                    .executeAndCheck();
+        } else {
+            sc.command(CommandBuilder.of().add("rm", "-f").add("\"" + prefix.toString() + "\"*"))
+                    .executeAndCheck();
+        }
     }
 
     private static boolean checkDirectoryPermissions(ShellControl proc, String dir) throws Exception {
-        if (proc.getOsType().equals(OsType.WINDOWS)) {
+        if (proc.getOsType() == OsType.WINDOWS) {
             return true;
         }
 

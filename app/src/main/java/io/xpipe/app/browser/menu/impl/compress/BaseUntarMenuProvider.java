@@ -33,20 +33,6 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
     }
 
     @Override
-    public String getExecutable() {
-        return "tar";
-    }
-
-    @Override
-    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var builder = UntarActionProvider.Action.builder();
-        builder.initEntries(model, entries);
-        builder.gz(gz);
-        builder.toDirectory(toDirectory);
-        return builder.build();
-    }
-
-    @Override
     public BrowserMenuCategory getCategory() {
         return BrowserMenuCategory.CUSTOM;
     }
@@ -59,13 +45,6 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
                 ? "[...]"
                 : getTarget(entries.getFirst().getRawFileEntry().getPath()).getFileName() + sep;
         return toDirectory ? AppI18n.observable("untarDirectory", dir) : AppI18n.observable("untarHere");
-    }
-
-    private FilePath getTarget(FilePath name) {
-        return FilePath.of(name.toString()
-                .replaceAll("\\.tar$", "")
-                .replaceAll("\\.tar.gz$", "")
-                .replaceAll("\\.tgz$", ""));
     }
 
     @Override
@@ -81,5 +60,26 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
 
         return entries.stream()
                 .allMatch(entry -> entry.getRawFileEntry().getPath().toString().endsWith(".tar"));
+    }
+
+    @Override
+    public String getExecutable() {
+        return "tar";
+    }
+
+    @Override
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = UntarActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        builder.gz(gz);
+        builder.toDirectory(toDirectory);
+        return builder.build();
+    }
+
+    private FilePath getTarget(FilePath name) {
+        return FilePath.of(name.toString()
+                .replaceAll("\\.tar$", "")
+                .replaceAll("\\.tar.gz$", "")
+                .replaceAll("\\.tgz$", ""));
     }
 }

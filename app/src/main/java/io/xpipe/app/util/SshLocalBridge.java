@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.beacon.AppBeaconServer;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -8,7 +9,6 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,11 +24,6 @@ import java.util.stream.Collectors;
 public class SshLocalBridge {
 
     private static SshLocalBridge INSTANCE;
-
-    public static SshLocalBridge get() {
-        return INSTANCE;
-    }
-
     private final Path directory;
     private final int port;
     private final String user;
@@ -42,32 +37,8 @@ public class SshLocalBridge {
         this.user = user;
     }
 
-    public String getName() {
-        return AppProperties.get().isStaging() ? "xpipe_ptb_bridge" : "xpipe_bridge";
-    }
-
-    public String getHost() {
-        return "127.0.0.1";
-    }
-
-    public Path getPubHostKey() {
-        return directory.resolve(getName() + "_host_key.pub");
-    }
-
-    public Path getHostKey() {
-        return directory.resolve(getName() + "_host_key");
-    }
-
-    public Path getPubIdentityKey() {
-        return directory.resolve(getName() + ".pub");
-    }
-
-    public Path getIdentityKey() {
-        return directory.resolve(getName());
-    }
-
-    public Path getConfig() {
-        return directory.resolve("sshd_config");
+    public static SshLocalBridge get() {
+        return INSTANCE;
     }
 
     public static void init() throws Exception {
@@ -172,61 +143,6 @@ public class SshLocalBridge {
         }
     }
 
-    private String getRemoteCommand(ShellControl sc) {
-        var command = "\"" + XPipeInstallation.getLocalDefaultCliExecutable() + "\" ssh-launch "
-                + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
-        var p = Pattern.compile("\".+?\\\\Users\\\\([^\\\\]+)\\\\(.+)\"");
-        var matcher = p.matcher(command);
-        if (matcher.find() && matcher.group(1).contains(" ")) {
-            return matcher.replaceFirst("\"$2\"");
-        } else {
-            return command;
-        }
-    }
-
-    private void updateConfig() throws IOException {
-        var hostEntry =
-                """
-                       Host %s
-                           HostName localhost
-                           User "%s"
-                           Port %s
-                           IdentityFile "%s"
-                       """
-                        .formatted(getName(), user, port, getIdentityKey());
-
-        var file = Path.of(System.getProperty("user.home"), ".ssh", "config");
-        if (!Files.exists(file)) {
-            Files.writeString(file, hostEntry);
-            return;
-        }
-
-        var content = Files.readString(file).lines().collect(Collectors.joining("\n")) + "\n";
-        var pattern = Pattern.compile(
-                """
-                                       Host %s
-                                        {4}HostName localhost
-                                        {4}User "(.+)"
-                                        {4}Port (\\d+)
-                                        {4}IdentityFile "(.+)"
-                                       """
-                        .formatted(getName()));
-        var matcher = pattern.matcher(content);
-        if (matcher.find()) {
-            var replaced = matcher.replaceFirst(Matcher.quoteReplacement(hostEntry));
-            Files.writeString(file, replaced);
-            return;
-        }
-
-        // Probably an invalid entry that did not match
-        if (content.contains("Host " + getName())) {
-            return;
-        }
-
-        var updated = content + "\n" + hostEntry + "\n";
-        Files.writeString(file, updated);
-    }
-
     private static FilePath getSshd(ShellControl sc) throws Exception {
         var exec = CommandSupport.findProgram(sc, "sshd");
         if (exec.isEmpty()) {
@@ -249,5 +165,84 @@ public class SshLocalBridge {
         }
         INSTANCE.getRunningShell().kill();
         INSTANCE = null;
+    }
+
+    public String getName() {
+        return AppProperties.get().isStaging() ? "xpipe_ptb_bridge" : "xpipe_bridge";
+    }
+
+    public String getHost() {
+        return "127.0.0.1";
+    }
+
+    public Path getHostKey() {
+        return directory.resolve(getName() + "_host_key");
+    }
+
+    public Path getPubIdentityKey() {
+        return directory.resolve(getName() + ".pub");
+    }
+
+    public Path getIdentityKey() {
+        return directory.resolve(getName());
+    }
+
+    public Path getConfig() {
+        return directory.resolve("sshd_config");
+    }
+
+    private String getRemoteCommand(ShellControl sc) {
+        var command = "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\" ssh-launch "
+                + sc.getShellDialect().environmentVariable("SSH_ORIGINAL_COMMAND");
+        var p = Pattern.compile("\".+?\\\\Users\\\\([^\\\\]+)\\\\(.+)\"");
+        var matcher = p.matcher(command);
+        if (matcher.find() && matcher.group(1).contains(" ")) {
+            return matcher.replaceFirst("\"$2\"");
+        } else {
+            return command;
+        }
+    }
+
+    private void updateConfig() throws IOException {
+        var hostEntry =
+                """
+                        Host %s
+                            HostName localhost
+                            User "%s"
+                            Port %s
+                            IdentityFile "%s"
+                        """
+                        .formatted(getName(), user, port, getIdentityKey());
+
+        var file = Path.of(System.getProperty("user.home"), ".ssh", "config");
+        if (!Files.exists(file)) {
+            Files.writeString(file, hostEntry);
+            return;
+        }
+
+        var content = Files.readString(file).lines().collect(Collectors.joining("\n")) + "\n";
+        var pattern = Pattern.compile(
+                """
+                                      Host %s
+                                       {4}HostName localhost
+                                       {4}User "(.+)"
+                                       {4}Port (\\d+)
+                                       {4}IdentityFile "(.+)"
+                                      """
+                        .formatted(getName()));
+        var matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            var replaced = matcher.replaceFirst(Matcher.quoteReplacement(hostEntry));
+            Files.writeString(file, replaced);
+            return;
+        }
+
+        // Probably an invalid entry that did not match
+        if (content.contains("Host " + getName())) {
+            return;
+        }
+
+        var updated = content + "\n" + hostEntry + "\n";
+        Files.writeString(file, updated);
     }
 }

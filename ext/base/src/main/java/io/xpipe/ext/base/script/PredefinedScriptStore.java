@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -63,7 +64,7 @@ public enum PredefinedScriptStore {
 
     public static String file(String name) {
         AtomicReference<String> string = new AtomicReference<>();
-        AppResources.with("io.xpipe.ext.base", "scripts/" + name, var1 -> {
+        AppResources.with(AppNames.extModuleName("base"), "scripts/" + name, var1 -> {
             string.set(Files.readString(var1));
         });
         return string.get();

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.Module;
 
 open module io.xpipe.beacon {
     exports io.xpipe.beacon;
-    exports io.xpipe.beacon.test;
     exports io.xpipe.beacon.api;
 
     requires com.fasterxml.jackson.core;

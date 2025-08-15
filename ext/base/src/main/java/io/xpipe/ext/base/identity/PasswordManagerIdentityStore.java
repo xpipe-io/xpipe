@@ -30,11 +30,6 @@ public class PasswordManagerIdentityStore extends IdentityStore
     String key;
     boolean perUser;
 
-    @Override
-    public void checkComplete() throws Throwable {
-        Validators.nonNull(key);
-    }
-
     private boolean checkOutdatedOrRefresh() {
         var instant = getCache("lastQueried", Instant.class, null);
         if (instant != null) {
@@ -53,6 +48,10 @@ public class PasswordManagerIdentityStore extends IdentityStore
             if (credential != null) {
                 return credential;
             }
+        }
+
+        if (AppPrefs.get() == null || AppPrefs.get().passwordManager().getValue() == null) {
+            return null;
         }
 
         var r = AppPrefs.get().passwordManager().getValue().retrieveCredentials(key);
@@ -119,6 +118,11 @@ public class PasswordManagerIdentityStore extends IdentityStore
     @Override
     public SshIdentityStrategy getSshIdentity() {
         return new SshIdentityStrategy.None();
+    }
+
+    @Override
+    public void checkComplete() throws Throwable {
+        Validators.nonNull(key);
     }
 
     @Override

@@ -81,7 +81,7 @@ public class DataStorageQuery {
         return found;
     }
 
-    private static String toRegex(String pattern) {
+    public static String toRegex(String pattern) {
         pattern = pattern.replaceAll("\\*\\*", "#");
         // https://stackoverflow.com/a/17369948/6477761
         StringBuilder sb = new StringBuilder(pattern.length());
@@ -112,16 +112,25 @@ public class DataStorageQuery {
                     }
                     break;
                 case '*':
-                    if (inClass == 0) sb.append("[^/]*");
-                    else sb.append('*');
+                    if (inClass == 0) {
+                        sb.append("[^/]*");
+                    } else {
+                        sb.append('*');
+                    }
                     break;
                 case '#':
-                    if (inClass == 0) sb.append(".*");
-                    else sb.append('*');
+                    if (inClass == 0) {
+                        sb.append(".*");
+                    } else {
+                        sb.append('*');
+                    }
                     break;
                 case '?':
-                    if (inClass == 0) sb.append('.');
-                    else sb.append('?');
+                    if (inClass == 0) {
+                        sb.append('.');
+                    } else {
+                        sb.append('?');
+                    }
                     break;
                 case '[':
                     inClass++;
@@ -141,12 +150,17 @@ public class DataStorageQuery {
                 case '$':
                 case '@':
                 case '%':
-                    if (inClass == 0 || (firstIndexInClass == i && ch == '^')) sb.append('\\');
+                    if (inClass == 0 || (firstIndexInClass == i && ch == '^')) {
+                        sb.append('\\');
+                    }
                     sb.append(ch);
                     break;
                 case '!':
-                    if (firstIndexInClass == i) sb.append('^');
-                    else sb.append('!');
+                    if (firstIndexInClass == i) {
+                        sb.append('^');
+                    } else {
+                        sb.append('!');
+                    }
                     break;
                 case '{':
                     inGroup++;
@@ -157,8 +171,11 @@ public class DataStorageQuery {
                     sb.append(')');
                     break;
                 case ',':
-                    if (inGroup > 0) sb.append('|');
-                    else sb.append(',');
+                    if (inGroup > 0) {
+                        sb.append('|');
+                    } else {
+                        sb.append(',');
+                    }
                     break;
                 default:
                     sb.append(ch);
