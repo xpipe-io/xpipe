@@ -29,6 +29,7 @@ public class StoreCreationMenu {
                 event.consume();
             });
             menu.getItems().add(automatically);
+            menu.getItems().add(networkScanMenu());
             menu.getItems().add(new SeparatorMenuItem());
 
             var disableSearch = Bindings.createBooleanBinding(
@@ -51,20 +52,6 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addHost", "mdi2h-home-plus", DataStoreCreationCategory.HOST, "ssh"));
 
-        menu.getItems()
-                .add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
-
-        menu.getItems()
-                .add(categoryMenu(
-                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
-
-        menu.getItems()
-                .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
-
-        menu.getItems()
-                .add(categoryMenu(
-                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
-
         menu.getItems().add(categoryMenu("addDesktop", "mdi2c-camera-plus", DataStoreCreationCategory.DESKTOP, null));
 
         menu.getItems()
@@ -73,6 +60,28 @@ public class StoreCreationMenu {
                         "mdi2a-account-multiple-plus",
                         DataStoreCreationCategory.IDENTITY,
                         "localIdentity"));
+
+        menu.getItems().add(cloudMenu());
+
+        menu.getItems().add(new SeparatorMenuItem());
+
+        menu.getItems()
+                .add(categoryMenu("addService", "mdi2l-link-plus", DataStoreCreationCategory.SERVICE, "customService"));
+
+        menu.getItems()
+                .add(categoryMenu(
+                        "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
+
+        menu.getItems().add(new SeparatorMenuItem());
+
+        menu.getItems()
+                .add(categoryMenu("addCommand", "mdi2c-code-greater-than", DataStoreCreationCategory.COMMAND, null));
+
+        menu.getItems()
+                .add(categoryMenu(
+                        "addScript", "mdi2s-script-text-outline", DataStoreCreationCategory.SCRIPT, "script"));
+
+        menu.getItems().add(new SeparatorMenuItem());
 
         var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, null);
         var item = new MenuItem();
@@ -91,10 +100,8 @@ public class StoreCreationMenu {
 
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
-        menu.getItems().add(networkScanMenu());
-
-        menu.getItems().add(setupMenu());
-
+        menu.getItems().add(new SeparatorMenuItem());
+        
         menu.getItems().add(actionMenu);
     }
 
@@ -148,12 +155,12 @@ public class StoreCreationMenu {
         return menu;
     }
 
-    private static Menu setupMenu() {
+    private static Menu cloudMenu() {
         var menu = new Menu();
         menu.setGraphic(new FontIcon("mdi2t-toy-brick-plus-outline"));
         menu.textProperty().bind(AppI18n.observable("addCloud"));
 
-        for (var p : SetupProvider.ALL) {
+        for (var p : CloudSetupProvider.ALL) {
             var item = new MenuItem();
             item.textProperty().bind(AppI18n.observable(p.getNameKey()));
             item.setGraphic(p.getGraphic().createGraphicNode());

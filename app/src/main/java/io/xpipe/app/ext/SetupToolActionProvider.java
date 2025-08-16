@@ -28,7 +28,7 @@ public class SetupToolActionProvider implements ActionProvider {
         @Override
         @SneakyThrows
         public void executeImpl() {
-            var provider = SetupProvider.byId(type);
+            var provider = CloudSetupProvider.byId(type);
             if (provider.isEmpty()) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Setup action not found: " + type));
             }

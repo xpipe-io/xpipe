@@ -5,11 +5,11 @@ import io.xpipe.core.ModuleLayerLoader;
 
 import java.util.*;
 
-public interface SetupProvider {
+public interface CloudSetupProvider {
 
-    List<SetupProvider> ALL = new ArrayList<>();
+    List<CloudSetupProvider> ALL = new ArrayList<>();
 
-    static Optional<SetupProvider> byId(String id) {
+    static Optional<CloudSetupProvider> byId(String id) {
         return ALL.stream().filter(d -> d.getId().equalsIgnoreCase(id)).findAny();
     }
 
@@ -25,7 +25,7 @@ public interface SetupProvider {
 
         @Override
         public void init(ModuleLayer layer) {
-            ALL.addAll(ServiceLoader.load(layer, SetupProvider.class).stream()
+            ALL.addAll(ServiceLoader.load(layer, CloudSetupProvider.class).stream()
                     .sorted(Comparator.comparing(p -> p.type().getModule().getName()))
                     .map(p -> p.get())
                     .toList());
