@@ -84,9 +84,9 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         }
     }
 
-    @Override
-    public String protocolVersion() {
-        return "2025-03-26";
+    public List<String> protocolVersions() {
+        return List.of(ProtocolVersions.MCP_2024_11_05, ProtocolVersions.MCP_2025_03_26);
+
     }
 
     @Override

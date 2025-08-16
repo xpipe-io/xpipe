@@ -1,0 +1,17 @@
+{
+  "name": "help",
+  "description": "Information about the XPipe MCP server and what tools it provides",
+  "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "required": [
+      "path",
+      "system"
+    ]
+  },
+  "annotations": {
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "openWorldHint": false
+  }
+}

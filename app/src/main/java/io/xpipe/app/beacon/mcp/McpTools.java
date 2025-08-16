@@ -41,6 +41,37 @@ import java.util.stream.Collectors;
 
 public final class McpTools {
 
+    public static McpServerFeatures.SyncToolSpecification help() throws IOException {
+        var tool = McpSchemaFiles.loadTool("help.json");
+        return McpServerFeatures.SyncToolSpecification.builder()
+                .tool(tool)
+                .callHandler(McpToolHandler.of((req) -> {
+                    var ro = AppMcpServer.get().getReadOnlyTools().stream()
+                            .filter(syncToolSpecification -> !syncToolSpecification.tool().name().equals("help")).toList();
+                    var mu = AppMcpServer.get().getMutationTools();
+
+                    var roList = ro.stream().map(syncToolSpecification -> "- " + syncToolSpecification.tool().name() + ": " + syncToolSpecification.tool().description()).collect(
+                            Collectors.joining("\n"));
+                    var muList = mu.stream().map(syncToolSpecification -> "- " + syncToolSpecification.tool().name() + ": " + syncToolSpecification.tool().description()).collect(
+                            Collectors.joining("\n"));
+
+                    var text = """
+                               The XPipe MCP server offers the following read-only tools:
+                               %s
+                               These tools will not modify anything on your system and are safe to use.
+                               
+                               You can also enable the following potentially destructive tools in the settings menu:
+                               %s
+                               These tools can perform write operations and other actions that might be potentially destructive.
+                               """.formatted(roList, muList);
+
+                    return McpSchema.CallToolResult.builder()
+                            .addTextContent(text)
+                            .build();
+                }))
+                .build();
+    }
+
     @Jacksonized
     @Builder
     @Value

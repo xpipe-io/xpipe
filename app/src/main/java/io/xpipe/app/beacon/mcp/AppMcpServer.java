@@ -17,14 +17,18 @@ import lombok.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Value
 public class AppMcpServer {
 
     private static AppMcpServer INSTANCE;
+
     McpSyncServer mcpSyncServer;
     HttpStreamableServerTransportProvider transportProvider;
+    List<McpServerFeatures.SyncToolSpecification> readOnlyTools;
+    List<McpServerFeatures.SyncToolSpecification> mutationTools;
 
     public static AppMcpServer get() {
         return INSTANCE;
@@ -45,11 +49,13 @@ public class AppMcpServer {
                         .build())
                 .build();
 
-        syncServer.addTool(McpTools.listSystems());
-        syncServer.addTool(McpTools.readFile());
-        syncServer.addTool(McpTools.listFiles());
-        syncServer.addTool(McpTools.findFile());
-        syncServer.addTool(McpTools.getFileInfo());
+        var readOnlyTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
+        readOnlyTools.add(McpTools.help());
+        readOnlyTools.add(McpTools.listSystems());
+        readOnlyTools.add(McpTools.readFile());
+        readOnlyTools.add(McpTools.listFiles());
+        readOnlyTools.add(McpTools.findFile());
+        readOnlyTools.add(McpTools.getFileInfo());
 
         var mutationTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
         mutationTools.add(McpTools.createFile());
@@ -60,6 +66,10 @@ public class AppMcpServer {
         mutationTools.add(McpTools.openTerminal());
         mutationTools.add(McpTools.openTerminalInline());
         mutationTools.add(McpTools.toggleState());
+
+        for (McpServerFeatures.SyncToolSpecification readOnlyTool : readOnlyTools) {
+            syncServer.addTool(readOnlyTool);
+        }
 
         var toolsAdded = new AtomicBoolean();
         AppPrefs.get().enableMcpMutationTools().subscribe(value -> {
@@ -76,7 +86,7 @@ public class AppMcpServer {
             syncServer.notifyToolsListChanged();
         });
 
-        INSTANCE = new AppMcpServer(syncServer, transportProvider);
+        INSTANCE = new AppMcpServer(syncServer, transportProvider, readOnlyTools, mutationTools);
     }
 
     public static void reset() {

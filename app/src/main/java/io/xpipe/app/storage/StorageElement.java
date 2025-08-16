@@ -119,8 +119,7 @@ public abstract class StorageElement {
             return;
         }
 
-        this.lastModified = lastModified;
-        notifyUpdate(false, false);
+        notifyUpdate(false, true);
     }
 
     public void setLastUsed(Instant lastUsed) {
@@ -128,8 +127,7 @@ public abstract class StorageElement {
             return;
         }
 
-        this.lastUsed = lastUsed;
-        notifyUpdate(false, false);
+        notifyUpdate(true, false);
     }
 
     public interface Listener {
