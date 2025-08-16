@@ -197,7 +197,7 @@ public final class BrowserFileListComp extends SimpleComp {
                 modeCol.setVisible(newValue.doubleValue() > 600);
             }
 
-            mtimeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 150 : 100);
+            mtimeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 150 : 110);
             sizeCol.setPrefWidth(newValue.doubleValue() == 0.0 || newValue.doubleValue() > 600 ? 120 : 90);
 
             var width = getFilenameWidth(table);

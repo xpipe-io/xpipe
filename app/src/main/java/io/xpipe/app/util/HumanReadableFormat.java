@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public final class HumanReadableFormat {
 
@@ -81,10 +82,19 @@ public final class HumanReadableFormat {
     }
 
     public static String duration(Duration duration) {
-        return duration.toString()
+        var s =  duration.toString()
                 .substring(2)
                 .replaceAll("(\\d[HMS])(?!$)", "$1 ")
                 .replaceAll("\\.\\d+", "")
                 .toLowerCase();
+        var padded = Pattern.compile("\\d+").matcher(s).replaceAll(matchResult -> {
+            var r = matchResult.group();
+            if (r.length() == 1) {
+                return "0" + r;
+            } else {
+                return r;
+            }
+        });
+        return padded;
     }
 }

@@ -80,6 +80,19 @@ public class BrowserFileTransferOperation {
         return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress, cancelled);
     }
 
+    private void restartShellIfNeeded() throws Exception {
+        var source = getFiles().getFirst().getFileSystem().getShell().orElseThrow();
+        var target = getTarget().getFileSystem().getShell().orElseThrow();
+
+        if (source.isAnyStreamClosed()) {
+            source.restart();
+        }
+
+        if (target.isAnyStreamClosed()) {
+            target.restart();
+        }
+    }
+
     private void updateProgress(BrowserTransferProgress progress) {
         this.progress.accept(progress);
     }
@@ -153,6 +166,8 @@ public class BrowserFileTransferOperation {
             updateProgress(null);
             return;
         }
+
+        restartShellIfNeeded();
 
         cancelled.set(false);
 
@@ -577,7 +592,7 @@ public class BrowserFileTransferOperation {
 
         if (!instant && !same && checkTransferValidity()) {
             var initialTransferred = transferred.get();
-            if (!thread.join(Duration.ofMillis(1000))) {
+            if (!thread.join(Duration.ofMillis(2000))) {
                 var nowTransferred = transferred.get();
                 var stuck = initialTransferred == nowTransferred;
                 if (stuck) {
