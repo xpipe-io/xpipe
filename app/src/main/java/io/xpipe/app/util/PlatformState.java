@@ -36,6 +36,16 @@ public enum PlatformState {
     }
 
     public static void teardown() {
+        // This is bad and can get sometimes stuck
+        //        PlatformThread.runLaterIfNeededBlocking(() -> {
+        //            try {
+        //                // Fix to preserve clipboard contents after shutdown
+        //                var string = Clipboard.getSystemClipboard().getString();
+        //                var s = new StringSelection(string);
+        //                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(s, s);
+        //            } catch (IllegalStateException ignored) {
+        //            }
+        //        });
         setCurrent(PlatformState.EXITED);
 
         // Give other threads, e.g. windows shutdown hook time to properly signal exit state
@@ -55,11 +65,11 @@ public enum PlatformState {
 
     private static String getErrorMessage(String message) {
         var header = message != null ? message + "\n\n" : "Failed to load graphics support\n\n";
-        var msg =
-                header + "Please note that XPipe is a desktop application that should be run on your local workstation."
-                        + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
-                        + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
-                        + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
+        var msg = header
+                + "Please note that XPipe is a desktop application that should be run on your local workstation."
+                + " It is able to provide the full functionality for all integrations via remote server connections, e.g. via SSH."
+                + " You don't have to install XPipe on any system like a server, a WSL distribution, a hypervisor, etc.,"
+                + " to have full access to that system, a shell connection to it is enough for XPipe to work from your local machine.";
         return msg;
     }
 
@@ -101,10 +111,10 @@ public enum PlatformState {
                 var i = Math.min(300, Math.max(25, s));
                 var value = i + "%";
                 switch (OsType.getLocal()) {
-                    case OsType.Linux ignored -> {
+                    case OsType.Linux linux -> {
                         System.setProperty("glass.gtk.uiScale", value);
                     }
-                    case OsType.Windows ignored -> {
+                    case OsType.Windows windows -> {
                         System.setProperty("glass.win.uiScale", value);
                     }
                     default -> {}
@@ -117,11 +127,6 @@ public enum PlatformState {
             // (https://bugs.openjdk.org/browse/JDK-8329382)
             // But apparently it can also occur without a custom stage on Windows
             System.setProperty("prism.forceUploadingPainter", "true");
-        }
-
-        if (AppPrefs.get() != null
-                && AppPrefs.get().disableHardwareAcceleration().get()) {
-            System.setProperty("prism.order", "sw");
         }
 
         try {

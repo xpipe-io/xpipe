@@ -20,11 +20,23 @@ import java.util.Base64;
  * which is what KeePassXC expects.
  */
 public class TweetNaClHelper {
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     public static final int KEY_SIZE = 32;
     public static final int NONCE_SIZE = 24;
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     // Sigma constant ("expand 32-byte k")
     private static final byte[] SIGMA = {101, 120, 112, 97, 110, 100, 32, 51, 50, 45, 98, 121, 116, 101, 32, 107};
+
+    @Getter
+    public static class KeyPair {
+        private final byte[] publicKey;
+        private final byte[] secretKey;
+
+        public KeyPair(byte[] publicKey, byte[] secretKey) {
+            this.publicKey = publicKey;
+            this.secretKey = secretKey;
+        }
+    }
 
     /**
      * Generate a new key pair.
@@ -392,16 +404,5 @@ public class TweetNaClHelper {
      */
     public static byte[] decodeBase64(String data) {
         return Base64.getDecoder().decode(data);
-    }
-
-    @Getter
-    public static class KeyPair {
-        private final byte[] publicKey;
-        private final byte[] secretKey;
-
-        public KeyPair(byte[] publicKey, byte[] secretKey) {
-            this.publicKey = publicKey;
-            this.secretKey = secretKey;
-        }
     }
 }

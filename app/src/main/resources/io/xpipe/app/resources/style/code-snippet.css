@@ -1,0 +1,36 @@
+.code-snippet {
+    -fx-padding: 0.3em 0.5em 0.3em 0.5em;
+    -fx-border-width: 0;
+    -fx-border-color: -color-accent-fg;
+    -fx-spacing: 0;
+    -fx-font-family: Monospace;
+}
+
+.code-snippet-container {
+    -fx-border-width: 1px;
+    -fx-border-color: -color-accent-fg;
+    -fx-background-color: transparent;
+    -fx-border-radius: 4px;
+    -fx-background-radius: 4px;
+    -fx-padding: 3px;
+}
+
+.copy {
+
+}
+
+.line-number {
+    -fx-alignment: center-right;
+    -fx-font-family: Monospace;
+    -fx-text-fill: grey;
+}
+
+.line-numbers {
+    -fx-padding: 0.3em 0.2em 0.3em 0.5em;
+    -fx-background-color: #073B4C11;
+}
+
+.code-snippet-container .spacer {
+    -fx-pref-width: 1px;
+    -fx-background-color: -color-accent-fg;
+}

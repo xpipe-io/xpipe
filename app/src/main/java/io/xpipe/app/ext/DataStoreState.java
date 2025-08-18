@@ -9,13 +9,13 @@ public abstract class DataStoreState {
 
     public DataStoreState() {}
 
-    protected static <T> T useNewer(T older, T newer) {
-        return newer != null ? newer : older;
-    }
-
     @SuppressWarnings("unchecked")
     public <DS extends DataStoreState> DS asNeeded() {
         return (DS) this;
+    }
+
+    protected static <T> T useNewer(T older, T newer) {
+        return newer != null ? newer : older;
     }
 
     public DataStoreState mergeCopy(DataStoreState newer) {

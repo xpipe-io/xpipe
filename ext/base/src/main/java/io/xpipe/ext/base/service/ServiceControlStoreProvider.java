@@ -30,11 +30,6 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     }
 
     @Override
-    public DataStoreCreationCategory getCreationCategory() {
-        return DataStoreCreationCategory.SERVICE;
-    }
-
-    @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.TUNNEL;
     }
@@ -47,6 +42,20 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
                         s.getHost().get(),
                         "Services",
                         CustomServiceGroupStore.builder().parent(s.getHost()).build());
+    }
+
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        ServiceControlStore s = section.getWrapper().getEntry().getStore().asNeeded();
+        return Bindings.createStringBinding(
+                () -> {
+                    var state = s.isSessionRunning()
+                            ? AppI18n.get("active")
+                            : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
+                    return new StoreStateFormat(null, state).format();
+                },
+                section.getWrapper().getCache(),
+                AppPrefs.get().language());
     }
 
     @Override
@@ -95,22 +104,13 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     }
 
     @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        ServiceControlStore s = section.getWrapper().getEntry().getStore().asNeeded();
-        return Bindings.createStringBinding(
-                () -> {
-                    var state = s.isSessionRunning()
-                            ? AppI18n.get("active")
-                            : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, state).format();
-                },
-                section.getWrapper().getCache(),
-                AppPrefs.get().language());
+    public String getDisplayIconFileName(DataStore store) {
+        return "base:service_icon.svg";
     }
 
     @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "base:service_icon.svg";
+    public List<Class<?>> getStoreClasses() {
+        return List.of(ServiceControlStore.class);
     }
 
     @Override
@@ -124,7 +124,7 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
     }
 
     @Override
-    public List<Class<?>> getStoreClasses() {
-        return List.of(ServiceControlStore.class);
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.SERVICE;
     }
 }

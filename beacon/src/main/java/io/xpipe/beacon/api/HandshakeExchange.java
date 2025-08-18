@@ -17,13 +17,13 @@ public class HandshakeExchange extends BeaconInterface<HandshakeExchange.Request
     }
 
     @Override
-    public boolean requiresAuthentication() {
-        return false;
+    public String getPath() {
+        return "/handshake";
     }
 
     @Override
-    public String getPath() {
-        return "/handshake";
+    public boolean requiresAuthentication() {
+        return false;
     }
 
     @Jacksonized

@@ -9,7 +9,6 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
@@ -18,7 +17,6 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -31,106 +29,9 @@ import javafx.scene.paint.Color;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
+import java.util.UUID;
 
 public class TerminalCategory extends AppPrefsCategory {
-
-    public static OptionsBuilder terminalChoice(boolean docsLink) {
-        var prefs = AppPrefs.get();
-        var c = ChoiceComp.ofTranslatable(
-                prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
-        c.maxWidth(1000);
-        c.apply(struc -> {
-            struc.get().setCellFactory(param -> {
-                return new ListCell<>() {
-
-                    {
-                        // Update recommended state on changes
-                        prefs.terminalMultiplexer().addListener((observable, oldValue, newValue) -> {
-                            updateItem(getItem(), isEmpty());
-                        });
-                    }
-
-                    @Override
-                    protected void updateItem(ExternalTerminalType item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            return;
-                        }
-
-                        setText(item.toTranslatedString().getValue());
-                        if (item != ExternalTerminalType.CUSTOM) {
-                            var graphic = new FontIcon(
-                                    item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
-                            graphic.iconColorProperty()
-                                    .bind(new ReadOnlyObjectWrapper<>(
-                                            item.isRecommended() ? Color.GREEN : Color.ORANGE));
-                            setGraphic(graphic);
-                        } else {
-                            setGraphic(new FontIcon("mdi2m-minus-circle"));
-                        }
-                    }
-                };
-            });
-        });
-
-        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.terminalType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
-
-            Hyperlinks.open(t.getWebsite());
-        });
-        var visitVisible = Bindings.createBooleanBinding(
-                () -> {
-                    var t = prefs.terminalType().getValue();
-                    if (t == null || t.getWebsite() == null) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                prefs.terminalType());
-        visit.visible(visitVisible);
-
-        var h = new HorizontalComp(List.of(c.hgrow(), visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
-        });
-        h.maxWidth(600);
-
-        var terminalTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
-                    ThreadHelper.runFailableAsync(() -> {
-                        var term = AppPrefs.get().terminalType().getValue();
-                        if (term != null) {
-                            // Don't use tabs to not use multiplexer stuff
-                            TerminalLaunch.builder()
-                                    .title("Test")
-                                    .localScript(new ShellScript(ProcessControlProvider.get()
-                                            .getEffectiveLocalDialect()
-                                            .getEchoCommand(
-                                                    "If you can read this, the terminal integration works", false)))
-                                    .preferTabs(false)
-                                    .logIfEnabled(false)
-                                    .launch();
-                        }
-                    });
-                })
-                .padding(new Insets(6, 11, 6, 5))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
-
-        var builder = new OptionsBuilder().pref(prefs.terminalType);
-        if (!docsLink) {
-            builder.longDescription((DocumentationLink) null);
-        }
-        builder.addComp(h, prefs.terminalType);
-        builder.pref(prefs.customTerminalCommand)
-                .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
-                        .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
-                        .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
-                .addComp(terminalTest);
-        return builder;
-    }
 
     @Override
     protected String getId() {
@@ -170,7 +71,7 @@ public class TerminalCategory extends AppPrefsCategory {
 
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
-                .sub(terminalChoice(true))
+                .sub(terminalChoice())
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
@@ -188,6 +89,105 @@ public class TerminalCategory extends AppPrefsCategory {
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )
                 .buildComp();
+    }
+
+    public static OptionsBuilder terminalChoice() {
+        var prefs = AppPrefs.get();
+        var c = ChoiceComp.ofTranslatable(
+                prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
+        c.maxWidth(1000);
+        c.apply(struc -> {
+            struc.get().setCellFactory(param -> {
+                return new ListCell<>() {
+
+                    {
+                        // Update recommended state on changes
+                        prefs.terminalMultiplexer().addListener((observable, oldValue, newValue) -> {
+                            updateItem(getItem(), isEmpty());
+                        });
+                    }
+
+                    @Override
+                    protected void updateItem(ExternalTerminalType item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            return;
+                        }
+
+                        setText(item.toTranslatedString().getValue());
+                        if (item != ExternalTerminalType.CUSTOM) {
+                            var graphic = new FontIcon(
+                                    item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
+                            graphic.setFill(item.isRecommended() ? Color.GREEN : Color.ORANGE);
+                            setGraphic(graphic);
+                        } else {
+                            setGraphic(new FontIcon("mdi2m-minus-circle"));
+                        }
+                    }
+                };
+            });
+        });
+        c.prefWidth(300);
+
+        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
+            var t = prefs.terminalType().getValue();
+            if (t == null || t.getWebsite() == null) {
+                return;
+            }
+
+            Hyperlinks.open(t.getWebsite());
+        });
+        var visitVisible = Bindings.createBooleanBinding(
+                () -> {
+                    var t = prefs.terminalType().getValue();
+                    if (t == null || t.getWebsite() == null) {
+                        return false;
+                    }
+
+                    return true;
+                },
+                prefs.terminalType());
+        visit.visible(visitVisible);
+
+        var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
+            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.get().setSpacing(10);
+        });
+        h.maxWidth(600);
+
+        var terminalTest = new ButtonComp(AppI18n.observable("test"), new FontIcon("mdi2p-play"), () -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        var term = AppPrefs.get().terminalType().getValue();
+                        if (term != null) {
+                            // Don't use tabs to not use multiplexer stuff
+                            TerminalLauncher.open(
+                                    null,
+                                    "Test",
+                                    null,
+                                    ProcessControlProvider.get()
+                                            .createLocalProcessControl(true)
+                                            .command(ProcessControlProvider.get()
+                                                    .getEffectiveLocalDialect()
+                                                    .getEchoCommand(
+                                                            "If you can read this, the terminal integration works",
+                                                            false)),
+                                    UUID.randomUUID(),
+                                    false);
+                        }
+                    });
+                })
+                .padding(new Insets(6, 11, 6, 5))
+                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+
+        var builder = new OptionsBuilder()
+                .pref(prefs.terminalType)
+                .addComp(h, prefs.terminalType)
+                .pref(prefs.customTerminalCommand)
+                .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
+                        .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
+                        .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
+                .addComp(terminalTest);
+        return builder;
     }
 
     private OptionsBuilder terminalProxy() {
@@ -281,7 +281,6 @@ public class TerminalCategory extends AppPrefsCategory {
                         OsType.getLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
-                .longDescription(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
@@ -319,9 +318,6 @@ public class TerminalCategory extends AppPrefsCategory {
                 .build();
         var choice = choiceBuilder.build().buildComp();
         choice.maxWidth(getCompWidth());
-        return new OptionsBuilder()
-                .nameAndDescription("terminalPrompt")
-                .longDescription(DocumentationLink.TERMINAL_PROMPT)
-                .addComp(choice, prefs.terminalPrompt);
+        return new OptionsBuilder().nameAndDescription("terminalPrompt").addComp(choice, prefs.terminalPrompt);
     }
 }

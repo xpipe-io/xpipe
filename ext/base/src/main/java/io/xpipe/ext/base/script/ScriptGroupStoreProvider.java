@@ -25,6 +25,11 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
     }
 
     @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.GROUP;
+    }
+
+    @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
@@ -32,11 +37,6 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
     @Override
     public DataStoreCreationCategory getCreationCategory() {
         return DataStoreCreationCategory.SCRIPT;
-    }
-
-    @Override
-    public DataStoreUsageCategory getUsageCategory() {
-        return DataStoreUsageCategory.GROUP;
     }
 
     @Override

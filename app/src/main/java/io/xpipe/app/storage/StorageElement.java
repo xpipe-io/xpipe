@@ -78,11 +78,6 @@ public abstract class StorageElement {
         synchronized (listeners) {
             listeners.forEach(l -> l.onUpdate());
         }
-
-        // Save changes instantly
-        if (used || modified) {
-            DataStorage.get().saveAsync();
-        }
     }
 
     public void addListener(Listener l) {
@@ -119,7 +114,8 @@ public abstract class StorageElement {
             return;
         }
 
-        notifyUpdate(false, true);
+        this.lastModified = lastModified;
+        notifyUpdate(false, false);
     }
 
     public void setLastUsed(Instant lastUsed) {
@@ -127,7 +123,8 @@ public abstract class StorageElement {
             return;
         }
 
-        notifyUpdate(true, false);
+        this.lastUsed = lastUsed;
+        notifyUpdate(false, false);
     }
 
     public interface Listener {

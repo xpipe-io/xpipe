@@ -22,20 +22,6 @@ import java.util.List;
 
 public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
-    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
-        var custom = new CustomProvider(recursive);
-        return List.of(
-                new FixedProvider("400", recursive),
-                new FixedProvider("600", recursive),
-                new FixedProvider("644", recursive),
-                new FixedProvider("700", recursive),
-                new FixedProvider("755", recursive),
-                new FixedProvider("777", recursive),
-                new FixedProvider("u+x", recursive),
-                new FixedProvider("a+x", recursive),
-                custom);
-    }
-
     @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2w-wrench-outline");
@@ -103,6 +89,20 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
                 BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             return getLeafActions(model, true);
         }
+    }
+
+    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+        var custom = new CustomProvider(recursive);
+        return List.of(
+                new FixedProvider("400", recursive),
+                new FixedProvider("600", recursive),
+                new FixedProvider("644", recursive),
+                new FixedProvider("700", recursive),
+                new FixedProvider("755", recursive),
+                new FixedProvider("777", recursive),
+                new FixedProvider("u+x", recursive),
+                new FixedProvider("a+x", recursive),
+                custom);
     }
 
     private static class FixedProvider implements BrowserMenuLeafProvider {

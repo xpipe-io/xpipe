@@ -17,6 +17,11 @@ import java.util.List;
 public class IncusContainerActionProviderMenu implements HubBranchProvider<IncusContainerStore> {
 
     @Override
+    public Class<IncusContainerStore> getApplicableClass() {
+        return IncusContainerStore.class;
+    }
+
+    @Override
     public boolean isMajor(DataStoreEntryRef<IncusContainerStore> o) {
         return true;
     }
@@ -29,11 +34,6 @@ public class IncusContainerActionProviderMenu implements HubBranchProvider<Incus
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<IncusContainerStore> store) {
         return new LabelGraphic.IconGraphic("mdi2p-package-variant-closed");
-    }
-
-    @Override
-    public Class<IncusContainerStore> getApplicableClass() {
-        return IncusContainerStore.class;
     }
 
     @Override

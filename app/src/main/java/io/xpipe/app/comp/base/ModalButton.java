@@ -17,15 +17,15 @@ public class ModalButton {
     boolean close;
     boolean defaultButton;
 
-    @NonFinal
-    Consumer<Button> augment;
-
     public ModalButton(String key, Runnable action, boolean close, boolean defaultButton) {
         this.key = key;
         this.action = action;
         this.close = close;
         this.defaultButton = defaultButton;
     }
+
+    @NonFinal
+    Consumer<Button> augment;
 
     public static ModalButton finish(Runnable action) {
         return new ModalButton("finish", action, true, true);
@@ -65,14 +65,14 @@ public class ModalButton {
                 false);
     }
 
+    public ModalButton augment(Consumer<Button> augment) {
+        this.augment = augment;
+        return this;
+    }
+
     public static Runnable toggle(Property<Boolean> prop) {
         return () -> {
             prop.setValue(true);
         };
-    }
-
-    public ModalButton augment(Consumer<Button> augment) {
-        this.augment = augment;
-        return this;
     }
 }

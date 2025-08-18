@@ -19,16 +19,6 @@ import lombok.Value;
 @AllArgsConstructor
 public class IdentityChoice {
 
-    Property<DataStoreEntryRef<ShellStore>> host;
-    ObjectProperty<IdentityValue> identity;
-    boolean allowCustomUserInput;
-    boolean requireUserInput;
-    boolean requirePassword;
-    boolean keyInput;
-    boolean allowAgentForward;
-    String userChoiceTranslationKey;
-    String passwordChoiceTranslationKey;
-
     public static OptionsBuilder ssh(
             Property<DataStoreEntryRef<ShellStore>> host, ObjectProperty<IdentityValue> identity, boolean requireUser) {
         var i = new IdentityChoice(
@@ -41,6 +31,16 @@ public class IdentityChoice {
                 null, identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
+
+    Property<DataStoreEntryRef<ShellStore>> host;
+    ObjectProperty<IdentityValue> identity;
+    boolean allowCustomUserInput;
+    boolean requireUserInput;
+    boolean requirePassword;
+    boolean keyInput;
+    boolean allowAgentForward;
+    String userChoiceTranslationKey;
+    String passwordChoiceTranslationKey;
 
     public OptionsBuilder build() {
         var existing = identity.getValue();

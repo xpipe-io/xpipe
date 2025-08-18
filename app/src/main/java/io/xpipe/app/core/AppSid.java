@@ -15,7 +15,7 @@ public class AppSid {
     private static boolean hasSetsid;
 
     public static void init() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return;
         }
 

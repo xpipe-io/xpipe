@@ -1,7 +1,6 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -38,7 +37,6 @@ public class EnpassPasswordManager implements PasswordManager {
 
     private static final UUID MASTER_PASSWORD_UUID = UUID.randomUUID();
     private static ShellControl SHELL;
-    private final FilePath vaultPath;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -55,10 +53,7 @@ public class EnpassPasswordManager implements PasswordManager {
         comp.apply(struc -> {
             var text = (TextField) struc.get().getChildren().getFirst();
             text.requestFocus();
-            text.setPromptText(AppSystemInfo.ofCurrent()
-                    .getUserHome()
-                    .resolve("Documents/Enpass/Vaults/primary/vault.json")
-                    .toString());
+            text.setPromptText(System.getProperty("user.home") + "/Documents/Enpass/Vaults/primary/vault.json");
 
             // Show prompt text, remove focus
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -79,6 +74,8 @@ public class EnpassPasswordManager implements PasswordManager {
                         },
                         p);
     }
+
+    private final FilePath vaultPath;
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
@@ -167,10 +164,5 @@ public class EnpassPasswordManager implements PasswordManager {
     @Override
     public String getKeyPlaceholder() {
         return "Item title";
-    }
-
-    @Override
-    public String getWebsite() {
-        return "https://www.enpass.io/";
     }
 }

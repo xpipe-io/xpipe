@@ -1,12 +1,12 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.beacon.BeaconConfig;
 import io.xpipe.beacon.BeaconInterface;
 import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
@@ -33,23 +33,18 @@ public class AppBeaconServer {
     @Getter
     private final boolean propertyPort;
 
+    private boolean running;
+    private ExecutorService executor;
+    private HttpServer server;
+
     @Getter
     private final Set<BeaconSession> sessions = new HashSet<>();
 
     @Getter
     private final AppBeaconCache cache = new AppBeaconCache();
 
-    private boolean running;
-    private ExecutorService executor;
-    private HttpServer server;
-
     @Getter
     private String localAuthSecret;
-
-    private AppBeaconServer(int port, boolean propertyPort) {
-        this.port = port;
-        this.propertyPort = propertyPort;
-    }
 
     public static void setupPort() {
         int port;
@@ -58,10 +53,15 @@ public class AppBeaconServer {
             port = BeaconConfig.getUsedPort();
             propertyPort = true;
         } else {
-            port = BeaconConfig.getDefaultBeaconPort();
+            port = XPipeInstallation.getDefaultBeaconPort();
             propertyPort = false;
         }
         INSTANCE = new AppBeaconServer(port, propertyPort);
+    }
+
+    private AppBeaconServer(int port, boolean propertyPort) {
+        this.port = port;
+        this.propertyPort = propertyPort;
     }
 
     public static void init() {
@@ -85,23 +85,16 @@ public class AppBeaconServer {
         if (INSTANCE != null) {
             INSTANCE.stop();
             INSTANCE.deleteAuthSecret();
-            for (BeaconShellSession ss : INSTANCE.getCache().getShellSessions()) {
-                try {
-                    ss.getControl().close();
-                } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable(ex).omit().expected().handle();
-                }
-            }
             INSTANCE = null;
         }
     }
 
-    public static AppBeaconServer get() {
-        return INSTANCE;
-    }
-
     public void addSession(BeaconSession session) {
         this.sessions.add(session);
+    }
+
+    public static AppBeaconServer get() {
+        return INSTANCE;
     }
 
     private void stop() {
@@ -119,7 +112,7 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.getLocal() != OsType.WINDOWS) {
@@ -129,7 +122,7 @@ public class AppBeaconServer {
     }
 
     private void deleteAuthSecret() {
-        var file = BeaconConfig.getLocalBeaconAuthFile();
+        var file = XPipeInstallation.getLocalBeaconAuthFile();
         try {
             Files.delete(file);
         } catch (IOException ignored) {
@@ -155,13 +148,6 @@ public class AppBeaconServer {
 
         server.createContext("/", exchange -> {
             handleCatchAll(exchange);
-        });
-
-        server.createContext("/mcp", exchange -> {
-            var mcpServer = AppMcpServer.get();
-            if (mcpServer != null) {
-                mcpServer.createHttpHandler().handle(exchange);
-            }
         });
 
         server.start();

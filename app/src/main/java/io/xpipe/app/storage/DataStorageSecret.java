@@ -22,20 +22,6 @@ import java.io.IOException;
 @ToString
 public class DataStorageSecret {
 
-    private final InPlaceSecretValue secret;
-
-    @Getter
-    private JsonNode originalNode;
-
-    @Getter
-    private EncryptionToken encryptedToken;
-
-    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue secret) {
-        this.encryptedToken = encryptedToken;
-        this.originalNode = originalNode;
-        this.secret = secret;
-    }
-
     public static DataStorageSecret deserialize(JsonNode tree) throws IOException {
         if (!tree.isObject()) {
             return null;
@@ -83,6 +69,20 @@ public class DataStorageSecret {
 
     public static DataStorageSecret ofSecret(SecretValue internalSecret, EncryptionToken token) {
         return new DataStorageSecret(token, null, internalSecret.inPlace());
+    }
+
+    @Getter
+    private JsonNode originalNode;
+
+    private final InPlaceSecretValue secret;
+
+    @Getter
+    private EncryptionToken encryptedToken;
+
+    public DataStorageSecret(EncryptionToken encryptedToken, JsonNode originalNode, InPlaceSecretValue secret) {
+        this.encryptedToken = encryptedToken;
+        this.originalNode = originalNode;
+        this.secret = secret;
     }
 
     public boolean requiresRewrite(boolean allowUserSecretKey) {

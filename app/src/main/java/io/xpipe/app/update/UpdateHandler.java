@@ -237,12 +237,6 @@ public abstract class UpdateHandler {
         if (available != null
                 && !available.getVersion().equals(preparedUpdate.getValue().getVersion())) {
             preparedUpdate.setValue(null);
-            ThreadHelper.runAsync(() -> {
-                prepareUpdate();
-            });
-            ErrorEventFactory.fromMessage("A newer update is available than the one which was prepared.")
-                    .expected()
-                    .handle();
             return;
         }
 

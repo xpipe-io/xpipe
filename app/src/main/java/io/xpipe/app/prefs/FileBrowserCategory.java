@@ -1,14 +1,9 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
-
-import javafx.beans.property.ReadOnlyObjectWrapper;
-
-import java.util.List;
 
 public class FileBrowserCategory extends AppPrefsCategory {
 
@@ -34,14 +29,7 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .addToggle(prefs.editFilesWithDoubleClick)
                         .pref(prefs.downloadsDirectory)
                         .addComp(
-                                new ContextualFileReferenceChoiceComp(
-                                                new ReadOnlyObjectWrapper<>(DataStorage.get()
-                                                        .local()
-                                                        .ref()),
-                                                prefs.downloadsDirectory,
-                                                null,
-                                                List.of())
-                                        .maxWidth(getCompWidth()),
+                                new TextFieldComp(prefs.downloadsDirectory).maxWidth(getCompWidth()),
                                 prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)
                         .addToggle(prefs.pinLocalMachineOnStartup))

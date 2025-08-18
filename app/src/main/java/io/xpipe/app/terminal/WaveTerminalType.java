@@ -1,10 +1,10 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
+import io.xpipe.core.XPipeInstallation;
 
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -24,13 +24,13 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     }
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
+    default String getWebsite() {
+        return "https://www.waveterm.dev/";
     }
 
     @Override
-    default String getWebsite() {
-        return "https://www.waveterm.dev/";
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override
@@ -44,6 +44,11 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     }
 
     @Override
+    default String getId() {
+        return "app.wave";
+    }
+
+    @Override
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var wsh = CommandSupport.findProgram(sc, "wsh");
@@ -53,16 +58,14 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                 var inPath = CommandSupport.findProgram(sc, "xpipe").isPresent();
                 var msg =
                         """
-                          The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.
+                The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.
 
-                          You can do this by first making sure that XPipe is shut down and then running the command "%s" in a local terminal block inside Wave.
-                          """
+                You can do this by first making sure that XPipe is shut down and then running the command "%s" in a local terminal block inside Wave.
+                """
                                 .formatted(
                                         inPath
                                                 ? "xpipe open"
-                                                : "\""
-                                                        + AppInstallation.ofCurrent()
-                                                                .getCliExecutablePath() + "\" open");
+                                                : XPipeInstallation.getLocalDefaultCliExecutable() + " open");
                 throw ErrorEventFactory.expected(new IllegalStateException(msg));
             }
 
@@ -72,11 +75,6 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
                             .add(configuration.getDialectLaunchCommand()))
                     .execute();
         }
-    }
-
-    @Override
-    default String getId() {
-        return "app.wave";
     }
 
     class Windows implements WaveTerminalType {}

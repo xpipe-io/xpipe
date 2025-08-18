@@ -25,7 +25,7 @@ public abstract class BrowserIconFileType {
     }
 
     public static synchronized void loadDefinitions() {
-        AppResources.with(AppResources.MAIN_MODULE, "file_list.txt", path -> {
+        AppResources.with(AppResources.XPIPE_MODULE, "file_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;

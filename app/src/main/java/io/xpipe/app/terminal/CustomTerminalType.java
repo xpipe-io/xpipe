@@ -38,7 +38,7 @@ public class CustomTerminalType implements ExternalApplicationType, ExternalTerm
             var toExecute = ExternalApplicationHelper.replaceVariableArgument(
                     format, "CMD", configuration.getScriptFile().toString());
             // We can't be sure whether the command is blocking or not, so always make it not blocking
-            if (pc.getOsType() == OsType.WINDOWS) {
+            if (pc.getOsType().equals(OsType.WINDOWS)) {
                 toExecute = "start \"" + configuration.getCleanTitle() + "\" " + toExecute;
             } else {
                 toExecute = "nohup " + toExecute + " </dev/null &>/dev/null & disown";

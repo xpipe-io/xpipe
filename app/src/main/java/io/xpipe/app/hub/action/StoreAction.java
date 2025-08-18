@@ -24,12 +24,6 @@ public abstract class StoreAction<T extends DataStore> extends SerializableActio
     protected final DataStoreEntryRef<T> ref;
 
     @Override
-    public String getShortcutName() {
-        var name = DataStorage.get().getStoreEntryDisplayName(ref.get());
-        return name + " (" + getDisplayName() + ")";
-    }
-
-    @Override
     protected boolean beforeExecute() throws Exception {
         ref.get().incrementBusyCounter();
         return true;
@@ -38,6 +32,12 @@ public abstract class StoreAction<T extends DataStore> extends SerializableActio
     @Override
     protected void afterExecute() {
         ref.get().decrementBusyCounter();
+    }
+
+    @Override
+    public String getShortcutName() {
+        var name = DataStorage.get().getStoreEntryDisplayName(ref.get());
+        return name + " (" + getDisplayName() + ")";
     }
 
     @SuppressWarnings("unchecked")

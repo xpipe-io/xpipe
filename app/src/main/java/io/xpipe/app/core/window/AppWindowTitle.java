@@ -1,7 +1,6 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
@@ -41,8 +40,7 @@ public class AppWindowTitle {
         var t = LicenseProvider.get() != null
                 ? " " + LicenseProvider.get().licenseTitle().getValue()
                 : "";
-        var base = String.format(
-                AppNames.ofMain().getName() + "%s (%s)", t, AppProperties.get().getVersion());
+        var base = String.format("XPipe%s (%s)", t, AppProperties.get().getVersion());
         var prefix = AppProperties.get().isStaging() ? "[Public Test Build, Not a proper release] " : "";
         var dist = AppDistributionType.get();
         if (dist != AppDistributionType.UNKNOWN) {

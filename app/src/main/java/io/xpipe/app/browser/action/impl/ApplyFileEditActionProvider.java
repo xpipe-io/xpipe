@@ -33,17 +33,17 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         BrowserFileOutput output;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             output.beforeTransfer();
             try (var out = output.open()) {
                 input.transferTo(out);
             }
             output.onFinish();
-        }
-
-        @Override
-        public boolean isMutation() {
-            return true;
         }
 
         @Override

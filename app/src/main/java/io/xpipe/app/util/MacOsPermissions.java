@@ -17,16 +17,16 @@ public class MacOsPermissions {
                 if (Platform.isFxApplicationThread()) {
                     pc.osascriptCommand(
                                     """
-                                        tell application "System Events" to keystroke "t"
-                                        """)
+                                    tell application "System Events" to keystroke "t"
+                                    """)
                             .execute();
                     return true;
                 }
 
                 var success = pc.osascriptCommand(
                                 """
-                                                  tell application "System Events" to keystroke "t"
-                                                  """)
+                                tell application "System Events" to keystroke "t"
+                                """)
                         .executeAndCheck();
 
                 if (success) {

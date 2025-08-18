@@ -12,8 +12,11 @@ import java.util.*;
 
 public abstract class WindowsRegistry {
 
-    public static final int HKEY_CURRENT_USER = 0x80000001;
-    public static final int HKEY_LOCAL_MACHINE = 0x80000002;
+    @Value
+    public static class Key {
+        int hkey;
+        String key;
+    }
 
     public static WindowsRegistry.Local local() {
         return new Local();
@@ -22,6 +25,9 @@ public abstract class WindowsRegistry {
     public static WindowsRegistry ofShell(ShellControl shellControl) {
         return shellControl.isLocal() ? local() : new Remote(shellControl);
     }
+
+    public static final int HKEY_CURRENT_USER = 0x80000001;
+    public static final int HKEY_LOCAL_MACHINE = 0x80000002;
 
     public abstract boolean keyExists(int hkey, String key) throws Exception;
 
@@ -41,12 +47,6 @@ public abstract class WindowsRegistry {
 
     public abstract Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match)
             throws Exception;
-
-    @Value
-    public static class Key {
-        int hkey;
-        String key;
-    }
 
     public static class Local extends WindowsRegistry {
 
@@ -134,12 +134,6 @@ public abstract class WindowsRegistry {
 
     public static class Remote extends WindowsRegistry {
 
-        private final ShellControl shellControl;
-
-        public Remote(ShellControl shellControl) {
-            this.shellControl = shellControl;
-        }
-
         public static Optional<String> readOutputValue(String original) {
             // Output has the following format:
             // \n<Version information>\n\n<key>\t<registry type>\t<value>
@@ -160,6 +154,12 @@ public abstract class WindowsRegistry {
             }
 
             return Optional.empty();
+        }
+
+        private final ShellControl shellControl;
+
+        public Remote(ShellControl shellControl) {
+            this.shellControl = shellControl;
         }
 
         private String hkey(int hkey) {

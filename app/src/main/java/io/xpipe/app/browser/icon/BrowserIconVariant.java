@@ -7,6 +7,10 @@ public class BrowserIconVariant {
     private final String lightIcon;
     private final String darkIcon;
 
+    public BrowserIconVariant(String icon) {
+        this(icon, icon);
+    }
+
     public BrowserIconVariant(String lightIcon, String darkIcon) {
         this.lightIcon = lightIcon;
         this.darkIcon = darkIcon;

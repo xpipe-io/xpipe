@@ -64,4 +64,8 @@ public class ProcessOutputException extends Exception {
                 || exitCode == CommandControl.INTERNAL_ERROR_EXIT_CODE
                 || exitCode == CommandControl.ELEVATION_FAILED_EXIT_CODE;
     }
+
+    public boolean isKill() {
+        return exitCode == CommandControl.START_FAILED_EXIT_CODE;
+    }
 }

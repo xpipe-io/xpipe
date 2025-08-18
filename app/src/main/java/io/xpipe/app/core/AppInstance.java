@@ -11,6 +11,7 @@ import io.xpipe.beacon.BeaconServer;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import java.awt.*;
 import java.util.List;
@@ -81,7 +82,7 @@ public class AppInstance {
                 return;
             }
 
-            var cli = AppInstallation.ofCurrent().getCliExecutablePath();
+            var cli = XPipeInstallation.getLocalDefaultCliExecutable();
             ErrorEventFactory.fromThrowable(
                             "Unable to connect to existing running daemon instance as it did not respond."
                                     + " Either try to kill the process xpiped manually or use the command \""
@@ -93,7 +94,7 @@ public class AppInstance {
                     .handle();
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             Desktop.getDesktop().setOpenURIHandler(e -> {
                 try {
                     client.get()

@@ -15,20 +15,6 @@ import java.util.List;
 
 public class BrowseInNativeManagerActionProvider implements BrowserActionProvider {
 
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem()
-                .getShell()
-                .orElseThrow()
-                .getLocalSystemAccess()
-                .supportsFileSystemAccess();
-    }
-
-    @Override
-    public String getId() {
-        return "browseInNativeFileManager";
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -45,5 +31,19 @@ public class BrowseInNativeManagerActionProvider implements BrowserActionProvide
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return model.getFileSystem()
+                .getShell()
+                .orElseThrow()
+                .getLocalSystemAccess()
+                .supportsFileSystemAccess();
+    }
+
+    @Override
+    public String getId() {
+        return "browseInNativeFileManager";
     }
 }

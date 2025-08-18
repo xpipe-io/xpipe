@@ -25,6 +25,11 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
     }
 
     @Override
+    public Class<DataStore> getApplicableClass() {
+        return DataStore.class;
+    }
+
+    @Override
     public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
         return o.get().getProvider().canClone();
     }
@@ -37,11 +42,6 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
         return new LabelGraphic.IconGraphic("mdi2c-content-copy");
-    }
-
-    @Override
-    public Class<DataStore> getApplicableClass() {
-        return DataStore.class;
     }
 
     @Override

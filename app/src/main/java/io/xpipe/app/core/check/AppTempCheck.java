@@ -1,6 +1,5 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.OsType;
 
@@ -30,10 +29,11 @@ public class AppTempCheck {
     }
 
     public static void check() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (!OsType.getLocal().equals(OsType.WINDOWS)) {
             return;
         }
 
-        checkTemp(AppSystemInfo.ofWindows().getTemp().toString());
+        checkTemp(System.getProperty("java.io.tmpdir"));
+        checkTemp(System.getenv("TEMP"));
     }
 }

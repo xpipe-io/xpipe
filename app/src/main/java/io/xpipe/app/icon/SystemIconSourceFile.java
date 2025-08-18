@@ -7,14 +7,14 @@ import java.nio.file.Path;
 @Value
 public class SystemIconSourceFile {
 
-    SystemIconSource source;
-    String name;
-    Path file;
-    ColorSchemeData colorSchemeData;
-
     public enum ColorSchemeData {
         LIGHT,
         DARK,
         DEFAULT
     }
+
+    SystemIconSource source;
+    String name;
+    Path file;
+    ColorSchemeData colorSchemeData;
 }

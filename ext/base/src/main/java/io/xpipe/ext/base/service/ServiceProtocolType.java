@@ -15,9 +15,9 @@ import java.util.Locale;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = ServiceProtocolType.Undefined.class),
-            @JsonSubTypes.Type(value = ServiceProtocolType.Http.class),
+    @JsonSubTypes.Type(value = ServiceProtocolType.Http.class),
     @JsonSubTypes.Type(value = ServiceProtocolType.Https.class),
-            @JsonSubTypes.Type(value = ServiceProtocolType.Custom.class)
+    @JsonSubTypes.Type(value = ServiceProtocolType.Custom.class)
 })
 public interface ServiceProtocolType {
 

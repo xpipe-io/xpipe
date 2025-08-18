@@ -16,6 +16,11 @@ import java.util.List;
 public class PodmanContainerActionProviderMenu implements HubBranchProvider<PodmanContainerStore> {
 
     @Override
+    public Class<PodmanContainerStore> getApplicableClass() {
+        return PodmanContainerStore.class;
+    }
+
+    @Override
     public boolean isMajor(DataStoreEntryRef<PodmanContainerStore> o) {
         return true;
     }
@@ -28,11 +33,6 @@ public class PodmanContainerActionProviderMenu implements HubBranchProvider<Podm
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
         return new LabelGraphic.IconGraphic("mdi2p-package-variant-closed");
-    }
-
-    @Override
-    public Class<PodmanContainerStore> getApplicableClass() {
-        return PodmanContainerStore.class;
     }
 
     @Override

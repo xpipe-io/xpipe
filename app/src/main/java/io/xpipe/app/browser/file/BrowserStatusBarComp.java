@@ -21,6 +21,8 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Value
@@ -41,19 +43,6 @@ public class BrowserStatusBarComp extends SimpleComp {
                 createKillButton()));
         bar.spacing(15);
         bar.styleClass("status-bar");
-
-        bar.apply(struc -> {
-            struc.get().widthProperty().subscribe(value -> {
-                var veryConstrained = value.doubleValue() < 600;
-                var somewhatConstrained = value.doubleValue() < 750;
-                struc.get().getChildren().get(2).setVisible(!somewhatConstrained);
-                struc.get().getChildren().get(2).setManaged(!somewhatConstrained);
-                struc.get().getChildren().get(4).setVisible(!veryConstrained);
-                struc.get().getChildren().get(4).setManaged(!veryConstrained);
-                struc.get().getChildren().get(5).setVisible(!veryConstrained);
-                struc.get().getChildren().get(5).setManaged(!veryConstrained);
-            });
-        });
 
         var r = bar.createRegion();
         r.setOnDragDetected(event -> {
@@ -92,32 +81,21 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private Comp<?> createProgressEstimateStatus() {
-        var text = Bindings.createStringBinding(
-                () -> {
-                    var p = model.getProgress().getValue();
-                    var expected = model.getProgressRemaining().getValue();
-                    if (p == null || expected == null) {
-                        return null;
-                    }
-
-                    var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
-                    var show = elapsed > 3000;
-                    if (!show) {
-                        return "...";
-                    }
-
-                    var time = HumanReadableFormat.duration(expected) + " @ ";
-                    var progress = HumanReadableFormat.transferSpeed(
-                            model.getProgressTransferSpeed().getValue());
-                    return time + progress;
-                },
-                model.getProgressRemaining(),
-                model.getProgressTransferSpeed(),
-                model.getProgress());
-
+        var text = BindingsHelper.map(model.getProgress(), p -> {
+            if (p == null) {
+                return null;
+            } else {
+                var expected = p.expectedTimeRemaining();
+                var show = p.elapsedTime().compareTo(Duration.of(200, ChronoUnit.MILLIS)) > 0
+                        && (!p.hasKnownTotalSize() || p.getTotal() > 50_000_000 || expected.toMillis() > 5000);
+                var time = show ? HumanReadableFormat.duration(p.expectedTimeRemaining()) : "";
+                return time;
+            }
+        });
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .prefWidth(90)
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
@@ -128,6 +106,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return null;
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
+                if (!p.hasKnownTotalSize()) {
+                    return transferred;
+                }
+
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 return transferred + " / " + all;
             }
@@ -135,6 +117,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .prefWidth(150)
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
@@ -166,7 +149,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 cc);
-        return new LabelComp(ccCount).minWidth(Region.USE_PREF_SIZE);
+        return new LabelComp(ccCount);
     }
 
     private Comp<?> createSelectionStatus() {
@@ -191,7 +174,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 },
                 selectedCount,
                 allCount));
-        return selectedComp.minWidth(Region.USE_PREF_SIZE);
+        return selectedComp;
     }
 
     private void simulateEmptyCell(Region r) {

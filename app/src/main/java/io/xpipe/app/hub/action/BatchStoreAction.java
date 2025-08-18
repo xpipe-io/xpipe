@@ -23,8 +23,13 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
     private final List<StoreAction<T>> actions;
 
     @Override
-    public ActionProvider getProvider() {
-        return actions.getFirst().getProvider();
+    public boolean isMutation() {
+        return actions.stream().anyMatch(StoreAction::isMutation);
+    }
+
+    @Override
+    public boolean forceConfirmation() {
+        return actions.stream().anyMatch(StoreAction::forceConfirmation);
     }
 
     @Override
@@ -46,13 +51,8 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
     }
 
     @Override
-    public boolean isMutation() {
-        return actions.stream().anyMatch(StoreAction::isMutation);
-    }
-
-    @Override
-    public boolean forceConfirmation() {
-        return actions.stream().anyMatch(StoreAction::forceConfirmation);
+    public ActionProvider getProvider() {
+        return actions.getFirst().getProvider();
     }
 
     @SneakyThrows

@@ -7,19 +7,6 @@ import java.util.*;
 
 public final class FilePath {
 
-    @NonNull
-    private final String value;
-
-    private FilePath normalized;
-    private List<String> split;
-
-    private FilePath(@NonNull String value) {
-        this.value = value;
-        if (value.isEmpty()) {
-            throw new IllegalArgumentException("File path is empty");
-        }
-    }
-
     public static FilePath parse(String path) {
         return path != null && path.equals(path.strip()) && !path.isBlank() ? new FilePath(path) : null;
     }
@@ -41,9 +28,20 @@ public final class FilePath {
         return path != null ? new FilePath(path.toString()) : null;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(value);
+    @NonNull
+    private final String value;
+
+    private FilePath normalized;
+    private List<String> split;
+
+    private FilePath(@NonNull String value) {
+        this.value = value;
+        if (value.isBlank()) {
+            throw new IllegalArgumentException("File path is empty");
+        }
+        if (!value.equals(value.strip())) {
+            throw new IllegalArgumentException("File path " + value + " has leading or trailing spaces");
+        }
     }
 
     @Override
@@ -56,8 +54,9 @@ public final class FilePath {
                 normalize().removeTrailingSlash().value, filePath.normalize().removeTrailingSlash().value);
     }
 
-    public String toString() {
-        return value;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(value);
     }
 
     public FilePath getRoot() {
@@ -78,6 +77,10 @@ public final class FilePath {
 
     public Path toLocalPath() {
         return Path.of(value);
+    }
+
+    public String toString() {
+        return value;
     }
 
     public FilePath toDirectory() {

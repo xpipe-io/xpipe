@@ -33,22 +33,20 @@ public class VncCategory extends AppPrefsCategory {
                 .subclasses(ExternalVncClient.getClasses())
                 .allowNull(false)
                 .transformer(entryComboBox -> {
-                    var websiteLinkButton =
-                            new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-                                var c = prefs.vncClient.getValue();
-                                if (c != null && c.getWebsite() != null) {
-                                    Hyperlinks.open(c.getWebsite());
-                                }
+                    var docsLinkButton = new ButtonComp(
+                            AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                                Hyperlinks.open(DocumentationLink.VNC_CLIENTS.getLink());
                             });
-                    websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
+                    docsLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
+                    hbox.setMaxWidth(getCompWidth());
                     return hbox;
                 })
                 .build();
-        var choice = choiceBuilder.build().buildComp().maxWidth(600);
+        var choice = choiceBuilder.build().buildComp();
         return new OptionsBuilder()
                 .addTitle("vncClient")
                 .sub(new OptionsBuilder().pref(prefs.vncClient).addComp(choice))

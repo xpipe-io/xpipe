@@ -53,23 +53,6 @@
     -fx-icon-color: #124d98;
 }
 
-
-.root:light .category.cyan > .category-button  .expand-button .ikonli-font-icon {
-    -fx-icon-color: #00c5e1;
-}
-
-.root:light .category.cyan > .category-button  .expand-button:disabled .ikonli-font-icon {
-    -fx-icon-color: #108d91;
-}
-
-.root:light .category.purple > .category-button  .expand-button .ikonli-font-icon {
-    -fx-icon-color: #8353f3;
-}
-
-.root:light .category.purple > .category-button  .expand-button:disabled .ikonli-font-icon {
-    -fx-icon-color: #6436c5;
-}
-
 .root:light .category.red > .category-button  .expand-button .ikonli-font-icon {
     -fx-icon-color: #a40000;
 }
@@ -100,22 +83,6 @@
 
 .root:dark .category.blue > .category-button  .expand-button:disabled .ikonli-font-icon {
     -fx-icon-color: #2459a1;
-}
-
-.root:dark .category.cyan > .category-button  .expand-button .ikonli-font-icon {
-    -fx-icon-color: #25c9d8;
-}
-
-.root:dark .category.cyan > .category-button  .expand-button:disabled .ikonli-font-icon {
-    -fx-icon-color: #21afaf;
-}
-
-.root:dark .category.purple > .category-button  .expand-button .ikonli-font-icon {
-    -fx-icon-color: #8f61f6;
-}
-
-.root:dark .category.purple > .category-button  .expand-button:disabled .ikonli-font-icon {
-    -fx-icon-color: #7447d5;
 }
 
 .root:dark .category.red > .category-button  .expand-button .ikonli-font-icon {

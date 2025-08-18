@@ -16,7 +16,7 @@ import javafx.scene.input.*;
 
 import lombok.Getter;
 
-import java.nio.file.InvalidPathException;
+import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -190,16 +190,7 @@ public class BrowserFileListCompEntry {
         // Accept drops from outside the app window
         if (event.getGestureSource() == null && event.getDragboard().hasFiles()) {
             Dragboard db = event.getDragboard();
-            var list = db.getFiles().stream()
-                    .map(file -> {
-                        try {
-                            return file.toPath();
-                        } catch (InvalidPathException ignored) {
-                            return null;
-                        }
-                    })
-                    .filter(path -> path != null)
-                    .toList();
+            var list = db.getFiles().stream().map(File::toPath).toList();
             var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry()
                     : model.getFileSystemModel().getCurrentDirectory();

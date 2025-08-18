@@ -26,6 +26,11 @@ public class BrowseHubLeafProvider implements HubLeafProvider<FileSystemStore> {
     }
 
     @Override
+    public Class<FileSystemStore> getApplicableClass() {
+        return FileSystemStore.class;
+    }
+
+    @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.OPEN;
     }
@@ -43,11 +48,6 @@ public class BrowseHubLeafProvider implements HubLeafProvider<FileSystemStore> {
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<FileSystemStore> store) {
         return new LabelGraphic.IconGraphic("mdi2f-folder-open-outline");
-    }
-
-    @Override
-    public Class<FileSystemStore> getApplicableClass() {
-        return FileSystemStore.class;
     }
 
     @Override

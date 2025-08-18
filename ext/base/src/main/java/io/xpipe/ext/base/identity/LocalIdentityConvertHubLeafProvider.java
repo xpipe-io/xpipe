@@ -27,18 +27,18 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<LocalIdentityStore> o) {
-        return true;
-    }
-
-    @Override
-    public boolean isApplicable(DataStoreEntryRef<LocalIdentityStore> o) {
-        return DataStorage.get().supportsSync();
+    public AbstractAction createAction(DataStoreEntryRef<LocalIdentityStore> ref) {
+        return Action.builder().ref(ref).build();
     }
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<LocalIdentityStore> store) {
         return AppI18n.observable("sync");
+    }
+
+    @Override
+    public boolean isMajor(DataStoreEntryRef<LocalIdentityStore> o) {
+        return true;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
     }
 
     @Override
-    public AbstractAction createAction(DataStoreEntryRef<LocalIdentityStore> ref) {
-        return Action.builder().ref(ref).build();
+    public boolean isApplicable(DataStoreEntryRef<LocalIdentityStore> o) {
+        return DataStorage.get().supportsSync();
     }
 
     @Override

@@ -65,7 +65,7 @@ public class ScriptHelper {
 
         // Fix for powershell as there are permission issues when executing a powershell askpass script
         if (forceExecutable && ShellDialects.isPowershell(parent)) {
-            scriptType = parent.getOsType() == OsType.WINDOWS ? ShellDialects.CMD : ShellDialects.SH;
+            scriptType = parent.getOsType().equals(OsType.WINDOWS) ? ShellDialects.CMD : ShellDialects.SH;
         }
 
         return createTerminalPreparedAskpassScript(pass, parent, scriptType);
@@ -73,7 +73,7 @@ public class ScriptHelper {
 
     private static FilePath createTerminalPreparedAskpassScript(
             List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
-        var fileName = "xpipe-" + Math.abs(new Random().nextInt());
+        var fileName = "xpipe-" + new Random().nextInt();
         var temp = parent.getSystemTemporaryDirectory();
         var fileBase = temp.join(fileName);
         if (type != parent.getShellDialect()) {
@@ -86,12 +86,7 @@ public class ScriptHelper {
                                 pass.stream()
                                         .map(secretValue -> secretValue.getSecretValue())
                                         .toList());
-                content = sub.getShellDialect().prepareScriptContent(sub, content);
-                return createExecScriptRaw(
-                        sub,
-                        sub.getSystemTemporaryDirectory()
-                                .join(fileName + "." + sub.getShellDialect().getScriptFileEnding()),
-                        content);
+                return createExecScript(sub.getShellDialect(), sub, content);
             }
         } else {
             var content = parent.getShellDialect()
@@ -102,12 +97,7 @@ public class ScriptHelper {
                             pass.stream()
                                     .map(secretValue -> secretValue.getSecretValue())
                                     .toList());
-            content = parent.getShellDialect().prepareScriptContent(parent, content);
-            return createExecScriptRaw(
-                    parent,
-                    parent.getSystemTemporaryDirectory()
-                            .join(fileName + "." + parent.getShellDialect().getScriptFileEnding()),
-                    content);
+            return createExecScript(parent.getShellDialect(), parent, content);
         }
     }
 }

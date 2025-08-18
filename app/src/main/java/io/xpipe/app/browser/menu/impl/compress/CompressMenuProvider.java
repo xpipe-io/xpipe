@@ -73,19 +73,60 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         return List.of(
                 new ZipActionProvider(false),
+                new TarBasedActionProvider(false, false) {
+                    @Override
+                    protected String getExtension() {
+                        return "tar";
+                    }
+                },
                 new TarBasedActionProvider(false, true) {
 
                     @Override
                     protected String getExtension() {
                         return "tar.gz";
                     }
-                },
-                new TarBasedActionProvider(false, false) {
-                    @Override
-                    protected String getExtension() {
-                        return "tar";
-                    }
                 });
+    }
+
+    private class BranchProvider implements BrowserMenuBranchProvider {
+
+        private final boolean directory;
+
+        private BranchProvider(boolean directory) {
+            this.directory = directory;
+        }
+
+        @Override
+        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return AppI18n.observable(directory ? "excludeRoot" : "includeRoot");
+        }
+
+        @Override
+        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return directory
+                    ? new LabelGraphic.IconGraphic("mdi2f-file-tree")
+                    : new LabelGraphic.IconGraphic("mdi2f-file-outline");
+        }
+
+        @Override
+        public List<? extends BrowserMenuItemProvider> getBranchingActions(
+                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            return List.of(
+                    new ZipActionProvider(directory),
+                    new TarBasedActionProvider(directory, false) {
+                        @Override
+                        protected String getExtension() {
+                            return "tar";
+                        }
+                    },
+                    new TarBasedActionProvider(directory, true) {
+
+                        @Override
+                        protected String getExtension() {
+                            return "tar.gz";
+                        }
+                    });
+        }
     }
 
     private abstract static class LeafProvider implements BrowserMenuLeafProvider {
@@ -130,47 +171,6 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         protected abstract void create(String fileName, BrowserFileSystemTabModel model, List<BrowserEntry> entries);
 
         protected abstract String getExtension();
-    }
-
-    private class BranchProvider implements BrowserMenuBranchProvider {
-
-        private final boolean directory;
-
-        private BranchProvider(boolean directory) {
-            this.directory = directory;
-        }
-
-        @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return directory
-                    ? new LabelGraphic.IconGraphic("mdi2f-file-tree")
-                    : new LabelGraphic.IconGraphic("mdi2f-file-outline");
-        }
-
-        @Override
-        public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return AppI18n.observable(directory ? "excludeRoot" : "includeRoot");
-        }
-
-        @Override
-        public List<? extends BrowserMenuItemProvider> getBranchingActions(
-                BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return List.of(
-                    new ZipActionProvider(directory),
-                    new TarBasedActionProvider(directory, true) {
-
-                        @Override
-                        protected String getExtension() {
-                            return "tar.gz";
-                        }
-                    },
-                    new TarBasedActionProvider(directory, false) {
-                        @Override
-                        protected String getExtension() {
-                            return "tar";
-                        }
-                    });
-        }
     }
 
     private class ZipActionProvider extends LeafProvider {

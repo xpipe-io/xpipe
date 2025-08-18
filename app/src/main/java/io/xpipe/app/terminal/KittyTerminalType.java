@@ -1,7 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppNames;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -12,6 +11,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -24,21 +24,21 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         try (var sc = LocalShell.getShell().start()) {
             var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);
             sc.executeSimpleCommand(sc.getShellDialect().getMkdirsCommand(temp.toString()));
-            return temp.join(AppNames.ofCurrent().getSnakeName() + "_kitty");
+            return temp.join("xpipe_kitty");
         }
     }
 
-    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite, boolean preferTab)
-            throws Exception {
+    private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
             var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
             var argsArray = payload.putArray("args");
             args.forEach(argsArray::add);
             payload.put("tab_title", configuration.getColoredTitle());
-            payload.put("type", preferTab ? "tab" : "os-window");
+            payload.put("type", "tab");
             payload.put("logo_alpha", 0.01);
-            payload.put("logo", AppInstallation.ofCurrent().getLogoPath().toString());
+            payload.put(
+                    "logo", XPipeInstallation.getLocalDefaultInstallationIcon().toString());
 
             var json = JsonNodeFactory.instance.objectNode();
             json.put("cmd", "launch");
@@ -74,11 +74,6 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-    }
-
-    @Override
     default String getWebsite() {
         return "https://github.com/kovidgoyal/kitty";
     }
@@ -90,6 +85,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
+    }
+
+    @Override
     default boolean useColoredTitle() {
         return true;
     }
@@ -98,7 +98,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return LocalShell.getDialect() == ShellDialects.BASH ? 0 : 1;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.BASH ? 0 : 1;
         }
 
         public boolean isAvailable() {
@@ -124,7 +124,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
             var toClose = prepare();
             var socketWrite = CommandBuilder.of().add("socat", "-");
-            open(configuration, socketWrite, configuration.isPreferTabs());
+            open(configuration, socketWrite);
             if (toClose) {
                 closeInitial(socketWrite);
             }
@@ -159,7 +159,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public int getProcessHierarchyOffset() {
-            return LocalShell.getDialect() == ShellDialects.ZSH ? 1 : 0;
+            return ProcessControlProvider.get().getEffectiveLocalDialect() == ShellDialects.ZSH ? 1 : 0;
         }
 
         @Override
@@ -172,7 +172,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
             var toClose = prepare();
             var socketWrite = CommandBuilder.of().add("/usr/bin/nc", "-U");
-            open(configuration, socketWrite, configuration.isPreferTabs());
+            open(configuration, socketWrite);
             if (toClose) {
                 closeInitial(socketWrite);
             }

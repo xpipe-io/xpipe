@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.terminal.TerminalLaunch;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.Hyperlinks;
 
 import java.util.ArrayList;
@@ -57,10 +57,7 @@ public class CommandUpdater extends PortableUpdater {
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
             OperationMode.executeAfterShutdown(() -> {
-                TerminalLaunch.builder()
-                        .title("XPipe Updater")
-                        .localScript(script)
-                        .launch();
+                TerminalLauncher.openDirectFallback("XPipe Updater", sc -> script);
             });
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();

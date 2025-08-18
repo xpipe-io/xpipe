@@ -34,32 +34,6 @@ public class StoreToggleComp extends SimpleComp {
     @Setter
     private ObservableValue<Boolean> customVisibility = new SimpleBooleanProperty(true);
 
-    public StoreToggleComp(
-            String nameKey,
-            ObservableValue<LabelGraphic> graphic,
-            StoreSection section,
-            boolean initial,
-            Consumer<Boolean> onChange) {
-        this.nameKey = nameKey;
-        this.graphic = graphic;
-        this.section = section;
-        this.value = new SimpleBooleanProperty(initial);
-        this.onChange = onChange;
-    }
-
-    public StoreToggleComp(
-            String nameKey,
-            ObservableValue<LabelGraphic> graphic,
-            StoreSection section,
-            BooleanProperty initial,
-            Consumer<Boolean> onChange) {
-        this.nameKey = nameKey;
-        this.graphic = graphic;
-        this.section = section;
-        this.value = initial;
-        this.onChange = onChange;
-    }
-
     public static <T extends DataStore> StoreToggleComp simpleToggle(
             String nameKey,
             ObservableValue<LabelGraphic> graphic,
@@ -122,6 +96,32 @@ public class StoreToggleComp extends SimpleComp {
             val.set(newValue);
         });
         return t;
+    }
+
+    public StoreToggleComp(
+            String nameKey,
+            ObservableValue<LabelGraphic> graphic,
+            StoreSection section,
+            boolean initial,
+            Consumer<Boolean> onChange) {
+        this.nameKey = nameKey;
+        this.graphic = graphic;
+        this.section = section;
+        this.value = new SimpleBooleanProperty(initial);
+        this.onChange = onChange;
+    }
+
+    public StoreToggleComp(
+            String nameKey,
+            ObservableValue<LabelGraphic> graphic,
+            StoreSection section,
+            BooleanProperty initial,
+            Consumer<Boolean> onChange) {
+        this.nameKey = nameKey;
+        this.graphic = graphic;
+        this.section = section;
+        this.value = initial;
+        this.onChange = onChange;
     }
 
     @Override

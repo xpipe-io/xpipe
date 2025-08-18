@@ -18,24 +18,6 @@ public class NodeCallback {
 
     private static final Set<Window> windows = new HashSet<>();
     private static final Set<Node> nodes = new HashSet<>();
-    // Reuse listener for everything. Disabling generics allows that
-    @SuppressWarnings("rawtypes")
-    private static final ChangeListener listener = new ChangeListener() {
-
-        @Override
-        public void changed(ObservableValue observableValue, Object o, Object t1) {
-            checkPlatformThread();
-        }
-    };
-
-    @SuppressWarnings("rawtypes")
-    private static final ListChangeListener listListener = new ListChangeListener() {
-
-        @Override
-        public void onChanged(Change change) {
-            checkPlatformThread();
-        }
-    };
 
     public static void init() {
         if (!AppProperties.get().isDebugPlatformThreadAccess()) {
@@ -62,6 +44,25 @@ public class NodeCallback {
             }
         });
     }
+
+    // Reuse listener for everything. Disabling generics allows that
+    @SuppressWarnings("rawtypes")
+    private static final ChangeListener listener = new ChangeListener() {
+
+        @Override
+        public void changed(ObservableValue observableValue, Object o, Object t1) {
+            checkPlatformThread();
+        }
+    };
+
+    @SuppressWarnings("rawtypes")
+    private static final ListChangeListener listListener = new ListChangeListener() {
+
+        @Override
+        public void onChanged(Change change) {
+            checkPlatformThread();
+        }
+    };
 
     @SuppressWarnings("unchecked")
     private static void watchPlatformThreadChanges(Node node) {

@@ -56,54 +56,6 @@ public class BrowserSessionTabsComp extends SimpleComp {
         this.headerHeight = new SimpleDoubleProperty();
     }
 
-    private static void setupKeyEvents(TabPane tabs) {
-        tabs.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
-            var current = tabs.getSelectionModel().getSelectedItem();
-            if (current == null) {
-                return;
-            }
-
-            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(keyEvent)) {
-                tabs.getTabs().remove(current);
-                keyEvent.consume();
-                return;
-            }
-
-            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN)
-                    .match(keyEvent)) {
-                tabs.getTabs().clear();
-                keyEvent.consume();
-            }
-
-            if (keyEvent.getCode().isFunctionKey()) {
-                var start = KeyCode.F1.getCode();
-                var index = keyEvent.getCode().getCode() - start;
-                if (index < tabs.getTabs().size()) {
-                    tabs.getSelectionModel().select(index);
-                    keyEvent.consume();
-                    return;
-                }
-            }
-
-            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN);
-            if (forward.match(keyEvent)) {
-                var next = (tabs.getSelectionModel().getSelectedIndex() + 1)
-                        % tabs.getTabs().size();
-                tabs.getSelectionModel().select(next);
-                keyEvent.consume();
-                return;
-            }
-
-            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
-            if (back.match(keyEvent)) {
-                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1)
-                        % tabs.getTabs().size();
-                tabs.getSelectionModel().select(previous);
-                keyEvent.consume();
-            }
-        });
-    }
-
     public Region createSimple() {
         var tabs = createTabPane();
         var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
@@ -290,6 +242,54 @@ public class BrowserSessionTabsComp extends SimpleComp {
                                     App.getApp().getStage().widthProperty()));
                     headerHeight.bind(headerArea.heightProperty());
                 });
+            }
+        });
+    }
+
+    private static void setupKeyEvents(TabPane tabs) {
+        tabs.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            var current = tabs.getSelectionModel().getSelectedItem();
+            if (current == null) {
+                return;
+            }
+
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(keyEvent)) {
+                tabs.getTabs().remove(current);
+                keyEvent.consume();
+                return;
+            }
+
+            if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN)
+                    .match(keyEvent)) {
+                tabs.getTabs().clear();
+                keyEvent.consume();
+            }
+
+            if (keyEvent.getCode().isFunctionKey()) {
+                var start = KeyCode.F1.getCode();
+                var index = keyEvent.getCode().getCode() - start;
+                if (index < tabs.getTabs().size()) {
+                    tabs.getSelectionModel().select(index);
+                    keyEvent.consume();
+                    return;
+                }
+            }
+
+            var forward = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN);
+            if (forward.match(keyEvent)) {
+                var next = (tabs.getSelectionModel().getSelectedIndex() + 1)
+                        % tabs.getTabs().size();
+                tabs.getSelectionModel().select(next);
+                keyEvent.consume();
+                return;
+            }
+
+            var back = new KeyCodeCombination(KeyCode.TAB, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN);
+            if (back.match(keyEvent)) {
+                var previous = (tabs.getTabs().size() + tabs.getSelectionModel().getSelectedIndex() - 1)
+                        % tabs.getTabs().size();
+                tabs.getSelectionModel().select(previous);
+                keyEvent.consume();
             }
         });
     }

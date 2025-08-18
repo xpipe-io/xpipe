@@ -46,9 +46,7 @@ public class TooltipHelper {
         @Override
         protected void show() {
             Window owner = getOwnerWindow();
-            if (owner.isFocused()) {
-                super.show();
-            }
+            if (owner.isFocused()) super.show();
         }
     }
 }

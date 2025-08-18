@@ -2,7 +2,7 @@ import java.util.stream.Collectors
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
-tasks.register('licenses', DefaultTask) {
+task licenses(type: DefaultTask) {
     doLast {
         copy {
             from "$projectDir/licenses/"
@@ -18,7 +18,7 @@ tasks.register('licenses', DefaultTask) {
 def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(' '))
 
 if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-    tasks.register('baseDist', DefaultTask) {
+    task baseDist(type: DefaultTask) {
         doLast {
             copy {
                 from "$distDir/jpackage/xpiped"
@@ -59,7 +59,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         }
     }
 } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-    tasks.register('baseDist', DefaultTask) {
+    task baseDist(type: DefaultTask) {
         doLast {
             copy {
                 from "$distDir/jpackage/xpiped"
@@ -98,7 +98,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         }
     }
 } else {
-    tasks.register('baseDist', DefaultTask) {
+    task baseDist(type: DefaultTask) {
         doLast {
             def app = "${productName}.app"
             copy {

@@ -3,9 +3,10 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppProperties;
 
 public enum DocumentationLink {
+    INDEX(""),
     API("api"),
     TTY("troubleshoot/tty"),
-    SSH_BROKEN_PIPE("troubleshoot/ssh#client-loop-send-disconnect--connection-reset"),
+    WINDOWS_SSH("guide/ssh#windows-ssh-servers"),
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
@@ -35,18 +36,16 @@ public enum DocumentationLink {
     PODMAN("guide/podman"),
     KVM("guide/kvm"),
     KVM_VNC("guide/kvm#vnc-access"),
-    HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
-    SSH_HOST_KEYS("troubleshoot/ssh#no-matching-host-key-type-found"),
-    SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
-    SSH_PERMISSION_DENIED("troubleshoot/ssh#permission-denied"),
-    SSH_IPV6("troubleshoot/ssh#ipv6-issues"),
-    SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
-    SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),
-    SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
+    SSH_HOST_KEYS("guide/ssh#no-matching-host-key-type-found"),
+    SSH_KEX("guide/ssh#no-matching-key-exchange-method"),
+    SSH_PERMISSION_DENIED("guide/ssh#permission-denied"),
+    SSH_CONNECTION_CLOSED("guide/ssh#connection-closed-by-remote-host"),
+    SSH_KEY_PERMISSIONS("guide/ssh#key-permissions-too-open"),
+    SSH_NO_ROUTE("guide/ssh#no-route-to-host"),
     SSH_CONFIG("guide/ssh-config"),
     SSH_KEYS("guide/ssh#key-based-authentication"),
     SSH_OPTIONS("guide/ssh-config#adding-ssh-options"),
@@ -62,7 +61,7 @@ public enum DocumentationLink {
     TUNNELS_REMOTE("guide/ssh-tunnels#remote-tunnels"),
     TUNNELS_DYNAMIC("guide/ssh-tunnels#dynamic-tunnels"),
     HYPERV("guide/hyperv"),
-    SSH_MACS("troubleshoot/ssh#no-matching-mac-found"),
+    SSH_MACS("guide/ssh#no-matching-mac-found"),
     SSH_JUMP_SERVERS("guide/ssh#gateways-and-jump-servers"),
     SSH_CUSTOM("guide/ssh-config#custom-ssh-connections"),
     KEEPASSXC("guide/password-manager#keepassxc"),
@@ -72,29 +71,15 @@ public enum DocumentationLink {
     SHELL_ENVIRONMENTS_USER("guide/environments#users"),
     SHELL_ENVIRONMENTS_SCRIPTS("guide/environments#scripts"),
     SERIAL("guide/serial"),
-    ICONS("guide/hub#icons"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
     SERIAL_PORTS("guide/serial#serial-ports"),
-    TERMINAL("guide/terminals#noteworthy-integrations"),
-    TERMINAL_LOGGING("guide/terminals#logging"),
-    TERMINAL_MULTIPLEXER("guide/terminals#multiplexers"),
-    TERMINAL_PROMPT("guide/terminals#prompts"),
-    TEAM_VAULTS("guide/sync#team-vaults"),
-    SSH_TROUBLESHOOT("troubleshoot/ssh"),
-    NO_EXEC("troubleshoot/noexec"),
-    MCP("guide/mcp");
+    NO_EXEC("troubleshooting/noexec");
 
     private final String page;
 
     DocumentationLink(String page) {
         this.page = page;
-    }
-
-    public static String getRoot() {
-        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
-                || AppProperties.get().isStaging();
-        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 
     public void open() {
@@ -103,5 +88,11 @@ public enum DocumentationLink {
 
     public String getLink() {
         return getRoot() + "/" + page;
+    }
+
+    public static String getRoot() {
+        var ptbDocs = AppProperties.get().isDevelopmentEnvironment()
+                || AppProperties.get().isStaging();
+        return ptbDocs ? "https://docs-ptb.xpipe.io" : "https://docs.xpipe.io";
     }
 }

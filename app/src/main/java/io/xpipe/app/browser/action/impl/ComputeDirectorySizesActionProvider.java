@@ -10,11 +10,6 @@ import lombok.extern.jackson.Jacksonized;
 
 public class ComputeDirectorySizesActionProvider implements BrowserActionProvider {
 
-    @Override
-    public String getId() {
-        return "computeDirectorySizes";
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -38,5 +33,10 @@ public class ComputeDirectorySizesActionProvider implements BrowserActionProvide
                 model.getFileList().updateEntry(be.getRawFileEntry().getPath(), fileEntry);
             }
         }
+    }
+
+    @Override
+    public String getId() {
+        return "computeDirectorySizes";
     }
 }

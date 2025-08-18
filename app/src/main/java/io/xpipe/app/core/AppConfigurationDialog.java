@@ -21,7 +21,7 @@ public class AppConfigurationDialog {
         var options = new OptionsBuilder()
                 .sub(AppearanceCategory.languageChoice())
                 .sub(AppearanceCategory.themeChoice())
-                .sub(TerminalCategory.terminalChoice(false))
+                .sub(TerminalCategory.terminalChoice())
                 .sub(EditorCategory.editorChoice())
                 .buildComp();
         options.styleClass("initial-setup");

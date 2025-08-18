@@ -31,6 +31,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AppLogs {
 
     public static final List<String> LOG_LEVELS = List.of("error", "warn", "info", "debug", "trace");
+    private static final String WRITE_SYSOUT_PROP = "io.xpipe.app.writeSysOut";
+    private static final String WRITE_LOGS_PROP = "io.xpipe.app.writeLogs";
+    private static final String DEBUG_PLATFORM_PROP = "io.xpipe.app.debugPlatform";
+    private static final String LOG_LEVEL_PROP = "io.xpipe.app.logLevel";
+    private static final String DEFAULT_LOG_LEVEL = "info";
 
     private static final DateTimeFormatter NAME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").withZone(ZoneId.systemDefault());
@@ -74,6 +79,22 @@ public class AppLogs {
         hookUpSystemErr();
     }
 
+    private static boolean shouldWriteLogs() {
+        if (System.getProperty(WRITE_LOGS_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(WRITE_LOGS_PROP));
+        }
+
+        return true;
+    }
+
+    private static boolean shouldWriteSysout() {
+        if (System.getProperty(WRITE_SYSOUT_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(WRITE_SYSOUT_PROP));
+        }
+
+        return false;
+    }
+
     public static void init() {
         if (INSTANCE != null) {
             return;
@@ -113,11 +134,11 @@ public class AppLogs {
         }
 
         PrintStream outFileStream = null;
-        var shouldLogToFile = AppProperties.get().isLogToFile();
+        var shouldLogToFile = shouldWriteLogs();
         if (shouldLogToFile) {
             try {
                 FileUtils.forceMkdir(usedLogsDir.toFile());
-                var file = usedLogsDir.resolve(AppNames.ofMain().getName() + ".log");
+                var file = usedLogsDir.resolve("xpipe.log");
                 var fos = new FileOutputStream(file.toFile(), true);
                 var buf = new BufferedOutputStream(fos);
                 outFileStream = new PrintStream(buf, false);
@@ -126,7 +147,7 @@ public class AppLogs {
             }
         }
 
-        var shouldLogToSysout = AppProperties.get().isLogToSysOut();
+        var shouldLogToSysout = shouldWriteSysout();
 
         if (shouldLogToFile && outFileStream == null) {
             TrackEvent.info("Log file initialization failed. Writing to standard out");
@@ -138,7 +159,7 @@ public class AppLogs {
             TrackEvent.info("Writing log output to " + usedLogsDir + " from now on");
         }
 
-        var level = AppProperties.get().getLogLevel();
+        var level = determineLogLevel();
         INSTANCE = new AppLogs(usedLogsDir, shouldLogToSysout, shouldLogToFile, level, outFileStream);
     }
 
@@ -155,6 +176,15 @@ public class AppLogs {
         return INSTANCE;
     }
 
+    private static String determineLogLevel() {
+        if (System.getProperty(LOG_LEVEL_PROP) != null) {
+            String p = System.getProperty(LOG_LEVEL_PROP);
+            return LOG_LEVELS.contains(p) ? p : "trace";
+        }
+
+        return DEFAULT_LOG_LEVEL;
+    }
+
     public void flush() {
         if (outFileStream != null) {
             outFileStream.flush();
@@ -165,6 +195,14 @@ public class AppLogs {
         if (outFileStream != null) {
             outFileStream.close();
         }
+    }
+
+    private boolean shouldDebugPlatform() {
+        if (System.getProperty(DEBUG_PLATFORM_PROP) != null) {
+            return Boolean.parseBoolean(System.getProperty(DEBUG_PLATFORM_PROP));
+        }
+
+        return false;
     }
 
     private void hookUpSystemOut() {
@@ -219,7 +257,7 @@ public class AppLogs {
     }
 
     public synchronized void logEvent(TrackEvent event) {
-        var li = LOG_LEVELS.indexOf(AppProperties.get().getLogLevel());
+        var li = LOG_LEVELS.indexOf(determineLogLevel());
         int i = li == -1 ? 5 : li;
         int current = LOG_LEVELS.indexOf(event.getType());
         if (current <= i) {
@@ -252,11 +290,11 @@ public class AppLogs {
 
     private void setLogLevels() {
         // Debug output for platform
-        if (AppProperties.get().isLogPlatformDebug()) {
+        if (shouldDebugPlatform()) {
             System.setProperty("prism.verbose", "true");
             System.setProperty("prism.debug", "true");
-            // System.setProperty("prism.trace", "true");
-            // System.setProperty("sun.perflog", "results.log");
+            System.setProperty("prism.trace", "true");
+            System.setProperty("sun.perflog", "results.log");
             //            System.setProperty("quantum.verbose", "true");
             //            System.setProperty("quantum.debug", "true");
             //            System.setProperty("quantum.pulse", "true");
@@ -323,6 +361,7 @@ public class AppLogs {
         @Override
         protected void handleNormalizedLoggingCall(
                 Level level, Marker marker, String msg, Object[] arguments, Throwable throwable) {
+            var formatted = msg;
             if (arguments != null) {
                 for (var arg : arguments) {
                     msg = msg.replaceFirst("\\{}", Objects.toString(arg));
@@ -337,18 +376,14 @@ public class AppLogs {
 
         @Override
         public boolean isTraceEnabled() {
-            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
-
-            // You almost never want trace output, javafx will spam everything
-            return false;
+            return LOG_LEVELS.indexOf("trace")
+                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override
         public boolean isTraceEnabled(Marker marker) {
-            // return LOG_LEVELS.indexOf("trace") <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
-
-            // You almost never want trace output, javafx will spam everything
-            return false;
+            return LOG_LEVELS.indexOf("trace")
+                    <= LOG_LEVELS.indexOf(AppLogs.get().getLogLevel());
         }
 
         @Override

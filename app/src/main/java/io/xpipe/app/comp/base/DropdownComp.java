@@ -7,7 +7,6 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.util.ContextMenuHelper;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
 import javafx.css.SizeUnits;
@@ -54,8 +53,7 @@ public class DropdownComp extends Comp<CompStructure<Button>> {
 
         var graphic = new FontIcon("mdi2c-chevron-double-down");
         button.fontProperty().subscribe(c -> {
-            graphic.iconSizeProperty()
-                    .bind(new ReadOnlyIntegerWrapper((int) new Size(c.getSize(), SizeUnits.PT).pixels()));
+            graphic.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
         });
 
         button.setGraphic(graphic);

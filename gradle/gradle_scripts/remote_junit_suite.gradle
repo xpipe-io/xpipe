@@ -1,5 +1,3 @@
-import java.util.stream.Collectors
-
 apply from: "$rootDir/gradle/gradle_scripts/junit.gradle"
 
 testing {
@@ -14,28 +12,32 @@ testing {
             }
 
             targets {
-                configureEach {
+                all {
                     testTask.configure {
                         workingDir = projectDir
 
                         jvmArgs += ["-Xmx2g"]
                         jvmArgs += jvmRunArgs
 
-                        def daemonArgs = Map.of(
-                                propertyName("dataDir"), "$projectDir/local/",
-                                propertyName("persistData"), "false",
-                                propertyName("writeSysOut"), "true",
-                                propertyName("writeLogs"), "false",
-                                propertyName("logLevel"), "trace",
-                                propertyName("beacon", "port"), "21723",
-                                propertyName("beacon", "printMessages"), "true"
-                        )
-                        def daemonArgsString = daemonArgs.entrySet().stream()
-                                .map(e -> e.getKey() + "=" + e.getValue())
-                                .collect(Collectors.joining(" "))
+                        def attachDebugger = System.getProperty('idea.debugger.dispatch.addr') != null
+                        def daemonCommand = attachDebugger ? ':app:runAttachedDebugger' : ':app:run'
+                        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+                            systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir\\gradlew.bat\" --console=plain $daemonCommand"
+                        } else {
+                            systemProperty "io.xpipe.beacon.customDaemonCommand", "\"$rootDir/gradlew\" --console=plain $daemonCommand"
+                        }
+                        systemProperty "io.xpipe.beacon.daemonArgs",
+                                       " -Dio.xpipe.beacon.port=21723" +
+                                               " -Dio.xpipe.app.dataDir=$projectDir/local/" +
+                                               " -Dio.xpipe.storage.persist=false" +
+                                               " -Dio.xpipe.app.writeSysOut=true" +
+                                               " -Dio.xpipe.app.writeLogs=false" +
+                                               " -Dio.xpipe.beacon.printMessages=true" +
+                                               " -Dio.xpipe.app.logLevel=trace"
 
-                        systemProperty propertyName("beacon", "daemonArgs"), daemonArgsString
-                        systemProperty propertyName("beacon", "port"), "21723"
+                        systemProperty 'io.xpipe.beacon.printDaemonOutput', "true"
+                        systemProperty "io.xpipe.beacon.port", "21723"
+                        systemProperty "io.xpipe.beacon.launchDebugDaemon", "true"
                     }
                 }
             }

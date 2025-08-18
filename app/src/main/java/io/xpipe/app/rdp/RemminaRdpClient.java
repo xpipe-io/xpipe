@@ -42,11 +42,6 @@ public class RemminaRdpClient implements ExternalApplicationType.PathApplication
     }
 
     @Override
-    public String getWebsite() {
-        return "https://remmina.org/";
-    }
-
-    @Override
     public String getExecutable() {
         return "remmina";
     }

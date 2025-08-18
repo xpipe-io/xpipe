@@ -7,8 +7,8 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.OsType;
 
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,7 +26,9 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
     private Region createIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("identitiesIntroTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFontSizes.title(title);
 
         var introDesc = new Label();
@@ -35,7 +37,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         introDesc.setMaxWidth(470);
 
         var img = new FontIcon("mdi2a-account-group");
-        img.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+        img.setIconSize(80);
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
@@ -71,7 +73,9 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
     private Region createBottom() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("identitiesIntroBottomTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFontSizes.title(title);
 
         var importDesc = new Label();
@@ -90,7 +94,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         syncPane.setAlignment(Pos.CENTER);
 
         var fi = new FontIcon("mdi2g-git");
-        fi.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+        fi.setIconSize(80);
         var img = new StackPane(fi);
         img.setPrefWidth(100);
         img.setPrefHeight(120);

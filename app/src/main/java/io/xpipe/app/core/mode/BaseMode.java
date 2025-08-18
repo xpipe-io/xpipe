@@ -4,7 +4,6 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
-import io.xpipe.app.beacon.mcp.AppMcpServer;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserLocalFileSystem;
 import io.xpipe.app.browser.icon.BrowserIconManager;
@@ -112,7 +111,6 @@ public class BaseMode extends OperationMode {
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
                     storageLoaded.countDown();
-                    AppMcpServer.init();
                     StoreViewState.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
@@ -175,7 +173,6 @@ public class BaseMode extends OperationMode {
     public void finalTeardown() throws Exception {
         TrackEvent.withInfo("Base mode shutdown started").build();
         AbstractAction.reset();
-        AppMcpServer.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
@@ -196,7 +193,6 @@ public class BaseMode extends OperationMode {
         AppDataLock.unlock();
         BlobManager.reset();
         FileBridge.reset();
-        AppFileWatcher.reset();
         GlobalTimer.reset();
         TrackEvent.info("Base mode shutdown finished");
     }

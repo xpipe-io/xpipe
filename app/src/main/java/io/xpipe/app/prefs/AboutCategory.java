@@ -3,14 +3,14 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.core.AppNames;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.JfxHelper;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.core.OsType;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 
@@ -36,26 +36,29 @@ public class AboutCategory extends AppPrefsCategory {
         var update = new UpdateCheckComp().prefWidth(600);
         return new VerticalComp(List.of(
                         props,
-                        Comp.vspacer(1),
+                        Comp.hspacer(3),
                         update,
-                        Comp.vspacer(5),
+                        Comp.hspacer(13),
                         Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
                 .apply(s -> s.get().setFillWidth(true))
                 .apply(struc -> struc.get().setSpacing(12))
                 .styleClass("information")
-                .styleClass("about-tab");
+                .styleClass("about-tab")
+                .apply(struc -> struc.get().maxWidth(600));
     }
 
     private Comp<?> createProperties() {
         var title = Comp.of(() -> {
             return JfxHelper.createNamedEntry(
-                    new ReadOnlyStringWrapper(AppNames.ofCurrent().getName() + " Desktop"),
+                    AppI18n.observable("xPipeClient"),
                     new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
                             + AppProperties.get().getArch() + ")"),
                     "logo/logo.png");
         });
 
-        title.styleClass(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.styleClass(Styles.TEXT_BOLD);
+        }
 
         var section = new OptionsBuilder()
                 .addComp(Comp.vspacer(40))
@@ -67,10 +70,8 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
                 .name("virtualMachine")
                 .addComp(
-                        new LabelComp(System.getProperty("java.vm.vendor") + " "
-                                + System.getProperty("java.vm.name")
-                                + " "
-                                + System.getProperty("java.vm.version")),
+                        new LabelComp(System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name")
+                                + " " + System.getProperty("java.vm.version")),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");

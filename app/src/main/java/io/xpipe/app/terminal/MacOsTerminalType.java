@@ -12,6 +12,11 @@ public class MacOsTerminalType implements ExternalApplicationType.MacApplication
     }
 
     @Override
+    public int getProcessHierarchyOffset() {
+        return 2;
+    }
+
+    @Override
     public boolean isRecommended() {
         return false;
     }
@@ -28,11 +33,6 @@ public class MacOsTerminalType implements ExternalApplicationType.MacApplication
                         .add("open", "-a")
                         .addQuoted("Terminal.app")
                         .addFile(configuration.getScriptFile()));
-    }
-
-    @Override
-    public int getProcessHierarchyOffset() {
-        return 2;
     }
 
     @Override

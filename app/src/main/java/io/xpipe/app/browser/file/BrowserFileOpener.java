@@ -190,9 +190,7 @@ public class BrowserFileOpener {
 
                             return new BrowserFileOutput() {
                                 @Override
-                                public Optional<DataStoreEntry> target() {
-                                    return Optional.of(model.getEntry().get());
-                                }
+                                public void beforeTransfer() {}
 
                                 @Override
                                 public boolean hasOutput() {
@@ -200,12 +198,14 @@ public class BrowserFileOpener {
                                 }
 
                                 @Override
-                                public OutputStream open() throws Exception {
-                                    return entry.getFileSystem().openOutput(file, size);
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
                                 }
 
                                 @Override
-                                public void beforeTransfer() {}
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
 
                                 @Override
                                 public void onFinish() {
@@ -239,9 +239,7 @@ public class BrowserFileOpener {
 
                             return new BrowserFileOutput() {
                                 @Override
-                                public Optional<DataStoreEntry> target() {
-                                    return Optional.of(model.getEntry().get());
-                                }
+                                public void beforeTransfer() {}
 
                                 @Override
                                 public boolean hasOutput() {
@@ -249,12 +247,14 @@ public class BrowserFileOpener {
                                 }
 
                                 @Override
-                                public OutputStream open() throws Exception {
-                                    return entry.getFileSystem().openOutput(file, size);
+                                public Optional<DataStoreEntry> target() {
+                                    return Optional.of(model.getEntry().get());
                                 }
 
                                 @Override
-                                public void beforeTransfer() {}
+                                public OutputStream open() throws Exception {
+                                    return entry.getFileSystem().openOutput(file, size);
+                                }
 
                                 @Override
                                 public void onFinish() {

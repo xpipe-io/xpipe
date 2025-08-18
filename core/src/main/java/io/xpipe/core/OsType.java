@@ -48,25 +48,37 @@ public interface OsType {
         }
     }
 
-    class Unix implements OsType {
+    abstract class Unix implements OsType {
+
+    }
+
+    final class Linux extends Unix implements OsType, Local, Any {
 
         @Override
         public String getName() {
             return "Linux";
         }
-    }
-
-    final class Linux extends Unix implements OsType, Local, Any {
-
+        
         @Override
         public String getId() {
             return "linux";
         }
     }
 
-    final class Solaris extends Unix implements Any {}
+    final class Solaris extends Unix implements Any {
 
-    final class Bsd extends Unix implements Any {}
+        @Override
+        public String getName() {
+            return "Solaris";
+        }
+    }
+
+    final class Bsd extends Unix implements Any {
+
+        @Override
+        public String getName() {
+            return "Bsd";
+        }}
 
     final class MacOs implements OsType, Local, Any {
 

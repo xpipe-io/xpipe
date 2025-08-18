@@ -3,8 +3,10 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.check.AppUserDirectoryCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.XPipeDaemonMode;
 
+import lombok.Getter;
 import lombok.Value;
 
 import java.io.IOException;
@@ -16,20 +18,26 @@ import java.util.*;
 public class AppProperties {
 
     private static AppProperties INSTANCE;
-
     boolean fullVersion;
+
+    @Getter
     String version;
+
+    @Getter
     String build;
+
     UUID buildUuid;
     String sentryUrl;
     String arch;
+
+    @Getter
     boolean image;
+
     boolean staging;
     boolean useVirtualThreads;
     boolean debugThreads;
     Path dataDir;
     Path defaultDataDir;
-    Path dataBinDir;
     boolean showcase;
     AppVersion canonicalVersion;
     boolean locatePtb;
@@ -39,19 +47,22 @@ public class AppProperties {
     UUID uuid;
     boolean initialLaunch;
     boolean restarted;
+    /**
+     * Unique identifier that resets on every XPipe restart.
+     */
     UUID sessionId;
-    boolean developerMode;
+
     boolean newBuildSession;
+
     boolean aotTrainMode;
+
     boolean debugPlatformThreadAccess;
-    boolean persistData;
+
     AppArguments arguments;
+
     XPipeDaemonMode explicitMode;
+
     String devLoginPassword;
-    boolean logToSysOut;
-    boolean logToFile;
-    boolean logPlatformDebug;
-    String logLevel;
 
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -79,34 +90,32 @@ public class AppProperties {
                 .getProtocol()
                 .equals("jrt");
         arguments = AppArguments.init(args);
-        fullVersion = Optional.ofNullable(System.getProperty(AppNames.propertyName("fullVersion")))
+        fullVersion = Optional.ofNullable(System.getProperty("io.xpipe.app.fullVersion"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        version = Optional.ofNullable(System.getProperty(AppNames.propertyName("version")))
-                .orElse("dev");
-        build = Optional.ofNullable(System.getProperty(AppNames.propertyName("build")))
-                .orElse("unknown");
-        buildUuid = Optional.ofNullable(System.getProperty(AppNames.propertyName("buildId")))
+        version =
+                Optional.ofNullable(System.getProperty("io.xpipe.app.version")).orElse("dev");
+        build = Optional.ofNullable(System.getProperty("io.xpipe.app.build")).orElse("unknown");
+        buildUuid = Optional.ofNullable(System.getProperty("io.xpipe.app.buildId"))
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
-        sentryUrl = System.getProperty(AppNames.propertyName("sentryUrl"));
-        arch = System.getProperty(AppNames.propertyName("arch"));
-        staging = Optional.ofNullable(System.getProperty(AppNames.propertyName("staging")))
+        sentryUrl = System.getProperty("io.xpipe.app.sentryUrl");
+        arch = System.getProperty("io.xpipe.app.arch");
+        staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        devLoginPassword = System.getProperty(AppNames.propertyName("loginPassword"));
-        useVirtualThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("useVirtualThreads")))
+        devLoginPassword = System.getProperty("io.xpipe.app.loginPassword");
+        useVirtualThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.useVirtualThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
-        debugThreads = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugThreads")))
+        debugThreads = Optional.ofNullable(System.getProperty("io.xpipe.app.debugThreads"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        debugPlatformThreadAccess = Optional.ofNullable(
-                        System.getProperty(AppNames.propertyName("debugPlatformThreadAccess")))
+        debugPlatformThreadAccess = Optional.ofNullable(System.getProperty("io.xpipe.app.debugPlatformThreadAccess"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        defaultDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(isStaging() ? ".xpipe-ptb" : ".xpipe");
-        dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
+        defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
+        dataDir = Optional.ofNullable(System.getProperty("io.xpipe.app.dataDir"))
                 .map(s -> {
                     var p = Path.of(s);
                     if (!p.isAbsolute()) {
@@ -115,47 +124,28 @@ public class AppProperties {
                     return p;
                 })
                 .orElse(defaultDataDir);
-        showcase = Optional.ofNullable(System.getProperty(AppNames.propertyName("showcase")))
+        showcase = Optional.ofNullable(System.getProperty("io.xpipe.app.showcase"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         canonicalVersion = AppVersion.parse(version).orElse(null);
-        locatePtb = Optional.ofNullable(System.getProperty(AppNames.propertyName("locatorUsePtbInstallation")))
+        locatePtb = Optional.ofNullable(System.getProperty("io.xpipe.app.locator.usePtbInstallation"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         locatorVersionCheck = Optional.ofNullable(
-                        System.getProperty(AppNames.propertyName("locatorDisableInstallationVersionCheck")))
+                        System.getProperty("io.xpipe.app.locator.disableInstallationVersionCheck"))
                 .map(s -> !Boolean.parseBoolean(s))
                 .orElse(true);
         isTest = isJUnitTest();
-        autoAcceptEula = Optional.ofNullable(System.getProperty(AppNames.propertyName("acceptEula")))
+        autoAcceptEula = Optional.ofNullable(System.getProperty("io.xpipe.app.acceptEula"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        restarted = Optional.ofNullable(System.getProperty(AppNames.propertyName("restarted")))
+        restarted = Optional.ofNullable(System.getProperty("io.xpipe.app.restarted"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        developerMode = Optional.ofNullable(System.getProperty(AppNames.propertyName("developerMode")))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
-        persistData = Optional.ofNullable(System.getProperty(AppNames.propertyName("persistData")))
-                .map(Boolean::parseBoolean)
-                .orElse(true);
-        logToSysOut = Optional.ofNullable(System.getProperty(AppNames.propertyName("writeSysOut")))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
-        logToFile = Optional.ofNullable(System.getProperty(AppNames.propertyName("writeLogs")))
-                .map(Boolean::parseBoolean)
-                .orElse(true);
-        logPlatformDebug = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugPlatform")))
-                .map(Boolean::parseBoolean)
-                .orElse(false);
-        logLevel = Optional.ofNullable(System.getProperty(AppNames.propertyName("logLevel")))
-                .filter(s -> AppLogs.LOG_LEVELS.contains(s))
-                .orElse("info");
 
         // We require the user dir from here
         AppUserDirectoryCheck.check(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
-        dataBinDir = dataDir.resolve("cache", "bin");
         UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);
         if (id == null) {
             uuid = UUID.randomUUID();
@@ -168,11 +158,15 @@ public class AppProperties {
         var cachedBuildId = AppCache.getNonNull("lastBuildId", String.class, () -> null);
         newBuildSession = !buildUuid.toString().equals(cachedBuildId);
         AppCache.update("lastBuildId", buildUuid);
-        aotTrainMode = Optional.ofNullable(System.getProperty(AppNames.propertyName("aotTrainMode")))
+        aotTrainMode = Optional.ofNullable(System.getProperty("io.xpipe.app.aotTrainMode"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty(AppNames.propertyName("mode")))
+        explicitMode = XPipeDaemonMode.getIfPresent(System.getProperty("io.xpipe.app.mode"))
                 .orElse(null);
+    }
+
+    public void resetInitialLaunch() {
+        AppCache.clear("lastBuildId");
     }
 
     private static boolean isJUnitTest() {
@@ -182,6 +176,35 @@ public class AppProperties {
             }
         }
         return false;
+    }
+
+    public static void logSystemProperties() {
+        for (var e : System.getProperties().entrySet()) {
+            if (List.of("user.dir").contains(e.getKey())) {
+                TrackEvent.info("Detected system property " + e.getKey() + "=" + e.getValue());
+            }
+        }
+    }
+
+    public void logArguments() {
+        TrackEvent.withInfo("Loaded properties")
+                .tag("version", version)
+                .tag("build", build)
+                .tag("dataDir", dataDir)
+                .tag("fullVersion", fullVersion)
+                .handle();
+
+        TrackEvent.withInfo("Received arguments")
+                .tag("raw", arguments.getRawArgs())
+                .tag("resolved", arguments.getResolvedArgs())
+                .tag("resolvedCommand", arguments.getOpenArgs())
+                .handle();
+
+        for (var e : System.getProperties().entrySet()) {
+            if (e.getKey().toString().contains("io.xpipe")) {
+                TrackEvent.info("Detected xpipe property " + e.getKey() + "=" + e.getValue());
+            }
+        }
     }
 
     public static void init() {
@@ -200,33 +223,16 @@ public class AppProperties {
         return INSTANCE;
     }
 
-    public void resetInitialLaunch() {
-        AppCache.clear("lastBuildId");
-    }
-
-    public void logArguments() {
-        TrackEvent.withInfo("Loaded properties")
-                .tag("version", version)
-                .tag("build", build)
-                .tag("dataDir", dataDir)
-                .tag("fullVersion", fullVersion)
-                .handle();
-
-        TrackEvent.withInfo("Received arguments")
-                .tag("raw", arguments.getRawArgs())
-                .tag("resolved", arguments.getResolvedArgs())
-                .tag("resolvedCommand", arguments.getOpenArgs())
-                .handle();
-
-        for (var e : System.getProperties().entrySet()) {
-            if (e.getKey().toString().contains(AppNames.ofCurrent().getGroupName())) {
-                TrackEvent.info("Detected app property " + e.getKey() + "=" + e.getValue());
-            }
-        }
-    }
-
     public boolean isDevelopmentEnvironment() {
-        return !isImage() && isDeveloperMode();
+        return !AppProperties.get().isImage() && AppProperties.get().isDeveloperMode();
+    }
+
+    public boolean isDeveloperMode() {
+        if (AppPrefs.get() == null) {
+            return false;
+        }
+
+        return AppPrefs.get().developerMode().getValue();
     }
 
     public Optional<AppVersion> getCanonicalVersion() {

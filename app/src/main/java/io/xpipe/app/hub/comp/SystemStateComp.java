@@ -43,16 +43,16 @@ public class SystemStateComp extends SimpleComp {
 
         var success = Styles.toDataURI(
                 """
-                                       .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }
-                                       """);
+                .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }
+                """);
         var failure = Styles.toDataURI(
                 """
-                                       .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }
-                                       """);
+                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }
+                        """);
         var other = Styles.toDataURI(
                 """
-                                     .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }
-                                     """);
+                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }
+                        """);
 
         var pane = new StackedFontIcon();
         pane.getChildren().addAll(fi, border);
@@ -60,13 +60,13 @@ public class SystemStateComp extends SimpleComp {
 
         var dataClass1 =
                 """
-                         .stacked-ikonli-font-icon > .outer-icon {
-                             -fx-icon-size: 26px;
-                         }
-                         .stacked-ikonli-font-icon > .inner-icon {
-                             -fx-icon-size: 12px;
-                         }
-                         """;
+            .stacked-ikonli-font-icon > .outer-icon {
+                -fx-icon-size: 26px;
+            }
+            .stacked-ikonli-font-icon > .inner-icon {
+                -fx-icon-size: 12px;
+            }
+            """;
         pane.getStylesheets().add(Styles.toDataURI(dataClass1));
 
         state.subscribe(val -> {

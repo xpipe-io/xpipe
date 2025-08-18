@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -13,10 +12,8 @@ import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -24,7 +21,6 @@ import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class StoreViewState {
@@ -65,6 +61,9 @@ public class StoreViewState {
     private final Set<StoreEntryWrapper> batchModeSelectionSet = new HashSet<>();
 
     @Getter
+    private boolean initialized = false;
+
+    @Getter
     private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
             storeEntryWrapper -> {
                 if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
@@ -85,22 +84,19 @@ public class StoreViewState {
             () -> {
                 var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
                 var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-                var failed = Comparator.<StoreSection>comparingInt(value -> {
-                    if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                var incomplete = Comparator.<StoreSection>comparingInt(value -> {
+                    if (!value.getWrapper().getValidity().getValue().isUsable()) {
                         return 1;
                     }
 
                     return 0;
                 });
                 return g != null
-                        ? failed.thenComparing(g.comparator().thenComparing(t.comparator()))
-                        : failed.thenComparing(t.comparator());
+                        ? incomplete.thenComparing(g.comparator().thenComparing(t.comparator()))
+                        : incomplete.thenComparing(t.comparator());
             },
             globalSortMode,
             tieSortMode);
-
-    @Getter
-    private boolean initialized = false;
 
     @Getter
     private StoreSection currentTopLevelSection;
@@ -152,20 +148,6 @@ public class StoreViewState {
         return INSTANCE;
     }
 
-    public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
-        return Bindings.size(allEntries
-                .filtered(
-                        storeEntryWrapper -> {
-                            if (!storeEntryWrapper.includeInConnectionCount()) {
-                                return false;
-                            }
-
-                            return filter.test(storeEntryWrapper);
-                        },
-                        observables)
-                .getList());
-    }
-
     public boolean isBatchModeSelected(StoreEntryWrapper entry) {
         return batchModeSelectionSet.contains(entry);
     }
@@ -201,7 +183,7 @@ public class StoreViewState {
 
         String tie = AppCache.getNonNull("tieSortMode", String.class, () -> null);
         var tieMode = global != null ? StoreSectionSortMode.fromId(tie).orElse(null) : null;
-        tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_ASC);
+        tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_DESC);
     }
 
     private void updateContent() {
@@ -296,20 +278,12 @@ public class StoreViewState {
     }
 
     public void triggerStoreListVisibilityUpdate() {
-        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
-            return;
-        }
-
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListVisibilityObservable.set(entriesListVisibilityObservable.get() + 1);
         });
     }
 
     public void triggerStoreListUpdate() {
-        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
-            return;
-        }
-
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });

@@ -21,11 +21,6 @@ import java.util.function.Function;
 @Builder
 public class OptionsChoiceBuilder {
 
-    private final Property<?> property;
-    private final List<Class<?>> subclasses;
-    private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
-    private final boolean allowNull;
-
     private static String createIdForClass(Class<?> c) {
         if (c.getAnnotation(JsonTypeName.class) != null) {
             var a = c.getAnnotation(JsonTypeName.class);
@@ -76,6 +71,11 @@ public class OptionsChoiceBuilder {
             return null;
         }
     }
+
+    private final Property<?> property;
+    private final List<Class<?>> subclasses;
+    private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
+    private final boolean allowNull;
 
     @SuppressWarnings("unchecked")
     public <T> OptionsBuilder build() {

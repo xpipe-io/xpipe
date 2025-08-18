@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -103,11 +102,7 @@ public class CoreJacksonModule extends SimpleModule {
 
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            try {
-                return Path.of(p.getValueAsString());
-            } catch (InvalidPathException ignored) {
-                return null;
-            }
+            return Path.of(p.getValueAsString());
         }
     }
 

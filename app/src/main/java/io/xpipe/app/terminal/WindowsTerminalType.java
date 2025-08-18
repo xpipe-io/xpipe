@@ -1,14 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -47,9 +46,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
-        cmd.add(configuration
-                .getScriptDialect()
-                .getOpenScriptCommand(configuration.getScriptFile().getFileName()));
+        cmd.add(configuration.getDialectLaunchCommand());
         return cmd;
     }
 
@@ -94,8 +91,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("suppressApplicationTitle", true);
         newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {
-            var logoFile = AppInstallation.ofCurrent().getLogoPath();
-            newProfile.put("icon", logoFile.toString());
+            var dir = XPipeInstallation.getLocalDefaultInstallationIcon();
+            newProfile.put("icon", dir.toString());
         }
         profiles.add(newProfile);
         JacksonMapper.getDefault().writeValue(getConfigFile().toFile(), config);
@@ -128,20 +125,16 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             checkProfile();
-            try (var sc = LocalShell.getShell().start()) {
-                var inPath = sc.view().findProgram("wt");
-                var exec = inPath.orElse(FilePath.of(getPath()));
-                var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
-            }
-        }
 
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return WindowsTerminalType.toCommand(configuration);
+            var inPath = LocalShell.getShell().view().findProgram("wt").isPresent();
+            if (inPath) {
+                super.launch(configuration);
+            } else {
+                LocalShell.getShell()
+                        .executeSimpleCommand(CommandBuilder.of()
+                                .addFile(getPath().toString())
+                                .add(toCommand(configuration)));
+            }
         }
 
         @Override
@@ -149,16 +142,20 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             return "https://aka.ms/terminal";
         }
 
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return WindowsTerminalType.toCommand(configuration);
+        }
+
         private Path getPath() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
-                    .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local).resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
                     .resolve("Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
@@ -178,19 +175,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             }
 
             checkProfile();
-            try (var sc = LocalShell.getShell().start()) {
-                var exec = getPath();
-                var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(
+                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
         }
 
         private Path getPath() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe");
         }
 
@@ -207,8 +199,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
                     .resolve("Packages\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }
@@ -228,19 +220,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             }
 
             checkProfile();
-            try (var sc = LocalShell.getShell().start()) {
-                var exec = getPath();
-                var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
-            }
+            LocalShell.getShell()
+                    .executeSimpleCommand(
+                            CommandBuilder.of().addFile(getPath().toString()).add(toCommand(configuration)));
         }
 
         private Path getPath() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\wt.exe");
         }
 
@@ -257,8 +244,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.ofWindows()
-                    .getLocalAppData()
+            var local = System.getenv("LOCALAPPDATA");
+            return Path.of(local)
                     .resolve("Packages\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
     }

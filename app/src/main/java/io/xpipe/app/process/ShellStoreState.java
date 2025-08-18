@@ -23,6 +23,10 @@ public class ShellStoreState extends DataStoreState implements SystemState {
     ShellTtyState ttyState;
     Boolean running;
 
+    public boolean isRunning() {
+        return running != null ? running : false;
+    }
+
     @Override
     public DataStoreState mergeCopy(DataStoreState newer) {
         var shellStoreState = (ShellStoreState) newer;

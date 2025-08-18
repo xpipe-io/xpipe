@@ -17,17 +17,6 @@ import java.util.List;
 
 public class OpenFileNativeDetailsActionProvider implements BrowserActionProvider {
 
-    @Override
-    public String getId() {
-        return "openFileNativeDetails";
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var sc = model.getFileSystem().getShell().orElseThrow();
-        return sc.getLocalSystemAccess().supportsFileSystemAccess();
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -39,7 +28,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
                 switch (OsType.getLocal()) {
-                    case OsType.Windows ignored -> {
+                    case OsType.Windows windows -> {
                         var shell = LocalShell.getLocalPowershell();
                         if (shell.isEmpty()) {
                             return;
@@ -61,11 +50,11 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // So let's keep one process running
                         shell.get().command(content).notComplex().execute();
                     }
-                    case OsType.Linux ignored -> {
+                    case OsType.Linux linux -> {
                         var dbus = String.format(
                                 """
-                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
-                                                 """,
+                                dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
+                                """,
                                 localFile);
                         var success = sc.executeSimpleBooleanCommand(dbus);
                         if (success) {
@@ -80,20 +69,31 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                                                         : e.getParent()))
                                 .execute();
                     }
-                    case OsType.MacOs ignored -> {
+                    case OsType.MacOs macOs -> {
                         sc.osascriptCommand(String.format(
                                         """
-                                                          set fileEntry to (POSIX file "%s") as text
-                                                          tell application "Finder"
-                                                              activate
-                                                              open information window of alias fileEntry
-                                                          end tell
-                                                          """,
+                                 set fileEntry to (POSIX file "%s") as text
+                                 tell application "Finder"
+                                     activate
+                                     open information window of alias fileEntry
+                                 end tell
+                                 """,
                                         localFile))
                                 .execute();
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public String getId() {
+        return "openFileNativeDetails";
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }
 }

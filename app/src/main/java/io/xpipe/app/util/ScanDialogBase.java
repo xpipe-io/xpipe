@@ -10,17 +10,14 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import lombok.Getter;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -33,7 +30,6 @@ public class ScanDialogBase {
     private final Runnable closeAction;
     private final ScanDialogAction action;
     private final ObservableList<DataStoreEntryRef<ShellStore>> entries;
-    private final boolean showButton;
     private final ObservableList<ScanProvider.ScanOpportunity> available =
             FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
     private final ListProperty<ScanProvider.ScanOpportunity> selected =
@@ -46,13 +42,11 @@ public class ScanDialogBase {
             boolean expand,
             Runnable closeAction,
             ScanDialogAction action,
-            ObservableList<DataStoreEntryRef<ShellStore>> entries,
-            boolean showButton) {
+            ObservableList<DataStoreEntryRef<ShellStore>> entries) {
         this.expand = expand;
         this.closeAction = closeAction;
         this.action = action;
         this.entries = entries;
-        this.showButton = showButton;
     }
 
     public void finish() throws Exception {
@@ -96,11 +90,6 @@ public class ScanDialogBase {
         closeAction.run();
     }
 
-    public void reset() {
-        available.clear();
-        selected.clear();
-    }
-
     private void onUpdate() {
         available.clear();
         selected.clear();
@@ -135,7 +124,7 @@ public class ScanDialogBase {
         VBox.setVgrow(stackPane, ALWAYS);
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
-            var n = s.getName().getValue();
+            var n = AppI18n.get(s.getNameKey());
             if (s.getLicensedFeatureId() == null || s.isDisabled()) {
                 return n;
             }
@@ -152,25 +141,8 @@ public class ScanDialogBase {
                 .createRegion();
         stackPane.getChildren().add(r);
 
-        if (showButton) {
-            var button = new Button();
-            button.textProperty().bind(AppI18n.observable("start"));
-            button.setGraphic(new FontIcon("mdi2p-play"));
-            button.setOnAction(e -> {
-                onUpdate();
-            });
-
-            var show = busy.not().and(Bindings.isEmpty(available));
-            button.visibleProperty().bind(show);
-            button.managedProperty().bind(show);
-
-            button.disableProperty().bind(Bindings.isEmpty(entries));
-
-            stackPane.getChildren().add(button);
-        } else {
-            onUpdate();
-            entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
-        }
+        onUpdate();
+        entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
 
         var comp = new LoadingOverlayComp(Comp.of(() -> stackPane), busy, true).vgrow();
         return comp;

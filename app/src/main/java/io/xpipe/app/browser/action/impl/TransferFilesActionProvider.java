@@ -38,11 +38,6 @@ public class TransferFilesActionProvider implements ActionProvider {
         boolean download;
 
         @Override
-        public void executeImpl() throws Exception {
-            operation.execute();
-        }
-
-        @Override
         public boolean isMutation() {
             return !download;
         }
@@ -50,6 +45,11 @@ public class TransferFilesActionProvider implements ActionProvider {
         @Override
         public boolean forceConfirmation() {
             return operation.isMove();
+        }
+
+        @Override
+        public void executeImpl() throws Exception {
+            operation.execute();
         }
 
         @Override

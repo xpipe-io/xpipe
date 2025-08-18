@@ -5,12 +5,12 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.GlobalObjectProperty;
 import io.xpipe.app.util.PlatformState;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.*;
@@ -18,20 +18,16 @@ import java.util.*;
 public class AppI18n {
 
     private static AppI18n INSTANCE;
-    private final Property<AppI18nData> currentLanguage = new GlobalObjectProperty<>();
-    private final Property<SupportedLocale> currentLocale = new GlobalObjectProperty<>();
+    private final Property<AppI18nData> currentLanguage = new SimpleObjectProperty<>();
+    private final ObservableValue<SupportedLocale> currentLocale = BindingsHelper.map(
+            currentLanguage,
+            appI18nData -> appI18nData != null ? appI18nData.getLocale() : SupportedLocale.getEnglish());
     private final Map<String, ObservableValue<String>> observableCache = new HashMap<>();
     private AppI18nData english;
 
-    public AppI18n() {
-        currentLocale.bind(BindingsHelper.map(
-                currentLanguage,
-                appI18nData -> appI18nData != null ? appI18nData.getLocale() : SupportedLocale.getEnglish()));
-    }
-
     public static ObservableValue<SupportedLocale> activeLanguage() {
         if (INSTANCE == null) {
-            return new GlobalObjectProperty<>(SupportedLocale.getEnglish());
+            return new SimpleObjectProperty<>(SupportedLocale.getEnglish());
         }
 
         return INSTANCE.currentLocale;
@@ -50,10 +46,6 @@ public class AppI18n {
 
     public static ObservableValue<String> observable(String s, Object... vars) {
         return INSTANCE.observableImpl(s, vars);
-    }
-
-    public static String get(String s, Object... vars) {
-        return INSTANCE.getLocalised(s, vars);
     }
 
     private ObservableValue<String> observableImpl(String s, Object... vars) {
@@ -87,6 +79,10 @@ public class AppI18n {
             observableCache.put(key, binding);
             return binding;
         }
+    }
+
+    public static String get(String s, Object... vars) {
+        return INSTANCE.getLocalised(s, vars);
     }
 
     private void load() throws Exception {

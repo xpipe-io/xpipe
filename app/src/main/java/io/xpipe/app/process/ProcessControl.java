@@ -10,7 +10,7 @@ public interface ProcessControl extends AutoCloseable {
 
     UUID getUuid();
 
-    ProcessControl withExceptionConverter(ProcessExceptionConverter converter);
+    ProcessControl withExceptionConverter(ExceptionConverter converter);
 
     void resetData();
 
@@ -45,4 +45,9 @@ public interface ProcessControl extends AutoCloseable {
     InputStream getStderr();
 
     Charset getCharset();
+
+    @FunctionalInterface
+    interface ExceptionConverter {
+        <T extends Throwable> T convert(T t);
+    }
 }

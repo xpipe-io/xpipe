@@ -21,6 +21,11 @@ public class PodmanContainerInspectActionProvider implements HubLeafProvider<Pod
     }
 
     @Override
+    public Class<PodmanContainerStore> getApplicableClass() {
+        return PodmanContainerStore.class;
+    }
+
+    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<PodmanContainerStore> store) {
         return AppI18n.observable("inspectContainer");
     }
@@ -28,11 +33,6 @@ public class PodmanContainerInspectActionProvider implements HubLeafProvider<Pod
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<PodmanContainerStore> store) {
         return new LabelGraphic.IconGraphic("mdi2i-information-outline");
-    }
-
-    @Override
-    public Class<PodmanContainerStore> getApplicableClass() {
-        return PodmanContainerStore.class;
     }
 
     @Override

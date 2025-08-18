@@ -12,11 +12,6 @@ import lombok.extern.jackson.Jacksonized;
 
 public class TarActionProvider implements BrowserActionProvider {
 
-    @Override
-    public String getId() {
-        return "tar";
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -27,6 +22,11 @@ public class TarActionProvider implements BrowserActionProvider {
         private final boolean directoryContentOnly;
 
         private final boolean gz;
+
+        @Override
+        public boolean isMutation() {
+            return true;
+        }
 
         @Override
         public void executeImpl() throws Exception {
@@ -59,10 +59,10 @@ public class TarActionProvider implements BrowserActionProvider {
             }
             model.refreshSync();
         }
+    }
 
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
+    @Override
+    public String getId() {
+        return "tar";
     }
 }

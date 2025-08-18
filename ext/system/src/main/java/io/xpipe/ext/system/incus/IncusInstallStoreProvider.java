@@ -23,6 +23,11 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.GROUP;
+    }
+
+    @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var nonRunning = StoreToggleComp.<IncusInstallStore>childrenToggle(
                 null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
@@ -42,11 +47,6 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
 
             return SystemStateComp.State.FAILURE;
         }));
-    }
-
-    @Override
-    public DataStoreUsageCategory getUsageCategory() {
-        return DataStoreUsageCategory.GROUP;
     }
 
     @Override

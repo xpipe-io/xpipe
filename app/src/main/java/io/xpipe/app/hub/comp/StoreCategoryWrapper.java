@@ -175,10 +175,7 @@ public class StoreCategoryWrapper {
                         .getUuid()
                         .equals(storeCategoryWrapper.getCategory().getParentCategory()))
                 .toList());
-        var direct = directContainedEntries
-                .getList()
-                .filtered(storeEntryWrapper -> storeEntryWrapper.includeInConnectionCount())
-                .size();
+        var direct = directContainedEntries.getList().size();
         var sub = children.getList().stream()
                 .mapToInt(value -> value.allContainedEntriesCount.get())
                 .sum();
@@ -191,9 +188,8 @@ public class StoreCategoryWrapper {
         }
 
         var directFiltered = directContainedEntries.getList().stream()
-                .filter(storeEntryWrapper -> storeEntryWrapper.includeInConnectionCount()
-                        && storeEntryWrapper.matchesFilter(
-                                StoreViewState.get().getFilterString().getValue()))
+                .filter(storeEntryWrapper -> storeEntryWrapper.matchesFilter(
+                        StoreViewState.get().getFilterString().getValue()))
                 .count();
         var subFiltered = children.getList().stream()
                 .mapToInt(value -> value.shownContainedEntriesCount.get())
@@ -238,5 +234,9 @@ public class StoreCategoryWrapper {
 
     public Property<String> nameProperty() {
         return name;
+    }
+
+    public Property<Instant> lastAccessProperty() {
+        return lastAccess;
     }
 }

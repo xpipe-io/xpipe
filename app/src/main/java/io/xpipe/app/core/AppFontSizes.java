@@ -15,27 +15,7 @@ import java.util.regex.Pattern;
 @AllArgsConstructor
 public class AppFontSizes {
 
-    public static final AppFontSizes BASE_10 = ofBase("10");
-    public static final AppFontSizes BASE_10_5 = ofBase("10.5");
-    public static final AppFontSizes BASE_11 = ofBase("11");
-
     private static final Pattern FONT_SIZE_PATTERN = Pattern.compile("-fx-font-size: \\d+(\\.\\d+)?pt;");
-    // -1.0pt
-    String xs;
-    // -0.5pt
-    String sm;
-    // 0pt
-    String base;
-    // +0.5pt
-    String lg;
-    // +1.0pt
-    String xl;
-    // +2.0pt
-    String xxl;
-    // +3.0pt
-    String xxxl;
-    // +7.0pt
-    String title;
 
     public static void xs(Node node) {
         apply(node, AppFontSizes::getXs);
@@ -76,14 +56,7 @@ public class AppFontSizes {
         }
 
         AppPrefs.get().theme().subscribe((newValue) -> {
-            var effective = newValue != null ? newValue.getFontSizes().get() : getDefault();
-            setFont(node, function.apply(effective));
-        });
-
-        AppPrefs.get().useSystemFont().addListener((ignored, ignored2, newValue) -> {
-            var effective = AppPrefs.get().theme().getValue() != null
-                    ? AppPrefs.get().theme().getValue().getFontSizes().get()
-                    : getDefault();
+            var effective = newValue != null ? newValue.getFontSizes() : getDefault();
             setFont(node, function.apply(effective));
         });
     }
@@ -94,6 +67,11 @@ public class AppFontSizes {
         s = matcher.replaceAll("");
         node.setStyle("-fx-font-size: " + fontSize + "pt;" + s);
     }
+
+    public static final AppFontSizes DEFAULT = getDefault();
+    public static final AppFontSizes BASE_10 = ofBase("10");
+    public static final AppFontSizes BASE_10_5 = ofBase("10.5");
+    public static final AppFontSizes BASE_11 = ofBase("11");
 
     public static AppFontSizes ofBase(String base) {
         if (base.contains(".")) {
@@ -108,30 +86,39 @@ public class AppFontSizes {
         }
     }
 
-    private static AppFontSizes interSize(AppFontSizes s) {
-        if (s == BASE_10) {
-            return BASE_10;
-        } else if (s == BASE_10_5) {
-            return BASE_10_5;
-        } else if (s == BASE_11) {
-            return BASE_10_5;
-        } else {
-            return s;
-        }
-    }
-
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
-        var inter = AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue();
-        var r =
-                switch (OsType.getLocal()) {
-                    case OsType.Linux ignored -> linux;
-                    case OsType.MacOs ignored -> mac;
-                    case OsType.Windows ignored -> windows;
-                };
-        return inter ? interSize(r) : r;
+        return switch (OsType.getLocal()) {
+            case OsType.Linux linux1 -> linux;
+            case OsType.MacOs macOs -> mac;
+            case OsType.Windows windows1 -> windows;
+        };
     }
 
     public static AppFontSizes getDefault() {
         return forOs(AppFontSizes.BASE_10_5, AppFontSizes.BASE_10, AppFontSizes.BASE_11);
     }
+
+    // -1.0pt
+    String xs;
+
+    // -0.5pt
+    String sm;
+
+    // 0pt
+    String base;
+
+    // +0.5pt
+    String lg;
+
+    // +1.0pt
+    String xl;
+
+    // +2.0pt
+    String xxl;
+
+    // +3.0pt
+    String xxxl;
+
+    // +7.0pt
+    String title;
 }

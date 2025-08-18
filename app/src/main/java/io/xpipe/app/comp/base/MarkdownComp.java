@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private static Boolean WEB_VIEW_SUPPORTED;
-    private static Path TEMP;
+
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
     private final boolean bodyPadding;
@@ -51,6 +51,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         this.htmlTransformation = htmlTransformation;
         this.bodyPadding = bodyPadding;
     }
+
+    private static Path TEMP;
 
     private Path getHtmlFile(String markdown) {
         if (TEMP == null) {
@@ -100,7 +102,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
                         && AppPrefs.get().theme().getValue().isDark()
                 ? "misc/github-markdown-dark.css"
                 : "misc/github-markdown-light.css";
-        var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, theme).orElseThrow();
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, theme).orElseThrow();
         wv.getEngine().setUserStyleSheetLocation(url.toString());
 
         PlatformThread.sync(markdown).subscribe(val -> {
@@ -161,7 +163,6 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         if (!WEB_VIEW_SUPPORTED) {
             var text = new TextArea();
             text.setEditable(false);
-            text.setWrapText(true);
             markdown.subscribe(s -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     text.setText(s);

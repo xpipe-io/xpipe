@@ -15,7 +15,7 @@ public class LocalExtensionTest extends ExtensionTest {
             return;
         }
 
-        var mode = OsType.getLocal() == OsType.WINDOWS ? "tray" : "background";
+        var mode = OsType.getLocal().equals(OsType.WINDOWS) ? "tray" : "background";
         OperationMode.init(new String[] {"-Dio.xpipe.app.mode=" + mode});
     }
 }

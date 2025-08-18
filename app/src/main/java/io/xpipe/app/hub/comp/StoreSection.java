@@ -83,9 +83,8 @@ public class StoreSection {
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable,
-            ObservableBooleanValue enabled) {
-        var allEnabled = all.blockUpdatesIf(Bindings.not(enabled));
-        var topLevel = allEnabled.filtered(
+            ObservableValue<Boolean> enabled) {
+        var topLevel = all.filtered(
                 section -> {
                     if (!enabled.getValue()) {
                         return false;
@@ -143,15 +142,18 @@ public class StoreSection {
             ObservableValue<StoreCategoryWrapper> category,
             ObservableIntegerValue visibilityObservable,
             ObservableIntegerValue updateObservable,
-            ObservableBooleanValue enabled) {
+            ObservableValue<Boolean> enabled) {
         if (e.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return new StoreSection(
                     e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
         }
 
-        var allEnabled = all.blockUpdatesIf(Bindings.not(enabled));
-        var allChildren = allEnabled.filtered(
+        var allChildren = all.filtered(
                 other -> {
+                    if (!enabled.getValue()) {
+                        return false;
+                    }
+
                     // Legacy implementation that does not use children caches. Use for testing
                     //                                if (true) return DataStorage.get()
                     //                                        .getDefaultDisplayParent(other.getEntry())

@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
@@ -150,14 +149,14 @@ public class BrowserTransferModel {
                     progress -> {
                         // Don't update item progress to keep it as finished
                         if (progress == null) {
-                            itemModel.updateProgress(null);
+                            itemModel.getProgress().setValue(null);
                             return;
                         }
 
                         synchronized (item.getProgress()) {
                             item.getProgress().setValue(progress);
                         }
-                        itemModel.updateProgress(progress);
+                        itemModel.getProgress().setValue(progress);
                     },
                     itemModel.getTransferCancelled());
             var action = TransferFilesActionProvider.Action.builder()
@@ -213,15 +212,15 @@ public class BrowserTransferModel {
         }
     }
 
-    private Path getDownloadsTargetDirectory() {
-        var def = AppSystemInfo.ofCurrent().getDownloads();
+    private Path getDownloadsTargetDirectory() throws Exception {
+        var def = DesktopHelper.getDownloadsDirectory();
         var custom = AppPrefs.get().downloadsDirectory().getValue();
-        if (custom == null) {
+        if (custom == null || custom.isBlank()) {
             return def;
         }
 
         try {
-            var path = custom.asLocalPath();
+            var path = Path.of(custom);
             if (Files.isDirectory(path)) {
                 return path;
             }

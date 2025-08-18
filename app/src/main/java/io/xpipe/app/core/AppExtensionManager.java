@@ -4,9 +4,10 @@ import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.LocalExec;
 import io.xpipe.app.util.ModuleAccess;
 import io.xpipe.core.ModuleLayerLoader;
+import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import lombok.Getter;
 
@@ -15,6 +16,7 @@ import java.lang.module.ModuleFinder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,12 +58,6 @@ public class AppExtensionManager {
         return INSTANCE;
     }
 
-    private static String getLocalInstallVersion(AppInstallation localInstallation) {
-        var exec = localInstallation.getDaemonExecutablePath();
-        var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
-        return out.orElseThrow().strip();
-    }
-
     private void loadBaseExtension() {
         var baseModule = findAndParseExtension("base", ModuleLayer.boot());
         if (baseModule.isEmpty()) {
@@ -74,19 +70,15 @@ public class AppExtensionManager {
 
     private void determineExtensionDirectories() throws Exception {
         if (!AppProperties.get().isFullVersion()) {
-            var localInstallation =
-                    !AppProperties.get().isStaging() && AppProperties.get().isLocatePtb()
-                            ? AppInstallation.ofDefault(true)
-                            : AppInstallation.ofCurrent();
-            Path p = localInstallation.getBaseInstallationPath();
+            var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath(
+                    AppProperties.get().isStaging() || AppProperties.get().isLocatePtb());
+            Path p = localInstallation;
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local " + AppNames.ofCurrent().getName()
-                                + " installation was not found but is required for development. See https://github"
-                                + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                        "Required local XPipe installation was not found but is required for development. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
-            var iv = getLocalInstallVersion(localInstallation);
+            var iv = getLocalInstallVersion();
             var installVersion = AppVersion.parse(iv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
             var sv = !AppProperties.get().isImage()
@@ -95,24 +87,29 @@ public class AppExtensionManager {
             var sourceVersion = AppVersion.parse(sv)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
             if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException("Incompatible development version. Source: " + sv
-                        + ", Installation: "
-                        + iv
-                        + "\n\nPlease try to check out the matching release version in the repository. See https://github"
-                        + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                throw new IllegalStateException(
+                        "Incompatible development version. Source: " + sv + ", Installation: " + iv
+                                + "\n\nPlease try to check out the matching release version in the repository. See https://github.com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
-            var extensions = localInstallation.getExtensionsPath();
+            var extensions = XPipeInstallation.getLocalExtensionsDirectory(p);
             extensionBaseDirectories.add(extensions);
         }
     }
 
+    private static String getLocalInstallVersion() throws Exception {
+        var localInstallation = XPipeInstallation.getLocalDefaultInstallationBasePath();
+        var exec = localInstallation.resolve(XPipeInstallation.getDaemonExecutablePath(OsType.getLocal()));
+        var fc = new ProcessBuilder(exec.toString(), "version").redirectError(ProcessBuilder.Redirect.DISCARD);
+        var proc = fc.start();
+        var out = new String(proc.getInputStream().readAllBytes());
+        proc.waitFor(1, TimeUnit.SECONDS);
+        return out.strip();
+    }
+
     public Set<Module> getContentModules() {
         return Stream.concat(
-                        Stream.of(ModuleLayer.boot()
-                                .findModule(AppNames.packageName(null))
-                                .orElseThrow()),
-                        loadedModules.stream())
+                        Stream.of(ModuleLayer.boot().findModule("io.xpipe.app").orElseThrow()), loadedModules.stream())
                 .collect(Collectors.toSet());
     }
 
@@ -135,16 +132,16 @@ public class AppExtensionManager {
             ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("java.base").orElseThrow(),
                     "java.io",
-                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
+                    extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
             ModuleAccess.exportAndOpen(
                     ModuleLayer.boot().findModule("org.apache.commons.io").orElseThrow(),
                     "org.apache.commons.io.input",
-                    extendedLayer.findModule(AppNames.extModuleName("proc")).orElseThrow());
+                    extendedLayer.findModule("io.xpipe.ext.proc").orElseThrow());
         }
     }
 
     private Optional<Module> findAndParseExtension(String name, ModuleLayer parent) {
-        var inModulePath = ModuleLayer.boot().findModule(AppNames.extModuleName(name));
+        var inModulePath = ModuleLayer.boot().findModule("io.xpipe.ext." + name);
         if (inModulePath.isPresent()) {
             TrackEvent.info("Loaded extension " + name + " from boot module path");
             return inModulePath;

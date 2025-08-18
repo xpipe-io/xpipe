@@ -7,6 +7,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 public class BooleanScope implements AutoCloseable {
 
+    public static BooleanScope noop() {
+        return new BooleanScope(new SimpleBooleanProperty());
+    }
+
     private final BooleanProperty prop;
     private boolean wait;
 
@@ -14,18 +18,14 @@ public class BooleanScope implements AutoCloseable {
         this.prop = prop;
     }
 
-    public static BooleanScope noop() {
-        return new BooleanScope(new SimpleBooleanProperty());
+    public boolean get() {
+        return prop.get();
     }
 
     public static <E extends Throwable> void executeExclusive(BooleanProperty prop, FailableRunnable<E> r) throws E {
         try (var ignored = new BooleanScope(prop).exclusive().start()) {
             r.run();
         }
-    }
-
-    public boolean get() {
-        return prop.get();
     }
 
     public BooleanScope exclusive() {

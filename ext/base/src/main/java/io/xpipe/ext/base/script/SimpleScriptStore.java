@@ -60,7 +60,7 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
             var targetType = shellControl.getOriginalShellDialect();
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
-            return targetType.sourceScriptCommand(shellControl, script.toString());
+            return targetType.sourceScriptCommand(script.toString());
         }
 
         return null;

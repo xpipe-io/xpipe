@@ -23,22 +23,22 @@ public class OpenNativeFileDetailsMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.OPEN;
-    }
-
-    @Override
     public KeyCombination getShortcut() {
         return new KeyCodeCombination(KeyCode.ENTER, KeyCombination.ALT_DOWN);
     }
 
     @Override
-    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable("showDetails");
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.OPEN;
     }
 
     @Override
     public boolean acceptsEmptySelection() {
         return true;
+    }
+
+    @Override
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("showDetails");
     }
 }

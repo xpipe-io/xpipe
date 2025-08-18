@@ -2,13 +2,12 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.process.CommandBuilder;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class RunCommandInTerminalActionProvider implements BrowserActionProvider {
 
@@ -21,24 +20,11 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
     @SuperBuilder
     public static class Action extends BrowserAction {
 
+        @NonNull
         String title;
 
         @NonNull
         String command;
-
-        @Override
-        public void executeImpl() throws Exception {
-            var wd = files.getFirst();
-            model.openTerminalSync(
-                    title,
-                    wd,
-                    model.getFileSystem()
-                            .getShell()
-                            .orElseThrow()
-                            .command(command)
-                            .withWorkingDirectory(wd),
-                    true);
-        }
 
         @Override
         public boolean isMutation() {
@@ -46,12 +32,19 @@ public class RunCommandInTerminalActionProvider implements BrowserActionProvider
         }
 
         @Override
-        public Map<String, String> toDisplayMap() {
-            var map = new LinkedHashMap<>(super.toDisplayMap());
-            map.remove("Title");
-            map.remove("Files");
-            map.put("Working Directory", files.getFirst().toString());
-            return map;
+        public void executeImpl() throws Exception {
+            var cmd = CommandBuilder.of().add(command);
+            for (BrowserEntry entry : getEntries()) {
+                cmd.addFile(entry.getRawFileEntry().getPath());
+            }
+
+            model.openTerminalSync(
+                    title,
+                    model.getCurrentDirectory() != null
+                            ? model.getCurrentDirectory().getPath()
+                            : null,
+                    model.getFileSystem().getShell().orElseThrow().command(cmd),
+                    true);
         }
     }
 }

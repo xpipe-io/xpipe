@@ -74,7 +74,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             // This allows for assigning logos even if AppImages has not been initialized yet
             var dir = "img/logo/";
-            AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
+            AppResources.with(AppResources.XPIPE_MODULE, dir, path -> {
                 var image = AppPrefs.get() != null
                                 && AppPrefs.get().theme().getValue().isDark()
                         ? path.resolve("loading-160-dark.png")
@@ -82,8 +82,8 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingIcon.setImage(AppImages.loadImage(image));
             });
 
-            var version = new LabelComp(
-                    (AppNames.ofCurrent().getName()) + " " + AppProperties.get().getVersion());
+            var version = new LabelComp((AppProperties.get().isStaging() ? "XPipe PTB" : "XPipe") + " "
+                    + AppProperties.get().getVersion());
             version.apply(struc -> {
                 AppFontSizes.apply(struc.get(), appFontSizes -> "15");
                 struc.get().setOpacity(0.65);

@@ -118,9 +118,4 @@ public class WindowsCredentialManager implements PasswordManager {
     public String getKeyPlaceholder() {
         return "Credential name";
     }
-
-    @Override
-    public String getWebsite() {
-        return "https://support.microsoft.com/en-us/windows/credential-manager-in-windows-1b5c916a-6a16-889f-8581-fc16e8165ac0";
-    }
 }

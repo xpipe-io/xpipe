@@ -37,13 +37,13 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return AppI18n.observable("new");
+    public boolean acceptsEmptySelection() {
+        return true;
     }
 
     @Override
-    public boolean acceptsEmptySelection() {
-        return true;
+    public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return AppI18n.observable("new");
     }
 
     @Override
@@ -187,11 +187,6 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
-                    }
-
-                    @Override
                     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
@@ -200,6 +195,11 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     public ObservableValue<String> getName(
                             BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                         return AppI18n.observable("symbolicLink");
+                    }
+
+                    @Override
+                    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
                     }
                 });
     }

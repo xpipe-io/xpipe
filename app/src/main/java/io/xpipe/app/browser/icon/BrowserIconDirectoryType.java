@@ -20,6 +20,13 @@ public abstract class BrowserIconDirectoryType {
 
     private static final List<BrowserIconDirectoryType> ALL = new ArrayList<>();
 
+    public static synchronized BrowserIconDirectoryType byId(String id) {
+        return ALL.stream()
+                .filter(fileType -> fileType.getId().equals(id))
+                .findAny()
+                .orElseThrow();
+    }
+
     public static synchronized void loadDefinitions() {
         ALL.add(new BrowserIconDirectoryType() {
 
@@ -40,7 +47,7 @@ public abstract class BrowserIconDirectoryType {
             }
         });
 
-        AppResources.with(AppResources.MAIN_MODULE, "folder_list.txt", path -> {
+        AppResources.with(AppResources.XPIPE_MODULE, "folder_list.txt", path -> {
             try (var reader =
                     new BufferedReader(new InputStreamReader(Files.newInputStream(path), StandardCharsets.UTF_8))) {
                 String line;

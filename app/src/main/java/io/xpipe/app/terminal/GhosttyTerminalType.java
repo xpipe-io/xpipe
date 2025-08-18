@@ -11,11 +11,6 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType GHOSTTY_MACOS = new MacOs();
 
     @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
-    }
-
-    @Override
     default String getWebsite() {
         return "https://ghostty.org";
     }
@@ -23,6 +18,11 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
     @Override
     default boolean isRecommended() {
         return AppPrefs.get().terminalMultiplexer().getValue() != null;
+    }
+
+    @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -54,7 +53,7 @@ public interface ExternalApplicationType extends PrefsValue {
                 return Optional.of(systemApplicationsDef);
             }
             var userApplicationsDef =
-                    AppSystemInfo.ofCurrent().getUserHome().resolve("Applications", getApplicationName() + ".app");
+                    Path.of(System.getProperty("user.home") + "/Applications/" + getApplicationName() + ".app");
             if (Files.exists(userApplicationsDef)) {
                 return Optional.of(userApplicationsDef);
             }
@@ -81,7 +80,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.MACOS;
+            return OsType.getLocal().equals(OsType.MACOS);
         }
     }
 
@@ -103,9 +102,10 @@ public interface ExternalApplicationType extends PrefsValue {
         default void launch(CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
                 if (!CommandSupport.isInPath(pc, getExecutable())) {
-                    throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
-                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute "
-                            + "executable path using the custom terminal setting."));
+                    throw ErrorEventFactory.expected(
+                            new IOException(
+                                    "Executable " + getExecutable()
+                                            + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute executable path using the custom terminal setting."));
                 }
 
                 args.add(0, getExecutable());
@@ -180,7 +180,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.WINDOWS;
+            return OsType.getLocal().equals(OsType.WINDOWS);
         }
     }
 }

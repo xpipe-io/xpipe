@@ -1,7 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.storage.DataStoreEntry;
-
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Stream;
@@ -116,15 +114,16 @@ public interface StoreSectionSortMode {
 
     abstract class DateSortMode implements StoreSectionSortMode {
 
-        private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
         private int entriesListObservableIndex = -1;
+        private final Map<StoreSection, StoreSection> cachedRepresentatives = new IdentityHashMap<>();
 
         public StoreSection computeRepresentative(StoreSection s) {
             return Stream.concat(
                             s.getShownChildren().getList().stream()
-                                    .filter(section ->
-                                            section.getWrapper().getEntry().getValidity()
-                                                    != DataStoreEntry.Validity.LOAD_FAILED)
+                                    .filter(section -> section.getWrapper()
+                                            .getEntry()
+                                            .getValidity()
+                                            .isUsable())
                                     .map(this::getRepresentative),
                             Stream.of(s))
                     .max(Comparator.comparing(section -> date(section)))
@@ -138,9 +137,8 @@ public interface StoreSectionSortMode {
                         StoreViewState.get().getEntriesListUpdateObservable().get();
             }
 
-            var found = cachedRepresentatives.get(s);
-            if (found != null) {
-                return found;
+            if (cachedRepresentatives.containsKey(s)) {
+                return cachedRepresentatives.get(s);
             }
 
             var r = computeRepresentative(s);

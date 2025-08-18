@@ -67,13 +67,16 @@ public abstract class StoreEntryComp extends SimpleComp {
                 }
             },
             App.getApp().getStage().widthProperty());
-    private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
     protected final Comp<?> content;
 
     public StoreEntryComp(StoreSection section, Comp<?> content) {
         this.section = section;
         this.content = content;
+    }
+
+    public StoreEntryWrapper getWrapper() {
+        return section.getWrapper();
     }
 
     public static StoreEntryComp create(StoreSection section, Comp<?> content, boolean preferLarge) {
@@ -95,19 +98,6 @@ public abstract class StoreEntryComp extends SimpleComp {
                     && AppPrefs.get().condenseConnectionDisplay().get();
             return forceCondensed ? new DenseStoreEntryComp(e, null) : new StandardStoreEntryComp(e, null);
         }
-    }
-
-    private static String getDefaultNotes() {
-        if (DEFAULT_NOTES == null) {
-            AppResources.with(AppResources.MAIN_MODULE, "misc/notes_default.md", f -> {
-                DEFAULT_NOTES = Files.readString(f);
-            });
-        }
-        return DEFAULT_NOTES;
-    }
-
-    public StoreEntryWrapper getWrapper() {
-        return section.getWrapper();
     }
 
     public abstract boolean isFullSize();
@@ -249,7 +239,6 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.tooltipKey("personalConnection");
         button.apply(struc -> {
             AppFontSizes.base(struc.get());
-            struc.get().setDisable(true);
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
@@ -405,7 +394,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 rename.setOnAction(event -> {
                     name.requestFocus();
                 });
-                items.add(items.size(), rename);
+                items.add(1, rename);
 
                 var notes = new MenuItem(AppI18n.get("addNotes"), new FontIcon("mdi2c-comment-text-outline"));
                 notes.setOnAction(event -> {
@@ -413,7 +402,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     event.consume();
                 });
                 notes.visibleProperty().bind(BindingsHelper.map(getWrapper().getNotes(), s -> s.getCommited() == null));
-                items.add(items.size(), notes);
+                items.add(2, notes);
 
                 var freeze = new MenuItem();
                 freeze.graphicProperty()
@@ -650,8 +639,18 @@ public abstract class StoreEntryComp extends SimpleComp {
         var item = branch != null
                 ? new Menu(null, icon.createGraphicNode())
                 : new MenuItem(null, icon.createGraphicNode());
-        item.textProperty().bind(name);
 
+        var proRequired = p.getLicensedFeatureId() != null
+                && !LicenseProvider.get().getFeature(p.getLicensedFeatureId()).isSupported();
+        if (proRequired) {
+            item.setDisable(true);
+            item.textProperty()
+                    .bind(LicenseProvider.get()
+                            .getFeature(p.getLicensedFeatureId())
+                            .suffixObservable(name.getValue()));
+        } else {
+            item.textProperty().bind(name);
+        }
         Menu menu = item instanceof Menu m ? m : null;
 
         if (branch != null) {
@@ -672,5 +671,16 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
 
         return item;
+    }
+
+    private static String DEFAULT_NOTES = null;
+
+    private static String getDefaultNotes() {
+        if (DEFAULT_NOTES == null) {
+            AppResources.with(AppResources.XPIPE_MODULE, "misc/notes_default.md", f -> {
+                DEFAULT_NOTES = Files.readString(f);
+            });
+        }
+        return DEFAULT_NOTES;
     }
 }

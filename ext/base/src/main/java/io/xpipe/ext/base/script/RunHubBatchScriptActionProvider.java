@@ -26,6 +26,11 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
         private final DataStoreEntryRef<SimpleScriptStore> scriptStore;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             var map = new LinkedHashMap<String, CommandControl>();
             for (DataStoreEntryRef<ShellStore> ref : refs) {
@@ -35,11 +40,6 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
                 map.put(ref.get().getName(), cmd);
             }
             CommandDialog.runMultipleAndShow(map);
-        }
-
-        @Override
-        public boolean isMutation() {
-            return true;
         }
     }
 }

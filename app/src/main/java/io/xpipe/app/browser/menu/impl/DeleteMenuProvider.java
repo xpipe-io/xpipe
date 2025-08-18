@@ -34,11 +34,6 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public boolean automaticallyResolveLinks() {
-        return false;
-    }
-
-    @Override
     public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return new LabelGraphic.IconGraphic("mdi2d-delete");
     }
@@ -51,6 +46,11 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public KeyCombination getShortcut() {
         return new KeyCodeCombination(KeyCode.DELETE);
+    }
+
+    @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
     }
 
     @Override

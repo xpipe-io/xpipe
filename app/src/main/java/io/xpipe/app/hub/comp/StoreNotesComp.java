@@ -90,18 +90,6 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         var dialog = new DialogComp() {
 
             @Override
-            protected String finishKey() {
-                return "apply";
-            }
-
-            @Override
-            protected List<Comp<?>> customButtons() {
-                return List.of(new ButtonComp(AppI18n.observable("cancel"), () -> {
-                    ref.get().hide();
-                }));
-            }
-
-            @Override
             protected void finish() {
                 n.setValue(
                         new StoreNotes(n.getValue().getCurrent(), n.getValue().getCurrent()));
@@ -112,8 +100,8 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             protected void discard() {}
 
             @Override
-            public Comp<?> content() {
-                return Comp.of(() -> md.get());
+            protected String finishKey() {
+                return "apply";
             }
 
             @Override
@@ -122,6 +110,18 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                             n.setValue(new StoreNotes(null, null));
                         })
                         .hide(BindingsHelper.map(n, v -> v.getCommited() == null));
+            }
+
+            @Override
+            protected List<Comp<?>> customButtons() {
+                return List.of(new ButtonComp(AppI18n.observable("cancel"), () -> {
+                    ref.get().hide();
+                }));
+            }
+
+            @Override
+            public Comp<?> content() {
+                return Comp.of(() -> md.get());
             }
         }.createRegion();
 

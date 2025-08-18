@@ -23,11 +23,6 @@ public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
         });
     }
 
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return false;
-    }
-
     public String getId() {
         return "refresh";
     }
@@ -45,6 +40,11 @@ public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("refresh");
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return false;
     }
 
     @Override

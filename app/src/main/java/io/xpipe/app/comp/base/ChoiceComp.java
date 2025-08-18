@@ -83,7 +83,6 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         });
 
         cb.getStyleClass().add("choice-comp");
-        cb.setMaxWidth(10000);
         return new SimpleCompStructure<>(cb);
     }
 }

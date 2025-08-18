@@ -21,6 +21,11 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
         return DataStorage.get().getStoreEntryDisplayName(s.getHost().get()) + " - Port " + s.getContainerPort();
     }
 
+    @Override
+    public String getId() {
+        return "mappedService";
+    }
+
     protected String formatService(AbstractServiceStore s) {
         var m = (MappedServiceStore) s;
         var desc = s.getLocalPort() != null
@@ -30,6 +35,11 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
                                 + m.getContainerPort()
                         : ":" + m.getRemotePort() + " <- :" + m.getContainerPort();
         return desc;
+    }
+
+    @Override
+    public List<Class<?>> getStoreClasses() {
+        return List.of(MappedServiceStore.class);
     }
 
     @Override
@@ -65,15 +75,5 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
                         },
                         store);
         return q.buildDialog();
-    }
-
-    @Override
-    public String getId() {
-        return "mappedService";
-    }
-
-    @Override
-    public List<Class<?>> getStoreClasses() {
-        return List.of(MappedServiceStore.class);
     }
 }

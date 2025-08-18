@@ -37,6 +37,10 @@ public abstract class AesSecretValue extends EncryptedSecretValue {
         return nonce;
     }
 
+    protected String getAlgorithm() {
+        return "AES/GCM/NoPadding";
+    }
+
     protected abstract SecretKey getSecretKey();
 
     @Override

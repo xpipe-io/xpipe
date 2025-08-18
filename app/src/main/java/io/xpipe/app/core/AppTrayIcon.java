@@ -21,16 +21,16 @@ public class AppTrayIcon {
 
         var image =
                 switch (OsType.getLocal()) {
-                    case OsType.Windows ignored -> "img/logo/full/logo_16x16.png";
-                    case OsType.Linux ignored -> "img/logo/full/logo_24x24.png";
-                    case OsType.MacOs ignored -> "img/logo/padded/logo_24x24.png";
+                    case OsType.Windows windows -> "img/logo/full/logo_16x16.png";
+                    case OsType.Linux linux -> "img/logo/full/logo_24x24.png";
+                    case OsType.MacOs macOs -> "img/logo/padded/logo_24x24.png";
                 };
-        var url = AppResources.getResourceURL(AppResources.MAIN_MODULE, image).orElseThrow();
+        var url = AppResources.getResourceURL(AppResources.XPIPE_MODULE, image).orElseThrow();
 
         PopupMenu popupMenu = new PopupMenu();
         this.trayIcon =
                 new TrayIcon(loadImageFromURL(url), App.getApp().getStage().getTitle(), popupMenu);
-        this.trayIcon.setToolTip(AppNames.ofCurrent().getName());
+        this.trayIcon.setToolTip("XPipe");
         this.trayIcon.setImageAutoSize(true);
 
         {
@@ -68,6 +68,14 @@ public class AppTrayIcon {
         }
     }
 
+    public static boolean isSupported() {
+        return Desktop.isDesktopSupported() && SystemTray.isSupported();
+    }
+
+    public final TrayIcon getAwtTrayIcon() {
+        return trayIcon;
+    }
+
     private void ensureSystemTraySupported() {
         if (!SystemTray.isSupported()) {
             throw new UnsupportedOperationException(
@@ -95,7 +103,7 @@ public class AppTrayIcon {
     }
 
     public void showErrorMessage(String title, String message) {
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             showMacAlert(title, message, "Error");
         } else {
             EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));

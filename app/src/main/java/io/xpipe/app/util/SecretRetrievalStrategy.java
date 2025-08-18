@@ -157,11 +157,9 @@ public interface SecretRetrievalStrategy {
                         var newline = seq.chars().anyMatch(value -> value == 10);
                         if (seq.length() == 0 || newline) {
                             throw ErrorEventFactory.expected(
-                                    new IllegalArgumentException("Received not exactly one output line:\n" + r
-                                            + "\n\n"
+                                    new IllegalArgumentException("Received not exactly one output line:\n" + r + "\n\n"
                                             + "XPipe requires your password manager command to output only the raw password."
-                                            + " If the output includes any formatting, messages, or your password key either matched multiple entries or "
-                                            + "none,"
+                                            + " If the output includes any formatting, messages, or your password key either matched multiple entries or none,"
                                             + " you will have to change the command and/or password key."));
                         }
                     });

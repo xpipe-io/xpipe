@@ -22,8 +22,8 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.get().getProvider().canConfigure();
+    public Class<DataStore> getApplicableClass() {
+        return DataStore.class;
     }
 
     @Override
@@ -34,11 +34,6 @@ public class EditHubLeafProvider implements HubLeafProvider<DataStore> {
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
         return new LabelGraphic.IconGraphic("mdi2w-wrench-outline");
-    }
-
-    @Override
-    public Class<DataStore> getApplicableClass() {
-        return DataStore.class;
     }
 
     @Override

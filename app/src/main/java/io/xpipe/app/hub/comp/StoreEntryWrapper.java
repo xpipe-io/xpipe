@@ -69,8 +69,9 @@ public class StoreEntryWrapper {
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
-    private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
+
     private boolean effectiveBusyProviderBound = false;
+    private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
 
     public StoreEntryWrapper(DataStoreEntry entry) {
         this.entry = entry;
@@ -104,10 +105,6 @@ public class StoreEntryWrapper {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().moveEntryToCategory(entry, category);
         });
-    }
-
-    public boolean includeInConnectionCount() {
-        return getEntry().getProvider() != null && getEntry().getProvider().includeInConnectionCount();
     }
 
     public boolean isInStorage() {
@@ -272,11 +269,8 @@ public class StoreEntryWrapper {
                         .or(() -> {
                             if (entry.getStore() instanceof GroupStore<?>) {
                                 return Optional.empty();
-                            } else if (entry.getProvider() != null
-                                    && entry.getProvider().canConfigure()) {
-                                return Optional.of(new EditHubLeafProvider());
                             } else {
-                                return Optional.empty();
+                                return Optional.of(new EditHubLeafProvider());
                             }
                         })
                         .orElse(null);

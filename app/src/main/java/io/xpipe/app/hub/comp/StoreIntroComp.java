@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanDialog;
+import io.xpipe.core.OsType;
 
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -26,7 +26,9 @@ public class StoreIntroComp extends SimpleComp {
     private Region createIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("storeIntroTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFontSizes.title(title);
 
         var introDesc = new Label();
@@ -65,7 +67,9 @@ public class StoreIntroComp extends SimpleComp {
     private Region createImportIntro() {
         var title = new Label();
         title.textProperty().bind(AppI18n.observable("importConnectionsTitle"));
-        title.getStyleClass().add(Styles.TEXT_BOLD);
+        if (OsType.getLocal() != OsType.MACOS) {
+            title.getStyleClass().add(Styles.TEXT_BOLD);
+        }
         AppFontSizes.title(title);
 
         var importDesc = new Label();
@@ -80,7 +84,7 @@ public class StoreIntroComp extends SimpleComp {
         importPane.setAlignment(Pos.CENTER);
 
         var fi = new FontIcon("mdi2g-git");
-        fi.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+        fi.setIconSize(80);
         var img = new StackPane(fi);
         img.setPrefWidth(100);
         img.setPrefHeight(150);

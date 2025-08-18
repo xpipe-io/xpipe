@@ -28,7 +28,7 @@ public class SshCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder().addTitle("sshConfiguration");
         if (OsType.getLocal() == OsType.WINDOWS) {
-            options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp());
+            options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp().maxWidth(600));
         }
         if (OsType.getLocal() != OsType.WINDOWS) {
             var choice = new ContextualFileReferenceChoiceComp(
@@ -41,7 +41,6 @@ public class SshCategory extends AppPrefsCategory {
             options.sub(
                     new OptionsBuilder().nameAndDescription("sshAgentSocket").addComp(choice, prefs.sshAgentSocket));
         }
-        options.sub(new OptionsBuilder().pref(prefs.alwaysShowSshMotd).addToggle(prefs.alwaysShowSshMotd));
         return options.buildComp();
     }
 }

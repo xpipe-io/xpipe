@@ -37,6 +37,10 @@ public interface ActionProvider {
 
     default void init() {}
 
+    default String getLicensedFeatureId() {
+        return null;
+    }
+
     default String getId() {
         return null;
     }

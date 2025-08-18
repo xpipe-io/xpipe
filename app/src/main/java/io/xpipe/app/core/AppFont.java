@@ -22,7 +22,7 @@ public class AppFont {
 
         TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(
-                AppResources.MAIN_MODULE,
+                AppResources.XPIPE_MODULE,
                 "fonts",
                 path -> Files.walkFileTree(path, new SimpleFileVisitor<>() {
                     @Override

@@ -35,7 +35,3 @@
     -fx-background-color: -color-bg-default;
     -fx-border-color: -color-border-default;
 }
-
-.host-address-choice-comp:empty .arrow-button .arrow, .host-address-choice-comp:empty:hover .arrow-button .arrow {
-    -fx-shape: "";
-}

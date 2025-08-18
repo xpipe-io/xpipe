@@ -1,11 +1,10 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,7 +12,7 @@ import java.nio.file.Path;
 public class DesktopShortcuts {
 
     private static Path createWindowsShortcut(String executable, String args, String name) throws Exception {
-        var shortcutPath = AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".lnk");
+        var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
 
         var shell = LocalShell.getLocalPowershell();
         if (shell.isEmpty()) {
@@ -21,19 +20,19 @@ public class DesktopShortcuts {
             return shortcutPath;
         }
 
-        var icon = AppInstallation.ofCurrent().getLogoPath();
+        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                         """
-                                    $TARGET="%s"
-                                    $SHORTCUT="%s"
-                                    $ws = New-Object -ComObject WScript.Shell
-                                    $s = $ws.CreateShortcut("$SHORTCUT")
-                                    $S.IconLocation='%s'
-                                    $S.WindowStyle=7
-                                    $S.TargetPath = "$TARGET"
-                                    $S.Arguments = '%s'
-                                    $S.Save()
-                                    """,
+                        $TARGET="%s"
+                        $SHORTCUT="%s"
+                        $ws = New-Object -ComObject WScript.Shell
+                        $s = $ws.CreateShortcut("$SHORTCUT")
+                        $S.IconLocation='%s'
+                        $S.WindowStyle=7
+                        $S.TargetPath = "$TARGET"
+                        $S.Arguments = '%s'
+                        $S.Save()
+                        """,
                         executable, shortcutPath, icon, args)
                 .replaceAll("\n", ";");
         shell.get().command(content).execute();
@@ -43,26 +42,26 @@ public class DesktopShortcuts {
     private static Path createLinuxShortcut(String executable, String args, String name) throws Exception {
         // Linux .desktop names are very restrictive
         var fixedName = name.replaceAll("[^\\w _]", "");
-        var icon = AppInstallation.ofCurrent().getLogoPath();
+        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var content = String.format(
                 """
-                                    [Desktop Entry]
-                                    Type=Application
-                                    Name=%s
-                                    Comment=Open with XPipe
-                                    Exec="%s" %s
-                                    Icon=%s
-                                    Terminal=false
-                                    Categories=Utility;Development;
-                                    """,
+                        [Desktop Entry]
+                        Type=Application
+                        Name=%s
+                        Comment=Open with XPipe
+                        Exec="%s" %s
+                        Icon=%s
+                        Terminal=false
+                        Categories=Utility;Development;
+                        """,
                 fixedName, executable, args, icon);
 
         var osFile = Path.of("/etc/os-release");
         var ubuntu =
                 Files.exists(osFile) && Files.readString(osFile).toLowerCase().contains("ubuntu");
         var file = ubuntu
-                ? AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".desktop")
-                : AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "applications", name + ".desktop");
+                ? DesktopHelper.getDesktopDirectory().resolve(name + ".desktop")
+                : Path.of(System.getProperty("user.home"), ".local", "share", "applications", name + ".desktop");
         Files.createDirectories(file.getParent());
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
@@ -80,14 +79,14 @@ public class DesktopShortcuts {
     }
 
     private static Path createMacOSShortcut(String executable, String args, String name) throws Exception {
-        var icon = AppInstallation.ofCurrent().getLogoPath();
+        var icon = XPipeInstallation.getLocalDefaultInstallationIcon();
         var assets = icon.getParent().resolve("Assets.car");
-        var base = AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".app");
+        var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
         var content = String.format(
                 """
-                                    #!/usr/bin/env sh
-                                    "%s" open %s
-                                    """,
+                        #!/usr/bin/env sh
+                        "%s" open %s
+                        """,
                 executable, args);
 
         try (var pc = LocalShell.getShell()) {
@@ -104,17 +103,17 @@ public class DesktopShortcuts {
                     .writeTextFile(
                             FilePath.of(base + "/Contents/Info.plist"),
                             """
-                                                                                <?xml version="1.0" encoding="UTF-8"?>
-                                                                                <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-                                                                                <plist version="1.0">
-                                                                                <dict>
-                                                                                    <key>CFBundleIconName</key>
-                                                                                    <string>xpipe</string>
-                                                                                	<key>CFBundleIconFile</key>
-                                                                                	<string>xpipe</string>
-                                                                                </dict>
-                                                                                </plist>
-                                                                                """);
+                                                    <?xml version="1.0" encoding="UTF-8"?>
+                                                    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+                                                    <plist version="1.0">
+                                                    <dict>
+                                                        <key>CFBundleIconName</key>
+                                                        <string>xpipe</string>
+                                                    	<key>CFBundleIconFile</key>
+                                                    	<string>xpipe</string>
+                                                    </dict>
+                                                    </plist>
+                                                    """);
             pc.command("cp \"" + icon + "\" \"" + base + "/Contents/Resources/xpipe.icns\"")
                     .execute();
             pc.command("cp \"" + assets + "\" \"" + base + "/Contents/Resources/Assets.car\"")
@@ -124,15 +123,15 @@ public class DesktopShortcuts {
     }
 
     public static Path createCliOpen(String action, String name) throws Exception {
-        var exec = AppInstallation.ofCurrent().getCliExecutablePath().toString();
+        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
         return create(exec, "open " + action, name);
     }
 
     public static Path create(String executable, String args, String name) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return createWindowsShortcut(executable, args, compat);
-        } else if (OsType.getLocal() == OsType.LINUX) {
+        } else if (OsType.getLocal().equals(OsType.LINUX)) {
             return createLinuxShortcut(executable, args, compat);
         } else {
             return createMacOSShortcut(executable, args, compat);

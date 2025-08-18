@@ -22,28 +22,19 @@ public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, Batc
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.get().getValidity().isUsable() && (o.get().getProvider().launch(o.get()) != null);
-    }
-
-    @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("open");
-    }
-
-    @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2c-console");
-    }
-
-    @Override
-    public Class<DataStore> getApplicableClass() {
-        return DataStore.class;
-    }
-
-    @Override
     public String getId() {
         return "open";
+    }
+
+    @Jacksonized
+    @SuperBuilder
+    public static class Action extends StoreAction<DataStore> {
+
+        @Override
+        public void executeImpl() throws Exception {
+            var r = ref.get().getProvider().launch(ref.get());
+            r.run();
+        }
     }
 
     @Override
@@ -61,14 +52,23 @@ public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, Batc
         return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 
-    @Jacksonized
-    @SuperBuilder
-    public static class Action extends StoreAction<DataStore> {
+    @Override
+    public Class<DataStore> getApplicableClass() {
+        return DataStore.class;
+    }
 
-        @Override
-        public void executeImpl() throws Exception {
-            var r = ref.get().getProvider().launch(ref.get());
-            r.run();
-        }
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
+        return o.get().getValidity().isUsable() && (o.get().getProvider().launch(o.get()) != null);
+    }
+
+    @Override
+    public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
+        return AppI18n.observable("open");
+    }
+
+    @Override
+    public LabelGraphic getIcon(DataStoreEntryRef<DataStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 }

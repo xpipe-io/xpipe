@@ -44,10 +44,7 @@ public class IconsCategory extends AppPrefsCategory {
                 .addTitle("customIcons")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("iconSources")
-                        .longDescription(DocumentationLink.ICONS)
-                        .addComp(createOverview().maxWidth(getCompWidth()))
-                        .nameAndDescription("preferMonochromeIcons")
-                        .addToggle(AppPrefs.get().preferMonochromeIcons))
+                        .addComp(createOverview().maxWidth(getCompWidth())))
                 .buildComp();
     }
 
@@ -96,9 +93,7 @@ public class IconsCategory extends AppPrefsCategory {
                                 .remote(remote.get())
                                 .id(UUID.randomUUID().toString())
                                 .build();
-                        if (sources.stream()
-                                .noneMatch(s -> s instanceof SystemIconSource.GitRepository g
-                                        && g.getRemote().equals(remote.get()))) {
+                        if (!sources.contains(source)) {
                             sources.add(source);
                             var nl = new ArrayList<>(
                                     AppPrefs.get().getIconSources().getValue());
@@ -139,9 +134,7 @@ public class IconsCategory extends AppPrefsCategory {
                                 .path(path)
                                 .id(UUID.randomUUID().toString())
                                 .build();
-                        if (sources.stream()
-                                .noneMatch(s -> s instanceof SystemIconSource.Directory d
-                                        && d.getPath().equals(path))) {
+                        if (!sources.contains(source)) {
                             sources.add(source);
                             var nl = new ArrayList<>(
                                     AppPrefs.get().getIconSources().getValue());

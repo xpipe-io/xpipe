@@ -1,17 +1,19 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.terminal.TerminalLaunch;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.FailableRunnable;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+import io.xpipe.core.XPipeInstallation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -24,17 +26,17 @@ import java.nio.file.Path;
 public class AppInstaller {
 
     public static InstallerAssetType getSuitablePlatformAsset() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return new InstallerAssetType.Msi();
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.getLocal().equals(OsType.LINUX)) {
             return Files.exists(Path.of("/etc/debian_version"))
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return new InstallerAssetType.Pkg();
         }
 
@@ -45,11 +47,22 @@ public class AppInstaller {
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     @JsonSubTypes({
         @JsonSubTypes.Type(value = InstallerAssetType.Msi.class),
-                @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
+        @JsonSubTypes.Type(value = InstallerAssetType.Debian.class),
         @JsonSubTypes.Type(value = InstallerAssetType.Rpm.class),
-                @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
+        @JsonSubTypes.Type(value = InstallerAssetType.Pkg.class)
     })
     public abstract static class InstallerAssetType {
+
+        protected void runAndClose(FailableRunnable<Exception> r) {
+            OperationMode.executeAfterShutdown(() -> {
+                r.run();
+
+                // In case we perform any operations such as opening a terminal
+                // give it some time to open while this process is still alive
+                // Otherwise it might quit because the parent process is dead already
+                ThreadHelper.sleep(100);
+            });
+        }
 
         public abstract void installLocal(Path file);
 
@@ -65,25 +78,25 @@ public class AppInstaller {
                 var logFile =
                         FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
                 var systemWide = isSystemWide();
-                var cmdScript = LocalShell.getDialect() == ShellDialects.CMD && !systemWide;
+                var cmdScript =
+                        ProcessControlProvider.get().getEffectiveLocalDialect().equals(ShellDialects.CMD)
+                                && !systemWide;
                 var command = cmdScript
                         ? getCmdCommand(file.toString(), logFile.toString())
                         : getPowershellCommand(file.toString(), logFile.toString(), systemWide);
 
-                OperationMode.executeAfterShutdown(() -> {
+                runAndClose(() -> {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
-                            toRun = "start \"" + AppNames.ofCurrent().getName() + " Updater\" /min cmd /c \""
+                            toRun = "start \"XPipe Updater\" /min cmd /c \""
                                     + ScriptHelper.createExecScript(ShellDialects.CMD, sc, command) + "\"";
                         } else {
                             toRun = sc.getShellDialect() == ShellDialects.POWERSHELL
-                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", "
-                                            + "\"-File\", \"`\""
+                                    ? "Start-Process -WindowStyle Minimized -FilePath powershell -ArgumentList  \"-ExecutionPolicy\", \"Bypass\", \"-File\", \"`\""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "`\"\""
-                                    : "start \"" + AppNames.ofCurrent().getName()
-                                            + " Updater\" /min powershell -ExecutionPolicy Bypass -File \""
+                                    : "start \"XPipe Updater\" /min powershell -ExecutionPolicy Bypass -File \""
                                             + ScriptHelper.createExecScript(ShellDialects.POWERSHELL, sc, command)
                                             + "\"";
                         }
@@ -99,19 +112,19 @@ public class AppInstaller {
 
             private boolean isSystemWide() {
                 return Files.exists(
-                        AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
+                        XPipeInstallation.getCurrentInstallationBasePath().resolve("system"));
             }
 
             private String getCmdCommand(String file, String logFile) {
                 var args = "MSIFASTINSTALL=7 DISABLEROLLBACK=1";
                 return String.format(
                         """
-                                     echo Installing %s ...
-                                     cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
-                                     echo + msiexec /i "%s" /lv "%s" /qb %s
-                                     start "" /wait msiexec /i "%s" /lv "%s" /qb %s
-                                     %s
-                                     """,
+                        echo Installing %s ...
+                        cd /D "%%HOMEDRIVE%%%%HOMEPATH%%"
+                        echo + msiexec /i "%s" /lv "%s" /qb %s
+                        start "" /wait msiexec /i "%s" /lv "%s" /qb %s
+                        %s
+                        """,
                         file,
                         file,
                         logFile,
@@ -128,12 +141,12 @@ public class AppInstaller {
                 var runas = systemWide ? "-Verb runAs" : "";
                 return String.format(
                         """
-                                     echo Installing %s ...
-                                     cd "$env:HOMEDRIVE\\$env:HOMEPATH"
-                                     echo '+ msiexec /i "%s" /lv "%s" /qb%s'
-                                     Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
-                                     %s
-                                     """,
+                        echo Installing %s ...
+                        cd "$env:HOMEDRIVE\\$env:HOMEPATH"
+                        echo '+ msiexec /i "%s" /lv "%s" /qb%s'
+                        Start-Process %s -FilePath msiexec -Wait -ArgumentList "/i", "`"%s`"", "/lv", "`"%s`"", "/qb"%s
+                        %s
+                        """,
                         file,
                         file,
                         logFile,
@@ -153,26 +166,23 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                                            runinstaller() {
-                                                                echo "Installing downloaded .deb installer ..."
-                                                                echo "+ sudo apt install \\"%s\\""
-                                                                DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
-                                                                %s || return 1
-                                                            }
+                                             runinstaller() {
+                                                 echo "Installing downloaded .deb installer ..."
+                                                 echo "+ sudo apt install \\"%s\\""
+                                                 DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
+                                                 %s || return 1
+                                             }
 
-                                                            cd ~
-                                                            runinstaller
-                                                            if [ "$?" != 0 ]; then
-                                                              echo "Update failed ..."
-                                                              read key
-                                                            fi
-                                                            """,
+                                             cd ~
+                                             runinstaller
+                                             if [ "$?" != 0 ]; then
+                                               echo "Update failed ..."
+                                               read key
+                                             fi
+                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
-                    TerminalLaunch.builder()
-                            .title(AppNames.ofCurrent().getName() + " Updater")
-                            .localScript(command)
-                            .launch();
+                runAndClose(() -> {
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 
@@ -189,26 +199,24 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                                            runinstaller() {
-                                                                echo "Installing downloaded .rpm installer ..."
-                                                                echo "+ sudo rpm -U -v --force \\"%s\\""
-                                                                sudo rpm -U -v --force "%s" || return 1
-                                                                %s || return 1
-                                                            }
+                                             runinstaller() {
+                                                 echo "Installing downloaded .rpm installer ..."
+                                                 echo "+ sudo rpm -U -v --force \\"%s\\""
+                                                 sudo rpm -U -v --force "%s" || return 1
+                                                 %s || return 1
+                                             }
 
-                                                            cd ~
-                                                            runinstaller
-                                                            if [ "$?" != 0 ]; then
-                                                              echo "Update failed ..."
-                                                              read key
-                                                            fi
-                                                            """,
+                                             cd ~
+                                             runinstaller
+                                             if [ "$?" != 0 ]; then
+                                               echo "Update failed ..."
+                                               read key
+                                             fi
+                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
-                    TerminalLaunch.builder()
-                            .title(AppNames.ofCurrent().getName() + " Updater")
-                            .localScript(command)
-                            .launch();
+
+                runAndClose(() -> {
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 
@@ -225,26 +233,24 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var command = new ShellScript(String.format(
                         """
-                                                            runinstaller() {
-                                                                echo "Installing downloaded .pkg installer ..."
-                                                                echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
-                                                                sudo installer -verboseR -pkg "%s" -target / || return 1
-                                                                %s || return 1
-                                                            }
+                                           runinstaller() {
+                                               echo "Installing downloaded .pkg installer ..."
+                                               echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
+                                               sudo installer -verboseR -pkg "%s" -target / || return 1
+                                               %s || return 1
+                                           }
 
-                                                            cd ~
-                                                            runinstaller
-                                                            if [ "$?" != 0 ]; then
-                                                              echo "Update failed ..."
-                                                              read -rs -k 1 key
-                                                            fi
-                                                            """,
+                                           cd ~
+                                           runinstaller
+                                           if [ "$?" != 0 ]; then
+                                             echo "Update failed ..."
+                                             read -rs -k 1 key
+                                           fi
+                                           """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
-                    TerminalLaunch.builder()
-                            .title(AppNames.ofCurrent().getName() + " Updater")
-                            .localScript(command)
-                            .launch();
+
+                runAndClose(() -> {
+                    TerminalLauncher.openDirectFallback("XPipe Updater", sc -> command);
                 });
             }
 

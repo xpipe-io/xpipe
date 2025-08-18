@@ -5,12 +5,6 @@
     -fx-background-radius: 4;
 }
 
-.root:nord .modal-overlay-comp .modal-box {
-    -fx-border-width: 1;
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
-}
-
 .modal-overlay-comp .modal-box > .content {
     -fx-padding: 15 27 10 27;
 }
@@ -20,11 +14,6 @@
     -fx-border-width: 1px;
     -fx-border-radius: 2px;
     -fx-background-radius: 2px;
-}
-
-.root:nord .modal-overlay-comp .modal-box .button-bar .button {
-    -fx-border-radius: 0;
-    -fx-background-radius: 0;
 }
 
 .root:dark .modal-overlay-comp.modal-pane {

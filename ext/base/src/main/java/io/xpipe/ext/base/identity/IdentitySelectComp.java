@@ -7,7 +7,9 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -22,10 +24,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -40,12 +40,6 @@ import java.util.List;
 
 public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
-    private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
-    private final Property<String> inPlaceUser;
-    private final ObservableValue<SecretRetrievalStrategy> password;
-    private final ObservableValue<SshIdentityStrategy> identityStrategy;
-    private final boolean allowUserInput;
-
     public IdentitySelectComp(
             ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference,
             Property<String> inPlaceUser,
@@ -58,6 +52,12 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         this.identityStrategy = identityStrategy;
         this.allowUserInput = allowUserInput;
     }
+
+    private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
+    private final Property<String> inPlaceUser;
+    private final ObservableValue<SecretRetrievalStrategy> password;
+    private final ObservableValue<SshIdentityStrategy> identityStrategy;
+    private final boolean allowUserInput;
 
     private void addNamedIdentity() {
         var pass = EncryptedValue.CurrentKey.of(password.getValue());
@@ -133,8 +133,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         IdentityStore id = storeEntry.getStore().asNeeded();
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")
-                : id instanceof PasswordManagerIdentityStore
-                ? AppI18n.get("passwordManagerIdentity")
                 : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
                         ? AppI18n.get("userIdentity")
                         : AppI18n.get("globalIdentity");
@@ -192,36 +190,34 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
         });
 
-        var combo = new ComboTextFieldComp(
-                prop, FXCollections.observableList(map.keySet().stream().toList()), () -> {
-                    return new ListCell<>() {
-                        @Override
-                        protected void updateItem(String item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty) {
-                                return;
-                            }
+        var combo = new ComboTextFieldComp(prop, map.keySet().stream().toList(), () -> {
+            return new ListCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        return;
+                    }
 
-                            setText(item);
+                    setText(item);
 
-                            if (item != null) {
-                                var store = map.get(item);
-                                if (store != null) {
-                                    var provider = store.get().getProvider();
-                                    var image = provider.getDisplayIconFileName(store.getStore());
-                                    setGraphic(PrettyImageHelper.ofFixedSize(image, 16, 16)
-                                            .createRegion());
-                                }
-                            } else {
-                                setGraphic(null);
-                            }
+                    if (item != null) {
+                        var store = map.get(item);
+                        if (store != null) {
+                            var provider = store.get().getProvider();
+                            var image = provider.getDisplayIconFileName(store.getStore());
+                            setGraphic(
+                                    PrettyImageHelper.ofFixedSize(image, 16, 16).createRegion());
                         }
-                    };
-                });
+                    } else {
+                        setGraphic(null);
+                    }
+                }
+            };
+        });
         combo.apply(struc -> struc.get().setEditable(allowUserInput));
         combo.styleClass(Styles.LEFT_PILL);
         combo.grow(false, true);
-
         combo.apply(struc -> {
             var binding = Bindings.createStringBinding(
                     () -> {
@@ -235,7 +231,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     selectedReference);
             struc.get().promptTextProperty().bind(binding);
         });
-
         combo.apply(struc -> {
             struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.ESCAPE && !allowUserInput) {
@@ -244,34 +239,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     event.consume();
                 }
             });
-        });
-
-        combo.apply(struc -> {
-            var popover = new StoreChoicePopover<>(
-                    null,
-                    selectedReference,
-                    IdentityStore.class,
-                    null,
-                    StoreViewState.get().getAllIdentitiesCategory(),
-                    "selectIdentity");
-            ((Region) popover.getPopover().getContentNode()).setMaxHeight(350);
-            var skin = new ComboBoxListViewSkin<>(struc.get()) {
-                @Override
-                public void show() {
-                    popover.show(struc.get());
-                }
-
-                @Override
-                public void hide() {
-                    popover.hide();
-                }
-            };
-            popover.getPopover().showingProperty().addListener((o, oldValue, newValue) -> {
-                if (!newValue) {
-                    struc.get().hide();
-                }
-            });
-            struc.get().setSkin(skin);
         });
 
         combo.apply(struc -> {

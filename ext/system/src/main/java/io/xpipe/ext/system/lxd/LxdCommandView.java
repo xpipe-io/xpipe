@@ -18,10 +18,6 @@ import java.util.stream.Collectors;
 
 public class LxdCommandView extends CommandViewBase {
 
-    public LxdCommandView(ShellControl shellControl) {
-        super(shellControl);
-    }
-
     private static ElevationFunction requiresElevation() {
         return new ElevationFunction() {
             @Override
@@ -41,11 +37,14 @@ public class LxdCommandView extends CommandViewBase {
                 // path
                 return !shellControl
                         .command(
-                                "test -S /var/lib/lxd/unix.socket && test -w /var/lib/lxd/unix.socket || test -S /var/snap/lxd/common/lxd/unix"
-                                        + ".socket && test -w /var/snap/lxd/common/lxd/unix.socket")
+                                "test -S /var/lib/lxd/unix.socket && test -w /var/lib/lxd/unix.socket || test -S /var/snap/lxd/common/lxd/unix.socket && test -w /var/snap/lxd/common/lxd/unix.socket")
                         .executeAndCheck();
             }
         };
+    }
+
+    public LxdCommandView(ShellControl shellControl) {
+        super(shellControl);
     }
 
     private static String formatErrorMessage(String s) {

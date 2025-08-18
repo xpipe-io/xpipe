@@ -52,13 +52,13 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
     }
 
     @Override
-    public DataStore defaultStore(DataStoreCategory category) {
-        return PasswordManagerIdentityStore.builder().key(null).build();
+    public String getId() {
+        return "passwordManagerIdentity";
     }
 
     @Override
-    public String getId() {
-        return "passwordManagerIdentity";
+    public DataStore defaultStore(DataStoreCategory category) {
+        return PasswordManagerIdentityStore.builder().key(null).build();
     }
 
     @Override

@@ -2,9 +2,12 @@ package io.xpipe.app.browser.menu;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.util.LicenseProvider;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -32,6 +35,12 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
             m.setGraphic(graphic.createGraphicNode());
         }
         m.setDisable(!isActive(model, selected));
+
+        if (getLicensedFeatureId() != null
+                && !LicenseProvider.get().getFeature(getLicensedFeatureId()).isSupported()) {
+            m.setDisable(true);
+            m.setGraphic(new FontIcon("mdi2p-professional-hexagon"));
+        }
 
         return m;
     }

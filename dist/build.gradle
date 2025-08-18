@@ -1,7 +1,9 @@
 
 plugins {
-    id 'org.beryx.jlink' version '3.1.3'
-    id("com.netflix.nebula.ospackage") version "12.1.0"
+    id 'org.beryx.jlink' version '3.1.1'
+    id "org.asciidoctor.jvm.convert" version "4.0.4"
+    id 'org.jreleaser' version '1.15.0'
+    id("com.netflix.nebula.ospackage") version "11.11.2"
     id 'org.gradle.crypto.checksum' version '1.4.0'
     id 'signing'
 }
@@ -10,7 +12,7 @@ repositories {
     mavenCentral()
 }
 
-tasks.register('dist', DefaultTask) {}
+task dist(type: DefaultTask) {}
 
 
 run {
@@ -18,20 +20,20 @@ run {
 }
 
 distTar {
-    enabled = false
+    enabled = false;
 }
 
 distZip {
-    enabled = false
+    enabled = false;
 }
 
 import org.gradle.crypto.checksum.Checksum
 
 import java.util.stream.Collectors
 
-tasks.register('createGithubChangelog', DefaultTask) {
+task createGithubChangelog(type: DefaultTask) {
     doLast {
-        def template = file("$projectDir/changelog_format/github.md").text
+        def template = file("$projectDir/misc/github.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(argument)
         def dir = layout.buildDirectory.dir("dist/release").get()
@@ -41,9 +43,9 @@ tasks.register('createGithubChangelog', DefaultTask) {
     }
 }
 
-tasks.register('createDiscordChangelog', DefaultTask) {
+task createDiscordChangelog(type: DefaultTask) {
     doLast {
-        def template = file("$projectDir/changelog_format/discord.md").text
+        def template = file("$projectDir/misc/discord.md").text
         def argument = incrementalChangelogFile.exists() ? incrementalChangelogFile.text : changelogFile.text
         def text = template.formatted(productName, versionString, argument, productName, kebapProductName)
         def dir = layout.buildDirectory.dir("dist/release").get()
@@ -54,7 +56,7 @@ tasks.register('createDiscordChangelog', DefaultTask) {
 }
 
 def distDir = layout.buildDirectory.get().dir('dist')
-tasks.register('createChecksums', Checksum) {
+task createChecksums(type: Checksum) {
     inputFiles.setFrom(distDir.dir('artifacts').getAsFileTree().files)
     outputDirectory.set(layout.buildDirectory.dir("dist/checksums/artifacts"))
     checksumAlgorithm.set(Checksum.Algorithm.SHA256)
@@ -62,7 +64,7 @@ tasks.register('createChecksums', Checksum) {
     doLast {
         def artifactChecksumsSha256Hex = new HashMap<String, String>()
         for (final def file in outputDirectory.get().getAsFileTree().files) {
-            def name = file.name.lastIndexOf('.').with { it != -1 ? file.name[0..<it] : file.name }
+            def name = file.name.lastIndexOf('.').with {it != -1 ? file.name[0..<it] : file.name}
             if (name.endsWith('mapping.map') || name.endsWith('.asc')) {
                 continue
             }
@@ -78,7 +80,7 @@ tasks.register('createChecksums', Checksum) {
 
 def getArtifactChecksumSha256Hex(String name) {
     var file = layout.buildDirectory.file("dist/checksums/artifacts/${name}.sha256")
-    return file.get().getAsFile().exists() ? file.get().getAsFile().text : ""
+    return file.get().getAsFile().exists() ? file.get().getAsFile().text : "";
 }
 
 def getArtifactChecksumSha256Base64(String name) {
@@ -97,7 +99,7 @@ clean {
 apply from: 'base.gradle'
 apply from: 'jpackage.gradle'
 
-if (fullVersion) {
+if (rootProject.fullVersion) {
     apply from: 'train.gradle'
     apply from: 'base_full.gradle'
     apply from: 'cli.gradle'
@@ -112,11 +114,10 @@ if (fullVersion) {
         apply from: 'pkg.gradle'
     }
 
-    apply from: 'github.gradle'
+    apply from: 'jreleaser.gradle'
     apply from: 'aur.gradle'
     apply from: 'nix.gradle'
     apply from: 'choco.gradle'
-    apply from: 'homebrew.gradle'
     apply from: 'winget.gradle'
     apply from: 'install.gradle'
     apply from: 'i18n.gradle'
@@ -125,27 +126,26 @@ if (fullVersion) {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     }
 
-    tasks.register('signArtifacts', Sign) {
+    task signArtifacts(type: Sign) {
         def dir = layout.buildDirectory.dir("dist/artifacts").get()
-        dir.asFileTree.files.forEach { sign(it) }
+        dir.asFileTree.files.forEach {sign(it)}
     }
 
-    tasks.register('signChecksums', Sign) {
+    task signChecksums(type: Sign) {
         def checksums = layout.buildDirectory.file("dist/checksums/sha256sums.txt").get().asFile
         sign(checksums)
     }
 }
 
 distTar {
-    enabled = false
+    enabled = false;
 }
 
 distZip {
-    enabled = false
+    enabled = false;
 }
 
 assembleDist {
-    enabled = false
+    enabled = false;
     dependsOn.clear()
 }
-

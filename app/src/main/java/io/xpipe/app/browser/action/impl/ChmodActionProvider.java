@@ -35,6 +35,11 @@ public class ChmodActionProvider implements BrowserActionProvider {
         private final boolean recursive;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             model.getFileSystem()
                     .getShell()
@@ -50,11 +55,6 @@ public class ChmodActionProvider implements BrowserActionProvider {
                                             .toString())
                                     .toList()));
             model.refreshBrowserEntriesSync(getEntries());
-        }
-
-        @Override
-        public boolean isMutation() {
-            return true;
         }
     }
 }

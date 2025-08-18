@@ -34,13 +34,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
 
-    private static final PseudoClass INVISIBLE = PseudoClass.getPseudoClass("invisible");
-    private final BrowserFileSystemTabModel model;
-
-    public BrowserNavBarComp(BrowserFileSystemTabModel model) {
-        this.model = model;
-    }
-
     @Override
     public Structure createBase() {
         var pathBar = createPathBar();
@@ -192,6 +185,22 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         return pathBar;
     }
 
+    public record Structure(HBox box, TextField textField, Button historyButton) implements CompStructure<HBox> {
+
+        @Override
+        public HBox get() {
+            return box;
+        }
+    }
+
+    private static final PseudoClass INVISIBLE = PseudoClass.getPseudoClass("invisible");
+
+    private final BrowserFileSystemTabModel model;
+
+    public BrowserNavBarComp(BrowserFileSystemTabModel model) {
+        this.model = model;
+    }
+
     private ContextMenu createContextMenu() {
         var cm = ContextMenuHelper.create();
 
@@ -253,13 +262,5 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
             }
         });
         return cm;
-    }
-
-    public record Structure(HBox box, TextField textField, Button historyButton) implements CompStructure<HBox> {
-
-        @Override
-        public HBox get() {
-            return box;
-        }
     }
 }

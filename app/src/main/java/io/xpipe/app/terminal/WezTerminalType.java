@@ -96,25 +96,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            boolean runGui = true;
-            if (configuration.isPreferTabs()) {
-                runGui = !LocalShell.getShell()
-                        .command(CommandBuilder.of()
-                                .addFile("wezterm")
-                                .add("cli", "spawn")
-                                .addFile(configuration.getScriptFile()))
-                        .executeAndCheck();
-            }
-
-            if (runGui) {
-                ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
-            }
+            return TerminalOpenFormat.TABBED;
         }
 
         public boolean isAvailable() {
@@ -131,13 +113,27 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public String getId() {
             return "app.wezterm";
         }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var spawn = LocalShell.getShell()
+                    .command(CommandBuilder.of()
+                            .addFile("wezterm")
+                            .add("cli", "spawn")
+                            .addFile(configuration.getScriptFile()))
+                    .executeAndCheck();
+            if (!spawn) {
+                ExternalApplicationHelper.startAsync(
+                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
+            }
+        }
     }
 
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+            return TerminalOpenFormat.TABBED;
         }
 
         @Override
@@ -148,19 +144,15 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                 getApplicationName()))
                         .readStdoutOrThrow();
                 var path = Path.of(pathOut);
-
-                boolean runGui = true;
-                if (configuration.isPreferTabs()) {
-                    runGui = !sc.command(CommandBuilder.of()
-                                    .addFile(path.resolve("Contents")
-                                            .resolve("MacOS")
-                                            .resolve("wezterm")
-                                            .toString())
-                                    .add("cli", "spawn", "--pane-id", "0")
-                                    .addFile(configuration.getScriptFile()))
-                            .executeAndCheck();
-                }
-                if (runGui) {
+                var spawn = sc.command(CommandBuilder.of()
+                                .addFile(path.resolve("Contents")
+                                        .resolve("MacOS")
+                                        .resolve("wezterm")
+                                        .toString())
+                                .add("cli", "spawn", "--pane-id", "0")
+                                .addFile(configuration.getScriptFile()))
+                        .executeAndCheck();
+                if (!spawn) {
                     ExternalApplicationHelper.startAsync(CommandBuilder.of()
                             .addFile(path.resolve("Contents")
                                     .resolve("MacOS")

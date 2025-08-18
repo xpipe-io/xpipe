@@ -17,10 +17,11 @@ import java.util.regex.Pattern;
 @Value
 public class AppArguments {
 
-    private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
     List<String> rawArgs;
     List<String> resolvedArgs;
     List<String> openArgs;
+
+    private static final Pattern PROPERTY_PATTERN = Pattern.compile("^-[DP](.+)=(.+)$");
 
     public static AppArguments init(String[] args) {
         var rawArgs = Arrays.asList(args);

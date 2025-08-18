@@ -3,7 +3,6 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.SVGRenderingHints;
@@ -23,6 +22,13 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 public class SystemIconCache {
+
+    private enum ImageColorScheme {
+        TRANSPARENT,
+        MIXED,
+        LIGHT,
+        DARK
+    }
 
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
@@ -102,16 +108,7 @@ public class SystemIconCache {
                         .toList();
                 for (var icon : darkAvailableIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
-                    var generateDarkIcon = existingBaseScheme == null
-                            || existingBaseScheme == ImageColorScheme.DARK
-                            || AppPrefs.get().preferMonochromeIcons().get();
-
-                    if (!generateDarkIcon
-                            && !AppPrefs.get().preferMonochromeIcons().get()) {
-                        delete(target, icon.getName(), true);
-                        continue;
-                    }
-
+                    var generateDarkIcon = existingBaseScheme == null || existingBaseScheme == ImageColorScheme.DARK;
                     if (generateDarkIcon) {
                         if (refreshChecksum(icon.getFile(), target, icon.getName(), true)) {
                             continue;
@@ -131,7 +128,6 @@ public class SystemIconCache {
                     }
                 }
 
-                // Generate dark icons manually if there is none provided by inverting the colors
                 for (var icon : baseIcons) {
                     var existingBaseScheme = colorSchemeMap.get(icon.getName());
                     var generateDarkModeInverse =
@@ -145,19 +141,6 @@ public class SystemIconCache {
                         continue;
                     }
                 }
-
-                if (AppPrefs.get().preferMonochromeIcons().get()) {
-                    var lightAvailableIcons = e.getValue().getIcons().stream()
-                            .filter(f -> f.getColorSchemeData() == SystemIconSourceFile.ColorSchemeData.LIGHT)
-                            .toList();
-                    for (var icon : lightAvailableIcons) {
-                        if (refreshChecksum(icon.getFile(), target, icon.getName(), false)) {
-                            continue;
-                        }
-
-                        rasterizeSizes(icon.getFile(), target, icon.getName(), false);
-                    }
-                }
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
@@ -169,7 +152,6 @@ public class SystemIconCache {
         var bytes = Files.readAllBytes(source);
         var md = MessageDigest.getInstance("MD5");
         md.update(bytes);
-        md.update(String.valueOf(AppPrefs.get().preferMonochromeIcons().get()).getBytes());
         var digest = md.digest();
         var md5File = dir.resolve(md5Name);
         if (Files.exists(md5File) && Arrays.equals(Files.readAllBytes(md5File), digest)) {
@@ -255,13 +237,6 @@ public class SystemIconCache {
         return image;
     }
 
-    private static void delete(Path dir, String name, boolean dark) throws IOException {
-        for (var px : sizes) {
-            var out = dir.resolve(name + "-" + px + (dark ? "-dark" : "") + ".png");
-            Files.deleteIfExists(out);
-        }
-    }
-
     private static BufferedImage invert(BufferedImage image) {
         var buffer = new BufferedImage(image.getWidth(), image.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < image.getHeight(); y++) {
@@ -318,12 +293,5 @@ public class SystemIconCache {
         } else {
             return ImageColorScheme.MIXED;
         }
-    }
-
-    private enum ImageColorScheme {
-        TRANSPARENT,
-        MIXED,
-        LIGHT,
-        DARK
     }
 }

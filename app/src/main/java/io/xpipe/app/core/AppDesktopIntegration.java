@@ -44,7 +44,7 @@ public class AppDesktopIntegration {
 
             // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
-            if (OsType.getLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+            if (OsType.getLocal().equals(OsType.MACOS) && Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().setPreferencesHandler(e -> {
                     if (PlatformState.getCurrent() != PlatformState.RUNNING) {
                         return;

@@ -1,7 +1,6 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -24,117 +23,6 @@ public class WrapperShellControl implements ShellControl {
 
     public WrapperShellControl(ShellControl parent) {
         this.parent = parent;
-    }
-
-    @Override
-    public UUID getUuid() {
-        return parent.getUuid();
-    }
-
-    @Override
-    public void resetData() {
-        parent.resetData();
-    }
-
-    @Override
-    public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
-            throws Exception {
-        return parent.prepareTerminalOpen(config, workingDirectory);
-    }
-
-    @Override
-    public void refreshRunningState() {
-        parent.refreshRunningState();
-    }
-
-    @Override
-    public void closeStdin() throws IOException {
-        parent.closeStdin();
-    }
-
-    @Override
-    public boolean isAnyStreamClosed() {
-        return parent.isAnyStreamClosed();
-    }
-
-    @Override
-    public boolean isRunning(boolean refresh) {
-        return parent.isRunning(true);
-    }
-
-    @Override
-    public ShellDialect getShellDialect() {
-        return parent.getShellDialect();
-    }
-
-    @Override
-    public void close() throws Exception {
-        parent.close();
-    }
-
-    @Override
-    public void shutdown() throws Exception {
-        parent.shutdown();
-    }
-
-    @Override
-    public void kill() {
-        parent.kill();
-    }
-
-    @Override
-    public void killExternal() {
-        parent.killExternal();
-    }
-
-    @Override
-    public Charset getCharset() {
-        return parent.getCharset();
-    }
-
-    @Override
-    public void setUser(String user) {
-        parent.setUser(user);
-    }
-
-    @Override
-    public boolean isExiting() {
-        return parent.isExiting();
-    }
-
-    @Override
-    public boolean isInitializing() {
-        return parent.isInitializing();
-    }
-
-    @Override
-    public void setDumbOpen(ShellOpenFunction openFunction) {
-        parent.setDumbOpen(openFunction);
-    }
-
-    @Override
-    public void setTerminalOpen(ShellOpenFunction openFunction) {
-        parent.setTerminalOpen(openFunction);
-    }
-
-    @Override
-    public void writeLine(String line) throws IOException {
-        parent.writeLine(line);
-    }
-
-    @Override
-    public void writeLine(String line, boolean log) throws IOException {
-        parent.writeLine(line, log);
-    }
-
-    @Override
-    public boolean isSubShellActive() {
-        return parent.isSubShellActive();
-    }
-
-    @Override
-    public void setSubShellActive(boolean active) {
-        parent.setSubShellActive(active);
     }
 
     @Override
@@ -203,6 +91,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public List<ShellTerminalInitCommand> getTerminalInitCommands() {
+        return parent.getTerminalInitCommands();
+    }
+
+    @Override
     public ParentSystemAccess getParentSystemAccess() {
         return parent.getParentSystemAccess();
     }
@@ -223,6 +116,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public ShellControl getMachineRootSession() throws Exception {
+        return parent.getMachineRootSession();
+    }
+
+    @Override
     public String getOsName() {
         return parent.getOsName();
     }
@@ -233,7 +131,7 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public void requireLicensedFeature(LicensedFeature id) {
+    public void requireLicensedFeature(String id) {
         parent.requireLicensedFeature(id);
     }
 
@@ -268,8 +166,114 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withExceptionConverter(ProcessExceptionConverter converter) {
+    public UUID getUuid() {
+        return parent.getUuid();
+    }
+
+    @Override
+    public ShellControl withExceptionConverter(ExceptionConverter converter) {
         return parent.withExceptionConverter(converter);
+    }
+
+    @Override
+    public void resetData() {
+        parent.resetData();
+    }
+
+    @Override
+    public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
+            throws Exception {
+        return parent.prepareTerminalOpen(config, workingDirectory);
+    }
+
+    @Override
+    public void refreshRunningState() {
+        parent.refreshRunningState();
+    }
+
+    @Override
+    public void closeStdin() throws IOException {
+        parent.closeStdin();
+    }
+
+    @Override
+    public boolean isAnyStreamClosed() {
+        return parent.isAnyStreamClosed();
+    }
+
+    @Override
+    public boolean isRunning(boolean refresh) {
+        return parent.isRunning(true);
+    }
+
+    @Override
+    public ShellDialect getShellDialect() {
+        return parent.getShellDialect();
+    }
+
+    @Override
+    public void setUser(String user) {
+        parent.setUser(user);
+    }
+
+    @Override
+    public boolean isInitializing() {
+        return parent.isInitializing();
+    }
+
+    @Override
+    public void setDumbOpen(ShellOpenFunction openFunction) {
+        parent.setDumbOpen(openFunction);
+    }
+
+    @Override
+    public void setTerminalOpen(ShellOpenFunction openFunction) {
+        parent.setTerminalOpen(openFunction);
+    }
+
+    @Override
+    public void writeLine(String line) throws IOException {
+        parent.writeLine(line);
+    }
+
+    @Override
+    public void writeLine(String line, boolean log) throws IOException {
+        parent.writeLine(line, log);
+    }
+
+    @Override
+    public void write(byte[] b) throws IOException {
+        parent.write(b);
+    }
+
+    @Override
+    public void setSubShellActive(boolean active) {
+        parent.setSubShellActive(active);
+    }
+
+    @Override
+    public boolean isSubShellActive() {
+        return parent.isSubShellActive();
+    }
+
+    @Override
+    public void close() throws Exception {
+        parent.close();
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        parent.shutdown();
+    }
+
+    @Override
+    public void kill() {
+        parent.kill();
+    }
+
+    @Override
+    public void killExternal() {
+        parent.killExternal();
     }
 
     @Override
@@ -290,6 +294,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public LocalProcessInputStream getStderr() {
         return parent.getStderr();
+    }
+
+    @Override
+    public Charset getCharset() {
+        return parent.getCharset();
     }
 
     @Override

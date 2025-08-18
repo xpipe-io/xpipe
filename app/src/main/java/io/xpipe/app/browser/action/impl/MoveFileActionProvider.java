@@ -10,11 +10,6 @@ import lombok.extern.jackson.Jacksonized;
 
 public class MoveFileActionProvider implements BrowserActionProvider {
 
-    @Override
-    public String getId() {
-        return "moveFile";
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -23,14 +18,19 @@ public class MoveFileActionProvider implements BrowserActionProvider {
         FilePath target;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             model.getFileSystem().move(getEntries().getFirst().getRawFileEntry().getPath(), target);
             model.refreshSync();
         }
+    }
 
-        @Override
-        public boolean isMutation() {
-            return true;
-        }
+    @Override
+    public String getId() {
+        return "moveFile";
     }
 }

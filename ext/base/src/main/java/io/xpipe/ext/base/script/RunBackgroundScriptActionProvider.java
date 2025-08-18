@@ -22,17 +22,15 @@ public class RunBackgroundScriptActionProvider implements ActionProvider {
         private final DataStoreEntryRef<SimpleScriptStore> scriptStore;
 
         @Override
-        public void executeImpl() throws Exception {
-            var sc = ref.getStore().getOrStartSession();
-            var script = scriptStore.getStore().assembleScriptChain(sc);
-            if (script != null) {
-                sc.command(script).execute();
-            }
+        public boolean isMutation() {
+            return true;
         }
 
         @Override
-        public boolean isMutation() {
-            return true;
+        public void executeImpl() throws Exception {
+            var sc = ref.getStore().getOrStartSession();
+            var script = scriptStore.getStore().assembleScriptChain(sc);
+            sc.command(script).execute();
         }
     }
 }

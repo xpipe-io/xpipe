@@ -1,29 +1,14 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.LocalShell;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class PowerShellTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
-
-    @Override
-    public TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
-    }
-
-    @Override
-    public boolean isRecommended() {
-        return false;
-    }
-
-    @Override
-    public boolean useColoredTitle() {
-        return false;
-    }
 
     @Override
     public boolean supportsEscapes() {
@@ -36,13 +21,28 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
     }
 
     @Override
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
+    }
+
+    @Override
     public int getProcessHierarchyOffset() {
-        var powershell = ShellDialects.isPowershell(LocalShell.getDialect());
+        var powershell = ShellDialects.isPowershell(ProcessControlProvider.get().getEffectiveLocalDialect());
         return powershell ? -1 : 0;
     }
 
+    @Override
+    public boolean isRecommended() {
+        return false;
+    }
+
+    @Override
+    public boolean useColoredTitle() {
+        return false;
+    }
+
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-        if (configuration.getScriptDialect() == ShellDialects.POWERSHELL) {
+        if (configuration.getScriptDialect().equals(ShellDialects.POWERSHELL)) {
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")
                     .add("-File")

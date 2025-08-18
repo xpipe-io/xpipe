@@ -115,17 +115,17 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     }
 
     @Override
+    public String getId() {
+        return "syncedIdentity";
+    }
+
+    @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
                 .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
                 .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))
                 .perUser(false)
                 .build();
-    }
-
-    @Override
-    public String getId() {
-        return "syncedIdentity";
     }
 
     @Override

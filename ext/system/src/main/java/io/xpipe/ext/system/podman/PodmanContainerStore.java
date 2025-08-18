@@ -126,6 +126,11 @@ public class PodmanContainerStore
         return new ShellControlParentStoreFunction() {
 
             @Override
+            public ShellStore getParentStore() {
+                return getCmd().getStore().getHost().getStore();
+            }
+
+            @Override
             public ShellControl control(ShellControl parent) throws Exception {
                 refreshContainerState(getCmd().getStore().getHost().getStore().getOrStartSession());
                 var pc = new PodmanCommandView(parent).container().exec(containerName);
@@ -145,11 +150,6 @@ public class PodmanContainerStore
                     }
                 });
                 return pc;
-            }
-
-            @Override
-            public ShellStore getParentStore() {
-                return getCmd().getStore().getHost().getStore();
             }
         };
     }

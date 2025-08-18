@@ -7,6 +7,7 @@ import io.xpipe.app.browser.menu.MultiExecuteMenuProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.FileKind;
@@ -24,17 +25,17 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
             return false;
         }
 
+        if (e.getInfo() != null && e.getInfo().possiblyExecutable()) {
+            return true;
+        }
+
         var shell = e.getFileSystem().getShell();
         if (shell.isEmpty()) {
             return false;
         }
+
         var os = shell.get().getOsType();
-
-        if (e.getInfo() != null && e.getInfo().possiblyExecutable() && os != OsType.WINDOWS) {
-            return true;
-        }
-
-        if (os == OsType.WINDOWS
+        if (os.equals(OsType.WINDOWS)
                 && Stream.of("exe", "bat", "ps1", "cmd")
                         .anyMatch(s -> e.getPath().toString().endsWith(s))) {
             return true;
@@ -72,20 +73,9 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
         return entries.stream().allMatch(entry -> isExecutable(entry.getRawFileEntry()));
     }
 
-    @Override
-    protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var sc = model.getFileSystem().getShell().orElseThrow();
-        return entries.stream()
-                .map(browserEntry -> {
-                    return CommandBuilder.of()
-                            .add(sc.getShellDialect()
-                                    .runScriptCommand(
-                                            sc,
-                                            browserEntry
-                                                    .getRawFileEntry()
-                                                    .getPath()
-                                                    .toString()));
-                })
-                .toList();
+    protected CommandBuilder createCommand(ShellControl sc, BrowserFileSystemTabModel model, BrowserEntry entry) {
+        return CommandBuilder.of()
+                .add(sc.getShellDialect()
+                        .runScriptCommand(sc, entry.getRawFileEntry().getPath().toString()));
     }
 }

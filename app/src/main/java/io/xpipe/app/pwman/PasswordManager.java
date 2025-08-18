@@ -31,16 +31,14 @@ public interface PasswordManager {
         return l;
     }
 
-    CredentialResult retrieveCredentials(String key);
-
-    String getKeyPlaceholder();
-
-    String getWebsite();
-
     @Value
     class CredentialResult {
 
         String username;
         SecretValue password;
     }
+
+    CredentialResult retrieveCredentials(String key);
+
+    String getKeyPlaceholder();
 }

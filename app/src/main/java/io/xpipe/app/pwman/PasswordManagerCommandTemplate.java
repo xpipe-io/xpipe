@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
 
+    String getTemplate();
+
     PasswordManagerCommandTemplate BITWARDEN = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
@@ -19,6 +21,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
             return "bitwarden";
         }
     };
+
     PasswordManagerCommandTemplate ONEPASSWORD = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
@@ -30,6 +33,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
             return "1password";
         }
     };
+
     PasswordManagerCommandTemplate DASHLANE = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
@@ -41,6 +45,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
             return "dashlane";
         }
     };
+
     PasswordManagerCommandTemplate LASTPASS = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
@@ -52,6 +57,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
             return "lastpass";
         }
     };
+
     PasswordManagerCommandTemplate KEEPER = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
@@ -64,8 +70,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
             return "keeper";
         }
     };
+
     List<PasswordManagerCommandTemplate> ALL =
             Stream.of(ONEPASSWORD, BITWARDEN, DASHLANE, LASTPASS, KEEPER).toList();
-
-    String getTemplate();
 }

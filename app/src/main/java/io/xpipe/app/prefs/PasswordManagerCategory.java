@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -36,28 +35,20 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                 .subclasses(PasswordManager.getClasses())
                 .allowNull(true)
                 .transformer(entryComboBox -> {
-                    var websiteLinkButton =
-                            new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-                                var l = prefs.passwordManager.getValue().getWebsite();
-                                if (l != null) {
-                                    Hyperlinks.open(l);
-                                }
+                    var docsLinkButton = new ButtonComp(
+                            AppI18n.observable("docs"), new FontIcon("mdi2h-help-circle-outline"), () -> {
+                                Hyperlinks.open(DocumentationLink.PASSWORD_MANAGER.getLink());
                             });
-                    websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
-                    websiteLinkButton.disable(Bindings.createBooleanBinding(
-                            () -> {
-                                return prefs.passwordManager.getValue() == null
-                                        || prefs.passwordManager.getValue().getWebsite() == null;
-                            },
-                            prefs.passwordManager));
+                    docsLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, docsLinkButton.createRegion());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
+                    hbox.setMaxWidth(getCompWidth());
                     return hbox;
                 })
                 .build();
-        var choice = choiceBuilder.build().buildComp().maxWidth(600);
+        var choice = choiceBuilder.build().buildComp();
 
         var testInput = new PasswordManagerTestComp(testPasswordManagerValue, true);
         testInput.maxWidth(getCompWidth());

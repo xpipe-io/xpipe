@@ -21,15 +21,15 @@ public class HttpHelper {
             var sslContext = SSLContext.getInstance("TLS");
             var trustManager = new X509TrustManager() {
                 @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[] {};
+                }
+
+                @Override
                 public void checkClientTrusted(X509Certificate[] certs, String authType) {}
 
                 @Override
                 public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[] {};
-                }
             };
             sslContext.init(null, new TrustManager[] {trustManager}, new SecureRandom());
             builder.sslContext(sslContext);

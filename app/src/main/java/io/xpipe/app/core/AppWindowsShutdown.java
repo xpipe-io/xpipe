@@ -17,9 +17,6 @@ import java.util.List;
 
 public class AppWindowsShutdown {
 
-    public static final int WM_ENDSESSION = 0x16;
-    public static final int WM_QUERYENDSESSION = 0x11;
-    public static final long ENDSESSION_CRITICAL = 0x40000000L;
     // Prevent GC
     private static final WinShutdownHookProc PROC = new WinShutdownHookProc();
 
@@ -37,11 +34,6 @@ public class AppWindowsShutdown {
         }
     }
 
-    public interface WinHookProc extends WinUser.HOOKPROC {
-
-        WinDef.LRESULT callback(int nCode, WinDef.WPARAM wParam, CWPSSTRUCT hookProcStruct);
-    }
-
     public static class CWPSSTRUCT extends Structure {
         public WinDef.LPARAM lParam;
         public WinDef.WPARAM wParam;
@@ -53,6 +45,15 @@ public class AppWindowsShutdown {
             return List.of("lParam", "wParam", "message", "hwnd");
         }
     }
+
+    public interface WinHookProc extends WinUser.HOOKPROC {
+
+        WinDef.LRESULT callback(int nCode, WinDef.WPARAM wParam, CWPSSTRUCT hookProcStruct);
+    }
+
+    public static final int WM_ENDSESSION = 0x16;
+    public static final int WM_QUERYENDSESSION = 0x11;
+    public static final long ENDSESSION_CRITICAL = 0x40000000L;
 
     @Setter
     @RequiredArgsConstructor

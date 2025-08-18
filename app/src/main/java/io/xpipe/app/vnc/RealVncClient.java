@@ -1,6 +1,5 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 
@@ -17,11 +16,6 @@ public abstract class RealVncClient implements ExternalVncClient {
     @Override
     public boolean supportsPasswords() {
         return false;
-    }
-
-    @Override
-    public String getWebsite() {
-        return "https://www.realvnc.com/";
     }
 
     protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
@@ -45,24 +39,23 @@ public abstract class RealVncClient implements ExternalVncClient {
         }
 
         @Override
+        public Optional<Path> determineFromPath() {
+            var found = WindowsType.super.determineFromPath();
+            return found.filter(path -> path.toString().contains("RealVNC"));
+        }
+
+        @Override
         public String getExecutable() {
             return "vncviewer.exe";
         }
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getProgramFiles()
+            return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
                             .resolve("RealVNC")
                             .resolve("VNC Viewer")
                             .resolve("vncviewer.exe"))
                     .filter(path -> Files.exists(path));
-        }
-
-        @Override
-        public Optional<Path> determineFromPath() {
-            var found = WindowsType.super.determineFromPath();
-            return found.filter(path -> path.toString().contains("RealVNC"));
         }
 
         @Override

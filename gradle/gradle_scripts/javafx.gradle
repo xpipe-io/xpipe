@@ -1,6 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
-def currentOS = DefaultNativePlatform.currentOperatingSystem
+def currentOS = DefaultNativePlatform.currentOperatingSystem;
 def platform = null
 if (currentOS.isWindows()) {
     platform = 'win'
@@ -18,7 +18,7 @@ configurations {
     javafx
 }
 
-if (hasProperty("customJavaFxPath")) {
+if (rootProject.hasProperty("customJavaFxPath")) {
     repositories {
         flatDir {
             dirs customJavaFxPath

@@ -46,11 +46,6 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     }
 
     @Override
-    public String getWebsite() {
-        return "https://www.freerdp.com/";
-    }
-
-    @Override
     public String getExecutable() {
         return "xfreerdp";
     }

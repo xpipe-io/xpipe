@@ -9,26 +9,6 @@ import java.util.Base64;
 public class PwshTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
-    public TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW;
-    }
-
-    @Override
-    public String getWebsite() {
-        return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
-    }
-
-    @Override
-    public boolean isRecommended() {
-        return false;
-    }
-
-    @Override
-    public boolean useColoredTitle() {
-        return false;
-    }
-
-    @Override
     public boolean supportsEscapes() {
         return false;
     }
@@ -46,6 +26,26 @@ public class PwshTerminalType implements ExternalApplicationType.PathApplication
                     return "\"" + base64 + "\"";
                 });
         launch(b);
+    }
+
+    @Override
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW;
+    }
+
+    @Override
+    public String getWebsite() {
+        return "https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4";
+    }
+
+    @Override
+    public boolean isRecommended() {
+        return false;
+    }
+
+    @Override
+    public boolean useColoredTitle() {
+        return false;
     }
 
     @Override

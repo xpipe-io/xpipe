@@ -1,13 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
 
@@ -16,13 +16,13 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
     }
 
     @Override
-    public TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+    public String getWebsite() {
+        return "https://konsole.kde.org/download.html";
     }
 
     @Override
-    public String getWebsite() {
-        return "https://konsole.kde.org/download.html";
+    public TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
             return;
         }
 
-        var config = AppSystemInfo.ofCurrent().getUserHome().resolve(".config", "konsolerc");
+        var config = Path.of(System.getProperty("user.home"), ".config", "konsolerc");
         if (!Files.exists(config)) {
             return;
         }

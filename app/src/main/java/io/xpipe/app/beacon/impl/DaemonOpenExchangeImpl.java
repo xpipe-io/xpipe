@@ -14,11 +14,6 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
     private int openCounter = 0;
 
     @Override
-    public boolean requiresCompletedStartup() {
-        return false;
-    }
-
-    @Override
     public Object handle(HttpExchange exchange, Request msg) throws BeaconServerException {
         if (msg.getArguments().isEmpty()) {
             try {
@@ -44,6 +39,11 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
 
     @Override
     public boolean requiresEnabledApi() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresCompletedStartup() {
         return false;
     }
 }

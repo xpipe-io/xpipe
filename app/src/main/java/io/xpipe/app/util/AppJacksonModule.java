@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
@@ -23,13 +22,11 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.jsontype.impl.AsPropertyTypeDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -62,9 +59,6 @@ public class AppJacksonModule extends SimpleModule {
 
         addSerializer(ShellScript.class, new ShellScriptSerializer());
         addDeserializer(ShellScript.class, new ShellScriptDeserializer());
-
-        addSerializer(HostAddress.class, new HostAddressSerializer());
-        addDeserializer(HostAddress.class, new HostAddressDeserializer());
 
         for (ShellDialect t : ShellDialects.ALL) {
             context.registerSubtypes(new NamedType(t.getClass()));
@@ -365,44 +359,6 @@ public class AppJacksonModule extends SimpleModule {
             }
 
             return new DataStoreEntryRef<>(e);
-        }
-    }
-
-    public static class HostAddressSerializer extends JsonSerializer<HostAddress> {
-
-        @Override
-        public void serialize(HostAddress value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
-            if (value.isSingle()) {
-                jgen.writeString(value.get());
-            } else {
-                var tree = JsonNodeFactory.instance.objectNode();
-                tree.put("value", value.get());
-                tree.set("available", JacksonMapper.getDefault().valueToTree(value.getAvailable()));
-                jgen.writeTree(tree);
-            }
-        }
-    }
-
-    public static class HostAddressDeserializer extends JsonDeserializer<HostAddress> {
-
-        @Override
-        public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var tree = (JsonNode) p.getCodec().readTree(p);
-            if (tree.isTextual()) {
-                return HostAddress.of(tree.textValue());
-            } else {
-                var value = tree.get("value");
-                var available = tree.get("available");
-                if (value == null || !value.isTextual() || available == null || !available.isArray()) {
-                    return null;
-                }
-
-                var l = new ArrayList<String>();
-                for (JsonNode jsonNode : available) {
-                    l.add(jsonNode.textValue());
-                }
-                return HostAddress.of(value.textValue(), l);
-            }
         }
     }
 }

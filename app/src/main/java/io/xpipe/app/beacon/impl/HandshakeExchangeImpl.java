@@ -29,11 +29,6 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
         return Response.builder().sessionToken(session.getToken()).build();
     }
 
-    @Override
-    public boolean requiresEnabledApi() {
-        return false;
-    }
-
     private boolean checkAuth(BeaconAuthMethod authMethod) {
         if (authMethod instanceof BeaconAuthMethod.Local local) {
             var c = local.getAuthFileContent().strip();
@@ -45,6 +40,11 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
             return AppPrefs.get().apiKey().get().equals(c);
         }
 
+        return false;
+    }
+
+    @Override
+    public boolean requiresEnabledApi() {
         return false;
     }
 }

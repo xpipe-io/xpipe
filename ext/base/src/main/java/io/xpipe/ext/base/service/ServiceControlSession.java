@@ -19,10 +19,6 @@ public class ServiceControlSession extends Session {
         return store.isElevated() ? ElevationFunction.elevated("service") : ElevationFunction.none();
     }
 
-    public boolean isRunning() {
-        return true;
-    }
-
     public void start() throws Exception {
         if (isRunning()) {
             listener.onStateChange(true);
@@ -34,6 +30,10 @@ public class ServiceControlSession extends Session {
                 .launchAsnyc(CommandBuilder.of().add(store.getStartScript().getValue()));
         session.command(builder).elevated(elevationFunction()).execute();
         listener.onStateChange(true);
+    }
+
+    public boolean isRunning() {
+        return true;
     }
 
     public void stop() throws Exception {

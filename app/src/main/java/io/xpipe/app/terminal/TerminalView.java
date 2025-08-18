@@ -1,9 +1,9 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.window.NativeWinWindowControl;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
@@ -18,13 +18,64 @@ import java.util.function.Consumer;
 
 public class TerminalView {
 
-    private static TerminalView INSTANCE;
+    public static boolean isSupported() {
+        return OsType.getLocal() == OsType.WINDOWS;
+    }
+
+    @Value
+    public static class ShellSession {
+        UUID request;
+        ProcessHandle shell;
+        TerminalSession terminal;
+    }
+
+    @Getter
+    public static class TerminalSession {
+
+        protected final ProcessHandle terminalProcess;
+
+        protected TerminalSession(ProcessHandle terminalProcess) {
+            this.terminalProcess = terminalProcess;
+        }
+
+        public boolean isRunning() {
+            return terminalProcess.isAlive();
+        }
+
+        public Optional<ControllableTerminalSession> controllable() {
+            return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
+        }
+    }
+
+    public interface Listener {
+
+        default void onSessionOpened(ShellSession session) {}
+
+        default void onSessionClosed(ShellSession session) {}
+
+        default void onTerminalOpened(TerminalSession instance) {}
+
+        default void onTerminalClosed(TerminalSession instance) {}
+    }
+
     private final List<ShellSession> sessions = new ArrayList<>();
     private final List<TerminalSession> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
-    public static boolean isSupported() {
-        return OsType.getLocal() == OsType.WINDOWS;
+    public synchronized List<ShellSession> getSessions() {
+        return new ArrayList<>(sessions);
+    }
+
+    public synchronized List<TerminalSession> getTerminalInstances() {
+        return new ArrayList<>(terminalInstances);
+    }
+
+    public synchronized void addListener(Listener listener) {
+        this.listeners.add(listener);
+    }
+
+    public synchronized void removeListener(Listener listener) {
+        this.listeners.remove(listener);
     }
 
     public static void focus(TerminalSession term) {
@@ -41,38 +92,6 @@ public class TerminalView {
                 }
             }
         }
-    }
-
-    public static void init() {
-        var instance = new TerminalView();
-        ThreadHelper.createPlatformThread("terminal-view", true, () -> {
-                    while (true) {
-                        instance.tick();
-                        ThreadHelper.sleep(500);
-                    }
-                })
-                .start();
-        INSTANCE = instance;
-    }
-
-    public static TerminalView get() {
-        return INSTANCE;
-    }
-
-    public synchronized List<ShellSession> getSessions() {
-        return new ArrayList<>(sessions);
-    }
-
-    public synchronized List<TerminalSession> getTerminalInstances() {
-        return new ArrayList<>(terminalInstances);
-    }
-
-    public synchronized void addListener(Listener listener) {
-        this.listeners.add(listener);
-    }
-
-    public synchronized void removeListener(Listener listener) {
-        this.listeners.remove(listener);
     }
 
     public synchronized void open(UUID request, long pid) {
@@ -124,9 +143,9 @@ public class TerminalView {
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
         return switch (OsType.getLocal()) {
-            case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess));
-            case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess));
-            case OsType.Windows ignored -> {
+            case OsType.Linux linux -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.MacOs macOs -> Optional.of(new TerminalSession(terminalProcess));
+            case OsType.Windows windows -> {
                 var controls = NativeWinWindowControl.byPid(terminalProcess.pid());
                 if (controls.isEmpty()) {
                     yield Optional.empty();
@@ -199,39 +218,21 @@ public class TerminalView {
         }
     }
 
-    public interface Listener {
+    private static TerminalView INSTANCE;
 
-        default void onSessionOpened(ShellSession session) {}
-
-        default void onSessionClosed(ShellSession session) {}
-
-        default void onTerminalOpened(TerminalSession instance) {}
-
-        default void onTerminalClosed(TerminalSession instance) {}
+    public static void init() {
+        var instance = new TerminalView();
+        ThreadHelper.createPlatformThread("terminal-view", true, () -> {
+                    while (true) {
+                        instance.tick();
+                        ThreadHelper.sleep(500);
+                    }
+                })
+                .start();
+        INSTANCE = instance;
     }
 
-    @Value
-    public static class ShellSession {
-        UUID request;
-        ProcessHandle shell;
-        TerminalSession terminal;
-    }
-
-    @Getter
-    public static class TerminalSession {
-
-        protected final ProcessHandle terminalProcess;
-
-        protected TerminalSession(ProcessHandle terminalProcess) {
-            this.terminalProcess = terminalProcess;
-        }
-
-        public boolean isRunning() {
-            return terminalProcess.isAlive();
-        }
-
-        public Optional<ControllableTerminalSession> controllable() {
-            return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
-        }
+    public static TerminalView get() {
+        return INSTANCE;
     }
 }

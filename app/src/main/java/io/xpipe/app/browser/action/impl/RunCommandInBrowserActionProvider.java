@@ -2,14 +2,13 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.CommandDialog;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class RunCommandInBrowserActionProvider implements BrowserActionProvider {
 
@@ -26,27 +25,20 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
         String command;
 
         @Override
-        public void executeImpl() {
-            var cmd = model.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .command(command)
-                    .withWorkingDirectory(files.getFirst());
-            CommandDialog.runAndShow(cmd);
-            model.refreshSync();
-        }
-
-        @Override
         public boolean isMutation() {
             return true;
         }
 
         @Override
-        public Map<String, String> toDisplayMap() {
-            var map = new LinkedHashMap<>(super.toDisplayMap());
-            map.remove("Files");
-            map.put("Working Directory", files.getFirst().toString());
-            return map;
+        public void executeImpl() {
+            var builder = CommandBuilder.of().add(command);
+            for (BrowserEntry entry : getEntries()) {
+                builder.addFile(entry.getRawFileEntry().getPath());
+            }
+
+            var cmd = model.getFileSystem().getShell().orElseThrow().command(builder);
+            CommandDialog.runAndShow(cmd);
+            model.refreshBrowserEntriesSync(getEntries());
         }
     }
 }

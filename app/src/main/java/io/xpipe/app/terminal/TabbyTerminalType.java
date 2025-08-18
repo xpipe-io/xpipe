@@ -16,6 +16,21 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
     ExternalTerminalType TABBY_MAC_OS = new MacOs();
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.TABBED;
+    }
+
+    @Override
+    default String getWebsite() {
+        return "https://tabby.sh";
+    }
+
+    @Override
+    default boolean useColoredTitle() {
+        return true;
+    }
+
+    @Override
     default TerminalInitFunction additionalInitCommands() {
         //        return TerminalInitFunction.of(sc -> {
         //            if (sc.getShellDialect() == ShellDialects.ZSH) {
@@ -36,21 +51,6 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         return TerminalInitFunction.none();
     }
 
-    @Override
-    default TerminalOpenFormat getOpenFormat() {
-        return TerminalOpenFormat.TABBED;
-    }
-
-    @Override
-    default String getWebsite() {
-        return "https://tabby.sh";
-    }
-
-    @Override
-    default boolean useColoredTitle() {
-        return true;
-    }
-
     class Windows implements ExternalApplicationType.WindowsType, TabbyTerminalType {
 
         @Override
@@ -66,7 +66,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
-            if (configuration.getScriptDialect() == ShellDialects.CMD) {
+            if (configuration.getScriptDialect().equals(ShellDialects.CMD)) {
                 // It also freezes with any other input than .bat files, why?
                 launch(CommandBuilder.of()
                         .add("run")

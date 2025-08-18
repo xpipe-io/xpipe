@@ -1,11 +1,10 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.terminal.TerminalLaunch;
+import io.xpipe.app.terminal.TerminalLauncher;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
@@ -26,11 +25,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType NOTEPAD = new WindowsType() {
 
         @Override
-        public String getWebsite() {
-            return "https://apps.microsoft.com/detail/9msmlrh6lzf3?hl=en-US&gl=US";
-        }
-
-        @Override
         public String getId() {
             return "app.notepad";
         }
@@ -47,16 +41,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
+            return Optional.of(Path.of(System.getenv("SystemRoot") + "\\System32\\notepad.exe"));
         }
     };
 
     ExternalEditorType VSCODIUM_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://vscodium.com/";
-        }
 
         @Override
         public String getId() {
@@ -75,8 +64,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("VSCodium")
                             .resolve("bin")
@@ -86,11 +74,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType CURSOR_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://cursor.com/";
-        }
 
         @Override
         public String getId() {
@@ -109,8 +92,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("cursor")
                             .resolve("Cursor.exe"))
@@ -119,11 +101,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType VOID_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://voideditor.com/";
-        }
 
         @Override
         public String getId() {
@@ -142,8 +119,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getProgramFiles()
+            return Optional.of(Path.of(System.getenv("PROGRAMFILES"))
                             .resolve("Void")
                             .resolve("Void.exe"))
                     .filter(path -> Files.exists(path));
@@ -151,11 +127,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType WINDSURF_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://windsurf.com/editor";
-        }
 
         @Override
         public String getId() {
@@ -174,8 +145,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("Windsurf")
                             .resolve("bin")
@@ -185,11 +155,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType KIRO_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://kiro.dev/";
-        }
 
         @Override
         public String getId() {
@@ -208,8 +173,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("Kiro")
                             .resolve("bin")
@@ -220,11 +184,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     // Cli is broken, keep inactive
     WindowsType THEIAIDE_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://theia-ide.org/";
-        }
 
         @Override
         public String getId() {
@@ -243,8 +202,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("TheiaIDE")
                             .resolve("TheiaIDE.exe"))
@@ -253,11 +211,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType TRAE_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://www.trae.ai/";
-        }
 
         @Override
         public String getId() {
@@ -276,8 +229,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("Trae")
                             .resolve("bin")
@@ -287,11 +239,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     WindowsType VSCODE_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://code.visualstudio.com/";
-        }
 
         @Override
         public String getId() {
@@ -310,8 +257,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("Microsoft VS Code")
                             .resolve("bin")
@@ -320,12 +266,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://code.visualstudio.com/insiders/";
-        }
+    ExternalEditorType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
 
         @Override
         public String getId() {
@@ -344,8 +285,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
+            return Optional.of(Path.of(System.getenv("LOCALAPPDATA"))
                             .resolve("Programs")
                             .resolve("Microsoft VS Code Insiders")
                             .resolve("bin")
@@ -355,11 +295,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     ExternalEditorType NOTEPADPLUSPLUS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://notepad-plus-plus.org/";
-        }
 
         @Override
         public String getId() {
@@ -391,7 +326,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code", "https://code.visualstudio.com/") {
+    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code") {
         @Override
         public void launch(Path file) throws Exception {
             var builder = CommandBuilder.of()
@@ -402,70 +337,40 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf", "https://windsurf.com/editor");
+    LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf");
 
-    LinuxPathType CURSOR_LINUX = new LinuxPathType("app.cursor", "cursor", "https://cursor.com/");
+    LinuxPathType CURSOR_LINUX = new LinuxPathType("app.cursor", "cursor");
 
-    LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro", "https://kiro.dev/");
+    LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro");
 
-    LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed", "https://zed.dev/");
+    LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed");
 
-    ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
+    ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed");
 
-    LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium", "https://vscodium.com/");
+    LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium");
 
-    LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor", "https://vscodium.com/");
+    LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor");
 
-    LinuxPathType KATE = new LinuxPathType("app.kate", "kate", "https://kate-editor.org");
+    LinuxPathType KATE = new LinuxPathType("app.kate", "kate");
 
-    LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit", "https://gedit-text-editor.org/");
+    LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit");
 
-    LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
+    LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad");
 
-    LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start");
+    LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad");
 
-    LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
-    ExternalEditorType TEXT_EDIT =
-            new MacOsEditor("app.textEdit", "TextEdit", "https://support.apple.com/en-gb/guide/textedit/welcome/mac");
-    ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit", "https://www.barebones.com/products/bbedit/");
-    ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text", "https://www.sublimetext.com/");
-    ExternalEditorType VSCODE_MACOS =
-            new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
-    ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium", "https://vscodium.com/");
-    ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor", "https://cursor.com/");
-    ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void", "https://voideditor.com/");
-    ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf", "https://windsurf.com/editor");
-    ExternalEditorType KIRO_MACOS = new MacOsEditor("app.kiro", "Kiro", "https://kiro.dev/");
-    ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae", "https://www.trae.ai/");
+    LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma");
+    ExternalEditorType TEXT_EDIT = new MacOsEditor("app.textEdit", "TextEdit");
+    ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit");
+    ExternalEditorType SUBLIME_MACOS = new MacOsEditor("app.sublime", "Sublime Text");
+    ExternalEditorType VSCODE_MACOS = new MacOsEditor("app.vscode", "Visual Studio Code");
+    ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium");
+    ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor");
+    ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void");
+    ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf");
+    ExternalEditorType KIRO_MACOS = new MacOsEditor("app.kiro", "Kiro");
+    ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae");
     ExternalEditorType CUSTOM = new ExternalEditorType() {
-
-        @Override
-        public String getWebsite() {
-            return null;
-        }
-
-        @Override
-        public void launch(Path file) throws Exception {
-            var customCommand = AppPrefs.get().customEditorCommand().getValue();
-            if (customCommand == null || customCommand.isBlank()) {
-                throw ErrorEventFactory.expected(new IllegalStateException("No custom editor command specified"));
-            }
-
-            var format =
-                    customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
-            var command = CommandBuilder.of()
-                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
-            if (AppPrefs.get().customEditorCommandInTerminal().get()) {
-                TerminalLaunch.builder()
-                        .title(file.toString())
-                        .localScript(sc -> new ShellScript(command.buildFull(sc)))
-                        .logIfEnabled(false)
-                        .preferTabs(false)
-                        .launch();
-            } else {
-                ExternalApplicationHelper.startAsync(command);
-            }
-        }
 
         @Override
         public ObservableValue<String> toTranslatedString() {
@@ -480,17 +385,33 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
+        public void launch(Path file) throws Exception {
+            var customCommand = AppPrefs.get().customEditorCommand().getValue();
+            if (customCommand == null || customCommand.isBlank()) {
+                throw ErrorEventFactory.expected(new IllegalStateException("No custom editor command specified"));
+            }
+
+            var format =
+                    customCommand.toLowerCase(Locale.ROOT).contains("$file") ? customCommand : customCommand + " $FILE";
+            var command = CommandBuilder.of()
+                    .add(ExternalApplicationHelper.replaceVariableArgument(format, "FILE", file.toString()));
+            if (AppPrefs.get().customEditorCommandInTerminal().get()) {
+                TerminalLauncher.openDirect(file.toString(), sc -> new ShellScript(command.buildFull(sc)));
+            } else {
+                ExternalApplicationHelper.startAsync(command);
+            }
+        }
+
+        @Override
         public String getId() {
             return "app.custom";
         }
     };
-    ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet", false, "https://www.jetbrains.com/fleet/");
-    ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea", false, "https://www.jetbrains.com/idea/");
-    ExternalEditorType PYCHARM =
-            new GenericPathType("app.pycharm", "pycharm", false, "https://www.jetbrains.com/pycharm/");
-    ExternalEditorType WEBSTORM =
-            new GenericPathType("app.webstorm", "webstorm", false, "https://www.jetbrains.com/webstorm/");
-    ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false, "https://www.jetbrains.com/clion/");
+    ExternalEditorType FLEET = new GenericPathType("app.fleet", "fleet", false);
+    ExternalEditorType INTELLIJ = new GenericPathType("app.intellij", "idea", false);
+    ExternalEditorType PYCHARM = new GenericPathType("app.pycharm", "pycharm", false);
+    ExternalEditorType WEBSTORM = new GenericPathType("app.webstorm", "webstorm", false);
+    ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false);
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(
             VOID_WINDOWS,
             CURSOR_WINDOWS,
@@ -532,13 +453,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     @SuppressWarnings("TrivialFunctionalExpressionUsage")
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
-                if (OsType.getLocal() == OsType.WINDOWS) {
+                if (OsType.getLocal().equals(OsType.WINDOWS)) {
                     all.addAll(WINDOWS_EDITORS);
                 }
-                if (OsType.getLocal() == OsType.LINUX) {
+                if (OsType.getLocal().equals(OsType.LINUX)) {
                     all.addAll(LINUX_EDITORS);
                 }
-                if (OsType.getLocal() == OsType.MACOS) {
+                if (OsType.getLocal().equals(OsType.MACOS)) {
                     all.addAll(MACOS_EDITORS);
                 }
                 all.addAll(CROSS_PLATFORM_EDITORS);
@@ -553,21 +474,21 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return existing;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.getLocal().equals(OsType.WINDOWS)) {
             return WINDOWS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
                     .orElse(NOTEPAD);
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.getLocal().equals(OsType.LINUX)) {
             return LINUX_EDITORS.stream()
                     .filter(ExternalApplicationType.PathApplication::isAvailable)
                     .findFirst()
                     .orElse(null);
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.getLocal().equals(OsType.MACOS)) {
             return MACOS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
@@ -577,39 +498,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         return null;
     }
 
-    String getWebsite();
-
     void launch(Path file) throws Exception;
-
-    interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
-
-        @Override
-        default void launch(Path file) throws Exception {
-            var location = findExecutable();
-            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
-            if (detach()) {
-                ExternalApplicationHelper.startAsync(builder);
-            } else {
-                LocalShell.getShell().executeSimpleCommand(builder);
-            }
-        }
-    }
 
     class MacOsEditor implements ExternalApplicationType.MacApplication, ExternalEditorType {
 
         private final String id;
         private final String appName;
-        private final String website;
 
-        public MacOsEditor(String id, String appName, String website) {
+        public MacOsEditor(String id, String appName) {
             this.id = id;
             this.appName = appName;
-            this.website = website;
-        }
-
-        @Override
-        public String getWebsite() {
-            return website;
         }
 
         @Override
@@ -638,18 +536,11 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         private final String id;
         private final String executable;
         private final boolean async;
-        private final String website;
 
-        public GenericPathType(String id, String executable, boolean async, String website) {
+        public GenericPathType(String id, String executable, boolean async) {
             this.id = id;
             this.executable = executable;
             this.async = async;
-            this.website = website;
-        }
-
-        @Override
-        public String getWebsite() {
-            return website;
         }
 
         @Override
@@ -680,13 +571,27 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     class LinuxPathType extends GenericPathType {
 
-        public LinuxPathType(String id, String executable, String website) {
-            super(id, executable, true, website);
+        public LinuxPathType(String id, String executable) {
+            super(id, executable, true);
         }
 
         @Override
         public boolean isSelectable() {
-            return OsType.getLocal() == OsType.LINUX;
+            return OsType.getLocal().equals(OsType.LINUX);
+        }
+    }
+
+    interface WindowsType extends ExternalApplicationType.WindowsType, ExternalEditorType {
+
+        @Override
+        default void launch(Path file) throws Exception {
+            var location = findExecutable();
+            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
+            if (detach()) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
         }
     }
 }

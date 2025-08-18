@@ -16,22 +16,6 @@ import java.util.List;
 
 public class OpenTerminalActionProvider implements BrowserActionProvider {
 
-    @Override
-    public String getId() {
-        return "openTerminalInDirectory";
-    }
-
-    @Override
-    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
-    }
-
-    @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var t = AppPrefs.get().terminalType().getValue();
-        return t != null;
-    }
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends BrowserAction {
@@ -52,5 +36,21 @@ public class OpenTerminalActionProvider implements BrowserActionProvider {
                         name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
             }
         }
+    }
+
+    @Override
+    public String getId() {
+        return "openTerminalInDirectory";
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+    }
+
+    @Override
+    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var t = AppPrefs.get().terminalType().getValue();
+        return t != null;
     }
 }

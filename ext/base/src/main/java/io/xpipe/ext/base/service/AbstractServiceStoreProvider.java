@@ -41,14 +41,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public List<String> getSearchableTerms(DataStore store) {
-        AbstractServiceStore s = store.asNeeded();
-        return s.getLocalPort() != null
-                ? List.of("" + s.getRemotePort(), "" + s.getLocalPort())
-                : List.of("" + s.getRemotePort());
-    }
-
-    @Override
     public DataStoreUsageCategory getUsageCategory() {
         return DataStoreUsageCategory.TUNNEL;
     }
@@ -61,52 +53,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         s.getHost().get(),
                         "Services",
                         CustomServiceGroupStore.builder().parent(s.getHost()).build());
-    }
-
-    @Override
-    public ObservableValue<String> informationString(StoreSection section) {
-        return Bindings.createStringBinding(
-                () -> {
-                    AbstractServiceStore s =
-                            section.getWrapper().getEntry().getStore().asNeeded();
-                    var desc = formatService(s);
-                    var type = s.getServiceProtocolType() != null
-                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)
-                            ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
-                            : null;
-                    var state = !s.requiresTunnel()
-                            ? null
-                            : s.isSessionRunning()
-                                    ? AppI18n.get("active")
-                                    : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, desc, type, state).format();
-                },
-                section.getWrapper().getCache(),
-                AppI18n.activeLanguage());
-    }
-
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "base:service_icon.svg";
-    }
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var toggle = createToggleComp(sec);
-        toggle.setCustomVisibility(Bindings.createBooleanBinding(
-                () -> {
-                    AbstractServiceStore s =
-                            sec.getWrapper().getEntry().getStore().asNeeded();
-                    if (s.getHost() == null
-                            || !s.getHost().getStore().requiresTunnel()
-                            || !s.getHost().getStore().isLocallyTunnelable()) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                sec.getWrapper().getCache()));
-        return new DenseStoreEntryComp(sec, toggle);
     }
 
     @Override
@@ -132,6 +78,55 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 w.getCache()));
     }
 
+    @Override
+    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
+        var toggle = createToggleComp(sec);
+        toggle.setCustomVisibility(Bindings.createBooleanBinding(
+                () -> {
+                    AbstractServiceStore s =
+                            sec.getWrapper().getEntry().getStore().asNeeded();
+                    if (s.getHost() == null
+                            || !s.getHost().getStore().requiresTunnel()
+                            || !s.getHost().getStore().isLocallyTunnelable()) {
+                        return false;
+                    }
+
+                    return true;
+                },
+                sec.getWrapper().getCache()));
+        return new DenseStoreEntryComp(sec, toggle);
+    }
+
+    @Override
+    public List<String> getSearchableTerms(DataStore store) {
+        AbstractServiceStore s = store.asNeeded();
+        return s.getLocalPort() != null
+                ? List.of("" + s.getRemotePort(), "" + s.getLocalPort())
+                : List.of("" + s.getRemotePort());
+    }
+
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        return Bindings.createStringBinding(
+                () -> {
+                    AbstractServiceStore s =
+                            section.getWrapper().getEntry().getStore().asNeeded();
+                    var desc = formatService(s);
+                    var type = s.getServiceProtocolType() != null
+                                    && !(s.getServiceProtocolType() instanceof ServiceProtocolType.Undefined)
+                            ? AppI18n.get(s.getServiceProtocolType().getTranslationKey())
+                            : null;
+                    var state = !s.requiresTunnel()
+                            ? null
+                            : s.isSessionRunning()
+                                    ? AppI18n.get("active")
+                                    : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
+                    return new StoreStateFormat(null, desc, type, state).format();
+                },
+                section.getWrapper().getCache(),
+                AppI18n.activeLanguage());
+    }
+
     protected String formatService(AbstractServiceStore s) {
         var desc = s.getLocalPort() != null
                 ? "localhost:" + s.getLocalPort() + " <- :" + s.getRemotePort()
@@ -139,5 +134,10 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                         ? "localhost:" + s.getSession().getLocalPort() + " <- :" + s.getRemotePort()
                         : AppI18n.get("servicePort", s.getRemotePort());
         return desc;
+    }
+
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        return "base:service_icon.svg";
     }
 }

@@ -26,9 +26,6 @@ import java.util.LinkedHashMap;
 @AllArgsConstructor
 public class StoreCategoryConfigComp extends SimpleComp {
 
-    private final StoreCategoryWrapper wrapper;
-    private final Property<DataStoreCategoryConfig> config;
-
     public static void show(StoreCategoryWrapper wrapper) {
         var config = new SimpleObjectProperty<>(wrapper.getCategory().getConfig());
         var comp = new StoreCategoryConfigComp(wrapper, config);
@@ -41,6 +38,9 @@ public class StoreCategoryConfigComp extends SimpleComp {
         }));
         modal.show();
     }
+
+    private final StoreCategoryWrapper wrapper;
+    private final Property<DataStoreCategoryConfig> config;
 
     @Override
     protected Region createSimple() {

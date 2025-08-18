@@ -23,16 +23,16 @@ public class RunHubScriptActionProvider implements ActionProvider {
         DataStoreEntryRef<SimpleScriptStore> scriptStore;
 
         @Override
+        public boolean isMutation() {
+            return true;
+        }
+
+        @Override
         public void executeImpl() throws Exception {
             var sc = ref.getStore().getOrStartSession();
             var script = scriptStore.getStore().assembleScriptChain(sc);
             var cmd = sc.command(script);
             CommandDialog.runAndShow(cmd);
-        }
-
-        @Override
-        public boolean isMutation() {
-            return true;
         }
     }
 }

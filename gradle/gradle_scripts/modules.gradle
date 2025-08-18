@@ -64,31 +64,3 @@ extraJavaModuleInfo {
         exportAllPackages()
     }
 }
-
-extraJavaModuleInfo {
-    module("io.modelcontextprotocol.sdk:mcp", "io.modelcontextprotocol.sdk.mcp") {
-        exportAllPackages()
-        requires("com.fasterxml.jackson.core")
-        requires("com.fasterxml.jackson.databind")
-        requires("com.fasterxml.jackson.annotation")
-        requires("org.slf4j")
-        requires("reactor.core")
-        requires("org.reactivestreams")
-        requires("com.networknt.schema")
-    }
-}
-
-extraJavaModuleInfo {
-    module("io.projectreactor:reactor-core", "reactor.core") {
-        requires("org.reactivestreams")
-        exportAllPackages()
-        ignoreServiceProvider("io.micrometer.context.ContextAccessor", "reactor.util.context.ReactorContextAccessor")
-        ignoreServiceProvider("reactor.blockhound.integration.BlockHoundIntegration", "reactor.core.scheduler.ReactorBlockHoundIntegration")
-    }
-}
-
-extraJavaModuleInfo {
-    module("org.reactivestreams:reactive-streams", "org.reactivestreams") {
-        exportAllPackages()
-    }
-}

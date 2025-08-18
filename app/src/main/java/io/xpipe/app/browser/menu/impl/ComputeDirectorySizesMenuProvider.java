@@ -16,6 +16,13 @@ import java.util.List;
 
 public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvider {
 
+    @Override
+    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var builder = ComputeDirectorySizesActionProvider.Action.builder();
+        builder.initEntries(model, entries);
+        return builder.build();
+    }
+
     public String getId() {
         return "computeDirectorySizes";
     }
@@ -26,20 +33,10 @@ public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public BrowserMenuCategory getCategory() {
-        return BrowserMenuCategory.ACTION;
-    }
-
-    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var topLevel =
                 entries.size() == 1 && entries.getFirst().getRawFileEntry().equals(model.getCurrentDirectory());
         return AppI18n.observable(topLevel ? "computeDirectorySizes" : "computeSize");
-    }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
     }
 
     @Override
@@ -49,9 +46,12 @@ public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var builder = ComputeDirectorySizesActionProvider.Action.builder();
-        builder.initEntries(model, entries);
-        return builder.build();
+    public boolean acceptsEmptySelection() {
+        return true;
+    }
+
+    @Override
+    public BrowserMenuCategory getCategory() {
+        return BrowserMenuCategory.ACTION;
     }
 }

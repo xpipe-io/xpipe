@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -39,17 +38,17 @@ import java.util.stream.Stream;
 public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
+    public boolean showProviderChoice() {
+        return false;
+    }
+
+    @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SCRIPTING;
     }
 
     @Override
     public boolean canMoveCategories() {
-        return false;
-    }
-
-    @Override
-    public boolean showProviderChoice() {
         return false;
     }
 
@@ -96,9 +95,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         Comp<?> choice = (Comp<?>) Class.forName(
                         AppExtensionManager.getInstance()
                                 .getExtendedLayer()
-                                .findModule(AppNames.extModuleName("proc"))
+                                .findModule("io.xpipe.ext.proc")
                                 .orElseThrow(),
-                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
+                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
                 .getDeclaredConstructor(List.class, Property.class, boolean.class)
                 .newInstance(availableDialects, dialect, true);
 
@@ -223,6 +222,39 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 + st.getMinimumDialect().getScriptFileEnding();
     }
 
+    @SneakyThrows
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        if (store == null) {
+            return "proc:shellEnvironment_icon.svg";
+        }
+
+        SimpleScriptStore st = store.asNeeded();
+        return (String) Class.forName(
+                        AppExtensionManager.getInstance()
+                                .getExtendedLayer()
+                                .findModule("io.xpipe.ext.proc")
+                                .orElseThrow(),
+                        "io.xpipe.ext.proc.ShellDialectChoiceComp")
+                .getDeclaredMethod("getImageName", ShellDialect.class)
+                .invoke(null, st.getMinimumDialect());
+    }
+
+    @Override
+    public DataStore defaultStore(DataStoreCategory category) {
+        return SimpleScriptStore.builder().scripts(List.of()).build();
+    }
+
+    @Override
+    public String getId() {
+        return "script";
+    }
+
+    @Override
+    public List<Class<?>> getStoreClasses() {
+        return List.of(SimpleScriptStore.class);
+    }
+
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
         SimpleScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
@@ -242,38 +274,5 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             suffix = null;
         }
         return new SimpleStringProperty(DataStoreFormatter.join(type, suffix));
-    }
-
-    @SneakyThrows
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-        if (store == null) {
-            return "proc:shellEnvironment_icon.svg";
-        }
-
-        SimpleScriptStore st = store.asNeeded();
-        return (String) Class.forName(
-                        AppExtensionManager.getInstance()
-                                .getExtendedLayer()
-                                .findModule(AppNames.extModuleName("proc"))
-                                .orElseThrow(),
-                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
-                .getDeclaredMethod("getImageName", ShellDialect.class)
-                .invoke(null, st.getMinimumDialect());
-    }
-
-    @Override
-    public DataStore defaultStore(DataStoreCategory category) {
-        return SimpleScriptStore.builder().scripts(List.of()).build();
-    }
-
-    @Override
-    public String getId() {
-        return "script";
-    }
-
-    @Override
-    public List<Class<?>> getStoreClasses() {
-        return List.of(SimpleScriptStore.class);
     }
 }

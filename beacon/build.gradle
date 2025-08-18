@@ -7,8 +7,8 @@ plugins {
 apply from: "$rootDir/gradle/gradle_scripts/java.gradle"
 apply from: "$rootDir/gradle/gradle_scripts/lombok.gradle"
 
-version = versionString
-group = groupName
+version = rootProject.versionString
+group = 'io.xpipe'
 base.archivesName = 'xpipe-beacon'
 
 repositories {
@@ -17,12 +17,12 @@ repositories {
 
 dependencies {
     compileOnly 'org.hamcrest:hamcrest:3.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.13.4'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.13.4'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.12.2'
     api project(':core')
 }
 
-tasks.register('dist', Copy) {
+task dist(type: Copy) {
     from jar.archiveFile
     into "${project(':dist').buildDir}/dist/libraries"
 }

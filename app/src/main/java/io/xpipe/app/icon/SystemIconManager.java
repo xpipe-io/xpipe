@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.storage.DataStorage;
 
 import java.nio.file.Files;
@@ -30,14 +31,17 @@ public class SystemIconManager {
         // For chinese users, GitHub link might be unreliable
         // So use an alternative chinese mirror they can use
         all.add(SystemIconSource.GitRepository.builder()
-                .remote("https://github.com/selfhst/icons")
+                .remote(
+                        AppPrefs.get().language().getValue() == SupportedLocale.CHINESE
+                                ? "https://gitcode.com/gh_mirrors/icons13/icons"
+                                : "https://github.com/selfhst/icons")
                 .id("selfhst")
                 .build());
         for (var pref : prefs) {
             try {
                 pref.checkComplete();
             } catch (ValidationException e) {
-                // This can be expected for synced directory sources
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
                 continue;
             }
 
@@ -55,31 +59,16 @@ public class SystemIconManager {
         return all;
     }
 
+    public static Map<SystemIconSource, SystemIconSourceData> getSources() {
+        return LOADED;
+    }
+
     public static Set<SystemIcon> getIcons() {
         return ICONS;
     }
 
     public static String getIconFile(SystemIcon icon) {
         return "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
-    }
-
-    public static Optional<SystemIcon> getIcon(String id) {
-        var split = id.split("/");
-        if (split.length == 2) {
-            var source = split[0];
-            var foundSource = getAllSources().stream()
-                    .filter(systemIconSource -> systemIconSource.getId().equals(source))
-                    .findFirst();
-            if (foundSource.isEmpty()) {
-                return Optional.empty();
-            }
-
-            var icon = new SystemIcon(foundSource.get(), split[1]);
-            var foundIcon = ICONS.contains(icon);
-            return foundIcon ? Optional.of(icon) : Optional.empty();
-        } else {
-            return Optional.empty();
-        }
     }
 
     public static void init() throws Exception {

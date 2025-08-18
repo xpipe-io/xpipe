@@ -21,11 +21,6 @@ public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>,
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<StoppableStore> o) {
-        return true;
-    }
-
-    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<StoppableStore> store) {
         return AppI18n.observable("stop");
     }
@@ -33,11 +28,6 @@ public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>,
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<StoppableStore> store) {
         return new LabelGraphic.IconGraphic("mdi2s-stop");
-    }
-
-    @Override
-    public Class<?> getApplicableClass() {
-        return StoppableStore.class;
     }
 
     @Override
@@ -56,8 +46,18 @@ public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>,
     }
 
     @Override
+    public Class<?> getApplicableClass() {
+        return StoppableStore.class;
+    }
+
+    @Override
     public Action createBatchAction(DataStoreEntryRef<StoppableStore> ref) {
         return Action.builder().ref(ref).build();
+    }
+
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<StoppableStore> o) {
+        return true;
     }
 
     @Override
@@ -70,13 +70,13 @@ public class StoreStopActionProvider implements HubLeafProvider<StoppableStore>,
     public static class Action extends StoreAction<StoppableStore> {
 
         @Override
-        public void executeImpl() throws Exception {
-            ref.getStore().stop();
+        public boolean isMutation() {
+            return true;
         }
 
         @Override
-        public boolean isMutation() {
-            return true;
+        public void executeImpl() throws Exception {
+            ref.getStore().stop();
         }
     }
 }

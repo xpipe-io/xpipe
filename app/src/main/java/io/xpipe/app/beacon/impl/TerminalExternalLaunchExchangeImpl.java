@@ -44,16 +44,6 @@ public class TerminalExternalLaunchExchangeImpl extends TerminalExternalLaunchEx
         return Response.builder().command(r).build();
     }
 
-    @Override
-    public boolean requiresEnabledApi() {
-        return false;
-    }
-
-    @Override
-    public Object getSynchronizationObject() {
-        return DataStorage.get();
-    }
-
     private boolean checkPermission() {
         var cache = AppCache.getBoolean("externalLaunchPermitted", false);
         if (cache) {
@@ -65,5 +55,15 @@ public class TerminalExternalLaunchExchangeImpl extends TerminalExternalLaunchEx
             AppCache.update("externalLaunchPermitted", true);
         }
         return r;
+    }
+
+    @Override
+    public boolean requiresEnabledApi() {
+        return false;
+    }
+
+    @Override
+    public Object getSynchronizationObject() {
+        return DataStorage.get();
     }
 }

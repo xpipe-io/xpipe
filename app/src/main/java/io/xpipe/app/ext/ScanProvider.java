@@ -1,11 +1,8 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.ModuleLayerLoader;
-
-import javafx.beans.value.ObservableValue;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -29,39 +26,15 @@ public abstract class ScanProvider {
 
     public abstract void scan(DataStoreEntry entry, ShellControl sc) throws Throwable;
 
-    public static class Loader implements ModuleLayerLoader {
-
-        @Override
-        public void init(ModuleLayer layer) {
-            ALL = ServiceLoader.load(layer, ScanProvider.class).stream()
-                    .map(ServiceLoader.Provider::get)
-                    .sorted(Comparator.comparing(
-                            scanProvider -> scanProvider.getClass().getName()))
-                    .collect(Collectors.toList());
-        }
-    }
-
     @Value
     @AllArgsConstructor
     public class ScanOpportunity {
-        ObservableValue<String> name;
+        String nameKey;
         boolean disabled;
         String licenseFeatureId;
 
         public ScanOpportunity(String nameKey, boolean disabled) {
-            this.name = AppI18n.observable(nameKey);
-            this.disabled = disabled;
-            this.licenseFeatureId = null;
-        }
-
-        public ScanOpportunity(String nameKey, boolean disabled, String licenseFeatureId) {
-            this.name = AppI18n.observable(nameKey);
-            this.disabled = disabled;
-            this.licenseFeatureId = licenseFeatureId;
-        }
-
-        public ScanOpportunity(ObservableValue<String> name, boolean disabled) {
-            this.name = name;
+            this.nameKey = nameKey;
             this.disabled = disabled;
             this.licenseFeatureId = null;
         }
@@ -72,6 +45,18 @@ public abstract class ScanProvider {
 
         public ScanProvider getProvider() {
             return ScanProvider.this;
+        }
+    }
+
+    public static class Loader implements ModuleLayerLoader {
+
+        @Override
+        public void init(ModuleLayer layer) {
+            ALL = ServiceLoader.load(layer, ScanProvider.class).stream()
+                    .map(ServiceLoader.Provider::get)
+                    .sorted(Comparator.comparing(
+                            scanProvider -> scanProvider.getClass().getName()))
+                    .collect(Collectors.toList());
         }
     }
 }

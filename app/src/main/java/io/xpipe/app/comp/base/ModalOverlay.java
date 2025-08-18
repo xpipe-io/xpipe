@@ -19,25 +19,6 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class ModalOverlay {
 
-    ObservableValue<String> title;
-    Comp<?> content;
-    LabelGraphic graphic;
-
-    @Singular
-    List<Object> buttons;
-
-    @NonFinal
-    @Setter
-    boolean hasCloseButton;
-
-    @NonFinal
-    @Setter
-    boolean requireCloseButtonForClose;
-
-    @NonFinal
-    @Setter
-    Runnable hideAction;
-
     public static ModalOverlay of(Comp<?> content) {
         return of((ObservableValue<String>) null, content, null);
     }
@@ -63,6 +44,25 @@ public class ModalOverlay {
     public ModalOverlay withDefaultButtons() {
         return withDefaultButtons(() -> {});
     }
+
+    ObservableValue<String> title;
+    Comp<?> content;
+    LabelGraphic graphic;
+
+    @Singular
+    List<Object> buttons;
+
+    @NonFinal
+    @Setter
+    boolean hasCloseButton;
+
+    @NonFinal
+    @Setter
+    boolean requireCloseButtonForClose;
+
+    @NonFinal
+    @Setter
+    Runnable hideAction;
 
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);

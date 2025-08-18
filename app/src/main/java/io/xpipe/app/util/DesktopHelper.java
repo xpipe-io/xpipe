@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -10,6 +9,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -23,7 +23,7 @@ public class DesktopHelper {
         try {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", uri);
-                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
+                pb.directory(new File(System.getProperty("user.home")));
                 pb.redirectErrorStream(true);
                 pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
                 pb.start();
@@ -41,7 +41,7 @@ public class DesktopHelper {
                 }
             } else {
                 var pb = new ProcessBuilder("open", uri);
-                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
+                pb.directory(new File(System.getProperty("user.home")));
                 pb.redirectErrorStream(true);
                 pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
                 pb.start();
@@ -51,9 +51,54 @@ public class DesktopHelper {
         }
     }
 
+    public static Path getDesktopDirectory() throws Exception {
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            var shell = LocalShell.getLocalPowershell();
+            if (shell.isEmpty()) {
+                return Path.of(System.getProperty("user.home")).resolve("Desktop");
+            }
+
+            return Path.of(shell.get()
+                    .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
+                    .readStdoutOrThrow());
+        } else if (OsType.getLocal() == OsType.LINUX) {
+            try (var sc = LocalShell.getShell().start()) {
+                var out = sc.command("xdg-user-dir DESKTOP").readStdoutIfPossible();
+                if (out.isPresent()) {
+                    return Path.of(out.get());
+                }
+            }
+        }
+
+        return Path.of(System.getProperty("user.home") + "/Desktop");
+    }
+
+    public static Path getDownloadsDirectory() throws Exception {
+        if (OsType.getLocal() == OsType.WINDOWS) {
+            var shell = LocalShell.getLocalPowershell();
+            if (shell.isEmpty()) {
+                return Path.of(System.getProperty("user.home")).resolve("Desktop");
+            }
+
+            return Path.of(shell.get()
+                    .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
+                    .readStdoutOrThrow());
+        } else if (OsType.getLocal() == OsType.LINUX) {
+            try (var sc = LocalShell.getShell().start()) {
+                var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();
+                if (out.isPresent() && !out.get().isBlank()) {
+                    return Path.of(out.get());
+                }
+            }
+        }
+
+        return Path.of(System.getProperty("user.home") + "/Downloads");
+    }
+
     public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {
+        var d = sc.getShellDialect();
         switch (sc.getOsType()) {
-            case OsType.Windows ignored -> {
+            case OsType.Windows windows -> {
                 // Explorer does not support single quotes, so use normal quotes
                 if (kind == FileKind.DIRECTORY) {
                     sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString()))
@@ -63,14 +108,14 @@ public class DesktopHelper {
                             .execute();
                 }
             }
-            case OsType.Linux ignored -> {
+            case OsType.Linux linux -> {
                 var action = kind == FileKind.DIRECTORY
                         ? "org.freedesktop.FileManager1.ShowFolders"
                         : "org.freedesktop.FileManager1.ShowItems";
                 var dbus = String.format(
                         """
-                                         dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
-                                         """,
+                                                 dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
+                                                 """,
                         action, path);
                 var success = sc.executeSimpleBooleanCommand(dbus);
                 if (success) {
@@ -82,15 +127,15 @@ public class DesktopHelper {
                                 .addFile(kind == FileKind.DIRECTORY ? path : path.getParent()))
                         .execute();
             }
-            case OsType.MacOs ignored -> {
+            case OsType.MacOs macOs -> {
                 sc.command(CommandBuilder.of()
                                 .add("open")
                                 .addIf(kind == FileKind.DIRECTORY, "-R")
                                 .addFile(path))
                         .execute();
             }
-            case OsType.Bsd ignored -> {}
-            case OsType.Solaris ignored -> {}
+            case OsType.Bsd bsd -> {}
+            case OsType.Solaris solaris -> {}
         }
     }
 

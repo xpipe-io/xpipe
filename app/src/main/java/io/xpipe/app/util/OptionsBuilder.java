@@ -181,25 +181,17 @@ public class OptionsBuilder {
 
     public OptionsBuilder pref(Object property) {
         var mapping = AppPrefs.get().getMapping(property);
-        pref(
-                mapping.getKey(),
-                mapping.isRequiresRestart(),
-                mapping.getLicenseFeatureId(),
-                mapping.getDocumentationLink());
+        pref(mapping.getKey(), mapping.isRequiresRestart(), mapping.getLicenseFeatureId());
         return this;
     }
 
-    public OptionsBuilder pref(
-            String key, boolean requiresRestart, String licenseFeatureId, DocumentationLink documentationLink) {
+    public OptionsBuilder pref(String key, boolean requiresRestart, String licenseFeatureId) {
         var name = key;
         name(name);
         if (requiresRestart) {
             description(AppI18n.observable(name + "Description").map(s -> s + "\n\n" + AppI18n.get("requiresRestart")));
         } else {
             description(AppI18n.observable(name + "Description"));
-        }
-        if (documentationLink != null) {
-            longDescription(documentationLink);
         }
         if (licenseFeatureId != null) {
             licenseRequirement(licenseFeatureId);
@@ -380,15 +372,9 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder longDescription(String link) {
-        finishCurrent();
-        longDescription = link;
-        return this;
-    }
-
     public OptionsBuilder longDescription(DocumentationLink link) {
         finishCurrent();
-        longDescription = link != null ? link.getLink() : null;
+        longDescription = link.getLink();
         return this;
     }
 
@@ -408,8 +394,8 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
-        var comp = new SecretFieldComp(prop, copy);
+    public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop) {
+        var comp = new SecretFieldComp(prop, true);
         pushComp(comp);
         props.add(prop);
         return this;

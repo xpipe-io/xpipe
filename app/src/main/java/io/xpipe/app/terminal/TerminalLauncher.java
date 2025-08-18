@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppNames;
+import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -11,6 +11,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.XPipeInstallation;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,7 +37,7 @@ public class TerminalLauncher {
         return ScriptHelper.createExecScriptRaw(processControl, file, content);
     }
 
-    private static String constructTerminalInitScript(
+    public static String constructTerminalInitScript(
             ShellDialect t,
             ShellControl processControl,
             WorkingDirectoryFunction workingDirectory,
@@ -85,7 +86,24 @@ public class TerminalLauncher {
         return content;
     }
 
-    static void openDirect(
+    public static void openDirect(String title, ShellScript command) throws Exception {
+        openDirect(title, sc -> command, AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirectFallback(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
+            throws Exception {
+        // We can't use the SSH bridge and other stuff
+        var type = ExternalTerminalType.determineFallbackTerminalToOpen(
+                AppPrefs.get().terminalType().getValue());
+        openDirect(title, command, type);
+    }
+
+    public static void openDirect(String title, FailableFunction<ShellControl, ShellScript, Exception> command)
+            throws Exception {
+        openDirect(title, command, AppPrefs.get().terminalType().getValue());
+    }
+
+    public static void openDirect(
             String title, FailableFunction<ShellControl, ShellScript, Exception> command, ExternalTerminalType type)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
@@ -107,21 +125,32 @@ public class TerminalLauncher {
         }
     }
 
-    static void open(
-            DataStoreEntry entry,
-            String title,
-            FilePath directory,
-            ProcessControl cc,
-            UUID request,
-            boolean preferTabs,
-            boolean enableLogging,
-            ExternalTerminalType type)
+    public static void open(String title, ProcessControl cc) throws Exception {
+        open(null, title, null, cc, UUID.randomUUID(), true);
+    }
+
+    public static void open(String title, ProcessControl cc, UUID request) throws Exception {
+        open(null, title, null, cc, request, true);
+    }
+
+    public static void open(DataStoreEntry entry, String title, FilePath directory, ProcessControl cc)
             throws Exception {
+        open(entry, title, directory, cc, UUID.randomUUID(), true);
+    }
+
+    public static void open(
+            DataStoreEntry entry, String title, FilePath directory, ProcessControl cc, UUID request, boolean preferTabs)
+            throws Exception {
+        var type = AppPrefs.get().terminalType().getValue();
+        if (type == null) {
+            throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
+        }
+
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
         var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
         var adjustedTitle = prefix + cleanTitle;
-        var log = enableLogging && AppPrefs.get().enableTerminalLogging().get();
+        var log = AppPrefs.get().enableTerminalLogging().get();
         var terminalConfig = new TerminalInitScriptConfig(
                 adjustedTitle,
                 !log
@@ -162,9 +191,10 @@ public class TerminalLauncher {
             return;
         }
 
-        var changedDialect = config.getScriptDialect() != LocalShell.getDialect();
+        var changedDialect =
+                config.getScriptDialect() != ProcessControlProvider.get().getEffectiveLocalDialect();
         config = config.withScript(
-                LocalShell.getDialect(),
+                ProcessControlProvider.get().getEffectiveLocalDialect(),
                 getTerminalRegisterCommand(request) + "\n"
                         + (changedDialect
                                 ? config.getDialectLaunchCommand().buildSimple()
@@ -191,7 +221,7 @@ public class TerminalLauncher {
     }
 
     private static String getTerminalRegisterCommand(UUID request) throws Exception {
-        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
+        var exec = XPipeInstallation.getLocalDefaultCliExecutable();
         return CommandBuilder.of()
                 .addFile(exec)
                 .add("terminal-register", "--request", request.toString())
@@ -252,18 +282,18 @@ public class TerminalLauncher {
                     .get()
                     .prepareIntermediateTerminalOpen(
                             TerminalInitFunction.fixed(proxyMultiplexerCommand),
-                            TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
+                            TerminalInitScriptConfig.ofName("XPipe"),
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + proxyLaunchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
                     null,
-                    AppNames.ofCurrent().getName(),
-                    AppNames.ofCurrent().getName(),
+                    "XPipe",
+                    "XPipe",
                     false,
                     fullLocalCommand,
-                    LocalShell.getDialect()));
+                    ProcessControlProvider.get().getEffectiveLocalDialect()));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -272,16 +302,16 @@ public class TerminalLauncher {
             var launchCommand = LocalShell.getShell()
                     .prepareIntermediateTerminalOpen(
                             TerminalInitFunction.fixed(multiplexerCommand),
-                            TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
+                            TerminalInitScriptConfig.ofName("XPipe"),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
             return Optional.of(new TerminalLaunchConfiguration(
                     null,
-                    AppNames.ofCurrent().getName(),
-                    AppNames.ofCurrent().getName(),
+                    "XPipe",
+                    "XPipe",
                     false,
                     fullLocalCommand,
-                    LocalShell.getDialect()));
+                    ProcessControlProvider.get().getEffectiveLocalDialect()));
         }
     }
 
@@ -297,11 +327,12 @@ public class TerminalLauncher {
                 .get()
                 .prepareIntermediateTerminalOpen(
                         TerminalInitFunction.fixed(openCommand),
-                        TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
+                        TerminalInitScriptConfig.ofName("XPipe"),
                         WorkingDirectoryFunction.none());
         // Restart for the next time
         proxyControl.get().start();
         var fullLocalCommand = getTerminalRegisterCommand(request) + "\n" + launchCommand;
-        return Optional.ofNullable(launchConfiguration.withScript(LocalShell.getDialect(), fullLocalCommand));
+        return Optional.ofNullable(launchConfiguration.withScript(
+                ProcessControlProvider.get().getEffectiveLocalDialect(), fullLocalCommand));
     }
 }

@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public abstract class CommandView implements AutoCloseable {
 
-    protected abstract CommandControl build(Consumer<CommandBuilder> builder) throws Exception;
+    protected abstract CommandControl build(Consumer<CommandBuilder> builder);
 
     protected abstract ShellControl getShellControl();
 

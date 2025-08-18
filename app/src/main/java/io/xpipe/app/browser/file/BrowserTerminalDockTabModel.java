@@ -147,6 +147,17 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
         });
     }
 
+    private void refreshShowingState() {
+        var sessions = TerminalView.get().getSessions();
+        var remaining = sessions.stream()
+                .filter(s -> terminalRequests.contains(s.getRequest())
+                        && s.getTerminal().isRunning())
+                .toList();
+        if (remaining.isEmpty()) {
+            ((BrowserFullSessionModel) browserModel).unsplitTab(BrowserTerminalDockTabModel.this);
+        }
+    }
+
     @Override
     public void close() {
         if (listener != null) {
@@ -168,16 +179,5 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     @Override
     public DataStoreColor getColor() {
         return null;
-    }
-
-    private void refreshShowingState() {
-        var sessions = TerminalView.get().getSessions();
-        var remaining = sessions.stream()
-                .filter(s -> terminalRequests.contains(s.getRequest())
-                        && s.getTerminal().isRunning())
-                .toList();
-        if (remaining.isEmpty()) {
-            ((BrowserFullSessionModel) browserModel).unsplitTab(BrowserTerminalDockTabModel.this);
-        }
     }
 }
