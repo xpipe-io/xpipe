@@ -34,7 +34,6 @@ public abstract class AppInstallation {
             case OsType.Windows ignored -> WINDOWS;
             case OsType.Linux ignored -> LINUX;
             case OsType.MacOs ignored -> MACOS;
-            default -> throw new IllegalStateException();
         };
     }
 
@@ -48,7 +47,6 @@ public abstract class AppInstallation {
             case OsType.Windows ignored -> new Windows(def);
             case OsType.Linux ignored -> new Linux(def);
             case OsType.MacOs ignored -> new MacOs(def);
-            default -> throw new IllegalStateException();
         };
     }
 

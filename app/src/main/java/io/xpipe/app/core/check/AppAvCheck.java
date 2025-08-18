@@ -72,7 +72,8 @@ public class AppAvCheck {
         BITDEFENDER("Bitdefender") {
             @Override
             public String getDescription() {
-                return "Bitdefender sometimes isolates " + AppNames.ofCurrent().getName() + " and some shell programs, effectively making it unusable.";
+                return "Bitdefender sometimes isolates " + AppNames.ofCurrent().getName()
+                        + " and some shell programs, effectively making it unusable.";
             }
 
             @Override

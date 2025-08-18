@@ -24,8 +24,8 @@ public class AppTestCommandCheck {
                         .execute();
             } catch (ProcessOutputException ex) {
                 throw ProcessOutputException.withPrefix(
-                        "Installation self test failed. Is your \"test\" shell command working as expected and is the " + AppNames.ofCurrent().getName() + " installation directory "
-                                + "accessible?",
+                        "Installation self test failed. Is your \"test\" shell command working as expected and is the "
+                                + AppNames.ofCurrent().getName() + " installation directory " + "accessible?",
                         ex);
             }
         }

@@ -153,13 +153,17 @@ public class StoreViewState {
     }
 
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
-        return Bindings.size(allEntries.filtered(storeEntryWrapper -> {
-            if (!storeEntryWrapper.includeInConnectionCount()) {
-                return false;
-            }
+        return Bindings.size(allEntries
+                .filtered(
+                        storeEntryWrapper -> {
+                            if (!storeEntryWrapper.includeInConnectionCount()) {
+                                return false;
+                            }
 
-            return filter.test(storeEntryWrapper);
-        }, observables).getList());
+                            return filter.test(storeEntryWrapper);
+                        },
+                        observables)
+                .getList());
     }
 
     public boolean isBatchModeSelected(StoreEntryWrapper entry) {

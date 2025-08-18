@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon.mcp;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
@@ -23,19 +22,15 @@ import io.xpipe.core.JacksonMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.xpipe.core.StorePath;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
-import org.apache.commons.lang3.ClassUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -47,23 +42,33 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var ro = AppMcpServer.get().getReadOnlyTools().stream()
-                            .filter(syncToolSpecification -> !syncToolSpecification.tool().name().equals("help")).toList();
+                            .filter(syncToolSpecification ->
+                                    !syncToolSpecification.tool().name().equals("help"))
+                            .toList();
                     var mu = AppMcpServer.get().getMutationTools();
 
-                    var roList = ro.stream().map(syncToolSpecification -> "- " + syncToolSpecification.tool().name() + ": " + syncToolSpecification.tool().description()).collect(
-                            Collectors.joining("\n"));
-                    var muList = mu.stream().map(syncToolSpecification -> "- " + syncToolSpecification.tool().name() + ": " + syncToolSpecification.tool().description()).collect(
-                            Collectors.joining("\n"));
+                    var roList = ro.stream()
+                            .map(syncToolSpecification ->
+                                    "- " + syncToolSpecification.tool().name() + ": "
+                                            + syncToolSpecification.tool().description())
+                            .collect(Collectors.joining("\n"));
+                    var muList = mu.stream()
+                            .map(syncToolSpecification ->
+                                    "- " + syncToolSpecification.tool().name() + ": "
+                                            + syncToolSpecification.tool().description())
+                            .collect(Collectors.joining("\n"));
 
-                    var text = """
+                    var text =
+                            """
                                The XPipe MCP server offers the following read-only tools:
                                %s
                                These tools will not modify anything on your system and are safe to use.
-                               
+
                                You can also enable the following potentially destructive tools in the settings menu:
                                %s
                                These tools can perform write operations and other actions that might be potentially destructive.
-                               """.formatted(roList, muList);
+                               """
+                                    .formatted(roList, muList);
 
                     return McpSchema.CallToolResult.builder()
                             .addTextContent(text)
@@ -89,7 +94,9 @@ public final class McpTools {
                 .tool(tool)
                 .callHandler(McpToolHandler.of((req) -> {
                     var filter = req.getOptionalStringArgument("filter");
-                    var entries = filter.isPresent() ? DataStorageQuery.queryUserInput(filter.get()) : DataStorage.get().getStoreEntries();
+                    var entries = filter.isPresent()
+                            ? DataStorageQuery.queryUserInput(filter.get())
+                            : DataStorage.get().getStoreEntries();
 
                     var list = new ArrayList<ConnectionResource>();
                     for (var e : entries) {

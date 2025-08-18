@@ -33,7 +33,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -311,9 +310,9 @@ public class AppMainWindow {
             if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
                 var image = stage.getScene().snapshot(null);
                 var awt = AppImages.toAwtImage(image);
-                var file = AppSystemInfo.ofCurrent().getUserHome().resolve(
-                        "Desktop",
-                        AppNames.ofCurrent().getKebapName() + "-screenshot.png");
+                var file = AppSystemInfo.ofCurrent()
+                        .getUserHome()
+                        .resolve("Desktop", AppNames.ofCurrent().getKebapName() + "-screenshot.png");
                 try {
                     ImageIO.write(awt, "png", file.toFile());
                 } catch (IOException e) {

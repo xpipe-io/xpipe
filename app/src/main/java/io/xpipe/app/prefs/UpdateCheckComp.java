@@ -5,12 +5,9 @@ import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
-import io.xpipe.app.update.UpdateHandler;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
 
 public class UpdateCheckComp extends SimpleComp {
@@ -43,18 +40,12 @@ public class UpdateCheckComp extends SimpleComp {
                         return AppI18n.get("checkingForUpdates");
                     }
 
-                    if (uh
-                            .getPreparedUpdate()
-                            .getValue() != null) {
-                        var prefix =
-                                !uh.supportsDirectInstallation()
-                                        ? AppI18n.get("updateReadyPortable")
-                                        : AppI18n.get("updateReady");
-                        var version = "Version "
-                                + uh
-                                        .getPreparedUpdate()
-                                        .getValue()
-                                        .getVersion();
+                    if (uh.getPreparedUpdate().getValue() != null) {
+                        var prefix = !uh.supportsDirectInstallation()
+                                ? AppI18n.get("updateReadyPortable")
+                                : AppI18n.get("updateReady");
+                        var version =
+                                "Version " + uh.getPreparedUpdate().getValue().getVersion();
                         return prefix + " (" + version + ")";
                     }
 
@@ -75,9 +66,7 @@ public class UpdateCheckComp extends SimpleComp {
                         return AppI18n.get("checkingForUpdatesDescription");
                     }
 
-                    if (uh
-                            .getPreparedUpdate()
-                            .getValue() != null) {
+                    if (uh.getPreparedUpdate().getValue() != null) {
                         return AppDistributionType.get() == AppDistributionType.PORTABLE
                                 ? AppI18n.get("updateReadyDescriptionPortable")
                                 : AppI18n.get("updateReadyDescription");
@@ -91,9 +80,7 @@ public class UpdateCheckComp extends SimpleComp {
                 uh.getBusy());
         var graphic = Bindings.createObjectBinding(
                 () -> {
-                    if (uh
-                            .getPreparedUpdate()
-                            .getValue() != null) {
+                    if (uh.getPreparedUpdate().getValue() != null) {
                         return "mdi2b-button-cursor";
                     }
 
@@ -108,9 +95,7 @@ public class UpdateCheckComp extends SimpleComp {
                 uh.getLastUpdateCheckResult());
         return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
-                    if (uh
-                            .getPreparedUpdate()
-                            .getValue() != null) {
+                    if (uh.getPreparedUpdate().getValue() != null) {
                         showAlert();
                         return;
                     }

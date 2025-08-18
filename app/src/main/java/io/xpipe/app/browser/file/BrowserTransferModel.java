@@ -213,7 +213,7 @@ public class BrowserTransferModel {
         }
     }
 
-    private Path getDownloadsTargetDirectory() throws Exception {
+    private Path getDownloadsTargetDirectory() {
         var def = AppSystemInfo.ofCurrent().getDownloads();
         var custom = AppPrefs.get().downloadsDirectory().getValue();
         if (custom == null) {

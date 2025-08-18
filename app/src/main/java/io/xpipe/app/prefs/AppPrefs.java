@@ -314,7 +314,7 @@ public final class AppPrefs {
         this.selectedCategory = new GlobalObjectProperty<>(categories.getFirst());
     }
 
-    public static void initLocal() throws Exception {
+    public static void initLocal() {
         INSTANCE = new AppPrefs();
         PrefsProvider.getAll().forEach(prov -> prov.addPrefs(INSTANCE.extensionHandler));
         INSTANCE.loadLocal();

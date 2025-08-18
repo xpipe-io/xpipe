@@ -50,16 +50,18 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         label.getStyleClass().add("name");
 
         var allCount = StoreViewState.get()
-                .entriesCount(storeEntryWrapper -> {
-                    var rootCategory =
-                            storeEntryWrapper.getCategory().getValue().getRoot();
-                    var inRootCategory = StoreViewState.get()
-                            .getActiveCategory()
-                            .getValue()
-                            .getRoot()
-                            .equals(rootCategory);
-                    return inRootCategory;
-                }, StoreViewState.get().getActiveCategory());
+                .entriesCount(
+                        storeEntryWrapper -> {
+                            var rootCategory =
+                                    storeEntryWrapper.getCategory().getValue().getRoot();
+                            var inRootCategory = StoreViewState.get()
+                                    .getActiveCategory()
+                                    .getValue()
+                                    .getRoot()
+                                    .equals(rootCategory);
+                            return inRootCategory;
+                        },
+                        StoreViewState.get().getActiveCategory());
         var count = new CountComp(allCount, allCount, Function.identity());
 
         var c = count.createRegion();

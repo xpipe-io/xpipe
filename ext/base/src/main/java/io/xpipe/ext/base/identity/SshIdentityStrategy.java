@@ -59,7 +59,9 @@ public interface SshIdentityStrategy {
         var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
 
         if (OsType.getLocal() != OsType.WINDOWS) {
-            LocalShell.getShell().command(CommandBuilder.of().add("chmod", "400").addFile(file)).executeAndCheck();
+            LocalShell.getShell()
+                    .command(CommandBuilder.of().add("chmod", "400").addFile(file))
+                    .executeAndCheck();
         }
 
         return Optional.of(file);

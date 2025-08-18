@@ -52,7 +52,8 @@ public class ContextualFileReference {
         }
 
         var ns = p.normalize().toUnix();
-        var home = FilePath.of(AppSystemInfo.ofCurrent().getUserHome()).normalize().toUnix();
+        var home =
+                FilePath.of(AppSystemInfo.ofCurrent().getUserHome()).normalize().toUnix();
 
         String replaced;
         var withHomeResolved = ns.toString().replace("~", home.toString());

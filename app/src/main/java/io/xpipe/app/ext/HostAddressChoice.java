@@ -37,7 +37,8 @@ public class HostAddressChoice {
                         fullList.add(val.getValue());
                     }
 
-                    var effectiveValue = val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
+                    var effectiveValue =
+                            val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
                     return HostAddress.of(effectiveValue, fullList);
                 },
                 value);

@@ -27,7 +27,8 @@ public class TroubleshootCategory extends AppPrefsCategory {
 
     @SneakyThrows
     private static void heapDump() {
-        var file = AppSystemInfo.ofCurrent().getDesktop().resolve(AppNames.ofMain().getSnakeName() + ".hprof");
+        var file =
+                AppSystemInfo.ofCurrent().getDesktop().resolve(AppNames.ofMain().getSnakeName() + ".hprof");
         FileUtils.deleteQuietly(file.toFile());
         MBeanServer server = ManagementFactory.getPlatformMBeanServer();
         HotSpotDiagnosticMXBean mxBean = ManagementFactory.newPlatformMXBeanProxy(

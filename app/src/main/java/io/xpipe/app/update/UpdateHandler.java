@@ -240,7 +240,9 @@ public abstract class UpdateHandler {
             ThreadHelper.runAsync(() -> {
                 prepareUpdate();
             });
-            ErrorEventFactory.fromMessage("A newer update is available than the one which was prepared.").expected().handle();
+            ErrorEventFactory.fromMessage("A newer update is available than the one which was prepared.")
+                    .expected()
+                    .handle();
             return;
         }
 

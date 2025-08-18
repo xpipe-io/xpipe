@@ -81,7 +81,8 @@ public class AppExtensionManager {
             Path p = localInstallation.getBaseInstallationPath();
             if (!Files.exists(p)) {
                 throw new IllegalStateException(
-                        "Required local " + AppNames.ofCurrent().getName() + " installation was not found but is required for development. See https://github"
+                        "Required local " + AppNames.ofCurrent().getName()
+                                + " installation was not found but is required for development. See https://github"
                                 + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 

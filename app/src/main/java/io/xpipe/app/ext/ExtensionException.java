@@ -26,11 +26,12 @@ public class ExtensionException extends RuntimeException {
     public static ExtensionException corrupt(String message, Throwable cause) {
         try {
             var loc = AppInstallation.ofCurrent().getBaseInstallationPath();
-            var full =
-                    message + ".\n\n" + "Please check whether the " + AppNames.ofCurrent().getName() + " installation data at " + loc + " is corrupted.";
+            var full = message + ".\n\n" + "Please check whether the "
+                    + AppNames.ofCurrent().getName() + " installation data at " + loc + " is corrupted.";
             return new ExtensionException(full, cause);
         } catch (Throwable t) {
-            var full = message + ".\n\n" + "Please check whether the " + AppNames.ofCurrent().getName() + " installation data is corrupted.";
+            var full = message + ".\n\n" + "Please check whether the "
+                    + AppNames.ofCurrent().getName() + " installation data is corrupted.";
             return new ExtensionException(full, cause);
         }
     }

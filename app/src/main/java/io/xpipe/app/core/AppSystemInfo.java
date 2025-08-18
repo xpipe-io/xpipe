@@ -64,7 +64,7 @@ public abstract class AppSystemInfo {
 
     public abstract Path getDesktop();
 
-    public static final class Windows extends AppSystemInfo{
+    public static final class Windows extends AppSystemInfo {
 
         private Path userHome;
         private Path localAppData;
@@ -198,8 +198,9 @@ public abstract class AppSystemInfo {
             }
 
             try {
-                return (downloads = Path.of(
-                        shell.get().command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path").readStdoutOrThrow()));
+                return (downloads = Path.of(shell.get()
+                        .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
+                        .readStdoutOrThrow()));
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
                 return (downloads = fallback);

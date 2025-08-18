@@ -10,7 +10,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

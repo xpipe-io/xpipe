@@ -127,8 +127,15 @@ public class TerminalLauncherManager {
                 try (var sc = LocalShell.getShell().start()) {
                     var defaultShell = sc.getShellDialect();
                     var shellExec = defaultShell.getExecutableName();
-                    var script = ScriptHelper.createExecScript(sc, sc.getShellDialect().getEchoCommand(
-                            "Unknown " + AppNames.ofCurrent().getName() + " launch request", false) + "\n" + shellExec);
+                    var script = ScriptHelper.createExecScript(
+                            sc,
+                            sc.getShellDialect()
+                                            .getEchoCommand(
+                                                    "Unknown "
+                                                            + AppNames.ofCurrent()
+                                                                    .getName() + " launch request",
+                                                    false)
+                                    + "\n" + shellExec);
                     return Path.of(script.toString());
                 } catch (Exception ex) {
                     throw new BeaconServerException(ex);

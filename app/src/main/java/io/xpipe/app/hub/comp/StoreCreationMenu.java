@@ -101,7 +101,7 @@ public class StoreCreationMenu {
         menu.getItems().add(categoryMenu("addSerial", "mdi2s-serial-port", DataStoreCreationCategory.SERIAL, "serial"));
 
         menu.getItems().add(new SeparatorMenuItem());
-        
+
         menu.getItems().add(actionMenu);
     }
 

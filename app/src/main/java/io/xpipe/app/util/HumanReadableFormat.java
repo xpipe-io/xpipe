@@ -82,7 +82,7 @@ public final class HumanReadableFormat {
     }
 
     public static String duration(Duration duration) {
-        var s =  duration.toString()
+        var s = duration.toString()
                 .substring(2)
                 .replaceAll("(\\d[HMS])(?!$)", "$1 ")
                 .replaceAll("\\.\\d+", "")
