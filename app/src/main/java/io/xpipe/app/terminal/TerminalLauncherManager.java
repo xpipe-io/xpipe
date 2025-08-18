@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.TrackEvent;
@@ -124,9 +125,10 @@ public class TerminalLauncherManager {
                         .tag("request", request.toString())
                         .handle();
                 try (var sc = LocalShell.getShell().start()) {
-                    var defaultShell = LocalShell.getDialect();
+                    var defaultShell = sc.getShellDialect();
                     var shellExec = defaultShell.getExecutableName();
-                    var script = ScriptHelper.createExecScript(sc, shellExec);
+                    var script = ScriptHelper.createExecScript(sc, sc.getShellDialect().getEchoCommand(
+                            "Unknown " + AppNames.ofCurrent().getName() + " launch request", false) + "\n" + shellExec);
                     return Path.of(script.toString());
                 } catch (Exception ex) {
                     throw new BeaconServerException(ex);

@@ -16,6 +16,7 @@ import java.util.*;
 public class AppProperties {
 
     private static AppProperties INSTANCE;
+
     boolean fullVersion;
     String version;
     String build;
@@ -47,6 +48,10 @@ public class AppProperties {
     AppArguments arguments;
     XPipeDaemonMode explicitMode;
     String devLoginPassword;
+    boolean logToSysOut;
+    boolean logToFile;
+    boolean logPlatformDebug;
+    String logLevel;
 
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -134,6 +139,18 @@ public class AppProperties {
         persistData = Optional.ofNullable(System.getProperty(AppNames.propertyName("persistData")))
                 .map(Boolean::parseBoolean)
                 .orElse(true);
+        logToSysOut = Optional.ofNullable(System.getProperty(AppNames.propertyName("writeSysOut")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        logToFile = Optional.ofNullable(System.getProperty(AppNames.propertyName("writeLogs")))
+                .map(Boolean::parseBoolean)
+                .orElse(true);
+        logPlatformDebug = Optional.ofNullable(System.getProperty(AppNames.propertyName("debugPlatform")))
+                .map(Boolean::parseBoolean)
+                .orElse(false);
+        logLevel = Optional.ofNullable(System.getProperty(AppNames.propertyName("logLevel")))
+                .filter(s -> AppLogs.LOG_LEVELS.contains(s))
+                .orElse("info");
 
         // We require the user dir from here
         AppUserDirectoryCheck.check(dataDir);
