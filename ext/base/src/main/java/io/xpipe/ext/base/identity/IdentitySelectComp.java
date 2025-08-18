@@ -133,6 +133,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         IdentityStore id = storeEntry.getStore().asNeeded();
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")
+                : id instanceof PasswordManagerIdentityStore
+                ? AppI18n.get("passwordManagerIdentity")
                 : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
                         ? AppI18n.get("userIdentity")
                         : AppI18n.get("globalIdentity");

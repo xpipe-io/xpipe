@@ -74,7 +74,9 @@ public class DeveloperCategory extends AppPrefsCategory {
                 .nameAndDescription("developerDisableUpdateVersionCheck")
                 .addToggle(prefs.developerDisableUpdateVersionCheck)
                 .nameAndDescription("developerPrintInitFiles")
-                .addToggle(prefs.developerPrintInitFiles);
+                .addToggle(prefs.developerPrintInitFiles)
+                .nameAndDescription("developerShowSensitiveCommands")
+                .addToggle(prefs.developerShowSensitiveCommands);
         if (AppProperties.get().isDevelopmentEnvironment()) {
             sub.nameAndDescription("developerForceSshTty").addToggle(prefs.developerForceSshTty);
             sub.nameAndDescription("developerDisableSshTunnelGateways")

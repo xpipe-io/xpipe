@@ -99,7 +99,7 @@ public class PasswordManagerCommand implements PasswordManager {
 
     @Override
     public CredentialResult retrieveCredentials(String key) {
-        if (script == null) {
+        if (script == null || script.getValue().isBlank()) {
             return null;
         }
 

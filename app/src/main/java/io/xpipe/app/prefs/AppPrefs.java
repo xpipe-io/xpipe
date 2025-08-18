@@ -237,6 +237,8 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "developerDisableSshTunnelGateways", Boolean.class, false);
     final BooleanProperty developerPrintInitFiles =
             mapLocal(new GlobalBooleanProperty(false), "developerPrintInitFiles", Boolean.class, false);
+    final BooleanProperty developerShowSensitiveCommands =
+            mapLocal(new GlobalBooleanProperty(false), "developerShowSensitiveCommands", Boolean.class, false);
     final BooleanProperty disableSshPinCaching =
             mapLocal(new GlobalBooleanProperty(false), "disableSshPinCaching", Boolean.class, false);
     final ObjectProperty<SupportedLocale> language =
@@ -421,6 +423,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue developerPrintInitFiles() {
         return developerPrintInitFiles;
+    }
+
+    public ObservableBooleanValue developerShowSensitiveCommands() {
+        return developerShowSensitiveCommands;
     }
 
     public ObservableBooleanValue checkForSecurityUpdates() {
