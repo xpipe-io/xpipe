@@ -75,7 +75,7 @@ dependencies {
     api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
     api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.17'
     api 'io.xpipe:modulefs:0.1.6'
-    api 'net.synedra:validatorfx:0.4.2'
+    api 'net.synedra:validatorfx:0.6.1'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
 }
 
