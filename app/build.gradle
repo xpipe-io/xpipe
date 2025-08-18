@@ -59,7 +59,7 @@ dependencies {
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
 
-    api "com.github.weisj:jsvg:1.7.1"
+    api "com.github.weisj:jsvg:2.0.0"
     api 'io.xpipe:vernacular:1.15'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.7'
