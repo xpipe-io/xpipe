@@ -58,7 +58,7 @@ public abstract class AbstractAction {
 
     public static void reset() {
         closed = true;
-        for (int i = 100; i > 0; i--) {
+        for (int i = 50; i > 0; i--) {
             synchronized (active) {
                 var count = active.size();
                 if (count == 0) {
@@ -66,7 +66,7 @@ public abstract class AbstractAction {
                 }
             }
 
-            // Wait 10s max
+            // Wait 5s max
             ThreadHelper.sleep(100);
         }
 
