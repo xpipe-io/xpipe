@@ -138,8 +138,9 @@ public interface StoreSectionSortMode {
                         StoreViewState.get().getEntriesListUpdateObservable().get();
             }
 
-            if (cachedRepresentatives.containsKey(s)) {
-                return cachedRepresentatives.get(s);
+            var found = cachedRepresentatives.get(s);
+            if (found != null) {
+                return found;
             }
 
             var r = computeRepresentative(s);

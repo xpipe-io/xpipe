@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -291,12 +292,20 @@ public class StoreViewState {
     }
 
     public void triggerStoreListVisibilityUpdate() {
+        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListVisibilityObservable.set(entriesListVisibilityObservable.get() + 1);
         });
     }
 
     public void triggerStoreListUpdate() {
+        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
+            return;
+        }
+
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });

@@ -6,6 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
@@ -45,6 +46,11 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         for (AppLayoutModel.Entry e : entries) {
             var b = new IconButtonComp(e.icon(), () -> {
+                // Don't allow switching prior to startup
+                if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
+                    return;
+                }
+
                 if (e.action() != null) {
                     e.action().run();
                     return;
