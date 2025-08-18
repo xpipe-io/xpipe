@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -23,7 +24,7 @@ public class DesktopHelper {
         try {
             if (OsType.getLocal() == OsType.WINDOWS) {
                 var pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", uri);
-                pb.directory(new File(System.getProperty("user.home")));
+                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
                 pb.redirectErrorStream(true);
                 pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
                 pb.start();
@@ -41,7 +42,7 @@ public class DesktopHelper {
                 }
             } else {
                 var pb = new ProcessBuilder("open", uri);
-                pb.directory(new File(System.getProperty("user.home")));
+                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
                 pb.redirectErrorStream(true);
                 pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
                 pb.start();
@@ -49,50 +50,6 @@ public class DesktopHelper {
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }
-    }
-
-    public static Path getDesktopDirectory() throws Exception {
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
-                return Path.of(System.getProperty("user.home")).resolve("Desktop");
-            }
-
-            return Path.of(shell.get()
-                    .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
-                    .readStdoutOrThrow());
-        } else if (OsType.getLocal() == OsType.LINUX) {
-            try (var sc = LocalShell.getShell().start()) {
-                var out = sc.command("xdg-user-dir DESKTOP").readStdoutIfPossible();
-                if (out.isPresent()) {
-                    return Path.of(out.get());
-                }
-            }
-        }
-
-        return Path.of(System.getProperty("user.home") + "/Desktop");
-    }
-
-    public static Path getDownloadsDirectory() throws Exception {
-        if (OsType.getLocal() == OsType.WINDOWS) {
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
-                return Path.of(System.getProperty("user.home")).resolve("Desktop");
-            }
-
-            return Path.of(shell.get()
-                    .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
-                    .readStdoutOrThrow());
-        } else if (OsType.getLocal() == OsType.LINUX) {
-            try (var sc = LocalShell.getShell().start()) {
-                var out = sc.command("xdg-user-dir DOWNLOAD").readStdoutIfPossible();
-                if (out.isPresent() && !out.get().isBlank()) {
-                    return Path.of(out.get());
-                }
-            }
-        }
-
-        return Path.of(System.getProperty("user.home") + "/Downloads");
     }
 
     public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {

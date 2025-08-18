@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FilePath;
@@ -51,7 +52,7 @@ public class ContextualFileReference {
         }
 
         var ns = p.normalize().toUnix();
-        var home = FilePath.of(System.getProperty("user.home")).normalize().toUnix();
+        var home = FilePath.of(AppSystemInfo.ofCurrent().getUserHome()).normalize().toUnix();
 
         String replaced;
         var withHomeResolved = ns.toString().replace("~", home.toString());

@@ -61,13 +61,13 @@ public abstract class AppInstallation {
                 yield Path.of(stage ? "/Applications/XPipe PTB.app" : "/Applications/XPipe.app");
             }
             case OsType.Windows ignored -> {
-                var pg = AppSystemInfo.getWindows().getProgramFiles();
+                var pg = AppSystemInfo.ofWindows().getProgramFiles();
                 var systemPath = pg.resolve(AppNames.ofCurrent().getName());
                 if (Files.exists(systemPath)) {
                     yield systemPath;
                 }
 
-                var ad = AppSystemInfo.getWindows().getLocalAppData();
+                var ad = AppSystemInfo.ofWindows().getLocalAppData();
                 yield ad.resolve(AppNames.ofCurrent().getName());
             }
         };

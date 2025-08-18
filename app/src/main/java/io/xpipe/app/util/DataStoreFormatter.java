@@ -56,11 +56,6 @@ public class DataStoreFormatter {
             return null;
         }
 
-        // Remove port
-        if (input.contains(":")) {
-            input = input.split(":")[0];
-        }
-
         // Check for amazon web services
         if (input.endsWith(".rds.amazonaws.com")) {
             var split = input.split("\\.");

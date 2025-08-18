@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -59,7 +60,7 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
             return;
         }
 
-        var config = Path.of(System.getProperty("user.home"), ".config", "konsolerc");
+        var config = AppSystemInfo.ofCurrent().getUserHome().resolve(".config", "konsolerc");
         if (!Files.exists(config)) {
             return;
         }

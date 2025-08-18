@@ -33,12 +33,11 @@ public class HostAddressChoice {
         options.bind(
                 () -> {
                     var fullList = new ArrayList<>(list);
-                    if (val.getValue() != null) {
+                    if (val.getValue() != null && !fullList.contains(val.getValue())) {
                         fullList.add(val.getValue());
                     }
 
-                    var effectiveValue =
-                            val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
+                    var effectiveValue = val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
                     return HostAddress.of(effectiveValue, fullList);
                 },
                 value);

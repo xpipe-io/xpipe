@@ -34,6 +34,6 @@ public class AppTempCheck {
             return;
         }
 
-        checkTemp(AppSystemInfo.getWindows().getTemp().toString());
+        checkTemp(AppSystemInfo.ofWindows().getTemp().toString());
     }
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -54,7 +55,7 @@ public class EnpassPasswordManager implements PasswordManager {
         comp.apply(struc -> {
             var text = (TextField) struc.get().getChildren().getFirst();
             text.requestFocus();
-            text.setPromptText(System.getProperty("user.home") + "/Documents/Enpass/Vaults/primary/vault.json");
+            text.setPromptText(AppSystemInfo.ofCurrent().getUserHome().resolve("Documents/Enpass/Vaults/primary/vault.json").toString());
 
             // Show prompt text, remove focus
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {

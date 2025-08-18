@@ -51,7 +51,7 @@ public abstract class RealVncClient implements ExternalVncClient {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getProgramFiles()
                             .resolve("RealVNC")
                             .resolve("VNC Viewer")

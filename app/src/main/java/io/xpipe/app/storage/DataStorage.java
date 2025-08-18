@@ -406,11 +406,6 @@ public abstract class DataStorage {
             return null;
         }
 
-        var parent = getDefaultDisplayParent(entry).or(() -> getSyntheticParent(entry));
-        if (parent.isEmpty()) {
-            return null;
-        }
-
         var cat = getStoreCategory(entry);
         var breakOut = new DataStoreCategory(
                 null,
@@ -478,6 +473,7 @@ public abstract class DataStorage {
 
         var parent = getDefaultDisplayParent(entry).or(() -> getSyntheticParent(entry));
         if (parent.isEmpty()) {
+            deleteStoreCategory(breakOut.get(), false, false);
             return;
         }
 

@@ -42,6 +42,19 @@ public class BrowserStatusBarComp extends SimpleComp {
         bar.spacing(15);
         bar.styleClass("status-bar");
 
+        bar.apply(struc -> {
+            struc.get().widthProperty().subscribe(value -> {
+               var veryConstrained = value.doubleValue() < 600;
+               var somewhatConstrained = value.doubleValue() < 750;
+               struc.get().getChildren().get(2).setVisible(!somewhatConstrained);
+                struc.get().getChildren().get(2).setManaged(!somewhatConstrained);
+                struc.get().getChildren().get(4).setVisible(!veryConstrained);
+                struc.get().getChildren().get(4).setManaged(!veryConstrained);
+                struc.get().getChildren().get(5).setVisible(!veryConstrained);
+                struc.get().getChildren().get(5).setManaged(!veryConstrained);
+            });
+        });
+
         var r = bar.createRegion();
         r.setOnDragDetected(event -> {
             event.consume();
@@ -105,7 +118,6 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(140)
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
@@ -123,7 +135,6 @@ public class BrowserStatusBarComp extends SimpleComp {
         var progressComp = new LabelComp(text)
                 .styleClass("progress")
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .prefWidth(150)
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
@@ -155,7 +166,8 @@ public class BrowserStatusBarComp extends SimpleComp {
                     }
                 },
                 cc);
-        return new LabelComp(ccCount);
+        return new LabelComp(ccCount)
+                .minWidth(Region.USE_PREF_SIZE);
     }
 
     private Comp<?> createSelectionStatus() {
@@ -180,7 +192,8 @@ public class BrowserStatusBarComp extends SimpleComp {
                 },
                 selectedCount,
                 allCount));
-        return selectedComp;
+        return selectedComp
+                .minWidth(Region.USE_PREF_SIZE);
     }
 
     private void simulateEmptyCell(Region r) {

@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -214,7 +215,7 @@ public class SshLocalBridge {
                         """
                         .formatted(getName(), user, port, getIdentityKey());
 
-        var file = Path.of(System.getProperty("user.home"), ".ssh", "config");
+        var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".ssh", "config");
         if (!Files.exists(file)) {
             Files.writeString(file, hostEntry);
             return;

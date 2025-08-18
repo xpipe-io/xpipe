@@ -45,7 +45,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getProgramFiles()
                             .resolve("TigerVNC")
                             .resolve("vncviewer.exe"))

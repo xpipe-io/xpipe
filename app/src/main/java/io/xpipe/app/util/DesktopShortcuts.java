@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
@@ -12,7 +13,7 @@ import java.nio.file.Path;
 public class DesktopShortcuts {
 
     private static Path createWindowsShortcut(String executable, String args, String name) throws Exception {
-        var shortcutPath = DesktopHelper.getDesktopDirectory().resolve(name + ".lnk");
+        var shortcutPath = AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".lnk");
 
         var shell = LocalShell.getLocalPowershell();
         if (shell.isEmpty()) {
@@ -60,8 +61,8 @@ public class DesktopShortcuts {
         var ubuntu =
                 Files.exists(osFile) && Files.readString(osFile).toLowerCase().contains("ubuntu");
         var file = ubuntu
-                ? DesktopHelper.getDesktopDirectory().resolve(name + ".desktop")
-                : Path.of(System.getProperty("user.home"), ".local", "share", "applications", name + ".desktop");
+                ? AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".desktop")
+                : AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "applications", name + ".desktop");
         Files.createDirectories(file.getParent());
         Files.writeString(file, content);
         file.toFile().setExecutable(true);
@@ -81,7 +82,7 @@ public class DesktopShortcuts {
     private static Path createMacOSShortcut(String executable, String args, String name) throws Exception {
         var icon = AppInstallation.ofCurrent().getLogoPath();
         var assets = icon.getParent().resolve("Assets.car");
-        var base = DesktopHelper.getDesktopDirectory().resolve(name + ".app");
+        var base = AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".app");
         var content = String.format(
                 """
                                     #!/usr/bin/env sh

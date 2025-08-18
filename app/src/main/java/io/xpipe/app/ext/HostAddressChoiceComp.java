@@ -75,7 +75,10 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             prop.setValue(hostAddress);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            currentAddress.setValue(newValue);
+            var valid = allAddresses.contains(newValue);
+            if (valid) {
+                currentAddress.setValue(newValue);
+            }
         });
 
         var combo = new ComboTextFieldComp(prop, allAddresses, () -> {
@@ -131,8 +134,6 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                 struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
             });
             struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
-
-            struc.get().setEditable(mutable);
         });
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);

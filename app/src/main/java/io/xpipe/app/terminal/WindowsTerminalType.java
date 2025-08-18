@@ -150,14 +150,14 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         private Path getPath() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\wt.exe");
         }
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminal_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
@@ -189,7 +189,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         private Path getPath() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\wt.exe");
         }
@@ -207,7 +207,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalPreview_8wekyb3d8bbwe\\LocalState\\settings.json");
         }
@@ -239,7 +239,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         private Path getPath() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Microsoft\\WindowsApps\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\wt.exe");
         }
@@ -257,7 +257,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public Path getConfigFile() {
-            return AppSystemInfo.getWindows()
+            return AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Packages\\Microsoft.WindowsTerminalCanary_8wekyb3d8bbwe\\LocalState\\settings.json");
         }

@@ -25,7 +25,7 @@ public class TightVncClient implements ExternalApplicationType.InstallLocationTy
 
     @Override
     public Optional<Path> determineInstallation() {
-        return Optional.of(AppSystemInfo.getWindows()
+        return Optional.of(AppSystemInfo.ofWindows()
                         .getProgramFiles()
                         .resolve("TightVNC")
                         .resolve("tvnviewer.exe"))

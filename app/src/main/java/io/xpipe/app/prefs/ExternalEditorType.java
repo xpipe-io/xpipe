@@ -47,7 +47,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
+            return Optional.of(AppSystemInfo.ofWindows().getSystemRoot().resolve("\\System32\\notepad.exe"));
         }
     };
 
@@ -75,7 +75,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("VSCodium")
@@ -109,7 +109,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("cursor")
@@ -142,7 +142,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getProgramFiles()
                             .resolve("Void")
                             .resolve("Void.exe"))
@@ -174,7 +174,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Windsurf")
@@ -208,7 +208,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Kiro")
@@ -243,7 +243,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("TheiaIDE")
@@ -276,7 +276,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Trae")
@@ -310,7 +310,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code")
@@ -344,7 +344,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.getWindows()
+            return Optional.of(AppSystemInfo.ofWindows()
                             .getLocalAppData()
                             .resolve("Programs")
                             .resolve("Microsoft VS Code Insiders")

@@ -58,7 +58,7 @@ public class SecureCrtTerminalType implements ExternalApplicationType.WindowsTyp
 
     @Override
     public Optional<Path> determineInstallation() {
-        var file = AppSystemInfo.getWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
+        var file = AppSystemInfo.ofWindows().getProgramFiles().resolve("VanDyke Software\\SecureCRT\\SecureCRT.exe");
         if (!Files.exists(file)) {
             return Optional.empty();
         }

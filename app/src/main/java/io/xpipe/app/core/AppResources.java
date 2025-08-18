@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppResources {
 
-    public static final String MAIN_MODULE = "io." + AppNames.ofMain().getSnakeName() + ".app";
+    public static final String MAIN_MODULE = AppNames.packageName(null);
 
     private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
 

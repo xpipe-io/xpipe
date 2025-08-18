@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -53,7 +54,7 @@ public interface ExternalApplicationType extends PrefsValue {
                 return Optional.of(systemApplicationsDef);
             }
             var userApplicationsDef =
-                    Path.of(System.getProperty("user.home") + "/Applications/" + getApplicationName() + ".app");
+                    AppSystemInfo.ofCurrent().getUserHome().resolve("Applications", getApplicationName() + ".app");
             if (Files.exists(userApplicationsDef)) {
                 return Optional.of(userApplicationsDef);
             }

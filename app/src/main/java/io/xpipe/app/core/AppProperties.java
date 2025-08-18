@@ -100,7 +100,7 @@ public class AppProperties {
                         System.getProperty(AppNames.propertyName("debugPlatformThreadAccess")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        defaultDataDir = Path.of(System.getProperty("user.home"), isStaging() ? ".xpipe-ptb" : ".xpipe");
+        defaultDataDir = AppSystemInfo.ofCurrent().getUserHome().resolve(isStaging() ? ".xpipe-ptb" : ".xpipe");
         dataDir = Optional.ofNullable(System.getProperty(AppNames.propertyName("dataDir")))
                 .map(s -> {
                     var p = Path.of(s);

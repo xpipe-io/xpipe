@@ -60,4 +60,17 @@ public class HostAddress {
     public String get() {
         return value;
     }
+
+    public int getSelectedIndex() {
+        return available.indexOf(value);
+    }
+
+    public HostAddress mergeWithIndex(HostAddress newer) {
+        var index = getSelectedIndex();
+        if (index < newer.getAvailable().size()) {
+            return new HostAddress(newer.getAvailable().get(index), newer.getAvailable());
+        } else {
+            return newer;
+        }
+    }
 }

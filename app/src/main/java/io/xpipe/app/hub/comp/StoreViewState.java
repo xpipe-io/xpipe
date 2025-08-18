@@ -196,7 +196,7 @@ public class StoreViewState {
 
         String tie = AppCache.getNonNull("tieSortMode", String.class, () -> null);
         var tieMode = global != null ? StoreSectionSortMode.fromId(tie).orElse(null) : null;
-        tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_DESC);
+        tieSortMode.setValue(tieMode != null ? tieMode : StoreSectionSortMode.DATE_ASC);
     }
 
     private void updateContent() {

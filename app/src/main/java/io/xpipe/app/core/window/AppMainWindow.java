@@ -311,8 +311,7 @@ public class AppMainWindow {
             if (AppProperties.get().isShowcase() && event.getCode().equals(KeyCode.F12)) {
                 var image = stage.getScene().snapshot(null);
                 var awt = AppImages.toAwtImage(image);
-                var file = Path.of(
-                        System.getProperty("user.home"),
+                var file = AppSystemInfo.ofCurrent().getUserHome().resolve(
                         "Desktop",
                         AppNames.ofCurrent().getKebapName() + "-screenshot.png");
                 try {

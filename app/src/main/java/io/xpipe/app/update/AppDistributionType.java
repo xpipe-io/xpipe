@@ -159,7 +159,7 @@ public enum AppDistributionType implements Translatable {
                         && AppInstallation.ofCurrent()
                                 .getBaseInstallationPath()
                                 .startsWith(
-                                        AppSystemInfo.getWindows().getUserHome().resolve("scoop"))) {
+                                        AppSystemInfo.ofWindows().getUserHome().resolve("scoop"))) {
                     return SCOOP;
                 }
 

@@ -58,7 +58,7 @@ public abstract class AbstractAction {
 
     public static void reset() {
         closed = true;
-        for (int i = 10; i > 0; i--) {
+        for (int i = 100; i > 0; i--) {
             synchronized (active) {
                 var count = active.size();
                 if (count == 0) {
@@ -67,12 +67,12 @@ public abstract class AbstractAction {
             }
 
             // Wait 10s max
-            ThreadHelper.sleep(1000);
+            ThreadHelper.sleep(100);
         }
 
         synchronized (active) {
             for (AbstractAction abstractAction : active) {
-                TrackEvent.trace("Action has not quit after timeout: " + abstractAction.toString());
+                TrackEvent.info("Action has not quit after timeout: " + abstractAction.toString());
             }
         }
     }

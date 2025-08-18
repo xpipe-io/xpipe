@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
@@ -213,7 +214,7 @@ public class BrowserTransferModel {
     }
 
     private Path getDownloadsTargetDirectory() throws Exception {
-        var def = DesktopHelper.getDownloadsDirectory();
+        var def = AppSystemInfo.ofCurrent().getDownloads();
         var custom = AppPrefs.get().downloadsDirectory().getValue();
         if (custom == null) {
             return def;
