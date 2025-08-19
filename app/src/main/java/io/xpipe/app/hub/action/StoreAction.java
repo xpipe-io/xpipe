@@ -31,6 +31,7 @@ public abstract class StoreAction<T extends DataStore> extends SerializableActio
 
     @Override
     protected boolean beforeExecute() throws Exception {
+        ref.get().notifyUpdate(true, false);
         ref.get().incrementBusyCounter();
         return true;
     }

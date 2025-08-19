@@ -419,7 +419,6 @@ public class StoreEntryWrapper {
         }
 
         var found = getDefaultActionProvider().getValue();
-        entry.notifyUpdate(true, false);
         if (found != null) {
             if (found instanceof HubLeafProvider<?> def) {
                 def.execute(getEntry().ref());
