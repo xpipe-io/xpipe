@@ -75,8 +75,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             prop.setValue(hostAddress);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            var valid = allAddresses.contains(newValue);
-            if (valid) {
+            if (mutable || allAddresses.contains(newValue)) {
                 currentAddress.setValue(newValue);
             }
         });
