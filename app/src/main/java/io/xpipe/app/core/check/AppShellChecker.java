@@ -15,10 +15,7 @@ import java.util.Optional;
 public abstract class AppShellChecker {
 
     public void check() throws Exception {
-        var canFallback = !ProcessControlProvider.get()
-                .getEffectiveLocalDialect()
-                .equals(ProcessControlProvider.get().getFallbackDialect());
-
+        var canFallback = !ProcessControlProvider.get().canFallback();
         if (canFallback && fallBackInstantly()) {
             toggleFallback();
             canFallback = false;
@@ -60,9 +57,7 @@ public abstract class AppShellChecker {
     }
 
     private String formatMessage(String output) {
-        var fallback = !ProcessControlProvider.get()
-                        .getEffectiveLocalDialect()
-                        .equals(ProcessControlProvider.get().getFallbackDialect())
+        var fallback = ProcessControlProvider.get().canFallback()
                 ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
                 : "";
         return """

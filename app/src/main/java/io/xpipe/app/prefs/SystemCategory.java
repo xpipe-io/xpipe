@@ -3,8 +3,12 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
+
+import java.util.List;
 
 public class SystemCategory extends AppPrefsCategory {
 
@@ -21,8 +25,6 @@ public class SystemCategory extends AppPrefsCategory {
     public Comp<?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
-        var localShellBuilder =
-                new OptionsBuilder().pref(prefs.useLocalFallbackShell).addToggle(prefs.useLocalFallbackShell);
         builder.addTitle("system")
                 .sub(new OptionsBuilder()
                         .pref(prefs.startupBehaviour)
@@ -36,9 +38,10 @@ public class SystemCategory extends AppPrefsCategory {
                                         prefs.closeBehaviour,
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
-                                .maxWidth(getCompWidth())));
-        builder.sub(localShellBuilder);
-        builder.sub(new OptionsBuilder().pref(prefs.developerMode).addToggle(prefs.developerMode));
+                                .maxWidth(getCompWidth()))
+                        .pref(prefs.localShellDialect).addComp(new ShellDialectChoiceComp(ProcessControlProvider.get().getAvailableLocalDialects(), prefs.localShellDialect, ShellDialectChoiceComp.NullHandling.NULL_DISABLED).maxWidth(getCompWidth()),
+                                prefs.localShellDialect)
+                        .pref(prefs.developerMode).addToggle(prefs.developerMode));
         return builder.buildComp();
     }
 }

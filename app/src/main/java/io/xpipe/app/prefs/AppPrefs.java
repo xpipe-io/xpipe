@@ -4,8 +4,10 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
@@ -129,6 +131,14 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "disableCertutilUse", Boolean.class, false);
     public final BooleanProperty useLocalFallbackShell =
             mapLocal(new GlobalBooleanProperty(false), "useLocalFallbackShell", Boolean.class, true);
+    final Property<ShellDialect> localShellDialect = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(ProcessControlProvider.get().getAvailableLocalDialects().getFirst()))
+            .key("localShellDialect")
+            .valueClass(ShellDialect.class)
+            .vaultSpecific(false)
+            .requiresRestart(true)
+            .build());
+
     public final BooleanProperty disableTerminalRemotePasswordPreparation = mapVaultShared(
             new GlobalBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
@@ -509,6 +519,10 @@ public final class AppPrefs {
         return useLocalFallbackShell;
     }
 
+    public ObservableValue<ShellDialect> localShellDialect() {
+        return localShellDialect;
+    }
+
     public ObservableBooleanValue disableTerminalRemotePasswordPreparation() {
         return disableTerminalRemotePasswordPreparation;
     }
@@ -668,6 +682,15 @@ public final class AppPrefs {
                         .map(appVersion -> appVersion.getMajor() == 18 && appVersion.getMinor() == 0)
                         .orElse(false)) {
             useSystemFont.set(false);
+        }
+
+        if (useLocalFallbackShell.get()) {
+            localShellDialect.setValue(ProcessControlProvider.get().getAvailableLocalDialects().get(1));
+            useLocalFallbackShell.set(false);
+        }
+
+        if (localShellDialect.getValue() == null || !ProcessControlProvider.get().getAvailableLocalDialects().contains(localShellDialect.getValue())) {
+            localShellDialect.setValue(ProcessControlProvider.get().getAvailableLocalDialects().getFirst());
         }
     }
 

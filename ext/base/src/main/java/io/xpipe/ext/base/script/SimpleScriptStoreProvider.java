@@ -6,11 +6,7 @@ import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreCreationCategory;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.EnabledParentStoreProvider;
-import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellDialect;
@@ -93,14 +89,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 ShellDialects.CMD,
                 ShellDialects.POWERSHELL,
                 ShellDialects.POWERSHELL_CORE);
-        Comp<?> choice = (Comp<?>) Class.forName(
-                        AppExtensionManager.getInstance()
-                                .getExtendedLayer()
-                                .findModule(AppNames.extModuleName("proc"))
-                                .orElseThrow(),
-                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
-                .getDeclaredConstructor(List.class, Property.class, boolean.class)
-                .newInstance(availableDialects, dialect, true);
+        Comp<?> choice = new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -252,14 +241,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         }
 
         SimpleScriptStore st = store.asNeeded();
-        return (String) Class.forName(
-                        AppExtensionManager.getInstance()
-                                .getExtendedLayer()
-                                .findModule(AppNames.extModuleName("proc"))
-                                .orElseThrow(),
-                        AppNames.extModuleName("proc") + ".ShellDialectChoiceComp")
-                .getDeclaredMethod("getImageName", ShellDialect.class)
-                .invoke(null, st.getMinimumDialect());
+        return ShellDialectChoiceComp.getImageName(st.getMinimumDialect());
     }
 
     @Override

@@ -293,11 +293,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withErrorFormatter(Function<String, String> formatter) {
-        return parent.withErrorFormatter(formatter);
-    }
-
-    @Override
     public void checkLicenseOrThrow() {
         parent.checkLicenseOrThrow();
     }

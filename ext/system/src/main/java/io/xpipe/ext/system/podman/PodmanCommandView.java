@@ -18,7 +18,7 @@ public class PodmanCommandView extends CommandViewBase {
     }
 
     private static String formatErrorMessage(String s) {
-        return "Podman connection failed:\n" + s;
+        return s;
     }
 
     private static <T extends Throwable> T convertException(T s) {
@@ -114,8 +114,7 @@ public class PodmanCommandView extends CommandViewBase {
             var sub = shellControl.subShell();
             sub.setDumbOpen(createOpenFunction(container, false));
             sub.setTerminalOpen(createOpenFunction(container, true));
-            return sub.withErrorFormatter(PodmanCommandView::formatErrorMessage)
-                    .withExceptionConverter(PodmanCommandView::convertException);
+            return sub.withExceptionConverter(PodmanCommandView::convertException);
         }
 
         private ShellOpenFunction createOpenFunction(String containerName, boolean terminal) {

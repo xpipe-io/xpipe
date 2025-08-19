@@ -169,8 +169,7 @@ public class LxdCommandView extends CommandViewBase {
         var sub = shellControl.subShell();
         sub.setDumbOpen(createOpenFunction(container, user, false, busybox));
         sub.setTerminalOpen(createOpenFunction(container, user, true, busybox));
-        return sub.withErrorFormatter(LxdCommandView::formatErrorMessage)
-                .withExceptionConverter(LxdCommandView::convertException)
+        return sub.withExceptionConverter(LxdCommandView::convertException)
                 .elevated(requiresElevation());
     }
 

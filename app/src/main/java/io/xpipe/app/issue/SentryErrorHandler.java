@@ -216,9 +216,9 @@ public class SentryErrorHandler implements ErrorHandler {
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));
         s.setTag("licenseRequired", Boolean.toString(ee.getThrowable() instanceof LicenseRequiredException));
         s.setTag(
-                "fallbackShell",
-                AppPrefs.get() != null
-                        ? String.valueOf(AppPrefs.get().useLocalFallbackShell().get())
+                "localShell",
+                AppPrefs.get() != null && AppPrefs.get().localShellDialect().getValue() != null
+                        ? AppPrefs.get().localShellDialect().getValue().getId()
                         : "unknown");
         s.setTag("initial", AppProperties.get() != null ? AppProperties.get().isInitialLaunch() + "" : "false");
 

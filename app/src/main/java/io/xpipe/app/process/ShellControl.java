@@ -140,8 +140,6 @@ public interface ShellControl extends ProcessControl {
     @Override
     LocalProcessInputStream getStderr();
 
-    ShellControl withErrorFormatter(Function<String, String> formatter);
-
     void checkLicenseOrThrow();
 
     String prepareIntermediateTerminalOpen(
