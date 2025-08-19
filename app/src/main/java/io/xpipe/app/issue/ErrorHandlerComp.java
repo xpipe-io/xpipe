@@ -72,13 +72,18 @@ public class ErrorHandlerComp extends SimpleComp {
 
     private Region createTop() {
         var desc = event.getDescription();
-        if (desc == null && event.getThrowable() != null) {
-            var tName = event.getThrowable().getClass().getSimpleName();
-            desc = AppI18n.get("errorTypeOccured", tName);
+
+        if (event.getThrowable() != null) {
+            var toAppend = event.getThrowable().getMessage() != null ?
+                    event.getThrowable().getMessage() :
+                    AppI18n.get("errorTypeOccured", event.getThrowable().getClass().getSimpleName());
+            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
         }
+
         if (desc == null) {
             desc = AppI18n.get("errorNoDetail");
         }
+
         desc = desc.strip();
 
         if (event.isTerminal()) {

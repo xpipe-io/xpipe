@@ -86,7 +86,7 @@ public abstract class OperationMode {
                         && ex.getMessage().contains("Accessible")) {
                     ErrorEventFactory.fromThrowable(ex)
                             .expected()
-                            .descriptionPrefix(
+                            .description(
                                     "An error occurred with the Accessibility implementation. A screen reader might not be supported right now")
                             .build()
                             .handle();

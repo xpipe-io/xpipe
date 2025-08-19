@@ -66,7 +66,7 @@ public class LocalShell {
         } catch (Exception ex) {
             localPowershell = null;
             ErrorEventFactory.fromThrowable(ex)
-                    .descriptionPrefix("Failed to start local powershell process")
+                    .description("Failed to start local powershell process")
                     .handle();
         }
 

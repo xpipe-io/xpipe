@@ -16,13 +16,12 @@ public class ErrorEventFactory {
 
     public static ErrorEvent.ErrorEventBuilder fromThrowable(Throwable t) {
         var b = retrieveBuilder(t);
-        return b.description(t.getMessage());
+        return b;
     }
 
     public static ErrorEvent.ErrorEventBuilder fromThrowable(String msg, Throwable t) {
         var b = retrieveBuilder(t);
-        return b.description(
-                msg + (t.getMessage() != null ? "\n\n" + t.getMessage().strip() : ""));
+        return b.description(msg);
     }
 
     public static ErrorEvent.ErrorEventBuilder fromMessage(String msg) {

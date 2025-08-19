@@ -85,11 +85,6 @@ public class ErrorEvent {
 
     public static class ErrorEventBuilder {
 
-        public ErrorEventBuilder descriptionPrefix(String prefix) {
-            this.description = this.description != null ? prefix + "\n\n" + this.description : prefix;
-            return this;
-        }
-
         public ErrorEventBuilder documentationLink(DocumentationLink documentationLink) {
             return link(documentationLink.getLink());
         }
