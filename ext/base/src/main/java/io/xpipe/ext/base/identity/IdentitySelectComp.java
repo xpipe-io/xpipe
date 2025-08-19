@@ -60,6 +60,39 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     }
 
     private void addNamedIdentity() {
+        var pwMan = DataStorage.get().getStoreEntries().stream()
+                .map(entry -> entry.getStore() instanceof PasswordManagerIdentityStore p ? p : null)
+                .filter(s -> s != null)
+                .findFirst();
+        if (pwMan.isPresent()) {
+            var perUser = pwMan.get().isPerUser();
+            var id = PasswordManagerIdentityStore.builder().key(inPlaceUser.getValue()).perUser(perUser).build();
+            showIdentityCreation(id);
+            return;
+        }
+
+        var synced = DataStorage.get().getStoreEntries().stream()
+                .map(entry -> entry.getStore() instanceof SyncedIdentityStore p ? p : null)
+                .filter(s -> s != null)
+                .findFirst();
+        if (synced.isPresent()) {
+            var pass = EncryptedValue.VaultKey.of(password.getValue());
+            if (pass == null) {
+                pass = EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None());
+            }
+            var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
+            if (ssh == null) {
+                ssh = EncryptedValue.VaultKey.of(new SshIdentityStrategy.None());
+            }
+            var id = SyncedIdentityStore.builder()
+                    .username(inPlaceUser.getValue())
+                    .password(pass)
+                    .sshIdentity(ssh)
+                    .build();
+            showIdentityCreation(id);
+            return;
+        }
+
         var pass = EncryptedValue.CurrentKey.of(password.getValue());
         if (pass == null) {
             pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
@@ -73,9 +106,12 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .password(pass)
                 .sshIdentity(ssh)
                 .build();
+        showIdentityCreation(id);
+    }
 
+    private void showIdentityCreation(IdentityStore store) {
         StoreCreationDialog.showCreation(
-                id,
+                store,
                 DataStoreCreationCategory.IDENTITY,
                 dataStoreEntry -> {
                     PlatformThread.runLaterIfNeeded(() -> {

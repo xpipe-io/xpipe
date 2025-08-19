@@ -40,6 +40,7 @@ public class PasswdFile {
         }
 
         var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/passwd"))
+                .sensitive()
                 .readStdoutIfPossible()
                 .orElse("");
         lines.lines().forEach(s -> {

@@ -55,6 +55,7 @@ public class BrowserFileSystemCache extends ShellControlCache {
         }
 
         var lines = sc.command(CommandBuilder.of().add("cat").addFile("/etc/group"))
+                .sensitive()
                 .readStdoutIfPossible()
                 .orElse("");
         lines.lines().forEach(s -> {
