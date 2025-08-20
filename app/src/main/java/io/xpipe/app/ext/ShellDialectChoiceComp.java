@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 public class ShellDialectChoiceComp extends SimpleComp {
 
     public enum NullHandling {
-
         NULL_IS_DEFAULT,
         NULL_IS_ALL,
         NULL_DISABLED
@@ -63,7 +62,12 @@ public class ShellDialectChoiceComp extends SimpleComp {
             @Override
             protected void updateItem(ShellDialect item, boolean empty) {
                 super.updateItem(item, empty);
-                setText(item != null ? item.getDisplayName() : nullHandling == NullHandling.NULL_IS_ALL ? AppI18n.get("all") : AppI18n.get("default"));
+                setText(
+                        item != null
+                                ? item.getDisplayName()
+                                : nullHandling == NullHandling.NULL_IS_ALL
+                                        ? AppI18n.get("all")
+                                        : AppI18n.get("default"));
                 setGraphic(
                         item != null
                                 ? PrettyImageHelper.ofFixedSizeSquare("proc:" + ICONS.get(item), 16)

@@ -74,9 +74,10 @@ public class ErrorHandlerComp extends SimpleComp {
         var desc = event.getDescription();
 
         if (event.getThrowable() != null) {
-            var toAppend = event.getThrowable().getMessage() != null ?
-                    event.getThrowable().getMessage() :
-                    AppI18n.get("errorTypeOccured", event.getThrowable().getClass().getSimpleName());
+            var toAppend = event.getThrowable().getMessage() != null
+                    ? event.getThrowable().getMessage()
+                    : AppI18n.get(
+                            "errorTypeOccured", event.getThrowable().getClass().getSimpleName());
             desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
         }
 

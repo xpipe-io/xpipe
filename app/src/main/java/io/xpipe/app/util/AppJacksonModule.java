@@ -93,7 +93,8 @@ public class AppJacksonModule extends SimpleModule {
         public OsType.Local deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.MACOS);
             var n = p.getValueAsString();
-            return stream.filter(osType -> osType.getName().equals(n) || osType.getId().equals(n))
+            return stream.filter(osType ->
+                            osType.getName().equals(n) || osType.getId().equals(n))
                     .findFirst()
                     .orElse(null);
         }
@@ -105,7 +106,8 @@ public class AppJacksonModule extends SimpleModule {
         public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS);
             var n = p.getValueAsString();
-            return stream.filter(osType -> osType.getName().equals(n) || osType.getId().equals(n))
+            return stream.filter(osType ->
+                            osType.getName().equals(n) || osType.getId().equals(n))
                     .findFirst()
                     .orElse(null);
         }

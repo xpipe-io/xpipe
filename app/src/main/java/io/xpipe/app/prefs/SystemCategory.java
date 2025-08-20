@@ -8,8 +8,6 @@ import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
-import java.util.List;
-
 public class SystemCategory extends AppPrefsCategory {
 
     @Override
@@ -39,9 +37,16 @@ public class SystemCategory extends AppPrefsCategory {
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
                                 .maxWidth(getCompWidth()))
-                        .pref(prefs.localShellDialect).addComp(new ShellDialectChoiceComp(ProcessControlProvider.get().getAvailableLocalDialects(), prefs.localShellDialect, ShellDialectChoiceComp.NullHandling.NULL_DISABLED).maxWidth(getCompWidth()),
+                        .pref(prefs.localShellDialect)
+                        .addComp(
+                                new ShellDialectChoiceComp(
+                                                ProcessControlProvider.get().getAvailableLocalDialects(),
+                                                prefs.localShellDialect,
+                                                ShellDialectChoiceComp.NullHandling.NULL_DISABLED)
+                                        .maxWidth(getCompWidth()),
                                 prefs.localShellDialect)
-                        .pref(prefs.developerMode).addToggle(prefs.developerMode));
+                        .pref(prefs.developerMode)
+                        .addToggle(prefs.developerMode));
         return builder.buildComp();
     }
 }

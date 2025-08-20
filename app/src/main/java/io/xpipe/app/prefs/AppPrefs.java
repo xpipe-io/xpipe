@@ -132,7 +132,8 @@ public final class AppPrefs {
     public final BooleanProperty useLocalFallbackShell =
             mapLocal(new GlobalBooleanProperty(false), "useLocalFallbackShell", Boolean.class, true);
     final Property<ShellDialect> localShellDialect = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>(ProcessControlProvider.get().getAvailableLocalDialects().getFirst()))
+            .property(new GlobalObjectProperty<>(
+                    ProcessControlProvider.get().getAvailableLocalDialects().getFirst()))
             .key("localShellDialect")
             .valueClass(ShellDialect.class)
             .vaultSpecific(false)
@@ -685,12 +686,15 @@ public final class AppPrefs {
         }
 
         if (useLocalFallbackShell.get()) {
-            localShellDialect.setValue(ProcessControlProvider.get().getAvailableLocalDialects().get(1));
+            localShellDialect.setValue(
+                    ProcessControlProvider.get().getAvailableLocalDialects().get(1));
             useLocalFallbackShell.set(false);
         }
 
-        if (localShellDialect.getValue() == null || !ProcessControlProvider.get().getAvailableLocalDialects().contains(localShellDialect.getValue())) {
-            localShellDialect.setValue(ProcessControlProvider.get().getAvailableLocalDialects().getFirst());
+        if (localShellDialect.getValue() == null
+                || !ProcessControlProvider.get().getAvailableLocalDialects().contains(localShellDialect.getValue())) {
+            localShellDialect.setValue(
+                    ProcessControlProvider.get().getAvailableLocalDialects().getFirst());
         }
     }
 

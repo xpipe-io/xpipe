@@ -16,7 +16,10 @@ import java.util.Optional;
 public abstract class AppShellChecker {
 
     public void check() throws Exception {
-        var isDefaultShell = ProcessControlProvider.get().getAvailableLocalDialects().getFirst().equals(ProcessControlProvider.get().getEffectiveLocalDialect());
+        var isDefaultShell = ProcessControlProvider.get()
+                .getAvailableLocalDialects()
+                .getFirst()
+                .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
         if (isDefaultShell && fallBackInstantly()) {
             toggleFallback();
             isDefaultShell = false;
@@ -67,7 +70,10 @@ public abstract class AppShellChecker {
 
                %s will now attempt to fall back to another shell.
                """
-                .formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), AppNames.ofCurrent().getName());
+                .formatted(
+                        LocalShell.getDialect().getDisplayName(),
+                        modifyOutput(output),
+                        AppNames.ofCurrent().getName());
     }
 
     protected abstract boolean fallBackInstantly();

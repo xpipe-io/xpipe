@@ -66,7 +66,10 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .findFirst();
         if (pwMan.isPresent()) {
             var perUser = pwMan.get().isPerUser();
-            var id = PasswordManagerIdentityStore.builder().key(inPlaceUser.getValue()).perUser(perUser).build();
+            var id = PasswordManagerIdentityStore.builder()
+                    .key(inPlaceUser.getValue())
+                    .perUser(perUser)
+                    .build();
             showIdentityCreation(id);
             return;
         }
@@ -170,10 +173,10 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         var suffix = id instanceof LocalIdentityStore
                 ? AppI18n.get("localIdentity")
                 : id instanceof PasswordManagerIdentityStore
-                ? AppI18n.get("passwordManagerIdentity")
-                : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
-                        ? AppI18n.get("userIdentity")
-                        : AppI18n.get("globalIdentity");
+                        ? AppI18n.get("passwordManagerIdentity")
+                        : id instanceof SyncedIdentityStore && storeEntry.isPerUserStore()
+                                ? AppI18n.get("userIdentity")
+                                : AppI18n.get("globalIdentity");
         return storeEntry.getName() + " (" + suffix + ")";
     }
 

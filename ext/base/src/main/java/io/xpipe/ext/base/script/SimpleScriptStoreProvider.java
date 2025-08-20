@@ -3,9 +3,7 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
-import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.process.OsFileSystem;
@@ -89,7 +87,8 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 ShellDialects.CMD,
                 ShellDialects.POWERSHELL,
                 ShellDialects.POWERSHELL_CORE);
-        Comp<?> choice = new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
+        Comp<?> choice =
+                new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();

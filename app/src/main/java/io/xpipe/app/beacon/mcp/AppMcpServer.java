@@ -1,6 +1,5 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.spec.HttpHeaders;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -12,6 +11,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -120,14 +120,13 @@ public class AppMcpServer {
                         return;
                     }
 
-                    if (exchange.getRequestMethod().equals("GET") && exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
-                        var msg = "Session ID required in mcp-session-id header." +
-                                " Check whether you are using the streamable HTTP transport and not something else like SSE.";
+                    if (exchange.getRequestMethod().equals("GET")
+                            && exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
+                        var msg = "Session ID required in mcp-session-id header."
+                                + " Check whether you are using the streamable HTTP transport and not something else like SSE.";
                         transportProvider.sendError(exchange, 400, msg);
                         ThreadHelper.runAsync(() -> {
-                            ErrorEventFactory.fromMessage(msg)
-                                    .expected()
-                                    .handle();
+                            ErrorEventFactory.fromMessage(msg).expected().handle();
                         });
                         return;
                     }
