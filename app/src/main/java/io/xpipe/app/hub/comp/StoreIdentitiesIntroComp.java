@@ -35,7 +35,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         introDesc.setMaxWidth(470);
 
         var img = new FontIcon("mdi2a-account-group");
-        img.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+        img.setIconSize(80);
         var text = new VBox(title, introDesc);
         text.setSpacing(5);
         text.setAlignment(Pos.CENTER_LEFT);
@@ -90,7 +90,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         syncPane.setAlignment(Pos.CENTER);
 
         var fi = new FontIcon("mdi2g-git");
-        fi.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+        fi.setIconSize(80);
         var img = new StackPane(fi);
         img.setPrefWidth(100);
         img.setPrefHeight(120);

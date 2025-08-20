@@ -103,7 +103,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
                         desc.heightProperty()));
         pane.prefHeightProperty().addListener((c, o, n) -> {
             var size = Math.min(n.intValue(), 100);
-            fi.getIcon().iconSizeProperty().bind(new ReadOnlyDoubleWrapper(size * iconSize));
+            fi.getIcon().setIconSize((int) (size * iconSize));
         });
         bt.setGraphic(hbox);
         return Structure.builder()

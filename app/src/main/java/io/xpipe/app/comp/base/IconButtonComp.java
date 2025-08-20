@@ -57,15 +57,14 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
             PlatformThread.runLaterIfNeeded(() -> {
                 button.setGraphic(labelGraphic.createGraphicNode());
                 if (button.getGraphic() instanceof FontIcon fi) {
-                    fi.iconSizeProperty().bind(new ReadOnlyIntegerWrapper((int)
-                            new Size(button.getFont().getSize(), SizeUnits.PT).pixels()));
+                    fi.setIconSize((int)
+                            new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
                 }
             });
         });
         button.fontProperty().subscribe((n) -> {
             if (button.getGraphic() instanceof FontIcon fi) {
-                fi.iconSizeProperty()
-                        .bind(new ReadOnlyIntegerWrapper((int) new Size(n.getSize(), SizeUnits.PT).pixels()));
+                fi.setIconSize((int) new Size(n.getSize(), SizeUnits.PT).pixels());
             }
         });
         if (listener != null) {

@@ -1,5 +1,6 @@
 package io.xpipe.app.prefs;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -61,9 +62,8 @@ public class TerminalCategory extends AppPrefsCategory {
                         if (item != ExternalTerminalType.CUSTOM) {
                             var graphic = new FontIcon(
                                     item.isRecommended() ? "mdi2c-check-decagram" : "mdi2a-alert-circle-check");
-                            graphic.iconColorProperty()
-                                    .bind(new ReadOnlyObjectWrapper<>(
-                                            item.isRecommended() ? Color.GREEN : Color.ORANGE));
+                            graphic.getStyleClass().add("graphic");
+                            graphic.getStyleClass().add(item.isRecommended() ? "supported" : "unsupported");
                             setGraphic(graphic);
                         } else {
                             setGraphic(new FontIcon("mdi2m-minus-circle"));

@@ -8,6 +8,7 @@ import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.util.LabelGraphic;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -40,5 +41,10 @@ public class OpenNativeFileDetailsMenuProvider implements BrowserMenuLeafProvide
     @Override
     public boolean acceptsEmptySelection() {
         return true;
+    }
+
+    @Override
+    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return new LabelGraphic.IconGraphic("mdi2f-folder-information-outline");
     }
 }

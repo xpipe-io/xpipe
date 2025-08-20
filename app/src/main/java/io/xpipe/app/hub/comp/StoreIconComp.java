@@ -37,7 +37,7 @@ public class StoreIconComp extends SimpleComp {
         background.getStyleClass().add("background");
 
         var dots = new FontIcon("mdi2d-dots-horizontal");
-        dots.iconSizeProperty().bind(new ReadOnlyIntegerWrapper((int) (h * 1.3)));
+        dots.setIconSize((int) (h * 1.3));
 
         var stack = new StackPane(background, storeIcon, dots);
         stack.setMinHeight(w + 5);

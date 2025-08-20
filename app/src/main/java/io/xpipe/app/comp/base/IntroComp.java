@@ -50,7 +50,7 @@ public class IntroComp extends SimpleComp {
 
         var img = graphic.createGraphicNode();
         if (img instanceof FontIcon fontIcon) {
-            fontIcon.iconSizeProperty().bind(new ReadOnlyIntegerWrapper(80));
+            fontIcon.setIconSize(80);
         }
         var text = new VBox(title, introDesc);
         text.setSpacing(5);

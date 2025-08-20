@@ -56,16 +56,15 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
                     var n = t.createGraphicNode();
                     button.setGraphic(n);
                     if (n instanceof FontIcon f && button.getFont() != null) {
-                        f.iconSizeProperty().bind(new ReadOnlyIntegerWrapper((int)
-                                new Size(button.getFont().getSize(), SizeUnits.PT).pixels()));
+                        f.setIconSize((int)
+                                new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
                     }
                 });
             });
 
             button.fontProperty().subscribe(c -> {
                 if (button.getGraphic() instanceof FontIcon f) {
-                    f.iconSizeProperty()
-                            .bind(new ReadOnlyIntegerWrapper((int) new Size(c.getSize(), SizeUnits.PT).pixels()));
+                    f.setIconSize((int) new Size(c.getSize(), SizeUnits.PT).pixels());
                 }
             });
         }

@@ -1,5 +1,6 @@
 package io.xpipe.app.issue;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -33,7 +34,7 @@ public class ErrorHandlerDialog {
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
-                graphic.iconColorProperty().bind(new ReadOnlyObjectWrapper<>(Color.RED));
+                graphic.pseudoClassStateChanged(Styles.STATE_DANGER, true);
                 return graphic;
             }));
             if (event.getThrowable() != null && event.isReportable()) {
