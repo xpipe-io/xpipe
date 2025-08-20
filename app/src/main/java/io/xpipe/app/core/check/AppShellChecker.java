@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellSpawnException;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 
@@ -15,18 +16,19 @@ import java.util.Optional;
 public abstract class AppShellChecker {
 
     public void check() throws Exception {
-        var canFallback = !ProcessControlProvider.get().canFallback();
-        if (canFallback && fallBackInstantly()) {
+        var isDefaultShell = ProcessControlProvider.get().getAvailableLocalDialects().getFirst().equals(ProcessControlProvider.get().getEffectiveLocalDialect());
+        if (isDefaultShell && fallBackInstantly()) {
             toggleFallback();
-            canFallback = false;
+            isDefaultShell = false;
         }
 
         var err = selfTestErrorCheck();
         if (err.isPresent()
-                && canFallback
+                && isDefaultShell
                 && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
             var msg = formatMessage(err.get().getMessage());
             ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
+                    .documentationLink(DocumentationLink.LOCAL_SHELL_WARNING)
                     .expected()
                     .handle();
             toggleFallback();
@@ -57,24 +59,16 @@ public abstract class AppShellChecker {
     }
 
     private String formatMessage(String output) {
-        var fallback = ProcessControlProvider.get().canFallback()
-                ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
-                : "";
         return """
                Shell self-test failed for %s:
                %s
 
                This indicates that something is seriously wrong and certain shell functionality will not work as expected. Some features like the terminal launcher have to create shell scripts for your external terminal emulator to launch.
 
-               The most likely causes are:
-               %s
-
-               %s
+               %s will now attempt to fall back to another shell.
                """
-                .formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), listReasons(), fallback);
+                .formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), AppNames.ofCurrent().getName());
     }
-
-    protected abstract String listReasons();
 
     protected abstract boolean fallBackInstantly();
 

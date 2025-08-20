@@ -83,6 +83,9 @@ public enum DocumentationLink {
     TEAM_VAULTS("guide/sync#team-vaults"),
     SSH_TROUBLESHOOT("troubleshoot/ssh"),
     NO_EXEC("troubleshoot/noexec"),
+    LOCAL_SHELL_ERROR("troubleshoot/local-shell"),
+    LOCAL_SHELL_WARNING("troubleshoot/local-shell#startup-warnings"),
+    LOCAL_SHELL_OCCASIONAL("troubleshoot/local-shell#occasional-failures"),
     MCP("guide/mcp");
 
     private final String page;

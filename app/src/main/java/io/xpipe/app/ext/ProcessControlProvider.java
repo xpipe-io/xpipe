@@ -58,11 +58,6 @@ public abstract class ProcessControlProvider {
 
     public abstract List<ShellDialect> getAvailableLocalDialects();
 
-    public boolean canFallback() {
-        var av = getAvailableLocalDialects();
-        return av.indexOf(getEffectiveLocalDialect()) < av.size() - 1;
-    }
-
     public abstract <T extends DataStore> DataStoreEntryRef<T> replace(DataStoreEntryRef<T> ref);
 
     public abstract ModalOverlay createNetworkScanModal();

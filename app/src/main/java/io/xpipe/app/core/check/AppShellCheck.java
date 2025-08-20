@@ -12,16 +12,6 @@ public class AppShellCheck {
                         new AppShellChecker() {
 
                             @Override
-                            protected String listReasons() {
-                                return """
-                               - There is a permissions issue
-                               - The system shell is restricted or blocked
-                               - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
-                               - Some elementary command-line tools are not available or not working correctly
-                           """;
-                            }
-
-                            @Override
                             protected boolean fallBackInstantly() {
                                 return false;
                             }
@@ -35,16 +25,6 @@ public class AppShellCheck {
                                 // users
                                 // to use sh
                                 return false;
-                            }
-
-                            @Override
-                            protected String listReasons() {
-                                return """
-                               - There is a permissions issue
-                               - The system shell is restricted or blocked
-                               - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
-                               - Some elementary command-line tools are not available or not working correctly
-                           """;
                             }
 
                             @Override
@@ -71,17 +51,6 @@ public class AppShellCheck {
                                 }
 
                                 return super.modifyOutput(output);
-                            }
-
-                            @Override
-                            protected String listReasons() {
-                                return """
-                           - An AntiVirus program might block required programs and commands
-                           - The system shell is restricted or blocked
-                           - Your PATH environment variable is corrupt / incomplete. You can check this by manually trying to run some commands in a terminal
-                           - Some elementary command-line tools are not available or not working correctly
-                           - Applocker might block script execution
-                           """;
                             }
 
                             @Override

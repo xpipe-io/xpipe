@@ -148,7 +148,9 @@ public class ErrorHandlerComp extends SimpleComp {
         }
 
         if (event.getLink() != null) {
-            actionBox.getChildren().add(createActionComp(ErrorAction.openDocumentation(event.getLink()), busy));
+            var ac = createActionComp(ErrorAction.openDocumentation(event.getLink()), busy);
+            ac.getStyleClass().addAll(BUTTON_OUTLINED, ACCENT);
+            actionBox.getChildren().add(ac);
         }
 
         var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
