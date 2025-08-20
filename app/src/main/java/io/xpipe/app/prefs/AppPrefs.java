@@ -67,6 +67,7 @@ public final class AppPrefs {
             .key("alwaysShowSshMotd")
             .valueClass(Boolean.class)
             .requiresRestart(false)
+            .vaultSpecific(true)
             .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
@@ -82,9 +83,9 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.API)
             .build());
     final BooleanProperty enableMcpServer =
-            mapVaultShared(new GlobalBooleanProperty(false), "enableMcpServer", Boolean.class, false);
+            mapLocal(new GlobalBooleanProperty(false), "enableMcpServer", Boolean.class, false);
     final BooleanProperty enableMcpMutationTools =
-            mapVaultShared(new GlobalBooleanProperty(false), "enableMcpMutationTools", Boolean.class, false);
+            mapLocal(new GlobalBooleanProperty(false), "enableMcpMutationTools", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultShared(new GlobalBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
