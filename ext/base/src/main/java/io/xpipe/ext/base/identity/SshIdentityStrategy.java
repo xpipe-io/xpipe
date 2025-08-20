@@ -118,8 +118,28 @@ public interface SshIdentityStrategy {
             }
         }
 
+
         @Override
-        public void buildCommand(CommandBuilder builder) {}
+        public void buildCommand(CommandBuilder builder) {
+            builder.environment("SSH_AUTH_SOCK", sc -> {
+                if (sc.getOsType() == OsType.WINDOWS) {
+                    return null;
+                }
+
+                if (AppPrefs.get() != null) {
+                    var socket = AppPrefs.get().sshAgentSocket().getValue();
+                    if (socket == null) {
+                        socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+                    }
+
+                    if (socket != null) {
+                        return socket.resolveTildeHome(sc.view().userHome()).toString();
+                    }
+                }
+
+                return null;
+            });
+        }
 
         @Override
         public List<KeyValue> configOptions(ShellControl parent) throws Exception {
@@ -308,7 +328,7 @@ public interface SshIdentityStrategy {
             var s = file.toAbsoluteFilePath(parent);
             // The ~ is supported on all platforms, so manually replace it here for Windows
             if (s.startsWith("~")) {
-                s = s.resolveTildeHome(parent.view().userHome().toString());
+                s = s.resolveTildeHome(parent.view().userHome());
             }
             var resolved = parent.getShellDialect()
                     .evaluateExpression(parent, s.toString())
@@ -374,7 +394,7 @@ public interface SshIdentityStrategy {
             var s = file.toAbsoluteFilePath(sc);
             // The ~ is supported on all platforms, so manually replace it here for Windows
             if (s.startsWith("~")) {
-                s = s.resolveTildeHome(sc.view().userHome().toString());
+                s = s.resolveTildeHome(sc.view().userHome());
             }
             var resolved =
                     sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();

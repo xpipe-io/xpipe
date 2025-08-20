@@ -189,8 +189,8 @@ public final class FilePath {
         return r;
     }
 
-    public FilePath resolveTildeHome(String dir) {
-        return value.startsWith("~") ? FilePath.of(value.replace("~", dir)) : this;
+    public FilePath resolveTildeHome(FilePath dir) {
+        return value.startsWith("~") ? FilePath.of(value.replace("~", dir.toString())) : this;
     }
 
     public List<String> split() {

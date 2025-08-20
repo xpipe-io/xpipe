@@ -223,7 +223,7 @@ public class SshIdentityStateManager {
             if (socket == null) {
                 socket = AppPrefs.get().defaultSshAgentSocket().getValue();
             }
-            checkLocalAgentIdentities(socket != null ? socket.toString() : null);
+            checkLocalAgentIdentities(socket != null ? socket.resolveTildeHome(sc.view().userHome()).toString() : null);
         }
 
         runningAgent = RunningAgent.SSH_AGENT;

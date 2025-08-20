@@ -83,8 +83,8 @@ public class ShellSession extends Session {
             return true;
         }
 
-        // Don't run commands while in exit
-        if (shellControl.isExiting()) {
+        // Don't run commands while in startup / exit
+        if (shellControl.isInitializing() || shellControl.isExiting()) {
             return true;
         }
 
