@@ -56,8 +56,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                         sc.getShellDialect()
                                 .getEchoCommand(
                                         "XPipe is now successfully connected to your Bitwarden vault. You can close this window",
-                                        false),
-                        sc.getShellDialect().getPauseCommand());
+                                        false));
                 TerminalLaunch.builder()
                         .title("Bitwarden login")
                         .localScript(script)

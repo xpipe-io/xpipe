@@ -85,7 +85,7 @@ public class GitHubUpdater extends UpdateHandler {
     }
 
     public synchronized AvailableRelease refreshUpdateCheckImpl(boolean first, boolean securityOnly) throws Exception {
-        var rel = AppDownloads.queryLatestRelease(first, securityOnly);
+        var rel = AppDownloads.queryLatestVersion(first, securityOnly);
         event("Determined latest suitable release " + rel.getTag());
         var isUpdate = isUpdate(rel.getTag());
         var assetType = AppInstaller.getSuitablePlatformAsset();
