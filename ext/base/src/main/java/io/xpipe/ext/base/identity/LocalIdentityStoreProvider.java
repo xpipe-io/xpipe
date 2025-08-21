@@ -5,6 +5,9 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,6 +35,14 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
         var pass = new SimpleObjectProperty<>(st.getPassword());
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
 
+        var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
+                .allowAgentForward(true)
+                .proxy(new ReadOnlyObjectWrapper<>(
+                        DataStorage.get().local().ref()))
+                .allowKeyFileSync(false)
+                .perUserKeyFileCheck(path -> false)
+                .build();
+
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
@@ -42,14 +53,9 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
-                        SshIdentityStrategyHelper.identity(
-                                new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()),
-                                identity,
-                                null,
-                                false,
-                                true),
-                        identity)
+                        OptionsChoiceBuilder.builder().allowNull(false).property(identity)
+                                .customConfiguration(sshIdentityChoiceConfig).subclasses(SshIdentityStrategy.getSubclasses()).build()
+                                .build(), identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()
@@ -73,7 +79,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))
+                .sshIdentity(EncryptedValue.of(new NoneStrategy()))
                 .build();
     }
 

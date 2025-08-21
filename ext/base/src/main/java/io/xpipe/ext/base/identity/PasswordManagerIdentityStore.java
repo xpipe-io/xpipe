@@ -9,6 +9,8 @@ import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -117,7 +119,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
     @Override
     public SshIdentityStrategy getSshIdentity() {
-        return new SshIdentityStrategy.None();
+        return new NoneStrategy();
     }
 
     @Override

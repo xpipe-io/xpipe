@@ -6,6 +6,8 @@ import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;
@@ -44,7 +46,7 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     @Override
     public void checkComplete() throws Throwable {
         super.checkComplete();
-        if (getSshIdentity() instanceof SshIdentityStrategy.File f) {
+        if (getSshIdentity() instanceof KeyFileStrategy f) {
             if (!f.getFile().isInDataDirectory()) {
                 throw new ValidationException("Key file is not synced");
             }

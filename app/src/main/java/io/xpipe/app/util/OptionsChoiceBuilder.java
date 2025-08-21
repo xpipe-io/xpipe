@@ -12,8 +12,11 @@ import javafx.scene.layout.Region;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
+import lombok.SneakyThrows;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.Function;
@@ -25,21 +28,36 @@ public class OptionsChoiceBuilder {
     private final List<Class<?>> subclasses;
     private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
     private final boolean allowNull;
+    private final Object customConfiguration;
 
+    @SneakyThrows
     private static String createIdForClass(Class<?> c) {
-        if (c.getAnnotation(JsonTypeName.class) != null) {
-            var a = c.getAnnotation(JsonTypeName.class);
+        var custom = Arrays.stream(c.getDeclaredMethods()).filter(m -> m.getName().equals("getOptionsNameKey")).findFirst();
+        if (custom.isPresent()) {
+            return (String) custom.get().invoke(null);
+        }
+
+        var a = c.getAnnotation(JsonTypeName.class);
+        if (a != null) {
             return a.value();
         }
 
         return null;
     }
 
-    private static OptionsBuilder createOptionsForClass(Class<?> c, Property<Object> property) {
+    private static Method findCreateOptionsMethod(Class<?> c) {
+        return Arrays.stream(c.getDeclaredMethods()).filter(method -> method.getName().equals("createOptions")).findFirst().orElse(null);
+    }
+
+    private static OptionsBuilder createOptionsForClass(Class<?> c, Property<Object> property, Object customConfiguration) {
+        var method = findCreateOptionsMethod(c);
+        if (method == null) {
+            return null;
+        }
+
         try {
-            var method = c.getDeclaredMethod("createOptions", Property.class);
             method.setAccessible(true);
-            var r = method.invoke(null, property);
+            var r = method.getParameters().length == 2 ? method.invoke(null, property, customConfiguration) : method.invoke(null, property);
             if (r != null) {
                 return (OptionsBuilder) r;
             }
@@ -120,7 +138,7 @@ public class OptionsChoiceBuilder {
         for (int i = 0; i < sub.size(); i++) {
             map.put(
                     AppI18n.observable(createIdForClass(sub.get(i))),
-                    createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0))));
+                    createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
         }
 
         return new OptionsBuilder()

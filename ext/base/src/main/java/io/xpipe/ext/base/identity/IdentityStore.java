@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.app.util.*;
 
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

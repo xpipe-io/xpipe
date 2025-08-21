@@ -16,6 +16,7 @@ open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.desktop;
     exports io.xpipe.ext.base.service;
     exports io.xpipe.ext.base.identity;
+    exports io.xpipe.ext.base.identity.ssh;
 
     requires java.desktop;
     requires io.xpipe.core;

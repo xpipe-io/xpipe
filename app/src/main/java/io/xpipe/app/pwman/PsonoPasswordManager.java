@@ -33,6 +33,7 @@ public class PsonoPasswordManager implements PasswordManager {
     private final InPlaceSecretValue apiSecretKey;
     private final String serverUrl;
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PsonoPasswordManager> p) {
         var apiKey = new SimpleObjectProperty<>(p.getValue().getApiKey());
         var apiSecretKey = new SimpleObjectProperty<>(p.getValue().getApiSecretKey());

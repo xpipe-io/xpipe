@@ -12,6 +12,8 @@ import io.xpipe.app.util.Validators;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -55,7 +57,7 @@ public interface IdentityValue {
     static IdentityValue.InPlace none() {
         var s = LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.of(new SshIdentityStrategy.None()))
+                .sshIdentity(EncryptedValue.of(new NoneStrategy()))
                 .build();
         return of(s);
     }
@@ -93,7 +95,7 @@ public interface IdentityValue {
     }
 
     default void checkCompleteSshIdentity() throws ValidationException {
-        Validators.nonNull(unwrap().getSshIdentity(), "Identity ssh auth");
+        Validators.nonNull(unwrap().getSshIdentity(), "Identity ssh key");
         unwrap().getSshIdentity().checkComplete();
     }
 

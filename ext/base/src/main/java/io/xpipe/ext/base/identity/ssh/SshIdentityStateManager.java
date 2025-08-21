@@ -1,4 +1,4 @@
-package io.xpipe.ext.base.identity;
+package io.xpipe.ext.base.identity.ssh;
 
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;

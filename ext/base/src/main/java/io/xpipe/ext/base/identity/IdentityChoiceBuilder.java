@@ -3,11 +3,10 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
+import io.xpipe.app.util.*;
 
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 import javafx.beans.property.*;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +16,7 @@ import lombok.Value;
 @Value
 @Builder
 @AllArgsConstructor
-public class IdentityChoice {
+public class IdentityChoiceBuilder {
 
     Property<DataStoreEntryRef<ShellStore>> host;
     ObjectProperty<IdentityValue> identity;
@@ -31,13 +30,13 @@ public class IdentityChoice {
 
     public static OptionsBuilder ssh(
             Property<DataStoreEntryRef<ShellStore>> host, ObjectProperty<IdentityValue> identity, boolean requireUser) {
-        var i = new IdentityChoice(
+        var i = new IdentityChoiceBuilder(
                 host, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
-        var i = new IdentityChoice(
+        var i = new IdentityChoiceBuilder(
                 null, identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
@@ -68,21 +67,24 @@ public class IdentityChoice {
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .hide(refSelected)
                 .addProperty(ref);
+
+        var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
+                .allowAgentForward(allowAgentForward)
+                .proxy(host != null
+                        ? host
+                        : new ReadOnlyObjectWrapper<>(
+                        DataStorage.get().local().ref()))
+                .allowKeyFileSync(true)
+                .perUserKeyFileCheck(path -> false)
+                .build();
+
         if (keyInput) {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
                     .longDescription(DocumentationLink.SSH_KEYS)
-                    .sub(
-                            SshIdentityStrategyHelper.identity(
-                                    host != null
-                                            ? host
-                                            : new ReadOnlyObjectWrapper<>(
-                                                    DataStorage.get().local().ref()),
-                                    identityStrategy,
-                                    path -> false,
-                                    true,
-                                    allowAgentForward),
-                            identityStrategy)
+                    .sub(OptionsChoiceBuilder.builder().allowNull(false).property(identityStrategy)
+                            .customConfiguration(sshIdentityChoiceConfig).subclasses(SshIdentityStrategy.getSubclasses()).build()
+                            .build(), identityStrategy)
                     .nonNullIf(inPlaceSelected)
                     .disable(refSelected)
                     .hide(refSelected);

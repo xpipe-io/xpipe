@@ -7,7 +7,7 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.IdentityChoice;
+import io.xpipe.ext.base.identity.IdentityChoiceBuilder;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
 import javafx.beans.property.Property;
@@ -79,7 +79,7 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
                 .name("container")
                 .description("lxdContainerDescription")
                 .addStaticString(st.getContainerName())
-                .sub(IdentityChoice.container(identity), identity)
+                .sub(IdentityChoiceBuilder.container(identity), identity)
                 .bind(
                         () -> {
                             return IncusContainerStore.builder()

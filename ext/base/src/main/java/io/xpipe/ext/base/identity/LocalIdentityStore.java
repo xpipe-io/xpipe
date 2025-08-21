@@ -4,6 +4,7 @@ import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.Value;

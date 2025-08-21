@@ -165,3 +165,8 @@
 .ikonli-font-icon.graphic.unsupported {
     -fx-icon-color: -color-warning-fg;
 }
+
+.ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+    -fx-fill: -color-fg-default;
+}

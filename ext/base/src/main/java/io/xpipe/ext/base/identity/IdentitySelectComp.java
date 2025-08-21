@@ -16,6 +16,8 @@ import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -85,7 +87,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
             var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
             if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new SshIdentityStrategy.None());
+                ssh = EncryptedValue.VaultKey.of(new NoneStrategy());
             }
             var id = SyncedIdentityStore.builder()
                     .username(inPlaceUser.getValue())
@@ -102,7 +104,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         }
         var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
         if (ssh == null) {
-            ssh = EncryptedValue.CurrentKey.of(new SshIdentityStrategy.None());
+            ssh = EncryptedValue.CurrentKey.of(new NoneStrategy());
         }
         var id = LocalIdentityStore.builder()
                 .username(inPlaceUser.getValue())

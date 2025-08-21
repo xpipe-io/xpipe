@@ -8,6 +8,10 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 
+import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 import javafx.beans.property.*;
 
 import java.nio.file.Files;
@@ -40,7 +44,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var identity = new SimpleObjectProperty<>(st.getSshIdentity());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
         perUser.addListener((observable, oldValue, newValue) -> {
-            if (!(identity.getValue() instanceof SshIdentityStrategy.File f)
+            if (!(identity.getValue() instanceof KeyFileStrategy f)
                     || f.getFile() == null
                     || !f.getFile().isInDataDirectory()) {
                 return;
@@ -57,6 +61,14 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
             }
         });
 
+        var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
+                .allowAgentForward(true)
+                .proxy(new ReadOnlyObjectWrapper<>(
+                        DataStorage.get().local().ref()))
+                .allowKeyFileSync(true)
+                .perUserKeyFileCheck(path -> perUser.get())
+                .build();
+
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
@@ -67,16 +79,11 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
-                        SshIdentityStrategyHelper.identity(
-                                new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()),
-                                identity,
-                                path -> perUser.get(),
-                                true,
-                                true),
-                        identity)
+                        OptionsChoiceBuilder.builder().allowNull(false).property(identity)
+                                .customConfiguration(sshIdentityChoiceConfig).subclasses(SshIdentityStrategy.getSubclasses()).build()
+                                .build(), identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
-                    var wrong = i instanceof SshIdentityStrategy.File f
+                    var wrong = i instanceof KeyFileStrategy f
                             && f.getFile() != null
                             && !f.getFile().isInDataDirectory();
                     return !wrong;
@@ -118,7 +125,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
                 .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.VaultKey.of(new SshIdentityStrategy.None()))
+                .sshIdentity(EncryptedValue.VaultKey.of(new NoneStrategy()))
                 .perUser(false)
                 .build();
     }
