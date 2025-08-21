@@ -34,7 +34,8 @@ public class ErrorHandlerDialog {
             var headerId = event.isTerminal() ? "terminalErrorOccured" : "errorOccured";
             var errorModal = ModalOverlay.of(headerId, comp, new LabelGraphic.NodeGraphic(() -> {
                 var graphic = new FontIcon("mdomz-warning");
-                graphic.pseudoClassStateChanged(Styles.STATE_DANGER, true);
+                graphic.getStyleClass().add("graphic");
+                graphic.getStyleClass().add("error");
                 return graphic;
             }));
             if (event.getThrowable() != null && event.isReportable()) {

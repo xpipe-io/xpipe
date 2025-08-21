@@ -19,10 +19,10 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class OtherExternalStrategy implements SshIdentityStrategy {
+public class OtherExternalAgentStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(Property<OtherExternalStrategy> p, SshIdentityStrategyChoiceConfig config) {
+    public static OptionsBuilder createOptions(Property<OtherExternalAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder().nameAndDescription("forwardAgent")
@@ -33,7 +33,7 @@ public class OtherExternalStrategy implements SshIdentityStrategy {
                 .addComp(new TextFieldComp(publicKey).apply(
                         struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
                 .bind(() -> {
-                    return new OtherExternalStrategy(forward.get(), publicKey.get());
+                    return new OtherExternalAgentStrategy(forward.get(), publicKey.get());
                 }, p);
     }
 
@@ -47,7 +47,7 @@ public class OtherExternalStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+    public List<KeyValue> configOptions() {
         var file =  SshIdentityStrategy.getPublicKeyPath(publicKey);
         return List.of(new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"), new KeyValue("PKCS11Provider", "none"));

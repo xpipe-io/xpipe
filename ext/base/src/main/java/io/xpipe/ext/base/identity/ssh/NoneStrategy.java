@@ -19,7 +19,7 @@ public class NoneStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions(ShellControl parent) {
+    public List<KeyValue> configOptions() {
         // Don't use any agent keys to prevent too many authentication failures
         return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"), new KeyValue("IdentityFile", "none"),
                 new KeyValue("PKCS11Provider", "none"));

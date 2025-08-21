@@ -187,6 +187,7 @@ public class StoreCreationDialog {
                     .getQueueEntries()
                     .add(new AppLayoutModel.QueueEntry(
                             AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
+                                AppLayoutModel.get().selectConnections();
                                 modal.show();
                             }));
         });

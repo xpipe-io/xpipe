@@ -195,7 +195,7 @@ public class SshIdentityStateManager {
         runningAgent = RunningAgent.GPG_AGENT;
     }
 
-    public static synchronized void prepareLocalOpenSshAgent(ShellControl sc) throws Exception {
+    public static synchronized void prepareLocalOpenSshAgent(ShellControl sc, FilePath socket) throws Exception {
         if (runningAgent == RunningAgent.SSH_AGENT) {
             return;
         }
@@ -205,19 +205,33 @@ public class SshIdentityStateManager {
             stopWindowsAgents(false, true, true);
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
-        } else if (AppPrefs.get() != null) {
-            var socket = AppPrefs.get().sshAgentSocket().getValue();
-            if (socket == null) {
-                socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-            }
+        } else {
             checkLocalAgentIdentities(socket != null ? socket.resolveTildeHome(sc.view().userHome()).toString() : null);
         }
 
         runningAgent = RunningAgent.SSH_AGENT;
     }
 
+    public static synchronized void prepareLocalCustomAgent(ShellControl sc, FilePath socket) throws Exception {
+        if (runningAgent == RunningAgent.CUSTOM_AGENT) {
+            return;
+        }
+
+        if (sc.getOsType() == OsType.WINDOWS) {
+            CommandSupport.isInPathOrThrow(sc, "ssh-agent", "SSH Agent", null);
+            stopWindowsAgents(false, true, true);
+            sc.executeSimpleBooleanCommand("ssh-agent start");
+            checkLocalAgentIdentities(null);
+        } else {
+            checkLocalAgentIdentities(socket != null ? socket.resolveTildeHome(sc.view().userHome()).toString() : null);
+        }
+
+        runningAgent = RunningAgent.CUSTOM_AGENT;
+    }
+
     private enum RunningAgent {
         SSH_AGENT,
+        CUSTOM_AGENT,
         GPG_AGENT,
         EXTERNAL_AGENT
     }

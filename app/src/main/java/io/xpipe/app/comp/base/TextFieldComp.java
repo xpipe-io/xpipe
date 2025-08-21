@@ -28,7 +28,9 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
         this.lazy = lazy;
         if (!lazy) {
             currentValue.subscribe(val -> {
-                value.setValue(val);
+                if (!Objects.equals(val, value.getValue())) {
+                    value.setValue(val);
+                }
             });
         }
         lastAppliedValue.addListener((c, o, n) -> {

@@ -2,7 +2,6 @@ package io.xpipe.ext.base.identity.ssh;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
@@ -19,7 +18,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.file.Files;
 import java.util.List;
 
 @JsonTypeName("pageant")
@@ -97,7 +95,7 @@ public class PageantStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+    public List<KeyValue> configOptions() {
         var file =  SshIdentityStrategy.getPublicKeyPath(publicKey);
         return List.of(new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"), new KeyValue("PKCS11Provider", "none"));

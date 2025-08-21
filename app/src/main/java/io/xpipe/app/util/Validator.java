@@ -55,7 +55,7 @@ public interface Validator {
                 .immediate();
     }
 
-    static <T> Check create(Validator v, ObservableValue<String> message, ReadOnlyProperty<T> s, Predicate<T> p) {
+    static <T> Check create(Validator v, ObservableValue<String> message, ObservableValue<T> s, Predicate<T> p) {
         return v.createCheck()
                 .dependsOn("val", s)
                 .withMethod(c -> {

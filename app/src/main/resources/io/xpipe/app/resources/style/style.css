@@ -166,6 +166,10 @@
     -fx-icon-color: -color-warning-fg;
 }
 
+.ikonli-font-icon.graphic.error {
+    -fx-icon-color: -color-danger-fg;
+}
+
 .ikonli-font-icon {
     -fx-icon-color: -color-fg-default;
     -fx-fill: -color-fg-default;

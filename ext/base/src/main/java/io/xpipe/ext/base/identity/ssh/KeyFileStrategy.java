@@ -3,6 +3,7 @@ package io.xpipe.ext.base.identity.ssh;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.comp.base.ContextualFileReferenceSync;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -126,9 +127,9 @@ public class KeyFileStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+    public List<KeyValue> configOptions() {
         return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", resolveFilePath(parent).toString()), new KeyValue("PKCS11Provider", "none"));
+                new KeyValue("IdentityFile", resolveFilePath().toString()), new KeyValue("PKCS11Provider", "none"));
     }
 
     @Override
@@ -137,13 +138,12 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
     }
 
-    private FilePath resolveFilePath(ShellControl sc) throws Exception {
-        var s = file.toAbsoluteFilePath(sc);
+    private FilePath resolveFilePath() {
+        var s = file.toLocalAbsoluteFilePath();
         // The ~ is supported on all platforms, so manually replace it here for Windows
         if (s.startsWith("~")) {
-            s = s.resolveTildeHome(sc.view().userHome());
+            s = s.resolveTildeHome(FilePath.of(AppSystemInfo.ofCurrent().getUserHome()));
         }
-        var resolved = sc.getShellDialect().evaluateExpression(sc, s.toString()).readStdoutOrThrow();
-        return FilePath.of(resolved);
+        return s;
     }
 }

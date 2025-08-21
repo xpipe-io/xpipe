@@ -77,6 +77,12 @@ public class ContextualFileReference {
                         sc != null ? OsFileSystem.of(sc.getOsType()).getFileSystemSeparator() : "/")));
     }
 
+    public FilePath toLocalAbsoluteFilePath() {
+        return FilePath.of(path.replaceAll(
+                "/",
+                Matcher.quoteReplacement(OsFileSystem.ofLocal().getFileSystemSeparator())));
+    }
+
     public boolean isInDataDirectory() {
         return serialize().contains("<DATA>");
     }

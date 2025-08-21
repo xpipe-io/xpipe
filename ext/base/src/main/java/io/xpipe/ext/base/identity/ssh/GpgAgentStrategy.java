@@ -8,10 +8,8 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -93,7 +91,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions(ShellControl parent) throws Exception {
+    public List<KeyValue> configOptions() {
         var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
         return List.of(new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"), new KeyValue("PKCS11Provider", "none"));
