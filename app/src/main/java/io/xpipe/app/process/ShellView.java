@@ -163,6 +163,12 @@ public class ShellView {
         cmd.executeAndCheck();
     }
 
+    public void unsetEnvironmentVariable(String name) throws Exception {
+         shellControl
+                .command(shellControl.getShellDialect().unsetEnvironmentVariableCommand(name))
+                .executeAndCheck();
+    }
+
     public String getEnvironmentVariable(String name) throws Exception {
         return shellControl
                 .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))

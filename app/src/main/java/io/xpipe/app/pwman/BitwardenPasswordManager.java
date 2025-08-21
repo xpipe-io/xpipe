@@ -22,6 +22,7 @@ public class BitwardenPasswordManager implements PasswordManager {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
             SHELL.start();
+            SHELL.view().unsetEnvironmentVariable("BW_SESSION");
             SHELL.view()
                     .setEnvironmentVariable(
                             "BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
