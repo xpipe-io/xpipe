@@ -36,9 +36,8 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
         SshLocalBridge.init();
         var b = SshLocalBridge.get();
         var abs = b.getIdentityKey().toAbsolutePath();
-        var drivePath =
-                "/drives/" + abs.getRoot().toString().substring(0, 1).toLowerCase() + "/"
-                        + abs.getRoot().relativize(abs).toString().replaceAll("\\\\", "/");
+        var drivePath = "/drives/" + abs.getRoot().toString().substring(0, 1).toLowerCase() + "/"
+                + abs.getRoot().relativize(abs).toString().replaceAll("\\\\", "/");
         var winPath = b.getIdentityKey().toString().replaceAll("\\\\", "\\\\\\\\");
         var command = CommandBuilder.of()
                 .add("ssh")

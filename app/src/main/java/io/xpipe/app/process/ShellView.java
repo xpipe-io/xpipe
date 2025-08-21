@@ -164,7 +164,7 @@ public class ShellView {
     }
 
     public void unsetEnvironmentVariable(String name) throws Exception {
-         shellControl
+        shellControl
                 .command(shellControl.getShellDialect().unsetEnvironmentVariableCommand(name))
                 .executeAndCheck();
     }

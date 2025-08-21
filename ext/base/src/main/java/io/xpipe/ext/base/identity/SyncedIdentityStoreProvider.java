@@ -7,11 +7,11 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+
 import javafx.beans.property.*;
 
 import java.nio.file.Files;
@@ -63,8 +63,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
-                .proxy(new ReadOnlyObjectWrapper<>(
-                        DataStorage.get().local().ref()))
+                .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(path -> perUser.get())
                 .build();
@@ -79,9 +78,14 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
-                        OptionsChoiceBuilder.builder().allowNull(false).property(identity)
-                                .customConfiguration(sshIdentityChoiceConfig).available(SshIdentityStrategy.getSubclasses()).build()
-                                .build(), identity)
+                        OptionsChoiceBuilder.builder()
+                                .allowNull(false)
+                                .property(identity)
+                                .customConfiguration(sshIdentityChoiceConfig)
+                                .available(SshIdentityStrategy.getSubclasses())
+                                .build()
+                                .build(),
+                        identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof KeyFileStrategy f
                             && f.getFile() != null

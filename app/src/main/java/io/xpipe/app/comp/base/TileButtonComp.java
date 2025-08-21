@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;

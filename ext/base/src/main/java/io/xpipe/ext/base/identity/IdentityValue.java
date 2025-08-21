@@ -8,12 +8,12 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.app.util.Validators;
+import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;

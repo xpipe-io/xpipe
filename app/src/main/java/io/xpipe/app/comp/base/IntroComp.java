@@ -5,7 +5,6 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.LabelGraphic;
 
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;

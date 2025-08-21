@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
@@ -10,9 +9,12 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -28,18 +30,25 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<GpgAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
-        return new OptionsBuilder().nameAndDescription("forwardAgent")
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        return new OptionsBuilder()
+                .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(
-                        struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
-                .bind(() -> {
-                    return new GpgAgentStrategy(forward.get(), publicKey.get());
-                }, p);
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
+                .bind(
+                        () -> {
+                            return new GpgAgentStrategy(forward.get(), publicKey.get());
+                        },
+                        p);
     }
 
     private static Boolean supported;
@@ -50,7 +59,10 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
         }
 
         try {
-            var found = LocalShell.getShell().view().findProgram("gpg-connect-agent").isPresent();
+            var found = LocalShell.getShell()
+                    .view()
+                    .findProgram("gpg-connect-agent")
+                    .isPresent();
             if (!found) {
                 return (supported = false);
             }
@@ -62,7 +74,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
             var file = AppSystemInfo.ofWindows().getRoamingAppData().resolve("gnupg", "gpg-agent.conf");
             return (supported = Files.exists(file));
         } else {
-            var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".gnupg","gpg-agent.conf");
+            var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".gnupg", "gpg-agent.conf");
             return (supported = Files.exists(file));
         }
     }
@@ -93,7 +105,10 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
     @Override
     public List<KeyValue> configOptions() {
         var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
-        return List.of(new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"), new KeyValue("PKCS11Provider", "none"));
+        return List.of(
+                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
+                new KeyValue("PKCS11Provider", "none"));
     }
 }

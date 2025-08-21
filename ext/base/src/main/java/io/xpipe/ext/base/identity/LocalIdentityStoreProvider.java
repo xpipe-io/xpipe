@@ -4,10 +4,10 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -37,8 +37,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
-                .proxy(new ReadOnlyObjectWrapper<>(
-                        DataStorage.get().local().ref()))
+                .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(false)
                 .perUserKeyFileCheck(path -> false)
                 .build();
@@ -53,9 +52,14 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
                 .sub(
-                        OptionsChoiceBuilder.builder().allowNull(false).property(identity)
-                                .customConfiguration(sshIdentityChoiceConfig).available(SshIdentityStrategy.getSubclasses()).build()
-                                .build(), identity)
+                        OptionsChoiceBuilder.builder()
+                                .allowNull(false)
+                                .property(identity)
+                                .customConfiguration(sshIdentityChoiceConfig)
+                                .available(SshIdentityStrategy.getSubclasses())
+                                .build()
+                                .build(),
+                        identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

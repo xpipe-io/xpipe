@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -9,8 +8,6 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.util.LabelGraphic;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 

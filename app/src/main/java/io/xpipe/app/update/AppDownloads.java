@@ -2,7 +2,6 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppVersion;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -92,7 +91,9 @@ public class AppDownloads {
             req.put("dist", AppDistributionType.get().getId());
             req.put(
                     "lang",
-                    AppPrefs.get() != null ? AppPrefs.get().language().getValue().getId() : null);
+                    AppPrefs.get() != null
+                            ? AppPrefs.get().language().getValue().getId()
+                            : null);
             var url = URI.create("https://api.xpipe.io/version");
 
             var builder = HttpRequest.newBuilder();

@@ -34,7 +34,9 @@ public class OptionsChoiceBuilder {
 
     @SneakyThrows
     private static String createIdForClass(Class<?> c) {
-        var custom = Arrays.stream(c.getDeclaredMethods()).filter(m -> m.getName().equals("getOptionsNameKey")).findFirst();
+        var custom = Arrays.stream(c.getDeclaredMethods())
+                .filter(m -> m.getName().equals("getOptionsNameKey"))
+                .findFirst();
         if (custom.isPresent()) {
             return (String) custom.get().invoke(null);
         }
@@ -48,10 +50,14 @@ public class OptionsChoiceBuilder {
     }
 
     private static Method findCreateOptionsMethod(Class<?> c) {
-        return Arrays.stream(c.getDeclaredMethods()).filter(method -> method.getName().equals("createOptions")).findFirst().orElse(null);
+        return Arrays.stream(c.getDeclaredMethods())
+                .filter(method -> method.getName().equals("createOptions"))
+                .findFirst()
+                .orElse(null);
     }
 
-    private static OptionsBuilder createOptionsForClass(Class<?> c, Property<Object> property, Object customConfiguration) {
+    private static OptionsBuilder createOptionsForClass(
+            Class<?> c, Property<Object> property, Object customConfiguration) {
         var method = findCreateOptionsMethod(c);
         if (method == null) {
             return null;
@@ -59,7 +65,9 @@ public class OptionsChoiceBuilder {
 
         try {
             method.setAccessible(true);
-            var r = method.getParameters().length == 2 ? method.invoke(null, property, customConfiguration) : method.invoke(null, property);
+            var r = method.getParameters().length == 2
+                    ? method.invoke(null, property, customConfiguration)
+                    : method.invoke(null, property);
             if (r != null) {
                 return (OptionsBuilder) r;
             }

@@ -6,7 +6,6 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 

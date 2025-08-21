@@ -6,7 +6,6 @@ import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Pos;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.*;

@@ -4,9 +4,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+
 import javafx.beans.property.*;
 
 import lombok.AllArgsConstructor;
@@ -70,10 +70,11 @@ public class IdentityChoiceBuilder {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(allowAgentForward)
-                .proxy(host != null
-                        ? host
-                        : new ReadOnlyObjectWrapper<>(
-                        DataStorage.get().local().ref()))
+                .proxy(
+                        host != null
+                                ? host
+                                : new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(path -> false)
                 .build();
@@ -82,9 +83,15 @@ public class IdentityChoiceBuilder {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
                     .longDescription(DocumentationLink.SSH_KEYS)
-                    .sub(OptionsChoiceBuilder.builder().allowNull(false).property(identityStrategy)
-                            .customConfiguration(sshIdentityChoiceConfig).available(SshIdentityStrategy.getSubclasses()).build()
-                            .build(), identityStrategy)
+                    .sub(
+                            OptionsChoiceBuilder.builder()
+                                    .allowNull(false)
+                                    .property(identityStrategy)
+                                    .customConfiguration(sshIdentityChoiceConfig)
+                                    .available(SshIdentityStrategy.getSubclasses())
+                                    .build()
+                                    .build(),
+                            identityStrategy)
                     .nonNullIf(inPlaceSelected)
                     .disable(refSelected)
                     .hide(refSelected);

@@ -75,8 +75,8 @@ public class BrowserFileSystemHelper {
             return path;
         }
 
-        var tildeResolved = path.resolveTildeHome(model.getFileSystem()
-                .getShell().orElseThrow().view().userHome());
+        var tildeResolved = path.resolveTildeHome(
+                model.getFileSystem().getShell().orElseThrow().view().userHome());
         var resolved = FilePath.of(shell.get()
                 .getShellDialect()
                 .resolveDirectory(shell.get(), tildeResolved.toString())

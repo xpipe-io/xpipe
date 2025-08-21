@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -8,6 +7,8 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -26,23 +27,24 @@ import java.util.List;
 public class YubikeyPivStrategy implements SshIdentityStrategy {
 
     private String getFile() {
-        var file = switch (OsType.getLocal()) {
-            case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
-            case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
-            case OsType.Windows ignored -> {
-                var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
-                if (Files.exists(Path.of(x64))) {
-                    yield x64;
-                }
+        var file =
+                switch (OsType.getLocal()) {
+                    case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                    case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
+                    case OsType.Windows ignored -> {
+                        var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
+                        if (Files.exists(Path.of(x64))) {
+                            yield x64;
+                        }
 
-                var x86 = "C:\\Program Files (x86)\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
-                if (Files.exists(Path.of(x86))) {
-                    yield x86;
-                }
+                        var x86 = "C:\\Program Files (x86)\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
+                        if (Files.exists(Path.of(x86))) {
+                            yield x86;
+                        }
 
-                yield x64;
-            }
-        };
+                        yield x64;
+                    }
+                };
         return file;
     }
 
@@ -71,7 +73,10 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
 
     @Override
     public List<KeyValue> configOptions() {
-        return List.of(new KeyValue("IdentitiesOnly", "no"), new KeyValue("PKCS11Provider", getFile()), new KeyValue("IdentityFile", "none"),
+        return List.of(
+                new KeyValue("IdentitiesOnly", "no"),
+                new KeyValue("PKCS11Provider", getFile()),
+                new KeyValue("IdentityFile", "none"),
                 new KeyValue("IdentityAgent", "none"));
     }
 }

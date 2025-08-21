@@ -8,7 +8,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ScanDialog;
 
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;

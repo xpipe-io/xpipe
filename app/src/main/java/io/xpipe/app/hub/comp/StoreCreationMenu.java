@@ -127,10 +127,14 @@ public class StoreCreationMenu {
 
             Platform.runLater(() -> {
                 if (defaultProvider != null) {
-                    providers.stream().filter(dataStoreProvider -> dataStoreProvider.getId().equals(defaultProvider)).findFirst().ifPresent(dataStoreProvider -> {
-                        var index = providers.indexOf(dataStoreProvider);
-                        menu.getItems().get(index).fire();
-                    });
+                    providers.stream()
+                            .filter(dataStoreProvider ->
+                                    dataStoreProvider.getId().equals(defaultProvider))
+                            .findFirst()
+                            .ifPresent(dataStoreProvider -> {
+                                var index = providers.indexOf(dataStoreProvider);
+                                menu.getItems().get(index).fire();
+                            });
                     return;
                 }
 

@@ -79,8 +79,7 @@ public class ContextualFileReference {
 
     public FilePath toLocalAbsoluteFilePath() {
         return FilePath.of(path.replaceAll(
-                "/",
-                Matcher.quoteReplacement(OsFileSystem.ofLocal().getFileSystemSeparator())));
+                "/", Matcher.quoteReplacement(OsFileSystem.ofLocal().getFileSystemSeparator())));
     }
 
     public boolean isInDataDirectory() {

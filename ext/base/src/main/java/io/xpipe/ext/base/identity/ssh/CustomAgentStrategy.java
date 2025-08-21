@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
@@ -13,10 +12,13 @@ import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.Validator;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -31,9 +33,12 @@ import java.util.List;
 public class CustomAgentStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(Property<CustomAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+    public static OptionsBuilder createOptions(
+            Property<CustomAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
+        var forward =
+                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
+        var publicKey =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
 
         var socket = AppPrefs.get().sshAgentSocket();
         var socketBinding = BindingsHelper.map(socket, s -> {
@@ -42,33 +47,41 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
         var socketProp = new SimpleStringProperty();
         socketProp.bind(socketBinding);
         var socketDisplay = new HorizontalComp(List.of(
-                new TextFieldComp(socketProp)
-                        .apply(struc -> struc.get().setEditable(false)).hgrow(),
-                new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-                    AppPrefs.get().selectCategory("ssh");
-                })
-                        .padding(new Insets(7))
-                        .grow(false, true)))
+                        new TextFieldComp(socketProp)
+                                .apply(struc -> struc.get().setEditable(false))
+                                .hgrow(),
+                        new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+                                    AppPrefs.get().selectCategory("ssh");
+                                })
+                                .padding(new Insets(7))
+                                .grow(false, true)))
                 .spacing(9);
 
         return new OptionsBuilder()
                 .nameAndDescription("agentSocket")
                 .addComp(socketDisplay)
-                .check(val -> Validator.create(val, AppI18n.observable("agentSocketNotConfigured"), AppPrefs.get().sshAgentSocket(), i -> {
-                    return i != null;
-                }))
+                .check(val -> Validator.create(
+                        val,
+                        AppI18n.observable("agentSocketNotConfigured"),
+                        AppPrefs.get().sshAgentSocket(),
+                        i -> {
+                            return i != null;
+                        }))
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
-                .addComp(new TextFieldComp(publicKey).apply(
-                        struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
-                .bind(() -> {
-                    return new CustomAgentStrategy(forward.get(), publicKey.get());
-                }, p);
+                .addComp(
+                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        publicKey)
+                .bind(
+                        () -> {
+                            return new CustomAgentStrategy(forward.get(), publicKey.get());
+                        },
+                        p);
     }
-
 
     boolean forwardAgent;
     String publicKey;
@@ -76,7 +89,8 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
         if (parent.isLocal()) {
-            SshIdentityStateManager.prepareLocalCustomAgent(parent, AppPrefs.get().sshAgentSocket().getValue());
+            SshIdentityStateManager.prepareLocalCustomAgent(
+                    parent, AppPrefs.get().sshAgentSocket().getValue());
         }
     }
 
@@ -100,8 +114,11 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
 
     @Override
     public List<KeyValue> configOptions() {
-        var file =  SshIdentityStrategy.getPublicKeyPath(publicKey);
-        return List.of(new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"), new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
-                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"), new KeyValue("PKCS11Provider", "none"));
+        var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
+        return List.of(
+                new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
+                new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
+                new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
+                new KeyValue("PKCS11Provider", "none"));
     }
 }

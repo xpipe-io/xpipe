@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
@@ -56,8 +55,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
                     var n = t.createGraphicNode();
                     button.setGraphic(n);
                     if (n instanceof FontIcon f && button.getFont() != null) {
-                        f.setIconSize((int)
-                                new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
+                        f.setIconSize((int) new Size(button.getFont().getSize(), SizeUnits.PT).pixels());
                     }
                 });
             });

@@ -15,9 +15,9 @@ import io.xpipe.app.util.EncryptedValue;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.SecretRetrievalStrategy;
-
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;

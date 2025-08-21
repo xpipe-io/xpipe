@@ -3,7 +3,6 @@ package io.xpipe.ext.base.identity.ssh;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.util.LocalShell;
@@ -206,7 +205,10 @@ public class SshIdentityStateManager {
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
         } else {
-            checkLocalAgentIdentities(socket != null ? socket.resolveTildeHome(sc.view().userHome()).toString() : null);
+            checkLocalAgentIdentities(
+                    socket != null
+                            ? socket.resolveTildeHome(sc.view().userHome()).toString()
+                            : null);
         }
 
         runningAgent = RunningAgent.SSH_AGENT;
@@ -223,7 +225,10 @@ public class SshIdentityStateManager {
             sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
         } else {
-            checkLocalAgentIdentities(socket != null ? socket.resolveTildeHome(sc.view().userHome()).toString() : null);
+            checkLocalAgentIdentities(
+                    socket != null
+                            ? socket.resolveTildeHome(sc.view().userHome()).toString()
+                            : null);
         }
 
         runningAgent = RunningAgent.CUSTOM_AGENT;

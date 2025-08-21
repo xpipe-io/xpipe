@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.KeyValue;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 
 import java.util.List;
@@ -21,7 +22,10 @@ public class NoneStrategy implements SshIdentityStrategy {
     @Override
     public List<KeyValue> configOptions() {
         // Don't use any agent keys to prevent too many authentication failures
-        return List.of(new KeyValue("IdentitiesOnly", "yes"), new KeyValue("IdentityAgent", "none"), new KeyValue("IdentityFile", "none"),
+        return List.of(
+                new KeyValue("IdentitiesOnly", "yes"),
+                new KeyValue("IdentityAgent", "none"),
+                new KeyValue("IdentityFile", "none"),
                 new KeyValue("PKCS11Provider", "none"));
     }
 }
