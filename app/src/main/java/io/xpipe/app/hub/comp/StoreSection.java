@@ -101,7 +101,7 @@ public class StoreSection {
                 List.of(),
                 storeEntryWrapper,
                 1,
-                all,
+                allEnabled,
                 selected,
                 entryFilter,
                 filterString,
@@ -149,8 +149,7 @@ public class StoreSection {
                     e, DerivedObservableList.arrayList(true), DerivedObservableList.arrayList(true), depth);
         }
 
-        var allEnabled = all.blockUpdatesIf(Bindings.not(enabled));
-        var allChildren = allEnabled.filtered(
+        var allChildren = all.filtered(
                 other -> {
                     // Legacy implementation that does not use children caches. Use for testing
                     //                                if (true) return DataStorage.get()

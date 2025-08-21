@@ -97,6 +97,12 @@ public abstract class DataStorage {
         return INSTANCE;
     }
 
+    public void generateCaches() {
+        for (DataStoreEntry storeEntry : getStoreEntries()) {
+            getStoreChildren(storeEntry);
+        }
+    }
+
     public abstract void reloadContent();
 
     public abstract SecretKey getVaultKey();
@@ -1303,11 +1309,6 @@ public abstract class DataStorage {
     }
 
     public DataStoreEntry getOrCreateNewSyntheticEntry(DataStoreEntry parent, String name, DataStore store) {
-        var forStoreIdentity = getStoreEntryIfPresent(store, true);
-        if (forStoreIdentity.isPresent()) {
-            return forStoreIdentity.get();
-        }
-
         var forStore = getStoreEntryIfPresent(store, false);
         if (forStore.isPresent()) {
             return forStore.get();

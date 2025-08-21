@@ -37,6 +37,7 @@ public interface SshIdentityStrategy {
         var l = new ArrayList<Class<?>>();
         l.add(NoneStrategy.class);
         l.add(KeyFileStrategy.class);
+        l.add(OpenSshAgentStrategy.class);
         if (OsType.getLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);
         }

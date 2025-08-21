@@ -124,13 +124,12 @@ public class DerivedObservableList<T> {
     }
 
     private void setContentUnique(List<? extends T> newList) {
-        var listSet = new HashSet<>();
         synchronized (list) {
-            listSet.addAll(list);
-            var newSet = new HashSet<>(newList);
-
             // Addition
+            var newSet = new HashSet<>(newList);
             if (newSet.containsAll(list)) {
+                var listSet = new HashSet<>(list);
+
                 var l = new ArrayList<>(newList);
                 l.removeIf(t -> !listSet.contains(t));
                 // Reordering occurred
@@ -151,18 +150,18 @@ public class DerivedObservableList<T> {
             }
 
             // Removal
+            var listSet = new HashSet<>(list);
             if (listSet.containsAll(newList)) {
-                var l = new ArrayList<>(list);
-                l.removeIf(t -> !newSet.contains(t));
+                var toRemove = new ArrayList<>(list);
+                toRemove.removeIf(t -> newSet.contains(t));
+                list.removeAll(toRemove);
+
                 // Reordering occurred
-                if (!l.equals(newList)) {
+                if (!list.equals(newList)) {
                     list.setAll(newList);
                     return;
                 }
 
-                var toRemove = new ArrayList<>(list);
-                toRemove.removeIf(t -> newSet.contains(t));
-                list.removeAll(toRemove);
                 return;
             }
 

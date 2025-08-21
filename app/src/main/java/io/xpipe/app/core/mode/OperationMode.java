@@ -196,6 +196,9 @@ public abstract class OperationMode {
         System.gc();
         inStartup = false;
         AppOpenArguments.init();
+        ThreadHelper.runAsync(() -> {
+            DataStorage.get().generateCaches();
+        });
     }
 
     public static void switchToAsync(OperationMode newMode) {
