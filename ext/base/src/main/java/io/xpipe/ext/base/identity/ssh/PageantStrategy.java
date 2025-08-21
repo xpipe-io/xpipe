@@ -72,11 +72,8 @@ public class PageantStrategy implements SshIdentityStrategy {
                 throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running or has no identities"));
             }
 
-            var socket = AppPrefs.get().sshAgentSocket().getValue();
-            if (socket == null) {
-                socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-            }
-            if (!socket.toString().contains("pageant")) {
+            var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+            if (socket == null || !socket.toString().contains("pageant")) {
                 throw ErrorEventFactory.expected(
                         new IllegalStateException("Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
             }

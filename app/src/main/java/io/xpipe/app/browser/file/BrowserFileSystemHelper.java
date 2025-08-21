@@ -75,9 +75,11 @@ public class BrowserFileSystemHelper {
             return path;
         }
 
+        var tildeResolved = path.resolveTildeHome(model.getFileSystem()
+                .getShell().orElseThrow().view().userHome());
         var resolved = FilePath.of(shell.get()
                 .getShellDialect()
-                .resolveDirectory(shell.get(), path.toString())
+                .resolveDirectory(shell.get(), tildeResolved.toString())
                 .readStdoutOrThrow());
 
         if (!resolved.isAbsolute()) {
