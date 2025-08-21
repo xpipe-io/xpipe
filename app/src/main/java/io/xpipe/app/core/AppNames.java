@@ -22,10 +22,6 @@ public abstract class AppNames {
         return ofCurrent().getGroupName() + ".app" + (name != null ? "." + name : "");
     }
 
-    public static String appModuleName(String name) {
-        return ofCurrent().getGroupName() + name;
-    }
-
     public static String extModuleName(String name) {
         return ofCurrent().getGroupName() + ".ext." + name;
     }

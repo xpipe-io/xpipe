@@ -25,11 +25,13 @@ import java.util.List;
 @JsonTypeName("ohmyposh")
 public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OhMyPoshTerminalPrompt> p) {
         return createOptions(
                 p, s -> OhMyPoshTerminalPrompt.builder().configuration(s).build());
     }
 
+    @SuppressWarnings("unused")
     public static OhMyPoshTerminalPrompt createDefault() {
         return OhMyPoshTerminalPrompt.builder()
                 .configuration(

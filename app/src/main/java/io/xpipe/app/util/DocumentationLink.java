@@ -42,7 +42,6 @@ public enum DocumentationLink {
     SSH("guide/ssh"),
     SSH_HOST_KEYS("troubleshoot/ssh#no-matching-host-key-type-found"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
-    SSH_PERMISSION_DENIED("troubleshoot/ssh#permission-denied"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),

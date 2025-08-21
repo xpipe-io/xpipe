@@ -426,6 +426,7 @@ public class AppTheme {
                 91);
 
         // Adjust this to create your own theme
+        @SuppressWarnings("unused")
         public static final Theme CUSTOM = new DerivedTheme(
                 "custom",
                 "primer",

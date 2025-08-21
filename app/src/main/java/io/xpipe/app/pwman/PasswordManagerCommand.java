@@ -33,6 +33,7 @@ public class PasswordManagerCommand implements PasswordManager {
     private static ShellControl SHELL;
     ShellScript script;
 
+    @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
         var template = new SimpleObjectProperty<PasswordManagerCommandTemplate>();
         var script = new SimpleObjectProperty<>(

@@ -219,6 +219,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     };
 
     // Cli is broken, keep inactive
+    @SuppressWarnings("unused")
     WindowsType THEIAIDE_WINDOWS = new WindowsType() {
 
         @Override
@@ -529,7 +530,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
-    @SuppressWarnings("TrivialFunctionalExpressionUsage")
+    @SuppressWarnings({"unused", "TrivialFunctionalExpressionUsage"})
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
                 if (OsType.getLocal() == OsType.WINDOWS) {

@@ -114,6 +114,7 @@ public class CoreJacksonModule extends SimpleModule {
     @JsonSerialize(as = Throwable.class)
     public abstract static class ThrowableTypeMixIn {
 
+        @SuppressWarnings("unused")
         @JsonIdentityInfo(generator = ObjectIdGenerators.StringIdGenerator.class, property = "$id")
         private Throwable cause;
     }

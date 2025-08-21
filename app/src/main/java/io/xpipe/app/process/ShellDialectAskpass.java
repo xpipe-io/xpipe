@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface ShellDialectAskpass {
 
-    String prepareStderrPassthroughContent(ShellControl sc, UUID requestId, String prefix);
+    String prepareStderrPassthroughContent(UUID requestId, String prefix);
 
     String prepareFixedContent(ShellControl sc, String fileName, List<String> s) throws Exception;
 

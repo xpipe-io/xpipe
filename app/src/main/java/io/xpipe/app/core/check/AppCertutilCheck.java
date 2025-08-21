@@ -8,6 +8,7 @@ import io.xpipe.core.OsType;
 
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings("unused")
 public class AppCertutilCheck {
 
     private static boolean getResult() {

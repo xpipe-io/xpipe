@@ -1,9 +1,6 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.core.AppInstallation;
-import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.core.AppNames;
-import io.xpipe.app.core.AppRestart;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
@@ -29,7 +26,7 @@ public class AppInstaller {
         }
 
         if (OsType.getLocal() == OsType.LINUX) {
-            return Files.exists(Path.of("/etc/debian_version"))
+            return AppSystemInfo.ofLinux().isDebianBased()
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }

@@ -107,19 +107,33 @@ public class StoreCreationMenu {
 
     private static Menu categoryMenu(
             String name, String graphic, DataStoreCreationCategory category, String defaultProvider) {
-        var sub = DataStoreProviders.getAll().stream()
+        var providers = DataStoreProviders.getAll().stream()
                 .filter(dataStoreProvider -> category.equals(dataStoreProvider.getCreationCategory()))
+                .sorted(Comparator.comparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
                 .toList();
 
         var menu = new Menu();
         menu.setGraphic(new FontIcon(graphic));
         menu.textProperty().bind(AppI18n.observable(name));
+
+        if (providers.isEmpty()) {
+            return menu;
+        }
+
         menu.setOnAction(event -> {
             if (event.getTarget() != menu) {
                 return;
             }
 
             Platform.runLater(() -> {
+                if (defaultProvider != null) {
+                    providers.stream().filter(dataStoreProvider -> dataStoreProvider.getId().equals(defaultProvider)).findFirst().ifPresent(dataStoreProvider -> {
+                        var index = providers.indexOf(dataStoreProvider);
+                        menu.getItems().get(index).fire();
+                    });
+                    return;
+                }
+
                 var onlyItem = menu.getItems().getFirst();
                 onlyItem.fire();
             });
@@ -127,13 +141,6 @@ public class StoreCreationMenu {
             // Fix weird JavaFX NPE
             menu.getParentPopup().hide();
         });
-
-        var providers = sub.stream()
-                .sorted(Comparator.comparingInt(dataStoreProvider -> dataStoreProvider.getOrderPriority()))
-                .toList();
-        if (providers.isEmpty()) {
-            return menu;
-        }
 
         int lastOrder = providers.getFirst().getOrderPriority();
         for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {

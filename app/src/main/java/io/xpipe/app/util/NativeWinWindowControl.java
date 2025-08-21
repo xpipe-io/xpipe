@@ -69,12 +69,6 @@ public class NativeWinWindowControl {
         return refs;
     }
 
-    public void removeBorders() {
-        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
-        var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
-        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
-    }
-
     public boolean isIconified() {
         return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }
@@ -154,6 +148,7 @@ public class NativeWinWindowControl {
         }
     }
 
+    @SuppressWarnings("unused")
     public enum DwmSystemBackDropType {
         // DWMSBT_NONE
         NONE(1),

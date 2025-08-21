@@ -106,6 +106,7 @@ public class ActionShortcutComp extends SimpleComp {
         return group;
     }
 
+    @SuppressWarnings("unused")
     private Comp<?> createMacroComp() {
         var button = new ButtonComp(
                 AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), onCreateMacro);

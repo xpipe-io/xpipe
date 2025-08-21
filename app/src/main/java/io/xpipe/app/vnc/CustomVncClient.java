@@ -23,6 +23,7 @@ public class CustomVncClient implements ExternalVncClient {
 
     String command;
 
+    @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<CustomVncClient> property) {
         var command = new SimpleObjectProperty<>(property.getValue().getCommand());
         return new OptionsBuilder()

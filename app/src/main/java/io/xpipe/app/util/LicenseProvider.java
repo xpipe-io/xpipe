@@ -20,8 +20,6 @@ public abstract class LicenseProvider {
 
     public abstract String formatExceptionMessage(String name, boolean plural, LicensedFeature licensedFeature);
 
-    public abstract boolean hasLicense();
-
     public abstract String getLicenseId();
 
     public abstract ObservableValue<String> licenseTitle();

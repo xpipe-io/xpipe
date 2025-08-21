@@ -33,28 +33,26 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
 
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-        try (var sc = LocalShell.getShell()) {
-            SshLocalBridge.init();
-            var b = SshLocalBridge.get();
-            var abs = b.getIdentityKey().toAbsolutePath();
-            var drivePath =
-                    "/drives/" + abs.getRoot().toString().substring(0, 1).toLowerCase() + "/"
-                            + abs.getRoot().relativize(abs).toString().replaceAll("\\\\", "/");
-            var winPath = b.getIdentityKey().toString().replaceAll("\\\\", "\\\\\\\\");
-            var command = CommandBuilder.of()
-                    .add("ssh")
-                    .addQuoted(b.getUser() + "@localhost")
-                    .add("-i")
-                    .add("\"$(cygpath -u \"" + winPath + "\" || echo \"" + drivePath + "\")\"")
-                    .add("-p")
-                    .add("" + b.getPort());
-            // Don't use local shell to build as it uses cygwin
-            var rawCommand = command.buildSimple();
-            var script = ShellTemp.getLocalTempDataDirectory("mobaxpipe.sh");
-            Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
-            var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
-            launch(CommandBuilder.of().add("-newtab").add(fixedFile));
-        }
+        SshLocalBridge.init();
+        var b = SshLocalBridge.get();
+        var abs = b.getIdentityKey().toAbsolutePath();
+        var drivePath =
+                "/drives/" + abs.getRoot().toString().substring(0, 1).toLowerCase() + "/"
+                        + abs.getRoot().relativize(abs).toString().replaceAll("\\\\", "/");
+        var winPath = b.getIdentityKey().toString().replaceAll("\\\\", "\\\\\\\\");
+        var command = CommandBuilder.of()
+                .add("ssh")
+                .addQuoted(b.getUser() + "@localhost")
+                .add("-i")
+                .add("\"$(cygpath -u \"" + winPath + "\" || echo \"" + drivePath + "\")\"")
+                .add("-p")
+                .add("" + b.getPort());
+        // Don't use local shell to build as it uses cygwin
+        var rawCommand = command.buildSimple();
+        var script = ShellTemp.getLocalTempDataDirectory("mobaxpipe.sh");
+        Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
+        var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
+        launch(CommandBuilder.of().add("-newtab").add(fixedFile));
     }
 
     @Override

@@ -48,6 +48,7 @@ public class EnpassPasswordManager implements PasswordManager {
         return SHELL;
     }
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<EnpassPasswordManager> p) {
         var prop = new SimpleObjectProperty<>(p.getValue().getVaultPath());
         var comp = new ContextualFileReferenceChoiceComp(

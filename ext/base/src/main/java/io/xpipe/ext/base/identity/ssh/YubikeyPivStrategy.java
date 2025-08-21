@@ -25,18 +25,6 @@ import java.util.List;
 @AllArgsConstructor
 public class YubikeyPivStrategy implements SshIdentityStrategy {
 
-    public static String getDefaultSharedLibrary() {
-        var file = switch (OsType.getLocal()) {
-            case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
-            case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
-            case OsType.Windows ignored -> {
-                var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
-                yield x64;
-            }
-        };
-        return file;
-    }
-
     private String getFile() {
         var file = switch (OsType.getLocal()) {
             case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";

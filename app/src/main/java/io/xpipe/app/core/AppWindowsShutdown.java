@@ -39,9 +39,11 @@ public class AppWindowsShutdown {
 
     public interface WinHookProc extends WinUser.HOOKPROC {
 
+        @SuppressWarnings("unused")
         WinDef.LRESULT callback(int nCode, WinDef.WPARAM wParam, CWPSSTRUCT hookProcStruct);
     }
 
+    @SuppressWarnings("unused")
     public static class CWPSSTRUCT extends Structure {
         public WinDef.LPARAM lParam;
         public WinDef.WPARAM wParam;

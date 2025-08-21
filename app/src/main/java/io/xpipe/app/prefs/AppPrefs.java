@@ -82,8 +82,13 @@ public final class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.API)
             .build());
-    final BooleanProperty enableMcpServer =
-            mapLocal(new GlobalBooleanProperty(false), "enableMcpServer", Boolean.class, false);
+    final BooleanProperty enableMcpServer = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("enableMcpServer")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .documentationLink(DocumentationLink.MCP)
+            .build());
     final BooleanProperty enableMcpMutationTools =
             mapLocal(new GlobalBooleanProperty(false), "enableMcpMutationTools", Boolean.class, false);
     final BooleanProperty dontAutomaticallyStartVmSshServer =
@@ -515,10 +520,6 @@ public final class AppPrefs {
 
     public ObservableBooleanValue disableCertutilUse() {
         return disableCertutilUse;
-    }
-
-    public ObservableBooleanValue useLocalFallbackShell() {
-        return useLocalFallbackShell;
     }
 
     public ObservableValue<ShellDialect> localShellDialect() {

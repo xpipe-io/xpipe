@@ -25,11 +25,13 @@ import java.util.List;
 @JsonTypeName("ohmyzsh")
 public class OhMyZshTerminalPrompt extends ConfigFileTerminalPrompt {
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OhMyZshTerminalPrompt> p) {
         return createOptions(
                 p, s -> OhMyZshTerminalPrompt.builder().configuration(s).build());
     }
 
+    @SuppressWarnings("unused")
     public static OhMyZshTerminalPrompt createDefault() {
         return OhMyZshTerminalPrompt.builder()
                 .configuration(

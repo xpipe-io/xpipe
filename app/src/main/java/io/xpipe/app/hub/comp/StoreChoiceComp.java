@@ -57,11 +57,6 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         return new StoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
     }
 
-    public static StoreChoiceComp<ShellStore> proxy(
-            Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
-        return new StoreChoiceComp<>(Mode.PROXY, null, selected, ShellStore.class, null, initialCategory);
-    }
-
     public static StoreChoiceComp<ShellStore> host(
             Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
         return new StoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);

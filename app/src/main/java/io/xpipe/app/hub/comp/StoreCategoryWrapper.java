@@ -93,19 +93,6 @@ public class StoreCategoryWrapper {
         return cachedParent;
     }
 
-    public boolean contains(StoreEntryWrapper entry) {
-        if (entry.getCategory().getValue() == this) {
-            return true;
-        }
-
-        for (var c : children.getList()) {
-            if (c.contains(entry)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void select() {
         PlatformThread.runLaterIfNeeded(() -> {
             StoreViewState.get().getActiveCategory().setValue(this);

@@ -16,9 +16,9 @@ public abstract class AppSystemInfo {
 
     public static AppSystemInfo ofCurrent() {
         return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> ofLinux();
-            case OsType.MacOs macOs -> ofMacOs();
-            case OsType.Windows windows -> ofWindows();
+            case OsType.Linux ignored -> ofLinux();
+            case OsType.MacOs ignored -> ofMacOs();
+            case OsType.Windows ignored -> ofWindows();
         };
     }
 

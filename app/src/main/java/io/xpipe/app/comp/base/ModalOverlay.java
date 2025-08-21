@@ -60,10 +60,6 @@ public class ModalOverlay {
         return this;
     }
 
-    public ModalOverlay withDefaultButtons() {
-        return withDefaultButtons(() -> {});
-    }
-
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);
         return button;

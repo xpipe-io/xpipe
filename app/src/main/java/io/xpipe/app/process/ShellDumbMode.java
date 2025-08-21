@@ -14,7 +14,7 @@ public interface ShellDumbMode {
         return null;
     }
 
-    default CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellControl parent, ShellOpenFunction function)
+    default CommandBuilder prepareInlineDumbCommand(ShellControl self, ShellOpenFunction function)
             throws Exception {
         return function.prepareWithoutInitCommand();
     }

@@ -36,19 +36,6 @@ public class AppActionLinkDetector {
         AppOpenArguments.handle(List.of(content));
     }
 
-    public static void detectOnFocus() {
-        var content = getClipboardAction();
-        if (content == null) {
-            lastDetectedAction = null;
-            return;
-        }
-        if (content.equals(lastDetectedAction)) {
-            return;
-        }
-        lastDetectedAction = content;
-        handle(content, true);
-    }
-
     public static void detectOnPaste() {
         var content = getClipboardAction();
         if (content == null) {

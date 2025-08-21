@@ -26,11 +26,13 @@ import java.util.List;
 @JsonTypeName("starship")
 public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<StarshipTerminalPrompt> p) {
         return createOptions(
                 p, s -> StarshipTerminalPrompt.builder().configuration(s).build());
     }
 
+    @SuppressWarnings("unused")
     public static StarshipTerminalPrompt createDefault() {
         return StarshipTerminalPrompt.builder()
                 .configuration(
