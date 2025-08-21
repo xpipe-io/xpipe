@@ -215,7 +215,7 @@ public class StoreCreationDialog {
         modal.addButton(new ModalButton(
                         "skip",
                         () -> {
-                            if (showInvalidConfirmAlert()) {
+                            if (!model.wasChanged() || showInvalidConfirmAlert()) {
                                 model.commit(false);
                                 modal.close();
                             } else {

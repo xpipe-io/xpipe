@@ -189,6 +189,14 @@ public class StoreCreationModel {
         return !eq;
     }
 
+    boolean wasChanged() {
+        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
+            return false;
+        }
+
+        return true;
+    }
+
     void finish() {
         if (finished.get()) {
             return;
@@ -211,7 +219,7 @@ public class StoreCreationModel {
         }
 
         // We didn't change anything
-        if (existingEntry != null && existingEntry.getStore().equals(store.getValue())) {
+        if (!wasChanged()) {
             commit(false);
             return;
         }
