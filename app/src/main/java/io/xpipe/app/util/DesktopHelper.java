@@ -105,10 +105,10 @@ public class DesktopHelper {
 
         ThreadHelper.runAsync(() -> {
             var xdg = OsType.getLocal() == OsType.LINUX;
-            if (Desktop.getDesktop().isSupported(Desktop.Action.OPEN)
+            if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
                     && AppDistributionType.get() != AppDistributionType.WEBTOP) {
                 try {
-                    Desktop.getDesktop().open(file.toFile());
+                    Desktop.getDesktop().browse(file.toFile().toURI());
                     return;
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();

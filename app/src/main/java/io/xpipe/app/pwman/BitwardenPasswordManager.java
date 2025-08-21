@@ -13,6 +13,8 @@ import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
+import java.nio.file.Files;
+
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
 
@@ -46,7 +48,8 @@ public class BitwardenPasswordManager implements PasswordManager {
             var sc = getOrStartShell();
             var command = sc.command(CommandBuilder.of().add("bw", "get", "item", "xpipe-test", "--nointeraction"));
             var r = command.readStdoutAndStderr();
-            if (r[1].contains("You are not logged in")) {
+            // Check for data file as bw seemingly breaks if it doesn't exist yet
+            if (!Files.exists(AppCache.getBasePath().resolve("data.json")) || r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         LocalShell.getDialect()
                                 .getSetEnvironmentVariableCommand(
