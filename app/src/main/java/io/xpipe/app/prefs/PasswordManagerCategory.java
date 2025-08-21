@@ -33,7 +33,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
 
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.passwordManager)
-                .subclasses(PasswordManager.getClasses())
+                .available(PasswordManager.getClasses())
                 .allowNull(true)
                 .transformer(entryComboBox -> {
                     var websiteLinkButton =

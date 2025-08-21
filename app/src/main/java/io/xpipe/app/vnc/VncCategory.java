@@ -30,7 +30,7 @@ public class VncCategory extends AppPrefsCategory {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.vncClient)
-                .subclasses(ExternalVncClient.getClasses())
+                .available(ExternalVncClient.getClasses())
                 .allowNull(false)
                 .transformer(entryComboBox -> {
                     var websiteLinkButton =

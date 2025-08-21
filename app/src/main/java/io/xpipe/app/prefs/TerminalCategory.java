@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -19,7 +18,6 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,7 +25,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -250,7 +247,7 @@ public class TerminalCategory extends AppPrefsCategory {
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.terminalMultiplexer)
                 .allowNull(true)
-                .subclasses(TerminalMultiplexer.getClasses())
+                .available(TerminalMultiplexer.getClasses())
                 .transformer(entryComboBox -> {
                     var websiteLinkButton =
                             new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
@@ -294,7 +291,7 @@ public class TerminalCategory extends AppPrefsCategory {
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.terminalPrompt)
                 .allowNull(true)
-                .subclasses(TerminalPrompt.getClasses())
+                .available(TerminalPrompt.getClasses())
                 .transformer(entryComboBox -> {
                     var websiteLinkButton =
                             new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {

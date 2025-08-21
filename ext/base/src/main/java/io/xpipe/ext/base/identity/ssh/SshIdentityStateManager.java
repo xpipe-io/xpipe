@@ -147,15 +147,6 @@ public class SshIdentityStateManager {
         runningAgent = RunningAgent.EXTERNAL_AGENT;
     }
 
-    public static synchronized void prepareRemoteGpgAgent(ShellControl sc) throws Exception {
-        if (sc.getOsType() == OsType.WINDOWS) {
-            checkAgentIdentities(sc, null);
-        } else {
-            var socketEnv = sc.command("gpgconf --list-dirs agent-ssh-socket").readStdoutOrThrow();
-            checkLocalAgentIdentities(socketEnv);
-        }
-    }
-
     public static synchronized void prepareLocalGpgAgent() throws Exception {
         if (runningAgent == RunningAgent.GPG_AGENT) {
             return;
@@ -202,10 +193,6 @@ public class SshIdentityStateManager {
         }
 
         runningAgent = RunningAgent.GPG_AGENT;
-    }
-
-    public static synchronized void prepareRemoteOpenSshAgent(ShellControl sc) throws Exception {
-        checkAgentIdentities(sc, null);
     }
 
     public static synchronized void prepareLocalOpenSshAgent(ShellControl sc) throws Exception {

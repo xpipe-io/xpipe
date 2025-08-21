@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity.ssh;
 
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +23,7 @@ import java.util.Optional;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = NoneStrategy.class),
     @JsonSubTypes.Type(value = KeyFileStrategy.class),
-    @JsonSubTypes.Type(value = SshAgentStrategy.class),
+    @JsonSubTypes.Type(value = OpenSshAgentStrategy.class),
     @JsonSubTypes.Type(value = PasswordManagerAgentStrategy.class),
     @JsonSubTypes.Type(value = PageantStrategy.class),
     @JsonSubTypes.Type(value = GpgAgentStrategy.class),
@@ -32,7 +34,24 @@ import java.util.Optional;
 public interface SshIdentityStrategy {
 
     static List<Class<?>> getSubclasses() {
-        return List.of(NoneStrategy.class, SshAgentStrategy.class, PageantStrategy.class, PasswordManagerAgentStrategy.class, GpgAgentStrategy.class, KeyFileStrategy.class, YubikeyPivStrategy.class, CustomPkcs11LibraryStrategy.class, OtherExternalStrategy.class);
+        var l = new ArrayList<Class<?>>();
+        l.add(NoneStrategy.class);
+        l.add(KeyFileStrategy.class);
+        l.add(OpenSshAgentStrategy.class);
+        if (AppPrefs.get().passwordManager().getValue() != null) {
+            l.add(PasswordManagerAgentStrategy.class);
+        }
+        if (GpgAgentStrategy.isSupported()) {
+            l.add(GpgAgentStrategy.class);
+        }
+        if (PageantStrategy.isSupported()) {
+            l.add(PageantStrategy.class);
+        }
+        l.add(YubikeyPivStrategy.class);
+        l.add(CustomPkcs11LibraryStrategy.class);
+        l.add(OtherExternalStrategy.class);
+
+        return l;
     }
 
     static Optional<FilePath> getPublicKeyPath(String publicKey) throws Exception {

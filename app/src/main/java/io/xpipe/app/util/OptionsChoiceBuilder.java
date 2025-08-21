@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -25,7 +26,8 @@ import java.util.function.Function;
 public class OptionsChoiceBuilder {
 
     private final Property<?> property;
-    private final List<Class<?>> subclasses;
+    private final List<Class<?>> available;
+    private final List<Class<?>> selectable;
     private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
     private final boolean allowNull;
     private final Object customConfiguration;
@@ -98,7 +100,8 @@ public class OptionsChoiceBuilder {
     @SuppressWarnings("unchecked")
     public <T> OptionsBuilder build() {
         Property<T> s = (Property<T>) property;
-        var sub = subclasses;
+        var initial = s.getValue();
+        var sub = available;
         var selectedIndex = s.getValue() == null
                 ? (allowNull ? 0 : -1)
                 : sub.stream()
@@ -123,8 +126,8 @@ public class OptionsChoiceBuilder {
                 return;
             }
 
-            for (int i = 0; i < subclasses.size(); i++) {
-                var c = subclasses.get(i);
+            for (int i = 0; i < sub.size(); i++) {
+                var c = sub.get(i);
                 if (c.isAssignableFrom(newValue.getClass())) {
                     properties.get(i + (allowNull ? 1 : 0)).setValue(newValue);
                 }
@@ -146,7 +149,7 @@ public class OptionsChoiceBuilder {
                 .bindChoice(
                         () -> {
                             if (selected.get() == -1) {
-                                return new SimpleObjectProperty<>();
+                                return new ReadOnlyObjectWrapper<>(initial);
                             }
 
                             var prop = properties.get(selected.get());

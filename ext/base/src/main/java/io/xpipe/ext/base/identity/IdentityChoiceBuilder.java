@@ -83,7 +83,7 @@ public class IdentityChoiceBuilder {
                     .description("keyAuthenticationDescription")
                     .longDescription(DocumentationLink.SSH_KEYS)
                     .sub(OptionsChoiceBuilder.builder().allowNull(false).property(identityStrategy)
-                            .customConfiguration(sshIdentityChoiceConfig).subclasses(SshIdentityStrategy.getSubclasses()).build()
+                            .customConfiguration(sshIdentityChoiceConfig).available(SshIdentityStrategy.getSubclasses()).build()
                             .build(), identityStrategy)
                     .nonNullIf(inPlaceSelected)
                     .disable(refSelected)

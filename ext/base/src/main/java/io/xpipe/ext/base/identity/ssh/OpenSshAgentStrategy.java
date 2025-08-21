@@ -2,6 +2,7 @@ package io.xpipe.ext.base.identity.ssh;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -21,13 +22,18 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class SshAgentStrategy implements SshIdentityStrategy {
+public class OpenSshAgentStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(Property<SshAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
+    public static OptionsBuilder createOptions(Property<OpenSshAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
+        var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
         var forward = new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
-        return new OptionsBuilder().nameAndDescription("forwardAgent")
+        return new OptionsBuilder()
+                .nameAndDescription("agentSocket")
+                .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
+                .hide(OsType.getLocal() == OsType.WINDOWS)
+                .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
@@ -35,7 +41,7 @@ public class SshAgentStrategy implements SshIdentityStrategy {
                 .addComp(new TextFieldComp(publicKey).apply(
                         struc -> struc.get().setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")), publicKey)
                 .bind(() -> {
-                    return new SshAgentStrategy(forward.get(), publicKey.get());
+                    return new OpenSshAgentStrategy(forward.get(), publicKey.get());
                 }, p);
     }
 
@@ -47,8 +53,6 @@ public class SshAgentStrategy implements SshIdentityStrategy {
     public void prepareParent(ShellControl parent) throws Exception {
         if (parent.isLocal()) {
             SshIdentityStateManager.prepareLocalOpenSshAgent(parent);
-        } else {
-            SshIdentityStateManager.prepareRemoteOpenSshAgent(parent);
         }
     }
 
