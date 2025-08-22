@@ -273,6 +273,14 @@ public final class BrowserFileListComp extends SimpleComp {
             return;
         }
 
+        if (event.isControlDown() || event.isShiftDown() || event.isAltDown() || event.isMetaDown()) {
+            return;
+        }
+
+        if (typedSelection.get().isEmpty() && typed.equals(" ")) {
+            return;
+        }
+
         var updated = typedSelection.get() + typed;
         var found = fileList.getShown().getValue().stream()
                 .filter(browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(updated.toLowerCase()))
@@ -608,9 +616,14 @@ public final class BrowserFileListComp extends SimpleComp {
         updateHandler.accept(null, null);
         fileList.getShown().addListener((observable, oldValue, newValue) -> {
             // Delay to prevent internal tableview exceptions when sorting
-            Platform.runLater(() -> {
+            var isSortChange = oldValue.size() == newValue.size() && new HashSet<>(oldValue).containsAll(newValue);
+            if (isSortChange) {
+                Platform.runLater(() -> {
+                    updateHandler.accept(oldValue, newValue);
+                });
+            } else {
                 updateHandler.accept(oldValue, newValue);
-            });
+            }
         });
         fileList.getFileSystemModel().getCurrentPath().addListener((observable, oldValue, newValue) -> {
             if (oldValue == null) {

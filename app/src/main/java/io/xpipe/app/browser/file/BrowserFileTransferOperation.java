@@ -18,6 +18,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -304,24 +305,45 @@ public class BrowserFileTransferOperation {
             flatFiles.put(source, directoryName);
 
             var baseRelative = source.getPath().getParent().toDirectory();
-            try (var stream = source.getFileSystem().listFilesRecursively(source.getFileSystem(), source.getPath())) {
-                List<FileEntry> list = stream.toList();
-                for (FileEntry fileEntry : list) {
-                    if (cancelled()) {
-                        return;
-                    }
+            var list = new ArrayList<FileEntry>();
+            source.getFileSystem().traverseFilesRecursively(source.getFileSystem(), source.getPath(), fileEntry -> {
+                if (cancelled()) {
+                    progress.accept(BrowserTransferProgress.finished(source.getName() + " ...", totalSize.get()));
+                    return false;
+                }
 
-                    var rel = fileEntry
-                            .getPath()
-                            .relativize(baseRelative)
-                            .toUnix()
-                            .toString();
-                    flatFiles.put(fileEntry, rel);
-                    if (fileEntry.getKind() == FileKind.FILE) {
-                        // This one is up-to-date and does not need to be recalculated
-                        // If we don't have a size, it doesn't matter that much as the total size is only for display
-                        totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
-                    }
+                var rel = fileEntry
+                        .getPath()
+                        .relativize(baseRelative)
+                        .toUnix()
+                        .toString();
+                flatFiles.put(fileEntry, rel);
+                if (fileEntry.getKind() == FileKind.FILE) {
+                    // This one is up-to-date and does not need to be recalculated
+                    // If we don't have a size, it doesn't matter that much as the total size is only for display
+                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    progress.accept(new BrowserTransferProgress(source.getName() + " ...", 0, totalSize.get()));
+                }
+                list.add(fileEntry);
+                return true;
+            });
+
+            for (FileEntry fileEntry : list) {
+                if (cancelled()) {
+                    return;
+                }
+
+                var rel = fileEntry
+                        .getPath()
+                        .relativize(baseRelative)
+                        .toUnix()
+                        .toString();
+                flatFiles.put(fileEntry, rel);
+                if (fileEntry.getKind() == FileKind.FILE) {
+                    // This one is up-to-date and does not need to be recalculated
+                    // If we don't have a size, it doesn't matter that much as the total size is only for display
+                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
+                    progress.accept(new BrowserTransferProgress(source.getName(), 0, totalSize.get()));
                 }
             }
         } else {

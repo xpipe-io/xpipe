@@ -30,6 +30,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -37,10 +38,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,6 +79,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             progress.setValue(null);
             progressesIntervalHistory.clear();
             progressTransferSpeed.setValue(0);
+            return;
+        }
+
+        if (n.getTransferred() == 0) {
+            progress.setValue(n);
             return;
         }
 
@@ -229,8 +232,23 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return;
         }
 
+        var all = new ArrayList<FileEntry>();
+        all.addAll(entries);
+        for (BrowserEntry browserEntry : fileList.getAll().getValue()) {
+            var fe = browserEntry.getRawFileEntry();
+            if (fe.getKind() == FileKind.LINK && entries.stream().anyMatch(o -> o.getPath().equals(fe.resolved().getPath()))) {
+                all.add(fe);
+            }
+        }
+
+        for (FileEntry fileEntry : entries) {
+            if (fileEntry.getKind() == FileKind.LINK) {
+                all.add(fileEntry.resolved());
+            }
+        }
+
         try {
-            for (var e : entries) {
+            for (var e : all) {
                 var refresh = fileSystem.getFileInfo(e.getPath());
                 fileList.updateEntry(e.getPath(), refresh.orElse(null));
             }
@@ -316,17 +334,17 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return Optional.empty();
         }
 
+        if (path == null) {
+            currentPath.set(null);
+            return Optional.empty();
+        }
+
         try {
             // Start shell in case we exited
             startIfNeeded();
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return Optional.ofNullable(cps);
-        }
-
-        if (path == null) {
-            currentPath.set(null);
-            return Optional.empty();
         }
 
         // Fix common issues with paths

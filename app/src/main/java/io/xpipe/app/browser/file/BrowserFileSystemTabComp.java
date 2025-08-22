@@ -9,11 +9,15 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -30,6 +34,7 @@ import javafx.scene.layout.VBox;
 import atlantafx.base.controls.Spacer;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -220,13 +225,22 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                     });
                 });
 
+        // Delay show to hide file list changes happening
+        // Not perfect, but covers most of the cases of small directories
+        var showOverview = new SimpleBooleanProperty(true);
+        model.getCurrentPath().subscribe(path -> {
+            GlobalTimer.delay(() -> {
+                showOverview.setValue(path == null);
+            }, Duration.ofMillis(250));
+        });
+
         var home = new BrowserOverviewComp(model).styleClass("browser-overview");
         var stack = new MultiContentComp(
                 Map.of(
                         home,
-                        model.getCurrentPath().isNull(),
+                        showOverview,
                         fileList,
-                        model.getCurrentPath().isNull().not()),
+                        showOverview.not()),
                 false);
         var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {

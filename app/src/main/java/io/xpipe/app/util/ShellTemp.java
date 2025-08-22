@@ -101,7 +101,7 @@ public class ShellTemp {
                                     "-Force"))
                     .executeAndCheck();
         } else {
-            sc.command(CommandBuilder.of().add("rm", "-f").add("\"" + prefix.toString() + "\"*"))
+            sc.command(CommandBuilder.of().add("rm", "-f").add("\"" + prefix.toString() + "\"*").add("2>/dev/null"))
                     .executeAndCheck();
         }
     }

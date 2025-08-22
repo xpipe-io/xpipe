@@ -172,7 +172,7 @@ public final class McpTools {
                         throw new BeaconClientException("Directory " + path + " does not exist");
                     }
 
-                    try (var stream = recursive ? fs.listFilesRecursively(fs, path) : fs.listFiles(fs, path)) {
+                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         for (FileEntry e : list) {
@@ -202,7 +202,7 @@ public final class McpTools {
                     }
 
                     var regex = Pattern.compile(DataStorageQuery.toRegex(pattern));
-                    try (var stream = recursive ? fs.listFilesRecursively(fs, path) : fs.listFiles(fs, path)) {
+                    try (var stream = recursive ? fs.listFilesRecursively(fs, path).stream() : fs.listFiles(fs, path)) {
                         var list = stream.toList();
                         var builder = McpSchema.CallToolResult.builder();
                         list.stream()

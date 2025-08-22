@@ -40,6 +40,7 @@ public enum DocumentationLink {
     VNC("guide/vnc"),
     REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
+    SSH_GATEWAYS("guide/ssh#gateways-and-jump-servers"),
     SSH_HOST_KEYS("troubleshoot/ssh#no-matching-host-key-type-found"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),

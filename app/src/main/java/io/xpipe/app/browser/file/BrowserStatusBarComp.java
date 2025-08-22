@@ -45,7 +45,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         bar.apply(struc -> {
             struc.get().widthProperty().subscribe(value -> {
                 var veryConstrained = value.doubleValue() < 600;
-                var somewhatConstrained = value.doubleValue() < 750;
+                var somewhatConstrained = value.doubleValue() < 710;
                 struc.get().getChildren().get(2).setVisible(!somewhatConstrained);
                 struc.get().getChildren().get(2).setManaged(!somewhatConstrained);
                 struc.get().getChildren().get(4).setVisible(!veryConstrained);

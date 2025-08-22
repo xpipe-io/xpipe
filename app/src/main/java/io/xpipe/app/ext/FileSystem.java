@@ -7,8 +7,11 @@ import io.xpipe.core.FilePath;
 import java.io.Closeable;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
@@ -49,18 +52,29 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Stream<FileEntry> listFiles(FileSystem system, FilePath file) throws Exception;
 
-    default Stream<FileEntry> listFilesRecursively(FileSystem system, FilePath file) throws Exception {
-        return listFiles(system, file).flatMap(fileEntry -> {
-            if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                return Stream.of(fileEntry);
+    default List<FileEntry> listFilesRecursively(FileSystem system, FilePath file) throws Exception {
+        var all = new ArrayList<FileEntry>();
+        traverseFilesRecursively(system, file, all::add);
+        return all;
+    }
+
+    default void traverseFilesRecursively(FileSystem system, FilePath file, Predicate<FileEntry> visitor) throws Exception {
+        List<FileEntry> base;
+        try (var filesStream = listFiles(system, file)) {
+            base = filesStream.toList();
+        }
+
+        for (FileEntry fileEntry : base) {
+            if (!visitor.test(fileEntry)) {
+                return;
             }
 
-            try {
-                return Stream.concat(Stream.of(fileEntry), listFilesRecursively(system, fileEntry.getPath()));
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                continue;
             }
-        });
+
+            traverseFilesRecursively(system, fileEntry.getPath(), visitor);
+        }
     }
 
     List<FilePath> listRoots() throws Exception;
