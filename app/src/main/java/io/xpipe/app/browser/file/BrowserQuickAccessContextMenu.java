@@ -12,6 +12,7 @@ import io.xpipe.core.FileKind;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -52,7 +53,10 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         });
         addEventFilter(Menu.ON_SHOWN, e -> {
             Platform.runLater(() -> {
-                getItems().getFirst().getStyleableNode().requestFocus();
+                var items = getItems();
+                if (items.size() > 0) {
+                    items.getFirst().getStyleableNode().requestFocus();
+                }
             });
         });
         InputHelper.onLeft(this, false, e -> {

@@ -244,7 +244,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
         @Override
         public LabelGraphic getIcon(DataStoreEntryRef<ShellStore> store) {
-            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+            return new LabelGraphic.IconGraphic("mdal-desktop_mac");
         }
 
         @Override
@@ -259,7 +259,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
         @Override
         public LabelGraphic getIcon() {
-            return new LabelGraphic.IconGraphic("mdi2d-desktop-mac");
+            return new LabelGraphic.IconGraphic("mdal-desktop_mac");
         }
 
         @Override

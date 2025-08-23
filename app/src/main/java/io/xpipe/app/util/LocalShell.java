@@ -38,7 +38,7 @@ public class LocalShell {
                     localPowershell.exitAndWait();
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).omit().handle();
-                    local.kill();
+                    localPowershell.kill();
                 }
             } else {
                 localPowershell.kill();

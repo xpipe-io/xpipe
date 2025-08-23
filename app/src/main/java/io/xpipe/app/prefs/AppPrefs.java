@@ -63,7 +63,7 @@ public final class AppPrefs {
             .requiresRestart(false)
             .build());
     final BooleanProperty alwaysShowSshMotd = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(true))
+            .property(new GlobalBooleanProperty(false))
             .key("alwaysShowSshMotd")
             .valueClass(Boolean.class)
             .requiresRestart(false)
@@ -697,6 +697,10 @@ public final class AppPrefs {
                 || !ProcessControlProvider.get().getAvailableLocalDialects().contains(localShellDialect.getValue())) {
             localShellDialect.setValue(
                     ProcessControlProvider.get().getAvailableLocalDialects().getFirst());
+        }
+
+        if (sshVerboseOutput.get()) {
+            sshVerboseOutput.set(false);
         }
     }
 
