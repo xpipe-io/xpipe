@@ -12,7 +12,7 @@ public class ShellScript {
     String value;
 
     public static ShellScript lines(String... lines) {
-        return new ShellScript(Arrays.stream(lines).collect(Collectors.joining("\n")));
+        return new ShellScript(Arrays.stream(lines).filter(s -> s != null).collect(Collectors.joining("\n")));
     }
 
     public static ShellScript lines(List<String> lines) {

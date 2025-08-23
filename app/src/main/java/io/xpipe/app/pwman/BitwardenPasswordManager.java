@@ -26,14 +26,18 @@ public class BitwardenPasswordManager implements PasswordManager {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
             SHELL.start();
 
-            var path = SHELL.view().findProgram("bw");
-            if (OsType.getLocal() != OsType.LINUX || path.isEmpty() || !path.get().toString().contains("snap")) {
+            if (moveAppDir()) {
                 SHELL.view().unsetEnvironmentVariable("BW_SESSION");
                 SHELL.view().setEnvironmentVariable("BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
             }
         }
         SHELL.start();
         return SHELL;
+    }
+
+    private static boolean moveAppDir() throws Exception {
+        var path = SHELL.view().findProgram("bw");
+        return OsType.getLocal() != OsType.LINUX || path.isEmpty() || !path.get().toString().contains("snap");
     }
 
     @Override
@@ -54,10 +58,10 @@ public class BitwardenPasswordManager implements PasswordManager {
             // Check for data file as bw seemingly breaks if it doesn't exist yet
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
-                        LocalShell.getDialect()
+                        moveAppDir() ? LocalShell.getDialect()
                                 .getSetEnvironmentVariableCommand(
                                         "BITWARDENCLI_APPDATA_DIR",
-                                        AppCache.getBasePath().toString()),
+                                        AppCache.getBasePath().toString()) : null,
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
                         "bw login --quiet",
                         sc.getShellDialect()
