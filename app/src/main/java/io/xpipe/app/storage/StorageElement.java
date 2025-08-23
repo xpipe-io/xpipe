@@ -80,7 +80,7 @@ public abstract class StorageElement {
         }
 
         // Save changes instantly
-        if (used || modified) {
+        if (modified) {
             DataStorage.get().saveAsync();
         }
     }

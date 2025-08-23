@@ -133,6 +133,12 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                 struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
             });
             struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
+
+            currentAddress.addListener((observable, oldValue, newValue) -> {
+                if (newValue == null) {
+                    struc.get().requestFocus();
+                }
+            });
         });
         combo.hgrow();
         combo.styleClass(Styles.LEFT_PILL);

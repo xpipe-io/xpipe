@@ -30,11 +30,12 @@ public class UntarActionProvider implements BrowserActionProvider {
             for (BrowserEntry entry : getEntries()) {
                 var target = getTarget(entry.getRawFileEntry().getPath());
                 var c = CommandBuilder.of().add("tar");
+                var args = "x" + (gz ? "z" : "") + "f";
+                c.add(args);
+                c.addFile(entry.getRawFileEntry().getPath());
                 if (toDirectory) {
                     c.add("-C").addFile(target);
                 }
-                c.add("-x").addIf(gz, "-z").add("-f");
-                c.addFile(entry.getRawFileEntry().getPath());
                 if (toDirectory) {
                     model.getFileSystem().mkdirs(target);
                 }

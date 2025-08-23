@@ -336,6 +336,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         if (path == null) {
             currentPath.set(null);
+            fileList.setAll(Stream.of());
             return Optional.empty();
         }
 

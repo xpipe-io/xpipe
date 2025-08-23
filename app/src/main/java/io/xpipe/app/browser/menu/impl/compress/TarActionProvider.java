@@ -31,10 +31,9 @@ public class TarActionProvider implements BrowserActionProvider {
         @Override
         public void executeImpl() throws Exception {
             var sc = model.getFileSystem().getShell().orElseThrow();
+            var args = "c" + (gz ? "z" : "") + "f";
             var tar = CommandBuilder.of()
-                    .add("tar", "-c")
-                    .addIf(gz, "-z")
-                    .add("-f")
+                    .add("tar", args)
                     .addFile(target);
             var base = model.getCurrentDirectory().getPath();
 

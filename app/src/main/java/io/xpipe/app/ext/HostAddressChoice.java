@@ -5,6 +5,7 @@ import io.xpipe.app.util.OptionsBuilder;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
+import javafx.collections.ListChangeListener;
 import lombok.Builder;
 import lombok.Value;
 
@@ -23,13 +24,18 @@ public class HostAddressChoice {
         var existing = value.getValue();
         var val = new SimpleObjectProperty<>(existing != null ? existing.get() : null);
         var list = FXCollections.observableArrayList(existing != null ? existing.getAvailable() : new ArrayList<>());
+        // For updating the options builder binding on list change, it doesn't support observable lists
+        var sizeProp = new SimpleIntegerProperty(0);
+        list.addListener((ListChangeListener<? super String>) c -> {
+            sizeProp.set(c.getList().size());
+        });
         var options = new OptionsBuilder();
         if (includeDescription) {
             options.nameAndDescription(this.translationKey);
         } else {
             options.name(translationKey);
         }
-        options.addComp(new HostAddressChoiceComp(val, list, allowMutation)).addProperty(val);
+        options.addComp(new HostAddressChoiceComp(val, list, allowMutation)).addProperty(val).addProperty(sizeProp);
         options.bind(
                 () -> {
                     var fullList = new ArrayList<>(list);

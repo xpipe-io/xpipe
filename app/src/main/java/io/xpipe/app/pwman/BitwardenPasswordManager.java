@@ -12,6 +12,7 @@ import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.OsType;
 
 import java.nio.file.Files;
 
@@ -24,10 +25,12 @@ public class BitwardenPasswordManager implements PasswordManager {
         if (SHELL == null) {
             SHELL = ProcessControlProvider.get().createLocalProcessControl(true);
             SHELL.start();
-            SHELL.view().unsetEnvironmentVariable("BW_SESSION");
-            SHELL.view()
-                    .setEnvironmentVariable(
-                            "BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
+
+            var path = SHELL.view().findProgram("bw");
+            if (OsType.getLocal() != OsType.LINUX || path.isEmpty() || !path.get().toString().contains("snap")) {
+                SHELL.view().unsetEnvironmentVariable("BW_SESSION");
+                SHELL.view().setEnvironmentVariable("BITWARDENCLI_APPDATA_DIR", AppCache.getBasePath().toString());
+            }
         }
         SHELL.start();
         return SHELL;
@@ -49,7 +52,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             var command = sc.command(CommandBuilder.of().add("bw", "get", "item", "xpipe-test", "--nointeraction"));
             var r = command.readStdoutAndStderr();
             // Check for data file as bw seemingly breaks if it doesn't exist yet
-            if (!Files.exists(AppCache.getBasePath().resolve("data.json")) || r[1].contains("You are not logged in")) {
+            if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         LocalShell.getDialect()
                                 .getSetEnvironmentVariableCommand(
@@ -65,6 +68,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                         .title("Bitwarden login")
                         .localScript(script)
                         .logIfEnabled(false)
+                        .preferTabs(false)
                         .launch();
                 return null;
             }

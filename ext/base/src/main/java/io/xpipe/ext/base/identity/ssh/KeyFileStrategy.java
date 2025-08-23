@@ -158,8 +158,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
 
     @Override
     public SecretRetrievalStrategy getAskpassStrategy() {
-        // Always try to cache passphrase
-        return password instanceof SecretRetrievalStrategy.None ? new SecretRetrievalStrategy.Prompt() : password;
+        return password;
     }
 
     private FilePath resolveFilePath() {

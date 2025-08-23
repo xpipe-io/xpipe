@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
 
@@ -57,9 +58,9 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                         () -> {
                             return host.getValue() != null
                                             && host.getValue().getStore() instanceof StatefulDataStore<?> sd
-                                            && sd.getState() instanceof ShellStoreState sss
-                                            && sss.getShellDialect() != null
-                                    ? sss.getShellDialect().getScriptFileEnding()
+                                            && sd.getState() instanceof SystemState ss
+                                            && ss.getShellDialect() != null
+                                    ? ss.getShellDialect().getScriptFileEnding()
                                     : "sh";
                         },
                         host));

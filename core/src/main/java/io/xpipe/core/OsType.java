@@ -48,9 +48,7 @@ public interface OsType {
         }
     }
 
-    abstract class Unix implements OsType {}
-
-    final class Linux extends Unix implements OsType, Local, Any {
+    final class Linux implements OsType, Local, Any {
 
         @Override
         public String getName() {
@@ -63,7 +61,7 @@ public interface OsType {
         }
     }
 
-    final class Solaris extends Unix implements Any {
+    final class Solaris implements Any {
 
         @Override
         public String getId() {
@@ -76,7 +74,7 @@ public interface OsType {
         }
     }
 
-    final class Bsd extends Unix implements Any {
+    final class Bsd implements Any {
 
         @Override
         public String getId() {

@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.Region;
@@ -41,7 +42,7 @@ public class OsLogoComp extends SimpleComp {
                         return null;
                     }
 
-                    return getImage(ons.getOsName());
+                    return getImage(ons.getOsName(), ons.getOsType());
                 },
                 wrapper.getPersistentState(),
                 state);
@@ -56,7 +57,7 @@ public class OsLogoComp extends SimpleComp {
                 .createRegion();
     }
 
-    private String getImage(String name) {
+    private String getImage(String name, OsType type) {
         if (name == null) {
             return null;
         }
@@ -81,11 +82,19 @@ public class OsLogoComp extends SimpleComp {
             });
         }
 
-        return ICONS.entrySet().stream()
+        var found = ICONS.entrySet().stream()
                 .filter(e -> name.toLowerCase().contains(e.getKey())
                         || name.toLowerCase().replaceAll("\\s+", "").contains(e.getKey()))
                 .findAny()
-                .map(e -> e.getValue())
-                .orElse("os/linux.svg");
+                .map(e -> e.getValue());
+        if (found.isPresent()) {
+            return found.get();
+        }
+
+        if (type == OsType.SOLARIS) {
+            return "os/illumos.svg";
+        }
+
+        return "os/linux.svg";
     }
 }
