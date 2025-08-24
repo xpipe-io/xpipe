@@ -1,9 +1,11 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
@@ -15,13 +17,18 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Region;
 
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.function.Supplier;
 
 @AllArgsConstructor
 public class StoreCategoryConfigComp extends SimpleComp {
@@ -44,15 +51,14 @@ public class StoreCategoryConfigComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var colors = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
-        colors.put(AppI18n.observable("none"), new OptionsBuilder());
+        var colors = new LinkedHashMap<DataStoreColor, ObservableValue<String>>();
+        colors.put(null, AppI18n.observable("none"));
         for (DataStoreColor value : DataStoreColor.values()) {
-            colors.put(AppI18n.observable(value.getId()), new OptionsBuilder());
+            colors.put(value, AppI18n.observable(value.getId()));
         }
 
         var c = config.getValue();
-        var color = new SimpleIntegerProperty(
-                c.getColor() != null ? Arrays.asList(DataStoreColor.values()).indexOf(c.getColor()) + 1 : 0);
+        var color = new SimpleObjectProperty<>(c.getColor());
         var scripts = new SimpleObjectProperty<>(c.getDontAllowScripts());
         var confirm = new SimpleObjectProperty<>(c.getConfirmAllModifications());
         var sync = new SimpleObjectProperty<>(c.getSync());
@@ -65,6 +71,29 @@ public class StoreCategoryConfigComp extends SimpleComp {
                                 .orElse(null)
                         : null);
         var connectionsCategory = wrapper.getRoot().equals(StoreViewState.get().getAllConnectionsCategory());
+
+        var colorChoice = new ChoiceComp<>(color, colors, false);
+        colorChoice.apply(struc -> {
+            Supplier<ListCell<DataStoreColor>> cell = () -> new ListCell<>() {
+                @Override
+                protected void updateItem(DataStoreColor color, boolean empty) {
+                    super.updateItem(color, empty);
+                    if (color == null) {
+                        setText(AppI18n.get("none"));
+                        setGraphic(DataStoreColor.createDisplayGraphic(color));
+                        return;
+                    }
+
+                    setText(AppI18n.get(color.getId()));
+                    setGraphic(DataStoreColor.createDisplayGraphic(color));
+                }
+            };
+            struc.get().setButtonCell(cell.get());
+            struc.get().setCellFactory(ignored -> {
+                return cell.get();
+            });
+        });
+
         var options = new OptionsBuilder()
                 .nameAndDescription("categorySync")
                 .addYesNoToggle(sync)
@@ -89,11 +118,11 @@ public class StoreCategoryConfigComp extends SimpleComp {
                         ref)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryColor")
-                .choice(color, colors)
+                .addComp(colorChoice, color)
                 .bind(
                         () -> {
                             return new DataStoreCategoryConfig(
-                                    color.get() > 0 ? DataStoreColor.values()[color.get() - 1] : null,
+                                    color.get(),
                                     scripts.get(),
                                     confirm.get(),
                                     sync.get(),

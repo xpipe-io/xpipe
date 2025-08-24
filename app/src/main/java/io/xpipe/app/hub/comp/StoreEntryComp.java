@@ -467,6 +467,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                         getWrapper().getEntry().setColor(null);
                         event.consume();
                     });
+                    none.setGraphic(DataStoreColor.createDisplayGraphic(null));
                     color.getItems().add(none);
                     Arrays.stream(DataStoreColor.values()).forEach(dataStoreColor -> {
                         MenuItem m = new MenuItem();
@@ -475,6 +476,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             getWrapper().getEntry().setColor(dataStoreColor);
                             event.consume();
                         });
+                        m.setGraphic(DataStoreColor.createDisplayGraphic(dataStoreColor));
                         color.getItems().add(m);
                     });
                     items.add(color);

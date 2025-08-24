@@ -1,9 +1,12 @@
 package io.xpipe.app.storage;
 
 import javafx.scene.Node;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import javafx.scene.shape.Rectangle;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -37,6 +40,25 @@ public enum DataStoreColor {
         this.id = id;
         this.emoji = emoji;
         this.terminalColor = terminalColor;
+    }
+
+    public static Region createDisplayGraphic(DataStoreColor color) {
+        var b = new Rectangle(8, 8);
+        b.setArcWidth(4);
+        b.setArcHeight(4);
+        b.getStyleClass().add("dot");
+        b.getStyleClass().add("color-box");
+        b.getStyleClass().add(color != null ? color.getId() : "gray");
+
+        var d = new Rectangle(10, 10);
+        d.setArcWidth(4 + 2);
+        d.setArcHeight(4 + 2);
+        d.getStyleClass().add("dot");
+        d.getStyleClass().add("color-box");
+        d.getStyleClass().add(color != null ? color.getId() : "gray");
+
+        var s = new StackPane(d, b);
+        return s;
     }
 
     public static void applyStyleClasses(DataStoreColor color, Node node) {
