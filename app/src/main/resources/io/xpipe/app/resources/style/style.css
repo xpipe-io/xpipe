@@ -174,3 +174,7 @@
     -fx-icon-color: -color-fg-default;
     -fx-fill: -color-fg-default;
 }
+
+.creation-menu.menu-button .separator {
+    -fx-padding: 2 0;
+}

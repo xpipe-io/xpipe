@@ -52,6 +52,10 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     }
 
     public boolean requiresTunnel() {
+        if (getHost() == null) {
+            return false;
+        }
+
         if (!getHost().getStore().isLocallyTunnelable()) {
             var parent = getHost().getStore().getNetworkParent();
             if (!(parent instanceof NetworkTunnelStore nts)) {

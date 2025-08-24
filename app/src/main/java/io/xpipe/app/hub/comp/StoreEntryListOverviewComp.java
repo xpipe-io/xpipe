@@ -128,6 +128,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         menu.setTextAlignment(TextAlignment.CENTER);
         menu.setOpacity(0.85);
         menu.setMinWidth(Region.USE_PREF_SIZE);
+        menu.getStyleClass().add("creation-menu");
         return menu;
     }
 

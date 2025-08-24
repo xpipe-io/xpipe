@@ -25,6 +25,10 @@ import java.util.UUID;
 
 public interface DataStoreProvider {
 
+    default boolean showIncompleteInfo() {
+        return false;
+    }
+
     default boolean includeInConnectionCount() {
         return getUsageCategory() != DataStoreUsageCategory.GROUP;
     }

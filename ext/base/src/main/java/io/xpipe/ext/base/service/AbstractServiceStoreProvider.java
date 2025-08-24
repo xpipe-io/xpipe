@@ -21,6 +21,11 @@ import java.util.List;
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
 
     @Override
+    public boolean showIncompleteInfo() {
+        return true;
+    }
+
+    @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SERVICES;
     }
