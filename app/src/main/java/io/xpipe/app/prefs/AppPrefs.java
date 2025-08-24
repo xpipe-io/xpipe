@@ -339,6 +339,7 @@ public final class AppPrefs {
         INSTANCE.loadLocal();
         INSTANCE.vaultStorageHandler =
                 new AppPrefsStorageHandler(DataStorage.getStorageDirectory().resolve("preferences.json"));
+        INSTANCE.fixLocalValues();
     }
 
     public static void initWithShell() throws Exception {
@@ -348,11 +349,6 @@ public final class AppPrefs {
                 DataStorage.get().forceRewrite();
             }
         });
-    }
-
-    public static void setLocalDefaultsIfNeeded() {
-        INSTANCE.initDefaultValues();
-        PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }
 
     public static void reset() {
@@ -662,10 +658,7 @@ public final class AppPrefs {
         });
     }
 
-    public void initDefaultValues() {
-        externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
-        terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
-        rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
+    private void fixLocalValues() {
         if (AppProperties.get().isInitialLaunch()) {
             if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
                 performanceMode.setValue(true);
@@ -681,9 +674,9 @@ public final class AppPrefs {
 
         if (OsType.getLocal() == OsType.MACOS
                 && AppProperties.get()
-                        .getCanonicalVersion()
-                        .map(appVersion -> appVersion.getMajor() == 18 && appVersion.getMinor() == 0)
-                        .orElse(false)) {
+                .getCanonicalVersion()
+                .map(appVersion -> appVersion.getMajor() == 18 && appVersion.getMinor() == 0)
+                .orElse(false)) {
             useSystemFont.set(false);
         }
 
@@ -702,6 +695,16 @@ public final class AppPrefs {
         if (sshVerboseOutput.get()) {
             sshVerboseOutput.set(false);
         }
+
+        PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
+    }
+
+    public void initDefaultValues() {
+        externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
+        terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
+        rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
+
+        PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }
 
     public OptionsBuilder getCustomOptions(String id) {

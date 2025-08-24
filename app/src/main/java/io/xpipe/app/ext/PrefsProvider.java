@@ -24,6 +24,8 @@ public abstract class PrefsProvider {
 
     public abstract void addPrefs(PrefsHandler handler);
 
+    public abstract void fixLocalValues();
+
     public abstract void initDefaultValues();
 
     public static class Loader implements ModuleLayerLoader {

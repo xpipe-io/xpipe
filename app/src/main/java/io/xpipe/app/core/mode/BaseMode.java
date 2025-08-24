@@ -95,7 +95,7 @@ public class BaseMode extends OperationMode {
                     AppRosettaCheck.check();
                     AppTestCommandCheck.check();
                     // This might be slow on macOS and might take longer than the platform init
-                    AppPrefs.setLocalDefaultsIfNeeded();
+                    AppPrefs.get().initDefaultValues();
                     localPrefsLoaded.countDown();
                     PlatformInit.init(true);
                     TrackEvent.info("Shell initialization thread completed");
