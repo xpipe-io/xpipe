@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -101,7 +102,7 @@ public class ScanDialogBase {
         selected.clear();
     }
 
-    private void onUpdate() {
+    public void onUpdate() {
         available.clear();
         selected.clear();
 
@@ -160,7 +161,7 @@ public class ScanDialogBase {
                 onUpdate();
             });
 
-            var show = busy.not().and(Bindings.isEmpty(available));
+            var show = PlatformThread.sync(busy.not().and(Bindings.isEmpty(available)));
             button.visibleProperty().bind(show);
             button.managedProperty().bind(show);
 
