@@ -47,9 +47,11 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
         cmd.add("--title").addQuoted(fixedName);
         cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
+
+        var spaces = configuration.getScriptFile().toString().contains(" ");
         cmd.add(configuration
                 .getScriptDialect()
-                .getOpenScriptCommand(configuration.getScriptFile().getFileName()));
+                .getOpenScriptCommand(spaces ? configuration.getScriptFile().getFileName() : configuration.getScriptFile().toString()));
         return cmd;
     }
 
@@ -131,11 +133,16 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             try (var sc = LocalShell.getShell().start()) {
                 var inPath = sc.view().findProgram("wt");
                 var exec = inPath.orElse(FilePath.of(getPath()));
-                var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
+                var spaces = configuration.getScriptFile().toString().contains(" ");
+
+                if (spaces) {
+                    var wd = sc.view().pwd();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).withWorkingDirectory(
+                            configuration.getScriptFile().getParent()).execute();
+                    sc.view().cd(wd);
+                } else {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                }
             }
         }
 
@@ -181,10 +188,16 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
                 var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
+                var spaces = configuration.getScriptFile().toString().contains(" ");
+
+                if (spaces) {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .execute();
+                    sc.view().cd(wd);
+                } else {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                }
             }
         }
 
@@ -231,10 +244,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
                 var wd = sc.view().pwd();
-                sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                        .withWorkingDirectory(configuration.getScriptFile().getParent())
-                        .execute();
-                sc.view().cd(wd);
+                var spaces = configuration.getScriptFile().toString().contains(" ");
+
+                if (spaces) {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).withWorkingDirectory(
+                            configuration.getScriptFile().getParent()).execute();
+                    sc.view().cd(wd);
+                } else {
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                }
             }
         }
 
