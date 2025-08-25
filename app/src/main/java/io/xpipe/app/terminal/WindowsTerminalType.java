@@ -94,6 +94,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);
+        newProfile.putNull("startingDirectory");
         newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {
             var logoFile = AppInstallation.ofCurrent().getLogoPath();
@@ -187,10 +188,10 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             checkProfile();
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
-                var wd = sc.view().pwd();
                 var spaces = configuration.getScriptFile().toString().contains(" ");
 
                 if (spaces) {
+                    var wd = sc.view().pwd();
                     sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
                             .withWorkingDirectory(configuration.getScriptFile().getParent())
                             .execute();
@@ -243,10 +244,10 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             checkProfile();
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
-                var wd = sc.view().pwd();
                 var spaces = configuration.getScriptFile().toString().contains(" ");
 
                 if (spaces) {
+                    var wd = sc.view().pwd();
                     sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).withWorkingDirectory(
                             configuration.getScriptFile().getParent()).execute();
                     sc.view().cd(wd);
