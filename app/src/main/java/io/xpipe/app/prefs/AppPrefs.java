@@ -62,13 +62,6 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .requiresRestart(false)
             .build());
-    final BooleanProperty alwaysShowSshMotd = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(false))
-            .key("alwaysShowSshMotd")
-            .valueClass(Boolean.class)
-            .requiresRestart(false)
-            .vaultSpecific(true)
-            .build());
     final BooleanProperty pinLocalMachineOnStartup = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("pinLocalMachineOnStartup")
@@ -364,10 +357,6 @@ public final class AppPrefs {
 
     public ObservableBooleanValue disableHardwareAcceleration() {
         return disableHardwareAcceleration;
-    }
-
-    public ObservableBooleanValue alwaysShowSshMotd() {
-        return alwaysShowSshMotd;
     }
 
     public ObservableBooleanValue preferTerminalTabs() {
