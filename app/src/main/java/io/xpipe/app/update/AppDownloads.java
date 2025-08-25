@@ -64,7 +64,8 @@ public class AppDownloads {
             var client = HttpHelper.client();
             var response = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() >= 400) {
-                throw new IOException(response.body());
+                var s = response.body();
+                throw new IOException("Changelog not found" + (s != null && !s.isEmpty() ? ": " + s : ""));
             }
             var json = JacksonMapper.getDefault().readTree(response.body());
             var changelog = json.required("changelog").asText();
