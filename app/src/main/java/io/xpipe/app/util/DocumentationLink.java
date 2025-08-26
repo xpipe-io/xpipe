@@ -14,6 +14,7 @@ public enum DocumentationLink {
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
+    WEBTOP_TAILSCALE("guide/webtop#networking-and-tailscale"),
     SYNC("guide/sync"),
     SYNC_LOCAL("guide/sync#local-repositories"),
     FIRST_STEPS("guide/first-steps"),

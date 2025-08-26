@@ -653,12 +653,10 @@ public final class AppPrefs {
     }
 
     private void fixLocalValues() {
-        if (AppProperties.get().isInitialLaunch()) {
-            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
-                performanceMode.setValue(true);
-            } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
-                performanceMode.setValue(true);
-            }
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            performanceMode.setValue(true);
+        } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
+            performanceMode.setValue(true);
         }
 
         if (!AppProperties.get().isDevelopmentEnvironment()) {
