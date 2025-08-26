@@ -8,7 +8,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
@@ -55,8 +54,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             Property<DataStoreEntryRef<T>> fileSystem,
             Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
-            List<PreviousFileReference> previousFileReferences, Predicate<DataStoreEntry> filter
-    ) {
+            List<PreviousFileReference> previousFileReferences,
+            Predicate<DataStoreEntry> filter) {
         this.sync = sync;
         this.previousFileReferences = previousFileReferences;
         this.filter = filter;

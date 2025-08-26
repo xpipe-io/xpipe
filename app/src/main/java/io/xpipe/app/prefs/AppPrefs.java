@@ -666,9 +666,9 @@ public final class AppPrefs {
 
         if (OsType.getLocal() == OsType.MACOS
                 && AppProperties.get()
-                .getCanonicalVersion()
-                .map(appVersion -> appVersion.getMajor() == 18)
-                .orElse(false)) {
+                        .getCanonicalVersion()
+                        .map(appVersion -> appVersion.getMajor() == 18)
+                        .orElse(false)) {
             useSystemFont.set(false);
         }
 

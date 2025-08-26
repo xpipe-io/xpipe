@@ -49,8 +49,6 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
         return "cloneStore";
     }
 
-
-
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<DataStore> {

@@ -14,10 +14,8 @@ import io.xpipe.app.util.InputHelper;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuButton;
@@ -229,19 +227,15 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         // Not perfect, but covers most of the cases of small directories
         var showOverview = new SimpleBooleanProperty(true);
         model.getCurrentPath().subscribe(path -> {
-            GlobalTimer.delay(() -> {
-                showOverview.setValue(path == null);
-            }, Duration.ofMillis(250));
+            GlobalTimer.delay(
+                    () -> {
+                        showOverview.setValue(path == null);
+                    },
+                    Duration.ofMillis(250));
         });
 
         var home = new BrowserOverviewComp(model).styleClass("browser-overview");
-        var stack = new MultiContentComp(
-                Map.of(
-                        home,
-                        showOverview,
-                        fileList,
-                        showOverview.not()),
-                false);
+        var stack = new MultiContentComp(Map.of(home, showOverview, fileList, showOverview.not()), false);
         var r = stack.styleClass("browser-content-container").createRegion();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {

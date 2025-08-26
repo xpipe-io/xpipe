@@ -4,8 +4,8 @@ import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-
 import javafx.collections.ListChangeListener;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -35,7 +35,9 @@ public class HostAddressChoice {
         } else {
             options.name(translationKey);
         }
-        options.addComp(new HostAddressChoiceComp(val, list, allowMutation)).addProperty(val).addProperty(sizeProp);
+        options.addComp(new HostAddressChoiceComp(val, list, allowMutation))
+                .addProperty(val)
+                .addProperty(sizeProp);
         options.bind(
                 () -> {
                     var fullList = new ArrayList<>(list);

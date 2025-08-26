@@ -116,8 +116,10 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
             if (!typedSelection.get().isEmpty()) {
                 var selection = typedSelection.get() + " ";
-                var found = fileList.getShown().getValue().stream().filter(
-                        browserEntry -> browserEntry.getFileName().toLowerCase().startsWith(selection)).findFirst();
+                var found = fileList.getShown().getValue().stream()
+                        .filter(browserEntry ->
+                                browserEntry.getFileName().toLowerCase().startsWith(selection))
+                        .findFirst();
                 // Ugly fix to prevent space from showing the menu when there is a file matching
                 // Due to the table view input map, these events always get sent and consumed, not allowing us to
                 // differentiate between these cases

@@ -55,8 +55,9 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
         });
-        var comp =
-                new BrowserFileChooserSessionComp(model, filter).styleClass("browser").styleClass("chooser");
+        var comp = new BrowserFileChooserSessionComp(model, filter)
+                .styleClass("browser")
+                .styleClass("chooser");
         var selection = new SimpleStringProperty();
         model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             selection.set(
@@ -90,7 +91,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
     protected Region createSimple() {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
             return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore)
-                    && storeEntryWrapper.getEntry().getValidity().isUsable() && filter.test(storeEntryWrapper.getEntry());
+                    && storeEntryWrapper.getEntry().getValidity().isUsable()
+                    && filter.test(storeEntryWrapper.getEntry());
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
             ThreadHelper.runFailableAsync(() -> {

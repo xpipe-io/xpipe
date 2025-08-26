@@ -312,11 +312,7 @@ public class BrowserFileTransferOperation {
                     return false;
                 }
 
-                var rel = fileEntry
-                        .getPath()
-                        .relativize(baseRelative)
-                        .toUnix()
-                        .toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -333,11 +329,7 @@ public class BrowserFileTransferOperation {
                     return;
                 }
 
-                var rel = fileEntry
-                        .getPath()
-                        .relativize(baseRelative)
-                        .toUnix()
-                        .toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
