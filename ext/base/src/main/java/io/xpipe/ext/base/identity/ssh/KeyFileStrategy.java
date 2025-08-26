@@ -71,7 +71,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                config.getProxy(), keyPath, config.isAllowKeyFileSync() ? sync : null, List.of()),
+                                config.getProxy(), keyPath, config.isAllowKeyFileSync() ? sync : null, List.of(),
+                                e -> e.equals(DataStorage.get().local())),
                         keyPath)
                 .nonNull()
                 .name("keyPassword")

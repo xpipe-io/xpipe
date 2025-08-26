@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.OptionsBuilder;
 
@@ -40,7 +41,8 @@ public class FileBrowserCategory extends AppPrefsCategory {
                                                         .ref()),
                                                 prefs.downloadsDirectory,
                                                 null,
-                                                List.of())
+                                                List.of(),
+                                        e -> e.equals(DataStorage.get().local()))
                                         .maxWidth(getCompWidth()),
                                 prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)

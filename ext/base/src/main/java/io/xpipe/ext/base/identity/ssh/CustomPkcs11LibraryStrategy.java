@@ -50,7 +50,8 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                                         DataStorage.get().local().ref()),
                                 file,
                                 null,
-                                List.of()),
+                                List.of(),
+                                e -> e.equals(DataStorage.get().local())),
                         file)
                 .nonNull()
                 .bind(
