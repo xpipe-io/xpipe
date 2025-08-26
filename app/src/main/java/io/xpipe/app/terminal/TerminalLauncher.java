@@ -193,11 +193,14 @@ public class TerminalLauncher {
 
     private static String getTerminalRegisterCommand(UUID request) throws Exception {
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
-        var lines = ShellScript.lines(CommandBuilder.of()
+        var registerLine = CommandBuilder.of()
                 .addFile(exec)
                 .add("terminal-register", "--request", request.toString())
-                .buildFull(LocalShell.getShell()),
-                OsType.getLocal() != OsType.WINDOWS ? "echo -en \"\\a\"" : null);
+                .buildFull(LocalShell.getShell());
+        var bellLine = "printf \"\\a\"";
+        var lines = ShellScript.lines(
+                registerLine,
+                OsType.getLocal() != OsType.WINDOWS ? bellLine : null);
         return lines.toString();
     }
 

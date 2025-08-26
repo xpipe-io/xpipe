@@ -223,6 +223,11 @@ public final class AppPrefs {
             .licenseFeatureId("logging")
             .documentationLink(DocumentationLink.TERMINAL_LOGGING)
             .build());
+    final BooleanProperty enableTerminalStartupBell = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("enableTerminalStartupBell")
+            .valueClass(Boolean.class)
+            .build());
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new GlobalBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
     final BooleanProperty disableApiHttpsTlsCheck =
