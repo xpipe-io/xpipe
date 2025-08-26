@@ -46,6 +46,8 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
                 .nonNull()
                 .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
                 .nonNull()
+                .nameAndDescription("serviceRemotePort")
+                .addStaticString(st.getRemotePort())
                 .nameAndDescription("serviceLocalPort")
                 .addInteger(localPort)
                 .bind(
