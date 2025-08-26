@@ -26,7 +26,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<DataStore> o) {
-        return o.get().getProvider().canClone();
+        return o.get().getProvider().canClone() && o.get().getBreakOutCategory() == null;
     }
 
     @Override
@@ -49,6 +49,8 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
         return "cloneStore";
     }
 
+
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<DataStore> {
@@ -57,9 +59,20 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
         public void executeImpl() {
             var entry = DataStoreEntry.createNew(
                     ref.get().getName() + " (" + AppI18n.get("connectionCopy") + ")", ref.getStore());
+
+            entry.setIcon(ref.get().getIcon(), true);
+            entry.setColor(ref.get().getColor());
+            entry.setExpanded(ref.get().isExpanded());
+            entry.setFreeze(ref.get().isFreeze());
+            entry.setCategoryUuid(ref.get().getCategoryUuid());
+            entry.setPinToTop(ref.get().isPinToTop());
+            entry.setOrderIndex(ref.get().getOrderIndex());
+            entry.setNotes(ref.get().getNotes());
+
             var instant = ref.get().getLastAccess().plus(Duration.ofSeconds(1));
             entry.setLastModified(instant);
             entry.setLastUsed(instant);
+
             DataStorage.get().addStoreEntryIfNotPresent(entry);
         }
     }
