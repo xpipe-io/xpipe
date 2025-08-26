@@ -77,7 +77,8 @@ public class TerminalCategory extends AppPrefsCategory {
             }
 
             Hyperlinks.open(t.getWebsite());
-        });
+        }).minWidth(Region.USE_PREF_SIZE);
+
         var visitVisible = Bindings.createBooleanBinding(
                 () -> {
                     var t = prefs.terminalType().getValue();
