@@ -47,6 +47,8 @@ public enum DocumentationLink {
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),
     SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
+    SSH_CONNECTION_TIMEOUT("troubleshoot/ssh#connection-timeout"),
+    SSH_SHELL_TIMEOUT("troubleshoot/ssh#shell-timeout"),
     SSH_CONFIG("guide/ssh-config"),
     SSH_KEYS("guide/ssh#key-based-authentication"),
     SSH_OPTIONS("guide/ssh-config#adding-ssh-options"),
