@@ -64,7 +64,7 @@ public interface DataStoreProvider {
 
     default void onParentRefresh(DataStoreEntry entry) {}
 
-    default void onChildrenRefresh(DataStoreEntry entry) {}
+    default void onChildrenRefresh(DataStoreEntry entry) throws Exception {}
 
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return new SimpleBooleanProperty(false);
