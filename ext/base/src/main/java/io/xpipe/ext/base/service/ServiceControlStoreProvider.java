@@ -102,7 +102,7 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
                     var state = s.isSessionRunning()
                             ? AppI18n.get("active")
                             : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, state).format();
+                    return new StoreStateFormat(List.of(), state).format();
                 },
                 section.getWrapper().getCache(),
                 AppPrefs.get().language());

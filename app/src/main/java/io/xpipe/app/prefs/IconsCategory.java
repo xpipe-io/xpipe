@@ -129,20 +129,20 @@ public class IconsCategory extends AppPrefsCategory {
                             return;
                         }
 
-                        var path = dir.get().asLocalPath();
-                        if (Files.isRegularFile(path)) {
+                        var path = dir.get().asLocalPathIfPossible();
+                        if (path.isEmpty() || Files.isRegularFile(path.get())) {
                             throw ErrorEventFactory.expected(
                                     new IllegalArgumentException(
                                             "A custom icon source must be a directory containing .svg files, not a single file"));
                         }
 
                         var source = SystemIconSource.Directory.builder()
-                                .path(path)
+                                .path(path.get())
                                 .id(UUID.randomUUID().toString())
                                 .build();
                         if (sources.stream()
                                 .noneMatch(s -> s instanceof SystemIconSource.Directory d
-                                        && d.getPath().equals(path))) {
+                                        && d.getPath().equals(path.get()))) {
                             sources.add(source);
                             var nl = new ArrayList<>(
                                     AppPrefs.get().getIconSources().getValue());

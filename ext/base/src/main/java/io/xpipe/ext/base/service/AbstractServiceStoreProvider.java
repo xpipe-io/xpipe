@@ -84,7 +84,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                             : s.isSessionRunning()
                                     ? AppI18n.get("active")
                                     : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, desc, type, state).format();
+                    return new StoreStateFormat(List.of(), desc, type, state).format();
                 },
                 section.getWrapper().getCache(),
                 AppI18n.activeLanguage());

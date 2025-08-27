@@ -50,6 +50,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return StoreStateFormat.shellStore(section, state -> null);
+        return StoreStateFormat.shellStore(section, state -> null, null);
     }
 }

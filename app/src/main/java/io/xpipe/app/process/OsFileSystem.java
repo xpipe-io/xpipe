@@ -87,16 +87,14 @@ public interface OsFileSystem {
 
         @Override
         public String getUserHomeDirectory(ShellControl pc) throws Exception {
-            var profile = pc.executeSimpleStringCommand(
-                    pc.getShellDialect().getPrintEnvironmentVariableCommand("USERPROFILE"));
-            if (!profile.isEmpty()) {
-                return profile;
+            var profile = pc.view().getEnvironmentVariable("USERPROFILE");
+            if (profile.isPresent()) {
+                return profile.get();
             }
 
-            var name =
-                    pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("USERNAME"));
-            if (!name.isEmpty()) {
-                return "C:\\Users\\" + name;
+            var name = pc.view().getEnvironmentVariable("USERNAME");
+            if (name.isPresent()) {
+                return "C:\\Users\\" + name.get();
             }
 
             return "C:\\Users\\User";
@@ -144,8 +142,8 @@ public interface OsFileSystem {
 
         @Override
         public String getUserHomeDirectory(ShellControl pc) throws Exception {
-            var r = pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
-            if (r.isBlank()) {
+            var r = pc.view().getEnvironmentVariable("HOME");
+            if (r.isEmpty()) {
                 var user = pc.view().user();
                 var eval = pc.command("eval echo ~" + user).readStdoutIfPossible();
                 if (eval.isPresent() && !eval.get().isBlank()) {
@@ -158,7 +156,7 @@ public interface OsFileSystem {
                     return "/home/" + user;
                 }
             } else {
-                return r;
+                return r.get();
             }
         }
 
@@ -203,7 +201,7 @@ public interface OsFileSystem {
 
         @Override
         public String getUserHomeDirectory(ShellControl pc) throws Exception {
-            return pc.executeSimpleStringCommand(pc.getShellDialect().getPrintEnvironmentVariableCommand("HOME"));
+            return pc.view().getEnvironmentVariableOrThrow("HOME");
         }
 
         @Override
