@@ -75,7 +75,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     public List<KeyValue> configOptions() {
         return List.of(
                 new KeyValue("IdentitiesOnly", "no"),
-                new KeyValue("PKCS11Provider", getFile()),
+                new KeyValue("PKCS11Provider", "\"" + getFile() + "\""),
                 new KeyValue("IdentityFile", "none"),
                 new KeyValue("IdentityAgent", "none"));
     }

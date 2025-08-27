@@ -156,7 +156,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         return List.of(
                 new KeyValue("IdentitiesOnly", "yes"),
                 new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", resolveFilePath().toString()),
+                new KeyValue("IdentityFile", "\"" + resolveFilePath().toString() + "\""),
                 new KeyValue("PKCS11Provider", "none"));
     }
 
