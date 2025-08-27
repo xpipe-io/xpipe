@@ -28,8 +28,8 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
 
     @Override
     public boolean isRecommended() {
-        // Tabs are only supported when single process option is enabled in konsole
-        return AppPrefs.get().terminalMultiplexer().getValue() != null || AppDistributionType.get() == AppDistributionType.WEBTOP;
+        // We can manually fix the single process option in konsole
+        return true;
     }
 
     @Override

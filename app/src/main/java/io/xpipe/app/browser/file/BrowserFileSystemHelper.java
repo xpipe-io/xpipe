@@ -83,7 +83,8 @@ public class BrowserFileSystemHelper {
                 .readStdoutOrThrow());
 
         if (!resolved.isAbsolute()) {
-            throw new IllegalArgumentException(String.format("Directory %s is not absolute", resolved));
+            throw ErrorEventFactory.expected(
+                    new IllegalArgumentException(String.format("Directory %s is not absolute", resolved)));
         }
 
         if (allowRewrite && model.getFileSystem().fileExists(resolved)) {

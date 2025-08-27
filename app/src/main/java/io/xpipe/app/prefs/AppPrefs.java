@@ -364,6 +364,10 @@ public final class AppPrefs {
         return disableHardwareAcceleration;
     }
 
+    public ObservableBooleanValue enableTerminalStartupBell() {
+        return enableTerminalStartupBell;
+    }
+
     public ObservableBooleanValue preferTerminalTabs() {
         return preferTerminalTabs;
     }
