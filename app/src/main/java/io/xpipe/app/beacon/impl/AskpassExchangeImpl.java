@@ -2,6 +2,8 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.secret.SecretManager;
+import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.util.*;
 import io.xpipe.beacon.BeaconClientException;

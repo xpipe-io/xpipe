@@ -7,11 +7,12 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.util.OptionsChoiceBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
@@ -66,6 +67,14 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 Path.of("keys"), config.getPerUserKeyFileCheck(), path -> Path.of("keys")
                         .resolve(path.getFileName()));
 
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(keyPasswordProperty)
+                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
+
         return new OptionsBuilder()
                 .name("location")
                 .description("locationDescription")
@@ -80,7 +89,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .nonNull()
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true), keyPasswordProperty)
+                .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .bind(
                         () -> {

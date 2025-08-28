@@ -5,6 +5,9 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
@@ -68,12 +71,20 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .perUserKeyFileCheck(path -> perUser.get())
                 .build();
 
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
+
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
@@ -128,7 +139,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
-                .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
+                .password(EncryptedValue.VaultKey.of(new SecretNoneStrategy()))
                 .sshIdentity(EncryptedValue.VaultKey.of(new NoneStrategy()))
                 .perUser(false)
                 .build();

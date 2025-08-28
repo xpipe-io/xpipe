@@ -1,8 +1,9 @@
-package io.xpipe.app.util;
+package io.xpipe.app.secret;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.SecretReference;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.SecretValue;
 
 import java.time.Duration;

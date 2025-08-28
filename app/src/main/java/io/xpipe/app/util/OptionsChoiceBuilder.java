@@ -143,13 +143,18 @@ public class OptionsChoiceBuilder {
         });
 
         var map = new LinkedHashMap<ObservableValue<String>, OptionsBuilder>();
-        if (allowNull) {
-            map.put(AppI18n.observable("none"), new OptionsBuilder());
-        }
         for (int i = 0; i < sub.size(); i++) {
             map.put(
                     AppI18n.observable(createIdForClass(sub.get(i))),
                     createOptionsForClass(sub.get(i), properties.get(i + (allowNull ? 1 : 0)), customConfiguration));
+        }
+        if (allowNull) {
+            var key = AppI18n.observable("none");
+            if (map.containsKey(key)) {
+                map.putFirst(AppI18n.observable("empty"), new OptionsBuilder());
+            } else {
+                map.putFirst(key, new OptionsBuilder());
+            }
         }
 
         return new OptionsBuilder()

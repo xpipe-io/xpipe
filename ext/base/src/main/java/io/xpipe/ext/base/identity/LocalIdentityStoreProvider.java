@@ -2,6 +2,9 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
@@ -42,12 +45,20 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .perUserKeyFileCheck(path -> false)
                 .build();
 
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
+
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .longDescription(DocumentationLink.SSH_KEYS)
@@ -82,7 +93,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
+                .password(EncryptedValue.of(new SecretNoneStrategy()))
                 .sshIdentity(EncryptedValue.of(new NoneStrategy()))
                 .build();
     }

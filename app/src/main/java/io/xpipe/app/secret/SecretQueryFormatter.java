@@ -1,4 +1,4 @@
-package io.xpipe.app.util;
+package io.xpipe.app.secret;
 
 import java.util.Optional;
 

@@ -1,7 +1,8 @@
-package io.xpipe.app.util;
+package io.xpipe.app.secret;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.SecretReference;
+import io.xpipe.app.util.AskpassAlert;
 
 import java.time.Duration;
 import java.util.Optional;

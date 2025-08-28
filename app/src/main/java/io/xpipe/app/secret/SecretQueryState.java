@@ -1,4 +1,4 @@
-package io.xpipe.app.util;
+package io.xpipe.app.secret;
 
 public enum SecretQueryState {
     NORMAL,
