@@ -93,6 +93,7 @@ public class BaseMode extends OperationMode {
                     AppShellCheck.check();
                     shellLoaded.countDown();
                     AppRosettaCheck.check();
+                    AppWindowsArmCheck.check();
                     AppTestCommandCheck.check();
                     // This might be slow on macOS and might take longer than the platform init
                     AppPrefs.get().initDefaultValues();

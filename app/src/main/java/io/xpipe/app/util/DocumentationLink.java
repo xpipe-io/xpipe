@@ -6,6 +6,7 @@ public enum DocumentationLink {
     API("api"),
     TTY("troubleshoot/tty"),
     SSH_BROKEN_PIPE("troubleshoot/ssh#client-loop-send-disconnect--connection-reset"),
+    WINDOWS_SETUP("guide/installation#windows"),
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
