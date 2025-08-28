@@ -115,8 +115,6 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.RDP)
             .build());
     final DoubleProperty windowOpacity = mapLocal(new GlobalDoubleProperty(1.0), "windowOpacity", Double.class, false);
-    final StringProperty customRdpClientCommand =
-            mapLocal(new GlobalStringProperty(null), "customRdpClientCommand", String.class, false);
     final StringProperty customTerminalCommand =
             mapLocal(new GlobalStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
@@ -595,10 +593,6 @@ public final class AppPrefs {
 
     public ObservableValue<String> customTerminalCommand() {
         return customTerminalCommand;
-    }
-
-    public ObservableValue<String> customRdpClientCommand() {
-        return customRdpClientCommand;
     }
 
     public ObservableValue<FilePath> downloadsDirectory() {

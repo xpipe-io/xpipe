@@ -1,13 +1,21 @@
 package io.xpipe.app.rdp;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.*;
 
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.util.*;
 
+@JsonTypeName("remmina")
+@Value
+@Jacksonized
+@Builder
 public class RemminaRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
 
     private List<String> toStrip() {
