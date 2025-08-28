@@ -36,9 +36,13 @@ public class AppConfigurationDialog {
         scroll.prefWidth(650);
 
         var modal = ModalOverlay.of("initialSetup", scroll);
-        modal.addButton(new ModalButton("docs", () -> {
-            DocumentationLink.INTRO.open();
-        }, false, false));
+        modal.addButton(new ModalButton(
+                "docs",
+                () -> {
+                    DocumentationLink.INTRO.open();
+                },
+                false,
+                false));
         modal.addButton(ModalButton.ok());
         AppDialog.show(modal);
     }

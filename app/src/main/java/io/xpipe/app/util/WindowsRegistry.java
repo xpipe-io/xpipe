@@ -1,14 +1,14 @@
 package io.xpipe.app.util;
 
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.Advapi32;
-import com.sun.jna.win32.W32APIOptions;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
+import com.sun.jna.win32.W32APIOptions;
 import lombok.Value;
 
 import java.util.*;
@@ -60,7 +60,7 @@ public abstract class WindowsRegistry {
         private static Boolean libraryLoaded;
 
         private static boolean isLibrarySupported() {
-            if (libraryLoaded !=  null) {
+            if (libraryLoaded != null) {
                 return libraryLoaded;
             }
 
@@ -68,8 +68,10 @@ public abstract class WindowsRegistry {
                 Native.load("Advapi32", Advapi32.class, W32APIOptions.DEFAULT_OPTIONS);
                 return (libraryLoaded = true);
             } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).description("Unable to load native library Advapi32.dll for registry queries." +
-                        " Registry queries will fail and some functionality will be unavailable").handle();
+                ErrorEventFactory.fromThrowable(t)
+                        .description("Unable to load native library Advapi32.dll for registry queries."
+                                + " Registry queries will fail and some functionality will be unavailable")
+                        .handle();
                 return (libraryLoaded = false);
             }
         }

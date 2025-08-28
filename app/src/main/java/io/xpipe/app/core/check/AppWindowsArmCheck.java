@@ -3,12 +3,11 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 public class AppWindowsArmCheck {
 
-    public static void check() throws Exception {
+    public static void check() {
         if (OsType.getLocal() != OsType.WINDOWS) {
             return;
         }
