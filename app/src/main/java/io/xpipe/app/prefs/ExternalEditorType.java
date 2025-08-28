@@ -51,7 +51,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    ExternalEditorType VSCODIUM_WINDOWS = new WindowsType() {
+    WindowsType VSCODIUM_WINDOWS = new WindowsType() {
 
         @Override
         public String getWebsite() {
