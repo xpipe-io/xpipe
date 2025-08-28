@@ -1,5 +1,8 @@
 package io.xpipe.app.util;
 
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.Advapi32;
+import com.sun.jna.win32.W32APIOptions;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -20,7 +23,7 @@ public abstract class WindowsRegistry {
     }
 
     public static WindowsRegistry ofShell(ShellControl shellControl) {
-        return shellControl.isLocal() ? local() : new Remote(shellControl);
+        return shellControl.isLocal() ? new Local() : new Remote(shellControl);
     }
 
     public abstract boolean keyExists(int hkey, String key) throws Exception;
@@ -54,30 +57,47 @@ public abstract class WindowsRegistry {
             return hkey == HKEY_LOCAL_MACHINE ? WinReg.HKEY_LOCAL_MACHINE : WinReg.HKEY_CURRENT_USER;
         }
 
+        private static Boolean libraryLoaded;
+
+        private static boolean isLibrarySupported() {
+            if (libraryLoaded !=  null) {
+                return libraryLoaded;
+            }
+
+            try {
+                Native.load("Advapi32", Advapi32.class, W32APIOptions.DEFAULT_OPTIONS);
+                return (libraryLoaded = true);
+            } catch (Throwable t) {
+                ErrorEventFactory.fromThrowable(t).description("Unable to load native library Advapi32.dll for registry queries." +
+                        " Registry queries will fail and some functionality will be unavailable").handle();
+                return (libraryLoaded = false);
+            }
+        }
+
         @Override
         public boolean keyExists(int hkey, String key) {
-            // This can fail even with errors in case the jna native library extraction or loading fails
-            try {
-                return Advapi32Util.registryKeyExists(hkey(hkey), key);
-            } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).handle();
+            if (!isLibrarySupported()) {
                 return false;
             }
+
+            return Advapi32Util.registryKeyExists(hkey(hkey), key);
         }
 
         @Override
         public List<String> listSubKeys(int hkey, String key) {
-            // This can fail even with errors in case the jna native library extraction or loading fails
-            try {
-                return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
-            } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).handle();
+            if (!isLibrarySupported()) {
                 return List.of();
             }
+
+            return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
         }
 
         @Override
         public boolean valueExists(int hkey, String key, String valueName) {
+            if (!isLibrarySupported()) {
+                return false;
+            }
+
             // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 return Advapi32Util.registryValueExists(hkey(hkey), key, valueName);
@@ -89,36 +109,36 @@ public abstract class WindowsRegistry {
 
         @Override
         public OptionalInt readIntegerValueIfPresent(int hkey, String key, String valueName) {
-            // This can fail even with errors in case the jna native library extraction or loading fails
-            try {
-                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
-                    return OptionalInt.empty();
-                }
-
-                return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
-            } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).handle();
+            if (!isLibrarySupported()) {
                 return OptionalInt.empty();
             }
+
+            if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+                return OptionalInt.empty();
+            }
+
+            return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
         }
 
         @Override
         public Optional<String> readStringValueIfPresent(int hkey, String key, String valueName) {
-            // This can fail even with errors in case the jna native library extraction or loading fails
-            try {
-                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
-                    return Optional.empty();
-                }
-
-                return Optional.ofNullable(Advapi32Util.registryGetStringValue(hkey(hkey), key, valueName));
-            } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).handle();
+            if (!isLibrarySupported()) {
                 return Optional.empty();
             }
+
+            if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+                return Optional.empty();
+            }
+
+            return Optional.ofNullable(Advapi32Util.registryGetStringValue(hkey(hkey), key, valueName));
         }
 
         @Override
         public Optional<String> findValuesRecursive(int hkey, String key, String valueName) throws Exception {
+            if (!isLibrarySupported()) {
+                return Optional.empty();
+            }
+
             try (var sc = LocalShell.getShell().start()) {
                 return new Remote(sc).findValuesRecursive(hkey, key, valueName);
             }
@@ -126,6 +146,10 @@ public abstract class WindowsRegistry {
 
         @Override
         public Optional<Key> findKeyForEqualValueMatchRecursive(int hkey, String key, String match) throws Exception {
+            if (!isLibrarySupported()) {
+                return Optional.empty();
+            }
+
             try (var sc = LocalShell.getShell().start()) {
                 return new Remote(sc).findKeyForEqualValueMatchRecursive(hkey, key, match);
             }
