@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.Translatable;
 
 import javafx.beans.property.Property;

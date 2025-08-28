@@ -9,7 +9,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.platform.ContextMenuHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;

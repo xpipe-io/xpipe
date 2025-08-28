@@ -4,7 +4,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;

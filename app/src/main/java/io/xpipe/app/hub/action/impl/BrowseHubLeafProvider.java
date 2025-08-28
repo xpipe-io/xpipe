@@ -9,7 +9,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.SimpleBooleanProperty;

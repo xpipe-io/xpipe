@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformInit;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformInit;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.animation.PauseTransition;

@@ -5,8 +5,8 @@ import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 
 public class SystemCategory extends AppPrefsCategory {
 

@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

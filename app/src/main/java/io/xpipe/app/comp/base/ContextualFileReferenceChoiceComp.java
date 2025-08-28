@@ -14,7 +14,7 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;

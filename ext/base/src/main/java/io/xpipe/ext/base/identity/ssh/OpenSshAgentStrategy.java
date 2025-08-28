@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 

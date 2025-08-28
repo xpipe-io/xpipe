@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.platform.InputHelper;
 
 import javafx.scene.layout.Region;
 

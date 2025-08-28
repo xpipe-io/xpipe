@@ -10,7 +10,7 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.update.UpdateAvailableDialog;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

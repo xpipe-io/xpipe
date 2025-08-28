@@ -7,7 +7,7 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.EncryptionKey;
+import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;

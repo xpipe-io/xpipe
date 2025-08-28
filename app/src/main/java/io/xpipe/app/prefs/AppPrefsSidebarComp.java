@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.css.PseudoClass;

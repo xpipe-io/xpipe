@@ -15,9 +15,9 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.util.FileReference;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 

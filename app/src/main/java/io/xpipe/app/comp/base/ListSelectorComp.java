@@ -2,7 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;

@@ -10,8 +10,8 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

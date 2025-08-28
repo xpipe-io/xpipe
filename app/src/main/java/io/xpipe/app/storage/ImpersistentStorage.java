@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.util.EncryptionKey;
+import io.xpipe.app.secret.EncryptionKey;
 
 import java.time.Instant;
 import javax.crypto.SecretKey;

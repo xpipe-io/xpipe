@@ -7,6 +7,10 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 

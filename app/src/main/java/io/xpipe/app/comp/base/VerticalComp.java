@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

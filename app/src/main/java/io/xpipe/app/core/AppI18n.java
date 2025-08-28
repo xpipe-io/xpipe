@@ -4,10 +4,10 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.GlobalObjectProperty;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.GlobalObjectProperty;
+import io.xpipe.app.platform.PlatformState;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

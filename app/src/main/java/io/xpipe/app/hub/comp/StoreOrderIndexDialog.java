@@ -1,7 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.base.*;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.SimpleObjectProperty;
 

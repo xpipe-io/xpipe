@@ -10,8 +10,8 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.geometry.Pos;
 

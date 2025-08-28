@@ -1,0 +1,26 @@
+package io.xpipe.app.platform;
+
+import javafx.scene.Node;
+
+public class NodeHelper {
+
+    public static boolean isParent(Node parent, Object child) {
+        if (child == null) {
+            return false;
+        }
+
+        if (!(child instanceof Node n)) {
+            return false;
+        }
+
+        var c = n.getParent();
+        while (c != null) {
+            if (c == parent) {
+                return true;
+            }
+
+            c = c.getParent();
+        }
+        return false;
+    }
+}

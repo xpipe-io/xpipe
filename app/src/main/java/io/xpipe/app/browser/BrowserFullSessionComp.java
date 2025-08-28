@@ -12,8 +12,8 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

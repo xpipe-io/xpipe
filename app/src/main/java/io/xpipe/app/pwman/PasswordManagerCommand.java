@@ -6,11 +6,12 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.SecretValue;
 

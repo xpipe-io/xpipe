@@ -3,13 +3,12 @@ package io.xpipe.app.secret;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Validators;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -21,7 +20,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.CharBuffer;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 
 @JsonTypeName("passwordManager")

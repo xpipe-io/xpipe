@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;

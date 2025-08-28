@@ -2,6 +2,9 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;

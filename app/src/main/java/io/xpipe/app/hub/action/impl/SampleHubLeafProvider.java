@@ -10,7 +10,7 @@ import io.xpipe.app.process.ElevationFunction;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.value.ObservableValue;

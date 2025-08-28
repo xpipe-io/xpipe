@@ -7,6 +7,7 @@ import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;

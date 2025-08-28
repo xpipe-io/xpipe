@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.property.*;

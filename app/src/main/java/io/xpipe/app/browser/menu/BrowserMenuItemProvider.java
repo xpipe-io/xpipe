@@ -3,7 +3,7 @@ package io.xpipe.app.browser.menu;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.MenuItem;

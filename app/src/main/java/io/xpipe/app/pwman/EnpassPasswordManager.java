@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretManager;

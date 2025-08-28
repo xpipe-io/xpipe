@@ -8,7 +8,7 @@ import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

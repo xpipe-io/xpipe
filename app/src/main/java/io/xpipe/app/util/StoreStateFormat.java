@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.comp.StoreSection;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.process.*;
 
 import javafx.beans.binding.Bindings;

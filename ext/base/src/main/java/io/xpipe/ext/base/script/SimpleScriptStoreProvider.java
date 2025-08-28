@@ -6,6 +6,8 @@ import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.Validator;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;

@@ -10,6 +10,8 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

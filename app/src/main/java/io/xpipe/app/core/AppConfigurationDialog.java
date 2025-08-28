@@ -7,7 +7,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppearanceCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.scene.layout.Region;
 

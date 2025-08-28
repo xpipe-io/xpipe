@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.util.EncryptedValue;
+import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 

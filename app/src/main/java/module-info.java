@@ -57,6 +57,7 @@ open module io.xpipe.app {
     exports io.xpipe.app.hub.action.impl;
     exports io.xpipe.app.process;
     exports io.xpipe.app.secret;
+    exports io.xpipe.app.platform;
 
     requires com.sun.jna;
     requires com.sun.jna.platform;

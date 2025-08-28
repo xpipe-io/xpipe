@@ -1,24 +1,20 @@
 package io.xpipe.app.secret;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
-import java.util.List;
 
 @JsonTypeName("customCommand")
 @Builder

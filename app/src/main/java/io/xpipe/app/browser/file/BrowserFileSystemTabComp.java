@@ -10,8 +10,8 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.InputHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;

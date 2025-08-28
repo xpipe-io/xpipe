@@ -5,8 +5,8 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;

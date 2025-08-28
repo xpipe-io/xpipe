@@ -4,7 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 

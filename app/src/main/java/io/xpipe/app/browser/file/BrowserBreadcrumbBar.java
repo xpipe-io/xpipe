@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.scene.Node;

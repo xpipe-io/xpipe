@@ -2,9 +2,8 @@ package io.xpipe.app.secret;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.SecretFieldComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 import javafx.beans.property.Property;

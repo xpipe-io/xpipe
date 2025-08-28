@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.ModuleLayerLoader;
 
 import java.util.*;

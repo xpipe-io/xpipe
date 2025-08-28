@@ -7,7 +7,7 @@ import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

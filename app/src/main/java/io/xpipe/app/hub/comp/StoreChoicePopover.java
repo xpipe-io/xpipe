@@ -9,9 +9,9 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.DataStoreCategoryChoiceComp;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.DataStoreCategoryChoiceComp;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
