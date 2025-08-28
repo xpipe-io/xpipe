@@ -17,7 +17,6 @@ public enum DocumentationLink {
     WEBTOP_TAILSCALE("guide/webtop#networking-and-tailscale"),
     SYNC("guide/sync"),
     SYNC_LOCAL("guide/sync#local-repositories"),
-    FIRST_STEPS("guide/first-steps"),
     DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
@@ -89,7 +88,8 @@ public enum DocumentationLink {
     LOCAL_SHELL_ERROR("troubleshoot/local-shell"),
     LOCAL_SHELL_WARNING("troubleshoot/local-shell#startup-warnings"),
     LOCAL_SHELL_OCCASIONAL("troubleshoot/local-shell#occasional-failures"),
-    MCP("guide/mcp");
+    MCP("guide/mcp"),
+    INTRO("guide/first-steps#adding-remote-connections");
 
     private final String page;
 

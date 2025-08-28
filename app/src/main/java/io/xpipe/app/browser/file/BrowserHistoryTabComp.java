@@ -116,13 +116,15 @@ public class BrowserHistoryTabComp extends SimpleComp {
     private Comp<?> createEmptyDisplay() {
         var docs = new IntroComp("browserWelcomeDocs", new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
         docs.setButtonAction(() -> {
-            DocumentationLink.FIRST_STEPS.open();
+            DocumentationLink.INTRO.open();
         });
+        docs.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2w-web"));
         docs.setButtonDefault(true);
 
         var open = new IntroComp(
                 "browserWelcomeEmpty",
                 new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
+        open.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2f-folder-open-outline"));
         open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
                     DataStorage.get().local().ref(), null, null);
