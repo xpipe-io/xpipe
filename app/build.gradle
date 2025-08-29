@@ -67,7 +67,7 @@ dependencies {
     api 'io.sentry:sentry:8.13.3'
     api 'commons-io:commons-io:2.20.0'
     api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.2"
-    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.19.2"
+    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.20.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.4.0"
     api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.4.0"
     api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
