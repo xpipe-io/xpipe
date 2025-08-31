@@ -17,6 +17,10 @@ public class BrowseInNativeManagerActionProvider implements BrowserActionProvide
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         return model.getFileSystem()
                 .getShell()
                 .orElseThrow()

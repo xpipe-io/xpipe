@@ -24,6 +24,10 @@ import java.util.stream.Stream;
 public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
     private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return List.of(new CustomProvider(recursive));
+        }
+
         var actions = Stream.<BrowserMenuItemProvider>concat(
                         model.getCache().getUsers().entrySet().stream()
                                 .filter(e -> !e.getValue().equals("nohome")
@@ -53,6 +57,10 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return true;
+        }
+
         var os = model.getFileSystem().getShell().orElseThrow().getOsType();
         return os != OsType.WINDOWS && os != OsType.MACOS;
     }

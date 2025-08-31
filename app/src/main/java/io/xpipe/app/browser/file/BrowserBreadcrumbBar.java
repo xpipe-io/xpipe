@@ -13,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 import atlantafx.base.controls.Breadcrumbs;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,21 +54,21 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                 }
 
                 var sc = model.getFileSystem().getShell();
-                if (sc.isEmpty()) {
-                    breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
-                } else {
-                    breadcrumbs.setDividerFactory(item -> {
-                        if (item == null) {
-                            return null;
-                        }
+                breadcrumbs.setDividerFactory(item -> {
+                    if (item == null) {
+                        return null;
+                    }
 
-                        if (item.isFirst() && item.getValue().equals("/")) {
-                            return new Label("");
-                        }
+                    if (item.isFirst() && item.getValue().equals("/")) {
+                        return new Label("");
+                    }
 
-                        return new Label(OsFileSystem.of(sc.get().getOsType()).getFileSystemSeparator());
-                    });
-                }
+                    if (sc.isEmpty()) {
+                        return new Label("/");
+                    }
+
+                    return new Label(OsFileSystem.of(sc.get().getOsType()).getFileSystemSeparator());
+                });
 
                 var elements = createBreadcumbHierarchy(val);
                 var modifiedElements = new ArrayList<>(elements);

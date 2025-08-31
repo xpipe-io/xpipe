@@ -165,7 +165,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             }
             this.fileSystem = fs;
 
-            this.cache = new BrowserFileSystemCache(this);
+            if (fs.getShell().isPresent()) {
+                this.cache = new BrowserFileSystemCache(this);
+            }
+
             for (var a : ActionProvider.ALL) {
                 if (a instanceof BrowserMenuItemProvider ba) {
                     ba.init(this);

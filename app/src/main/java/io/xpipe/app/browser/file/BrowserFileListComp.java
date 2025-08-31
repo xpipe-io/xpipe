@@ -193,8 +193,8 @@ public final class BrowserFileListComp extends SimpleComp {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
 
-            var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-            if (!OsType.WINDOWS.equals(shell.getOsType()) && !OsType.MACOS.equals(shell.getOsType())) {
+            var shell = fileList.getFileSystemModel().getFileSystem().getShell();
+            if (shell.isEmpty() || (!OsType.WINDOWS.equals(shell.get().getOsType()) && !OsType.MACOS.equals(shell.get().getOsType()))) {
                 modeCol.setVisible(newValue.doubleValue() > 600);
             }
 
@@ -579,9 +579,8 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                var shell =
-                        fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-                if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
+                var shell = fileList.getFileSystemModel().getFileSystem().getShell();
+                if (shell.isPresent() && (OsType.WINDOWS.equals(shell.get().getOsType()) || OsType.MACOS.equals(shell.get().getOsType()))) {
                     modeCol.setVisible(false);
                     ownerCol.setVisible(false);
                 } else {

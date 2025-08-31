@@ -19,8 +19,14 @@ import java.util.List;
 
 public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
+
+
     @Override
     public void init(BrowserFileSystemTabModel model) throws Exception {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return;
+        }
+
         var sc = model.getFileSystem().getShell().orElseThrow();
 
         var foundTar = CommandSupport.findProgram(sc, "tar");
@@ -49,6 +55,10 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         var ext = List.of("zip", "tar", "tar.gz", "tgz", "rar", "xar");
         if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
                 .getRawFileEntry()
