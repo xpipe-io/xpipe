@@ -7,6 +7,7 @@ import io.xpipe.app.hub.comp.OsLogoComp;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
+import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalPromptManager;
@@ -16,6 +17,8 @@ import io.xpipe.ext.base.script.ScriptStoreSetup;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
+
+import java.util.List;
 
 public interface ShellStoreProvider extends DataStoreProvider {
 
@@ -50,6 +53,10 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return StoreStateFormat.shellStore(section, state -> null, null);
+        return StoreStateFormat.shellStore(section, state -> formatAdditionalInformation(section, state).toArray(String[]::new), null);
+    }
+
+    default List<String> formatAdditionalInformation(StoreSection section, SystemState state) {
+        return List.of();
     }
 }
