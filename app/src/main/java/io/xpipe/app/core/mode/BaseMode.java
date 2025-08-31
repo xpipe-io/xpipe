@@ -15,6 +15,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.core.window.AppWindowTitle;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.StartOnInitStore;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.issue.TrackEvent;
@@ -162,6 +163,7 @@ public class BaseMode extends OperationMode {
 
         ActionProvider.initProviders();
         DataStoreProviders.init();
+        StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
         AppGnomeScaleDialog.showIfNeeded();

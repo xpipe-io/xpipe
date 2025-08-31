@@ -148,6 +148,7 @@ open module io.xpipe.app {
             OpenDirectoryMenuProvider,
             OpenDirectoryInNewTabMenuProvider,
             ScanHubLeafProvider,
+            StartOnInitHubLeafProvider,
             BrowseHubLeafProvider,
             RefreshActionProvider,
             ToggleActionProvider,
