@@ -42,7 +42,9 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
     }
 
     default boolean isEnabled() {
-        return getEnabledStores().contains(getSelfEntry().ref());
+        synchronized (StartOnInitStore.class) {
+            return getEnabledStores().contains(getSelfEntry().ref());
+        }
     }
 
     default void enable() {
