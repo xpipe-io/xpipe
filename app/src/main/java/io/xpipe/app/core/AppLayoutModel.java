@@ -9,6 +9,7 @@ import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,10 +21,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
+import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
@@ -189,10 +188,21 @@ public class AppLayoutModel {
             KeyCombination combination) {}
 
     @Value
+    @NonFinal
     public static class QueueEntry {
 
         ObservableValue<String> name;
         LabelGraphic icon;
         Runnable action;
+
+        public void show() {
+            ThreadHelper.runAsync(() -> {
+                try {
+                    getAction().run();
+                } finally {
+                    AppLayoutModel.get().getQueueEntries().remove(this);
+                }
+            });
+        }
     }
 }

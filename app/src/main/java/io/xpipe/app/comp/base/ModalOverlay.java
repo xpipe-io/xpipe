@@ -71,6 +71,12 @@ public class ModalOverlay {
         });
     }
 
+    public void hideable(AppLayoutModel.QueueEntry entry) {
+        setHideAction(() -> {
+            AppLayoutModel.get().getQueueEntries().add(entry);
+        });
+    }
+
     public void addButtonBarComp(Comp<?> comp) {
         buttons.add(comp);
     }
