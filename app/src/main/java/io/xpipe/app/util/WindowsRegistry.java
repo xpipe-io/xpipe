@@ -9,6 +9,7 @@ import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.WinReg;
 import com.sun.jna.win32.W32APIOptions;
+import io.xpipe.core.OsType;
 import lombok.Value;
 
 import java.util.*;
@@ -17,6 +18,15 @@ public abstract class WindowsRegistry {
 
     public static final int HKEY_CURRENT_USER = 0x80000001;
     public static final int HKEY_LOCAL_MACHINE = 0x80000002;
+
+    public static void init() {
+        if (OsType.getLocal() != OsType.WINDOWS) {
+            return;
+        }
+
+        // Load lib
+        Local.isLibrarySupported();
+    }
 
     public static WindowsRegistry.Local local() {
         return new Local();
@@ -59,7 +69,7 @@ public abstract class WindowsRegistry {
 
         private static Boolean libraryLoaded;
 
-        private static boolean isLibrarySupported() {
+        private static synchronized boolean isLibrarySupported() {
             if (libraryLoaded != null) {
                 return libraryLoaded;
             }
@@ -68,11 +78,12 @@ public abstract class WindowsRegistry {
                 Native.load("Advapi32", Advapi32.class, W32APIOptions.DEFAULT_OPTIONS);
                 return (libraryLoaded = true);
             } catch (Throwable t) {
+                libraryLoaded = false;
                 ErrorEventFactory.fromThrowable(t)
                         .description("Unable to load native library Advapi32.dll for registry queries."
                                 + " Registry queries will fail and some functionality will be unavailable")
                         .handle();
-                return (libraryLoaded = false);
+                return false;
             }
         }
 
