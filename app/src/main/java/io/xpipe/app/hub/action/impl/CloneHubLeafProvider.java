@@ -5,6 +5,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -72,6 +73,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
             entry.setLastUsed(instant);
 
             DataStorage.get().addStoreEntryIfNotPresent(entry);
+            StoreCreationDialog.showEdit(entry);
         }
     }
 }
