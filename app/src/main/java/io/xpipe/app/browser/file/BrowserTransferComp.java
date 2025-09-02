@@ -62,7 +62,7 @@ public class BrowserTransferComp extends SimpleComp {
                         return Bindings.createStringBinding(
                                 () -> {
                                     var p = sourceItem.get().getProgress().getValue();
-                                    if (p == null) {
+                                    if (p == null || p.getTotal() == 0) {
                                         return entry.getFileName();
                                     }
 

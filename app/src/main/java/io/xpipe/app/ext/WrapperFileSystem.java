@@ -26,6 +26,21 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public void kill() {
+        fs.kill();
+    }
+
+    @Override
+    public void cd(FilePath dir) throws Exception {
+        fs.cd(dir);
+    }
+
+    @Override
+    public boolean requiresReinit() {
+        return fs.requiresReinit();
+    }
+
+    @Override
     public void reinitIfNeeded() throws Exception {
         fs.reinitIfNeeded();
     }
@@ -36,8 +51,8 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public Optional<OsType> getOsType() {
-        return fs.getOsType();
+    public FilePath makeFileSystemCompatible(FilePath filePath) {
+        return fs.makeFileSystemCompatible(filePath);
     }
 
     @Override

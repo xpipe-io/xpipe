@@ -17,11 +17,17 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    void kill();
+
+    void cd(FilePath dir) throws Exception;
+
+    boolean requiresReinit();
+
     void reinitIfNeeded() throws Exception;
 
     String getFileSeparator();
 
-    Optional<OsType> getOsType();
+    FilePath makeFileSystemCompatible(FilePath filePath);
 
     Optional<FilePath> pwd() throws Exception;
 

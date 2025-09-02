@@ -32,6 +32,21 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public void kill() {
+        shellControl.killExternal();
+    }
+
+    @Override
+    public void cd(FilePath dir) throws Exception {
+        shellControl.view().cd(dir);
+    }
+
+    @Override
+    public boolean requiresReinit() {
+        return !shellControl.isRunning(true) || shellControl.isAnyStreamClosed();
+    }
+
+    @Override
     public void reinitIfNeeded() throws Exception {
         shellControl.start();
         if (shellControl.isAnyStreamClosed()) {
@@ -45,8 +60,8 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public Optional<OsType> getOsType() {
-        return Optional.of(shellControl.getOsType());
+    public FilePath makeFileSystemCompatible(FilePath filePath) {
+        return OsFileSystem.of(shellControl.getOsType()).makeFileSystemCompatible(filePath);
     }
 
     @Override
