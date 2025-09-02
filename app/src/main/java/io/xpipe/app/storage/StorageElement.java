@@ -1,11 +1,13 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.NonFinal;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -54,6 +56,19 @@ public abstract class StorageElement {
         this.lastModified = lastModified;
         this.expanded = expanded;
         this.dirty = dirty;
+    }
+
+    public Instant getStorageCreationDate() {
+        if (!Files.exists(directory)) {
+            return Instant.now();
+        }
+
+        try {
+            return Files.getLastModifiedTime(directory).toInstant();
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return Instant.now();
+        }
     }
 
     public void setExpanded(boolean expanded) {
