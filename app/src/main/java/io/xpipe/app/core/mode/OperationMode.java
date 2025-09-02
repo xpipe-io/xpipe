@@ -173,22 +173,7 @@ public abstract class OperationMode {
         if (AppProperties.get().isAotTrainMode()) {
             OperationMode.switchToSyncOrThrow(BACKGROUND);
             inStartup = false;
-            // Linux runners don't support graphics
-            if (OsType.getLocal() != OsType.LINUX) {
-                OperationMode.switchToSyncOrThrow(OperationMode.GUI);
-                ThreadHelper.sleep(5000);
-                BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                        DataStorage.get().local().ref(),
-                        m -> m.getFileSystem().getShell().orElseThrow().view().userHome(),
-                        null,
-                        true);
-                AppLayoutModel.get().selectSettings();
-                ThreadHelper.sleep(1000);
-                AppLayoutModel.get().selectLicense();
-                ThreadHelper.sleep(1000);
-                AppLayoutModel.get().selectBrowser();
-                ThreadHelper.sleep(5000);
-            }
+            AppAotTrain.runTrainingMode();
             OperationMode.shutdown(false);
             return;
         }

@@ -17,11 +17,7 @@ public class ChmodActionProvider implements BrowserActionProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (model.getFileSystem().getShell().isEmpty()) {
-            return true;
-        }
-
-        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+        return model.getFileSystem().supportsChmod();
     }
 
     @Override
@@ -40,19 +36,9 @@ public class ChmodActionProvider implements BrowserActionProvider {
 
         @Override
         public void executeImpl() throws Exception {
-            model.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("chmod")
-                            .addIf(recursive, "-R")
-                            .addLiteral(permissions)
-                            .addFiles(getEntries().stream()
-                                    .map(browserEntry -> browserEntry
-                                            .getRawFileEntry()
-                                            .getPath()
-                                            .toString())
-                                    .toList()));
+            for (BrowserEntry entry : getEntries()) {
+                model.getFileSystem().chmod(entry.getRawFileEntry().getPath(), permissions, recursive);
+            }
             model.refreshBrowserEntriesSync(getEntries());
         }
 

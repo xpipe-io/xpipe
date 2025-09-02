@@ -57,12 +57,7 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (model.getFileSystem().getShell().isEmpty()) {
-            return true;
-        }
-
-        var os = model.getFileSystem().getShell().orElseThrow().getOsType();
-        return os != OsType.WINDOWS && os != OsType.MACOS;
+        return model.getFileSystem().supportsChown();
     }
 
     @Override

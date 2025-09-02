@@ -28,8 +28,7 @@ public class BrowserFileOpener {
 
     private static BrowserFileOutput openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
             throws Exception {
-        var fileSystem = model.getFileSystem();
-        if (model.isClosed() || fileSystem.getShell().isEmpty()) {
+        if (model.isClosed()) {
             return BrowserFileOutput.none();
         }
 
@@ -44,11 +43,15 @@ public class BrowserFileOpener {
             }
         }
 
+        var defOutput = createFileOutput(model, file, totalBytes, false);
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return defOutput;
+        }
+
         var sc = model.getFileSystem().getShell().orElseThrow();
         var requiresSudo =
                 sc.getOsType() != OsType.WINDOWS && requiresSudo(model, (FileInfo.Unix) file.getInfo(), file.getPath());
 
-        var defOutput = createFileOutput(model, file, totalBytes, false);
         if (!requiresSudo) {
             return defOutput;
         }
@@ -97,16 +100,15 @@ public class BrowserFileOpener {
 
     private static BrowserFileOutput createFileOutput(
             BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws Exception {
-        var sc = elevate
-                ? model.getFileSystem()
-                        .getShell()
-                        .orElseThrow()
+        var shell = model.getFileSystem().getShell();
+        var sc = shell.isEmpty() ? null : elevate
+                ? shell.orElseThrow()
                         .identicalDialectSubShell()
                         .elevated(ElevationFunction.elevated(null))
                         .start()
                 : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
-        var isSudoersFile = file.getPath().startsWith("/etc/sudo");
+        var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
 
             @Override
@@ -133,14 +135,14 @@ public class BrowserFileOpener {
 
             @Override
             public void beforeTransfer() throws Exception {
-                if (isSudoersFile) {
+                if (checkSudoersFile) {
                     fs.copy(file.getPath(), sc.getSystemTemporaryDirectory().join(file.getName()));
                 }
             }
 
             @Override
             public void onFinish() throws Exception {
-                if (isSudoersFile) {
+                if (checkSudoersFile) {
                     if (sc.view().findProgram("visudo").isPresent()) {
                         try {
                             sc.command(CommandBuilder.of()

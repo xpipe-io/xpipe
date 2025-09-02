@@ -17,8 +17,8 @@ public class BrowserLocalFileSystem {
         if (localFileSystem == null) {
             localFileSystem = new LocalStore().createFileSystem();
             localFileSystem.open();
-        } else if (localFileSystem.getShell().orElseThrow().isAnyStreamClosed()) {
-            localFileSystem.getShell().orElseThrow().restart();
+        } else {
+            localFileSystem.reinitIfNeeded();
         }
     }
 

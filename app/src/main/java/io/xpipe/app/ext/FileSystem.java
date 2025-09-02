@@ -17,6 +17,28 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    boolean supportsLinkCreation();
+
+    boolean isCaseSensitive();
+
+    boolean supportsOwnerColumn();
+
+    boolean supportsModeColumn();
+
+    boolean supportsDirectorySizes();
+
+    boolean supportsChmod();
+
+    boolean supportsChown();
+
+    boolean supportsChgrp();
+
+    void chmod(FilePath path, String mode, boolean recursive) throws Exception;
+
+    void chown(FilePath path, String uid, boolean recursive) throws Exception;
+
+    void chgrp(FilePath path, String gid, boolean recursive) throws Exception;
+
     void kill();
 
     void cd(FilePath dir) throws Exception;

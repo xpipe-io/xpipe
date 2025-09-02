@@ -32,6 +32,75 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean supportsLinkCreation() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean isCaseSensitive() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsOwnerColumn() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public boolean supportsModeColumn() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsDirectorySizes() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsChmod() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsChown() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public boolean supportsChgrp() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                        .add("chmod")
+                        .addIf(recursive, "-R")
+                        .addLiteral(mode)
+                        .addFile(path))
+                .execute();
+    }
+
+    @Override
+    public void chown(FilePath path, String uid, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                .add("chown")
+                .addIf(recursive, "-R")
+                .addLiteral(uid)
+                .addFile(path))
+                .execute();
+    }
+
+    @Override
+    public void chgrp(FilePath path, String gid, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                .add("chgrp")
+                .addIf(recursive, "-R")
+                .addLiteral(gid)
+                .addFile(path)).execute();
+    }
+
+    @Override
     public void kill() {
         shellControl.killExternal();
     }

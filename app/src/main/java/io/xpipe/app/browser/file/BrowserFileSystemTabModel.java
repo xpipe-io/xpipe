@@ -202,13 +202,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private void startIfNeeded() throws Exception {
-        var s = fileSystem.getShell();
-        if (s.isPresent()) {
-            s.get().start();
-            if (s.get().isAnyStreamClosed()) {
-                s.get().restart();
-            }
-        }
+        fileSystem.reinitIfNeeded();
     }
 
     public void killTransfer() {

@@ -183,18 +183,12 @@ public final class BrowserFileListComp extends SimpleComp {
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol,
             TableColumn<BrowserEntry, String> sizeCol) {
-        var os = fileList.getFileSystemModel()
-                .getFileSystem()
-                .getShell()
-                .map(shellControl -> shellControl.getOsType())
-                .orElse(null);
         table.widthProperty().subscribe((newValue) -> {
-            if (os != OsType.WINDOWS && os != OsType.MACOS) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
 
-            var shell = fileList.getFileSystemModel().getFileSystem().getShell();
-            if (shell.isEmpty() || (!OsType.WINDOWS.equals(shell.get().getOsType()) && !OsType.MACOS.equals(shell.get().getOsType()))) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                 modeCol.setVisible(newValue.doubleValue() > 600);
             }
 
@@ -588,12 +582,15 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                var shell = fileList.getFileSystemModel().getFileSystem().getShell();
-                if (shell.isPresent() && (OsType.WINDOWS.equals(shell.get().getOsType()) || OsType.MACOS.equals(shell.get().getOsType()))) {
+                if (!fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                     modeCol.setVisible(false);
-                    ownerCol.setVisible(false);
                 } else {
                     modeCol.setVisible(table.getWidth() > 600);
+                }
+
+                if (!fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
+                    ownerCol.setVisible(false);
+                } else {
                     if (table.getWidth() > 1000) {
                         ownerCol.setVisible(hasOwner);
                     } else if (!hasOwner) {

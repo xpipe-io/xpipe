@@ -53,11 +53,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (model.getFileSystem().getShell().isEmpty()) {
-            return true;
-        }
-
-        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+        return model.getFileSystem().supportsChmod();
     }
 
     @Override

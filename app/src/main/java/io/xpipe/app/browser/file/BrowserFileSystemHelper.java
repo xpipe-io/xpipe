@@ -100,11 +100,6 @@ public class BrowserFileSystemHelper {
             return;
         }
 
-        var shell = model.getFileSystem().getShell();
-        if (shell.isEmpty()) {
-            return;
-        }
-
         if (verifyExists && !model.getFileSystem().directoryExists(path)) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     String.format("Directory %s does not exist or is not accessible", path)));
