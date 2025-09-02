@@ -229,18 +229,27 @@ public final class BrowserFileListComp extends SimpleComp {
         var m = fileList.getFileSystemModel();
         var user = unix.getUser() != null
                 ? unix.getUser()
-                : m.getCache().getUsers().getOrDefault(unix.getUid(), "?");
+                : m.getCache() != null ? m.getCache().getUsers().getOrDefault(unix.getUid(), "?") : null;
         var group = unix.getGroup() != null
                 ? unix.getGroup()
-                : m.getCache().getGroups().getOrDefault(unix.getGid(), "?");
-        var uid = String.valueOf(
-                unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
-        var gid = String.valueOf(
-                unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
-        if (uid.equals(gid) && user.equals(group)) {
-            return user + " [" + uid + "]";
+                : m.getCache() != null ? m.getCache().getGroups().getOrDefault(unix.getGid(), "?") : null;
+        var uid =
+                unix.getUid() != null ? String.valueOf(unix.getUid()) : m.getCache() != null ? m.getCache().getUidForUser(user) : null;
+        var gid =
+                unix.getGid() != null ? String.valueOf(unix.getGid()) : m.getCache() != null ? m.getCache().getGidForGroup(group) : null;
+
+        var userFormat = user + (uid != null ? " [" + uid + "]" : "");
+        var groupFormat = group + (gid != null ? " [" + gid + "]" : "");
+
+        if (uid != null && uid.equals(gid) && user != null && user.equals(group)) {
+            return userFormat;
         }
-        return user + " [" + uid + "] / " + group + " [" + gid + "]";
+
+        if (uid == null && gid == null && user != null && user.equals(group)) {
+            return userFormat;
+        }
+
+        return userFormat + "  / " + groupFormat;
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {

@@ -188,7 +188,8 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+                        return model.getFileSystem().getShell().isEmpty() ||
+                                model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
                     }
 
                     @Override

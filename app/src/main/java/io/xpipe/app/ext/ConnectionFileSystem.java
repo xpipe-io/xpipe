@@ -8,6 +8,7 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -26,6 +27,16 @@ public class ConnectionFileSystem implements FileSystem {
 
     public ConnectionFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
+    }
+
+    @Override
+    public Optional<OsType> getOsType() {
+        return Optional.of(shellControl.getOsType());
+    }
+
+    @Override
+    public FilePath pwd() throws Exception {
+        return shellControl.view().pwd();
     }
 
     @Override

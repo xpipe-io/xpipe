@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -14,6 +15,10 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
+
+    Optional<OsType> getOsType();
+
+    FilePath pwd() throws Exception;
 
     FileSystem createTransferOptimizedFileSystem() throws Exception;
 

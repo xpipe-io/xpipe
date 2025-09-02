@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -22,6 +23,16 @@ public class WrapperFileSystem implements FileSystem {
     public WrapperFileSystem(FileSystem fs, Supplier<Boolean> check) {
         this.fs = fs;
         this.check = check;
+    }
+
+    @Override
+    public Optional<OsType> getOsType() {
+        return fs.getOsType();
+    }
+
+    @Override
+    public FilePath pwd() throws Exception {
+        return fs.pwd();
     }
 
     @Override

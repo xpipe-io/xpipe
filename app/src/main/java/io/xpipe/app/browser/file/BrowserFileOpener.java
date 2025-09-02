@@ -64,6 +64,10 @@ public class BrowserFileOpener {
 
     private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
             throws Exception {
+        if (model.getFileSystem().getShell().isEmpty() || model.getCache() == null) {
+            return false;
+        }
+
         if (model.getCache().isRoot()) {
             return false;
         }
@@ -168,7 +172,7 @@ public class BrowserFileOpener {
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
-        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openWithAnyApplication(entry.getPath().toString());
             return;
         }
@@ -217,7 +221,7 @@ public class BrowserFileOpener {
     }
 
     public static void openInDefaultApplication(BrowserFileSystemTabModel model, FileEntry entry) {
-        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openInDefaultApplication(entry.getPath().toString());
             return;
         }
@@ -270,7 +274,8 @@ public class BrowserFileOpener {
         if (editor == null) {
             return;
         }
-        if (model.getFileSystem().getShell().orElseThrow().isLocal()) {
+
+        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openInTextEditor(entry.getPath().toString());
             return;
         }
