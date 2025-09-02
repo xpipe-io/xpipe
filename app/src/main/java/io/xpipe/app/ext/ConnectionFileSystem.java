@@ -2,6 +2,7 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.DocumentationLink;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -30,13 +32,26 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public void reinitIfNeeded() throws Exception {
+        shellControl.start();
+        if (shellControl.isAnyStreamClosed()) {
+            shellControl.restart();
+        }
+    }
+
+    @Override
+    public String getFileSeparator() {
+        return OsFileSystem.of(shellControl.getOsType()).getFileSystemSeparator();
+    }
+
+    @Override
     public Optional<OsType> getOsType() {
         return Optional.of(shellControl.getOsType());
     }
 
     @Override
-    public FilePath pwd() throws Exception {
-        return shellControl.view().pwd();
+    public Optional<FilePath> pwd() throws Exception {
+        return Optional.ofNullable(shellControl.view().pwd());
     }
 
     @Override
@@ -241,6 +256,39 @@ public class ConnectionFileSystem implements FileSystem {
                 .listRoots(shellControl)
                 .map(s -> FilePath.of(s))
                 .toList();
+    }
+
+    @Override
+    public List<FilePath> listCommonDirectories() throws Exception {
+        var home = shellControl.view().userHome();
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return List.of(home, home.join("Documents"), home.join("Downloads"), home.join("Desktop"));
+        } else if (shellControl.getOsType() == OsType.MACOS) {
+            var list = List.of(
+                    home,
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    home.join("Desktop"),
+                    FilePath.of("/Applications"),
+                    FilePath.of("/Library"),
+                    FilePath.of("/System"),
+                    FilePath.of("/etc"),
+                    FilePath.of("/tmp"));
+            return list;
+        } else {
+            var list = new ArrayList<>(List.of(
+                    home,
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    FilePath.of("/etc"),
+                    shellControl.getSystemTemporaryDirectory(),
+                    FilePath.of("/var")));
+            var parentHome = home.getParent();
+            if (parentHome != null && !parentHome.toString().equals("/")) {
+                list.add(3, parentHome);
+            }
+            return list;
+        }
     }
 
     @Override

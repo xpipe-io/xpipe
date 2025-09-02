@@ -6,6 +6,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -16,9 +17,13 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    void reinitIfNeeded() throws Exception;
+
+    String getFileSeparator();
+
     Optional<OsType> getOsType();
 
-    FilePath pwd() throws Exception;
+    Optional<FilePath> pwd() throws Exception;
 
     FileSystem createTransferOptimizedFileSystem() throws Exception;
 
@@ -83,4 +88,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
     }
 
     List<FilePath> listRoots() throws Exception;
+
+    List<FilePath> listCommonDirectories() throws Exception;
 }

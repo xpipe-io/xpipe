@@ -55,8 +55,6 @@ public interface OsFileSystem {
 
     String makeFileSystemCompatible(String name);
 
-    List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception;
-
     String getUserHomeDirectory(ShellControl pc) throws Exception;
 
     String getFileSystemSeparator();
@@ -77,12 +75,6 @@ public interface OsFileSystem {
         public String makeFileSystemCompatible(String name) {
             var r = name.replaceAll("[<>:\"/\\\\|?*]", "_").replaceAll("\\p{C}", "");
             return r.strip();
-        }
-
-        @Override
-        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = pc.view().userHome();
-            return List.of(home, home.join("Documents"), home.join("Downloads"), home.join("Desktop"));
         }
 
         @Override
@@ -121,23 +113,6 @@ public interface OsFileSystem {
         public String makeFileSystemCompatible(String name) {
             // Technically the backslash is supported, but it causes all kinds of troubles, so we also exclude it
             return name.replaceAll("[/\\\\]", "_").replaceAll("\0", "");
-        }
-
-        @Override
-        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = pc.view().userHome();
-            var list = new ArrayList<>(List.of(
-                    home,
-                    home.join("Downloads"),
-                    home.join("Documents"),
-                    FilePath.of("/etc"),
-                    pc.getSystemTemporaryDirectory(),
-                    FilePath.of("/var")));
-            var parentHome = home.getParent();
-            if (parentHome != null && !parentHome.toString().equals("/")) {
-                list.add(3, parentHome);
-            }
-            return list;
         }
 
         @Override
@@ -181,22 +156,6 @@ public interface OsFileSystem {
         public String makeFileSystemCompatible(String name) {
             // Technically the backslash is supported, but it causes all kinds of troubles, so we also exclude it
             return name.replaceAll("[\\\\/:]", "_").replaceAll("\0", "");
-        }
-
-        @Override
-        public List<FilePath> determineInterestingPaths(ShellControl pc) throws Exception {
-            var home = pc.view().userHome();
-            var list = List.of(
-                    home,
-                    home.join("Downloads"),
-                    home.join("Documents"),
-                    home.join("Desktop"),
-                    FilePath.of("/Applications"),
-                    FilePath.of("/Library"),
-                    FilePath.of("/System"),
-                    FilePath.of("/etc"),
-                    FilePath.of("/tmp"));
-            return list;
         }
 
         @Override

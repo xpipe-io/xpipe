@@ -45,35 +45,38 @@ public class BrowserOverviewComp extends SimpleComp {
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview, false);
         list.add(recentPane);
 
-        var sc = model.getFileSystem().getShell();
-        if (sc.isPresent()) {
-            var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
-            ThreadHelper.runFailableAsync(() -> {
-                var common = OsFileSystem.of(sc.get().getOsType()).determineInterestingPaths(sc.get()).stream().map(
-                        s -> FileEntry.ofDirectory(model.getFileSystem(), s)).filter(entry -> {
-                    var fs = model.getFileSystem();
+        var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
+        ThreadHelper.runFailableAsync(() -> {
+            var common = model.getFileSystem().listCommonDirectories().stream().map(
+                    s -> FileEntry.ofDirectory(model.getFileSystem(), s)).filter(entry -> {
+                var fs = model.getFileSystem();
 
-                    try {
-                        return fs.directoryExists(entry.getPath());
-                    } catch (Exception e) {
-                        ErrorEventFactory.fromThrowable(e).handle();
-                        return false;
-                    }
-                }).toList();
-                Platform.runLater(() -> {
-                    commonPlatform.setAll(common);
-                });
+                try {
+                    return fs.directoryExists(entry.getPath());
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                    return false;
+                }
+            }).toList();
+            Platform.runLater(() -> {
+                commonPlatform.setAll(common);
             });
-            var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
-            var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false).apply(
-                    struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
-            list.add(commonPane);
-        }
+        });
+        var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false).apply(
+                struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+        list.add(commonPane);
 
-        var roots = model.getFileSystem().listRoots().stream()
-                .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
-                .toList();
-        var rootsOverview = new BrowserFileOverviewComp(model, FXCollections.observableArrayList(roots), false);
+        var rootPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
+        ThreadHelper.runFailableAsync(() -> {
+            var roots = model.getFileSystem().listRoots().stream()
+                    .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
+                    .toList();
+            Platform.runLater(() -> {
+                rootPlatform.setAll(roots);
+            });
+                });
+        var rootsOverview = new BrowserFileOverviewComp(model, rootPlatform, false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview, false);
         list.add(rootsPane);
 

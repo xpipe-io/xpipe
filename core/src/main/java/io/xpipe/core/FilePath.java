@@ -221,6 +221,10 @@ public final class FilePath {
         return FilePath.of(String.join("\\", split()) + suffix);
     }
 
+    public boolean isRoot() {
+        return getRoot().equals(this);
+    }
+
     public Path asLocalPath() {
         return Path.of(value);
     }

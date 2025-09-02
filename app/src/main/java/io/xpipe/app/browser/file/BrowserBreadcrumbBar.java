@@ -53,7 +53,6 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                     return;
                 }
 
-                var sc = model.getFileSystem().getShell();
                 breadcrumbs.setDividerFactory(item -> {
                     if (item == null) {
                         return null;
@@ -63,11 +62,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                         return new Label("");
                     }
 
-                    if (sc.isEmpty()) {
-                        return new Label("/");
-                    }
-
-                    return new Label(OsFileSystem.of(sc.get().getOsType()).getFileSystemSeparator());
+                    return new Label(model.getFileSystem().getFileSeparator());
                 });
 
                 var elements = createBreadcumbHierarchy(val);

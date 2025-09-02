@@ -26,12 +26,22 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public void reinitIfNeeded() throws Exception {
+        fs.reinitIfNeeded();
+    }
+
+    @Override
+    public String getFileSeparator() {
+        return fs.getFileSeparator();
+    }
+
+    @Override
     public Optional<OsType> getOsType() {
         return fs.getOsType();
     }
 
     @Override
-    public FilePath pwd() throws Exception {
+    public Optional<FilePath> pwd() throws Exception {
         return fs.pwd();
     }
 
@@ -192,6 +202,11 @@ public class WrapperFileSystem implements FileSystem {
         }
 
         return fs.listRoots();
+    }
+
+    @Override
+    public List<FilePath> listCommonDirectories() throws Exception {
+        return fs.listCommonDirectories();
     }
 
     @Override
