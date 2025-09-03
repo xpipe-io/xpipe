@@ -9,7 +9,6 @@ import java.util.Optional;
 public class BeaconConfig {
 
     public static final String BEACON_PORT_PROP = "io.xpipe.beacon.port";
-    public static final String DAEMON_ARGUMENTS_PROP = "io.xpipe.beacon.daemonArgs";
     private static final String PRINT_MESSAGES_PROPERTY = "io.xpipe.beacon.printMessages";
 
     public static boolean printMessages() {
