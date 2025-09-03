@@ -1000,23 +1000,30 @@ public abstract class DataStorage {
             return true;
         }
 
-        var parentCat =
-                getStoreCategoryIfPresent(parent.get().getCategoryUuid()).orElseThrow();
-        var parentCatHierarchy = getCategoryParentHierarchy(parentCat);
-        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
-        var catHierarchy = getCategoryParentHierarchy(cat);
+        var parentCat = getStoreCategoryIfPresent(parent.get().getCategoryUuid());
+        if (parentCat.isEmpty()) {
+            return true;
+        }
+
+        var parentCatHierarchy = getCategoryParentHierarchy(parentCat.get());
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        if (cat.isEmpty()) {
+            return true;
+        }
+
+        var catHierarchy = getCategoryParentHierarchy(cat.get());
 
         var currentContainsBoth = catHierarchy.contains(current) && parentCatHierarchy.contains(current);
         if (currentContainsBoth) {
             return false;
         }
 
-        var diffParentCategoryHierarchy = !catHierarchy.contains(parentCat);
+        var diffParentCategoryHierarchy = !catHierarchy.contains(parentCat.get());
         if (diffParentCategoryHierarchy) {
             return true;
         }
 
-        var subParent = catHierarchy.indexOf(current) > catHierarchy.indexOf(parentCat);
+        var subParent = catHierarchy.indexOf(current) > catHierarchy.indexOf(parentCat.get());
         if (subParent) {
             return true;
         }

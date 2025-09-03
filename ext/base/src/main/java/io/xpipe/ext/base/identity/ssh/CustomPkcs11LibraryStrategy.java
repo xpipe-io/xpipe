@@ -50,7 +50,8 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                                         DataStorage.get().local().ref()),
                                 file,
                                 null,
-                                List.of()),
+                                List.of(),
+                                e -> e.equals(DataStorage.get().local())),
                         file)
                 .nonNull()
                 .bind(
@@ -89,7 +90,7 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
     public List<KeyValue> configOptions() {
         return List.of(
                 new KeyValue("IdentitiesOnly", "no"),
-                new KeyValue("PKCS11Provider", file.toString()),
+                new KeyValue("PKCS11Provider", "\"" + file.toString() + "\""),
                 new KeyValue("IdentityFile", "none"),
                 new KeyValue("IdentityAgent", "none"));
     }

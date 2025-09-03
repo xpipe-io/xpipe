@@ -30,7 +30,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -236,7 +235,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         all.addAll(entries);
         for (BrowserEntry browserEntry : fileList.getAll().getValue()) {
             var fe = browserEntry.getRawFileEntry();
-            if (fe.getKind() == FileKind.LINK && entries.stream().anyMatch(o -> o.getPath().equals(fe.resolved().getPath()))) {
+            if (fe.getKind() == FileKind.LINK
+                    && entries.stream()
+                            .anyMatch(o -> o.getPath().equals(fe.resolved().getPath()))) {
                 all.add(fe);
             }
         }

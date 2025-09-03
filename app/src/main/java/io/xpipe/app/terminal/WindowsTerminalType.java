@@ -51,7 +51,10 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         var spaces = configuration.getScriptFile().toString().contains(" ");
         cmd.add(configuration
                 .getScriptDialect()
-                .getOpenScriptCommand(spaces ? configuration.getScriptFile().getFileName() : configuration.getScriptFile().toString()));
+                .getOpenScriptCommand(
+                        spaces
+                                ? configuration.getScriptFile().getFileName()
+                                : configuration.getScriptFile().toString()));
         return cmd;
     }
 
@@ -138,11 +141,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
                 if (spaces) {
                     var wd = sc.view().pwd();
-                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).withWorkingDirectory(
-                            configuration.getScriptFile().getParent()).execute();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .execute();
                     sc.view().cd(wd);
                 } else {
-                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .execute();
                 }
             }
         }
@@ -197,7 +202,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
                             .execute();
                     sc.view().cd(wd);
                 } else {
-                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .execute();
                 }
             }
         }
@@ -248,11 +254,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
                 if (spaces) {
                     var wd = sc.view().pwd();
-                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).withWorkingDirectory(
-                            configuration.getScriptFile().getParent()).execute();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .execute();
                     sc.view().cd(wd);
                 } else {
-                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration))).execute();
+                    sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
+                            .execute();
                 }
             }
         }

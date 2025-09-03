@@ -84,6 +84,7 @@ public class AppMainWindow {
         stage.setMinWidth(500);
         stage.setMinHeight(400);
         INSTANCE = new AppMainWindow(stage);
+        AppModifiedStage.prepareStage(stage);
 
         var content = new AppMainWindowContentComp(stage).createRegion();
         content.opacityProperty()
@@ -100,7 +101,6 @@ public class AppMainWindow {
         content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
 
-        AppModifiedStage.prepareStage(stage);
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
@@ -282,6 +282,12 @@ public class AppMainWindow {
 
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
+
+            // Iconifying stages on Windows will break if the window is closed
+            // Work around this issue it by re-showing it immediately before hiding it again
+            if (OsType.getLocal() == OsType.WINDOWS) {
+                stage.setIconified(false);
+            }
 
             // Close self
             stage.close();

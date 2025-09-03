@@ -13,6 +13,7 @@ import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BindingsHelper;
 import io.xpipe.app.util.FileReference;
@@ -37,22 +38,26 @@ import java.util.function.Supplier;
 public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
 
     private final BrowserFileChooserSessionModel model;
+    private final Predicate<DataStoreEntry> filter;
 
-    public BrowserFileChooserSessionComp(BrowserFileChooserSessionModel model) {
+    public BrowserFileChooserSessionComp(BrowserFileChooserSessionModel model, Predicate<DataStoreEntry> filter) {
         this.model = model;
+        this.filter = filter;
     }
 
     public static void openSingleFile(
             Supplier<DataStoreEntryRef<? extends FileSystemStore>> store,
             Supplier<FilePath> initialPath,
             Consumer<FileReference> file,
-            boolean save) {
+            boolean save,
+            Predicate<DataStoreEntry> filter) {
         var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
         });
-        var comp =
-                new BrowserFileChooserSessionComp(model).styleClass("browser").styleClass("chooser");
+        var comp = new BrowserFileChooserSessionComp(model, filter)
+                .styleClass("browser")
+                .styleClass("chooser");
         var selection = new SimpleStringProperty();
         model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             selection.set(
@@ -86,7 +91,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
     protected Region createSimple() {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
             return (storeEntryWrapper.getEntry().getStore() instanceof ShellStore)
-                    && storeEntryWrapper.getEntry().getValidity().isUsable();
+                    && storeEntryWrapper.getEntry().getValidity().isUsable()
+                    && filter.test(storeEntryWrapper.getEntry());
         };
         BiConsumer<StoreEntryWrapper, BooleanProperty> action = (w, busy) -> {
             ThreadHelper.runFailableAsync(() -> {

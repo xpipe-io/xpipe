@@ -43,8 +43,13 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
     default StoreToggleComp createToggleComp(StoreSection sec) {
         var enabled = new SimpleBooleanProperty();
-        sec.getWrapper().getCache().subscribe((newValue) -> {
-            SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
+        sec.getWrapper().getCache().subscribe((ignored) -> {
+            var entry = sec.getWrapper().getEntry();
+            if (entry.getStore() == null) {
+                return;
+            }
+
+            SingletonSessionStore<?> s = entry.getStore().asNeeded();
             enabled.set(s.isSessionEnabled());
         });
 
@@ -52,7 +57,12 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
                 ? new LabelGraphic.IconGraphic("mdi2c-circle-slice-8")
                 : new LabelGraphic.IconGraphic("mdi2p-power"));
         var t = new StoreToggleComp(null, g, sec, enabled, newState -> {
-            SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
+            var entry = sec.getWrapper().getEntry();
+            if (entry.getStore() == null) {
+                return;
+            }
+
+            SingletonSessionStore<?> s = entry.getStore().asNeeded();
             if (s.isSessionEnabled() != newState) {
                 var action = ToggleActionProvider.Action.builder()
                         .ref(sec.getWrapper().getEntry().ref())

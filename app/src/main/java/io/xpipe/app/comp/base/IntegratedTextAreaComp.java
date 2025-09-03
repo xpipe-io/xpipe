@@ -5,7 +5,6 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.process.ShellStoreState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;

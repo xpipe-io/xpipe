@@ -52,7 +52,11 @@ public class EnpassPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<EnpassPasswordManager> p) {
         var prop = new SimpleObjectProperty<>(p.getValue().getVaultPath());
         var comp = new ContextualFileReferenceChoiceComp(
-                new SimpleObjectProperty<>(DataStorage.get().local().ref()), prop, null, List.of());
+                new SimpleObjectProperty<>(DataStorage.get().local().ref()),
+                prop,
+                null,
+                List.of(),
+                e -> e.equals(DataStorage.get().local()));
         comp.apply(struc -> {
             var text = (TextField) struc.get().getChildren().getFirst();
             text.requestFocus();

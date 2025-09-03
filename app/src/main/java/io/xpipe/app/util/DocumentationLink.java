@@ -6,6 +6,7 @@ public enum DocumentationLink {
     API("api"),
     TTY("troubleshoot/tty"),
     SSH_BROKEN_PIPE("troubleshoot/ssh#client-loop-send-disconnect--connection-reset"),
+    WINDOWS_SETUP("guide/installation#windows"),
     MACOS_SETUP("guide/installation#macos"),
     DOUBLE_PROMPT("troubleshoot/two-step-connections"),
     LICENSE_ACTIVATION("troubleshoot/license-activation"),
@@ -14,9 +15,9 @@ public enum DocumentationLink {
     PRIVACY("legal/privacy"),
     EULA("legal/eula"),
     WEBTOP_UPDATE("guide/webtop#updating"),
+    WEBTOP_TAILSCALE("guide/webtop#networking-and-tailscale"),
     SYNC("guide/sync"),
     SYNC_LOCAL("guide/sync#local-repositories"),
-    FIRST_STEPS("guide/first-steps"),
     DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
@@ -47,6 +48,8 @@ public enum DocumentationLink {
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),
     SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
+    SSH_CONNECTION_TIMEOUT("troubleshoot/ssh#connection-timeout"),
+    SSH_SHELL_TIMEOUT("troubleshoot/ssh#shell-timeout"),
     SSH_CONFIG("guide/ssh-config"),
     SSH_KEYS("guide/ssh#key-based-authentication"),
     SSH_OPTIONS("guide/ssh-config#adding-ssh-options"),
@@ -86,7 +89,8 @@ public enum DocumentationLink {
     LOCAL_SHELL_ERROR("troubleshoot/local-shell"),
     LOCAL_SHELL_WARNING("troubleshoot/local-shell#startup-warnings"),
     LOCAL_SHELL_OCCASIONAL("troubleshoot/local-shell#occasional-failures"),
-    MCP("guide/mcp");
+    MCP("guide/mcp"),
+    INTRO("guide/first-steps#adding-remote-connections");
 
     private final String page;
 

@@ -12,6 +12,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
@@ -36,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
 
@@ -43,6 +45,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final Property<FilePath> filePath;
     private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
+    private final Predicate<DataStoreEntry> filter;
 
     @Setter
     private ObservableValue<FilePath> prompt;
@@ -51,9 +54,11 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             Property<DataStoreEntryRef<T>> fileSystem,
             Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
-            List<PreviousFileReference> previousFileReferences) {
+            List<PreviousFileReference> previousFileReferences,
+            Predicate<DataStoreEntry> filter) {
         this.sync = sync;
         this.previousFileReferences = previousFileReferences;
+        this.filter = filter;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
@@ -80,7 +85,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                                     fileSystem.setValue(fileStore.getFileSystem());
                                 }
                             },
-                            false);
+                            false,
+                            filter);
                 })
                 .styleClass(sync != null ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
                 .grow(false, true);

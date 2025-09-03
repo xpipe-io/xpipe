@@ -211,7 +211,9 @@ public class StoreEntryWrapper {
         if (storeChanged || !information.isBound()) {
             information.unbind();
             shownInformation.unbind();
-            if (entry.getValidity().isUsable() || (entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED && entry.getProvider().showIncompleteInfo())) {
+            if (entry.getValidity().isUsable()
+                    || (entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
+                            && entry.getProvider().showIncompleteInfo())) {
                 var section = StoreViewState.get().getSectionForWrapper(this);
                 if (section.isPresent()) {
                     try {
@@ -220,7 +222,9 @@ public class StoreEntryWrapper {
                         shownInformation.bind(Bindings.createStringBinding(
                                 () -> {
                                     // Might have changed validity meanwhile
-                                    var showInfo = entry.getValidity().isUsable() || (entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED && entry.getProvider().showIncompleteInfo());
+                                    var showInfo = entry.getValidity().isUsable()
+                                            || (entry.getValidity() != DataStoreEntry.Validity.LOAD_FAILED
+                                                    && entry.getProvider().showIncompleteInfo());
                                     if (!showInfo) {
                                         return null;
                                     }

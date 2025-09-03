@@ -54,9 +54,11 @@ public class AppModifiedStage extends Stage {
                 updateStage(stage);
             });
         }
-        stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
-            applyModes(stage);
-        });
+        if (stage.getScene() != null) {
+            stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
+                applyModes(stage);
+            });
+        }
     }
 
     @SneakyThrows

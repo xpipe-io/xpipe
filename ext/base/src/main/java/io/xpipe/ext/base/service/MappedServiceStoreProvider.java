@@ -50,6 +50,8 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
                 .nonNull()
                 .sub(ServiceProtocolTypeHelper.choice(serviceProtocolType), serviceProtocolType)
                 .nonNull()
+                .nameAndDescription("serviceRemotePort")
+                .addStaticString(st.getRemotePort() + " <- " + st.getContainerPort())
                 .nameAndDescription("serviceLocalPort")
                 .addInteger(localPort)
                 .bind(

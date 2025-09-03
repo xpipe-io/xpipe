@@ -71,13 +71,15 @@ public class TerminalCategory extends AppPrefsCategory {
         });
 
         var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.terminalType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
+                    var t = prefs.terminalType().getValue();
+                    if (t == null || t.getWebsite() == null) {
+                        return;
+                    }
 
-            Hyperlinks.open(t.getWebsite());
-        });
+                    Hyperlinks.open(t.getWebsite());
+                })
+                .minWidth(Region.USE_PREF_SIZE);
+
         var visitVisible = Bindings.createBooleanBinding(
                 () -> {
                     var t = prefs.terminalType().getValue();
@@ -181,6 +183,9 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .pref(prefs.preferTerminalTabs)
                                 .addToggle(prefs.preferTerminalTabs)
                                 .hide(tabsSettingSupported.not())
+                                .pref(prefs.enableTerminalStartupBell)
+                                .addToggle(prefs.enableTerminalStartupBell)
+                                .hide(OsType.getLocal() == OsType.WINDOWS)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )

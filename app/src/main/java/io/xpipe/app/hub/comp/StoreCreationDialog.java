@@ -136,6 +136,12 @@ public class StoreCreationDialog {
             StoreCreationConsumer con,
             boolean staticDisplay,
             DataStoreEntry existingEntry) {
+        var ex = StoreCreationQueueEntry.findExisting(existingEntry);
+        if (ex.isPresent()) {
+            ex.get().show();
+            return;
+        }
+
         var prop = new SimpleObjectProperty<>(provider);
         var store = new SimpleObjectProperty<>(s);
         var model = new StoreCreationModel(prop, store, filter, initialName, existingEntry, staticDisplay, con);
@@ -157,12 +163,7 @@ public class StoreCreationDialog {
         comp.prefWidth(650);
         var nameKey = model.storeTypeNameKey() + "Add";
         var modal = ModalOverlay.of(nameKey, comp);
-        var provider = model.getProvider().getValue();
-        var graphic = provider != null
-                        && provider.getDisplayIconFileName(model.getStore().get()) != null
-                ? new LabelGraphic.ImageGraphic(
-                        provider.getDisplayIconFileName(model.getStore().get()), 20)
-                : new LabelGraphic.IconGraphic("mdi2b-beaker-plus-outline");
+        var queueEntry = StoreCreationQueueEntry.of(model, modal);
         comp.apply(struc -> {
             struc.get().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
@@ -174,9 +175,7 @@ public class StoreCreationDialog {
                 }
             });
         });
-        modal.hideable(AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
-            modal.show();
-        });
+        modal.hideable(queueEntry);
         AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
             if (model.getFinished().get() || !modal.isShowing()) {
                 return;
@@ -185,11 +184,7 @@ public class StoreCreationDialog {
             modal.hide();
             AppLayoutModel.get()
                     .getQueueEntries()
-                    .add(new AppLayoutModel.QueueEntry(
-                            AppI18n.observable(model.storeTypeNameKey() + "Add"), graphic, () -> {
-                                AppLayoutModel.get().selectConnections();
-                                modal.show();
-                            }));
+                    .add(queueEntry);
         });
         modal.setRequireCloseButtonForClose(true);
         modal.addButton(new ModalButton(

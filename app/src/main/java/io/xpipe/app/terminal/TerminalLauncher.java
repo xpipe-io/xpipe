@@ -11,6 +11,7 @@ import io.xpipe.app.util.LocalShell;
 import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.util.List;
@@ -192,10 +193,15 @@ public class TerminalLauncher {
 
     private static String getTerminalRegisterCommand(UUID request) throws Exception {
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
-        return CommandBuilder.of()
+        var registerLine = CommandBuilder.of()
                 .addFile(exec)
                 .add("terminal-register", "--request", request.toString())
                 .buildFull(LocalShell.getShell());
+        var bellLine = "printf \"\\a\"";
+        var printBell = OsType.getLocal() != OsType.WINDOWS
+                && AppPrefs.get().enableTerminalStartupBell().get();
+        var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
+        return lines.toString();
     }
 
     private static boolean launchMultiplexerTabInExistingTerminal(

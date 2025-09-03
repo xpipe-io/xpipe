@@ -158,15 +158,15 @@
     -fx-padding: 3 10;
 }
 
-.ikonli-font-icon.graphic.supported {
+.root .ikonli-font-icon.graphic.supported {
     -fx-icon-color: -color-success-fg;
 }
 
-.ikonli-font-icon.graphic.unsupported {
+.root .ikonli-font-icon.graphic.unsupported {
     -fx-icon-color: -color-warning-fg;
 }
 
-.ikonli-font-icon.graphic.error {
+.root .ikonli-font-icon.graphic.error {
     -fx-icon-color: -color-danger-fg;
 }
 

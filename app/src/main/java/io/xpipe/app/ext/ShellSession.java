@@ -11,19 +11,18 @@ import lombok.Getter;
 public class ShellSession extends Session {
 
     private final FailableSupplier<ShellControl> supplier;
-    private final ShellControl shellControl;
+    private ShellControl shellControl;
 
-    public ShellSession(FailableSupplier<ShellControl> supplier) throws Exception {
+    public ShellSession(FailableSupplier<ShellControl> supplier) {
         this.supplier = supplier;
-        this.shellControl = createControl();
     }
 
     private ShellControl createControl() throws Exception {
         var pc = supplier.get();
-        pc.onStartupFail(shellControl -> {
+        pc.onStartupFail(ignored -> {
             listener.onStateChange(false);
         });
-        pc.onInit(shellControl -> {
+        pc.onInit(ignored -> {
             listener.onStateChange(true);
         });
         pc.onKill(() -> {
@@ -32,28 +31,33 @@ public class ShellSession extends Session {
         // Listen for parent exit as onExit is called before exit is completed
         // In case it is stuck, we would not get the right status otherwise
         pc.getParentControl().ifPresent(p -> {
-            p.onExit(shellControl -> {
+            p.onExit(ignored -> {
                 listener.onStateChange(false);
             });
         });
-        pc.onExit(shellControl -> {
+        pc.onExit(ignored -> {
             listener.onStateChange(false);
         });
         return pc;
     }
 
     public boolean isRunning() {
+        if (shellControl == null) {
+            return false;
+        }
+
         return shellControl.isRunning(true);
     }
 
     public void start() throws Exception {
-        if (shellControl.isRunning(true)) {
+        if (shellControl != null && shellControl.isRunning(true)) {
             return;
         } else {
             stop();
         }
 
         try {
+            shellControl = createControl();
             shellControl.start();
 
             var shouldAliveCheck = !shellControl.isLocal();
@@ -73,11 +77,19 @@ public class ShellSession extends Session {
     }
 
     public void stop() throws Exception {
+        if (shellControl == null) {
+            return;
+        }
+
         shellControl.shutdown();
     }
 
     @Override
     public boolean checkAlive() throws Exception {
+        if (shellControl == null) {
+            return false;
+        }
+
         // If a subshell is active, then we are alive
         if (shellControl.isSubShellActive()) {
             return true;

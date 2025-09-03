@@ -5,7 +5,6 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
@@ -121,7 +120,7 @@ public final class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new GlobalBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>(new ArrayList<>(SystemIconManager.getIcons())))
+            .property(new GlobalObjectProperty<>(new ArrayList<>()))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .vaultSpecific(true)
@@ -222,6 +221,11 @@ public final class AppPrefs {
             .valueClass(Boolean.class)
             .licenseFeatureId("logging")
             .documentationLink(DocumentationLink.TERMINAL_LOGGING)
+            .build());
+    final BooleanProperty enableTerminalStartupBell = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("enableTerminalStartupBell")
+            .valueClass(Boolean.class)
             .build());
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new GlobalBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
@@ -335,7 +339,7 @@ public final class AppPrefs {
         INSTANCE.fixLocalValues();
     }
 
-    public static void initWithShell() throws Exception {
+    public static void initSynced() throws Exception {
         INSTANCE.loadSharedRemote();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
@@ -357,6 +361,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue disableHardwareAcceleration() {
         return disableHardwareAcceleration;
+    }
+
+    public ObservableBooleanValue enableTerminalStartupBell() {
+        return enableTerminalStartupBell;
     }
 
     public ObservableBooleanValue preferTerminalTabs() {
@@ -648,12 +656,10 @@ public final class AppPrefs {
     }
 
     private void fixLocalValues() {
-        if (AppProperties.get().isInitialLaunch()) {
-            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
-                performanceMode.setValue(true);
-            } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
-                performanceMode.setValue(true);
-            }
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            performanceMode.setValue(true);
+        } else if (System.getProperty("os.name").toLowerCase().contains("server")) {
+            performanceMode.setValue(true);
         }
 
         if (!AppProperties.get().isDevelopmentEnvironment()) {
@@ -663,9 +669,9 @@ public final class AppPrefs {
 
         if (OsType.getLocal() == OsType.MACOS
                 && AppProperties.get()
-                .getCanonicalVersion()
-                .map(appVersion -> appVersion.getMajor() == 18)
-                .orElse(false)) {
+                        .getCanonicalVersion()
+                        .map(appVersion -> appVersion.getMajor() == 18)
+                        .orElse(false)) {
             useSystemFont.set(false);
         }
 

@@ -7,6 +7,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppearanceCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.scene.layout.Region;
@@ -35,6 +36,13 @@ public class AppConfigurationDialog {
         scroll.prefWidth(650);
 
         var modal = ModalOverlay.of("initialSetup", scroll);
+        modal.addButton(new ModalButton(
+                "docs",
+                () -> {
+                    DocumentationLink.INTRO.open();
+                },
+                false,
+                false));
         modal.addButton(ModalButton.ok());
         AppDialog.show(modal);
     }

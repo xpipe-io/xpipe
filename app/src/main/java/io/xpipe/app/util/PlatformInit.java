@@ -8,6 +8,7 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Application;
 
+import javafx.application.Platform;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -20,6 +21,10 @@ public class PlatformInit {
 
     @Getter
     private static Throwable error;
+
+    public static boolean isLoadingThread() {
+        return Thread.currentThread() == loadingThread || (loadingThread != null && Platform.isFxApplicationThread());
+    }
 
     @SneakyThrows
     public static synchronized void init(boolean wait) {

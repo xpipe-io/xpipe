@@ -12,6 +12,11 @@ public class GuiErrorHandlerBase {
         try {
             AppProperties.init();
             AppExtensionManager.init();
+
+            if (PlatformInit.isLoadingThread()) {
+                return false;
+            }
+
             PlatformInit.init(true);
             AppMainWindow.init(true);
         } catch (Throwable ex) {

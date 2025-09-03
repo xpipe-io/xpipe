@@ -220,7 +220,7 @@ public class AppProperties {
 
         for (var e : System.getProperties().entrySet()) {
             if (e.getKey().toString().contains(AppNames.ofCurrent().getGroupName())) {
-                TrackEvent.info("Detected app property " + e.getKey() + "=" + e.getValue());
+                TrackEvent.debug("Detected app property " + e.getKey() + "=" + e.getValue());
             }
         }
     }

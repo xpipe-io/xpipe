@@ -3,7 +3,6 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 
 import java.io.IOException;
@@ -27,8 +26,8 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
 
     @Override
     public boolean isRecommended() {
-        // Tabs are only supported when single process option is enabled in konsole
-        return AppPrefs.get().terminalMultiplexer().getValue() != null;
+        // We can manually fix the single process option in konsole
+        return true;
     }
 
     @Override
