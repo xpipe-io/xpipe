@@ -22,7 +22,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import org.apache.commons.io.FilenameUtils;
 
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -92,9 +94,25 @@ public class IconsCategory extends AppPrefsCategory {
                             return;
                         }
 
+                        String id = null;
+                        try {
+                            var uri = URI.create(remote.get());
+                            var path = uri.getPath();
+                            if (path != null) {
+                                var name = FilenameUtils.getBaseName(path);
+                                if (!name.isBlank()) {
+                                    id = name;
+                                }
+                            }
+                        } catch (Exception ignored) {}
+
+                        if (id == null) {
+                            id = UUID.randomUUID().toString();
+                        }
+
                         var source = SystemIconSource.GitRepository.builder()
                                 .remote(remote.get())
-                                .id(UUID.randomUUID().toString())
+                                .id(id)
                                 .build();
                         if (sources.stream()
                                 .noneMatch(s -> s instanceof SystemIconSource.GitRepository g

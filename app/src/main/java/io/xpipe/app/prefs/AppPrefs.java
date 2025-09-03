@@ -5,7 +5,6 @@ import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
@@ -121,7 +120,7 @@ public final class AppPrefs {
     final BooleanProperty clearTerminalOnInit =
             mapLocal(new GlobalBooleanProperty(true), "clearTerminalOnInit", Boolean.class, false);
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>(new ArrayList<>(SystemIconManager.getIcons())))
+            .property(new GlobalObjectProperty<>(new ArrayList<>()))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .vaultSpecific(true)
@@ -340,7 +339,7 @@ public final class AppPrefs {
         INSTANCE.fixLocalValues();
     }
 
-    public static void initWithShell() throws Exception {
+    public static void initSynced() throws Exception {
         INSTANCE.loadSharedRemote();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {

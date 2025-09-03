@@ -87,6 +87,7 @@ public class BaseMode extends OperationMode {
         var shellLoaded = new CountDownLatch(1);
         var storageLoaded = new CountDownLatch(1);
         var localPrefsLoaded = new CountDownLatch(1);
+        var syncPrefsLoaded = new CountDownLatch(1);
         ThreadHelper.load(
                 true,
                 () -> {
@@ -110,7 +111,8 @@ public class BaseMode extends OperationMode {
                     }
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();
                     AppMainWindow.loadingText("loadingSettings");
-                    AppPrefs.initWithShell();
+                    AppPrefs.initSynced();
+                    syncPrefsLoaded.countDown();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
                     storageLoaded.countDown();
@@ -141,6 +143,7 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
+                    syncPrefsLoaded.await();
                     SystemIconManager.init();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
