@@ -283,6 +283,12 @@ public class AppMainWindow {
             // Close other windows
             Stage.getWindows().stream().filter(w -> !w.equals(stage)).toList().forEach(w -> w.fireEvent(e));
 
+            // Iconifying stages on Windows will break if the window is closed
+            // Work around this issue it by re-showing it immediately before hiding it again
+            if (OsType.getLocal() == OsType.WINDOWS) {
+                stage.setIconified(false);
+            }
+
             // Close self
             stage.close();
             OperationMode.onWindowClose();
