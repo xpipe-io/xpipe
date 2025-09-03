@@ -4,15 +4,21 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 
+import io.xpipe.app.core.AppFontSizes;
 import javafx.geometry.Pos;
 
 import atlantafx.base.layout.InputGroup;
+import javafx.scene.layout.Region;
+import lombok.Setter;
 
 import java.util.List;
 
 public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
 
     private final List<Comp<?>> entries;
+
+    @Setter
+    private Comp<?> heightReference;
 
     public InputGroupComp(List<Comp<?>> comps) {
         entries = List.copyOf(comps);
@@ -30,6 +36,28 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
             b.getChildren().add(entry.createRegion());
         }
         b.setAlignment(Pos.CENTER);
+
+        if (heightReference != null && entries.contains(heightReference)) {
+            var refIndex = entries.indexOf(heightReference);
+            var ref = b.getChildren().get(refIndex);
+            if (ref instanceof Region refR) {
+                for (int i = 0; i < entries.size(); i++) {
+                    if (i == refIndex) {
+                        continue;
+                    }
+
+                    var entry = b.getChildren().get(i);
+                    if (!(entry instanceof Region entryR)) {
+                        continue;
+                    }
+
+                    entryR.minHeightProperty().bind(refR.heightProperty());
+                    entryR.maxHeightProperty().bind(refR.heightProperty());
+                    entryR.prefHeightProperty().bind(refR.heightProperty());
+                }
+            }
+        }
+
         return new SimpleCompStructure<>(b);
     }
 }

@@ -123,11 +123,6 @@ public class DesktopShortcuts {
         return base;
     }
 
-    public static Path createCliOpen(String action, String name) throws Exception {
-        var exec = AppInstallation.ofCurrent().getCliExecutablePath().toString();
-        return create(exec, "open " + action, name);
-    }
-
     public static Path create(String executable, String args, String name) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
         if (OsType.getLocal() == OsType.WINDOWS) {
