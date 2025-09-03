@@ -142,7 +142,7 @@ def getJvmArgs() {
     }
 
     // Use project liliput
-    jvmRunArgs += ['-XX:+UnlockExperimentalVMOptions', '-XX:+UseCompactObjectHeaders']
+    jvmRunArgs += ['-XX:+UseCompactObjectHeaders']
 
     // Reduce heap usage with deduplication
     jvmRunArgs += ['-XX:+UseStringDeduplication']
@@ -195,7 +195,7 @@ project.ext {
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    devJavafxVersion = '25-ea+10'
+    devJavafxVersion = '26-ea+3'
     platformName = getPlatformName()
     jvmRunArgs = getJvmArgs()
     useBundledJavaFx = fullVersion
@@ -216,7 +216,6 @@ project.ext {
     // customJavaFxPath = null
 
     bundleCds = ci && fullVersion
-
     windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
     groupName = 'io.xpipe'
 }

@@ -1,16 +1,22 @@
 dependencies {
-    compileOnly 'org.projectlombok:lombok:1.18.38'
-    annotationProcessor 'org.projectlombok:lombok:1.18.38'
-    testCompileOnly 'org.projectlombok:lombok:1.18.38'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+    compileOnly 'org.projectlombok:lombok:edge-SNAPSHOT'
+    annotationProcessor 'org.projectlombok:lombok:edge-SNAPSHOT'
+    testCompileOnly 'org.projectlombok:lombok:edge-SNAPSHOT'
+    testAnnotationProcessor 'org.projectlombok:lombok:edge-SNAPSHOT'
+}
+
+repositories {
+    maven {
+        url = "https://projectlombok.org/edge-releases"
+    }
 }
 
 testing {
     suites {
         configureEach {
             dependencies {
-                compileOnly 'org.projectlombok:lombok:1.18.38'
-                annotationProcessor 'org.projectlombok:lombok:1.18.38'
+                compileOnly 'org.projectlombok:lombok:edge-SNAPSHOT'
+                annotationProcessor 'org.projectlombok:lombok:edge-SNAPSHOT'
             }
         }
     }

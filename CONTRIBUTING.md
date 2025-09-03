@@ -26,7 +26,7 @@ You should therefore always check out the matching version tag for your local re
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
 So for example if you currently have XPipe `16.0` installed, you should run `git reset --hard 16.0` first to properly compile against it.
 
-You need to have JDK for Java 24 installed to compile the project.
+You need to have JDK for Java 25 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash

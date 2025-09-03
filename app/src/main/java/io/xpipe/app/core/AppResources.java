@@ -60,7 +60,7 @@ public class AppResources {
                 fileSystems.put(module, fs);
             }
             return fs;
-        } catch (IOException ex) {
+        } catch (Throwable ex) {
             fileSystems.put(module, null);
             throw ex;
         }

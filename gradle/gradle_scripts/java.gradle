@@ -1,6 +1,6 @@
 tasks.withType(JavaCompile).configureEach {
-    sourceCompatibility = JavaVersion.VERSION_24
-    targetCompatibility = JavaVersion.VERSION_24
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
     modularity.inferModulePath = true
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked"
@@ -18,8 +18,8 @@ tasks.withType(JavaExec).configureEach {
 javadoc{
     source = sourceSets.main.allJava
     options {
-        addStringOption('-release', '24')
-        addStringOption('link', 'https://docs.oracle.com/en/java/javase/24/docs/api/')
+        addStringOption('-release', '25')
+        addStringOption('link', 'https://docs.oracle.com/en/java/javase/25/docs/api/')
         addBooleanOption('html5', true)
         addStringOption('Xdoclint:none', '-quiet')
         // addBooleanOption('-enable-preview', true)
