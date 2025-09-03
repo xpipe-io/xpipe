@@ -86,7 +86,7 @@ public class DesktopShortcuts {
         var content = String.format(
                 """
                                     #!/usr/bin/env sh
-                                    "%s" open %s
+                                    "%s" %s
                                     """,
                 executable, args);
 
