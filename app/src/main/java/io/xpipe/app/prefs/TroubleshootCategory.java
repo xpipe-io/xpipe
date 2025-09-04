@@ -9,6 +9,8 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;

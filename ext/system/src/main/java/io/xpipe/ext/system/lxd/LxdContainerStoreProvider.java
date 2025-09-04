@@ -5,6 +5,8 @@ import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.IdentityChoiceBuilder;
@@ -37,7 +39,7 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
         return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
-                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())});
+                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())}, null);
     }
 
     @Override

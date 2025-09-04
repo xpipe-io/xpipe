@@ -2,7 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.scene.Node;
@@ -13,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 import atlantafx.base.controls.Breadcrumbs;
+import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,10 @@ public class BrowserBreadcrumbBar extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory = crumb -> {
-            var name = crumb.getValue().equals("/")
+        Callback<Breadcrumbs.BreadCrumbItem<FilePath>, ButtonBase> crumbFactory = crumb -> {
+            var name = crumb.getValue().toString().equals("/")
                     ? "/"
-                    : FilePath.of(crumb.getValue()).getFileName();
+                    : crumb.getValue().getFileName();
             var btn = new Button(name, null);
             btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);
@@ -40,10 +41,10 @@ public class BrowserBreadcrumbBar extends SimpleComp {
     }
 
     private Region createBreadcrumbs(
-            Callback<Breadcrumbs.BreadCrumbItem<String>, ButtonBase> crumbFactory,
-            Callback<Breadcrumbs.BreadCrumbItem<String>, ? extends Node> dividerFactory) {
+            Callback<Breadcrumbs.BreadCrumbItem<FilePath>, ButtonBase> crumbFactory,
+            Callback<Breadcrumbs.BreadCrumbItem<FilePath>, ? extends Node> dividerFactory) {
 
-        var breadcrumbs = new Breadcrumbs<String>();
+        var breadcrumbs = new Breadcrumbs<FilePath>();
         breadcrumbs.setMinWidth(0);
         model.getCurrentPath().subscribe(val -> {
             PlatformThread.runLaterIfNeeded(() -> {
@@ -52,30 +53,21 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                     return;
                 }
 
-                var sc = model.getFileSystem().getShell();
-                if (sc.isEmpty()) {
-                    breadcrumbs.setDividerFactory(item -> item != null && !item.isLast() ? new Label("/") : null);
-                } else {
-                    breadcrumbs.setDividerFactory(item -> {
-                        if (item == null) {
-                            return null;
-                        }
+                breadcrumbs.setDividerFactory(item -> {
+                    if (item == null) {
+                        return null;
+                    }
 
-                        if (item.isFirst() && item.getValue().equals("/")) {
-                            return new Label("");
-                        }
+                    if (item.isFirst() && item.getValue().toString().equals("/")) {
+                        return new Label("");
+                    }
 
-                        return new Label(OsFileSystem.of(sc.get().getOsType()).getFileSystemSeparator());
-                    });
-                }
+                    return new Label(model.getFileSystem().getFileSeparator());
+                });
 
                 var elements = createBreadcumbHierarchy(val);
-                var modifiedElements = new ArrayList<>(elements);
-                if (val.toString().startsWith("/")) {
-                    modifiedElements.addFirst("/");
-                }
-                Breadcrumbs.BreadCrumbItem<String> items =
-                        Breadcrumbs.buildTreeModel(modifiedElements.toArray(String[]::new));
+                Breadcrumbs.BreadCrumbItem<FilePath> items =
+                        Breadcrumbs.buildTreeModel(elements.toArray(FilePath[]::new));
                 breadcrumbs.setSelectedCrumb(items);
             });
         });
@@ -94,19 +86,24 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         return breadcrumbs;
     }
 
-    private List<String> createBreadcumbHierarchy(FilePath filePath) {
-        var f = filePath.toString() + "/";
-        var list = new ArrayList<String>();
+    private List<FilePath> createBreadcumbHierarchy(FilePath filePath) {
+        var f = filePath.toDirectory().toString();
+        var list = new ArrayList<FilePath>();
         int lastElementStart = 0;
         for (int i = 0; i < f.length(); i++) {
             if (f.charAt(i) == '\\' || f.charAt(i) == '/') {
                 if (i - lastElementStart > 0) {
-                    list.add(f.substring(0, i));
+                    list.add(FilePath.of(f.substring(0, i)));
                 }
 
                 lastElementStart = i + 1;
             }
         }
+
+        if (filePath.toString().startsWith("/")) {
+            list.addFirst(FilePath.of("/"));
+        }
+
         return list;
     }
 }

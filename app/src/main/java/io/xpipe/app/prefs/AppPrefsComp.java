@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;

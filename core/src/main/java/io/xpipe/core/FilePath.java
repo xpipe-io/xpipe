@@ -2,6 +2,7 @@ package io.xpipe.core;
 
 import lombok.NonNull;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -220,7 +221,19 @@ public final class FilePath {
         return FilePath.of(String.join("\\", split()) + suffix);
     }
 
+    public boolean isRoot() {
+        return getRoot().equals(this);
+    }
+
     public Path asLocalPath() {
         return Path.of(value);
+    }
+
+    public Optional<Path> asLocalPathIfPossible() {
+        try {
+            return Optional.of(Path.of(value));
+        } catch (InvalidPathException ignored) {
+            return Optional.empty();
+        }
     }
 }

@@ -3,7 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 

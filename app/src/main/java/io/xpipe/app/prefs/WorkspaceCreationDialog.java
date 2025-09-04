@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 

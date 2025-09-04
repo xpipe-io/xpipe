@@ -5,6 +5,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
@@ -90,6 +92,6 @@ public interface SshIdentityStrategy {
     List<KeyValue> configOptions();
 
     default SecretRetrievalStrategy getAskpassStrategy() {
-        return new SecretRetrievalStrategy.None();
+        return new SecretNoneStrategy();
     }
 }

@@ -14,7 +14,7 @@ import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;
@@ -108,14 +108,15 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var source = currentPath.asLocalPath();
-                if (!Files.exists(source)) {
-                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + source)
+                var rawSource = currentPath.asLocalPathIfPossible();
+                if (rawSource.isEmpty() || !Files.exists(rawSource.get())) {
+                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + currentPath)
                             .expected()
                             .handle();
                     return;
                 }
 
+                var source = rawSource.get();
                 var target = sync.getTargetLocation().apply(source);
                 var shouldCopy = AppDialog.confirm("confirmGitShare");
                 if (!shouldCopy) {

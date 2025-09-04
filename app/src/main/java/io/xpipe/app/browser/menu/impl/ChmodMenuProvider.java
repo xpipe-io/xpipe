@@ -10,7 +10,7 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.OsType;
 
@@ -53,7 +53,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+        return model.getFileSystem().supportsChmod();
     }
 
     @Override

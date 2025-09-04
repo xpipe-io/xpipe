@@ -6,8 +6,8 @@ import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppStyle;
 import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

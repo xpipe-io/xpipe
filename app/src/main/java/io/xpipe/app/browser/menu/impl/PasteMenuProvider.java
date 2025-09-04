@@ -7,7 +7,7 @@ import io.xpipe.app.browser.file.BrowserFileTransferMode;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FileKind;
 
 import javafx.beans.value.ObservableValue;

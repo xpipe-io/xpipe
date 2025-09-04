@@ -4,8 +4,8 @@ import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanWrapper;

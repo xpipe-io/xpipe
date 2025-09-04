@@ -5,7 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

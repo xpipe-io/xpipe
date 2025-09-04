@@ -8,7 +8,7 @@ import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.property.*;

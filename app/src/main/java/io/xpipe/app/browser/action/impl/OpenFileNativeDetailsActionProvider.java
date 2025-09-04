@@ -24,6 +24,10 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         var sc = model.getFileSystem().getShell().orElseThrow();
         return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }

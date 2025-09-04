@@ -9,8 +9,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
-import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;

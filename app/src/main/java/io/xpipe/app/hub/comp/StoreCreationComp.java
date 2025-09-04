@@ -3,8 +3,11 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.ChainedValidator;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.SimpleValidator;
+import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;

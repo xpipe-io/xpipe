@@ -104,13 +104,6 @@ public class ShellView {
         return user;
     }
 
-    public String getPath() throws Exception {
-        var path = shellControl
-                .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand("PATH"))
-                .readStdoutOrThrow();
-        return path;
-    }
-
     public boolean isRoot() throws Exception {
         if (shellControl.getOsType() == OsType.WINDOWS) {
             return false;
@@ -169,10 +162,20 @@ public class ShellView {
                 .executeAndCheck();
     }
 
-    public String getEnvironmentVariable(String name) throws Exception {
-        return shellControl
+    public Optional<String> getEnvironmentVariable(String name) throws Exception {
+        var r = shellControl
                 .command(shellControl.getShellDialect().getPrintEnvironmentVariableCommand(name))
                 .readStdoutOrThrow();
+        if (r.isBlank() || r.equals(getDialect().environmentVariable(name))) {
+            return Optional.empty();
+        }
+
+        return Optional.of(r);
+    }
+
+    public String getEnvironmentVariableOrThrow(String name) throws Exception {
+        var r = getEnvironmentVariable(name);
+        return r.orElseThrow(() -> new IllegalArgumentException("Required environment variable " + name + " not defined"));
     }
 
     public void setEnvironmentVariable(String name, String value) throws Exception {

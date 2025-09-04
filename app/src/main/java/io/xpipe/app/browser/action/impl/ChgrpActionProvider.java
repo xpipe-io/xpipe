@@ -17,8 +17,7 @@ public class ChgrpActionProvider implements BrowserActionProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var os = model.getFileSystem().getShell().orElseThrow().getOsType();
-        return os != OsType.WINDOWS && os != OsType.MACOS;
+        return model.getFileSystem().supportsChgrp();
     }
 
     @Override
@@ -37,19 +36,9 @@ public class ChgrpActionProvider implements BrowserActionProvider {
 
         @Override
         public void executeImpl() throws Exception {
-            model.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("chgrp")
-                            .addIf(recursive, "-R")
-                            .addLiteral(group)
-                            .addFiles(getEntries().stream()
-                                    .map(browserEntry -> browserEntry
-                                            .getRawFileEntry()
-                                            .getPath()
-                                            .toString())
-                                    .toList()));
+            for (BrowserEntry entry : getEntries()) {
+                model.getFileSystem().chgrp(entry.getRawFileEntry().getPath(), group, recursive);
+            }
             model.refreshBrowserEntriesSync(getEntries());
         }
 

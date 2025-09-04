@@ -10,10 +10,10 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.app.util.ContextMenuHelper;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;

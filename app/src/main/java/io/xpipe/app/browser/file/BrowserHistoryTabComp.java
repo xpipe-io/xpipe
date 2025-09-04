@@ -7,9 +7,9 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;

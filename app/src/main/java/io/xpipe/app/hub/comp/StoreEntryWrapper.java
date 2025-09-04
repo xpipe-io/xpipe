@@ -16,8 +16,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.ext.FixedHierarchyStore;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

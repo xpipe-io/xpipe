@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 

@@ -4,7 +4,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import java.util.List;
 

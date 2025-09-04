@@ -9,9 +9,9 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;

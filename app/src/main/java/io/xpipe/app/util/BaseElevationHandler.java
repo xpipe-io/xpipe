@@ -4,6 +4,9 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.ElevationHandler;
 import io.xpipe.app.process.SecretReference;
+import io.xpipe.app.secret.SecretManager;
+import io.xpipe.app.secret.SecretQuery;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 
 import java.util.List;

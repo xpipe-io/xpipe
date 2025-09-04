@@ -47,8 +47,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var wsh = CommandSupport.findProgram(sc, "wsh");
-            var env = sc.command(sc.getShellDialect().getPrintEnvironmentVariableCommand("WAVETERM_JWT"))
-                    .readStdoutOrThrow();
+            var env = sc.view().getEnvironmentVariable("WAVETERM_JWT");
             if (wsh.isEmpty() || env.isEmpty()) {
                 var inPath = CommandSupport.findProgram(sc, "xpipe").isPresent();
                 var msg =

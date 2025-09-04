@@ -2,18 +2,21 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,6 +29,113 @@ public class ConnectionFileSystem implements FileSystem {
 
     public ConnectionFileSystem(ShellControl shellControl) {
         this.shellControl = shellControl;
+    }
+
+    @Override
+    public boolean supportsLinkCreation() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean isCaseSensitive() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsOwnerColumn() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public boolean supportsModeColumn() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsDirectorySizes() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsChmod() {
+        return shellControl.getOsType() != OsType.WINDOWS;
+    }
+
+    @Override
+    public boolean supportsChown() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public boolean supportsChgrp() {
+        return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                        .add("chmod")
+                        .addIf(recursive, "-R")
+                        .addLiteral(mode)
+                        .addFile(path))
+                .execute();
+    }
+
+    @Override
+    public void chown(FilePath path, String uid, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                .add("chown")
+                .addIf(recursive, "-R")
+                .addLiteral(uid)
+                .addFile(path))
+                .execute();
+    }
+
+    @Override
+    public void chgrp(FilePath path, String gid, boolean recursive) throws Exception {
+        shellControl.command(CommandBuilder.of()
+                .add("chgrp")
+                .addIf(recursive, "-R")
+                .addLiteral(gid)
+                .addFile(path)).execute();
+    }
+
+    @Override
+    public void kill() {
+        shellControl.killExternal();
+    }
+
+    @Override
+    public void cd(FilePath dir) throws Exception {
+        shellControl.view().cd(dir);
+    }
+
+    @Override
+    public boolean requiresReinit() {
+        return !shellControl.isRunning(true) || shellControl.isAnyStreamClosed();
+    }
+
+    @Override
+    public void reinitIfNeeded() throws Exception {
+        shellControl.start();
+        if (shellControl.isAnyStreamClosed()) {
+            shellControl.restart();
+        }
+    }
+
+    @Override
+    public String getFileSeparator() {
+        return OsFileSystem.of(shellControl.getOsType()).getFileSystemSeparator();
+    }
+
+    @Override
+    public FilePath makeFileSystemCompatible(FilePath filePath) {
+        return OsFileSystem.of(shellControl.getOsType()).makeFileSystemCompatible(filePath);
+    }
+
+    @Override
+    public Optional<FilePath> pwd() throws Exception {
+        return Optional.ofNullable(shellControl.view().pwd());
     }
 
     @Override
@@ -230,6 +340,39 @@ public class ConnectionFileSystem implements FileSystem {
                 .listRoots(shellControl)
                 .map(s -> FilePath.of(s))
                 .toList();
+    }
+
+    @Override
+    public List<FilePath> listCommonDirectories() throws Exception {
+        var home = shellControl.view().userHome();
+        if (shellControl.getOsType() == OsType.WINDOWS) {
+            return List.of(home, home.join("Documents"), home.join("Downloads"), home.join("Desktop"));
+        } else if (shellControl.getOsType() == OsType.MACOS) {
+            var list = List.of(
+                    home,
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    home.join("Desktop"),
+                    FilePath.of("/Applications"),
+                    FilePath.of("/Library"),
+                    FilePath.of("/System"),
+                    FilePath.of("/etc"),
+                    FilePath.of("/tmp"));
+            return list;
+        } else {
+            var list = new ArrayList<>(List.of(
+                    home,
+                    home.join("Downloads"),
+                    home.join("Documents"),
+                    FilePath.of("/etc"),
+                    shellControl.getSystemTemporaryDirectory(),
+                    FilePath.of("/var")));
+            var parentHome = home.getParent();
+            if (parentHome != null && !parentHome.toString().equals("/")) {
+                list.add(3, parentHome);
+            }
+            return list;
+        }
     }
 
     @Override

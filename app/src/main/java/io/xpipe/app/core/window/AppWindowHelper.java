@@ -2,8 +2,8 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.InputHelper;
-import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

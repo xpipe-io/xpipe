@@ -10,7 +10,7 @@ import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreToggleComp;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.util.DocumentationLink;
 
 import javafx.beans.value.ObservableValue;

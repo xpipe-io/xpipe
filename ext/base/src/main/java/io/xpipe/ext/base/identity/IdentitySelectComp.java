@@ -10,13 +10,14 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.SecretRetrievalStrategy;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
@@ -88,7 +89,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         if (synced.isPresent()) {
             var pass = EncryptedValue.VaultKey.of(password.getValue());
             if (pass == null) {
-                pass = EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None());
+                pass = EncryptedValue.VaultKey.of(new SecretNoneStrategy());
             }
             var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
             if (ssh == null) {
@@ -105,7 +106,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
         var pass = EncryptedValue.CurrentKey.of(password.getValue());
         if (pass == null) {
-            pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
+            pass = EncryptedValue.CurrentKey.of(new SecretNoneStrategy());
         }
         var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
         if (ssh == null) {

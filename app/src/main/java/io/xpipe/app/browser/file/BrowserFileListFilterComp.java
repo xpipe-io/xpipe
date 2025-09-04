@@ -5,8 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.InputHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;

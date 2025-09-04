@@ -8,7 +8,7 @@ import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 
@@ -44,6 +44,10 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 

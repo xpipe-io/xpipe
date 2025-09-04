@@ -9,8 +9,8 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;

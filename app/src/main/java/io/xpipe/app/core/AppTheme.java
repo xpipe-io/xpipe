@@ -5,8 +5,8 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ColorHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.ColorHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.animation.Interpolator;

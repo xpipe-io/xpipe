@@ -1,5 +1,7 @@
 package io.xpipe.app.core;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.JacksonMapper;
 
@@ -45,8 +47,12 @@ public class AppCache {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T getNonNull(String key, Class<?> type, Supplier<T> notPresent) {
+        return getNonNull(key, TypeFactory.defaultInstance().constructType(type), notPresent);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getNonNull(String key, JavaType type, Supplier<T> notPresent) {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
@@ -58,7 +64,7 @@ public class AppCache {
                 }
 
                 var r = (T) JacksonMapper.getDefault().treeToValue(tree, type);
-                if (r == null || !type.isAssignableFrom(r.getClass())) {
+                if (r == null) {
                     FileUtils.deleteQuietly(path.toFile());
                     return notPresent.get();
                 } else {
@@ -74,6 +80,7 @@ public class AppCache {
         }
         return notPresent.get();
     }
+
 
     public static boolean getBoolean(String key, boolean notPresent) {
         var path = getPath(key);

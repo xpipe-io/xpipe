@@ -7,7 +7,7 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.core.FailableRunnable;
 
 import javafx.beans.property.BooleanProperty;

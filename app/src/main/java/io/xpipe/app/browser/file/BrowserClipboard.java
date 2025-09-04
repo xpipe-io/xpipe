@@ -3,8 +3,8 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.GlobalClipboard;
-import io.xpipe.app.util.GlobalObjectProperty;
+import io.xpipe.app.platform.GlobalClipboard;
+import io.xpipe.app.platform.GlobalObjectProperty;
 
 import javafx.beans.property.Property;
 import javafx.scene.input.ClipboardContent;

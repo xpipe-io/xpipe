@@ -4,6 +4,8 @@ import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.update.AppDistributionType;

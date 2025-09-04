@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -62,7 +62,7 @@ public class BrowserTransferComp extends SimpleComp {
                         return Bindings.createStringBinding(
                                 () -> {
                                     var p = sourceItem.get().getProgress().getValue();
-                                    if (p == null) {
+                                    if (p == null || p.getTotal() == 0) {
                                         return entry.getFileName();
                                     }
 

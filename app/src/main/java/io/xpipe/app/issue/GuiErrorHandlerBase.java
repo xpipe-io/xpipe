@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.platform.PlatformInit;
 
 import java.util.function.Consumer;
 

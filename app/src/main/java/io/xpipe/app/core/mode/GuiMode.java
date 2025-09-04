@@ -3,7 +3,7 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

@@ -3,6 +3,9 @@ package io.xpipe.app.util;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.secret.SecretManager;
+import io.xpipe.app.secret.SecretQueryResult;
+import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.animation.AnimationTimer;

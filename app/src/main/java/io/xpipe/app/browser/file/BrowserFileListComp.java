@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FileKind;
@@ -182,18 +183,12 @@ public final class BrowserFileListComp extends SimpleComp {
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol,
             TableColumn<BrowserEntry, String> sizeCol) {
-        var os = fileList.getFileSystemModel()
-                .getFileSystem()
-                .getShell()
-                .map(shellControl -> shellControl.getOsType())
-                .orElse(null);
         table.widthProperty().subscribe((newValue) -> {
-            if (os != OsType.WINDOWS && os != OsType.MACOS) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
 
-            var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-            if (!OsType.WINDOWS.equals(shell.getOsType()) && !OsType.MACOS.equals(shell.getOsType())) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                 modeCol.setVisible(newValue.doubleValue() > 600);
             }
 
@@ -228,18 +223,27 @@ public final class BrowserFileListComp extends SimpleComp {
         var m = fileList.getFileSystemModel();
         var user = unix.getUser() != null
                 ? unix.getUser()
-                : m.getCache().getUsers().getOrDefault(unix.getUid(), "?");
+                : m.getCache() != null ? m.getCache().getUsers().getOrDefault(unix.getUid(), "?") : null;
         var group = unix.getGroup() != null
                 ? unix.getGroup()
-                : m.getCache().getGroups().getOrDefault(unix.getGid(), "?");
-        var uid = String.valueOf(
-                unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
-        var gid = String.valueOf(
-                unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
-        if (uid.equals(gid) && user.equals(group)) {
-            return user + " [" + uid + "]";
+                : m.getCache() != null ? m.getCache().getGroups().getOrDefault(unix.getGid(), "?") : null;
+        var uid =
+                unix.getUid() != null ? String.valueOf(unix.getUid()) : m.getCache() != null ? m.getCache().getUidForUser(user) : null;
+        var gid =
+                unix.getGid() != null ? String.valueOf(unix.getGid()) : m.getCache() != null ? m.getCache().getGidForGroup(group) : null;
+
+        var userFormat = user + (uid != null ? " [" + uid + "]" : "");
+        var groupFormat = group + (gid != null ? " [" + gid + "]" : "");
+
+        if (uid != null && uid.equals(gid) && user != null && user.equals(group)) {
+            return userFormat;
         }
-        return user + " [" + uid + "] / " + group + " [" + gid + "]";
+
+        if (uid == null && gid == null && user != null && user.equals(group)) {
+            return userFormat;
+        }
+
+        return userFormat + "  / " + groupFormat;
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
@@ -578,13 +582,15 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                var shell =
-                        fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-                if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
+                if (!fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                     modeCol.setVisible(false);
-                    ownerCol.setVisible(false);
                 } else {
                     modeCol.setVisible(table.getWidth() > 600);
+                }
+
+                if (!fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
+                    ownerCol.setVisible(false);
+                } else {
                     if (table.getWidth() > 1000) {
                         ownerCol.setVisible(hasOwner);
                     } else if (!hasOwner) {

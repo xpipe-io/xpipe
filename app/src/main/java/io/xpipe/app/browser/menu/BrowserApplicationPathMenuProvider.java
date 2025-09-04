@@ -11,6 +11,10 @@ public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvi
 
     @Override
     default void init(BrowserFileSystemTabModel model) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return;
+        }
+
         // Cache result for later calls
         model.getCache().isApplicationInPath(getExecutable());
     }

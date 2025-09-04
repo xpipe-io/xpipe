@@ -7,7 +7,7 @@ import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.platform.InputHelper;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;

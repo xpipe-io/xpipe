@@ -3,8 +3,10 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -14,6 +16,42 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
+
+    boolean supportsLinkCreation();
+
+    boolean isCaseSensitive();
+
+    boolean supportsOwnerColumn();
+
+    boolean supportsModeColumn();
+
+    boolean supportsDirectorySizes();
+
+    boolean supportsChmod();
+
+    boolean supportsChown();
+
+    boolean supportsChgrp();
+
+    void chmod(FilePath path, String mode, boolean recursive) throws Exception;
+
+    void chown(FilePath path, String uid, boolean recursive) throws Exception;
+
+    void chgrp(FilePath path, String gid, boolean recursive) throws Exception;
+
+    void kill();
+
+    void cd(FilePath dir) throws Exception;
+
+    boolean requiresReinit();
+
+    void reinitIfNeeded() throws Exception;
+
+    String getFileSeparator();
+
+    FilePath makeFileSystemCompatible(FilePath filePath);
+
+    Optional<FilePath> pwd() throws Exception;
 
     FileSystem createTransferOptimizedFileSystem() throws Exception;
 
@@ -78,4 +116,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
     }
 
     List<FilePath> listRoots() throws Exception;
+
+    List<FilePath> listCommonDirectories() throws Exception;
 }

@@ -6,6 +6,7 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
@@ -113,8 +114,6 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.RDP)
             .build());
     final DoubleProperty windowOpacity = mapLocal(new GlobalDoubleProperty(1.0), "windowOpacity", Double.class, false);
-    final StringProperty customRdpClientCommand =
-            mapLocal(new GlobalStringProperty(null), "customRdpClientCommand", String.class, false);
     final StringProperty customTerminalCommand =
             mapLocal(new GlobalStringProperty(null), "customTerminalCommand", String.class, false);
     final BooleanProperty clearTerminalOnInit =
@@ -595,10 +594,6 @@ public final class AppPrefs {
         return customTerminalCommand;
     }
 
-    public ObservableValue<String> customRdpClientCommand() {
-        return customRdpClientCommand;
-    }
-
     public ObservableValue<FilePath> downloadsDirectory() {
         return downloadsDirectory;
     }
@@ -741,7 +736,7 @@ public final class AppPrefs {
             // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh
             var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
-            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
+            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable.get();
             defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
         }
     }

@@ -164,7 +164,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             }
             this.fileSystem = fs;
 
-            this.cache = new BrowserFileSystemCache(this);
+            if (fs.getShell().isPresent()) {
+                this.cache = new BrowserFileSystemCache(this);
+            }
+
             for (var a : ActionProvider.ALL) {
                 if (a instanceof BrowserMenuItemProvider ba) {
                     ba.init(this);
@@ -198,13 +201,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private void startIfNeeded() throws Exception {
-        var s = fileSystem.getShell();
-        if (s.isPresent()) {
-            s.get().start();
-            if (s.get().isAnyStreamClosed()) {
-                s.get().restart();
-            }
-        }
+        fileSystem.reinitIfNeeded();
     }
 
     public void killTransfer() {

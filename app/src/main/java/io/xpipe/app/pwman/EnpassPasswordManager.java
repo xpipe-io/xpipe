@@ -4,8 +4,11 @@ import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretManager;
+import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
@@ -110,7 +113,7 @@ public class EnpassPasswordManager implements PasswordManager {
         }
 
         var pass = SecretManager.retrieve(
-                new SecretRetrievalStrategy.Prompt(),
+                new SecretPromptStrategy(),
                 "Enter Enpass vault master password",
                 MASTER_PASSWORD_UUID,
                 0,

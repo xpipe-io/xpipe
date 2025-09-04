@@ -4,6 +4,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.*;
+import io.xpipe.app.browser.menu.impl.ChownMenuProvider;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -11,7 +12,7 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ScriptHelper;
 
 import javafx.beans.property.SimpleStringProperty;
@@ -38,6 +39,10 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         return model.getBrowserModel() instanceof BrowserFullSessionModel;
     }
 

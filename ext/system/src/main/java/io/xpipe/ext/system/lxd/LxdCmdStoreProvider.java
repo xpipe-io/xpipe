@@ -8,7 +8,7 @@ import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.util.DocumentationLink;
 
 import javafx.beans.value.ObservableValue;

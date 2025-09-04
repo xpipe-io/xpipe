@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ScanProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 

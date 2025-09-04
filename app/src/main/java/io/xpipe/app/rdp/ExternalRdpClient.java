@@ -1,9 +1,11 @@
 package io.xpipe.app.rdp;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
+import io.xpipe.app.vnc.*;
 import io.xpipe.core.OsType;
 
 import java.nio.file.Files;
@@ -11,39 +13,33 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Supplier;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface ExternalRdpClient extends PrefsChoiceValue {
 
-    ExternalRdpClient MSTSC = new MstscRdpClient();
-    ExternalRdpClient DEVOLUTIONS = new DevolutionsRdpClient();
-    ExternalRdpClient REMMINA = new RemminaRdpClient();
-    ExternalRdpClient X_FREE_RDP = new FreeRdpClient();
-    ExternalRdpClient MICROSOFT_REMOTE_DESKTOP_MACOS_APP = new RemoteDesktopAppRdpClient();
-    ExternalRdpClient WINDOWS_APP_MACOS = new WindowsAppRdpClient();
-    ExternalRdpClient CUSTOM = new CustomRdpClient();
-    List<ExternalRdpClient> WINDOWS_CLIENTS = List.of(MSTSC, DEVOLUTIONS);
-    List<ExternalRdpClient> LINUX_CLIENTS = List.of(REMMINA, X_FREE_RDP);
-    List<ExternalRdpClient> MACOS_CLIENTS = List.of(X_FREE_RDP, MICROSOFT_REMOTE_DESKTOP_MACOS_APP, WINDOWS_APP_MACOS);
-
-    @SuppressWarnings("TrivialFunctionalExpressionUsage")
-    List<ExternalRdpClient> ALL = ((Supplier<List<ExternalRdpClient>>) () -> {
-                var all = new ArrayList<ExternalRdpClient>();
-                if (OsType.getLocal() == OsType.WINDOWS) {
-                    all.addAll(WINDOWS_CLIENTS);
-                }
-                if (OsType.getLocal() == OsType.LINUX) {
-                    all.addAll(LINUX_CLIENTS);
-                }
-                if (OsType.getLocal() == OsType.MACOS) {
-                    all.addAll(MACOS_CLIENTS);
-                }
-                all.add(CUSTOM);
-                return all;
-            })
-            .get();
+    static List<Class<?>> getClasses() {
+        var l = new ArrayList<Class<?>>();
+        switch (OsType.getLocal()) {
+            case OsType.Linux ignored -> {
+                l.add(RemminaRdpClient.class);
+                l.add(FreeRdpClient.class);
+            }
+            case OsType.MacOs ignored -> {
+                l.add(RemoteDesktopAppRdpClient.class);
+                l.add(WindowsAppRdpClient.class);
+                l.add(FreeRdpClient.class);
+            }
+            case OsType.Windows ignored -> {
+                l.add(MstscRdpClient.class);
+                l.add(DevolutionsRdpClient.class);
+            }
+        }
+        l.add(CustomRdpClient.class);
+        return l;
+    }
 
     static ExternalRdpClient getApplicationLauncher() {
         if (OsType.getLocal() == OsType.WINDOWS) {
-            return MSTSC;
+            return MstscRdpClient.builder().smartSizing(false).build();
         } else {
             return AppPrefs.get().rdpClientType().getValue();
         }
@@ -55,21 +51,34 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
             return existing;
         }
 
-        var r = ALL.stream()
-                .filter(t -> !t.equals(CUSTOM))
-                .filter(t -> t.isAvailable())
-                .findFirst()
-                .orElse(null);
+        return switch (OsType.getLocal()) {
+            case OsType.Linux ignored -> {
+                var freeRdp = new FreeRdpClient();
+                var remmina = new RemminaRdpClient();
+                yield remmina.isAvailable() ? remmina : freeRdp.isAvailable() ? freeRdp : remmina;
+            }
+            case OsType.MacOs ignored -> {
+                var remoteDesktopApp = new RemoteDesktopAppRdpClient();
+                if (remoteDesktopApp.isAvailable()) {
+                    yield remoteDesktopApp;
+                }
 
-        // Check if detection failed for some reason
-        if (r == null) {
-            var def = OsType.getLocal() == OsType.WINDOWS
-                    ? MSTSC
-                    : OsType.getLocal() == OsType.MACOS ? WINDOWS_APP_MACOS : REMMINA;
-            r = def;
-        }
+                var windowsApp = new WindowsAppRdpClient();
+                if (windowsApp.isAvailable()) {
+                    yield windowsApp;
+                }
 
-        return r;
+                var freeRdp = new FreeRdpClient();
+                if (freeRdp.isAvailable()) {
+                    yield freeRdp;
+                }
+
+                yield windowsApp;
+            }
+            case OsType.Windows ignored -> {
+                yield MstscRdpClient.builder().smartSizing(false).build();
+            }
+        };
     }
 
     void launch(RdpLaunchConfig configuration) throws Exception;

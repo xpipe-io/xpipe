@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;

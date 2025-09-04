@@ -1,7 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.util.Validator;
+import io.xpipe.app.platform.Validator;
 
 import lombok.AllArgsConstructor;
 import lombok.Value;

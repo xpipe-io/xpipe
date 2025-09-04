@@ -1,6 +1,11 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.ShellStore;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
@@ -58,12 +63,21 @@ public class IdentityChoiceBuilder {
         var ref = new SimpleObjectProperty<>(existing instanceof IdentityValue.Ref r ? r.getRef() : null);
         var inPlaceSelected = ref.isNull();
         var refSelected = ref.isNotNull();
+
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
+
         var options = new OptionsBuilder()
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
                 .nameAndDescription(passwordChoiceTranslationKey)
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .hide(refSelected)
                 .addProperty(ref);

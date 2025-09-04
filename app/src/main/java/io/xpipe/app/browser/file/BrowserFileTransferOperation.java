@@ -82,17 +82,9 @@ public class BrowserFileTransferOperation {
         return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress, cancelled);
     }
 
-    private void restartShellIfNeeded() throws Exception {
-        var source = getFiles().getFirst().getFileSystem().getShell().orElseThrow();
-        var target = getTarget().getFileSystem().getShell().orElseThrow();
-
-        if (source.isAnyStreamClosed()) {
-            source.restart();
-        }
-
-        if (target.isAnyStreamClosed()) {
-            target.restart();
-        }
+    private void reinitFileSystemsIfNeeded() throws Exception {
+        getFiles().getFirst().getFileSystem().reinitIfNeeded();
+        getTarget().getFileSystem().reinitIfNeeded();
     }
 
     private void updateProgress(BrowserTransferProgress progress) {
@@ -169,7 +161,7 @@ public class BrowserFileTransferOperation {
             return;
         }
 
-        restartShellIfNeeded();
+        reinitFileSystemsIfNeeded();
 
         cancelled.set(false);
 
@@ -186,13 +178,12 @@ public class BrowserFileTransferOperation {
                     handleSingleOnSameFileSystem(file);
                 } else {
                     // Transfers might change the working directory
-                    var currentDir =
-                            file.getFileSystem().getShell().orElseThrow().view().pwd();
+                    var currentDir = file.getFileSystem().pwd();
                     handleSingleAcrossFileSystems(file);
 
                     // Expect a kill
-                    if (!file.getFileSystem().getShell().orElseThrow().isAnyStreamClosed()) {
-                        file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+                    if (currentDir.isPresent() && !file.getFileSystem().requiresReinit()) {
+                        file.getFileSystem().cd(currentDir.get());
                     }
                 }
             }
@@ -285,7 +276,7 @@ public class BrowserFileTransferOperation {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
 
-        var flatFiles = new LinkedHashMap<FileEntry, String>();
+        var flatFiles = new LinkedHashMap<FileEntry, FilePath>();
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
@@ -302,7 +293,7 @@ public class BrowserFileTransferOperation {
             }
 
             var directoryName = source.getPath().getFileName();
-            flatFiles.put(source, directoryName);
+            flatFiles.put(source, FilePath.of(directoryName));
 
             var baseRelative = source.getPath().getParent().toDirectory();
             var list = new ArrayList<FileEntry>();
@@ -312,7 +303,7 @@ public class BrowserFileTransferOperation {
                     return false;
                 }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -329,7 +320,7 @@ public class BrowserFileTransferOperation {
                     return;
                 }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -345,7 +336,7 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            flatFiles.put(source, source.getPath().getFileName());
+            flatFiles.put(source, FilePath.of(source.getPath().getFileName()));
             // If we don't have a size, it doesn't matter that much as the total size is only for display
             totalSize.addAndGet(source.getFileSizeLong().orElse(0));
         }
@@ -367,8 +358,7 @@ public class BrowserFileTransferOperation {
                 }
 
                 var sourceFile = e.getKey();
-                var os = targetFs.getShell().orElseThrow().getOsType();
-                var fixedRelPath = OsFileSystem.of(os).makeFileSystemCompatible(FilePath.of(e.getValue()));
+                var fixedRelPath = targetFs.makeFileSystemCompatible(e.getValue());
                 var targetFile = target.getPath().join(fixedRelPath.toString());
                 if (sourceFile.getFileSystem().equals(targetFs)) {
                     throw new IllegalStateException();
@@ -470,8 +460,8 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            sourceFs.getShell().orElseThrow().killExternal();
-            targetFs.getShell().orElseThrow().killExternal();
+            sourceFs.kill();
+            targetFs.kill();
         };
         cancelled.addListener(closeCancelListener);
 
@@ -588,13 +578,7 @@ public class BrowserFileTransferOperation {
         var targetFs = target.getFileSystem();
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         if (!same) {
-            var sourceShell = sourceFs.getShell().orElseThrow();
-            var targetShell = targetFs.getShell().orElseThrow();
-            // Check for null on shell reset
-            return sourceShell.getStdout() != null
-                    && !sourceShell.getStdout().isClosed()
-                    && targetShell.getStdin() != null
-                    && !targetShell.getStdin().isClosed();
+            return !sourceFs.requiresReinit() && !targetFs.requiresReinit();
         } else {
             return true;
         }
@@ -611,20 +595,24 @@ public class BrowserFileTransferOperation {
                 var nowTransferred = transferred.get();
                 var stuck = initialTransferred == nowTransferred;
                 if (stuck) {
-                    sourceFs.getShell().orElseThrow().killExternal();
-                    targetFs.getShell().orElseThrow().killExternal();
+                    sourceFs.kill();
+                    targetFs.kill();
                     return;
                 }
             }
         }
 
         if (!same) {
-            var sourceShell = sourceFs.getShell().orElseThrow();
-            var targetShell = targetFs.getShell().orElseThrow();
-            try {
-                sourceShell.closeStdout();
-            } finally {
-                targetShell.closeStdin();
+            if (sourceFs.getShell().isPresent()) {
+                try {
+                    sourceFs.getShell().get().closeStdout();
+                } catch (Exception ignored) {}
+            }
+
+            if (targetFs.getShell().isPresent()) {
+                try {
+                    targetFs.getShell().get().closeStdin();
+                } catch (Exception ignored) {}
             }
         }
     }

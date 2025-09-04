@@ -8,8 +8,8 @@ import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.app.util.SecretManager;
+import io.xpipe.app.ext.FixedHierarchyStore;
+import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.StorePath;
 

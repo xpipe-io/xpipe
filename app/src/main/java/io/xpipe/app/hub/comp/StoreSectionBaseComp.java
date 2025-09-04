@@ -5,8 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;

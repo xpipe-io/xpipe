@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -22,6 +23,136 @@ public class WrapperFileSystem implements FileSystem {
     public WrapperFileSystem(FileSystem fs, Supplier<Boolean> check) {
         this.fs = fs;
         this.check = check;
+    }
+
+    @Override
+    public boolean supportsLinkCreation() {
+        return fs.supportsLinkCreation();
+    }
+
+    @Override
+    public boolean isCaseSensitive() {
+        return fs.isCaseSensitive();
+    }
+
+    @Override
+    public boolean supportsOwnerColumn() {
+        return fs.supportsOwnerColumn();
+    }
+
+    @Override
+    public boolean supportsModeColumn() {
+        return fs.supportsModeColumn();
+    }
+
+    @Override
+    public boolean supportsDirectorySizes() {
+        return fs.supportsDirectorySizes();
+    }
+
+    @Override
+    public boolean supportsChmod() {
+        return fs.supportsChmod();
+    }
+
+    @Override
+    public boolean supportsChown() {
+        return fs.supportsChown();
+    }
+
+    @Override
+    public boolean supportsChgrp() {
+        return fs.supportsChgrp();
+    }
+
+    @Override
+    public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.chmod(path, mode, recursive);
+    }
+
+    @Override
+    public void chown(FilePath path, String uid, boolean recursive) throws Exception {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.chown(path, uid, recursive);
+    }
+
+    @Override
+    public void chgrp(FilePath path, String gid, boolean recursive) throws Exception {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.chgrp(path, gid, recursive);
+    }
+
+    @Override
+    public void kill() {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.kill();
+    }
+
+    @Override
+    public void cd(FilePath dir) throws Exception {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.cd(dir);
+    }
+
+    @Override
+    public boolean requiresReinit() {
+        if (!check.get()) {
+            return false;
+        }
+
+        return fs.requiresReinit();
+    }
+
+    @Override
+    public void reinitIfNeeded() throws Exception {
+        if (!check.get()) {
+            return;
+        }
+
+        fs.reinitIfNeeded();
+    }
+
+    @Override
+    public String getFileSeparator() {
+        if (!check.get()) {
+            return "/";
+        }
+
+        return fs.getFileSeparator();
+    }
+
+    @Override
+    public FilePath makeFileSystemCompatible(FilePath filePath) {
+        if (!check.get()) {
+            return filePath;
+        }
+
+        return fs.makeFileSystemCompatible(filePath);
+    }
+
+    @Override
+    public Optional<FilePath> pwd() throws Exception {
+        if (!check.get()) {
+            return Optional.empty();
+        }
+
+        return fs.pwd();
     }
 
     @Override
@@ -181,6 +312,11 @@ public class WrapperFileSystem implements FileSystem {
         }
 
         return fs.listRoots();
+    }
+
+    @Override
+    public List<FilePath> listCommonDirectories() throws Exception {
+        return fs.listCommonDirectories();
     }
 
     @Override
