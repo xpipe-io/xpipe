@@ -5,9 +5,9 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.util.ThreadHelper;
 
 public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHandler {

@@ -8,8 +8,8 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.MarkdownEditorComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.storage.DataStorage;
 
 import javafx.application.Platform;
 import javafx.beans.property.Property;

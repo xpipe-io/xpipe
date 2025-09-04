@@ -4,8 +4,8 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.core.AppCache;
-
 import io.xpipe.app.platform.LabelGraphic;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.layout.Region;
 
@@ -23,9 +23,7 @@ public class StoreScriptsIntroComp extends SimpleComp {
     public Region createSimple() {
         var top = new IntroComp("scriptsIntro", new LabelGraphic.IconGraphic("mdi2s-script-text"));
 
-        var bottom = new IntroComp(
-                "scriptsIntroBottom",
-                new LabelGraphic.IconGraphic("mdi2t-tooltip-edit"));
+        var bottom = new IntroComp("scriptsIntroBottom", new LabelGraphic.IconGraphic("mdi2t-tooltip-edit"));
         bottom.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2p-play-circle"));
         bottom.setButtonDefault(true);
         bottom.setButtonAction(() -> {

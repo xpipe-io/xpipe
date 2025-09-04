@@ -45,9 +45,7 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
                 ? st.getUsername().getFixedUsername().map(s -> "User " + s).orElse("User")
                 : "Anonymous User";
         var s = user
-                + (st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy
-                        ? ""
-                        : " + Password")
+                + (st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy ? "" : " + Password")
                 + (st.getSshIdentity() == null || st.getSshIdentity() instanceof NoneStrategy ? "" : " + Key");
         return new SimpleStringProperty(s);
     }

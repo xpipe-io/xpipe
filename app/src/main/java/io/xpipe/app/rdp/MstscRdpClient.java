@@ -1,6 +1,5 @@
 package io.xpipe.app.rdp;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -11,6 +10,8 @@ import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -30,7 +31,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         return new OptionsBuilder()
                 .nameAndDescription("rdpSmartSizing")
                 .addToggle(smartSizing)
-                .bind(() -> MstscRdpClient.builder().smartSizing(smartSizing.get()).build(), property);
+                .bind(
+                        () -> MstscRdpClient.builder()
+                                .smartSizing(smartSizing.get())
+                                .build(),
+                        property);
     }
 
     boolean smartSizing;

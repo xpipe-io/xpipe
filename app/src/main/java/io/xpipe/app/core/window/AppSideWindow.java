@@ -1,6 +1,7 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.platform.PlatformInit;
+
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

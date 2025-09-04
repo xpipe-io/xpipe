@@ -157,8 +157,8 @@ public class SshIdentityStateManager {
             FilePath dir;
             if (sc.getOsType() == OsType.WINDOWS) {
                 stopWindowsAgents(true, false, true);
-                var appdata =
-                        FilePath.of(sc.view().getEnvironmentVariableOrThrow("APPDATA")).join("gnupg");
+                var appdata = FilePath.of(sc.view().getEnvironmentVariableOrThrow("APPDATA"))
+                        .join("gnupg");
                 dir = appdata;
             } else {
                 dir = sc.view().userHome().join(".gnupg");

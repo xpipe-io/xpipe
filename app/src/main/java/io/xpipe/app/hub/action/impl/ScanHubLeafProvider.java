@@ -6,10 +6,10 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.beans.value.ObservableValue;

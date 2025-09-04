@@ -5,9 +5,9 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;

@@ -101,12 +101,14 @@ public class BrowserFileOpener {
     private static BrowserFileOutput createFileOutput(
             BrowserFileSystemTabModel model, FileEntry file, long totalBytes, boolean elevate) throws Exception {
         var shell = model.getFileSystem().getShell();
-        var sc = shell.isEmpty() ? null : elevate
-                ? shell.orElseThrow()
-                        .identicalDialectSubShell()
-                        .elevated(ElevationFunction.elevated(null))
-                        .start()
-                : model.getFileSystem().getShell().orElseThrow().start();
+        var sc = shell.isEmpty()
+                ? null
+                : elevate
+                        ? shell.orElseThrow()
+                                .identicalDialectSubShell()
+                                .elevated(ElevationFunction.elevated(null))
+                                .start()
+                        : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
         var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {
@@ -174,7 +176,8 @@ public class BrowserFileOpener {
     }
 
     public static void openWithAnyApplication(BrowserFileSystemTabModel model, FileEntry entry) {
-        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
+        if (model.getFileSystem().getShell().isPresent()
+                && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openWithAnyApplication(entry.getPath().toString());
             return;
         }
@@ -223,7 +226,8 @@ public class BrowserFileOpener {
     }
 
     public static void openInDefaultApplication(BrowserFileSystemTabModel model, FileEntry entry) {
-        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
+        if (model.getFileSystem().getShell().isPresent()
+                && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openInDefaultApplication(entry.getPath().toString());
             return;
         }
@@ -277,7 +281,8 @@ public class BrowserFileOpener {
             return;
         }
 
-        if (model.getFileSystem().getShell().isPresent() && model.getFileSystem().getShell().get().isLocal()) {
+        if (model.getFileSystem().getShell().isPresent()
+                && model.getFileSystem().getShell().get().isLocal()) {
             FileOpener.openInTextEditor(entry.getPath().toString());
             return;
         }

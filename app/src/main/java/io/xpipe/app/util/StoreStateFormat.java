@@ -31,7 +31,8 @@ public class StoreStateFormat {
         this.states = states;
     }
 
-    public static ObservableValue<String> shellEnvironment(StoreSection section, boolean includeOsName, LicensedFeature licensedFeature) {
+    public static ObservableValue<String> shellEnvironment(
+            StoreSection section, boolean includeOsName, LicensedFeature licensedFeature) {
         return Bindings.createStringBinding(
                 () -> {
                     var s = (ShellEnvironmentStoreState)
@@ -39,7 +40,9 @@ public class StoreStateFormat {
                     var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
                     var name = DataStoreFormatter.join(
                             (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
-                    return new StoreStateFormat(licensedFeature != null ? List.of(licensedFeature) : List.of(), name, def).format();
+                    return new StoreStateFormat(
+                                    licensedFeature != null ? List.of(licensedFeature) : List.of(), name, def)
+                            .format();
                 },
                 AppI18n.activeLanguage(),
                 section.getWrapper().getPersistentState());
@@ -64,31 +67,21 @@ public class StoreStateFormat {
             if (s.getShellDialect() != null
                     && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                 if (s.getOsName() != null) {
-                    return new StoreStateFormat(
-                            features,
-                                    formattedOsName(s.getOsName()),
-                                    info)
-                            .format();
+                    return new StoreStateFormat(features, formattedOsName(s.getOsName()), info).format();
                 }
 
                 if (s.getShellDialect() == ShellDialects.NO_INTERACTION) {
                     return new StoreStateFormat(List.of(), null, info).format();
                 }
 
-                return new StoreStateFormat(
-                        features,
-                                s.getShellDialect().getDisplayName(),
-                                info)
-                        .format();
+                return new StoreStateFormat(features, s.getShellDialect().getDisplayName(), info).format();
             }
 
             var joined = Stream.concat(
                             Stream.of(s.getTtyState() != null && s.getTtyState() != ShellTtyState.NONE ? "TTY" : null),
                             info != null ? Arrays.stream(info) : Stream.of())
                     .toArray(String[]::new);
-            return new StoreStateFormat(
-                    features, formattedOsName(s.getOsName()), joined)
-                    .format();
+            return new StoreStateFormat(features, formattedOsName(s.getOsName()), joined).format();
         });
     }
 

@@ -8,10 +8,10 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ScriptHelper;
 
 import javafx.beans.property.SimpleStringProperty;

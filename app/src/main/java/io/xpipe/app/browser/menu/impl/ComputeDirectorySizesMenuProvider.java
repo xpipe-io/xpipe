@@ -44,8 +44,9 @@ public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvide
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem().supportsDirectorySizes() && entries.stream()
-                .allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+        return model.getFileSystem().supportsDirectorySizes()
+                && entries.stream()
+                        .allMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     @Override

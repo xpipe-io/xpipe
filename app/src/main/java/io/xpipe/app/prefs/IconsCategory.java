@@ -8,15 +8,15 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
-
 import io.xpipe.core.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +27,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.net.URI;
@@ -110,7 +111,8 @@ public class IconsCategory extends AppPrefsCategory {
                                     id = OsFileSystem.of(OsType.WINDOWS).makeFileSystemCompatible(name);
                                 }
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception ignored) {
+                        }
 
                         if (id == null) {
                             id = UUID.randomUUID().toString();

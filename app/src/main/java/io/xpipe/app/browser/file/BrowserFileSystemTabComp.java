@@ -9,9 +9,9 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
@@ -95,9 +95,12 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         refreshBtn.managedProperty().bind(smallWidth.not());
         refreshBtn.visibleProperty().bind(refreshBtn.managedProperty());
 
-        var terminalSupported = BrowserMenuProviders.byId("openInTerminal", model, List.of()).isApplicable(model, List.of());
+        var terminalSupported =
+                BrowserMenuProviders.byId("openInTerminal", model, List.of()).isApplicable(model, List.of());
         terminalBtn.managedProperty().bind(smallWidth.not().and(new ReadOnlyBooleanWrapper(terminalSupported)));
-        terminalBtn.visibleProperty().bind(terminalBtn.managedProperty().and(new ReadOnlyBooleanWrapper(terminalSupported)));
+        terminalBtn
+                .visibleProperty()
+                .bind(terminalBtn.managedProperty().and(new ReadOnlyBooleanWrapper(terminalSupported)));
 
         var filter = new BrowserFileListFilterComp(model, model.getFilter())
                 .hide(smallWidth)

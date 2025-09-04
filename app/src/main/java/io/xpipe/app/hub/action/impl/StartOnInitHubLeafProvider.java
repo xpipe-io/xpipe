@@ -7,7 +7,9 @@ import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -30,7 +32,8 @@ public class StartOnInitHubLeafProvider implements HubLeafProvider<StartOnInitSt
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<StartOnInitStore> store) {
-        return new LabelGraphic.IconGraphic(store.getStore().isEnabled() ? "mdi2t-toggle-switch-off-outline" : "mdi2t-toggle-switch-outline");
+        return new LabelGraphic.IconGraphic(
+                store.getStore().isEnabled() ? "mdi2t-toggle-switch-off-outline" : "mdi2t-toggle-switch-outline");
     }
 
     @Override
@@ -51,7 +54,7 @@ public class StartOnInitHubLeafProvider implements HubLeafProvider<StartOnInitSt
         public void executeImpl() {
             if (ref.getStore().isEnabled()) {
                 ref.getStore().disable();
-            } else  {
+            } else {
                 ref.getStore().enable();
             }
         }

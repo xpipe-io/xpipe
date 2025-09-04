@@ -8,15 +8,15 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.secret.EncryptedValue;
-import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.ext.base.identity.ssh.NoneStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
@@ -70,7 +70,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .filter(s -> s != null)
                 .findFirst();
         var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretNoneStrategy);
-        var hasSshIdentity = identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
+        var hasSshIdentity =
+                identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
         if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
             var perUser = pwManIdentity.get().isPerUser();
             var id = PasswordManagerIdentityStore.builder()

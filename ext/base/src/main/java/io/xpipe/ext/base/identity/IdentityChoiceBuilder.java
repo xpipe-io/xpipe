@@ -67,7 +67,8 @@ public class IdentityChoiceBuilder {
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(pass)
-                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
                 .available(SecretRetrievalStrategy.getSubclasses())
                 .build()
                 .build();

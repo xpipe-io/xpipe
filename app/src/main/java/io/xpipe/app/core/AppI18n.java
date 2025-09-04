@@ -2,12 +2,12 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.prefs.SupportedLocale;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.GlobalObjectProperty;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.SupportedLocale;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;

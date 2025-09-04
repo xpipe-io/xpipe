@@ -1,11 +1,12 @@
 package io.xpipe.app.rdp;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

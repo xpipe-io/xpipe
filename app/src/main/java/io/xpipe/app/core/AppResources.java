@@ -55,7 +55,8 @@ public class AppResources {
         }
 
         try {
-            var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+            var fs = (ModuleFileSystem)
+                    FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
             if (AppExtensionManager.getInstance() != null) {
                 fileSystems.put(module, fs);
             }

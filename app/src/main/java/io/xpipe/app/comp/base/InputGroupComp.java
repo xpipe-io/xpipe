@@ -5,9 +5,9 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 
 import javafx.geometry.Pos;
+import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
-import javafx.scene.layout.Region;
 import lombok.Setter;
 
 import java.util.List;

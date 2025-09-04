@@ -6,10 +6,10 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.platform.MarkdownHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.OsType;
 

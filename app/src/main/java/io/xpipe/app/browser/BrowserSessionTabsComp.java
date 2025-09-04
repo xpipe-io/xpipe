@@ -8,11 +8,11 @@ import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.BooleanScope;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

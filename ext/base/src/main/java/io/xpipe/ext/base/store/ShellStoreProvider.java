@@ -53,7 +53,8 @@ public interface ShellStoreProvider extends DataStoreProvider {
 
     @Override
     default ObservableValue<String> informationString(StoreSection section) {
-        return StoreStateFormat.shellStore(section, state -> formatAdditionalInformation(section, state).toArray(String[]::new), null);
+        return StoreStateFormat.shellStore(
+                section, state -> formatAdditionalInformation(section, state).toArray(String[]::new), null);
     }
 
     default List<String> formatAdditionalInformation(StoreSection section, SystemState state) {

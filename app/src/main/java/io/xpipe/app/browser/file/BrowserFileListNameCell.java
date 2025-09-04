@@ -2,10 +2,10 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;

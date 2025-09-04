@@ -7,9 +7,9 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.InputStream;
@@ -73,7 +73,8 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
-        shellControl.command(CommandBuilder.of()
+        shellControl
+                .command(CommandBuilder.of()
                         .add("chmod")
                         .addIf(recursive, "-R")
                         .addLiteral(mode)
@@ -83,21 +84,24 @@ public class ConnectionFileSystem implements FileSystem {
 
     @Override
     public void chown(FilePath path, String uid, boolean recursive) throws Exception {
-        shellControl.command(CommandBuilder.of()
-                .add("chown")
-                .addIf(recursive, "-R")
-                .addLiteral(uid)
-                .addFile(path))
+        shellControl
+                .command(CommandBuilder.of()
+                        .add("chown")
+                        .addIf(recursive, "-R")
+                        .addLiteral(uid)
+                        .addFile(path))
                 .execute();
     }
 
     @Override
     public void chgrp(FilePath path, String gid, boolean recursive) throws Exception {
-        shellControl.command(CommandBuilder.of()
-                .add("chgrp")
-                .addIf(recursive, "-R")
-                .addLiteral(gid)
-                .addFile(path)).execute();
+        shellControl
+                .command(CommandBuilder.of()
+                        .add("chgrp")
+                        .addIf(recursive, "-R")
+                        .addLiteral(gid)
+                        .addFile(path))
+                .execute();
     }
 
     @Override

@@ -5,9 +5,9 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

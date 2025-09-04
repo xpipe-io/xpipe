@@ -1,10 +1,10 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.platform.NativeMacOsWindowControl;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.OsType;
 
 import javafx.animation.PauseTransition;

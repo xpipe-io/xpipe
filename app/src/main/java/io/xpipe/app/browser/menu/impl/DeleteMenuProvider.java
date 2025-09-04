@@ -49,8 +49,8 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
         return AppI18n.observable(
                 "deleteFile",
                 entries.stream()
-                        .anyMatch(browserEntry ->
-                                browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
+                                .anyMatch(browserEntry ->
+                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
                         ? "link"
                         : "");
     }

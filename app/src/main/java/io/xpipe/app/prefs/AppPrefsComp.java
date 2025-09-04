@@ -3,8 +3,8 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.VerticalComp;
-import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.BooleanScope;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;

@@ -1,9 +1,9 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.process.ShellStoreState;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.process.ShellStoreState;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;

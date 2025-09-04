@@ -3,8 +3,8 @@ package io.xpipe.app.browser.action.impl;
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserFileOutput;
-
 import io.xpipe.app.storage.DataStorage;
+
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

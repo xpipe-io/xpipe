@@ -6,11 +6,11 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.StoreStateFormat;
 
 import javafx.beans.binding.Bindings;

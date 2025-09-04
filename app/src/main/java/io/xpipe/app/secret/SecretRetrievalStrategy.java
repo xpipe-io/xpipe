@@ -35,5 +35,4 @@ public interface SecretRetrievalStrategy {
     default boolean expectsQuery() {
         return true;
     }
-
 }

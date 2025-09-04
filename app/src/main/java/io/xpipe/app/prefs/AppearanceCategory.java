@@ -7,9 +7,9 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;

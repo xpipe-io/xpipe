@@ -5,14 +5,14 @@ import io.xpipe.app.comp.base.ContextualFileReferenceSync;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
@@ -70,7 +70,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(keyPasswordProperty)
-                .customConfiguration(SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
                 .available(SecretRetrievalStrategy.getSubclasses())
                 .build()
                 .build();

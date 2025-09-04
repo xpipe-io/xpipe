@@ -44,24 +44,26 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
         ThreadHelper.runFailableAsync(() -> {
-            var common = model.getFileSystem().listCommonDirectories().stream().map(
-                    s -> FileEntry.ofDirectory(model.getFileSystem(), s)).filter(entry -> {
-                var fs = model.getFileSystem();
+            var common = model.getFileSystem().listCommonDirectories().stream()
+                    .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
+                    .filter(entry -> {
+                        var fs = model.getFileSystem();
 
-                try {
-                    return fs.directoryExists(entry.getPath());
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                    return false;
-                }
-            }).toList();
+                        try {
+                            return fs.directoryExists(entry.getPath());
+                        } catch (Exception e) {
+                            ErrorEventFactory.fromThrowable(e).handle();
+                            return false;
+                        }
+                    })
+                    .toList();
             Platform.runLater(() -> {
                 commonPlatform.setAll(common);
             });
         });
         var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
-        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false).apply(
-                struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+        var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false)
+                .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
         list.add(commonPane);
 
         var rootPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
@@ -72,7 +74,7 @@ public class BrowserOverviewComp extends SimpleComp {
             Platform.runLater(() -> {
                 rootPlatform.setAll(roots);
             });
-                });
+        });
         var rootsOverview = new BrowserFileOverviewComp(model, rootPlatform, false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview, false);
         list.add(rootsPane);

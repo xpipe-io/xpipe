@@ -1,6 +1,5 @@
 package io.xpipe.app.secret;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
@@ -8,8 +7,11 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -25,7 +27,8 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
-        var cmdProperty = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
+        var cmdProperty =
+                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
         var content = new TextFieldComp(cmdProperty);
         return new OptionsBuilder()
                 .addComp(content, cmdProperty)
@@ -53,10 +56,15 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
                     throw ErrorEventFactory.expected(new IllegalStateException("No custom command specified"));
                 }
 
-                try (var cc = ProcessControlProvider.get().createLocalProcessControl(true).command(command).start()) {
-                    return new SecretQueryResult(InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
+                try (var cc = ProcessControlProvider.get()
+                        .createLocalProcessControl(true)
+                        .command(command)
+                        .start()) {
+                    return new SecretQueryResult(
+                            InPlaceSecretValue.of(cc.readStdoutOrThrow()), SecretQueryState.NORMAL);
                 } catch (Exception ex) {
-                    ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + command, ex).handle();
+                    ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + command, ex)
+                            .handle();
                     return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                 }
             }

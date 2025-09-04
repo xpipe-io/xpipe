@@ -127,7 +127,8 @@ public final class BrowserFileListModel {
 
         // This check will fail on case-insensitive file systems when changing the case of the file
         // So skip it in this case
-        var skipExistCheck = !fileSystemModel.getFileSystem().isCaseSensitive() && old.getFileName().equalsIgnoreCase(newName);
+        var skipExistCheck = !fileSystemModel.getFileSystem().isCaseSensitive()
+                && old.getFileName().equalsIgnoreCase(newName);
         if (!skipExistCheck) {
             boolean exists;
             try {

@@ -116,7 +116,8 @@ public abstract class OperationMode {
             NodeCallback.init();
             AppLogs.init();
             AppWindowsTempCheck.check();
-            AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
+            AppDirectoryPermissionsCheck.checkDirectory(
+                    AppSystemInfo.ofCurrent().getTemp());
             AppDebugModeCheck.printIfNeeded();
             AppProperties.get().logArguments();
             AppDistributionType.init();
@@ -139,8 +140,7 @@ public abstract class OperationMode {
 
     public static XPipeDaemonMode getStartupMode() {
         var event = TrackEvent.withInfo("Startup mode determined");
-        if (AppMainWindow.get() != null
-                && AppMainWindow.get().getStage().isShowing()) {
+        if (AppMainWindow.get() != null && AppMainWindow.get().getStage().isShowing()) {
             event.tag("mode", "gui").tag("reason", "windowShowing").handle();
             return XPipeDaemonMode.GUI;
         }

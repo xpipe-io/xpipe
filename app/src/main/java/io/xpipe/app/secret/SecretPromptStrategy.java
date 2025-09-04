@@ -1,7 +1,8 @@
 package io.xpipe.app.secret;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.util.AskpassAlert;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
 
 import java.time.Duration;

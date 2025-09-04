@@ -1,14 +1,16 @@
 package io.xpipe.app.rdp;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -42,8 +44,7 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
             throw ErrorEventFactory.expected(new IllegalStateException("No custom RDP command specified"));
         }
 
-        var format =
-                command.toLowerCase(Locale.ROOT).contains("$file") ? command : command + " $FILE";
+        var format = command.toLowerCase(Locale.ROOT).contains("$file") ? command : command + " $FILE";
         ExternalApplicationHelper.startAsync(CommandBuilder.of()
                 .add(ExternalApplicationHelper.replaceVariableArgument(
                         format,

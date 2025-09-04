@@ -113,11 +113,7 @@ public class EnpassPasswordManager implements PasswordManager {
         }
 
         var pass = SecretManager.retrieve(
-                new SecretPromptStrategy(),
-                "Enter Enpass vault master password",
-                MASTER_PASSWORD_UUID,
-                0,
-                true);
+                new SecretPromptStrategy(), "Enter Enpass vault master password", MASTER_PASSWORD_UUID, 0, true);
         if (pass == null) {
             return null;
         }

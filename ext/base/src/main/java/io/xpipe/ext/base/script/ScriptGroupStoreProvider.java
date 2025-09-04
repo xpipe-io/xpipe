@@ -3,10 +3,10 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

@@ -639,9 +639,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null
-                || cs.isMajor()
-                || (leaf != null && leaf.isDefault())) {
+        if (cs == null || cs.isMajor() || (leaf != null && leaf.isDefault())) {
             return null;
         }
 

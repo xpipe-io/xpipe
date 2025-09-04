@@ -1,11 +1,11 @@
 package io.xpipe.app.core;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.JacksonMapper;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
@@ -80,7 +80,6 @@ public class AppCache {
         }
         return notPresent.get();
     }
-
 
     public static boolean getBoolean(String key, boolean notPresent) {
         var path = getPath(key);

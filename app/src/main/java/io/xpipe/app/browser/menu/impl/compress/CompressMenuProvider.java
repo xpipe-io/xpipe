@@ -6,8 +6,8 @@ import io.xpipe.app.browser.menu.*;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.CommandSupport;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.util.CommandSupport;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.OsType;
 
@@ -18,8 +18,6 @@ import javafx.scene.control.TextField;
 import java.util.List;
 
 public class CompressMenuProvider implements BrowserMenuBranchProvider {
-
-
 
     @Override
     public void init(BrowserFileSystemTabModel model) throws Exception {

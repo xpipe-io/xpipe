@@ -1,6 +1,7 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.util.Rect;
+
 import javafx.stage.Window;
 
 import com.sun.jna.Library;

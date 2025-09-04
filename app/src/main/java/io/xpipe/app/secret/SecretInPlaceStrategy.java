@@ -1,13 +1,15 @@
 package io.xpipe.app.secret;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 
@@ -25,8 +27,7 @@ public class SecretInPlaceStrategy implements SecretRetrievalStrategy {
     }
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(
-            Property<SecretInPlaceStrategy> p, SecretStrategyChoiceConfig config) {
+    public static OptionsBuilder createOptions(Property<SecretInPlaceStrategy> p, SecretStrategyChoiceConfig config) {
         var original = p.getValue() != null ? p.getValue().getValue() : null;
         var secretProperty = new SimpleObjectProperty<>(
                 p.getValue() != null && p.getValue().getValue() != null

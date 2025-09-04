@@ -8,8 +8,8 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import javafx.application.Application;
-
 import javafx.application.Platform;
+
 import lombok.Getter;
 import lombok.SneakyThrows;
 

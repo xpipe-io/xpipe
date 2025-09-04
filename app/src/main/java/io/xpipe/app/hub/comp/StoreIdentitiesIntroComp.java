@@ -17,9 +17,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
-        var top = new IntroComp(
-                "identitiesIntro",
-                new LabelGraphic.IconGraphic("mdi2a-account-group"));
+        var top = new IntroComp("identitiesIntro", new LabelGraphic.IconGraphic("mdi2a-account-group"));
         top.setButtonDefault(true);
         top.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2p-play-circle"));
         top.setButtonAction(() -> {
@@ -30,9 +28,7 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
             StoreCreationDialog.showCreation(prov, DataStoreCreationCategory.IDENTITY);
         });
 
-        var bottom = new IntroComp(
-                "identitiesIntroBottom",
-                new LabelGraphic.IconGraphic("mdi2g-git"));
+        var bottom = new IntroComp("identitiesIntroBottom", new LabelGraphic.IconGraphic("mdi2g-git"));
         bottom.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2p-play-circle"));
         bottom.setButtonAction(() -> {
             AppPrefs.get().selectCategory("vaultSync");

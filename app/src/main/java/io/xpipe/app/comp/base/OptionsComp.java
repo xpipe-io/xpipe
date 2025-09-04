@@ -5,8 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.platform.Validator;
+import io.xpipe.app.util.Hyperlinks;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;

@@ -175,7 +175,8 @@ public class ShellView {
 
     public String getEnvironmentVariableOrThrow(String name) throws Exception {
         var r = getEnvironmentVariable(name);
-        return r.orElseThrow(() -> new IllegalArgumentException("Required environment variable " + name + " not defined"));
+        return r.orElseThrow(
+                () -> new IllegalArgumentException("Required environment variable " + name + " not defined"));
     }
 
     public void setEnvironmentVariable(String name, String value) throws Exception {

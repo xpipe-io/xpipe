@@ -605,13 +605,15 @@ public class BrowserFileTransferOperation {
             if (sourceFs.getShell().isPresent()) {
                 try {
                     sourceFs.getShell().get().closeStdout();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
 
             if (targetFs.getShell().isPresent()) {
                 try {
                     targetFs.getShell().get().closeStdin();
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
     }

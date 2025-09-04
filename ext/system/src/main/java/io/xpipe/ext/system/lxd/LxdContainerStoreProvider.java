@@ -38,8 +38,10 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
     public ObservableValue<String> informationString(StoreSection section) {
         var c = (ContainerStoreState) section.getWrapper().getPersistentState().getValue();
         var missing = c.getShellMissing() != null && c.getShellMissing() ? "No shell available" : null;
-        return StoreStateFormat.shellStore(section, (ContainerStoreState s) ->
-                new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())}, null);
+        return StoreStateFormat.shellStore(
+                section,
+                (ContainerStoreState s) -> new String[] {missing, DataStoreFormatter.capitalize(s.getContainerState())},
+                null);
     }
 
     @Override

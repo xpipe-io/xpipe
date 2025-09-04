@@ -182,9 +182,7 @@ public class StoreCreationDialog {
             }
 
             modal.hide();
-            AppLayoutModel.get()
-                    .getQueueEntries()
-                    .add(queueEntry);
+            AppLayoutModel.get().getQueueEntries().add(queueEntry);
         });
         modal.setRequireCloseButtonForClose(true);
         modal.addButton(new ModalButton(

@@ -75,8 +75,10 @@ public class ErrorEventFactory {
         }
 
         // On Linux shutdown, active file descriptors are getting closed. This breaks shell commands
-        if (OsType.getLocal() == OsType.LINUX && OperationMode.isInShutdown() &&
-                t instanceof IllegalStateException ise && "Parent stream is closed".equals(ise.getMessage())) {
+        if (OsType.getLocal() == OsType.LINUX
+                && OperationMode.isInShutdown()
+                && t instanceof IllegalStateException ise
+                && "Parent stream is closed".equals(ise.getMessage())) {
             b.expected();
         }
 

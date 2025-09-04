@@ -17,16 +17,16 @@ public class StoreIntroComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
-        var hub = new IntroComp("storeIntro", new LabelGraphic.NodeGraphic(() -> PrettyImageHelper.ofSpecificFixedSize("graphics/Wave.svg", 80, 144).createRegion()));
+        var hub = new IntroComp("storeIntro", new LabelGraphic.NodeGraphic(() -> PrettyImageHelper.ofSpecificFixedSize(
+                        "graphics/Wave.svg", 80, 144)
+                .createRegion()));
         hub.setButtonAction(() -> {
             ScanDialog.showSingleAsync(DataStorage.get().local());
         });
         hub.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2m-magnify"));
         hub.setButtonDefault(true);
 
-        var sync = new IntroComp(
-                "storeIntroImport",
-                new LabelGraphic.IconGraphic("mdi2g-git"));
+        var sync = new IntroComp("storeIntroImport", new LabelGraphic.IconGraphic("mdi2g-git"));
         sync.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2g-git"));
         sync.setButtonAction(() -> {
             AppPrefs.get().selectCategory("vaultSync");

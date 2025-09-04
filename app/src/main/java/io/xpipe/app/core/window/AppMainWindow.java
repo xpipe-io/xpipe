@@ -6,11 +6,11 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.platform.NativeWinWindowControl;
-import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
@@ -188,15 +188,17 @@ public class AppMainWindow {
         var timestamp = Instant.now();
         lastUpdate = timestamp;
         // Reduce printed window updates
-        GlobalTimer.delay(() -> {
-            if (!timestamp.equals(lastUpdate)) {
-                return;
-            }
+        GlobalTimer.delay(
+                () -> {
+                    if (!timestamp.equals(lastUpdate)) {
+                        return;
+                    }
 
-            synchronized (AppMainWindow.this) {
-                logChange();
-            }
-        }, Duration.ofSeconds(1));
+                    synchronized (AppMainWindow.this) {
+                        logChange();
+                    }
+                },
+                Duration.ofSeconds(1));
     }
 
     private void logChange() {

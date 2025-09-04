@@ -1,12 +1,13 @@
 package io.xpipe.app.ext;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ThreadHelper;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +18,9 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
         ThreadHelper.runFailableAsync(() -> {
             var enabled = getEnabledStores();
             for (DataStoreEntry e : DataStorage.get().getStoreEntries()) {
-                if (e.getStore() instanceof StartOnInitStore i && e.getValidity().isUsable() && enabled.contains(i.getSelfEntry().ref())) {
+                if (e.getStore() instanceof StartOnInitStore i
+                        && e.getValidity().isUsable()
+                        && enabled.contains(i.getSelfEntry().ref())) {
                     i.startOnInit();
                 }
             }

@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.NonFinal;

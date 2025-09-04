@@ -1,7 +1,7 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.ext.FixedHierarchyStore;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ConnectionRefreshExchange;
 

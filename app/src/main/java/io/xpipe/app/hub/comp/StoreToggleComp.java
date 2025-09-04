@@ -4,8 +4,8 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
