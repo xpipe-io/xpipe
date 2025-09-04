@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.FilePath;
 
@@ -13,7 +12,6 @@ import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 import atlantafx.base.controls.Breadcrumbs;
-import lombok.val;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,7 +11,7 @@ import java.util.List;
 public interface FileTypeMenuProvider extends BrowserMenuItemProvider {
 
     @Override
-    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default LabelGraphic getIcon() {
         return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(getType()));
     }
 

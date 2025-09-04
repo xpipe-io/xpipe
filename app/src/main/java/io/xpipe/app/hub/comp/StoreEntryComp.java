@@ -3,7 +3,6 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
@@ -641,8 +640,8 @@ public abstract class StoreEntryComp extends SimpleComp {
         var cs = leaf != null ? leaf : branch;
 
         if (cs == null
-                || cs.isMajor(getWrapper().getEntry().ref())
-                || (leaf != null && leaf.isDefault(getWrapper().getEntry().ref()))) {
+                || cs.isMajor()
+                || (leaf != null && leaf.isDefault())) {
             return null;
         }
 

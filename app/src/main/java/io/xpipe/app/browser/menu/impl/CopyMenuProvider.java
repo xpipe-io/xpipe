@@ -23,7 +23,7 @@ public class CopyMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdoal-file_copy");
     }
 

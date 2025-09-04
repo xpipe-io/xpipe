@@ -556,6 +556,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     @Getter
+    @SuppressWarnings("unused")
     public enum SelectionMode {
         SINGLE_FILE(false, true, false),
         MULTIPLE_FILE(true, true, false),

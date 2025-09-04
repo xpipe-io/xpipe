@@ -22,7 +22,7 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<FixedHierarchyStore> o) {
+    public boolean isMajor() {
         return true;
     }
 
@@ -47,7 +47,7 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<FixedHierarchyStore> o) {
+    public boolean isDefault() {
         return true;
     }
 

@@ -30,7 +30,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
                 : selected;
     }
 
-    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default LabelGraphic getIcon() {
         return null;
     }
 
@@ -52,7 +52,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
         return true;
     }
 
-    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default boolean isActive(BrowserFileSystemTabModel model) {
         return true;
     }
 }

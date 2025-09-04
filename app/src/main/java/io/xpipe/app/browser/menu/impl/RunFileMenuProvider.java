@@ -53,7 +53,7 @@ public class RunFileMenuProvider extends MultiExecuteMenuProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2p-play");
     }
 

@@ -42,7 +42,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<SimpleScriptStore> o) {
+    public boolean isDefault() {
         return true;
     }
 

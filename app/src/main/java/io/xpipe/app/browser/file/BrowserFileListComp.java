@@ -9,7 +9,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FileInfo;
 import io.xpipe.core.FileKind;
-import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -391,7 +390,7 @@ public final class BrowserFileListComp extends SimpleComp {
             var selected = fileList.getSelection();
             var action = BrowserMenuProviders.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
-                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
+                            && browserAction.isActive(fileList.getFileSystemModel()))
                     .filter(browserAction -> browserAction.getShortcut() != null)
                     .filter(browserAction -> browserAction.getShortcut().match(event))
                     .findAny();

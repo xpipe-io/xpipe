@@ -123,6 +123,7 @@ public abstract class DataStorage {
         return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
     }
 
+    @SuppressWarnings("unused")
     public DataStoreCategory getAllMacrosCategory() {
         return getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID).orElseThrow();
     }

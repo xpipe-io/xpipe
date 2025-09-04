@@ -30,12 +30,6 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
 
-    CommandControl terminalExitMode(TerminalExitMode mode);
-
-    CommandControl doesNotObeyReturnValueConvention();
-
-    CommandControl complex();
-
     CommandControl notComplex();
 
     CommandControl withWorkingDirectory(FilePath directory);
@@ -89,10 +83,5 @@ public interface CommandControl extends ProcessControl {
         } catch (Exception ex) {
             return false;
         }
-    }
-
-    enum TerminalExitMode {
-        KEEP_OPEN,
-        CLOSE
     }
 }

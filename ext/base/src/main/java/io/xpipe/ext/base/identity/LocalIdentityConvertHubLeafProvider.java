@@ -27,7 +27,7 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<LocalIdentityStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

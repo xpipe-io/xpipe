@@ -22,7 +22,7 @@ public class ServiceCopyAddressHubLeafProvider implements HubLeafProvider<Abstra
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<AbstractServiceStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

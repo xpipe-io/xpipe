@@ -211,7 +211,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
                 for (var a : c.getAddedSubList()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BooleanScope(addingTab).start()) {
+                        try (var ignored = new BooleanScope(addingTab).start()) {
                             var t = createTab(tabs, a);
                             map.put(a, t);
                             tabs.getTabs().add(t);
@@ -307,7 +307,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             },
                             model.getGlobalPinnedTab())));
             unpin.setOnAction(event -> {
-                model.unpinTab(tabModel);
+                model.unpinTab();
                 event.consume();
             });
             cm.getItems().add(unpin);

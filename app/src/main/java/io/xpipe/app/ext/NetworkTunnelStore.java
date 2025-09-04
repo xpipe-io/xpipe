@@ -28,5 +28,5 @@ public interface NetworkTunnelStore extends DataStore {
         }
     }
 
-    NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address) throws Exception;
+    NetworkTunnelSession createTunnelSession(int localPort, int remotePort, String address);
 }

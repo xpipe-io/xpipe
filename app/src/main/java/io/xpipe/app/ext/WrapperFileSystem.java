@@ -3,7 +3,6 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FilePath;
 
-import io.xpipe.core.OsType;
 import lombok.Getter;
 
 import java.io.IOException;

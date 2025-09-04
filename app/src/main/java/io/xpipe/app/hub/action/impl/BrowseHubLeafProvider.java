@@ -31,7 +31,7 @@ public class BrowseHubLeafProvider implements HubLeafProvider<FileSystemStore> {
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<FileSystemStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

@@ -4,6 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 
+import io.xpipe.app.storage.DataStorage;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -50,7 +51,14 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         public Map<String, String> toDisplayMap() {
             var map = new LinkedHashMap<String, String>();
             map.put("Action", getDisplayName());
-            map.put("Target", target);
+
+            var system = output.target();
+            if (system.isPresent()) {
+                map.put("System", DataStorage.get().getStoreEntryDisplayName(system.get()));
+            }
+
+            map.put("File", target);
+
             return map;
         }
     }

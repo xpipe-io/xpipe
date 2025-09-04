@@ -13,7 +13,7 @@ public interface HubMenuItemProvider<T extends DataStore> extends ActionProvider
         return null;
     }
 
-    default boolean isMajor(DataStoreEntryRef<T> o) {
+    default boolean isMajor() {
         return false;
     }
 

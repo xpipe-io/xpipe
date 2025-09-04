@@ -7,8 +7,6 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -21,7 +19,6 @@ import javafx.scene.layout.VBox;
 import lombok.SneakyThrows;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BrowserOverviewComp extends SimpleComp {
 

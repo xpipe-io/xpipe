@@ -88,11 +88,6 @@ public class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder addSeparator(String s) {
-        elements.add(sc -> sc.getShellDialect().getConcatenationOperator());
-        return this;
-    }
-
     public CommandBuilder addIf(boolean b, String... s) {
         if (b) {
             for (String s1 : s) {
@@ -127,11 +122,6 @@ public class CommandBuilder {
         for (var s1 : s) {
             elements.add(index++, s1);
         }
-        return this;
-    }
-
-    public CommandBuilder remove(String s) {
-        elements.removeIf(element -> element instanceof Fixed fixed && s.equals(fixed.string));
         return this;
     }
 
@@ -177,11 +167,6 @@ public class CommandBuilder {
         return this;
     }
 
-    public CommandBuilder prepend(Element e) {
-        elements.addFirst(e);
-        return this;
-    }
-
     public CommandBuilder add(Element e) {
         elements.add(e);
         return this;
@@ -197,15 +182,6 @@ public class CommandBuilder {
     public CommandBuilder addAll(FailableFunction<ShellControl, List<String>, Exception> f) {
         elements.add(sc -> String.join(" ", f.apply(sc)));
         return this;
-    }
-
-    public CommandBuilder prepend(String... s) {
-        elements.addAll(0, Arrays.stream(s).map(s2 -> new Fixed(s2)).toList());
-        return this;
-    }
-
-    public CommandBuilder prependQuoted(String s) {
-        return prepend("\"" + s + "\"");
     }
 
     public CommandBuilder addFile(FailableFunction<ShellControl, FilePath, Exception> f) {

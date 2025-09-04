@@ -30,7 +30,7 @@ public class BrowserIconManager {
         } else {
             for (var f : BrowserIconDirectoryType.getAll()) {
                 if (f.matches(r)) {
-                    return f.getIcon(r);
+                    return f.getIcon();
                 }
             }
         }

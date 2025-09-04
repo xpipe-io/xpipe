@@ -64,7 +64,7 @@ public class BrowserEntry {
         if (fileType != null) {
             return fileType.getIcon();
         } else if (directoryType != null) {
-            return directoryType.getIcon(rawFileEntry);
+            return directoryType.getIcon();
         } else {
             return rawFileEntry != null && rawFileEntry.resolved().getKind() == FileKind.DIRECTORY
                     ? "browser/default_folder.svg"

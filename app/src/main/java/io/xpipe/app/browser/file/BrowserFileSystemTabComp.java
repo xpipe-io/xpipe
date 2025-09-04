@@ -138,7 +138,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                 if (fullSessionModel.getGlobalPinnedTab().getValue() != model) {
                     fullSessionModel.pinTab(model);
                 } else {
-                    fullSessionModel.unpinTab(model);
+                    fullSessionModel.unpinTab();
                 }
                 e.consume();
             });

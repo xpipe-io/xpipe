@@ -56,7 +56,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 
@@ -76,7 +76,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         var t = AppPrefs.get().terminalType().getValue();
         return t != null;
     }

@@ -70,13 +70,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    protected ObservableValue<Boolean> busy() {
-        return new SimpleBooleanProperty(false);
-    }
-
     protected abstract void finish();
-
-    protected abstract void discard();
 
     public abstract Comp<?> content();
 

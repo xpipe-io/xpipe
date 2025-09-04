@@ -37,7 +37,7 @@ public class Check {
     private final ChangeListener<? super Object> dependencyListener;
     private Consumer<Context> checkMethod;
     private ValidationResult nextValidationResult = new ValidationResult();
-    private Function<ValidationMessage, Decoration> decorationFactory;
+    private final Function<ValidationMessage, Decoration> decorationFactory;
 
     public Check() {
         validationResultProperty.set(new ValidationResult());
@@ -57,11 +57,6 @@ public class Check {
 
     public Check decorates(Node target) {
         targets.add(target);
-        return this;
-    }
-
-    public Check decoratingWith(Function<ValidationMessage, Decoration> decorationFactory) {
-        this.decorationFactory = decorationFactory;
         return this;
     }
 
@@ -133,19 +128,6 @@ public class Check {
         @SuppressWarnings("unchecked")
         public <T> T get(String key) {
             return (T) dependencies.get(key).getValue();
-        }
-
-        public Iterable<String> keys() {
-            return dependencies.keySet();
-        }
-
-        /**
-         * Emit a warning.
-         *
-         * @param message The text to be presented to the user as warning message.
-         */
-        public void warn(String message) {
-            nextValidationResult.addWarning(message);
         }
 
         /**

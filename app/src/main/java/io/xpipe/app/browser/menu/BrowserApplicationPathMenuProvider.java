@@ -1,9 +1,6 @@
 package io.xpipe.app.browser.menu;
 
-import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-
-import java.util.List;
 
 public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvider {
 
@@ -20,7 +17,7 @@ public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvi
     }
 
     @Override
-    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default boolean isActive(BrowserFileSystemTabModel model) {
         return model.getCache().isApplicationInPath(getExecutable());
     }
 }

@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.prefs.AppPrefs;

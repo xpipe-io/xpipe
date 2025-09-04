@@ -10,7 +10,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import lombok.SneakyThrows;
 
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;

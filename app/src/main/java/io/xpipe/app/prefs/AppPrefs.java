@@ -478,6 +478,7 @@ public final class AppPrefs {
         return terminalMultiplexer;
     }
 
+    @SuppressWarnings("unused")
     public ObservableValue<ShellScript> terminalInitScript() {
         return terminalInitScript;
     }

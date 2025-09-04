@@ -39,7 +39,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-archive");
     }
 
@@ -151,7 +151,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return directory
                     ? new LabelGraphic.IconGraphic("mdi2f-file-tree")
                     : new LabelGraphic.IconGraphic("mdi2f-file-outline");
@@ -224,7 +224,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public boolean isActive(BrowserFileSystemTabModel model) {
             return model.getCache().getInstalledApplications().get("tar");
         }
 

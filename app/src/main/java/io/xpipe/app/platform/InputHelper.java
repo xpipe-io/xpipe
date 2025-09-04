@@ -4,7 +4,6 @@ import javafx.event.EventHandler;
 import javafx.event.EventTarget;
 import javafx.scene.input.*;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class InputHelper {

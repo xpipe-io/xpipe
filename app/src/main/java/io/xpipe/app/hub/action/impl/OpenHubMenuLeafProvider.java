@@ -47,7 +47,7 @@ public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, Batc
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<DataStore> o) {
+    public boolean isDefault() {
         return true;
     }
 

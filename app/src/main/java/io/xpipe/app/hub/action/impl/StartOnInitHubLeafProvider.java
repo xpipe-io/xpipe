@@ -1,17 +1,12 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.StartOnInitStore;
-import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.core.FilePath;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -53,7 +48,7 @@ public class StartOnInitHubLeafProvider implements HubLeafProvider<StartOnInitSt
     public static class Action extends StoreAction<StartOnInitStore> {
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             if (ref.getStore().isEnabled()) {
                 ref.getStore().disable();
             } else  {

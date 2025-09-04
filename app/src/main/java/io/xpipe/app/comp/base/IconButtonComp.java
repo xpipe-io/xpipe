@@ -28,10 +28,6 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
         this(new SimpleObjectProperty<>(new LabelGraphic.IconGraphic(defaultVal)), listener);
     }
 
-    public IconButtonComp(LabelGraphic defaultVal) {
-        this(new SimpleObjectProperty<>(defaultVal), null);
-    }
-
     public IconButtonComp(ObservableValue<? extends LabelGraphic> icon) {
         this.icon = icon;
         this.listener = null;

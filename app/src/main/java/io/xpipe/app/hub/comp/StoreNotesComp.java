@@ -109,9 +109,6 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
 
             @Override
-            protected void discard() {}
-
-            @Override
             public Comp<?> content() {
                 return Comp.of(() -> md.get());
             }

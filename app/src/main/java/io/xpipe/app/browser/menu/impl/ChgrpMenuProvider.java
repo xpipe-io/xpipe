@@ -12,7 +12,6 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.FileKind;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -42,7 +41,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-account-group-outline");
     }
 
@@ -75,7 +74,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     private static class FlatProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
@@ -94,7 +93,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     private static class RecursiveProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 

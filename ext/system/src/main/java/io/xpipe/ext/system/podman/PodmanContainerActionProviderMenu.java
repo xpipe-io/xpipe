@@ -16,7 +16,7 @@ import java.util.List;
 public class PodmanContainerActionProviderMenu implements HubBranchProvider<PodmanContainerStore> {
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<PodmanContainerStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

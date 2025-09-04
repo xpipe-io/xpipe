@@ -17,7 +17,7 @@ import java.util.List;
 public class IncusContainerActionProviderMenu implements HubBranchProvider<IncusContainerStore> {
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<IncusContainerStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

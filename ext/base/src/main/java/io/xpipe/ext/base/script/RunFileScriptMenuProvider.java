@@ -4,7 +4,6 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.*;
-import io.xpipe.app.browser.menu.impl.ChownMenuProvider;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -23,7 +22,7 @@ import java.util.List;
 public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2c-code-greater-than");
     }
 
@@ -104,7 +103,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
                 .toList();
         return new BrowserMenuBranchProvider() {
             @Override
-            public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            public LabelGraphic getIcon() {
                 return new LabelGraphic.CompGraphic(
                         PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16));
             }
@@ -127,7 +126,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new MultiExecuteMenuProvider() {
 
             @Override
-            public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+            public LabelGraphic getIcon() {
                 return new LabelGraphic.CompGraphic(
                         PrettyImageHelper.ofFixedSize(ref.get().getEffectiveIconFile(), 16, 16));
             }

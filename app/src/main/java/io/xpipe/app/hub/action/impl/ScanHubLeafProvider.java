@@ -25,7 +25,7 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

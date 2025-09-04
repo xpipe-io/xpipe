@@ -6,7 +6,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;

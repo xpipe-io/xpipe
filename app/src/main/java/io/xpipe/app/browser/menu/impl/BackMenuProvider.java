@@ -33,7 +33,7 @@ public class BackMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-arrow-left");
     }
 
@@ -48,7 +48,7 @@ public class BackMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         return model.getHistory().canGoBackProperty().get();
     }
 }

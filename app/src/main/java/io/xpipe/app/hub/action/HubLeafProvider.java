@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 
 public interface HubLeafProvider<T extends DataStore> extends HubMenuItemProvider<T> {
 
-    default boolean isDefault(DataStoreEntryRef<T> o) {
+    default boolean isDefault() {
         return false;
     }
 

@@ -35,7 +35,7 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2p-pencil");
     }
 
@@ -57,7 +57,7 @@ public class EditFileMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         var e = AppPrefs.get().externalEditor().getValue();
         return e != null;
     }

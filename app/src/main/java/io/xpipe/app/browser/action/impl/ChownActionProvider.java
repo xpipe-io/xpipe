@@ -4,8 +4,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.core.OsType;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;

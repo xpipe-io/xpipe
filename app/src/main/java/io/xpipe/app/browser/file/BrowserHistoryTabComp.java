@@ -130,10 +130,8 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     DataStorage.get().local().ref(), null, null);
         });
 
-        var v = new VerticalComp(List.of(docs, open));
-        v.spacing(70);
-        v.apply(struc -> struc.get().setAlignment(Pos.CENTER));
-        return v;
+        var list = new IntroListComp(List.of(docs, open));
+        return list;
     }
 
     private Comp<?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {

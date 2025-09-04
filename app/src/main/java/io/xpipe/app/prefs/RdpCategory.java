@@ -2,11 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ChoiceComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.util.DocumentationLink;
@@ -14,15 +10,10 @@ import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 
-import io.xpipe.app.vnc.ExternalVncClient;
-import javafx.geometry.Pos;
-
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.List;
 
 public class RdpCategory extends AppPrefsCategory {
 

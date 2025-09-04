@@ -6,11 +6,7 @@ import io.xpipe.app.comp.base.DelayedInitComp;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.platform.InputHelper;
 
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 
 public class StoreLayoutComp extends SimpleComp {

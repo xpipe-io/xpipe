@@ -1,7 +1,6 @@
 package io.xpipe.app.rdp;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;

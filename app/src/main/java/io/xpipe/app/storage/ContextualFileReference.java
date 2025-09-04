@@ -37,15 +37,6 @@ public class ContextualFileReference {
         return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();
     }
 
-    public static Optional<FilePath> resolveIfInDataDirectory(ShellControl shellControl, String s) {
-        if (s.startsWith("<DATA>")) {
-            var cf = of(s);
-            return Optional.of(cf.toAbsoluteFilePath(shellControl));
-        } else {
-            return Optional.empty();
-        }
-    }
-
     public static ContextualFileReference of(FilePath p) {
         if (p == null) {
             return null;

@@ -34,7 +34,7 @@ public class OpenDirectoryInNewTabMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2f-folder-open-outline");
     }
 

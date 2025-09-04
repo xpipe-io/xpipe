@@ -7,7 +7,6 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessOutputException;
 
-import io.xpipe.core.FileKind;
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

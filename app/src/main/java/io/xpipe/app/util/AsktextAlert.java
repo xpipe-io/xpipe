@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppSideWindow;
-import io.xpipe.app.core.window.AppWindowStyle;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;

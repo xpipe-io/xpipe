@@ -32,6 +32,7 @@ public class BeaconServer {
         }
     }
 
+    @SuppressWarnings("unused")
     public static boolean tryStop(BeaconClient client) throws Exception {
         DaemonStopExchange.Response res =
                 client.performRequest(DaemonStopExchange.Request.builder().build());

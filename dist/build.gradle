@@ -76,12 +76,12 @@ tasks.register('createChecksums', Checksum) {
     }
 }
 
-def getArtifactChecksumSha256Hex(String name) {
+String getArtifactChecksumSha256Hex(String name) {
     var file = layout.buildDirectory.file("dist/checksums/artifacts/${name}.sha256")
     return file.get().getAsFile().exists() ? file.get().getAsFile().text : ""
 }
 
-def getArtifactChecksumSha256Base64(String name) {
+String getArtifactChecksumSha256Base64(String name) {
     return Base64.getEncoder().encodeToString(HexFormat.of().parseHex(getArtifactChecksumSha256Hex(name)))
 }
 

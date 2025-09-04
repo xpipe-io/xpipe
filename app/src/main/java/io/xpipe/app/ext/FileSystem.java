@@ -3,10 +3,8 @@ package io.xpipe.app.ext;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;

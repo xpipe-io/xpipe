@@ -51,7 +51,7 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2c-content-paste");
     }
 
@@ -76,7 +76,7 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         return BrowserClipboard.retrieveCopy() != null;
     }
 }

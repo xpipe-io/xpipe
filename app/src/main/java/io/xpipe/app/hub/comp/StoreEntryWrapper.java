@@ -272,7 +272,7 @@ public class StoreEntryWrapper {
                                 && def.getApplicableClass()
                                         .isAssignableFrom(entry.getStore().getClass())
                                 && def.isApplicable(entry.ref())
-                                && def.isDefault(entry.ref()))
+                                && def.isDefault())
                         .findFirst()
                         .or(() -> {
                             if (entry.getStore() instanceof GroupStore<?>) {
@@ -346,14 +346,14 @@ public class StoreEntryWrapper {
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
                     && leaf.isApplicable(entry.ref())
-                    && (!major || leaf.isMajor(entry.ref()));
+                    && (!major || leaf.isMajor());
         }
 
         if (p instanceof HubBranchProvider<?> branch
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
                 && branch.isApplicable(entry.ref())
-                && (!major || branch.isMajor(entry.ref()))) {
+                && (!major || branch.isMajor())) {
             return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child, false);
             });

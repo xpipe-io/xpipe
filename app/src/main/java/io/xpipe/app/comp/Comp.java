@@ -68,10 +68,6 @@ public abstract class Comp<S extends CompStructure<?>> {
         return of(() -> new Separator(Orientation.HORIZONTAL));
     }
 
-    public static Comp<CompStructure<Separator>> vseparator() {
-        return of(() -> new Separator(Orientation.VERTICAL));
-    }
-
     @SuppressWarnings("unchecked")
     public <T extends Comp<S>> T apply(Augment<S> augment) {
         if (augments == null) {
@@ -155,10 +151,6 @@ public abstract class Comp<S extends CompStructure<?>> {
                 });
             });
         });
-    }
-
-    public Comp<S> disable(boolean o) {
-        return disable(new ReadOnlyBooleanWrapper(o));
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {

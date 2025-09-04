@@ -16,7 +16,6 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +26,7 @@ import java.util.List;
 public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2p-plus-box-outline");
     }
 
@@ -87,7 +86,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 
@@ -134,7 +133,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultDirectoryIcon());
                     }
 
@@ -192,7 +191,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 

@@ -150,7 +150,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         }
     }
 
-    public void unpinTab(BrowserSessionTab tab) {
+    public void unpinTab() {
         ThreadHelper.runFailableAsync(() -> {
             globalPinnedTab.setValue(null);
         });

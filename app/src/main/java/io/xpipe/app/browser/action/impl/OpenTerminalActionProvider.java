@@ -31,7 +31,7 @@ public class OpenTerminalActionProvider implements BrowserActionProvider {
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive() {
         var t = AppPrefs.get().terminalType().getValue();
         return t != null;
     }

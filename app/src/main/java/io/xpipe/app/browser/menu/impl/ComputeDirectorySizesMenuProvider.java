@@ -21,7 +21,7 @@ public class ComputeDirectorySizesMenuProvider implements BrowserMenuLeafProvide
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2f-format-list-text");
     }
 

@@ -32,8 +32,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
     public static final String MESSAGE_EVENT_TYPE = "message";
 
-    public static final String ENDPOINT_EVENT_TYPE = "endpoint";
-
     public static final String UTF_8 = "UTF-8";
     public static final String APPLICATION_JSON = "application/json";
     public static final String TEXT_EVENT_STREAM = "text/event-stream";

@@ -12,7 +12,7 @@ public interface BrowserActionProvider extends ActionProvider {
         return true;
     }
 
-    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default boolean isActive() {
         return true;
     }
 }

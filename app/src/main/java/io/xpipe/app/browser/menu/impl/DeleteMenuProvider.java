@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.DeleteActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
@@ -31,7 +30,7 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2d-delete");
     }
 

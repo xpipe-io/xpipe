@@ -69,7 +69,7 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     }
 
     @Override
-    public NetworkTunnelSession newSession() throws Exception {
+    public NetworkTunnelSession newSession() {
         var f = LicenseProvider.get().getFeature("services");
         if (licenseRequired() && !f.isSupported()) {
             var active = DataStorage.get().getStoreEntries().stream()

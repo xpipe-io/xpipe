@@ -23,7 +23,7 @@ public class ServiceRefreshHubProvider
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

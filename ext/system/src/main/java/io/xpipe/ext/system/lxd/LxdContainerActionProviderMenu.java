@@ -17,7 +17,7 @@ import java.util.List;
 public class LxdContainerActionProviderMenu implements HubBranchProvider<LxdContainerStore> {
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<LxdContainerStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

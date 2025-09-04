@@ -27,11 +27,11 @@ public interface BrowserMenuBranchProvider extends BrowserMenuItemProvider {
             return null;
         }
 
-        var graphic = getIcon(model, selected);
+        var graphic = getIcon();
         if (graphic != null) {
             m.setGraphic(graphic.createGraphicNode());
         }
-        m.setDisable(!isActive(model, selected));
+        m.setDisable(!isActive(model));
 
         return m;
     }
