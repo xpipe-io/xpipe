@@ -61,12 +61,12 @@ public class BaseMode extends OperationMode {
         AppWindowTitle.init();
         AppPathCorruptCheck.check();
         AppHomebrewCoreutilsCheck.check();
+        WindowsRegistry.init();
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
         AppSid.init();
         AppBeaconServer.init();
         AppLayoutModel.init();
-        WindowsRegistry.init();
 
         if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             AppPtbDialog.showIfNeeded();

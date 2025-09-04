@@ -58,7 +58,6 @@ public class BitwardenPasswordManager implements PasswordManager {
             var sc = getOrStartShell();
             var command = sc.command(CommandBuilder.of().add("bw", "get", "item", "xpipe-test", "--nointeraction"));
             var r = command.readStdoutAndStderr();
-            // Check for data file as bw seemingly breaks if it doesn't exist yet
             if (r[1].contains("You are not logged in")) {
                 var script = ShellScript.lines(
                         moveAppDir()

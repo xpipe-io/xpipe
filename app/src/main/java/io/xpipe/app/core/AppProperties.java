@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.check.AppUserDirectoryCheck;
+import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.XPipeDaemonMode;
@@ -153,7 +153,7 @@ public class AppProperties {
                 .orElse("info");
 
         // We require the user dir from here
-        AppUserDirectoryCheck.check(dataDir);
+        AppDirectoryPermissionsCheck.checkDirectory(dataDir);
         AppCache.setBasePath(dataDir.resolve("cache"));
         dataBinDir = dataDir.resolve("cache", "bin");
         UUID id = AppCache.getNonNull("uuid", UUID.class, () -> null);

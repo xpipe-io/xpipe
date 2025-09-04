@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.action.AbstractAction;
+import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.DeleteActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
@@ -20,17 +21,8 @@ import java.util.List;
 public class DeleteMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
-    public AbstractAction createAction(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var link = entries.stream()
-                .anyMatch(browserEntry -> browserEntry.getRawFileEntry().getKind() == FileKind.LINK);
-        var files = entries.stream()
-                .map(browserEntry -> !link
-                        ? browserEntry.getRawFileEntry().resolved().getPath()
-                        : browserEntry.getRawFileEntry().getPath())
-                .toList();
-        var builder = DeleteActionProvider.Action.builder();
-        builder.initFiles(model, files);
-        return builder.build();
+    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
+        return DeleteActionProvider.class;
     }
 
     @Override
@@ -58,8 +50,8 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
         return AppI18n.observable(
                 "deleteFile",
                 entries.stream()
-                                .anyMatch(browserEntry ->
-                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
+                        .anyMatch(browserEntry ->
+                                browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
                         ? "link"
                         : "");
     }

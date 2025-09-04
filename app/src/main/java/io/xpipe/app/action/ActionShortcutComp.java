@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
@@ -60,6 +61,7 @@ public class ActionShortcutComp extends SimpleComp {
         field.grow(true, false);
         field.apply(struc -> struc.get().setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
+        group.setHeightReference(copyButton);
         return group;
     }
 
@@ -74,7 +76,8 @@ public class ActionShortcutComp extends SimpleComp {
         });
         var copyButton = new ButtonComp(null, new FontIcon("mdi2f-file-move-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var file = DesktopShortcuts.createCliOpen(url.getValue(), name.getValue());
+                        var exec = AppInstallation.ofCurrent().getCliExecutablePath().toString();
+                        var file = DesktopShortcuts.create(exec, "open \"" + url.getValue() + "\"", name.getValue());
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })
@@ -83,6 +86,7 @@ public class ActionShortcutComp extends SimpleComp {
         var field = new TextFieldComp(name);
         field.grow(true, false);
         var group = new InputGroupComp(List.of(field, copyButton));
+        group.setHeightReference(copyButton);
         return group;
     }
 
@@ -103,6 +107,7 @@ public class ActionShortcutComp extends SimpleComp {
         field.grow(true, false);
         field.apply(struc -> struc.get().setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
+        group.setHeightReference(copyButton);
         return group;
     }
 

@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
-public class AppTempCheck {
+public class AppWindowsTempCheck {
 
     private static void checkTemp(String tmpdir) {
         Path dir = null;

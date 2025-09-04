@@ -6,8 +6,10 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -62,12 +64,15 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     }
 
     private void addNamedIdentity() {
-        var pwMan = DataStorage.get().getStoreEntries().stream()
+        var hasPwMan = AppPrefs.get().passwordManager().getValue() != null;
+        var pwManIdentity = DataStorage.get().getStoreEntries().stream()
                 .map(entry -> entry.getStore() instanceof PasswordManagerIdentityStore p ? p : null)
                 .filter(s -> s != null)
                 .findFirst();
-        if (pwMan.isPresent()) {
-            var perUser = pwMan.get().isPerUser();
+        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretRetrievalStrategy.None);
+        var hasSshIdentity = identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
+        if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
+            var perUser = pwManIdentity.get().isPerUser();
             var id = PasswordManagerIdentityStore.builder()
                     .key(inPlaceUser.getValue())
                     .perUser(perUser)
