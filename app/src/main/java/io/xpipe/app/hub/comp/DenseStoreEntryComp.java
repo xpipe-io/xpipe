@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.core.AppFontSizes;
 
 import javafx.beans.binding.Bindings;
@@ -138,8 +137,6 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         controls.setPadding(new Insets(0, 0, 0, 10));
         HBox.setHgrow(cr, Priority.ALWAYS);
         grid.addRow(0, controls);
-
-        GrowAugment.create(true, false).augment(grid);
 
         grid.getStyleClass().add("store-entry-grid");
         grid.getStyleClass().add("dense");

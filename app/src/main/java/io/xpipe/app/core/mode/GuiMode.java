@@ -40,7 +40,7 @@ public class GuiMode extends PlatformMode {
         LicenseProvider.get().init();
 
         PlatformThread.runLaterIfNeededBlocking(() -> {
-            AppMainWindow.getInstance().show();
+            AppMainWindow.get().show();
         });
     }
 }

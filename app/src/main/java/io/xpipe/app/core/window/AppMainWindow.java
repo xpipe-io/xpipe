@@ -11,7 +11,7 @@ import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -35,7 +35,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import javax.imageio.ImageIO;
 
 public class AppMainWindow {
@@ -52,7 +51,6 @@ public class AppMainWindow {
     private final Stage stage;
 
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
-    private Thread thread;
     private volatile Instant lastUpdate;
     private boolean shown = false;
 
@@ -105,11 +103,12 @@ public class AppMainWindow {
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
-        AppWindowHelper.addIcons(stage);
-        AppWindowHelper.setupStylesheets(stage.getScene());
-        AppWindowHelper.setupClickShield(stage);
-        AppWindowHelper.addMaximizedPseudoClass(stage);
-        AppWindowHelper.addFontSize(stage);
+        AppWindowStyle.addIcons(stage);
+        AppWindowStyle.addStylesheets(stage.getScene());
+        AppWindowStyle.addNavigationStyleClasses(stage.getScene());
+        AppWindowStyle.addClickShield(stage);
+        AppWindowStyle.addMaximizedPseudoClass(stage);
+        AppWindowStyle.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
 
         AppWindowTitle.getTitle().subscribe(s -> {
@@ -147,7 +146,7 @@ public class AppMainWindow {
         });
     }
 
-    public static AppMainWindow getInstance() {
+    public static AppMainWindow get() {
         return INSTANCE;
     }
 
@@ -186,29 +185,18 @@ public class AppMainWindow {
     }
 
     private synchronized void onChange() {
-        lastUpdate = Instant.now();
-        if (thread == null) {
-            thread = ThreadHelper.unstarted(() -> {
-                while (true) {
-                    var toStop = lastUpdate.plus(Duration.of(1, ChronoUnit.SECONDS));
-                    if (Instant.now().isBefore(toStop)) {
-                        var toSleep = Duration.between(Instant.now(), toStop);
-                        if (!toSleep.isNegative()) {
-                            var ms = toSleep.toMillis();
-                            ThreadHelper.sleep(ms);
-                        }
-                    } else {
-                        break;
-                    }
-                }
+        var timestamp = Instant.now();
+        lastUpdate = timestamp;
+        // Reduce printed window updates
+        GlobalTimer.delay(() -> {
+            if (!timestamp.equals(lastUpdate)) {
+                return;
+            }
 
-                synchronized (AppMainWindow.this) {
-                    logChange();
-                    thread = null;
-                }
-            });
-            thread.start();
-        }
+            synchronized (AppMainWindow.this) {
+                logChange();
+            }
+        }, Duration.ofSeconds(1));
     }
 
     private void logChange() {

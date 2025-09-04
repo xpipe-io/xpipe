@@ -19,6 +19,8 @@ public class AppFont {
         // Load ikonli fonts
         TrackEvent.info("Loading ikonli fonts ...");
         new FontIcon("mdi2s-stop");
+        new FontIcon("mdal-360");
+        new FontIcon("bi-alarm");
 
         TrackEvent.info("Loading bundled fonts ...");
         AppResources.with(

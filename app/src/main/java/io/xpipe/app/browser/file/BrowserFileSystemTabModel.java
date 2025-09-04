@@ -301,7 +301,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return false;
         }
 
-        if (AppMainWindow.getInstance().getStage().getWidth() <= 1380) {
+        if (AppMainWindow.get().getStage().getWidth() <= 1380) {
             return false;
         }
 

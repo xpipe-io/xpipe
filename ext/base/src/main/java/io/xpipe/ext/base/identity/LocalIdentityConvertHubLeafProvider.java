@@ -78,7 +78,7 @@ public class LocalIdentityConvertHubLeafProvider implements HubLeafProvider<Loca
 
             // Ugly solution to sync key file if needed
             Platform.runLater(() -> {
-                var found = AppMainWindow.getInstance()
+                var found = AppMainWindow.get()
                         .getStage()
                         .getScene()
                         .getRoot()

@@ -3,7 +3,6 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.ext.FileEntry;
@@ -42,7 +41,7 @@ public class BrowserFileOverviewComp extends SimpleComp {
                     event.consume();
                 });
                 l.setAlignment(Pos.CENTER_LEFT);
-                GrowAugment.create(true, false).augment(l);
+                l.setMaxWidth(10000);
                 return l;
             });
         };

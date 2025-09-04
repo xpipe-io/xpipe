@@ -75,7 +75,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        delayedStack.hide(AppMainWindow.getInstance().getStage().widthProperty().lessThan(1000));
+        delayedStack.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

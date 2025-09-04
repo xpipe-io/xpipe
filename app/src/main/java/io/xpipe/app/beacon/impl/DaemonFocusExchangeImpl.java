@@ -11,7 +11,7 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
         OperationMode.switchUp(OperationMode.GUI);
-        var w = AppMainWindow.getInstance();
+        var w = AppMainWindow.get();
         if (w != null) {
             w.focus();
         }

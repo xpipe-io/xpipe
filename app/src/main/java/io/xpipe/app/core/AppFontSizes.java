@@ -108,7 +108,7 @@ public class AppFontSizes {
         }
     }
 
-    private static AppFontSizes interSize(AppFontSizes s) {
+    private static AppFontSizes fallbackFontSize(AppFontSizes s) {
         if (s == BASE_10) {
             return BASE_10;
         } else if (s == BASE_10_5) {
@@ -128,7 +128,7 @@ public class AppFontSizes {
                     case OsType.MacOs ignored -> mac;
                     case OsType.Windows ignored -> windows;
                 };
-        return inter ? interSize(r) : r;
+        return inter ? fallbackFontSize(r) : r;
     }
 
     public static AppFontSizes getDefault() {

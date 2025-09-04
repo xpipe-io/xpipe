@@ -2,7 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.core.window.AppWindowStyle;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -17,7 +18,7 @@ public class AsktextAlert {
 
     public static Optional<String> query(String prompt) {
         var prop = new SimpleObjectProperty<String>();
-        var r = AppWindowHelper.showBlockingAlert(alert -> {
+        var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("asktextAlertTitle"));
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);

@@ -78,7 +78,7 @@ public class TerminalDockComp extends SimpleComp {
     }
 
     private void setupListeners(StackPane stack) {
-        var s = AppMainWindow.getInstance().getStage();
+        var s = AppMainWindow.get().getStage();
 
         var bounds = new ChangeListener<Bounds>() {
             @Override

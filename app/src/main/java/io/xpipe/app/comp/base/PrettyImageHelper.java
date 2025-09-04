@@ -37,8 +37,8 @@ public class PrettyImageHelper {
 
     private static ObservableValue<String> rasterizedImageIfExistsScaled(
             String img, int height, int... availableSizes) {
-        ObservableDoubleValue obs = AppMainWindow.getInstance() != null
-                ? AppMainWindow.getInstance().displayScale()
+        ObservableDoubleValue obs = AppMainWindow.get() != null
+                ? AppMainWindow.get().displayScale()
                 : new SimpleDoubleProperty(1.0);
         return Bindings.createStringBinding(
                 () -> {

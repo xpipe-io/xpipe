@@ -215,7 +215,7 @@ public class AppTheme {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            var window = AppMainWindow.getInstance();
+            var window = AppMainWindow.get();
             if (window == null) {
                 return;
             }

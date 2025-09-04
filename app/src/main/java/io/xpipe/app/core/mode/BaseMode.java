@@ -55,7 +55,7 @@ public class BaseMode extends OperationMode {
             return;
         }
 
-        // For debugging
+        // For debugging error handling
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");

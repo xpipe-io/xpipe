@@ -1,7 +1,6 @@
 package io.xpipe.app.core.mode;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
@@ -17,7 +16,6 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FailableRunnable;
-import io.xpipe.core.OsType;
 import io.xpipe.core.XPipeDaemonMode;
 
 import javafx.application.Platform;
@@ -141,8 +139,8 @@ public abstract class OperationMode {
 
     public static XPipeDaemonMode getStartupMode() {
         var event = TrackEvent.withInfo("Startup mode determined");
-        if (AppMainWindow.getInstance() != null
-                && AppMainWindow.getInstance().getStage().isShowing()) {
+        if (AppMainWindow.get() != null
+                && AppMainWindow.get().getStage().isShowing()) {
             event.tag("mode", "gui").tag("reason", "windowShowing").handle();
             return XPipeDaemonMode.GUI;
         }
@@ -374,8 +372,8 @@ public abstract class OperationMode {
 
             BACKGROUND.onSwitchTo();
             if (newMode != GUI
-                    && AppMainWindow.getInstance() != null
-                    && AppMainWindow.getInstance().getStage().isShowing()) {
+                    && AppMainWindow.get() != null
+                    && AppMainWindow.get().getStage().isShowing()) {
                 GUI.onSwitchTo();
                 newMode = GUI;
             } else {

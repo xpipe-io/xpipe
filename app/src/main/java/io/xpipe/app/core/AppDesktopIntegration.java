@@ -68,7 +68,7 @@ public class AppDesktopIntegration {
                 });
 
                 // Set dock icon explicitly on macOS
-                // This is necessary in case XPipe was started through a script as it will have no icon otherwise
+                // This is necessary in case the app was started through a script as it will have no icon otherwise
                 if (AppProperties.get().isDeveloperMode()
                         && AppLogs.get().isWriteToSysout()
                         && Taskbar.isTaskbarSupported()) {

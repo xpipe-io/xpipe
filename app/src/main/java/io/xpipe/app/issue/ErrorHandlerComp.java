@@ -1,7 +1,6 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -66,7 +65,7 @@ public class ErrorHandlerComp extends SimpleComp {
             });
         });
         b.disable(busy);
-        b.apply(GrowAugment.create(true, false));
+        b.maxWidth(2000);
         return b.createRegion();
     }
 

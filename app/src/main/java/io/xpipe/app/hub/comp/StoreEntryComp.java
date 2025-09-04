@@ -5,7 +5,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
 import io.xpipe.app.hub.action.HubBranchProvider;
@@ -126,7 +125,6 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var button = new Button();
         button.setGraphic(r);
-        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
         button.getStyleClass().add("store-entry-comp");
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);

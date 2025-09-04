@@ -77,9 +77,9 @@ public class RemminaHelper {
                                         .getValue(),
                                 password != null ? password : "",
                                 Math.round(
-                                        AppMainWindow.getInstance().getStage().getWidth()),
+                                        AppMainWindow.get().getStage().getWidth()),
                                 Math.round(
-                                        AppMainWindow.getInstance().getStage().getHeight()));
+                                        AppMainWindow.get().getStage().getHeight()));
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

@@ -2,7 +2,8 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.window.AppWindowHelper;
+import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretQueryResult;
 import io.xpipe.app.secret.SecretQueryState;
@@ -24,7 +25,7 @@ public class AskpassAlert {
 
     public static SecretQueryResult queryRaw(String prompt, InPlaceSecretValue secretValue, boolean stealFocus) {
         var prop = new SimpleObjectProperty<>(secretValue);
-        var r = AppWindowHelper.showBlockingAlert(alert -> {
+        var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.initModality(Modality.NONE);
                     alert.setTitle(AppI18n.get("askpassAlertTitle"));
                     alert.setHeaderText(prompt);

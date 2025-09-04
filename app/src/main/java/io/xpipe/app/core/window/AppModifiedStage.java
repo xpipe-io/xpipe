@@ -83,8 +83,8 @@ public class AppModifiedStage extends Stage {
                 case OsType.Linux ignored -> {}
                 case OsType.MacOs ignored -> {
                     var ctrl = new NativeMacOsWindowControl(stage);
-                    var seamlessFrame = AppMainWindow.getInstance() != null
-                            && AppMainWindow.getInstance().getStage() == stage
+                    var seamlessFrame = AppMainWindow.get() != null
+                            && AppMainWindow.get().getStage() == stage
                             && !AppPrefs.get().performanceMode().get()
                             && mergeFrame();
                     var seamlessFrameApplied = ctrl.setAppearance(
@@ -108,8 +108,8 @@ public class AppModifiedStage extends Stage {
                     boolean seamlessFrame;
                     if (AppPrefs.get().performanceMode().get()
                             || !mergeFrame()
-                            || AppMainWindow.getInstance() == null
-                            || stage != AppMainWindow.getInstance().getStage()) {
+                            || AppMainWindow.get() == null
+                            || stage != AppMainWindow.get().getStage()) {
                         seamlessFrame = false;
                     } else {
                         // This is not available on Windows 10
