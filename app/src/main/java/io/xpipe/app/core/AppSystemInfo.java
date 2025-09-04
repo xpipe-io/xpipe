@@ -64,6 +64,8 @@ public abstract class AppSystemInfo {
 
     public abstract Path getDesktop();
 
+    public abstract Path getTemp();
+
     public static final class Windows extends AppSystemInfo {
 
         private Path userHome;
@@ -281,6 +283,11 @@ public abstract class AppSystemInfo {
             var fallback = getUserHome().resolve("Desktop");
             return (desktop = fallback);
         }
+
+        @Override
+        public Path getTemp() {
+            return Path.of(System.getProperty("java.io.tmpdir"));
+        }
     }
 
     public static class MacOs extends AppSystemInfo {
@@ -298,6 +305,11 @@ public abstract class AppSystemInfo {
         @Override
         public Path getDesktop() {
             return getUserHome().resolve("Desktop");
+        }
+
+        @Override
+        public Path getTemp() {
+            return Path.of(System.getProperty("java.io.tmpdir"));
         }
     }
 }
