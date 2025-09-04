@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.core.Deobfuscator;
+import io.xpipe.app.util.Deobfuscator;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;

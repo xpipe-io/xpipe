@@ -57,19 +57,18 @@ public class IntroComp extends SimpleComp {
         var hbox = new HBox(img, text);
         hbox.setSpacing(55);
         hbox.setAlignment(Pos.CENTER);
-
-        var button = new ButtonComp(
-                AppI18n.observable(translationsKey + "Button"),
-                buttonGraphic != null ? buttonGraphic.createGraphicNode() : null,
-                buttonAction);
-        if (buttonDefault) {
-            button.styleClass(Styles.ACCENT);
-        }
-        var buttonPane = new StackPane(button.createRegion());
-        buttonPane.setAlignment(Pos.CENTER);
-
         var v = new VBox(hbox);
+
         if (buttonAction != null) {
+            var button = new ButtonComp(
+                    AppI18n.observable(translationsKey + "Button"),
+                    buttonGraphic != null ? buttonGraphic.createGraphicNode() : null,
+                    buttonAction);
+            if (buttonDefault) {
+                button.styleClass(Styles.ACCENT);
+            }
+            var buttonPane = new StackPane(button.createRegion());
+            buttonPane.setAlignment(Pos.CENTER);
             v.getChildren().add(buttonPane);
         }
 

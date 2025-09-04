@@ -1,4 +1,7 @@
-package io.xpipe.core;
+package io.xpipe.app.util;
+
+import io.xpipe.app.core.AppNames;
+import io.xpipe.core.OsType;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,11 +22,11 @@ public class Deobfuscator {
                 return stackTrace;
             }
 
-            var file = Files.createTempFile("xpipe-stacktrace", null);
+            var file = Files.createTempFile(AppNames.ofCurrent().getKebapName() + "-stacktrace", null);
             Files.writeString(file, stackTrace);
             var proc = new ProcessBuilder(
                             "retrace." + (OsType.getLocal() == OsType.WINDOWS ? "bat" : "sh"),
-                            System.getenv("XPIPE_MAPPING"),
+                            System.getenv(AppNames.ofMain().getUppercaseName() + "_MAPPING"),
                             file.toString())
                     .redirectErrorStream(true);
             var active = proc.start();

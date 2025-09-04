@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.Deobfuscator;
+import io.xpipe.app.util.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;

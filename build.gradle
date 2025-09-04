@@ -41,8 +41,8 @@ subprojects {subproject ->
     }
 }
 
-def user = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
-def pass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
+def sonatypeUser = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
+def sonatypePass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
 
 tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
@@ -53,8 +53,8 @@ nexusPublishing  {
         sonatype  {
             nexusUrl.set(uri('https://s01.oss.sonatype.org/service/local/'))
             snapshotRepositoryUrl.set(uri('https://s01.oss.sonatype.org/content/repositories/snapshots/'))
-            username = user
-            password = pass
+            username = sonatypeUser
+            password = sonatypePass
         }
     }
     useStaging = true
@@ -98,17 +98,17 @@ def getPlatformName() {
 def getJvmArgs() {
     def os = DefaultNativePlatform.currentOperatingSystem
     def jvmRunArgs = [
-            "-Dio.xpipe.app.arch=$arch",
+            "-D" + propertyName("arch") + "=" + arch,
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=$productName",
-            "-Djavafx.preloader=io.xpipe.app.core.AppPreloader",
+            "-Djavafx.preloader=" + packageName("core.AppPreloader"),
             "-Djdk.virtualThreadScheduler.parallelism=8"
     ]
 
     // Virtual threads cause crashes on Windows ARM
     if (os.isWindows() && arch == "arm64") {
         jvmRunArgs += [
-                "-Dio.xpipe.app.useVirtualThreads=false"
+                "-D" + propertyName("useVirtualThreads") + "=false"
         ]
     }
 
@@ -121,23 +121,23 @@ def getJvmArgs() {
     ]
 
     // Module access fixes
+    def appPackage = packageName(null)
     jvmRunArgs += [
-            "--add-opens", "java.base/java.lang=io.xpipe.app",
-            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=io.xpipe.app",
-            "--add-opens", "java.base/java.nio.file=io.xpipe.app",
-            "--add-opens", "java.base/java.lang=io.xpipe.app",
-            "--add-exports", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
+            "--add-opens", "java.base/java.lang=$appPackage",
+            "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=$appPackage",
+            "--add-opens", "java.base/java.nio.file=$appPackage",
+            "--add-exports", "javafx.graphics/com.sun.javafx.tk=$appPackage",
             "--add-exports", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
-            "--add-opens", "javafx.graphics/com.sun.glass.ui=io.xpipe.app",
-            "--add-opens", "javafx.graphics/javafx.stage=io.xpipe.app",
-            "--add-opens", "javafx.graphics/com.sun.javafx.tk=io.xpipe.app",
-            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=io.xpipe.app"
+            "--add-opens", "javafx.graphics/com.sun.glass.ui=$appPackage",
+            "--add-opens", "javafx.graphics/javafx.stage=$appPackage",
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk=$appPackage",
+            "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=$appPackage"
     ]
 
     if (fullVersion) {
         jvmRunArgs += [
-                "--add-opens", "java.base/java.io=io.xpipe.ext.proc",
-                "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=io.xpipe.ext.proc",
+                "--add-opens", "java.base/java.io=" + packageName("ext.proc", null),
+                "--add-opens", "org.apache.commons.io/org.apache.commons.io.input=" + packageName("ext.proc", null),
         ]
     }
 
@@ -163,61 +163,82 @@ def getJvmArgs() {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
 
+    if (os == org.gradle.internal.os.OperatingSystem.LINUX) {
+        jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=" + packageName(null))
+    }
+
     return jvmRunArgs
 }
 
 project.ext {
-    ci = System.getenv('CI') != null
-    os = org.gradle.internal.os.OperatingSystem.current()
-    allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
-            .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
-            .filter(s -> s != 'base')
-            .map(l -> project(":$l"))).toList()
-    fullVersion = file("$rootDir/private_files.txt").exists()
-    arch = getArchName()
-    privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+    // Release pipeline config
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
-    rawVersion = file('version').text.strip()
-    versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
-    versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
-    canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
-    buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
+    ci = System.getenv('CI') != null
     obfuscate = true
-    changelog = file("dist/changelog/${canonicalVersionString}.md").exists() ? file("dist/changelog/${canonicalVersionString}.md").text.strip() + '\n' : ""
+    bundleCds = ci && fullVersion
+
+    // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'
     kebapProductName = isStage ? 'xpipe-ptb' : 'xpipe'
     flatcaseProductName = isStage ? 'xpipeptb' : 'xpipe'
     snakeProductName = isStage ? 'xpipe_ptb' : 'xpipe'
+    artifactBaseName = "xpipe"
+
+    // Info
     publisher = 'XPipe UG (haftungsbeschränkt)'
     shortDescription = isStage ? 'XPipe PTB (Public Test Build)' : 'Your entire server infrastructure at your fingertips'
     longDescription = 'XPipe is a new type of shell connection hub and remote file manager that allows you to access your entire server infrastructure from your local machine. It works on top of your installed command-line programs that you normally use to connect and does not require any setup on your remote systems.'
     website = 'https://xpipe.io'
     sourceWebsite = isStage ? 'https://github.com/xpipe-io/xpipe-ptb' : 'https://github.com/xpipe-io/xpipe'
     authors = 'Christopher Schnick'
-    devJavafxVersion = '26-ea+3'
-    platformName = getPlatformName()
-    jvmRunArgs = getJvmArgs()
-    useBundledJavaFx = fullVersion
-    useBundledJna = fullVersion
-    announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
+
+    // Version info
+    rawVersion = file('version').text.strip()
+    versionString = rawVersion + (isFullRelease || isStage ? '' : '-SNAPSHOT')
+    versionReleaseNumber = rawVersion.split('-').length == 2 ? Integer.parseInt(rawVersion.split('-')[1]) : 1
+    canonicalVersionString = rawVersion.split('-').length == 2 ? rawVersion.split('-')[0] : rawVersion
+    buildId = UUID.nameUUIDFromBytes(versionString.getBytes())
+    windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
+
+    // Changelog info
+    changelog = file("dist/changelog/${canonicalVersionString}.md").exists() ? file("dist/changelog/${canonicalVersionString}.md").text.strip() + '\n' : ""
     changelogFile = file("$rootDir/dist/changelog/${versionString}.md").exists() ?
             file("$rootDir/dist/changelog/${versionString}.md") :
             file("$rootDir/dist/changelog/${canonicalVersionString}.md")
     incrementalChangelogFile = file("$rootDir/dist/changelog/${canonicalVersionString}_incremental.md")
+    announce = System.getenv('SKIP_ANNOUNCEMENT') == null || !Boolean.parseBoolean(System.getenv('SKIP_ANNOUNCEMENT'))
+
+    // Signing config
     signingKeyId = project.hasProperty('signingKeyId') ? project.property("signingKeyId") : (System.getenv('GPG_KEY_ID') != null ? System.getenv('GPG_KEY_ID') : "")
     signingKey = project.hasProperty('signingKeyFile') ? file(project.property("signingKeyFile")).text : (System.getenv('GPG_KEY') != null ? System.getenv('GPG_KEY') : "")
     signingPassword = project.hasProperty('signingKeyPassword') ? project.property("signingKeyPassword") : (System.getenv('GPG_KEY_PASSWORD') != null ? System.getenv('GPG_KEY_PASSWORD') : "")
-    deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
 
+    // Extension config
+    allExtensions = Stream.concat(Stream.of(project(':base')), Arrays.stream(file("$rootDir/ext").list())
+            .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
+            .filter(s -> s != 'base')
+            .map(l -> project(":$l"))).toList()
+    fullVersion = file("$rootDir/private_files.txt").exists()
+    privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+
+    // Build config
+    os = org.gradle.internal.os.OperatingSystem.current()
+    groupName = 'io.xpipe'
+    arch = getArchName()
+    jvmRunArgs = getJvmArgs()
+    useBundledJna = fullVersion
+
+    // JavaFX config
+    devJavafxVersion = '26-ea+3'
+    platformName = getPlatformName()
+    useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
-
     // Define a custom JavaFX SDK location
     // customJavaFxPath = null
 
-    bundleCds = ci && fullVersion
-    windowsSchemaCanonicalVersion = getWindowsSchemaCanonicalVersion()
-    groupName = 'io.xpipe'
+    // Other
+    deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
 }
 
 def propertyName(String s) {
@@ -243,10 +264,6 @@ def getWindowsSchemaCanonicalVersion() {
         v = v + ".0"
     }
     return v + "." + last
-}
-
-if (org.gradle.internal.os.OperatingSystem.current() == org.gradle.internal.os.OperatingSystem.LINUX) {
-    jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=io.xpipe.app")
 }
 
 if (isFullRelease && rawVersion.contains("-")) {

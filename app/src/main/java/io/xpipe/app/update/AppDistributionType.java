@@ -197,7 +197,7 @@ public enum AppDistributionType implements Translatable {
 
         if (OsType.getLocal() == OsType.LINUX) {
             if (base.startsWith("/opt")) {
-                var aptOut = LocalExec.readStdoutIfPossible("apt", "show", "xpipe");
+                var aptOut = LocalExec.readStdoutIfPossible("apt", "show", AppNames.ofCurrent().getKebapName());
                 if (aptOut.isPresent()) {
                     var fromRepo = aptOut.get().lines().anyMatch(s -> {
                         return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
