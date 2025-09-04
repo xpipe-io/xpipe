@@ -8,10 +8,12 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -101,7 +103,8 @@ public class IconsCategory extends AppPrefsCategory {
                             if (path != null) {
                                 var name = FilenameUtils.getBaseName(path);
                                 if (!name.isBlank()) {
-                                    id = name;
+                                    // Windows has the most strict file name rules
+                                    id = OsFileSystem.of(OsType.WINDOWS).makeFileSystemCompatible(name);
                                 }
                             }
                         } catch (Exception ignored) {}
