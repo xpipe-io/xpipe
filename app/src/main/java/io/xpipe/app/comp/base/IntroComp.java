@@ -68,7 +68,11 @@ public class IntroComp extends SimpleComp {
         var buttonPane = new StackPane(button.createRegion());
         buttonPane.setAlignment(Pos.CENTER);
 
-        var v = new VBox(hbox, buttonPane);
+        var v = new VBox(hbox);
+        if (buttonAction != null) {
+            v.getChildren().add(buttonPane);
+        }
+
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);
