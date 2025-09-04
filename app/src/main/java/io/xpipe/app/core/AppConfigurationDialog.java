@@ -4,12 +4,11 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppearanceCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.scene.layout.Region;
 

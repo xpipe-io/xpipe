@@ -70,7 +70,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .map(entry -> entry.getStore() instanceof PasswordManagerIdentityStore p ? p : null)
                 .filter(s -> s != null)
                 .findFirst();
-        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretRetrievalStrategy.None);
+        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretNoneStrategy);
         var hasSshIdentity = identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
         if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
             var perUser = pwManIdentity.get().isPerUser();
