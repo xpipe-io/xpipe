@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
-import java.util.Locale;
 
 public class HostHelper {
 

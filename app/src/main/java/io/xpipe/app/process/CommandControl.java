@@ -25,7 +25,6 @@ public interface CommandControl extends ProcessControl {
 
     CommandControl withExceptionConverter(ProcessExceptionConverter converter);
 
-    @Override
     CommandControl start() throws Exception;
 
     CommandControl withErrorFormatter(Function<String, String> formatter);

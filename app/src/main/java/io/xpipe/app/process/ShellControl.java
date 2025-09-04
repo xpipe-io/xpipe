@@ -127,7 +127,6 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl withExceptionConverter(ProcessExceptionConverter converter);
 
-    @Override
     ShellControl start() throws Exception;
 
     @Override

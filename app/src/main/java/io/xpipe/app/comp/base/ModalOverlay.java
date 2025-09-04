@@ -65,12 +65,6 @@ public class ModalOverlay {
         return button;
     }
 
-    public void hideable(ObservableValue<String> name, LabelGraphic icon, Runnable action) {
-        setHideAction(() -> {
-            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(name, icon, action));
-        });
-    }
-
     public void hideable(AppLayoutModel.QueueEntry entry) {
         setHideAction(() -> {
             AppLayoutModel.get().getQueueEntries().add(entry);

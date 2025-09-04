@@ -4,17 +4,12 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Window;
 
 public class TooltipHelper {
-
-    public static Tooltip create(String text) {
-        return create(new SimpleStringProperty(text), null);
-    }
 
     public static Tooltip create(ObservableValue<String> text, KeyCombination shortcut) {
         var tt = new FixedTooltip();

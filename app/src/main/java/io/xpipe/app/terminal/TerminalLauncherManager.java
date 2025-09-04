@@ -66,6 +66,7 @@ public class TerminalLauncherManager {
         return last.waitForCompletion();
     }
 
+    @SuppressWarnings("unused")
     public static boolean isCompletedSuccessfully(UUID request) {
         synchronized (entries) {
             var req = entries.get(request);

@@ -59,6 +59,7 @@ public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
 
     @Jacksonized
     @SuperBuilder
+    @SuppressWarnings("unused")
     public static class Action extends StoreAction<ShellStore> {
 
         @Override

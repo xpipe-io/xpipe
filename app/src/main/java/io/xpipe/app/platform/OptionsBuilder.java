@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -54,11 +53,6 @@ public class OptionsBuilder {
     public OptionsBuilder(Validator validator) {
         this.ownValidator = validator;
         this.allValidators.add(ownValidator);
-    }
-
-    public OptionsBuilder augment(Augment<CompStructure<VBox>> augment) {
-        this.augments.add(augment);
-        return this;
     }
 
     public Validator buildEffectiveValidator() {
@@ -175,12 +169,6 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addTitle(ObservableValue<String> title) {
-        finishCurrent();
-        entries.add(new OptionsComp.Entry(null, null, null, null, new LabelComp(title).styleClass("title-header")));
-        return this;
-    }
-
     public OptionsBuilder pref(Object property) {
         var mapping = AppPrefs.get().getMapping(property);
         pref(
@@ -267,40 +255,10 @@ public class OptionsBuilder {
         return check(Validator.nonNullIf(ownValidator, e, p, b));
     }
 
-    public OptionsBuilder withValidator(Consumer<Validator> val) {
-        val.accept(ownValidator);
-        return this;
-    }
-
-    public OptionsBuilder nonEmpty() {
-        var e = lastNameReference;
-        var p = props.getLast();
-        return check(Validator.nonEmpty(ownValidator, e, (ReadOnlyListProperty<?>) p));
-    }
-
-    public OptionsBuilder validate() {
-        var e = lastNameReference;
-        var p = props.getLast();
-        return check(Validator.nonNull(ownValidator, e, p));
-    }
-
-    public OptionsBuilder nonNull(Validator v) {
-        var e = lastNameReference;
-        var p = props.getLast();
-        return check(Validator.nonNull(v, e, p));
-    }
-
     private void pushComp(Comp<?> comp) {
         finishCurrent();
         this.comp = comp;
         this.lastCompHeadReference = comp;
-    }
-
-    public OptionsBuilder addStringArea(Property<String> prop, boolean lazy) {
-        var comp = new TextAreaComp(prop, lazy);
-        pushComp(comp);
-        props.add(prop);
-        return this;
     }
 
     public OptionsBuilder addInteger(Property<Integer> prop) {
@@ -357,10 +315,6 @@ public class OptionsBuilder {
 
     public OptionsBuilder spacer(double size) {
         return addComp(Comp.of(() -> new Spacer(size, Orientation.VERTICAL)));
-    }
-
-    public OptionsBuilder separator() {
-        return addComp(Comp.hseparator());
     }
 
     public OptionsBuilder name(String nameKey) {

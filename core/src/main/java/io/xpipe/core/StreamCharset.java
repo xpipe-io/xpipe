@@ -67,14 +67,6 @@ public class StreamCharset {
     Charset charset;
     byte[] byteOrderMark;
 
-    public static StreamCharset get(Charset charset, boolean byteOrderMark) {
-        return ALL.stream()
-                .filter(streamCharset ->
-                        streamCharset.getCharset().equals(charset) && streamCharset.hasByteOrderMark() == byteOrderMark)
-                .findFirst()
-                .orElseThrow();
-    }
-
     public static InputStreamReader detectedReader(InputStream inputStream) throws Exception {
         StreamCharset detected = null;
         for (var charset : StreamCharset.COMMON) {

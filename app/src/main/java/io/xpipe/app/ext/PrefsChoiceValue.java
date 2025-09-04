@@ -46,5 +46,6 @@ public interface PrefsChoiceValue extends PrefsValue, Translatable {
         return AppI18n.observable(getId());
     }
 
+    @SuppressWarnings("unused")
     String getId();
 }

@@ -20,7 +20,6 @@ import java.util.Base64;
  * which is what KeePassXC expects.
  */
 public class TweetNaClHelper {
-    public static final int KEY_SIZE = 32;
     public static final int NONCE_SIZE = 24;
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     // Sigma constant ("expand 32-byte k")

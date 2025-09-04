@@ -406,13 +406,6 @@ public class StoreEntryWrapper {
         });
     }
 
-    public void refreshChildren() {
-        var hasChildren = DataStorage.get().refreshChildren(entry);
-        PlatformThread.runLaterIfNeeded(() -> {
-            expanded.set(hasChildren);
-        });
-    }
-
     public void executeDefaultAction() {
         if (entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
             return;

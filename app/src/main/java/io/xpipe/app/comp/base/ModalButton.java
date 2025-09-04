@@ -27,10 +27,6 @@ public class ModalButton {
         this.defaultButton = defaultButton;
     }
 
-    public static ModalButton finish(Runnable action) {
-        return new ModalButton("finish", action, true, true);
-    }
-
     public static ModalButton ok(Runnable action) {
         return new ModalButton("ok", action, true, true);
     }
@@ -45,10 +41,6 @@ public class ModalButton {
 
     public static ModalButton cancel(Runnable action) {
         return new ModalButton("cancel", action, true, false);
-    }
-
-    public static ModalButton skip() {
-        return new ModalButton("skip", null, true, false);
     }
 
     public static ModalButton confirm(Runnable action) {

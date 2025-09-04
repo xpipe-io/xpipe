@@ -38,19 +38,6 @@ public class StoreToggleComp extends SimpleComp {
             String nameKey,
             ObservableValue<LabelGraphic> graphic,
             StoreSection section,
-            boolean initial,
-            Consumer<Boolean> onChange) {
-        this.nameKey = nameKey;
-        this.graphic = graphic;
-        this.section = section;
-        this.value = new SimpleBooleanProperty(initial);
-        this.onChange = onChange;
-    }
-
-    public StoreToggleComp(
-            String nameKey,
-            ObservableValue<LabelGraphic> graphic,
-            StoreSection section,
             BooleanProperty initial,
             Consumer<Boolean> onChange) {
         this.nameKey = nameKey;
@@ -58,23 +45,6 @@ public class StoreToggleComp extends SimpleComp {
         this.section = section;
         this.value = initial;
         this.onChange = onChange;
-    }
-
-    public static <T extends DataStore> StoreToggleComp simpleToggle(
-            String nameKey,
-            ObservableValue<LabelGraphic> graphic,
-            StoreSection section,
-            Function<T, Boolean> initial,
-            BiConsumer<T, Boolean> setter) {
-        return new StoreToggleComp(
-                nameKey,
-                graphic,
-                section,
-                new SimpleBooleanProperty(
-                        initial.apply(section.getWrapper().getEntry().getStore().asNeeded())),
-                v -> {
-                    setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
-                });
     }
 
     public static <T extends DataStore> StoreToggleComp enableToggle(

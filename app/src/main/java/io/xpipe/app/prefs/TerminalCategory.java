@@ -230,6 +230,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .hide(OsType.getLocal() != OsType.WINDOWS);
     }
 
+    @SuppressWarnings("unused")
     private OptionsBuilder terminalInitScript() {
         var prefs = AppPrefs.get();
         var ref = new SimpleObjectProperty<DataStoreEntryRef<ShellStore>>();

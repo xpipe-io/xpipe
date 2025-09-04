@@ -35,6 +35,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private final KeePassXcAssociationKey associationKey;
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var prop = new SimpleObjectProperty<KeePassXcAssociationKey>();
         p.subscribe(keePassXcManager -> {

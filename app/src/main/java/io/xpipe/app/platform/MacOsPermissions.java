@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+@SuppressWarnings("unused")
 public class MacOsPermissions {
 
     public static boolean waitForAccessibilityPermissions() throws Exception {

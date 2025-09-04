@@ -114,7 +114,7 @@ public class ShellView {
         }
 
         var isRoot = shellControl.executeSimpleBooleanCommand("test \"${EUID:-$(id -u)}\" -eq 0");
-        return isRoot;
+        return (root = isRoot);
     }
 
     public Optional<FilePath> findProgram(String name) throws Exception {

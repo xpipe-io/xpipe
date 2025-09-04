@@ -6,6 +6,7 @@ import io.xpipe.core.OsType;
 import java.util.List;
 import java.util.stream.Stream;
 
+@SuppressWarnings("unused")
 public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
 
     PasswordManagerCommandTemplate BITWARDEN = new PasswordManagerCommandTemplate() {

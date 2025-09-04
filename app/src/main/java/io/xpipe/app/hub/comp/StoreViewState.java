@@ -595,6 +595,7 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+    @SuppressWarnings("unused")
     public StoreCategoryWrapper getAllMacrosCategory() {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->

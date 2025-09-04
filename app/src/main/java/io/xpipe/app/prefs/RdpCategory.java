@@ -31,16 +31,6 @@ public class RdpCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
 
-        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.rdpClientType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
-
-            Hyperlinks.open(t.getWebsite());
-        });
-
-
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.rdpClientType)
                 .available(ExternalRdpClient.getClasses())

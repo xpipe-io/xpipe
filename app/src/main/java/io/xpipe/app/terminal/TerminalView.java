@@ -23,10 +23,6 @@ public class TerminalView {
     private final List<TerminalSession> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
-    public static boolean isSupported() {
-        return OsType.getLocal() == OsType.WINDOWS;
-    }
-
     public static void focus(TerminalSession term) {
         var control = term.controllable();
         if (control.isPresent()) {

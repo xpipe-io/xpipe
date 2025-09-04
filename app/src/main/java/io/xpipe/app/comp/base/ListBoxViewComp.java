@@ -251,9 +251,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 count++;
             }
         }
-        if (count > 10) {
-            // System.out.println("Visible: " + count);
-        }
+
+//        if (count > 10) {
+//            System.out.println("Visible: " + count);
+//        }
     }
 
     private void refresh(
