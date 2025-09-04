@@ -50,14 +50,14 @@ configurations {
 }
 
 dependencies {
-    compileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.2"
+    compileOnly "com.fasterxml.jackson.core:jackson-databind:2.19.2"
     compileOnly project(':core')
     compileOnly project(':beacon')
     compileOnly project(':app')
     compileOnly 'net.synedra:validatorfx:0.4.2'
     compileOnly files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
     compileOnly 'commons-io:commons-io:2.20.0'
-    compileOnly group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.4.0"
+    compileOnly "org.kordamp.ikonli:ikonli-javafx:12.4.0"
 
     if (project != project(':base')) {
         compileOnly project(':base')
