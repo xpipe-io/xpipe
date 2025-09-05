@@ -30,11 +30,6 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean isCaseSensitive() {
-        return fs.isCaseSensitive();
-    }
-
-    @Override
     public boolean supportsOwnerColumn() {
         return fs.supportsOwnerColumn();
     }
@@ -62,6 +57,16 @@ public class WrapperFileSystem implements FileSystem {
     @Override
     public boolean supportsChgrp() {
         return fs.supportsChgrp();
+    }
+
+    @Override
+    public boolean supportsTerminalWorkingDirectory() {
+        return fs.supportsTerminalWorkingDirectory();
+    }
+
+    @Override
+    public Optional<ShellControl> terminalControl() {
+        return fs.terminalControl();
     }
 
     @Override

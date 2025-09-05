@@ -17,8 +17,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     boolean supportsLinkCreation();
 
-    boolean isCaseSensitive();
-
     boolean supportsOwnerColumn();
 
     boolean supportsModeColumn();
@@ -30,6 +28,10 @@ public interface FileSystem extends Closeable, AutoCloseable {
     boolean supportsChown();
 
     boolean supportsChgrp();
+
+    boolean supportsTerminalWorkingDirectory();
+
+    Optional<ShellControl> terminalControl();
 
     void chmod(FilePath path, String mode, boolean recursive) throws Exception;
 

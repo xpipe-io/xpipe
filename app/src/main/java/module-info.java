@@ -195,8 +195,7 @@ open module io.xpipe.app {
             OpenDirectoryActionProvider,
             OpenFileDefaultActionProvider,
             OpenFileNativeDetailsActionProvider,
-            OpenFileWithActionProvider,
-            OpenTerminalActionProvider;
+            OpenFileWithActionProvider;
     provides Module with
             AppJacksonModule;
     provides ModuleLayerLoader with

@@ -55,6 +55,10 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         return entries.stream()
                         .allMatch(entry ->
                                 entry.getRawFileEntry().getPath().toString().endsWith(".zip"))

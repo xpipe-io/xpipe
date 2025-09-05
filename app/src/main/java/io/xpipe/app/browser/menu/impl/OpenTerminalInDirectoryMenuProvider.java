@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.menu.impl;
 
 import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.app.browser.action.impl.OpenTerminalActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
@@ -32,22 +31,13 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
                         ? List.of(model.getCurrentDirectory().getPath())
                         : Collections.singletonList((FilePath) null);
         for (var dir : dirs) {
-            var name = (dir != null ? dir + " - " : "") + model.getName().getValue();
-            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
+            var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "") + model.getName().getValue();
+            model.openTerminalAsync(name, dir, model.getFileSystem().terminalControl().orElseThrow(), dirs.size() == 1);
         }
-    }
-
-    @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
-        return OpenTerminalActionProvider.class;
     }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (model.getFileSystem().getShell().isEmpty()) {
-            return false;
-        }
-
         return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 

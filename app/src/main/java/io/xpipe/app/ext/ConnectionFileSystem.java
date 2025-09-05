@@ -37,11 +37,6 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean isCaseSensitive() {
-        return shellControl.getOsType() != OsType.WINDOWS;
-    }
-
-    @Override
     public boolean supportsOwnerColumn() {
         return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
     }
@@ -69,6 +64,16 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public boolean supportsChgrp() {
         return shellControl.getOsType() != OsType.WINDOWS && shellControl.getOsType() != OsType.MACOS;
+    }
+
+    @Override
+    public boolean supportsTerminalWorkingDirectory() {
+        return true;
+    }
+
+    @Override
+    public Optional<ShellControl> terminalControl() {
+        return Optional.of(shellControl);
     }
 
     @Override
