@@ -17,7 +17,7 @@ tasks.register('licenses', DefaultTask) {
 
 def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(' '))
 
-if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+if (os.isWindows()) {
     tasks.register('baseDist', DefaultTask) {
         doLast {
             copy {
@@ -58,7 +58,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
         }
     }
-} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+} else if (os.isLinux()) {
     tasks.register('baseDist', DefaultTask) {
         doLast {
             copy {

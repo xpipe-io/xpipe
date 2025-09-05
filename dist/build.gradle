@@ -104,11 +104,11 @@ if (fullVersion) {
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
 
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+    if (os.isLinux()) {
         apply from: 'linux_packages.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+    } else if (os.isWindows()) {
         apply from: 'msi.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+    } else if (os.isMacOsX()) {
         apply from: 'pkg.gradle'
     }
 

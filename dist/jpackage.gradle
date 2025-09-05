@@ -3,21 +3,19 @@ apply from: "$rootDir/gradle/gradle_scripts/jna.gradle"
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
-def distJvmArgs = new ArrayList<String>(project(':app').jvmRunArgs)
-
-def releaseArguments = distJvmArgs + [
-        "-Dio.xpipe.app.version=$versionString",
-        "-Dio.xpipe.app.build=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}",
-        "-Dio.xpipe.app.buildId=$buildId",
-        "-Dio.xpipe.app.fullVersion=$fullVersion",
-        "-Dio.xpipe.app.staging=$isStage",
-        '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279',
+def releaseArguments = jvmRunArgs + [
+        "-D" + propertyName("version") + "=" + versionString,
+        "-D" + propertyName("build") + "=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}\"",
+        "-D" + propertyName("buildId") + "=" + buildId,
+        "-D" + propertyName("fullVersion") + "=" + fullVersion,
+        "-D" + propertyName("staging") + "=" + isStage,
+        "-D" + propertyName("sentryUrl") + "=" + sentryUrl,
         '-Djna.nosys=false',
         '-Djna.nounpack=true',
         '-Djna.noclasspath=true'
 ]
 
-if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+if (os.isMacOsX()) {
     releaseArguments += "-Xdock:name=$productName"
 }
 
@@ -65,7 +63,7 @@ jlink {
             '--ignore-signing-information'
     ]
 
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+    if (os.isLinux()) {
         options.addAll('--strip-native-debug-symbols', 'exclude-debuginfo-files')
     }
 
@@ -89,17 +87,17 @@ jlink {
     launcher {
         moduleName = packageName(null)
         mainClass = packageName('Main')
-        name = 'xpiped'
+        name = jpackageExecutableName
         jvmArgs = releaseArguments
     }
 
     jpackage {
         imageOutputDir = file("$distDir/jpackage")
-        imageName = 'xpiped'
-        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        imageName = jpackageExecutableName
+        if (os.isWindows()) {
             icon = "$rootDir/dist/logo/logo.ico"
-            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : canonicalVersionString
-        } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+            appVersion = os.isWindows() ? windowsSchemaCanonicalVersion : canonicalVersionString
+        } else if (os.isLinux()) {
             icon = "$rootDir/dist/logo/logo.png"
             appVersion = canonicalVersionString
         } else {
@@ -115,7 +113,7 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
-def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
+def outputName = os.isMacOsX() ? "${jpackageExecutableName}.app/Contents/Resources" : jpackageExecutableName
 tasks.register('copyBundledExtensions', DefaultTask) {
     dependsOn extLibrariesTasks
     doLast {
@@ -159,7 +157,7 @@ tasks.register('finalizeMacOSResources', DefaultTask) {
     }
 }
 
-if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+if (os.isMacOsX()) {
     jpackageImage.finalizedBy(finalizeMacOSResources)
     jpackageImage.dependsOn(prepareMacOSResources)
 }

@@ -228,6 +228,8 @@ project.ext {
     arch = getArchName()
     jvmRunArgs = getJvmArgs()
     useBundledJna = fullVersion
+    sentryUrl = "https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279"
+    jpackageExecutableName = "xpiped"
 
     // JavaFX config
     devJavafxVersion = '26-ea+3'
