@@ -3,26 +3,6 @@ apply from: "$rootDir/gradle/gradle_scripts/jna.gradle"
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
-def releaseArguments = jvmRunArgs + [
-        "-D" + propertyName("version") + "=" + versionString,
-        "-D" + propertyName("build") + "=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}\"",
-        "-D" + propertyName("buildId") + "=" + buildId,
-        "-D" + propertyName("fullVersion") + "=" + fullVersion,
-        "-D" + propertyName("staging") + "=" + isStage,
-        "-D" + propertyName("sentryUrl") + "=" + sentryUrl,
-        '-Djna.nosys=false',
-        '-Djna.nounpack=true',
-        '-Djna.noclasspath=true'
-]
-
-if (os.isMacOsX()) {
-    releaseArguments += "-Xdock:name=$productName"
-}
-
-if (isFullRelease || isStage) {
-    releaseArguments.add("-XX:+DisableAttachMechanism")
-}
-
 // To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
 application {
     mainModule = packageName(null)
@@ -88,7 +68,7 @@ jlink {
         moduleName = packageName(null)
         mainClass = packageName('Main')
         name = jpackageExecutableName
-        jvmArgs = releaseArguments
+        jvmArgs = jpackageReleaseArguments
     }
 
     jpackage {
@@ -140,7 +120,7 @@ tasks.register('prepareMacOSResources', DefaultTask) {
                                                '__VERSION__',
                                                versionString,
                                                '__BUNDLE__',
-                                               isStage ? groupName + '.ptb-app' : groupName + '.app'))
+                                               jpackageMacOsBundleName))
             into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
     }
@@ -153,7 +133,7 @@ tasks.register('finalizeMacOSResources', DefaultTask) {
             into file("$distDir/jpackage/$outputName")
         }
 
-        file("$distDir/jpackage/$outputName/xpiped.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
+        file("$distDir/jpackage/$outputName/${jpackageExecutableName}.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
     }
 }
 

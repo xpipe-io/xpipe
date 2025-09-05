@@ -36,6 +36,8 @@ public abstract class AppNames {
 
     public abstract String getGroupName();
 
+    public abstract String getExecutableName();
+
     private static class Main extends AppNames {
 
         @Override
@@ -61,6 +63,11 @@ public abstract class AppNames {
         @Override
         public String getGroupName() {
             return "io.xpipe";
+        }
+
+        @Override
+        public String getExecutableName() {
+            return "xpiped";
         }
     }
 
@@ -89,6 +96,11 @@ public abstract class AppNames {
         @Override
         public String getGroupName() {
             return "io.xpipe";
+        }
+
+        @Override
+        public String getExecutableName() {
+            return "xpiped";
         }
     }
 }

@@ -229,7 +229,27 @@ project.ext {
     jvmRunArgs = getJvmArgs()
     useBundledJna = fullVersion
     sentryUrl = "https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279"
+
+    // JPackage config
     jpackageExecutableName = "xpiped"
+    jpackageMacOsBundleName = isStage ? groupName + '.ptb-app' : groupName + '.app'
+    jpackageReleaseArguments = jvmRunArgs + [
+            "-D" + propertyName("version") + "=" + versionString,
+            "-D" + propertyName("build") + "=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}\"",
+            "-D" + propertyName("buildId") + "=" + buildId,
+            "-D" + propertyName("fullVersion") + "=" + fullVersion,
+            "-D" + propertyName("staging") + "=" + isStage,
+            "-D" + propertyName("sentryUrl") + "=" + sentryUrl,
+            '-Djna.nosys=false',
+            '-Djna.nounpack=true',
+            '-Djna.noclasspath=true'
+    ]
+    if (os.isMacOsX()) {
+        releaseArguments += "-Xdock:name=$productName"
+    }
+    if (isFullRelease || isStage) {
+        releaseArguments += "-XX:+DisableAttachMechanism"
+    }
 
     // JavaFX config
     devJavafxVersion = '26-ea+3'
