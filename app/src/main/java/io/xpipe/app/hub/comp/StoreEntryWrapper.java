@@ -158,6 +158,11 @@ public class StoreEntryWrapper {
             return;
         }
 
+        // We received a delayed update after removal
+        if (!DataStorage.get().getStoreEntries().contains(entry)) {
+            return;
+        }
+
         // Avoid reupdating name when changed from the name property!
         if (!entry.getName().equals(name.getValue())) {
             name.setValue(entry.getName());
