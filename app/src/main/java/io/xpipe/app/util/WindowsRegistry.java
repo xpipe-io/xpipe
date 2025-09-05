@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import com.sun.jna.platform.win32.Win32Exception;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -93,7 +94,11 @@ public abstract class WindowsRegistry {
                 return false;
             }
 
-            return Advapi32Util.registryKeyExists(hkey(hkey), key);
+            try {
+                return Advapi32Util.registryKeyExists(hkey(hkey), key);
+            } catch (Win32Exception ignored) {
+                return false;
+            }
         }
 
         @Override
@@ -102,7 +107,11 @@ public abstract class WindowsRegistry {
                 return List.of();
             }
 
-            return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
+            try {
+                return Arrays.asList(Advapi32Util.registryGetKeys(hkey(hkey), key));
+            } catch (Win32Exception ignored) {
+                return List.of();
+            }
         }
 
         @Override
@@ -111,11 +120,9 @@ public abstract class WindowsRegistry {
                 return false;
             }
 
-            // This can fail even with errors in case the jna native library extraction or loading fails
             try {
                 return Advapi32Util.registryValueExists(hkey(hkey), key, valueName);
-            } catch (Throwable t) {
-                ErrorEventFactory.fromThrowable(t).handle();
+            } catch (Win32Exception ignored) {
                 return false;
             }
         }
@@ -126,11 +133,15 @@ public abstract class WindowsRegistry {
                 return OptionalInt.empty();
             }
 
-            if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+            try {
+                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+                    return OptionalInt.empty();
+                }
+
+                return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
+            } catch (Win32Exception ignored) {
                 return OptionalInt.empty();
             }
-
-            return OptionalInt.of(Advapi32Util.registryGetIntValue(hkey(hkey), key, valueName));
         }
 
         @Override
@@ -139,11 +150,15 @@ public abstract class WindowsRegistry {
                 return Optional.empty();
             }
 
-            if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+            try {
+                if (!Advapi32Util.registryValueExists(hkey(hkey), key, valueName)) {
+                    return Optional.empty();
+                }
+
+                return Optional.ofNullable(Advapi32Util.registryGetStringValue(hkey(hkey), key, valueName));
+            } catch (Win32Exception ignored) {
                 return Optional.empty();
             }
-
-            return Optional.ofNullable(Advapi32Util.registryGetStringValue(hkey(hkey), key, valueName));
         }
 
         @Override

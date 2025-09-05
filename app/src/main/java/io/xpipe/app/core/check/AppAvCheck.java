@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
 
@@ -35,8 +36,15 @@ public class AppAvCheck {
             return;
         }
 
-        var found = detect();
-        if (found.isEmpty()) {
+        AvType found;
+        try {
+            var detected = detect();
+            if (detected.isEmpty()) {
+                return;
+            }
+            found = detected.get();
+        } catch (Throwable t) {
+            ErrorEventFactory.fromThrowable(t).omit().handle();
             return;
         }
 
@@ -46,7 +54,7 @@ public class AppAvCheck {
                 markdown.set(new MarkdownComp(
                                 Files.readString(file),
                                 s -> {
-                                    var t = found.get();
+                                    var t = found;
                                     return s.formatted(
                                             t.getName(),
                                             t.getName(),
