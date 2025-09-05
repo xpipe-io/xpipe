@@ -11,11 +11,11 @@
 }
 
 .root:nord .store-section-mini-comp .item:hover, .root:nord:key-navigation .store-section-mini-comp .item:focused {
-    -fx-background-color: -color-accent-muted;
+    -fx-background-color: -color-neutral-muted;
 }
 
 .store-section-mini-comp .item:hover, .root:key-navigation .store-section-mini-comp .item:focused {
-    -fx-background-color: -color-accent-subtle;
+    -fx-background-color: -color-neutral-muted;
 }
 
 .root:light .store-section-mini-comp:sub:expanded:even-depth {

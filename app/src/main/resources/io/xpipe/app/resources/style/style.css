@@ -175,6 +175,14 @@
     -fx-fill: -color-fg-default;
 }
 
+.button.accent .ikonli-font-icon {
+    -fx-icon-color: -color-button-fg;
+}
+
+.button:default, .button.accent {
+    -color-button-bg-focused: -color-accent-subtle;
+}
+
 .creation-menu.menu-button .separator {
     -fx-padding: 2 0;
 }

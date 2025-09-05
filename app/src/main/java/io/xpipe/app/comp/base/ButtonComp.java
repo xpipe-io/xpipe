@@ -6,6 +6,7 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.css.Size;
@@ -34,6 +35,12 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
     public ButtonComp(ObservableValue<String> name, Node graphic, Runnable listener) {
         this.name = name;
         this.graphic = new SimpleObjectProperty<>(new LabelGraphic.NodeGraphic(() -> graphic));
+        this.listener = listener;
+    }
+
+    public ButtonComp(ObservableValue<String> name, LabelGraphic graphic, Runnable listener) {
+        this.name = name;
+        this.graphic = new ReadOnlyObjectWrapper<>(graphic);
         this.listener = listener;
     }
 

@@ -62,7 +62,7 @@ public class IntroComp extends SimpleComp {
         if (buttonAction != null) {
             var button = new ButtonComp(
                     AppI18n.observable(translationsKey + "Button"),
-                    buttonGraphic != null ? buttonGraphic.createGraphicNode() : null,
+                    buttonGraphic,
                     buttonAction);
             if (buttonDefault) {
                 button.styleClass(Styles.ACCENT);

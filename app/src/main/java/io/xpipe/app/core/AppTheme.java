@@ -267,9 +267,10 @@ public class AppTheme {
                 Color baseColor,
                 Color borderColor,
                 Supplier<Color> contextMenuColor,
+                Supplier<Color> emphasisColor,
                 int displayBorderRadius,
                 int skipLines) {
-            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor, displayBorderRadius);
+            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor, emphasisColor, displayBorderRadius);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -316,6 +317,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme PRIMER_DARK = new Theme(
                 "dark",
@@ -331,6 +333,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme NORD_LIGHT = new Theme(
                 "nordLight",
@@ -346,6 +349,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 0);
         public static final Theme NORD_DARK = new Theme(
                 "nordDark",
@@ -361,6 +365,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 0);
         public static final Theme CUPERTINO_LIGHT = new Theme(
                 "cupertinoLight",
@@ -376,6 +381,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme CUPERTINO_DARK = new Theme(
                 "cupertinoDark",
@@ -391,6 +397,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme DRACULA = new Theme(
                 "dracula",
@@ -406,6 +413,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 6);
         public static final Theme MOCHA = new DerivedTheme(
                 "mocha",
@@ -422,6 +430,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4,
                 91);
 
@@ -437,6 +446,7 @@ public class AppTheme {
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4,
                 91);
 
@@ -461,6 +471,9 @@ public class AppTheme {
 
         @Getter
         protected final Supplier<Color> contextMenuColor;
+
+        @Getter
+        protected final Supplier<Color> emphasisColor;
 
         @Getter
         protected final int displayBorderRadius;
@@ -490,9 +503,21 @@ public class AppTheme {
         }
 
         protected String getPlatformPreferencesStylesheet() {
-            var c = contextMenuColor.get();
-            var hex = ColorHelper.toWeb(c);
-            var s = "* { -color-context-menu: " + hex + "; }";
+            var s = """
+                    * {
+                        -color-context-menu: %s;
+                        -color-accent-fg: %s;
+                        -color-accent-emphasis: %s;
+                        -color-accent-muted: %s;
+                        -color-accent-subtle: %s;
+                    }
+                    """.formatted(
+                            ColorHelper.toWeb(contextMenuColor.get()),
+                    ColorHelper.toWeb(emphasisColor.get()),
+                    ColorHelper.toWeb(emphasisColor.get().darker().darker()),
+                    ColorHelper.toWeb(emphasisColor.get().darker().desaturate()),
+                    ColorHelper.toWeb(ColorHelper.withOpacity(emphasisColor.get().darker().desaturate().desaturate(), 0.2))
+            );
             return s;
         }
 
