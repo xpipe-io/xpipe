@@ -103,23 +103,24 @@ if (fullVersion) {
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
+    apply from: 'github.gradle'
+    apply from: 'install.gradle'
+    apply from: 'i18n.gradle'
 
     if (os.isLinux()) {
         apply from: 'linux_packages.gradle'
     } else if (os.isWindows()) {
-        apply from: 'msi.gradle'
+        apply from: 'msi/msi.gradle'
     } else if (os.isMacOsX()) {
-        apply from: 'pkg.gradle'
+        apply from: 'pkg/pkg.gradle'
     }
 
-    apply from: 'github.gradle'
-    apply from: 'aur.gradle'
-    apply from: 'nix.gradle'
-    apply from: 'choco.gradle'
-    apply from: 'homebrew.gradle'
-    apply from: 'winget.gradle'
-    apply from: 'install.gradle'
-    apply from: 'i18n.gradle'
+    apply from: 'aur/aur.gradle'
+    apply from: 'nix/nix.gradle'
+    apply from: 'choco/choco.gradle'
+    apply from: 'homebrew/homebrew.gradle'
+    apply from: 'winget/winget.gradle'
+    apply from: 'appimage/app_image.gradle'
 
     signing {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)

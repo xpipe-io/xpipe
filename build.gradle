@@ -5,7 +5,7 @@ import java.util.stream.Stream
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.13' apply false
+    id 'org.gradlex.extra-java-module-info' version '1.13.1' apply false
     id("com.diffplug.spotless") version "7.2.1" apply false
 }
 
@@ -41,6 +41,8 @@ subprojects {subproject ->
     }
 }
 
+// Publishing
+
 def sonatypeUser = project.hasProperty('sonatypeUsername') ? project.property('sonatypeUsername') : System.getenv('SONATYPE_USERNAME')
 def sonatypePass = project.hasProperty('sonatypePassword') ? project.property('sonatypePassword') : System.getenv('SONATYPE_PASSWORD')
 
@@ -60,12 +62,16 @@ nexusPublishing  {
     useStaging = true
 }
 
+// Developer config file setup
+
 var devProps = file("$rootDir/app/dev.properties")
 if (!devProps.exists()) {
     devProps.text = file("$rootDir/gradle/gradle_scripts/dev_default.properties").text
 }
 
-def getArchName() {
+// Project variable functions
+
+static def getArchName() {
     var arch = System.getProperty("os.arch").toLowerCase(Locale.ROOT)
     if (arch == 'amd64' || arch == 'x86_64') {
         return 'x86_64'
@@ -82,7 +88,7 @@ def getArchName() {
     return arch
 }
 
-def getPlatformName() {
+static def getPlatformName() {
     def currentOS = DefaultNativePlatform.currentOperatingSystem
     def platform
     if (currentOS.isWindows()) {
@@ -98,7 +104,6 @@ def getPlatformName() {
 def getJvmArgs() {
     def os = DefaultNativePlatform.currentOperatingSystem
     def jvmRunArgs = [
-            "-D" + propertyName("arch") + "=" + arch,
             "-Dfile.encoding=UTF-8",
             "-Dvisualvm.display.name=$productName",
             "-Djavafx.preloader=" + packageName("core.AppPreloader"),
@@ -163,12 +168,23 @@ def getJvmArgs() {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
 
-    if (os == org.gradle.internal.os.OperatingSystem.LINUX) {
+    if (os.isLinux()) {
         jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=" + packageName(null))
     }
 
     return jvmRunArgs
 }
+
+def getWindowsSchemaCanonicalVersion() {
+    def v = canonicalVersionString
+    def last = isStage ? versionReleaseNumber : 0
+    if (v.split("\\.").length == 2) {
+        v = v + ".0"
+    }
+    return v + "." + last
+}
+
+// Project variables
 
 project.ext {
     // Release pipeline config
@@ -225,6 +241,7 @@ project.ext {
     // Build config
     os = org.gradle.internal.os.OperatingSystem.current()
     groupName = 'io.xpipe'
+    artifactName = 'app'
     arch = getArchName()
     jvmRunArgs = getJvmArgs()
     useBundledJna = fullVersion
@@ -245,10 +262,10 @@ project.ext {
             '-Djna.noclasspath=true'
     ]
     if (os.isMacOsX()) {
-        releaseArguments += "-Xdock:name=$productName"
+        jpackageReleaseArguments += "-Xdock:name=$productName"
     }
     if (isFullRelease || isStage) {
-        releaseArguments += "-XX:+DisableAttachMechanism"
+        jpackageReleaseArguments += "-XX:+DisableAttachMechanism"
     }
 
     // JavaFX config
@@ -263,8 +280,13 @@ project.ext {
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
 }
 
+group = groupName
+version = versionString
+
+// Global helper functions
+
 def propertyName(String s) {
-    return groupName + ".app." + s
+    return groupName + "." + artifactName + "." + s
 }
 
 def propertyName(String module, String s) {
@@ -272,28 +294,11 @@ def propertyName(String module, String s) {
 }
 
 def packageName(String s) {
-    return groupName + ".app" + (s != null ? "." + s : "")
+    return groupName + "." + artifactName + (s != null ? "." + s : "")
 }
 
 def packageName(String module, String s) {
     return groupName + "." + module + (s != null ? "." + s : "")
-}
-
-def getWindowsSchemaCanonicalVersion() {
-    def v = canonicalVersionString
-    def last = isStage ? versionReleaseNumber : 0
-    if (v.split("\\.").length == 2) {
-        v = v + ".0"
-    }
-    return v + "." + last
-}
-
-if (isFullRelease && rawVersion.contains("-")) {
-    throw new IllegalArgumentException("Releases must have canonical versions")
-}
-
-if (isStage && !rawVersion.contains("-")) {
-    throw new IllegalArgumentException("Stage releases must have release numbers")
 }
 
 def replaceVariablesInFileAsString(String f, Map<String, String> replacements) {
@@ -312,6 +317,8 @@ def replaceVariablesInFile(String f, Map<String, String> replacements) {
     file(temp).text = replaced
     return file(temp)
 }
+
+// Test results
 
 def testTasks = [
         project(':core').getTasksByName('test', true),
@@ -344,5 +351,16 @@ tasks.register('testAll', DefaultTask) {
     finalizedBy(testReport)
 }
 
-group = groupName
-version = versionString
+// Checks
+
+if (System.getProperty("java.home").contains(" ")) {
+    throw new IllegalArgumentException("Your JDK home path contains spaces. This will break several gradle plugins")
+}
+
+if (isFullRelease && rawVersion.contains("-")) {
+    throw new IllegalArgumentException("Releases must have canonical versions")
+}
+
+if (isStage && !rawVersion.contains("-")) {
+    throw new IllegalArgumentException("Stage releases must have release numbers")
+}
