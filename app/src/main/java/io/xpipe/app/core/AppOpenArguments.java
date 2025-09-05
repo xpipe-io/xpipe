@@ -4,7 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.action.LauncherUrlProvider;
 import io.xpipe.app.browser.action.impl.OpenDirectoryActionProvider;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.storage.DataStorage;
@@ -28,11 +28,11 @@ public class AppOpenArguments {
     }
 
     public static synchronized void handle(List<String> arguments) {
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 
-        if (OperationMode.isInStartup()) {
+        if (AppOperationMode.isInStartup()) {
             TrackEvent.withDebug("Buffering open arguments").elements(arguments).handle();
             bufferedArguments.addAll(arguments);
             return;

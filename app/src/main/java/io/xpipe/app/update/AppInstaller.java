@@ -1,7 +1,7 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
@@ -67,7 +67,7 @@ public class AppInstaller {
                         ? getCmdCommand(file.toString(), logFile.toString())
                         : getPowershellCommand(file.toString(), logFile.toString(), systemWide);
 
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
@@ -165,7 +165,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
@@ -201,7 +201,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
@@ -237,7 +237,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)

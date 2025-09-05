@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
@@ -197,7 +197,7 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? AppPrefs.get().checkForSecurityUpdates().getValue().toString()
                         : "unknown");
-        s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
+        s.setTag("initError", String.valueOf(AppOperationMode.isInStartup()));
         s.setTag(
                 "developerMode",
                 AppPrefs.get() != null
@@ -209,8 +209,8 @@ public class SentryErrorHandler implements ErrorHandler {
                 "logs",
                 Boolean.toString(
                         ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty()));
-        s.setTag("inStartup", Boolean.toString(OperationMode.isInStartup()));
-        s.setTag("inShutdown", Boolean.toString(OperationMode.isInShutdown()));
+        s.setTag("inStartup", Boolean.toString(AppOperationMode.isInStartup()));
+        s.setTag("inShutdown", Boolean.toString(AppOperationMode.isInShutdown()));
         s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));

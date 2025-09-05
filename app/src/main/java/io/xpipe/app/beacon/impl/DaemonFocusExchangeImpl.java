@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.beacon.api.DaemonFocusExchange;
 
@@ -10,7 +10,7 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) {
-        OperationMode.switchUp(OperationMode.GUI);
+        AppOperationMode.switchUp(AppOperationMode.GUI);
         var w = AppMainWindow.get();
         if (w != null) {
             w.focus();

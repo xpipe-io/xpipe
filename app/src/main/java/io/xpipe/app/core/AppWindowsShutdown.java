@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformState;
@@ -73,7 +73,7 @@ public class AppWindowsShutdown {
                     // it down
                     // Guarantee that the shutdown is run regardless
                     ThreadHelper.runAsync(() -> {
-                        OperationMode.externalShutdown();
+                        AppOperationMode.externalShutdown();
                     });
 
                     // Indicates that we need to run the endsession case blocking
@@ -88,7 +88,7 @@ public class AppWindowsShutdown {
 
                     // Instant exit for critical shutdowns
                     if (type == ENDSESSION_CRITICAL) {
-                        OperationMode.halt(0);
+                        AppOperationMode.halt(0);
                     }
 
                     // A shutdown hook will be started in parallel while we exit

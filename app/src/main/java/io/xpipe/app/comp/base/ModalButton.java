@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 
 import javafx.beans.property.Property;
 import javafx.scene.control.Button;
@@ -51,7 +51,7 @@ public class ModalButton {
         return new ModalButton(
                 "quit",
                 () -> {
-                    OperationMode.halt(1);
+                    AppOperationMode.halt(1);
                 },
                 true,
                 false);

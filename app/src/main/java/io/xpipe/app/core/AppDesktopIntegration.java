@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
@@ -35,7 +35,7 @@ public class AppDesktopIntegration {
                             // This assures that it will be run later, on system wake
                             ThreadHelper.runAsync(() -> {
                                 ThreadHelper.sleep(1000);
-                                OperationMode.close();
+                                AppOperationMode.close();
                             });
                         }
                     }
@@ -63,7 +63,7 @@ public class AppDesktopIntegration {
                 Desktop.getDesktop().addAppEventListener(new AppReopenedListener() {
                     @Override
                     public void appReopened(AppReopenedEvent e) {
-                        OperationMode.switchToAsync(OperationMode.GUI);
+                        AppOperationMode.switchToAsync(AppOperationMode.GUI);
                     }
                 });
 

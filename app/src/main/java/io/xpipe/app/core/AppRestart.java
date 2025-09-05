@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalShell;
@@ -92,7 +92,7 @@ public class AppRestart {
     }
 
     public static void restart() {
-        OperationMode.executeAfterShutdown(() -> {
+        AppOperationMode.executeAfterShutdown(() -> {
             try (var sc = LocalShell.getShell().start()) {
                 sc.command(getBackgroundRestartCommand()).execute();
             }

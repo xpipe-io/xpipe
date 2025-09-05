@@ -2,7 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.platform.PlatformInit;
 
-public abstract class PlatformMode extends OperationMode {
+public abstract class AppPlatformMode extends AppOperationMode {
 
     @Override
     public boolean isSupported() {
@@ -11,7 +11,7 @@ public abstract class PlatformMode extends OperationMode {
 
     @Override
     public void onSwitchTo() throws Throwable {
-        OperationMode.BACKGROUND.onSwitchTo();
+        AppOperationMode.BACKGROUND.onSwitchTo();
         PlatformInit.init(true);
     }
 

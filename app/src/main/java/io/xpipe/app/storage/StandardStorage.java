@@ -1,7 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -63,7 +63,7 @@ public class StandardStorage extends DataStorage {
     }
 
     public void reloadContent() {
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 

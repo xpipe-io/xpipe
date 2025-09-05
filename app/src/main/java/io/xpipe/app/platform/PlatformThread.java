@@ -1,6 +1,6 @@
 package io.xpipe.app.platform;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 
 import javafx.application.Platform;
@@ -266,7 +266,7 @@ public class PlatformThread {
             return false;
         }
 
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return false;
         }
 

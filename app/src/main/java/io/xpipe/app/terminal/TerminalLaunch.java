@@ -1,7 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandControl;
@@ -49,7 +49,7 @@ public class TerminalLaunch {
             throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
         }
 
-        if (OperationMode.get() == null) {
+        if (AppOperationMode.get() == null) {
             if (command instanceof CommandControl cc) {
                 TerminalLauncher.openDirect(
                         getFullTitle(),

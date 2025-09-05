@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
 
@@ -18,7 +18,7 @@ public class ErrorHandlerDialog {
     public static void showAndWait(ErrorEvent event) {
         // There might be unfortunate freezes when there are errors on the platform
         // thread on startup
-        if (Platform.isFxApplicationThread() && OperationMode.isInStartup()) {
+        if (Platform.isFxApplicationThread() && AppOperationMode.isInStartup()) {
             ErrorAction.ignore().handle(event);
         }
 

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -105,7 +105,7 @@ public class AppGreetingsDialog {
 
         if (!AppCache.getBoolean("legalAccepted", false)) {
             AppProperties.get().resetInitialLaunch();
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
         }
     }
 }

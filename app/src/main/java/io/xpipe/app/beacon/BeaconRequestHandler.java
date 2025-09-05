@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -28,13 +28,13 @@ public class BeaconRequestHandler<T> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) {
-        if (OperationMode.isInShutdown() && !beaconInterface.acceptInShutdown()) {
+        if (AppOperationMode.isInShutdown() && !beaconInterface.acceptInShutdown()) {
             writeError(exchange, new BeaconClientErrorResponse("Daemon is currently in shutdown"), 400);
             return;
         }
 
         if (beaconInterface.requiresCompletedStartup()) {
-            while (OperationMode.isInStartup()) {
+            while (AppOperationMode.isInStartup()) {
                 ThreadHelper.sleep(100);
             }
         }

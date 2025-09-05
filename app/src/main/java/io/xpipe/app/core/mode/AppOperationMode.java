@@ -26,12 +26,12 @@ import lombok.SneakyThrows;
 import java.time.Duration;
 import java.util.List;
 
-public abstract class OperationMode {
+public abstract class AppOperationMode {
 
-    public static final OperationMode BACKGROUND = new BaseMode();
-    public static final OperationMode TRAY = new TrayMode();
-    public static final OperationMode GUI = new GuiMode();
-    private static final List<OperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
+    public static final AppOperationMode BACKGROUND = new AppBaseMode();
+    public static final AppOperationMode TRAY = new AppTrayMode();
+    public static final AppOperationMode GUI = new AppGuiMode();
+    private static final List<AppOperationMode> ALL = List.of(BACKGROUND, TRAY, GUI);
     private static final Object HALT_LOCK = new Object();
 
     @Getter
@@ -43,9 +43,9 @@ public abstract class OperationMode {
     @Getter
     private static boolean inShutdownHook;
 
-    private static OperationMode CURRENT = null;
+    private static AppOperationMode CURRENT = null;
 
-    public static OperationMode map(XPipeDaemonMode mode) {
+    public static AppOperationMode map(XPipeDaemonMode mode) {
         return switch (mode) {
             case BACKGROUND -> BACKGROUND;
             case TRAY -> TRAY;
@@ -55,13 +55,13 @@ public abstract class OperationMode {
 
     public static void externalShutdown() {
         // If we used System.exit(), we don't want to do this
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 
         inShutdownHook = true;
         TrackEvent.info("Received SIGTERM externally");
-        OperationMode.shutdown(false);
+        AppOperationMode.shutdown(false);
     }
 
     private static void setup(String[] args) {
@@ -75,7 +75,7 @@ public abstract class OperationMode {
             Thread.setDefaultUncaughtExceptionHandler((thread, ex) -> {
                 // It seems like a few exceptions are thrown in the quantum renderer
                 // when in shutdown. We can ignore these
-                if (OperationMode.isInShutdown()
+                if (AppOperationMode.isInShutdown()
                         && Platform.isFxApplicationThread()
                         && ex instanceof NullPointerException) {
                     return;
@@ -96,14 +96,14 @@ public abstract class OperationMode {
                 }
 
                 // Handle any startup uncaught errors
-                if (OperationMode.isInStartup() && thread.threadId() == 1) {
+                if (AppOperationMode.isInStartup() && thread.threadId() == 1) {
                     ex.printStackTrace();
-                    OperationMode.halt(1);
+                    AppOperationMode.halt(1);
                 }
 
                 if (ex instanceof OutOfMemoryError) {
                     ex.printStackTrace();
-                    OperationMode.halt(1);
+                    AppOperationMode.halt(1);
                 }
 
                 ErrorEventFactory.fromThrowable(ex).unhandled(true).build().handle();
@@ -130,7 +130,7 @@ public abstract class OperationMode {
             PlatformInit.init(false);
             ThreadHelper.runAsync(() -> {
                 PlatformInit.init(true);
-                AppMainWindow.init(OperationMode.getStartupMode() == XPipeDaemonMode.GUI);
+                AppMainWindow.init(AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI);
             });
             TrackEvent.info("Finished initial setup");
         } catch (Throwable ex) {
@@ -171,10 +171,10 @@ public abstract class OperationMode {
         setup(args);
 
         if (AppProperties.get().isAotTrainMode()) {
-            OperationMode.switchToSyncOrThrow(BACKGROUND);
+            AppOperationMode.switchToSyncOrThrow(BACKGROUND);
             inStartup = false;
             AppAotTrain.runTrainingMode();
-            OperationMode.shutdown(false);
+            AppOperationMode.shutdown(false);
             return;
         }
 
@@ -189,14 +189,14 @@ public abstract class OperationMode {
         });
     }
 
-    public static void switchToAsync(OperationMode newMode) {
+    public static void switchToAsync(AppOperationMode newMode) {
         ThreadHelper.createPlatformThread("mode switcher", false, () -> {
                     switchToSyncIfPossible(newMode);
                 })
                 .start();
     }
 
-    public static void switchToSyncOrThrow(OperationMode newMode) throws Throwable {
+    public static void switchToSyncOrThrow(AppOperationMode newMode) throws Throwable {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
         if (!newMode.isSupported()) {
@@ -208,7 +208,7 @@ public abstract class OperationMode {
         set(newMode);
     }
 
-    public static boolean switchToSyncIfPossible(OperationMode newMode) {
+    public static boolean switchToSyncIfPossible(AppOperationMode newMode) {
         TrackEvent.info("Attempting to switch mode to " + newMode.getId());
 
         if (newMode.equals(TRAY) && !TRAY.isSupported()) {
@@ -227,14 +227,14 @@ public abstract class OperationMode {
         return true;
     }
 
-    public static void switchUp(OperationMode newMode) {
+    public static void switchUp(AppOperationMode newMode) {
         if (newMode == BACKGROUND) {
             return;
         }
 
         TrackEvent.info("Attempting to switch mode up to " + newMode.getId());
 
-        if (newMode.equals(TRAY) && TRAY.isSupported() && OperationMode.get() == BACKGROUND) {
+        if (newMode.equals(TRAY) && TRAY.isSupported() && AppOperationMode.get() == BACKGROUND) {
             set(TRAY);
             return;
         }
@@ -248,7 +248,7 @@ public abstract class OperationMode {
         set(null);
     }
 
-    public static List<OperationMode> getAll() {
+    public static List<AppOperationMode> getAll() {
         return ALL;
     }
 
@@ -269,14 +269,14 @@ public abstract class OperationMode {
                 r.run();
             } catch (Throwable ex) {
                 ErrorEventFactory.fromThrowable(ex).handle();
-                OperationMode.halt(1);
+                AppOperationMode.halt(1);
             }
 
             // In case we perform any operations such as opening a terminal
             // give it some time to open while this process is still alive
             // Otherwise it might quit because the parent process is dead already
             ThreadHelper.sleep(100);
-            OperationMode.halt(0);
+            AppOperationMode.halt(0);
         };
 
         // Creates separate non daemon thread to force execution after shutdown even if current thread is a daemon
@@ -309,12 +309,12 @@ public abstract class OperationMode {
     public static void shutdown(boolean hasError) {
         if (isInStartup()) {
             TrackEvent.info("Received shutdown request while in startup. Halting ...");
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
         }
 
         TrackEvent.info("Starting shutdown ...");
 
-        synchronized (OperationMode.class) {
+        synchronized (AppOperationMode.class) {
             if (inShutdown) {
                 return;
             }
@@ -331,10 +331,10 @@ public abstract class OperationMode {
                 CURRENT = null;
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).term().handle();
-                OperationMode.halt(1);
+                AppOperationMode.halt(1);
             }
 
-            OperationMode.halt(hasError ? 1 : 0);
+            AppOperationMode.halt(hasError ? 1 : 0);
         });
         thread.start();
 
@@ -343,11 +343,11 @@ public abstract class OperationMode {
         var exited = thread.join(Duration.ofMillis(limit));
         if (!exited) {
             TrackEvent.info("Shutdown took too long. Halting ...");
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
         }
     }
 
-    private static synchronized void set(OperationMode newMode) {
+    private static synchronized void set(AppOperationMode newMode) {
         if (inShutdown) {
             return;
         }
@@ -385,7 +385,7 @@ public abstract class OperationMode {
         }
     }
 
-    public static OperationMode get() {
+    public static AppOperationMode get() {
         return CURRENT;
     }
 

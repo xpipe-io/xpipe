@@ -7,7 +7,7 @@ import io.xpipe.core.OsType;
 
 import java.awt.*;
 
-public class TrayMode extends PlatformMode {
+public class AppTrayMode extends AppPlatformMode {
 
     @Override
     public boolean isSupported() {

@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
 
 import lombok.Getter;
@@ -10,31 +10,31 @@ public enum CloseBehaviour implements PrefsChoiceValue {
     QUIT("app.quit") {
         @Override
         public void run() {
-            OperationMode.shutdown(false);
+            AppOperationMode.shutdown(false);
         }
     },
 
     MINIMIZE_TO_TRAY("app.minimizeToTray") {
         @Override
         public void run() {
-            OperationMode.switchToAsync(OperationMode.TRAY);
+            AppOperationMode.switchToAsync(AppOperationMode.TRAY);
         }
 
         @Override
         public boolean isSelectable() {
-            return OperationMode.TRAY.isSupported();
+            return AppOperationMode.TRAY.isSupported();
         }
     },
 
     CONTINUE_IN_BACKGROUND("app.continueInBackground") {
         @Override
         public void run() {
-            OperationMode.switchToAsync(OperationMode.BACKGROUND);
+            AppOperationMode.switchToAsync(AppOperationMode.BACKGROUND);
         }
 
         @Override
         public boolean isSelectable() {
-            return !OperationMode.TRAY.isSupported();
+            return !AppOperationMode.TRAY.isSupported();
         }
     };
 

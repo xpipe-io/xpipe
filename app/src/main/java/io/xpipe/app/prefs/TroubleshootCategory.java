@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -69,7 +69,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
-                                    OperationMode.executeAfterShutdown(() -> {
+                                    AppOperationMode.executeAfterShutdown(() -> {
                                         var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
                                                 .title(AppNames.ofCurrent().getName() + " Debug")
@@ -135,7 +135,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                             FileUtils.deleteQuietly(path.toFile());
                                                         }
                                                     }
-                                                    OperationMode.halt(0);
+                                                    AppOperationMode.halt(0);
                                                 });
                                             });
                                             modal.show();
@@ -177,7 +177,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 .resolve("Resources")
                                                 .resolve("scripts")
                                                 .resolve("uninstall.sh");
-                                        OperationMode.executeAfterShutdown(() -> {
+                                        AppOperationMode.executeAfterShutdown(() -> {
                                             TerminalLaunch.builder()
                                                     .title("Uninstall")
                                                     .localScript(sc -> ShellScript.lines(

@@ -35,7 +35,7 @@ import io.xpipe.core.XPipeDaemonMode;
 
 import java.util.concurrent.CountDownLatch;
 
-public class BaseMode extends OperationMode {
+public class AppBaseMode extends AppOperationMode {
 
     private boolean initialized;
 
@@ -71,7 +71,7 @@ public class BaseMode extends OperationMode {
         AppBeaconServer.init();
         AppLayoutModel.init();
 
-        if (OperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
+        if (AppOperationMode.getStartupMode() == XPipeDaemonMode.GUI) {
             AppPtbDialog.showIfNeeded();
         }
 

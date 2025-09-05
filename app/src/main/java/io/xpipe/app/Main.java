@@ -2,7 +2,7 @@ package io.xpipe.app;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 
 public class Main {
 
@@ -25,6 +25,6 @@ public class Main {
             return;
         }
 
-        OperationMode.init(args);
+        AppOperationMode.init(args);
     }
 }

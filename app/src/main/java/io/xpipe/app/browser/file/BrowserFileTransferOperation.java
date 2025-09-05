@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -140,7 +140,7 @@ public class BrowserFileTransferOperation {
     }
 
     private boolean cancelled() {
-        return cancelled.get() || OperationMode.isInShutdown();
+        return cancelled.get() || AppOperationMode.isInShutdown();
     }
 
     public boolean isMove() {

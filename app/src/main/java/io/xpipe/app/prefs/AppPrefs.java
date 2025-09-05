@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -627,7 +627,7 @@ public final class AppPrefs {
     private <T> T map(Mapping m) {
         mapping.add(m);
         m.property.addListener((observable, oldValue, newValue) -> {
-            var running = OperationMode.get() == OperationMode.GUI;
+            var running = AppOperationMode.get() == AppOperationMode.GUI;
             if (running && m.requiresRestart) {
                 AppPrefs.get().requiresRestart.set(true);
             }

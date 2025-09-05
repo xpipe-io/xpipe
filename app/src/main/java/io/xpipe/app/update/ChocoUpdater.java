@@ -5,7 +5,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellDialects;
@@ -62,7 +62,7 @@ public class ChocoUpdater extends UpdateHandler {
             var p = preparedUpdate.getValue();
             var performedUpdate = new PerformedUpdate(p.getVersion(), p.getBody(), p.getVersion());
             AppCache.update("performedUpdate", performedUpdate);
-            OperationMode.executeAfterShutdown(() -> {
+            AppOperationMode.executeAfterShutdown(() -> {
                 var systemWide = Files.exists(
                         AppInstallation.ofCurrent().getBaseInstallationPath().resolve("system"));
                 var propertiesArguments = systemWide ? ", --install-arguments=\"'ALLUSERS=1'\"" : "";

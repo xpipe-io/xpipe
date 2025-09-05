@@ -1,6 +1,6 @@
 package io.xpipe.app.beacon.impl;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.api.DaemonStopExchange;
 
@@ -17,7 +17,7 @@ public class DaemonStopExchangeImpl extends DaemonStopExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         ThreadHelper.runAsync(() -> {
             ThreadHelper.sleep(1000);
-            OperationMode.close();
+            AppOperationMode.close();
         });
         return Response.builder().success(true).build();
     }

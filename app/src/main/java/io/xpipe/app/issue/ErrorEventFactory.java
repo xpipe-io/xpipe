@@ -1,6 +1,6 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.OsType;
@@ -76,7 +76,7 @@ public class ErrorEventFactory {
 
         // On Linux shutdown, active file descriptors are getting closed. This breaks shell commands
         if (OsType.getLocal() == OsType.LINUX
-                && OperationMode.isInShutdown()
+                && AppOperationMode.isInShutdown()
                 && t instanceof IllegalStateException ise
                 && "Parent stream is closed".equals(ise.getMessage())) {
             b.expected();

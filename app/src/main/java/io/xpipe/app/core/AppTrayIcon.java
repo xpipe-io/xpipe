@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.OsType;
 
@@ -37,7 +37,7 @@ public class AppTrayIcon {
             var open = new MenuItem(AppI18n.get("open"));
             open.addActionListener(e -> {
                 tray.remove(trayIcon);
-                OperationMode.switchToAsync(OperationMode.GUI);
+                AppOperationMode.switchToAsync(AppOperationMode.GUI);
             });
             popupMenu.add(open);
         }
@@ -46,7 +46,7 @@ public class AppTrayIcon {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
                 tray.remove(trayIcon);
-                OperationMode.close();
+                AppOperationMode.close();
             });
             popupMenu.add(quit);
         }
@@ -54,7 +54,7 @@ public class AppTrayIcon {
         trayIcon.addActionListener(e -> {
             if (OsType.getLocal() != OsType.MACOS) {
                 tray.remove(trayIcon);
-                OperationMode.switchToAsync(OperationMode.GUI);
+                AppOperationMode.switchToAsync(AppOperationMode.GUI);
             }
         });
     }

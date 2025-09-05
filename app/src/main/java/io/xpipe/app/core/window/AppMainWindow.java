@@ -3,7 +3,7 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.NativeWinWindowControl;
@@ -262,7 +262,7 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!OperationMode.isInStartup() && !OperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
+            if (!AppOperationMode.isInStartup() && !AppOperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();
                 return;
             }
@@ -281,14 +281,14 @@ public class AppMainWindow {
 
             // Close self
             stage.close();
-            OperationMode.onWindowClose();
+            AppOperationMode.onWindowClose();
             e.consume();
         });
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
-                OperationMode.onWindowClose();
+                AppOperationMode.onWindowClose();
                 event.consume();
             }
         });
@@ -296,7 +296,7 @@ public class AppMainWindow {
         if (OsType.getLocal() == OsType.LINUX || OsType.getLocal() == OsType.MACOS) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                    OperationMode.onWindowClose();
+                    AppOperationMode.onWindowClose();
                     event.consume();
                 }
             });

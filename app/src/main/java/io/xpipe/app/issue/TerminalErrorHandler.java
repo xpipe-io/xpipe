@@ -3,7 +3,7 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.update.AppDistributionType;
@@ -18,11 +18,11 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
     public void handle(ErrorEvent event) {
         log.handle(event);
 
-        if (event.isOmitted() || OperationMode.isInShutdown()) {
+        if (event.isOmitted() || AppOperationMode.isInShutdown()) {
             ErrorAction.ignore().handle(event);
             // Wait a bit to the beacon the ability to respond to any open requests with an error
             ThreadHelper.sleep(3000);
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
             return;
         }
 
@@ -33,7 +33,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             // Exit if we couldn't initialize the GUI
             // Wait a bit to the beacon the ability to respond to any open requests with an error
             ThreadHelper.sleep(3000);
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
             return;
         }
 
@@ -52,12 +52,12 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             return;
         }
 
-        if (OperationMode.isInStartup() && !AppProperties.get().isDevelopmentEnvironment()) {
+        if (AppOperationMode.isInStartup() && !AppProperties.get().isDevelopmentEnvironment()) {
             handleProbableUpdate();
         }
 
         ThreadHelper.sleep(1000);
-        OperationMode.halt(1);
+        AppOperationMode.halt(1);
     }
 
     private void handleWithSecondaryException(ErrorEvent event, Throwable t) {
@@ -67,7 +67,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
         log.handle(second);
         ErrorAction.ignore().handle(second);
         ThreadHelper.sleep(1000);
-        OperationMode.halt(1);
+        AppOperationMode.halt(1);
     }
 
     private void handleProbableUpdate() {
@@ -91,7 +91,7 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
             log.handle(event);
             ErrorAction.ignore().handle(event);
             ThreadHelper.sleep(1000);
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
         }
     }
 }
