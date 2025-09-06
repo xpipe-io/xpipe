@@ -66,20 +66,45 @@ public class NodeCallback {
     @SuppressWarnings("unchecked")
     private static void watchPlatformThreadChanges(Node node) {
         watchGraph(node, c -> {
-            if (!nodes.add(c)) {
-                return;
-            }
+            c.sceneProperty().subscribe((oldScene, newScene) -> {
+                var add = oldScene == null && newScene != null;
+                var remove = oldScene != null && newScene == null;
+                if (!add && !remove) {
+                    return;
+                }
 
-            if (c instanceof Parent p) {
-                p.getChildrenUnmodifiable().addListener(listListener);
-            }
+                if (add && !nodes.add(c)) {
+                    return;
+                }
 
-            c.visibleProperty().addListener(listener);
-            c.boundsInParentProperty().addListener(listener);
-            c.managedProperty().addListener(listener);
-            c.opacityProperty().addListener(listener);
-            c.accessibleHelpProperty().addListener(listener);
-            c.accessibleTextProperty().addListener(listener);
+                if (remove) {
+                    nodes.remove(c);
+                }
+
+                if (c instanceof Parent p) {
+                    if (add) {
+                        p.getChildrenUnmodifiable().addListener(listListener);
+                    } else {
+                        p.getChildrenUnmodifiable().removeListener(listListener);
+                    }
+                }
+
+                if (add) {
+                    c.visibleProperty().addListener(listener);
+                    c.boundsInParentProperty().addListener(listener);
+                    c.managedProperty().addListener(listener);
+                    c.opacityProperty().addListener(listener);
+                    c.accessibleHelpProperty().addListener(listener);
+                    c.accessibleTextProperty().addListener(listener);
+                } else {
+                    c.visibleProperty().removeListener(listener);
+                    c.boundsInParentProperty().removeListener(listener);
+                    c.managedProperty().removeListener(listener);
+                    c.opacityProperty().removeListener(listener);
+                    c.accessibleHelpProperty().removeListener(listener);
+                    c.accessibleTextProperty().removeListener(listener);
+                }
+            });
         });
     }
 
@@ -88,9 +113,17 @@ public class NodeCallback {
             for (Node c : p.getChildrenUnmodifiable()) {
                 watchGraph(c, callback);
             }
-            p.getChildrenUnmodifiable().addListener((ListChangeListener<? super Node>) change -> {
+
+            ListChangeListener<? super Node> childListener = change -> {
                 for (Node c : change.getList()) {
                     watchGraph(c, callback);
+                }
+            };
+            p.sceneProperty().subscribe(scene -> {
+                if (scene != null) {
+                    p.getChildrenUnmodifiable().addListener(childListener);
+                } else {
+                    p.getChildrenUnmodifiable().removeListener(childListener);
                 }
             });
         }
