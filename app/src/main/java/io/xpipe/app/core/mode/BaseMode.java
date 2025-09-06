@@ -143,8 +143,9 @@ public class BaseMode extends OperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
-                    syncPrefsLoaded.await();
                     SystemIconManager.init();
+                    syncPrefsLoaded.await();
+                    SystemIconManager.initAdditional();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
                 },

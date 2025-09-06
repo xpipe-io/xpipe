@@ -88,6 +88,26 @@ public class SystemIconManager {
         reloadImages();
     }
 
+    public static void initAdditional() throws Exception {
+        for (var source : getEffectiveSources()) {
+            if (!LOADED.containsKey(source)) {
+                var data = SystemIconSourceData.of(source);
+                LOADED.put(source, data);
+                data.getIcons().forEach(systemIconSourceFile -> {
+                    var icon = new SystemIcon(source, systemIconSourceFile.getName());
+                    ICONS.add(icon);
+                });
+
+                try {
+                    AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+            }
+        }
+        SystemIconCache.refreshBuilt();
+    }
+
     public static synchronized void reloadSources() throws Exception {
         Files.createDirectories(DIRECTORY);
 
