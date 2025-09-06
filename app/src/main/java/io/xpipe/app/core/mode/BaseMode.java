@@ -60,6 +60,8 @@ public class BaseMode extends OperationMode {
         LicenseProvider.get().init();
         AppWindowTitle.init();
         AppPathCorruptCheck.check();
+        AppWindowsTempCheck.check();
+        AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
         AppHomebrewCoreutilsCheck.check();
         WindowsRegistry.init();
         AppAvCheck.check();

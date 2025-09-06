@@ -114,8 +114,6 @@ public abstract class OperationMode {
             AppProperties.init(args);
             NodeCallback.init();
             AppLogs.init();
-            AppWindowsTempCheck.check();
-            AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
             AppDebugModeCheck.printIfNeeded();
             AppProperties.get().logArguments();
             AppDistributionType.init();

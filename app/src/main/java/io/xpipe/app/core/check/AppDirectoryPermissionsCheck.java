@@ -20,7 +20,6 @@ public class AppDirectoryPermissionsCheck {
                 throw new IOException("Directory creation in " + dataDirectory + " failed silently");
             }
             Files.delete(testDirectory);
-            // if (true) throw new IOException();
         } catch (IOException e) {
             var message = "Unable to access directory " + dataDirectory + ".";
             if (OsType.getLocal() == OsType.WINDOWS) {
