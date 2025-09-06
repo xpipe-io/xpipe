@@ -35,15 +35,17 @@ public class AppDownloads {
             }
 
             var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
-            Files.write(downloadFile, response.body());
+            // Fix file name to not be included in temp dir clean
+            var fixedFile = Path.of(downloadFile.toString().replaceAll("-", "_"));
+            Files.write(fixedFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
                     .tag("version", version)
                     .tag("url", release.getUrl())
                     .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
-                    .tag("target", downloadFile)
+                    .tag("target", fixedFile)
                     .handle();
 
-            return downloadFile;
+            return fixedFile;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
             ErrorEventFactory.expected(ex);

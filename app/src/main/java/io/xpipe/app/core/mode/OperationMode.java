@@ -272,12 +272,15 @@ public abstract class OperationMode {
                 return;
             }
 
-            inShutdown = true;
             try {
-                if (CURRENT != null) {
-                    CURRENT.finalTeardown();
+                if (!isInStartup()) {
+                    inShutdown = true;
+                    if (CURRENT != null) {
+                        CURRENT.finalTeardown();
+                    }
+                    CURRENT = null;
                 }
-                CURRENT = null;
+                
                 // Restart local shell
                 LocalShell.init();
                 r.run();

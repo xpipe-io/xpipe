@@ -15,7 +15,9 @@ public class LocalShell {
     private static boolean powershellInitialized;
 
     public static synchronized void init() throws Exception {
-        local = ProcessControlProvider.get().createLocalProcessControl(false).start();
+        if (local == null) {
+            local = ProcessControlProvider.get().createLocalProcessControl(false).start();
+        }
     }
 
     public static synchronized void reset(boolean force) {
