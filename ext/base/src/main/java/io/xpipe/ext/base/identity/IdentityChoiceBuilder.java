@@ -76,7 +76,7 @@ public class IdentityChoiceBuilder {
                                 : new ReadOnlyObjectWrapper<>(
                                         DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
-                .perUserKeyFileCheck(path -> false)
+                .perUserKeyFileCheck(() -> false)
                 .build();
 
         if (keyInput) {

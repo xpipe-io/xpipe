@@ -65,7 +65,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .allowAgentForward(true)
                 .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
-                .perUserKeyFileCheck(path -> perUser.get())
+                .perUserKeyFileCheck(() -> perUser.get())
                 .build();
 
         return new OptionsBuilder()

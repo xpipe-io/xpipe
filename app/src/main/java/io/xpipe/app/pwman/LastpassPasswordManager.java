@@ -43,7 +43,7 @@ public class LastpassPasswordManager implements PasswordManager {
             var loggedIn =
                     sc.command(CommandBuilder.of().add("lpass", "status")).readStdoutIfPossible();
             if (loggedIn.isEmpty() || loggedIn.get().contains("Logged in as (null)")) {
-                var email = AsktextAlert.query("Enter LastPass account email address to log in");
+                var email = AsktextAlert.query("Enter LastPass account email address to log in", null);
                 if (email.isPresent()) {
                     var script = ShellScript.lines(
                             sc.getShellDialect()
