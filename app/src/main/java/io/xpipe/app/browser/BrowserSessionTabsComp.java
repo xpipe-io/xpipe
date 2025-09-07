@@ -511,6 +511,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     var color = tabModel.getColor();
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
+                    } else {
+                        c.getStyleClass().add("gray");
                     }
                     c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
                         // Prevent switch when dragging local files into app
