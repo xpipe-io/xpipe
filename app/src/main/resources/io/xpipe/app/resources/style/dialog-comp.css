@@ -1,5 +1,5 @@
 .dialog-comp .dialog-content {
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .dialog-comp .scroll-pane {

@@ -22,9 +22,6 @@
 .transfer > .download-background.color-box.gray {
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 1;
-    -fx-background-color: -color-foreground-base;
 }
 
 .transfer:highlighted > .download-background.color-box.gray {
@@ -35,7 +32,7 @@
 .transfer .button {
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
     -fx-padding: 0.1em 0.2em;
@@ -72,7 +69,7 @@
 .browser .browser-content.overview {
     -fx-spacing: 1.5em;
     -fx-padding: 1.5em;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .browser .browser-overview{
@@ -88,7 +85,7 @@
     -fx-border-width: 1;
     -fx-border-color: -color-border-default;
     -fx-border-radius: 4;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
     -fx-background-insets: 6;
     -fx-background-radius: 4;
 }
@@ -129,7 +126,7 @@
 .browser .top-bar > .button-bar {
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
     -fx-background-radius: 4;
     -fx-border-radius: 4;
 }
@@ -166,7 +163,6 @@
     -fx-background-radius: 0 0 4 4;
     -fx-border-width: 1 0 0 0;
     -fx-border-color: -color-border-default;
-    -fx-background-color: -color-foreground-base;
     -fx-padding: 5 8;
 }
 
@@ -288,9 +284,6 @@
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-background-insets: 0, 7 0 0 0;
-    -fx-border-width: 1;
-    -fx-border-color: -color-border-default;
-    -fx-background-color: -color-foreground-base, -color-bg-default;
 }
 
 .browser .browser-content-container {
@@ -319,11 +312,11 @@
 
 .table-view .column-header {
     -fx-pref-height: 2em;
-    -fx-background-color: -color-foreground-base;
+    -fx-background-color: transparent;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: -color-foreground-base;
+    -fx-background-color: transparent;
 }
 
 .table-view .column-header-background .label {

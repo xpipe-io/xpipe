@@ -8,9 +8,9 @@
 }
 
 .root:dark * {
-    -color-foreground-base: derive(-color-bg-default, 10%);
+    -color-foreground-base: derive(-color-bg-default-transparent, 10%);
 }
 
 .root:light * {
-    -color-foreground-base: derive(-color-bg-default, -3%);
+    -color-foreground-base: derive(-color-bg-default-transparent, -3%);
 }

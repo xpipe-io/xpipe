@@ -514,8 +514,8 @@ public class AppTheme {
                     """.formatted(
                             ColorHelper.toWeb(contextMenuColor.get()),
                     ColorHelper.toWeb(emphasisColor.get()),
-                    ColorHelper.toWeb(emphasisColor.get().darker().darker()),
-                    ColorHelper.toWeb(emphasisColor.get().darker().desaturate()),
+                    ColorHelper.toWeb(emphasisColor.get().darker()),
+                    ColorHelper.toWeb(emphasisColor.get().desaturate()),
                     ColorHelper.toWeb(ColorHelper.withOpacity(emphasisColor.get().darker().desaturate().desaturate(), 0.2))
             );
             return s;

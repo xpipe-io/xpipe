@@ -209,11 +209,11 @@
 }
 
 .root:light .store-entry-section-comp.none .store-entry-section-comp:expanded:even-depth {
-    -fx-background-color: derive(-color-bg-default, -3%);
+    -fx-background-color: derive(-color-bg-default-transparent, -3%);
 }
 
 .root:light .store-entry-section-comp.none .store-entry-section-comp:expanded:odd-depth {
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .root:light .store-entry-section-comp:sub:expanded:even-depth {
@@ -231,11 +231,11 @@
 }
 
 .root:dark .store-entry-section-comp.none .store-entry-section-comp:expanded:even-depth {
-    -fx-background-color: derive(-color-bg-default, 5%);
+    -fx-background-color: derive(-color-bg-default-transparent, 5%);
 }
 
 .root:dark .store-entry-section-comp.none .store-entry-section-comp:expanded:odd-depth {
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .root:dark .store-entry-section-comp:sub:expanded:even-depth {

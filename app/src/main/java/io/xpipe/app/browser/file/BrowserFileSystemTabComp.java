@@ -221,6 +221,8 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         }
         var fileList = new VerticalComp(fileListElements)
                 .styleClass("browser-content")
+                .styleClass("color-box")
+                .styleClass("gray")
                 .apply(struc -> {
                     struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (newValue) {
