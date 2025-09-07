@@ -197,7 +197,7 @@ project.ext {
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
     ci = System.getenv('CI') != null
-    obfuscate = false
+    obfuscate = true
     bundleCds = ci && fullVersion
 
     // Names
