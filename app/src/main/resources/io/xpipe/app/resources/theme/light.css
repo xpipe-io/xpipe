@@ -1,5 +1,7 @@
 .root:windows { -color-bg-default-transparent: #FFFFFFAF; }
 
+.root:linux { -color-bg-default-transparent: #FFFFFFAF; }
+
 .root:macos { -color-bg-default-transparent: #FFFFFFBF; }
 
 .root .table-view {

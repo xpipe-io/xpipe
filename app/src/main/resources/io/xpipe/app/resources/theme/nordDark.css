@@ -2,6 +2,8 @@
 
 .root:windows { -color-bg-default-transparent: #2E3440c0; }
 
+.root:linux { -color-bg-default-transparent: #2E3440c0; }
+
 .root .table-view {
     -color-cell-bg-odd: derive(-color-bg-subtle, -15%);
     -color-cell-bg: derive(-color-bg-subtle, -10%);
