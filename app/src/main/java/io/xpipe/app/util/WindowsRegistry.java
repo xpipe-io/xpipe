@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import com.sun.jna.platform.win32.Win32Exception;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -9,6 +8,7 @@ import io.xpipe.core.OsType;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Advapi32;
 import com.sun.jna.platform.win32.Advapi32Util;
+import com.sun.jna.platform.win32.Win32Exception;
 import com.sun.jna.platform.win32.WinReg;
 import com.sun.jna.win32.W32APIOptions;
 import lombok.Value;

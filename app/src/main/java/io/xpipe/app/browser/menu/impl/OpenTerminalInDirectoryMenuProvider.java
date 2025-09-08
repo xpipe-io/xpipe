@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
@@ -31,8 +30,10 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
                         ? List.of(model.getCurrentDirectory().getPath())
                         : Collections.singletonList((FilePath) null);
         for (var dir : dirs) {
-            var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "") + model.getName().getValue();
-            model.openTerminalAsync(name, dir, model.getFileSystem().terminalControl().orElseThrow(), dirs.size() == 1);
+            var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "")
+                    + model.getName().getValue();
+            model.openTerminalAsync(
+                    name, dir, model.getFileSystem().terminalControl().orElseThrow(), dirs.size() == 1);
         }
     }
 

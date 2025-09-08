@@ -16,7 +16,9 @@ public class LocalShell {
 
     public static synchronized void init() throws Exception {
         if (local == null) {
-            local = ProcessControlProvider.get().createLocalProcessControl(false).start();
+            local = ProcessControlProvider.get()
+                    .createLocalProcessControl(false)
+                    .start();
         }
     }
 

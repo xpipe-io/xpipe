@@ -21,7 +21,8 @@ public class Main {
                                The daemon executable %s does not accept any command-line arguments.
 
                                For a reference on how to use xpipe from the command-line, take a look at https://docs.xpipe.io/cli.
-                               """.formatted(AppNames.ofCurrent().getExecutableName()));
+                               """
+                            .formatted(AppNames.ofCurrent().getExecutableName()));
             return;
         }
 

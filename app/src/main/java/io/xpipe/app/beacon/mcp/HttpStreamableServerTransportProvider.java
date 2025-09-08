@@ -4,12 +4,12 @@
 
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.common.McpTransportContext;
 import io.xpipe.app.issue.TrackEvent;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.server.McpTransportContextExtractor;
 import io.modelcontextprotocol.spec.*;
 import io.modelcontextprotocol.util.Assert;
@@ -183,8 +183,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
         logger.debug("Handling GET request for session: {}", sessionId);
 
-        McpTransportContext transportContext =
-                this.contextExtractor.extract(exchange);
+        McpTransportContext transportContext = this.contextExtractor.extract(exchange);
 
         try {
             exchange.getResponseHeaders().add("Content-Type", TEXT_EVENT_STREAM);
@@ -262,8 +261,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             badRequestErrors.add("application/json required in Accept header");
         }
 
-        McpTransportContext transportContext =
-                this.contextExtractor.extract(exchange);
+        McpTransportContext transportContext = this.contextExtractor.extract(exchange);
 
         try {
             var body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -396,8 +394,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
             return;
         }
 
-        McpTransportContext transportContext =
-                this.contextExtractor.extract(exchange);
+        McpTransportContext transportContext = this.contextExtractor.extract(exchange);
 
         if (exchange.getRequestHeaders().getFirst(HttpHeaders.MCP_SESSION_ID) == null) {
             sendError(exchange, 400, "Session ID required in mcp-session-id header");

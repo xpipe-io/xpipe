@@ -127,8 +127,10 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 var syncedTarget =
                         handler.addDataFile(source, target, sync.getPerUser().get());
 
-                var sourceBase = source.toString().endsWith(".pem") ?
-                        Path.of(source.toString().substring(0, source.toString().length() - 4)) : source;
+                var sourceBase = source.toString().endsWith(".pem")
+                        ? Path.of(
+                                source.toString().substring(0, source.toString().length() - 4))
+                        : source;
 
                 var pubSource = Path.of(sourceBase + ".pub");
                 if (Files.exists(pubSource)) {

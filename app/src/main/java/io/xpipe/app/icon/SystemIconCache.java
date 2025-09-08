@@ -1,7 +1,5 @@
 package io.xpipe.app.icon;
 
-import com.github.weisj.jsvg.renderer.SVGRenderingHints;
-import com.github.weisj.jsvg.view.ViewBox;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
@@ -9,6 +7,8 @@ import io.xpipe.app.prefs.AppPrefs;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.SVGLoader;
+import com.github.weisj.jsvg.renderer.SVGRenderingHints;
+import com.github.weisj.jsvg.view.ViewBox;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 

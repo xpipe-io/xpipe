@@ -3,8 +3,6 @@ package io.xpipe.app.core.mode;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
-import io.xpipe.app.core.check.AppDirectoryPermissionsCheck;
-import io.xpipe.app.core.check.AppWindowsTempCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.NodeCallback;
@@ -263,7 +261,7 @@ public abstract class AppOperationMode {
                     }
                     CURRENT = null;
                 }
-                
+
                 // Restart local shell
                 LocalShell.init();
                 r.run();

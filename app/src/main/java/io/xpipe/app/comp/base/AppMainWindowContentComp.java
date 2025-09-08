@@ -42,11 +42,14 @@ public class AppMainWindowContentComp extends SimpleComp {
             loadingIcon.setFitWidth(80);
             loadingIcon.setFitHeight(80);
 
-            var dark = AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark();
+            var dark =
+                    AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark();
             loadingIcon.setOpacity(dark ? 0.95 : 0.93);
 
-            var color = AppPrefs.get() != null ? ColorHelper.withOpacity(AppPrefs.get().theme().getValue().getEmphasisColor().get(),
-                    dark ? 0.7 : 0.85) : Color.TRANSPARENT;
+            var color = AppPrefs.get() != null
+                    ? ColorHelper.withOpacity(
+                            AppPrefs.get().theme().getValue().getEmphasisColor().get(), dark ? 0.7 : 0.85)
+                    : Color.TRANSPARENT;
             DropShadow shadow = new DropShadow();
             shadow.setRadius(10);
             shadow.setColor(color);

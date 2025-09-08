@@ -60,10 +60,7 @@ public class IntroComp extends SimpleComp {
         var v = new VBox(hbox);
 
         if (buttonAction != null) {
-            var button = new ButtonComp(
-                    AppI18n.observable(translationsKey + "Button"),
-                    buttonGraphic,
-                    buttonAction);
+            var button = new ButtonComp(AppI18n.observable(translationsKey + "Button"), buttonGraphic, buttonAction);
             if (buttonDefault) {
                 button.styleClass(Styles.ACCENT);
             }

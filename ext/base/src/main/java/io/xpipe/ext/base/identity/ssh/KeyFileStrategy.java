@@ -27,7 +27,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @Value
@@ -63,7 +62,10 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         var keyPasswordProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
 
-        var sync = ContextualFileReferenceSync.of(DataStorage.get().getDataDir().resolve("keys"), file -> file.getFileName().toString(), config.getPerUserKeyFileCheck());
+        var sync = ContextualFileReferenceSync.of(
+                DataStorage.get().getDataDir().resolve("keys"),
+                file -> file.getFileName().toString(),
+                config.getPerUserKeyFileCheck());
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)

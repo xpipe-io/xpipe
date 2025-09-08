@@ -262,7 +262,9 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!AppOperationMode.isInStartup() && !AppOperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
+            if (!AppOperationMode.isInStartup()
+                    && !AppOperationMode.isInShutdown()
+                    && !CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();
                 return;
             }

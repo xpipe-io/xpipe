@@ -8,8 +8,6 @@ import javafx.beans.property.Property;
 import lombok.Builder;
 import lombok.Value;
 
-import java.nio.file.Path;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Value

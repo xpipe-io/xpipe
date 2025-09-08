@@ -5,8 +5,8 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorageSyncHandler;
-
 import io.xpipe.app.util.AsktextAlert;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Value;
@@ -25,62 +25,65 @@ import java.util.function.UnaryOperator;
 public class ContextualFileReferenceSync {
 
     public static ContextualFileReferenceSync of(Path dir, Function<Path, String> fileName, Supplier<Boolean> perUser) {
-        return new ContextualFileReferenceSync(dir, path -> {
-            String name = fileName.apply(path);
-            while (true) {
-                var target = dir.resolve(name);
-                if (Files.exists(target)) {
-                    var rename = new AtomicBoolean(false);
-                    var event = ErrorEventFactory.fromMessage(AppI18n.get("syncFileExists", target))
-                            .customAction(new ErrorAction() {
-                                @Override
-                                public String getName() {
-                                    return AppI18n.get("replaceFile");
+        return new ContextualFileReferenceSync(
+                dir,
+                path -> {
+                    String name = fileName.apply(path);
+                    while (true) {
+                        var target = dir.resolve(name);
+                        if (Files.exists(target)) {
+                            var rename = new AtomicBoolean(false);
+                            var event = ErrorEventFactory.fromMessage(AppI18n.get("syncFileExists", target))
+                                    .customAction(new ErrorAction() {
+                                        @Override
+                                        public String getName() {
+                                            return AppI18n.get("replaceFile");
+                                        }
+
+                                        @Override
+                                        public String getDescription() {
+                                            return AppI18n.get("replaceFileDescription");
+                                        }
+
+                                        @Override
+                                        public boolean handle(ErrorEvent event) throws Exception {
+                                            return true;
+                                        }
+                                    })
+                                    .customAction(new ErrorAction() {
+                                        @Override
+                                        public String getName() {
+                                            return AppI18n.get("renameFile");
+                                        }
+
+                                        @Override
+                                        public String getDescription() {
+                                            return AppI18n.get("renameFileDescription");
+                                        }
+
+                                        @Override
+                                        public boolean handle(ErrorEvent event) throws Exception {
+                                            rename.set(true);
+                                            return true;
+                                        }
+                                    });
+                            event.handle();
+
+                            if (rename.get()) {
+                                var newName = AsktextAlert.query(AppI18n.get("newFileName"), name);
+                                if (newName.isEmpty()) {
+                                    continue;
                                 }
 
-                                @Override
-                                public String getDescription() {
-                                    return AppI18n.get("replaceFileDescription");
-                                }
-
-                                @Override
-                                public boolean handle(ErrorEvent event) throws Exception {
-                                    return true;
-                                }
-                            })
-                            .customAction(new ErrorAction() {
-                                @Override
-                                public String getName() {
-                                    return AppI18n.get("renameFile");
-                                }
-
-                                @Override
-                                public String getDescription() {
-                                    return AppI18n.get("renameFileDescription");
-                                }
-
-                                @Override
-                                public boolean handle(ErrorEvent event) throws Exception {
-                                    rename.set(true);
-                                    return true;
-                                }
-                            });
-                    event.handle();
-
-                    if (rename.get()) {
-                        var newName = AsktextAlert.query(AppI18n.get("newFileName"), name);
-                        if (newName.isEmpty()) {
-                            continue;
+                                name = newName.get();
+                                continue;
+                            }
                         }
 
-                        name = newName.get();
-                        continue;
+                        return target;
                     }
-                }
-
-                return target;
-            }
-        }, perUser);
+                },
+                perUser);
     }
 
     Path targetDir;

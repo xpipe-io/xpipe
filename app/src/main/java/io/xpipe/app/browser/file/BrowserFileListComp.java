@@ -146,17 +146,21 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setAccessibleText("Directory contents");
 
         var placeholder = new Label();
-        var placeholderText = Bindings.createStringBinding(() -> {
-            if (fileList.getFileSystemModel().getCurrentPath().get() == null) {
-                return null;
-            }
+        var placeholderText = Bindings.createStringBinding(
+                () -> {
+                    if (fileList.getFileSystemModel().getCurrentPath().get() == null) {
+                        return null;
+                    }
 
-            if (fileList.getFileSystemModel().getBusy().get()) {
-                return null;
-            }
+                    if (fileList.getFileSystemModel().getBusy().get()) {
+                        return null;
+                    }
 
-            return AppI18n.get("emptyDirectory");
-        }, AppI18n.activeLanguage(), fileList.getFileSystemModel().getBusy(), fileList.getFileSystemModel().getCurrentPath());
+                    return AppI18n.get("emptyDirectory");
+                },
+                AppI18n.activeLanguage(),
+                fileList.getFileSystemModel().getBusy(),
+                fileList.getFileSystemModel().getCurrentPath());
         placeholder.textProperty().bind(PlatformThread.sync(placeholderText));
         table.setPlaceholder(placeholder);
         AppFontSizes.base(placeholder);
