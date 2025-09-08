@@ -137,11 +137,9 @@ public class StoreCreationModel {
                         .orElse(DataStorage.get().getAllConnectionsCategory()));
 
         // Don't put it in the wrong root category
-        if ((provider.getValue().getCreationCategory() == null
-                || !provider.getValue().getCreationCategory().getCategory().equals(rootCategory.getUuid()))) {
-            targetCategory = provider.getValue().getCreationCategory() != null
-                    ? provider.getValue().getCreationCategory().getCategory()
-                    : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
+        if ((provider.getValue().getCreationCategory() != null
+                && !provider.getValue().getCreationCategory().getCategory().equals(rootCategory.getUuid()))) {
+            targetCategory = provider.getValue().getCreationCategory().getCategory();
         }
 
         // Don't use the all connections category
