@@ -115,9 +115,6 @@ public abstract class AppOperationMode {
             AppProperties.init(args);
             NodeCallback.init();
             AppLogs.init();
-            AppWindowsTempCheck.check();
-            AppDirectoryPermissionsCheck.checkDirectory(
-                    AppSystemInfo.ofCurrent().getTemp());
             AppDebugModeCheck.printIfNeeded();
             AppProperties.get().logArguments();
             AppDistributionType.init();
@@ -258,12 +255,15 @@ public abstract class AppOperationMode {
                 return;
             }
 
-            inShutdown = true;
             try {
-                if (CURRENT != null) {
-                    CURRENT.finalTeardown();
+                if (!isInStartup()) {
+                    inShutdown = true;
+                    if (CURRENT != null) {
+                        CURRENT.finalTeardown();
+                    }
+                    CURRENT = null;
                 }
-                CURRENT = null;
+                
                 // Restart local shell
                 LocalShell.init();
                 r.run();

@@ -45,7 +45,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .allowAgentForward(true)
                 .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(false)
-                .perUserKeyFileCheck(path -> false)
+                .perUserKeyFileCheck(() -> false)
                 .build();
 
         var passwordChoice = OptionsChoiceBuilder.builder()

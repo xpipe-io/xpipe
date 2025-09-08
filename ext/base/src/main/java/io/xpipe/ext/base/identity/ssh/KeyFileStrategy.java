@@ -63,9 +63,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         var keyPasswordProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
 
-        var sync = new ContextualFileReferenceSync(
-                Path.of("keys"), config.getPerUserKeyFileCheck(), path -> Path.of("keys")
-                        .resolve(path.getFileName()));
+        var sync = ContextualFileReferenceSync.of(DataStorage.get().getDataDir().resolve("keys"), file -> file.getFileName().toString(), config.getPerUserKeyFileCheck());
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)

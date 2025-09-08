@@ -63,6 +63,8 @@ public class AppBaseMode extends AppOperationMode {
         LicenseProvider.get().init();
         AppWindowTitle.init();
         AppPathCorruptCheck.check();
+        AppWindowsTempCheck.check();
+        AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
         AppHomebrewCoreutilsCheck.check();
         WindowsRegistry.init();
         AppAvCheck.check();
@@ -146,8 +148,9 @@ public class AppBaseMode extends AppOperationMode {
                     PlatformInit.init(true);
                     AppImages.init();
                     imagesLoaded.countDown();
-                    syncPrefsLoaded.await();
                     SystemIconManager.init();
+                    syncPrefsLoaded.await();
+                    SystemIconManager.initAdditional();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
                 },

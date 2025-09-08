@@ -10,13 +10,14 @@ import lombok.Value;
 
 import java.nio.file.Path;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @Value
 @Builder
 public class SshIdentityStrategyChoiceConfig {
 
     Property<DataStoreEntryRef<ShellStore>> proxy;
-    Predicate<Path> perUserKeyFileCheck;
+    Supplier<Boolean> perUserKeyFileCheck;
     boolean allowKeyFileSync;
     boolean allowAgentForward;
 }
