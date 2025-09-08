@@ -1,6 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -13,6 +14,10 @@ import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
@@ -44,7 +49,7 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
@@ -52,6 +57,19 @@ public class BitwardenPasswordManager implements PasswordManager {
                     .link("https://bitwarden.com/help/cli/#download-and-install")
                     .handle();
             return null;
+        }
+
+        // Copy existing file if possible to retain configuration
+        var cacheDataFile = AppCache.getBasePath().resolve("data.json");
+        if (!Files.exists(cacheDataFile)) {
+            var def = getDefaultConfigPath();
+            if (Files.exists(def)) {
+                try {
+                    Files.copy(def, cacheDataFile);
+                } catch (IOException e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+            }
         }
 
         try {
@@ -67,11 +85,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                                                 AppCache.getBasePath().toString())
                                 : null,
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login --quiet",
-                        sc.getShellDialect()
-                                .getEchoCommand(
-                                        "XPipe is now successfully connected to your Bitwarden vault. You can close this window",
-                                        false));
+                        "bw login"
+                );
                 TerminalLaunch.builder()
                         .title("Bitwarden login")
                         .localScript(script)
@@ -106,6 +121,20 @@ public class BitwardenPasswordManager implements PasswordManager {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
+    }
+    
+    private Path getDefaultConfigPath() {
+        return switch (OsType.getLocal()) {
+            case OsType.Linux linux -> {
+                if (System.getenv("XDG_CONFIG_HOME") != null) {
+                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI").resolve("data.json");
+                } else {
+                    yield AppSystemInfo.ofLinux().getUserHome().resolve(".config", "Bitwarden CLI").resolve("data.json");
+                }
+            }
+            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+            case OsType.Windows windows -> AppSystemInfo.ofWindows().getRoamingAppData().resolve("Bitwarden CLI").resolve("data.json");
+        };
     }
 
     @Override
