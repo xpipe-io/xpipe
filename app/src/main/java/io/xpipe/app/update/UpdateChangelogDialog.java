@@ -7,12 +7,11 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
 
-public class UpdateChangelogAlert {
+public class UpdateChangelogDialog {
 
     private static boolean shown = false;
 
@@ -21,23 +20,10 @@ public class UpdateChangelogAlert {
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
             ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
                     .documentationLink(DocumentationLink.UPDATE_FAIL)
-                    .customAction(new ErrorAction() {
-                        @Override
-                        public String getName() {
-                            return AppI18n.get("updateFailAction");
-                        }
-
-                        @Override
-                        public String getDescription() {
-                            return AppI18n.get("updateFailActionDescription");
-                        }
-
-                        @Override
-                        public boolean handle(ErrorEvent event) {
-                            Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
-                            return true;
-                        }
-                    })
+                    .customAction(ErrorAction.translated("updateFailAction", () -> {
+                        Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                        return true;
+                    }))
                     .handle();
             return;
         }

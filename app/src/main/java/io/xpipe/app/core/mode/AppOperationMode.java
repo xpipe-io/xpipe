@@ -5,7 +5,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.*;
-import io.xpipe.app.platform.NodeCallback;
+import io.xpipe.app.platform.PlatformThreadWatcher;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
@@ -111,7 +111,7 @@ public abstract class AppOperationMode {
             AppMainWindow.loadingText("initializingApp");
             GlobalTimer.init();
             AppProperties.init(args);
-            NodeCallback.init();
+            PlatformThreadWatcher.init();
             AppLogs.init();
             AppDebugModeCheck.printIfNeeded();
             AppProperties.get().logArguments();
@@ -220,23 +220,6 @@ public abstract class AppOperationMode {
 
         set(newMode);
         return true;
-    }
-
-    public static void switchUp(AppOperationMode newMode) {
-        if (newMode == BACKGROUND) {
-            return;
-        }
-
-        TrackEvent.info("Attempting to switch mode up to " + newMode.getId());
-
-        if (newMode.equals(TRAY) && TRAY.isSupported() && AppOperationMode.get() == BACKGROUND) {
-            set(TRAY);
-            return;
-        }
-
-        if (newMode.equals(GUI) && GUI.isSupported()) {
-            set(GUI);
-        }
     }
 
     public static void close() {

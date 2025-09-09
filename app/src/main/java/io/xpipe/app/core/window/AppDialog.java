@@ -27,11 +27,6 @@ public class AppDialog {
     @Getter
     private static final ObservableList<ModalOverlay> modalOverlays = FXCollections.observableArrayList();
 
-    private static void showMainWindow() {
-        PlatformInit.init(true);
-        AppMainWindow.init(true);
-    }
-
     public static void closeDialog(ModalOverlay overlay) {
         PlatformThread.runLaterIfNeeded(() -> {
             synchronized (modalOverlays) {
@@ -67,7 +62,9 @@ public class AppDialog {
     }
 
     public static void show(ModalOverlay o, boolean wait) {
-        showMainWindow();
+        PlatformInit.init(true);
+        AppMainWindow.init(true);
+
         if (!Platform.isFxApplicationThread()) {
             PlatformThread.runLaterIfNeededBlocking(() -> {
                 synchronized (modalOverlays) {

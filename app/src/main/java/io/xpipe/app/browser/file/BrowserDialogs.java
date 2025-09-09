@@ -10,7 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class BrowserDialogs {
 
-    public static FileConflictChoice showFileConflictAlert(FilePath file, boolean multiple) {
+    public static FileConflictChoice showFileConflictDialog(FilePath file, boolean multiple) {
         var choice = new SimpleObjectProperty<FileConflictChoice>();
         var key = multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent";
         var w = multiple ? 1050 : 400;

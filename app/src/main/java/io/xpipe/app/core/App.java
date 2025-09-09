@@ -21,7 +21,7 @@ public class App extends Application {
     @Override
     @SneakyThrows
     public void start(Stage primaryStage) {
-        TrackEvent.info("Application launched");
+        TrackEvent.info("Platform application started");
         APP = this;
         stage = primaryStage;
     }

@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 
 public class AppPrefsSidebarComp extends SimpleComp {
 
-    private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
-
     @Override
     protected Region createSimple() {
         var effectiveCategories = AppPrefs.get().getCategories().stream()
@@ -43,7 +41,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {
-                                    struc.get().pseudoClassStateChanged(SELECTED, appPrefsCategory.equals(val));
+                                    struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), appPrefsCategory.equals(val));
                                 });
                             })
                             .grow(true, false);

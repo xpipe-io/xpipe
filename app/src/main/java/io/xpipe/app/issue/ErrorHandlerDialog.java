@@ -3,12 +3,17 @@ package io.xpipe.app.issue;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
 
+import io.xpipe.app.util.Deobfuscator;
 import javafx.application.Platform;
 
+import javafx.geometry.Insets;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Region;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,9 +44,12 @@ public class ErrorHandlerDialog {
                 errorModal.addButton(new ModalButton(
                         "stackTrace",
                         () -> {
-                            var content =
-                                    new ErrorDetailsComp(event).prefWidth(650).prefHeight(750);
-                            var detailsModal = ModalOverlay.of("errorDetails", content);
+                            var detailsModal = ModalOverlay.of("errorDetails", Comp.of(() -> {
+                                var content = createStrackTraceContent(event);
+                                content.setPrefWidth(650);
+                                content.setPrefHeight(750);
+                                return content;
+                            }));
                             detailsModal.show();
                         },
                         false,
@@ -76,4 +84,20 @@ public class ErrorHandlerDialog {
             ErrorAction.ignore().handle(event);
         }
     }
+
+    private static Region createStrackTraceContent(ErrorEvent event) {
+        if (event.getThrowable() != null) {
+            String stackTrace = Deobfuscator.deobfuscateToString(event.getThrowable());
+            stackTrace = stackTrace.replace("\t", "");
+            var tf = new TextArea(stackTrace);
+            AppFontSizes.xs(tf);
+            tf.setWrapText(true);
+            tf.setEditable(false);
+            tf.setPadding(new Insets(10, 0, 10, 0));
+            return tf;
+        }
+
+        return new Region();
+    }
+
 }

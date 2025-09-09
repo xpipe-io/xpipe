@@ -91,7 +91,7 @@ public class AppSideWindow {
         AppModifiedStage.prepareStage(stage);
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(alert.getDialogPane().getScene());
-        AppWindowStyle.addNavigationStyleClasses(alert.getDialogPane().getScene());
+        AppWindowStyle.addNavigationPseudoClasses(alert.getDialogPane().getScene());
         return alert;
     }
 }

@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class NodeCallback {
+public class PlatformThreadWatcher {
 
     private static final Set<Window> windows = new HashSet<>();
     private static final Set<Node> nodes = new HashSet<>();

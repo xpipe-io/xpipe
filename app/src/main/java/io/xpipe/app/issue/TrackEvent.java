@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @Getter
 public class TrackEvent {
 
-    private final Thread thread = Thread.currentThread();
     private final Instant instant = Instant.now();
     private String type;
     private String message;

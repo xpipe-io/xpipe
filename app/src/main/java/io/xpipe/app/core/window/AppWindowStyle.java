@@ -33,7 +33,7 @@ public class AppWindowStyle {
         });
     }
 
-    public static void addNavigationStyleClasses(Scene scene) {
+    public static void addNavigationPseudoClasses(Scene scene) {
         Consumer<Boolean> onInput = kb -> {
             var r = scene.getRoot();
             if (r != null) {

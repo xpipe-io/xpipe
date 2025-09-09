@@ -2,6 +2,7 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.OsType;
@@ -9,7 +10,14 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
-public class AppGuiMode extends AppPlatformMode {
+public class AppGuiMode extends AppOperationMode {
+
+    @Override
+    public boolean isSupported() {
+        // We force GUI to be supported and fail with a terminal
+        // exception if we can't initialize the platform
+        return true;
+    }
 
     @Override
     public String getId() {
@@ -32,7 +40,8 @@ public class AppGuiMode extends AppPlatformMode {
 
     @Override
     public void onSwitchTo() throws Throwable {
-        super.onSwitchTo();
+        AppOperationMode.BACKGROUND.onSwitchTo();
+        PlatformInit.init(true);
 
         // Refresh license check
         // In case our exit behavior is set to continue in background,
@@ -42,5 +51,11 @@ public class AppGuiMode extends AppPlatformMode {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             AppMainWindow.get().show();
         });
+    }
+
+    @Override
+    public void finalTeardown() throws Throwable {
+        onSwitchFrom();
+        BACKGROUND.finalTeardown();
     }
 }

@@ -109,7 +109,7 @@ public class BrowserFileTransferOperation {
                 return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            var choice = BrowserDialogs.showFileConflictAlert(target, multiple);
+            var choice = BrowserDialogs.showFileConflictDialog(target, multiple);
             if (choice == BrowserDialogs.FileConflictChoice.CANCEL) {
                 lastConflictChoice = BrowserDialogs.FileConflictChoice.CANCEL;
                 return BrowserDialogs.FileConflictChoice.CANCEL;

@@ -28,7 +28,7 @@ import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.UpdateAvailableDialog;
-import io.xpipe.app.update.UpdateChangelogAlert;
+import io.xpipe.app.update.UpdateChangelogDialog;
 import io.xpipe.app.update.UpdateNagDialog;
 import io.xpipe.app.util.*;
 import io.xpipe.core.XPipeDaemonMode;
@@ -167,7 +167,7 @@ public class AppBaseMode extends AppOperationMode {
         AppGreetingsDialog.showAndWaitIfNeeded();
         TrackEvent.info("Waiting for startup dialogs to close");
         AppDialog.waitForAllDialogsClose();
-        UpdateChangelogAlert.showIfNeeded();
+        UpdateChangelogDialog.showIfNeeded();
 
         ActionProvider.initProviders();
         DataStoreProviders.init();

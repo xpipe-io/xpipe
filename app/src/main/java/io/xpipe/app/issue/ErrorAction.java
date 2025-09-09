@@ -8,23 +8,10 @@ import io.xpipe.core.FailableSupplier;
 public interface ErrorAction {
 
     static ErrorAction openDocumentation(String link) {
-        return new ErrorAction() {
-            @Override
-            public String getName() {
-                return AppI18n.get("openDocumentation");
-            }
-
-            @Override
-            public String getDescription() {
-                return AppI18n.get("openDocumentationDescription");
-            }
-
-            @Override
-            public boolean handle(ErrorEvent event) {
-                Hyperlinks.open(link);
-                return false;
-            }
-        };
+        return translated("openDocumentation", () -> {
+            Hyperlinks.open(link);
+            return false;
+        });
     }
 
     static ErrorAction translated(String key, FailableSupplier<Boolean> r) {

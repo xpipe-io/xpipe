@@ -45,11 +45,6 @@ public class Deobfuscator {
         return stackTrace;
     }
 
-    public static void printStackTrace(Throwable t) {
-        var s = deobfuscateToString(t);
-        System.err.println(s);
-    }
-
     private static boolean canDeobfuscate() {
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;

@@ -2,24 +2,26 @@ package io.xpipe.app.core.mode;
 
 import io.xpipe.app.core.AppTray;
 import io.xpipe.app.issue.*;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
 
-public class AppTrayMode extends AppPlatformMode {
+public class AppTrayMode extends AppOperationMode {
 
     @Override
     public boolean isSupported() {
         return OsType.getLocal() == OsType.WINDOWS
-                && super.isSupported()
                 && Desktop.isDesktopSupported()
                 && SystemTray.isSupported();
     }
 
     @Override
     public void onSwitchTo() throws Throwable {
-        super.onSwitchTo();
+        AppOperationMode.BACKGROUND.onSwitchTo();
+        PlatformInit.init(true);
+
         PlatformThread.runLaterIfNeededBlocking(() -> {
             if (AppTray.get() == null) {
                 TrackEvent.info("Initializing tray");
@@ -55,5 +57,11 @@ public class AppTrayMode extends AppPlatformMode {
             log.handle(event);
             ErrorAction.ignore().handle(event);
         });
+    }
+
+    @Override
+    public void finalTeardown() throws Throwable {
+        onSwitchFrom();
+        BACKGROUND.finalTeardown();
     }
 }

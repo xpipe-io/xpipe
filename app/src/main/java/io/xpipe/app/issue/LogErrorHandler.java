@@ -23,7 +23,8 @@ public class LogErrorHandler implements ErrorHandler {
             System.err.println(event.getDescription());
         }
         if (event.getThrowable() != null) {
-            Deobfuscator.printStackTrace(event.getThrowable());
+            var s = Deobfuscator.deobfuscateToString(event.getThrowable());
+            System.err.println(s);
         }
     }
 }

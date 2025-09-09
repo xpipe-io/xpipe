@@ -9,8 +9,11 @@ import com.sun.net.httpserver.HttpExchange;
 public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
 
     @Override
-    public Object handle(HttpExchange exchange, Request msg) {
-        AppOperationMode.switchUp(AppOperationMode.GUI);
+    public Object handle(HttpExchange exchange, Request msg) throws Throwable {
+        if (AppOperationMode.GUI.isSupported()) {
+            AppOperationMode.switchToSyncOrThrow(AppOperationMode.GUI);
+        }
+
         var w = AppMainWindow.get();
         if (w != null) {
             w.focus();
