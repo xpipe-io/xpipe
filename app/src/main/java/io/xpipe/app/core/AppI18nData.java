@@ -39,7 +39,7 @@ public class AppI18nData {
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (!matchesLocale(file, l.getLocale())) {
+                    if (!matchesLocale(file, l)) {
                         return FileVisitResult.CONTINUE;
                     }
 
@@ -72,7 +72,7 @@ public class AppI18nData {
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (!matchesLocale(file, l.getLocale())) {
+                    if (!matchesLocale(file, l)) {
                         return FileVisitResult.CONTINUE;
                     }
 
@@ -99,9 +99,9 @@ public class AppI18nData {
         return new AppI18nData(l, translations, markdownDocumentations);
     }
 
-    private static boolean matchesLocale(Path f, Locale l) {
+    private static boolean matchesLocale(Path f, SupportedLocale l) {
         var name = FilenameUtils.getBaseName(f.getFileName().toString());
-        var ending = "_" + l.toLanguageTag();
+        var ending = "_" + l.getId();
         return name.endsWith(ending);
     }
 

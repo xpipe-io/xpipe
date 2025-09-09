@@ -124,7 +124,7 @@ public final class AppPrefs {
             mapVaultShared(new GlobalBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
     public final BooleanProperty performanceMode =
             map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>())
+                    .property(new GlobalBooleanProperty())
                     .key("performanceMode")
                     .valueClass(Boolean.class)
                     .build());
