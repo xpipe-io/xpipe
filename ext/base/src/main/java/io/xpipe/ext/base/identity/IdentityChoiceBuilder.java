@@ -97,7 +97,7 @@ public class IdentityChoiceBuilder {
         if (keyInput) {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
-                    .longDescription(DocumentationLink.SSH_KEYS)
+                    .documentationLink(DocumentationLink.SSH_KEYS)
                     .sub(
                             OptionsChoiceBuilder.builder()
                                     .allowNull(false)

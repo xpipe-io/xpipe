@@ -33,7 +33,7 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<FixedHierarchyStore> store) {
-        return AppI18n.observable("base.refresh");
+        return AppI18n.observable("refresh");
     }
 
     @Override

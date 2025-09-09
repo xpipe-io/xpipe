@@ -18,6 +18,10 @@ public abstract class AppNames {
         return ofCurrent().getGroupName() + ".app." + name;
     }
 
+    public static String packageName() {
+        return packageName(null);
+    }
+
     public static String packageName(String name) {
         return ofCurrent().getGroupName() + ".app" + (name != null ? "." + name : "");
     }

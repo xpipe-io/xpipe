@@ -85,7 +85,7 @@ public class XShellTerminalType implements ExternalApplicationType.WindowsType, 
         var b = SshLocalBridge.get();
         var keyName = b.getIdentityKey().getFileName().toString();
         var activated =
-                AppI18n.get().getMarkdownDocumentation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
+                AppI18n.get().getMarkdownTranslation("app:xshellSetup").formatted(b.getIdentityKey(), keyName);
         var modal = ModalOverlay.of("xshellSetup", new MarkdownComp(activated, s -> s, false).prefWidth(450));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("xshellSetup", true);

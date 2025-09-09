@@ -26,7 +26,7 @@ public class AppI18nData {
 
     SupportedLocale locale;
     Map<String, String> translations;
-    Map<String, String> markdownDocumentations;
+    Map<String, String> markdownTranslations;
 
     static AppI18nData load(SupportedLocale l) throws Exception {
         TrackEvent.info("Loading translations ...");

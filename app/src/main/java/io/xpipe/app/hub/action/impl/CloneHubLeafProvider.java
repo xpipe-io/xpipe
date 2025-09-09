@@ -32,7 +32,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("base.clone");
+        return AppI18n.observable("clone");
     }
 
     @Override

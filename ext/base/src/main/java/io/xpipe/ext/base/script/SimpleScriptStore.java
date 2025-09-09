@@ -85,7 +85,7 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
         Validators.nonNull(group);
         super.checkComplete();
         if (!initScript && !shellScript && !fileScript && !runnableScript) {
-            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+            throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
     }
 

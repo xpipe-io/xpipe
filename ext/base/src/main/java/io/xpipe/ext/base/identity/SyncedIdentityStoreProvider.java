@@ -92,7 +92,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .sub(passwordChoice, pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription(DocumentationLink.SSH_KEYS)
+                .documentationLink(DocumentationLink.SSH_KEYS)
                 .sub(
                         OptionsChoiceBuilder.builder()
                                 .allowNull(false)

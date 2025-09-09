@@ -76,11 +76,11 @@ public abstract class Comp<S extends CompStructure<?>> {
         return (T) this;
     }
 
-    public Comp<S> prefWidth(int width) {
+    public Comp<S> prefWidth(double width) {
         return apply(struc -> struc.get().setPrefWidth(width));
     }
 
-    public Comp<S> prefHeight(int height) {
+    public Comp<S> prefHeight(double height) {
         return apply(struc -> struc.get().setPrefHeight(height));
     }
 
@@ -112,11 +112,11 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setMinHeight(height));
     }
 
-    public Comp<S> maxWidth(int width) {
+    public Comp<S> maxWidth(double width) {
         return apply(struc -> struc.get().setMaxWidth(width));
     }
 
-    public Comp<S> maxHeight(int height) {
+    public Comp<S> maxHeight(double height) {
         return apply(struc -> struc.get().setMaxHeight(height));
     }
 

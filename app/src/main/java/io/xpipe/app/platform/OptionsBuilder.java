@@ -40,7 +40,7 @@ public class OptionsBuilder {
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
-    private String longDescription;
+    private String documentationLink;
     private Comp<?> comp;
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
@@ -110,9 +110,9 @@ public class OptionsBuilder {
             return;
         }
 
-        var entry = new OptionsComp.Entry(null, description, longDescription, name, comp);
+        var entry = new OptionsComp.Entry(null, description, documentationLink, name, comp);
         description = null;
-        longDescription = null;
+        documentationLink = null;
         name = null;
         lastNameReference = null;
         comp = null;
@@ -189,7 +189,7 @@ public class OptionsBuilder {
             description(AppI18n.observable(name + "Description"));
         }
         if (documentationLink != null) {
-            longDescription(documentationLink);
+            documentationLink(documentationLink);
         }
         if (licenseFeatureId != null) {
             licenseRequirement(licenseFeatureId);
@@ -336,15 +336,15 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder longDescription(String link) {
+    public OptionsBuilder documentationLink(String link) {
         finishCurrent();
-        longDescription = link;
+        documentationLink = link;
         return this;
     }
 
-    public OptionsBuilder longDescription(DocumentationLink link) {
+    public OptionsBuilder documentationLink(DocumentationLink link) {
         finishCurrent();
-        longDescription = link != null ? link.getLink() : null;
+        documentationLink = link != null ? link.getLink() : null;
         return this;
     }
 

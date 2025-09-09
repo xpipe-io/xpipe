@@ -10,7 +10,7 @@ public class PodmanScanProvider extends ScanProvider {
     @Override
     public ScanOpportunity create(DataStoreEntry entry, ShellControl sc) throws Exception {
         var view = new PodmanCommandView(sc);
-        return new ScanOpportunity("system.podmanContainers", !view.isSupported());
+        return new ScanOpportunity("podmanContainers", !view.isSupported());
     }
 
     @Override

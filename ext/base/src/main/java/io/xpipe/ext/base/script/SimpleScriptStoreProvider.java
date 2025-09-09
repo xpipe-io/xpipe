@@ -136,11 +136,11 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
         return new OptionsBuilder()
                 .name("minimumShellDialect")
                 .description("minimumShellDialectDescription")
-                .longDescription(DocumentationLink.SCRIPTING_COMPATIBILITY)
+                .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
                 .addComp(choice, dialect)
                 .name("scriptContents")
                 .description("scriptContentsDescription")
-                .longDescription(DocumentationLink.SCRIPTING_EDITING)
+                .documentationLink(DocumentationLink.SCRIPTING_EDITING)
                 .addComp(
                         new IntegratedTextAreaComp(commandProp, false, "commands", Bindings.createStringBinding(() -> {
                             return dialect.getValue() != null
@@ -149,13 +149,13 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                         })),
                         commandProp)
                 .nameAndDescription("executionType")
-                .longDescription(DocumentationLink.SCRIPTING_TYPES)
+                .documentationLink(DocumentationLink.SCRIPTING_TYPES)
                 .addComp(selectorComp, selectedExecTypes)
                 .check(validator ->
                         Validator.nonEmpty(validator, AppI18n.observable("executionType"), selectedExecTypes))
                 .name("snippets")
                 .description("snippetsDescription")
-                .longDescription(DocumentationLink.SCRIPTING_DEPENDENCIES)
+                .documentationLink(DocumentationLink.SCRIPTING_DEPENDENCIES)
                 .addComp(
                         new StoreListChoiceComp<>(
                                 others,
@@ -165,7 +165,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                         others)
                 .name("scriptGroup")
                 .description("scriptGroupDescription")
-                .longDescription(DocumentationLink.SCRIPTING_GROUPS)
+                .documentationLink(DocumentationLink.SCRIPTING_GROUPS)
                 .addComp(
                         new StoreChoiceComp<>(
                                 StoreChoiceComp.Mode.OTHER,

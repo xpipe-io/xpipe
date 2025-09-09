@@ -65,7 +65,7 @@ public class VaultCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
-                        .longDescription(DocumentationLink.TEAM_VAULTS)
+                        .documentationLink(DocumentationLink.TEAM_VAULTS)
                         .addComp(Comp.empty())
                         .name("userManagement")
                         .description(

@@ -108,7 +108,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(
-                    "base.archiveName",
+                    "archiveName",
                     Comp.of(() -> {
                                 var creationName = new TextField();
                                 creationName.textProperty().bindBidirectional(name);

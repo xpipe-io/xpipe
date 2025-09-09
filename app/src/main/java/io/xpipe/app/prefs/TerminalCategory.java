@@ -124,7 +124,7 @@ public class TerminalCategory extends AppPrefsCategory {
 
         var builder = new OptionsBuilder().pref(prefs.terminalType);
         if (!docsLink) {
-            builder.longDescription((DocumentationLink) null);
+            builder.documentationLink((DocumentationLink) null);
         }
         builder.addComp(h, prefs.terminalType);
         builder.pref(prefs.customTerminalCommand)
@@ -288,7 +288,7 @@ public class TerminalCategory extends AppPrefsCategory {
                         OsType.getLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
-                .longDescription(DocumentationLink.TERMINAL_MULTIPLEXER)
+                .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
         if (OsType.getLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
@@ -328,7 +328,7 @@ public class TerminalCategory extends AppPrefsCategory {
         choice.maxWidth(getCompWidth());
         return new OptionsBuilder()
                 .nameAndDescription("terminalPrompt")
-                .longDescription(DocumentationLink.TERMINAL_PROMPT)
+                .documentationLink(DocumentationLink.TERMINAL_PROMPT)
                 .addComp(choice, prefs.terminalPrompt);
     }
 }

@@ -149,7 +149,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                         var linkName = new SimpleStringProperty();
                         var target = new SimpleStringProperty();
                         var modal = ModalOverlay.of(
-                                "base.newLink",
+                                "newLink",
                                 new OptionsBuilder()
                                         .name("linkName")
                                         .addString(linkName)

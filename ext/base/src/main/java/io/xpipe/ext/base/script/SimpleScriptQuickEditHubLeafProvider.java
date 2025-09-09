@@ -28,7 +28,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<SimpleScriptStore> store) {
-        return AppI18n.observable("base.edit");
+        return AppI18n.observable("edit");
     }
 
     @Override

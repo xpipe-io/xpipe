@@ -50,7 +50,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
             @Override
             public String toString(T object) {
                 if (object == null) {
-                    return AppI18n.get("app.none");
+                    return AppI18n.get("none");
                 }
 
                 var found = range.getValue().get(object);
