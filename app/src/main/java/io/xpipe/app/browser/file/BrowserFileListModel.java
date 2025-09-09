@@ -4,7 +4,7 @@ import io.xpipe.app.browser.action.impl.MoveFileActionProvider;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.Property;

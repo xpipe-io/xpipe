@@ -11,7 +11,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 
 import java.nio.file.Files;
 import java.time.Instant;

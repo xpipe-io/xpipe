@@ -1,11 +1,11 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

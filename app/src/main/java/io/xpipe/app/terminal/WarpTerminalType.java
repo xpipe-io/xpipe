@@ -1,9 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.process.TerminalInitFunction;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.*;
 
 import java.nio.file.Files;

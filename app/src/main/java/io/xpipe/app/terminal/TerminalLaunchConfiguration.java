@@ -13,8 +13,8 @@ import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

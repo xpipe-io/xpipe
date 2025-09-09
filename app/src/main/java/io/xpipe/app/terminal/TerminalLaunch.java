@@ -10,7 +10,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 

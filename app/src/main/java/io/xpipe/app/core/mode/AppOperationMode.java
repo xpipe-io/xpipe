@@ -10,6 +10,7 @@ import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviour;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;

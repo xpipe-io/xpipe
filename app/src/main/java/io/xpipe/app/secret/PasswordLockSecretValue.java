@@ -1,4 +1,4 @@
-package io.xpipe.app.util;
+package io.xpipe.app.secret;
 
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.core.AesSecretValue;

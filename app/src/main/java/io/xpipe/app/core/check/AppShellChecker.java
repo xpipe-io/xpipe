@@ -6,8 +6,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellSpawnException;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ScriptHelper;
 
 import lombok.Value;
 

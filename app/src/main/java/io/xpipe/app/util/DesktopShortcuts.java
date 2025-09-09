@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;

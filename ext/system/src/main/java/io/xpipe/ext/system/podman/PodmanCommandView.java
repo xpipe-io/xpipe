@@ -2,8 +2,8 @@ package io.xpipe.ext.system.podman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.CommandView;
-import io.xpipe.app.util.CommandViewBase;
+import io.xpipe.app.process.CommandView;
+import io.xpipe.app.process.CommandViewBase;
 
 import lombok.NonNull;
 import lombok.Value;

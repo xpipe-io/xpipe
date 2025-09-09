@@ -1,10 +1,7 @@
-package io.xpipe.app.util;
+package io.xpipe.app.process;
 
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

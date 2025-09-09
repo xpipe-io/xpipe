@@ -6,8 +6,8 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.OsType;
 
 import lombok.experimental.SuperBuilder;

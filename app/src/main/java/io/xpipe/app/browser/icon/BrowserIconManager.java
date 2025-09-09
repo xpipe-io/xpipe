@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 public class BrowserIconManager {
 

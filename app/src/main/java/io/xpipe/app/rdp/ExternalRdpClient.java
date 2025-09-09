@@ -3,6 +3,7 @@ package io.xpipe.app.rdp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 

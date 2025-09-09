@@ -1,7 +1,6 @@
-package io.xpipe.app.util;
+package io.xpipe.app.process;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.FailableSupplier;

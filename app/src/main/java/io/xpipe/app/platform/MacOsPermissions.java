@@ -1,6 +1,6 @@
 package io.xpipe.app.platform;
 
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;

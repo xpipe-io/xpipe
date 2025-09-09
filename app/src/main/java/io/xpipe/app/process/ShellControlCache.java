@@ -1,6 +1,4 @@
-package io.xpipe.app.util;
-
-import io.xpipe.app.process.ShellControl;
+package io.xpipe.app.process;
 
 import lombok.Getter;
 

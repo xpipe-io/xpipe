@@ -1,9 +1,8 @@
-package io.xpipe.app.platform;
+package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.hub.comp.StoreCategoryWrapper;
-import io.xpipe.app.hub.comp.StoreViewState;
 
+import io.xpipe.app.platform.PlatformThread;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;

@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FailableSupplier;
 

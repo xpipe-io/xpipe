@@ -7,7 +7,7 @@ import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;

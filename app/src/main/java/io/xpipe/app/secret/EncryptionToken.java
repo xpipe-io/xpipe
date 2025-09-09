@@ -2,7 +2,6 @@ package io.xpipe.app.secret;
 
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.PasswordLockSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;

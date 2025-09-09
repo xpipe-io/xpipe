@@ -1,7 +1,6 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 
 import java.io.Closeable;

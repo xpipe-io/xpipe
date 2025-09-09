@@ -5,7 +5,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.CommandViewBase;
+import io.xpipe.app.process.CommandViewBase;
 import io.xpipe.ext.base.identity.IdentityValue;
 
 import lombok.NonNull;

@@ -5,7 +5,7 @@ import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.BooleanProperty;

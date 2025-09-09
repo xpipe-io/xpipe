@@ -9,7 +9,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;

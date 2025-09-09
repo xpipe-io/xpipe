@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FileInfo;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileInfo;
+import io.xpipe.app.ext.FileKind;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

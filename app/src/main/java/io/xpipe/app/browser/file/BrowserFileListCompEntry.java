@@ -5,7 +5,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;

@@ -1,4 +1,4 @@
-package io.xpipe.core;
+package io.xpipe.app.ext;
 
 public enum FileKind {
     FILE,

@@ -1,8 +1,4 @@
-package io.xpipe.app.util;
-
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandControl;
-import io.xpipe.app.process.ShellControl;
+package io.xpipe.app.process;
 
 import java.util.function.Consumer;
 

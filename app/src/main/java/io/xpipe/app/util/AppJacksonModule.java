@@ -7,6 +7,7 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.EncryptionToken;
+import io.xpipe.app.secret.PasswordLockSecretValue;
 import io.xpipe.app.secret.VaultKeySecretValue;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;

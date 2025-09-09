@@ -13,9 +13,9 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.core.FileInfo;
+import io.xpipe.app.ext.FileInfo;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 

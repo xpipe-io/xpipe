@@ -3,7 +3,7 @@ package io.xpipe.app.core;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.util.List;

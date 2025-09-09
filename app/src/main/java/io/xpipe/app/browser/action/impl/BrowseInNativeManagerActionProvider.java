@@ -6,7 +6,7 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;

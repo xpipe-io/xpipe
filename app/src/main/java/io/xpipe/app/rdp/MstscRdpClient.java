@@ -3,7 +3,7 @@ package io.xpipe.app.rdp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.SecretValue;

@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.nio.file.Files;

@@ -9,7 +9,7 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.property.SimpleStringProperty;

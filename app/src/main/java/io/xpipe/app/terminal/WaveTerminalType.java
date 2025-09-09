@@ -3,8 +3,8 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
 

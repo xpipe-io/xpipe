@@ -7,7 +7,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.platform.DataStoreCategoryChoiceComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;

@@ -1,7 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
 import io.xpipe.core.SecretValue;

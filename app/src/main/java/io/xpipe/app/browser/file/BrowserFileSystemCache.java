@@ -4,7 +4,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.util.PasswdFile;
-import io.xpipe.app.util.ShellControlCache;
+import io.xpipe.app.process.ShellControlCache;
 import io.xpipe.core.OsType;
 
 import lombok.Getter;

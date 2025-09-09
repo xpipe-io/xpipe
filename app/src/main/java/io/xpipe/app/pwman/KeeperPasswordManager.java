@@ -6,7 +6,7 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.CommandSupport;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;

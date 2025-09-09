@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 import lombok.Getter;
 

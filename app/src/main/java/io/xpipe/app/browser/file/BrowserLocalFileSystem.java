@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 
 import java.nio.file.Files;

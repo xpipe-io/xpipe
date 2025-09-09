@@ -2,7 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 
 public class ITerm2TerminalType implements ExternalApplicationType.MacApplication, TrackableTerminalType {
 

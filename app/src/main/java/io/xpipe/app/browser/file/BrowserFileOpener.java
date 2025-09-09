@@ -13,7 +13,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.core.FileInfo;
+import io.xpipe.app.ext.FileInfo;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

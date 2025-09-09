@@ -7,8 +7,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;

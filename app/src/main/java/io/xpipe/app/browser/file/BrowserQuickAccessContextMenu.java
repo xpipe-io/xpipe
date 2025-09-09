@@ -8,7 +8,7 @@ import io.xpipe.app.platform.BooleanAnimationTimer;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
