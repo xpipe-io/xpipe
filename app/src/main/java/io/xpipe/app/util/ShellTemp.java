@@ -21,7 +21,7 @@ public class ShellTemp {
         var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             var user = System.getenv("USER");
             temp = temp.resolve(user != null ? user : "user");
 
@@ -79,7 +79,7 @@ public class ShellTemp {
             if (newSession) {
                 // The temp dir is a lot to clean on Windows potentially
                 // Also, the wildcard remove is very slow in PowerShell
-                var skipClear = OsType.getLocal() == OsType.WINDOWS && sc.isLocal();
+                var skipClear = OsType.ofLocal() == OsType.WINDOWS && sc.isLocal();
                 if (!skipClear) {
                     clearFiles(sc, systemTemp.join("xpipe-"));
                 }

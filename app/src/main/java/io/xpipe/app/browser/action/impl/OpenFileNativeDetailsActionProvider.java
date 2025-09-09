@@ -42,7 +42,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
             for (BrowserEntry entry : getEntries()) {
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Windows ignored -> {
                         var shell = LocalShell.getLocalPowershell();
                         if (shell.isEmpty()) {

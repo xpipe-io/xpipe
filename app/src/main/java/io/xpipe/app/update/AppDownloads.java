@@ -85,7 +85,7 @@ public class AppDownloads {
             req.put("securityOnly", securityOnly);
             req.put("initial", AppProperties.get().isInitialLaunch() && first);
             req.put("ptb", AppProperties.get().isStaging());
-            req.put("os", OsType.getLocal().getId());
+            req.put("os", OsType.ofLocal().getId());
             req.put("arch", AppProperties.get().getArch());
             req.put("uuid", AppProperties.get().getUuid().toString());
             req.put("version", AppProperties.get().getVersion());

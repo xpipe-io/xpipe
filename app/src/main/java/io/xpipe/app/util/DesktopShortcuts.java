@@ -125,9 +125,9 @@ public class DesktopShortcuts {
 
     public static Path create(String executable, String args, String name) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return createWindowsShortcut(executable, args, compat);
-        } else if (OsType.getLocal() == OsType.LINUX) {
+        } else if (OsType.ofLocal() == OsType.LINUX) {
             return createLinuxShortcut(executable, args, compat);
         } else {
             return createMacOSShortcut(executable, args, compat);

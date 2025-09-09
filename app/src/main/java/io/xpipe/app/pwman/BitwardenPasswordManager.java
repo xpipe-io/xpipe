@@ -38,7 +38,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static boolean moveAppDir() throws Exception {
         var path = SHELL.view().findProgram("bw");
-        return OsType.getLocal() != OsType.LINUX
+        return OsType.ofLocal() != OsType.LINUX
                 || path.isEmpty()
                 || !path.get().toString().contains("snap");
     }

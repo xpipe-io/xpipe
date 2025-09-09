@@ -37,7 +37,7 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("agentSocket")
                 .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
-                .hide(OsType.getLocal() == OsType.WINDOWS)
+                .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()

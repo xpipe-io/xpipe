@@ -297,7 +297,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return false;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return false;
         }
 

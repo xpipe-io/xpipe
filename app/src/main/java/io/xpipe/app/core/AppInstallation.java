@@ -30,7 +30,7 @@ public abstract class AppInstallation {
     }
 
     public static AppInstallation ofCurrent() {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Windows ignored -> WINDOWS;
             case OsType.Linux ignored -> LINUX;
             case OsType.MacOs ignored -> MACOS;
@@ -43,7 +43,7 @@ public abstract class AppInstallation {
 
     public static AppInstallation ofDefault(boolean stage) {
         var def = determineDefaultInstallationBasePath(stage);
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Windows ignored -> new Windows(def);
             case OsType.Linux ignored -> new Linux(def);
             case OsType.MacOs ignored -> new MacOs(def);
@@ -51,7 +51,7 @@ public abstract class AppInstallation {
     }
 
     private static Path determineDefaultInstallationBasePath(boolean stage) {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield Path.of(stage ? "/opt/xpipe-ptb" : "/opt/xpipe");
             }
@@ -105,7 +105,7 @@ public abstract class AppInstallation {
 
     private static Path getInstallationBasePathForDaemonExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield executable.getParent().getParent();
             }
@@ -120,7 +120,7 @@ public abstract class AppInstallation {
 
     private static Path getInstallationBasePathForJavaExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield executable.getParent().getParent().getParent().getParent();
             }

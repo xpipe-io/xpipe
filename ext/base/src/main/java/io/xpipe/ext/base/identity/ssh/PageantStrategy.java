@@ -58,7 +58,7 @@ public class PageantStrategy implements SshIdentityStrategy {
             return supported;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return true;
         } else {
             try {

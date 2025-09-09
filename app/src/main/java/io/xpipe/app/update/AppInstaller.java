@@ -21,17 +21,17 @@ import java.nio.file.Path;
 public class AppInstaller {
 
     public static InstallerAssetType getSuitablePlatformAsset() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return new InstallerAssetType.Msi();
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             return AppSystemInfo.ofLinux().isDebianBased()
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             return new InstallerAssetType.Pkg();
         }
 

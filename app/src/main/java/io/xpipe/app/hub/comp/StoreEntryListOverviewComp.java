@@ -76,7 +76,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.xxxl(label);
             AppFontSizes.xxxl(c);
         } else {

@@ -40,7 +40,7 @@ public interface SshIdentityStrategy {
         l.add(NoneStrategy.class);
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);
         }
         if (GpgAgentStrategy.isSupported()) {
@@ -70,7 +70,7 @@ public interface SshIdentityStrategy {
             var base = LocalShell.getShell().getSystemTemporaryDirectory().join("key.pub");
             var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
 
-            if (OsType.getLocal() != OsType.WINDOWS) {
+            if (OsType.ofLocal() != OsType.WINDOWS) {
                 LocalShell.getShell()
                         .command(CommandBuilder.of().add("chmod", "400").addFile(file))
                         .executeAndCheck();

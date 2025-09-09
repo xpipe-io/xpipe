@@ -122,7 +122,7 @@ public class AppBeaconServer {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
         localAuthSecret = id;

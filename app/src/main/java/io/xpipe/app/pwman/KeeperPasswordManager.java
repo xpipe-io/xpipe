@@ -33,7 +33,7 @@ public class KeeperPasswordManager implements PasswordManager {
     private String getExecutable(ShellControl sc) {
         return sc.getShellDialect() == ShellDialects.CMD
                 ? "@keeper"
-                : (OsType.getLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
+                : (OsType.ofLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
     }
 
     @Override

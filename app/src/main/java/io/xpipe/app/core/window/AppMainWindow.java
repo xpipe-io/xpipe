@@ -88,7 +88,7 @@ public class AppMainWindow {
         content.opacityProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
-                            if (OsType.getLocal() != OsType.MACOS) {
+                            if (OsType.ofLocal() != OsType.MACOS) {
                                 return 1.0;
                             }
                             return stage.isFocused() ? 1.0 : 0.8;
@@ -160,7 +160,7 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS && !shown) {
+        if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
             var ctrl = new NativeWinWindowControl(stage);
             NativeWinWindowControl.MAIN_WINDOW = ctrl;
             AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
@@ -277,7 +277,7 @@ public class AppMainWindow {
 
             // Iconifying stages on Windows will break if the window is closed
             // Work around this issue it by re-showing it immediately before hiding it again
-            if (OsType.getLocal() == OsType.WINDOWS) {
+            if (OsType.ofLocal() == OsType.WINDOWS) {
                 stage.setIconified(false);
             }
 
@@ -295,7 +295,7 @@ public class AppMainWindow {
             }
         });
 
-        if (OsType.getLocal() == OsType.LINUX || OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.LINUX || OsType.ofLocal() == OsType.MACOS) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
                     AppOperationMode.onWindowClose();

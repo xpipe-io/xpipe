@@ -68,14 +68,14 @@ public class ErrorEventFactory {
         }
 
         // Indicates that the session is scheduled to end and new processes won't be started
-        if (OsType.getLocal() == OsType.WINDOWS
+        if (OsType.ofLocal() == OsType.WINDOWS
                 && t instanceof ProcessOutputException pex
                 && pex.getExitCode() == -1073741205) {
             b.expected();
         }
 
         // On Linux shutdown, active file descriptors are getting closed. This breaks shell commands
-        if (OsType.getLocal() == OsType.LINUX
+        if (OsType.ofLocal() == OsType.LINUX
                 && AppOperationMode.isInShutdown()
                 && t instanceof IllegalStateException ise
                 && "Parent stream is closed".equals(ise.getMessage())) {

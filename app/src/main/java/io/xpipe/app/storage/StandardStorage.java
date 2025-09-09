@@ -584,7 +584,7 @@ public class StandardStorage extends DataStorage {
         var file = dir.resolve("systeminfo");
         if (Files.exists(file)) {
             var read = Files.readString(file);
-            if (!OsType.getLocal().getName().equals(read)) {
+            if (!OsType.ofLocal().getName().equals(read)) {
                 ErrorEventFactory.fromMessage(
                                 "This vault was originally created on a different system running " + read
                                         + ". Sharing the same data directory between systems directly will cause some problems."
@@ -592,12 +592,12 @@ public class StandardStorage extends DataStorage {
                         .documentationLink(DocumentationLink.SYNC_LOCAL)
                         .expected()
                         .handle();
-                var s = OsType.getLocal().getName();
+                var s = OsType.ofLocal().getName();
                 Files.writeString(file, s);
             }
         } else {
             FileUtils.forceMkdir(dir.toFile());
-            var s = OsType.getLocal().getName();
+            var s = OsType.ofLocal().getName();
             Files.writeString(file, s);
         }
     }

@@ -15,7 +15,7 @@ public abstract class AppSystemInfo {
     private static final MacOs MACOS = new MacOs();
 
     public static AppSystemInfo ofCurrent() {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> ofLinux();
             case OsType.MacOs ignored -> ofMacOs();
             case OsType.Windows ignored -> ofWindows();
@@ -23,7 +23,7 @@ public abstract class AppSystemInfo {
     }
 
     public static Windows ofWindows() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             throw new IllegalStateException();
         }
 
@@ -31,7 +31,7 @@ public abstract class AppSystemInfo {
     }
 
     public static Linux ofLinux() {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             throw new IllegalStateException();
         }
 
@@ -39,7 +39,7 @@ public abstract class AppSystemInfo {
     }
 
     public static MacOs ofMacOs() {
-        if (OsType.getLocal() != OsType.MACOS) {
+        if (OsType.ofLocal() != OsType.MACOS) {
             throw new IllegalStateException();
         }
 

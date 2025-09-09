@@ -21,13 +21,13 @@ public class DesktopHelper {
 
     public static void openUrl(String uri) {
         try {
-            if (OsType.getLocal() == OsType.WINDOWS) {
+            if (OsType.ofLocal() == OsType.WINDOWS) {
                 var pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", uri);
                 pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
                 pb.redirectErrorStream(true);
                 pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
                 pb.start();
-            } else if (OsType.getLocal() == OsType.LINUX) {
+            } else if (OsType.ofLocal() == OsType.LINUX) {
                 String browser = null;
                 for (String b : browsers) {
                     if (browser == null
@@ -104,7 +104,7 @@ public class DesktopHelper {
         }
 
         ThreadHelper.runAsync(() -> {
-            var xdg = OsType.getLocal() == OsType.LINUX;
+            var xdg = OsType.ofLocal() == OsType.LINUX;
             if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
                     && AppDistributionType.get() != AppDistributionType.WEBTOP) {
                 try {
@@ -128,7 +128,7 @@ public class DesktopHelper {
         }
 
         ThreadHelper.runAsync(() -> {
-            var xdg = OsType.getLocal() == OsType.LINUX;
+            var xdg = OsType.ofLocal() == OsType.LINUX;
             if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
                 try {
                     Desktop.getDesktop().browseFileDirectory(file.toFile());

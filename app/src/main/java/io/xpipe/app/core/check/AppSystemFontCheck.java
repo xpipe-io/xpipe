@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public class AppSystemFontCheck {
 
     public static void init() {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             return;
         }
 

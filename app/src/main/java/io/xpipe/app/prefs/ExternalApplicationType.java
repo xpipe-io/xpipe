@@ -81,7 +81,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.MACOS;
+            return OsType.ofLocal() == OsType.MACOS;
         }
     }
 
@@ -180,7 +180,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.WINDOWS;
+            return OsType.ofLocal() == OsType.WINDOWS;
         }
     }
 }

@@ -61,7 +61,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
     @Override
     public boolean isAvailable() {
         try {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Linux ignored -> {
                     yield Files.exists(Path.of("/opt/Termius"));
                 }

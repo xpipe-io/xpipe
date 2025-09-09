@@ -17,7 +17,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
-        switch (OsType.getLocal()) {
+        switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 l.add(RemminaRdpClient.class);
                 l.add(FreeRdpClient.class);
@@ -37,7 +37,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     }
 
     static ExternalRdpClient getApplicationLauncher() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return MstscRdpClient.builder().smartSizing(false).build();
         } else {
             return AppPrefs.get().rdpClientType().getValue();
@@ -50,7 +50,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
             return existing;
         }
 
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 var freeRdp = new FreeRdpClient();
                 var remmina = new RemminaRdpClient();

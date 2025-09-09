@@ -30,7 +30,7 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
         var b = CommandBuilder.of()
                 .add(getExecutable())
                 .addFile(file.toString())
-                .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
+                .add(OsType.ofLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")

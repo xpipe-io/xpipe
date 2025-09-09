@@ -30,7 +30,7 @@ public class AppWindowsTempCheck {
     }
 
     public static void check() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return;
         }
 

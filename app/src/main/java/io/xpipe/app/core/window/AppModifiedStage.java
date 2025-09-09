@@ -71,7 +71,7 @@ public class AppModifiedStage extends Stage {
             return;
         }
 
-        var applyToStage = (OsType.getLocal() == OsType.WINDOWS) || (OsType.getLocal() == OsType.MACOS);
+        var applyToStage = (OsType.ofLocal() == OsType.WINDOWS) || (OsType.ofLocal() == OsType.MACOS);
         if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme().getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
@@ -79,7 +79,7 @@ public class AppModifiedStage extends Stage {
         }
 
         try {
-            switch (OsType.getLocal()) {
+            switch (OsType.ofLocal()) {
                 case OsType.Linux ignored -> {}
                 case OsType.MacOs ignored -> {
                     var ctrl = new NativeMacOsWindowControl(stage);
@@ -139,7 +139,7 @@ public class AppModifiedStage extends Stage {
             transition.setOnFinished(e -> {
                 applyModes(stage);
                 // We only need to update the frame by resizing on Windows
-                if (OsType.getLocal() == OsType.WINDOWS) {
+                if (OsType.ofLocal() == OsType.WINDOWS) {
                     stage.setWidth(stage.getWidth() - 1);
                     Platform.runLater(() -> {
                         stage.setWidth(stage.getWidth() + 1);

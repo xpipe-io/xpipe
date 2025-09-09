@@ -9,7 +9,7 @@ import io.xpipe.core.OsType;
 public class AppRosettaCheck {
 
     public static void check() throws Exception {
-        if (OsType.getLocal() != OsType.MACOS) {
+        if (OsType.ofLocal() != OsType.MACOS) {
             return;
         }
 

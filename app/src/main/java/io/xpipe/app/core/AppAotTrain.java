@@ -10,7 +10,7 @@ public class AppAotTrain {
 
     public static void runTrainingMode() throws Throwable {
         // Linux runners don't support graphics
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             return;
         }
 

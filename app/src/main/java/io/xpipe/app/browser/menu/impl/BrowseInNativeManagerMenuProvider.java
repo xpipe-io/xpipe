@@ -27,7 +27,7 @@ public class BrowseInNativeManagerMenuProvider implements BrowserMenuLeafProvide
 
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Windows ignored -> AppI18n.observable("browseInWindowsExplorer");
             case OsType.Linux ignored -> AppI18n.observable("browseInDefaultFileManager");
             case OsType.MacOs ignored -> AppI18n.observable("browseInFinder");

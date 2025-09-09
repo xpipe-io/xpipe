@@ -10,7 +10,7 @@ public interface OsType {
     Bsd BSD = new Bsd();
     Solaris SOLARIS = new Solaris();
 
-    static Local getLocal() {
+    static Local ofLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
             return MACOS;

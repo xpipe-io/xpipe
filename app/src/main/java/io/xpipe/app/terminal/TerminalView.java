@@ -29,7 +29,7 @@ public class TerminalView {
             control.get().show();
             control.get().focus();
         } else {
-            if (OsType.getLocal() == OsType.MACOS) {
+            if (OsType.ofLocal() == OsType.MACOS) {
                 // Just focus the app, this is correct most of the time
                 var terminalType = AppPrefs.get().terminalType().getValue();
                 if (terminalType instanceof ExternalApplicationType.MacApplication m) {
@@ -119,7 +119,7 @@ public class TerminalView {
     }
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.Windows ignored -> {

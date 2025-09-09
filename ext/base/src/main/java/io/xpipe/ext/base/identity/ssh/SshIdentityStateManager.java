@@ -128,7 +128,7 @@ public class SshIdentityStateManager {
             return;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             stopWindowsAgents(true, true, false);
 
             var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");

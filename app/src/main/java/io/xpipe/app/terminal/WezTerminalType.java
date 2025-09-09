@@ -25,7 +25,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
     @Override
     default boolean isRecommended() {
-        return OsType.getLocal() != OsType.WINDOWS;
+        return OsType.ofLocal() != OsType.WINDOWS;
     }
 
     @Override

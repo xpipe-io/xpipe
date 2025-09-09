@@ -27,7 +27,7 @@ public class OpenFileWithMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return OsType.getLocal() == OsType.WINDOWS
+        return OsType.ofLocal() == OsType.WINDOWS
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }

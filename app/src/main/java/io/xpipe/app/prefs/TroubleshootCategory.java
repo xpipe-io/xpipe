@@ -164,7 +164,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null);
 
-        if (OsType.getLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
+        if (OsType.ofLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
             b.addComp(
                     new TileButtonComp(
                                     "uninstallApplication",

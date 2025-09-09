@@ -32,7 +32,7 @@ public class AppCertutilCheck {
             return;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return;
         }
 

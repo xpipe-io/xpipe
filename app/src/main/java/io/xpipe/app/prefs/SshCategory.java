@@ -27,10 +27,10 @@ public class SshCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder().addTitle("sshConfiguration");
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             options.addComp(prefs.getCustomOptions("x11WslInstance").buildComp());
         }
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             var choice = new ContextualFileReferenceChoiceComp(
                     new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                     prefs.sshAgentSocket,

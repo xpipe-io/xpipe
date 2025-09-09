@@ -60,10 +60,10 @@ public class AppWindowStyle {
         stage.getIcons().clear();
 
         // This allows for assigning logos even if AppImages has not been initialized yet
-        var dir = OsType.getLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
+        var dir = OsType.ofLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
         AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
             var size =
-                    switch (OsType.getLocal()) {
+                    switch (OsType.ofLocal()) {
                         case OsType.Linux ignored -> 128;
                         case OsType.MacOs ignored -> 128;
                         case OsType.Windows ignored -> 32;
@@ -87,7 +87,7 @@ public class AppWindowStyle {
     }
 
     public static void addClickShield(Stage stage) {
-        if (OsType.getLocal() != OsType.MACOS) {
+        if (OsType.ofLocal() != OsType.MACOS) {
             return;
         }
 

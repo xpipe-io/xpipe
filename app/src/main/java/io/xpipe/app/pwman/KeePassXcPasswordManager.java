@@ -159,7 +159,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         }
 
         Optional<Path> found =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
                         var paths = List.of(
                                 Path.of("/usr/bin/keepassxc-proxy"),

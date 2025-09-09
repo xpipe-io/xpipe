@@ -37,7 +37,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var grid = new GridPane();
         grid.setHgap(6);
-        grid.setVgap(OsType.getLocal() == OsType.MACOS ? 2 : 0);
+        grid.setVgap(OsType.ofLocal() == OsType.MACOS ? 2 : 0);
 
         var selection = createBatchSelection();
         grid.add(selection.createRegion(), 0, 0, 1, 2);

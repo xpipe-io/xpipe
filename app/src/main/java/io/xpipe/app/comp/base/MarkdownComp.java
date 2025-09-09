@@ -143,7 +143,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     public CompStructure<StackPane> createBase() {
         var sp = new StackPane();
 
-        if (OsType.getLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64")) {
+        if (OsType.ofLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64")) {
             WEB_VIEW_SUPPORTED = false;
         }
 

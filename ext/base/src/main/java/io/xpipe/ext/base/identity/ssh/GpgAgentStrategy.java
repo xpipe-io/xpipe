@@ -70,7 +70,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
             return (supported = false);
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             var file = AppSystemInfo.ofWindows().getRoamingAppData().resolve("gnupg", "gpg-agent.conf");
             return (supported = Files.exists(file));
         } else {

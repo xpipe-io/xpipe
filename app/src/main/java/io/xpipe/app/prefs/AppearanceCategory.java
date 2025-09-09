@@ -115,7 +115,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                                     struc.get().setPromptText("100");
                                 }),
                                 prefs.uiScale)
-                        .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
+                        .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)

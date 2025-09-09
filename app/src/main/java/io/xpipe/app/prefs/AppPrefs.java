@@ -40,7 +40,6 @@ import lombok.Getter;
 import lombok.Value;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public final class AppPrefs {
 
@@ -136,7 +135,7 @@ public final class AppPrefs {
                     .build());
     final BooleanProperty useSystemFont =
             map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(OsType.getLocal() != OsType.MACOS))
+                    .property(new GlobalBooleanProperty(OsType.ofLocal() != OsType.MACOS))
                     .key("useSystemFont")
                     .valueClass(Boolean.class)
                     .build());
@@ -734,7 +733,7 @@ public final class AppPrefs {
             developerDisableSshTunnelGateways.setValue(false);
         }
 
-        if (OsType.getLocal() == OsType.MACOS
+        if (OsType.ofLocal() == OsType.MACOS
                 && AppProperties.get()
                         .getCanonicalVersion()
                         .map(appVersion -> appVersion.getMajor() == 18)
@@ -803,7 +802,7 @@ public final class AppPrefs {
             }
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             // On Linux and macOS, we prefer the shell variable compared to any global env variable
             // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh

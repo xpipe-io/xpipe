@@ -101,7 +101,7 @@ public enum PlatformState {
             if (s != null) {
                 var i = Math.min(300, Math.max(25, s));
                 var value = i + "%";
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
                         System.setProperty("glass.gtk.uiScale", value);
                     }

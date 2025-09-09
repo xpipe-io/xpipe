@@ -18,13 +18,13 @@ public interface PasswordManager {
         l.add(KeePassXcPasswordManager.class);
         l.add(BitwardenPasswordManager.class);
         l.add(DashlanePasswordManager.class);
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
             l.add(EnpassPasswordManager.class);
         }
         l.add(KeeperPasswordManager.class);
         l.add(PsonoPasswordManager.class);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             l.add(WindowsCredentialManager.class);
         }
         l.add(PasswordManagerCommand.class);

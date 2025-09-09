@@ -176,9 +176,9 @@ public abstract class StoreEntryComp extends SimpleComp {
                 .augment(button);
 
         var loading = new LoadingOverlayComp(Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
-        } else if (OsType.getLocal() == OsType.LINUX) {
+        } else if (OsType.ofLocal() == OsType.LINUX) {
             AppFontSizes.xl(button);
         } else {
             AppFontSizes.apply(button, sizes -> {

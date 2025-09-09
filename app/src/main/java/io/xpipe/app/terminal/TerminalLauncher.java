@@ -198,7 +198,7 @@ public class TerminalLauncher {
                 .add("terminal-register", "--request", request.toString())
                 .buildFull(LocalShell.getShell());
         var bellLine = "printf \"\\a\"";
-        var printBell = OsType.getLocal() != OsType.WINDOWS
+        var printBell = OsType.ofLocal() != OsType.WINDOWS
                 && AppPrefs.get().enableTerminalStartupBell().get();
         var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
         return lines.toString();

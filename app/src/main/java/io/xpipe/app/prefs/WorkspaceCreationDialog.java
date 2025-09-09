@@ -51,7 +51,7 @@ public class WorkspaceCreationDialog {
                 try {
                     var shortcutName = name.get();
                     var file =
-                            switch (OsType.getLocal()) {
+                            switch (OsType.ofLocal()) {
                                 case OsType.Windows ignored -> {
                                     var exec = AppInstallation.ofCurrent()
                                             .getDaemonExecutablePath()

@@ -45,7 +45,7 @@ public class FileOpener {
 
     public static void openWithAnyApplication(String localFile) {
         try {
-            switch (OsType.getLocal()) {
+            switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> {
                     // See https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shellexecuteinfoa
                     var struct = new ShellAPI.SHELLEXECUTEINFO();

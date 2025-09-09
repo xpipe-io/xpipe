@@ -31,7 +31,7 @@ public interface ExternalVncClient {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(InternalVncClient.class);
-        switch (OsType.getLocal()) {
+        switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 l.add(RemminaVncClient.class);
                 l.add(TigerVncClient.Linux.class);

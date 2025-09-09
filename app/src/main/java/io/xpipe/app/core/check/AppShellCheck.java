@@ -7,7 +7,7 @@ public class AppShellCheck {
 
     public static void check() throws Exception {
         var checker =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored ->
                         new AppShellChecker() {
 

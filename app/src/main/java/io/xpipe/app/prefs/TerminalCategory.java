@@ -189,7 +189,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .hide(tabsSettingSupported.not())
                                 .pref(prefs.enableTerminalStartupBell)
                                 .addToggle(prefs.enableTerminalStartupBell)
-                                .hide(OsType.getLocal() == OsType.WINDOWS)
+                                .hide(OsType.ofLocal() == OsType.WINDOWS)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )
@@ -227,7 +227,7 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .nameAndDescription("terminalEnvironment")
                 .addComp(proxyChoice, ref)
-                .hide(OsType.getLocal() != OsType.WINDOWS);
+                .hide(OsType.ofLocal() != OsType.WINDOWS);
     }
 
     @SuppressWarnings("unused")
@@ -285,12 +285,12 @@ public class TerminalCategory extends AppPrefsCategory {
         var options = new OptionsBuilder()
                 .name("terminalMultiplexer")
                 .description(
-                        OsType.getLocal() == OsType.WINDOWS
+                        OsType.ofLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
                 .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
         return options;

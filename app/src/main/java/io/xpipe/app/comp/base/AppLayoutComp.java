@@ -54,16 +54,16 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 // Only Windows 11 has colored background support
-                                if (OsType.getLocal() == OsType.WINDOWS && !SystemUtils.IS_OS_WINDOWS_11) {
+                                if (OsType.ofLocal() == OsType.WINDOWS && !SystemUtils.IS_OS_WINDOWS_11) {
                                     return 1.0;
                                 }
 
-                                if (OsType.getLocal() == OsType.LINUX) {
+                                if (OsType.ofLocal() == OsType.LINUX) {
                                     return 1.0;
                                 }
 
                                 // On macOS, we don't have a transparent background in dev mode
-                                if (OsType.getLocal() == OsType.MACOS
+                                if (OsType.ofLocal() == OsType.MACOS
                                         && AppProperties.get().isDevelopmentEnvironment()) {
                                     return 1.0;
                                 }

@@ -34,7 +34,7 @@ public class TerminalMultiplexerManager {
             return Optional.empty();
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             var hasProxy = AppPrefs.get().terminalProxy().getValue() != null;
             if (!hasProxy) {
                 return Optional.empty();

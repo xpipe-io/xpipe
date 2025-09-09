@@ -25,7 +25,7 @@ public class Deobfuscator {
             var file = Files.createTempFile(AppNames.ofCurrent().getKebapName() + "-stacktrace", null);
             Files.writeString(file, stackTrace);
             var proc = new ProcessBuilder(
-                            "retrace." + (OsType.getLocal() == OsType.WINDOWS ? "bat" : "sh"),
+                            "retrace." + (OsType.ofLocal() == OsType.WINDOWS ? "bat" : "sh"),
                             System.getenv(AppNames.ofMain().getUppercaseName() + "_MAPPING"),
                             file.toString())
                     .redirectErrorStream(true);

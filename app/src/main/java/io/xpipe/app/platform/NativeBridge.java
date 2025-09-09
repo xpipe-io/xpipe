@@ -19,7 +19,7 @@ public class NativeBridge {
 
     public static void init() {
         // Preload
-        if (OsType.getLocal() == OsType.MACOS && AppProperties.get().getArch().equals("arm64")) {
+        if (OsType.ofLocal() == OsType.MACOS && AppProperties.get().getArch().equals("arm64")) {
             getMacOsLibrary();
         }
     }

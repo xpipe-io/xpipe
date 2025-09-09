@@ -31,7 +31,7 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
 
             // The open command is used as a default opener on Linux
             // We don't want to overwrite the default startup mode
-            if (OsType.getLocal() == OsType.LINUX && openCounter++ == 0) {
+            if (OsType.ofLocal() == OsType.LINUX && openCounter++ == 0) {
                 return Response.builder().build();
             }
 

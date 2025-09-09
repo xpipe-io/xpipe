@@ -21,7 +21,7 @@ public abstract class WindowsRegistry {
     public static final int HKEY_LOCAL_MACHINE = 0x80000002;
 
     public static void init() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return;
         }
 

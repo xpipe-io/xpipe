@@ -130,7 +130,7 @@ public enum AppDistributionType implements Translatable {
 
     public static AppDistributionType determine() {
         var base = AppInstallation.ofCurrent().getBaseInstallationPath();
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
@@ -151,11 +151,11 @@ public enum AppDistributionType implements Translatable {
         } else {
             var file = base.resolve("installation");
             if (!Files.exists(file)) {
-                if (OsType.getLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {
+                if (OsType.ofLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {
                     return AUR;
                 }
 
-                if (OsType.getLocal() == OsType.WINDOWS
+                if (OsType.ofLocal() == OsType.WINDOWS
                         && AppInstallation.ofCurrent()
                                 .getBaseInstallationPath()
                                 .startsWith(
@@ -167,11 +167,11 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.getLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
+        if (OsType.ofLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
             return WEBTOP;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
+        if (OsType.ofLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
                 if (chocoOut.get().contains("xpipe")
@@ -181,7 +181,7 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
@@ -195,7 +195,7 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             if (base.startsWith("/opt")) {
                 var aptOut = LocalExec.readStdoutIfPossible(
                         "apt", "show", AppNames.ofCurrent().getKebapName());
@@ -216,7 +216,7 @@ public enum AppDistributionType implements Translatable {
         }
 
         // Fix for community AUR builds that use the RPM dist
-        if (OsType.getLocal() == OsType.LINUX && Files.exists(Path.of("/etc/arch-release"))) {
+        if (OsType.ofLocal() == OsType.LINUX && Files.exists(Path.of("/etc/arch-release"))) {
             return PORTABLE;
         }
 

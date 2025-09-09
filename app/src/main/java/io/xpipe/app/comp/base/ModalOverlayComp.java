@@ -47,9 +47,9 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         modal.setInTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
+                OsType.ofLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
         modal.setOutTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
+                OsType.ofLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {

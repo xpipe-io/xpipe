@@ -24,7 +24,7 @@ public class AppHomebrewCoreutilsCheck {
     }
 
     public static void check() {
-        if (OsType.getLocal() != OsType.MACOS) {
+        if (OsType.ofLocal() != OsType.MACOS) {
             return;
         }
 

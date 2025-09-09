@@ -52,7 +52,7 @@ public class AppTheme {
             }
 
             root.pseudoClassStateChanged(
-                    PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
+                    PseudoClass.getPseudoClass(OsType.ofLocal().getId()), true);
             if (AppPrefs.get() == null) {
                 var def = Theme.getDefaultLightTheme();
                 root.pseudoClassStateChanged(PseudoClass.getPseudoClass(def.getCssId()), true);
@@ -143,7 +143,7 @@ public class AppTheme {
     }
 
     private static void updateThemeToThemeName(Object oldName, Object newName) {
-        if (OsType.getLocal() == OsType.LINUX && newName != null) {
+        if (OsType.ofLocal() == OsType.LINUX && newName != null) {
             var toDark = (oldName == null || !oldName.toString().contains("-dark"))
                     && newName.toString().contains("-dark");
             var toLight = (oldName == null || oldName.toString().contains("-dark"))
@@ -488,7 +488,7 @@ public class AppTheme {
         protected final int displayBorderRadius;
 
         static Theme getDefaultLightTheme() {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> PRIMER_LIGHT;
                 case OsType.Linux ignored -> PRIMER_LIGHT;
                 case OsType.MacOs ignored -> CUPERTINO_LIGHT;
@@ -496,7 +496,7 @@ public class AppTheme {
         }
 
         static Theme getDefaultDarkTheme() {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> PRIMER_DARK;
                 case OsType.Linux ignored -> PRIMER_DARK;
                 case OsType.MacOs ignored -> CUPERTINO_DARK;

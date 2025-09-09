@@ -562,7 +562,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);
-    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.ofLocal(), true);
     List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
@@ -576,7 +576,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         // Fallback to an available default
-        switch (OsType.getLocal()) {
+        switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 // This should not be termius or wave as all others take precedence
                 var def = determineDefault(null);
@@ -634,11 +634,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         // Check if detection failed for some reason
         if (r == null) {
-            var def = OsType.getLocal() == OsType.WINDOWS
+            var def = OsType.ofLocal() == OsType.WINDOWS
                     ? (LocalShell.getDialect() == ShellDialects.CMD
                             ? ExternalTerminalType.CMD
                             : ExternalTerminalType.POWERSHELL)
-                    : OsType.getLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;
+                    : OsType.ofLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;
             r = def;
         }
 

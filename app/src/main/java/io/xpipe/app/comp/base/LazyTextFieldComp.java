@@ -46,7 +46,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         });
 
         r.focusedProperty().addListener((c, o, n) -> {
-            if (n && OsType.getLocal() != OsType.WINDOWS) {
+            if (n && OsType.ofLocal() != OsType.WINDOWS) {
                 Platform.runLater(() -> {
                     r.selectEnd();
                 });

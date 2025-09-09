@@ -13,7 +13,7 @@ public interface OsFileSystem {
     MacOs MACOS = new MacOs();
 
     static OsFileSystem ofLocal() {
-        return of(OsType.getLocal());
+        return of(OsType.ofLocal());
     }
 
     static OsFileSystem of(OsType osType) {

@@ -20,7 +20,7 @@ public class AppTrayIcon {
         tray = SystemTray.getSystemTray();
 
         var image =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Windows ignored -> "img/logo/full/logo_16x16.png";
                     case OsType.Linux ignored -> "img/logo/full/logo_24x24.png";
                     case OsType.MacOs ignored -> "img/logo/padded/logo_24x24.png";
@@ -52,7 +52,7 @@ public class AppTrayIcon {
         }
 
         trayIcon.addActionListener(e -> {
-            if (OsType.getLocal() != OsType.MACOS) {
+            if (OsType.ofLocal() != OsType.MACOS) {
                 tray.remove(trayIcon);
                 AppOperationMode.switchToAsync(AppOperationMode.GUI);
             }
@@ -95,7 +95,7 @@ public class AppTrayIcon {
     }
 
     public void showErrorMessage(String title, String message) {
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             showMacAlert(title, message, "Error");
         } else {
             EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));

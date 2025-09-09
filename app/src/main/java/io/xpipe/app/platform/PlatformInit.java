@@ -73,7 +73,7 @@ public class PlatformInit {
     }
 
     private static void initSync() {
-        if (AppProperties.get().isAotTrainMode() && OsType.getLocal() == OsType.LINUX) {
+        if (AppProperties.get().isAotTrainMode() && OsType.ofLocal() == OsType.LINUX) {
             latch.countDown();
             return;
         }
