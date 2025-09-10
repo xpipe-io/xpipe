@@ -197,7 +197,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    private void startIfNeeded() throws Exception {
+    public void startIfNeeded() throws Exception {
         var s = fileSystem.getShell();
         if (s.isPresent()) {
             s.get().start();

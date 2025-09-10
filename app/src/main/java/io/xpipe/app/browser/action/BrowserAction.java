@@ -41,6 +41,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
                 model = (BrowserFileSystemTabModel) found.get();
                 var target = getTargetDirectory(model);
                 model.cdSync(target.toString());
+                model.startIfNeeded();
             } else {
                 model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
                         ref.asNeeded(),

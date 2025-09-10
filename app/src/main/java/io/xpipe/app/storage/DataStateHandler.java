@@ -85,6 +85,10 @@ public class DataStateHandler {
     }
 
     public boolean canCacheToStorage(DataStore store) {
+        if (DataStorage.get() == null) {
+            return false;
+        }
+
         var entry = DataStorage.get().getStoreEntryIfPresent(store, true).or(() -> DataStorage.get()
                 .getStoreEntryInProgressIfPresent(store));
         return entry.isPresent();

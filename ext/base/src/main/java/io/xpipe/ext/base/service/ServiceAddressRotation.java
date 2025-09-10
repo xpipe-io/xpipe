@@ -19,7 +19,7 @@ public class ServiceAddressRotation {
         }
 
         var alias = aliases[counter++ % aliases.length];
-        var replaced = url.replace("localhost", alias);
+        var replaced = url.replaceFirst("localhost", alias);
         replacedUrls.put(url, replaced);
         return replaced;
     }
