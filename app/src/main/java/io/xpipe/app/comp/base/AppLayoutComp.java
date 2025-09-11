@@ -48,31 +48,6 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         var multi = new MultiContentComp(map, true);
         multi.styleClass("background");
 
-        multi.apply(struc -> {
-            struc.get()
-                    .opacityProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                // Only Windows 11 has colored background support
-                                if (OsType.ofLocal() == OsType.WINDOWS && !SystemUtils.IS_OS_WINDOWS_11) {
-                                    return 1.0;
-                                }
-
-                                if (OsType.ofLocal() == OsType.LINUX) {
-                                    return 1.0;
-                                }
-
-                                // On macOS, we don't have a transparent background in dev mode
-                                if (OsType.ofLocal() == OsType.MACOS
-                                        && AppProperties.get().isDevelopmentEnvironment()) {
-                                    return 1.0;
-                                }
-
-                                return AppPrefs.get().performanceMode().get() ? 1.0 : 0.95;
-                            },
-                            AppPrefs.get().performanceMode()));
-        });
-
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
         StackPane multiR = (StackPane) multi.createRegion();
