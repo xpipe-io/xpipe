@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.core.mode.OperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
@@ -136,7 +137,7 @@ public class BrowserTransferModel {
             return;
         }
 
-        if (DataStorage.get() == null) {
+        if (OperationMode.isInShutdown()) {
             return;
         }
 
