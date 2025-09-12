@@ -17,6 +17,10 @@ public class GuiErrorHandlerBase {
                 return false;
             }
 
+            if (App.getApp() == null) {
+                return false;
+            }
+
             PlatformInit.init(true);
             AppMainWindow.init(true);
         } catch (Throwable ex) {
