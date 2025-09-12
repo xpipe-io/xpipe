@@ -29,10 +29,6 @@ if (os.isWindows()) {
                 into "$distDir/base"
             }
             copy {
-                from "$projectDir/fonts"
-                into "$distDir/base/fonts"
-            }
-            copy {
                 from "$rootDir/lang"
                 into "$distDir/base/lang"
             }
@@ -108,10 +104,6 @@ if (os.isWindows()) {
             copy {
                 from "$distDir/licenses"
                 into "$distDir/$app/Contents/Resources/licenses"
-            }
-            copy {
-                from "$projectDir/fonts"
-                into "$distDir/$app/Contents/Resources/fonts"
             }
             copy {
                 from "$rootDir/lang"

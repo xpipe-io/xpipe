@@ -155,8 +155,6 @@ public abstract class AppInstallation {
 
     public abstract Path getDaemonDebugScriptPath();
 
-    public abstract Path getBundledFontsPath();
-
     public abstract Path getLangPath();
 
     public abstract Path getCliExecutablePath();
@@ -177,11 +175,6 @@ public abstract class AppInstallation {
         public Path getDaemonDebugScriptPath() {
             return getBaseInstallationPath()
                     .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.bat");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            return getBaseInstallationPath().resolve("fonts");
         }
 
         @Override
@@ -220,11 +213,6 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
-        }
-
-        @Override
         public Path getLangPath() {
             return devBase.resolve("lang");
         }
@@ -245,15 +233,6 @@ public abstract class AppInstallation {
         public Path getDaemonDebugScriptPath() {
             return getBaseInstallationPath()
                     .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.sh");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist", "fonts");
-            }
-
-            return getBaseInstallationPath().resolve("fonts");
         }
 
         @Override
@@ -296,11 +275,6 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
-        }
-
-        @Override
         public Path getLangPath() {
             return devBase.resolve("lang");
         }
@@ -320,15 +294,6 @@ public abstract class AppInstallation {
                             "Resources",
                             "scripts",
                             AppNames.ofCurrent().getExecutableName() + "_debug.sh");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist", "fonts");
-            }
-
-            return getBaseInstallationPath().resolve("Contents", "Resources", "fonts");
         }
 
         @Override
@@ -376,11 +341,6 @@ public abstract class AppInstallation {
         private MacOsDev(Path base, Path devBase) {
             super(base);
             this.devBase = devBase;
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
         }
 
         @Override
