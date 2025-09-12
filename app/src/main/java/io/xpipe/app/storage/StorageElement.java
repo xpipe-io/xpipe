@@ -126,6 +126,10 @@ public abstract class StorageElement {
             return;
         }
 
+        if (name.isBlank()) {
+            return;
+        }
+
         this.name = name;
         notifyUpdate(false, true);
     }
