@@ -271,4 +271,6 @@ public interface ShellControl extends ProcessControl {
     CommandControl command(CommandBuilder builder);
 
     void exitAndWait() throws IOException;
+
+    SudoCache getSudoCache();
 }

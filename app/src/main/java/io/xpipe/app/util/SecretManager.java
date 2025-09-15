@@ -88,12 +88,18 @@ public class SecretManager {
         return r;
     }
 
-    public static synchronized void completeRequest(UUID request) {
-        if (progress.removeIf(
-                secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))) {
+    public static synchronized List<SecretQueryProgress> completeRequest(UUID request) {
+        var found = progress.stream().filter(
+                secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))
+                .toList();
+
+        if (progress.removeAll(found)) {
             TrackEvent.withTrace("Completed secret request")
                     .tag("uuid", request)
                     .handle();
+            return found;
+        } else {
+            return List.of();
         }
     }
 
