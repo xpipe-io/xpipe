@@ -147,9 +147,6 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                 }
 
                 if (change.wasReplaced()) {
-                    if (allAddresses.size() > 0) {
-                        struc.get().show();
-                    }
                     return;
                 }
 
