@@ -60,7 +60,7 @@ dependencies {
     }
 
     api "com.github.weisj:jsvg:2.0.1-SNAPSHOT"
-    api 'io.xpipe:vernacular:1.15'
+    api 'io.xpipe:vernacular:1.16'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.7'
     api 'org.apache.commons:commons-lang3:3.18.0'
