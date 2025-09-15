@@ -6,7 +6,9 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -36,7 +38,8 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
 
     @Override
     public CompStructure<HBox> createBase() {
-        var combo = createComboBox();
+        var adding = new SimpleBooleanProperty(false);
+        var combo = createComboBox(adding);
 
         var addButton = new ButtonComp(null, new FontIcon("mdi2f-format-list-group-plus"), () -> {
             var toAdd = currentAddress.getValue();
@@ -44,11 +47,12 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                 return;
             }
 
+            adding.set(true);
             if (!allAddresses.contains(toAdd)) {
                 allAddresses.addFirst(toAdd);
             }
-
             currentAddress.setValue(null);
+            adding.set(false);
         });
         addButton.styleClass(Styles.CENTER_PILL).grow(false, true);
         addButton.tooltipKey("addAnotherHostName");
@@ -69,13 +73,24 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
         return new SimpleCompStructure<>(layout.createStructure().get());
     }
 
-    private Comp<?> createComboBox() {
+    private Comp<?> createComboBox(ObservableBooleanValue adding) {
         var prop = new SimpleStringProperty();
         currentAddress.subscribe(hostAddress -> {
             prop.setValue(hostAddress);
         });
         prop.addListener((observable, oldValue, newValue) -> {
-            if (mutable || allAddresses.contains(newValue)) {
+            if (mutable) {
+                currentAddress.setValue(newValue);
+                // Update list as well
+                var index = allAddresses.indexOf(oldValue);
+                if (!adding.get() && index != -1) {
+                    if (newValue != null) {
+                        allAddresses.set(index, newValue);
+                    } else {
+                        allAddresses.remove(index);
+                    }
+                }
+            } else if (allAddresses.contains(newValue)) {
                 currentAddress.setValue(newValue);
             }
         });
@@ -127,7 +142,9 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                     }
                 } else {
                     struc.get().requestFocus();
-                    struc.get().show();
+                    if (allAddresses.size() > 0) {
+                        struc.get().show();
+                    }
                 }
 
                 struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
