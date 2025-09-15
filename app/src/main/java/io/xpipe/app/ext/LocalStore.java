@@ -4,6 +4,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellStoreState;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.Value;
 
 @JsonTypeName("local")
@@ -30,7 +31,7 @@ public class LocalStore implements NetworkTunnelStore, ShellStore, StatefulDataS
     }
 
     @Override
-    public DataStore getNetworkParent() {
+    public DataStoreEntryRef<?> getNetworkParent() {
         return null;
     }
 
