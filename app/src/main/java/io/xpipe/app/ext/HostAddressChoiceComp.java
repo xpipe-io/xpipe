@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -84,11 +85,17 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                 // Update list as well
                 var index = allAddresses.indexOf(oldValue);
                 if (!adding.get() && index != -1) {
-                    if (newValue != null) {
-                        allAddresses.set(index, newValue);
-                    } else {
-                        allAddresses.remove(index);
-                    }
+                    Platform.runLater(() -> {
+                        if (newValue != null) {
+                            if (!allAddresses.contains(newValue)) {
+                                allAddresses.set(index, newValue);
+                            } else {
+                                allAddresses.remove(index);
+                            }
+                        } else {
+                            allAddresses.remove(index);
+                        }
+                    });
                 }
             } else if (allAddresses.contains(newValue)) {
                 currentAddress.setValue(newValue);
@@ -135,6 +142,17 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             struc.get().setVisibleRowCount(10);
 
             allAddresses.addListener((ListChangeListener<? super String>) change -> {
+                if (!change.next()) {
+                    return;
+                }
+
+                if (change.wasReplaced()) {
+                    if (allAddresses.size() > 0) {
+                        struc.get().show();
+                    }
+                    return;
+                }
+
                 if (struc.get().isShowing()) {
                     struc.get().hide();
                     if (allAddresses.size() > 0) {
