@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -105,7 +106,7 @@ public class FileOpener {
                         id.toString(),
                         id,
                         null,
-                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        () -> BrowserFileInput.of(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))),
                         null,
                         v -> openInTextEditor(v));
     }
@@ -121,7 +122,7 @@ public class FileOpener {
                         keyName,
                         key,
                         null,
-                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        () -> BrowserFileInput.of(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))),
                         (size) -> {
                             return new BrowserFileOutput() {
                                 @Override

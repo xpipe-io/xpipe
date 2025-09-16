@@ -2,6 +2,7 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.storage.DataStorage;
 
@@ -28,7 +29,7 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         String target;
 
         @NonNull
-        InputStream input;
+        BrowserFileInput input;
 
         @NonNull
         BrowserFileOutput output;
@@ -37,9 +38,13 @@ public class ApplyFileEditActionProvider implements ActionProvider {
         public void executeImpl() throws Exception {
             output.beforeTransfer();
             try (var out = output.open()) {
-                input.transferTo(out);
+                input.open().transferTo(out);
             }
-            output.onFinish();
+            try {
+                output.onFinish();
+            } finally {
+                input.onFinish();
+            }
         }
 
         @Override
