@@ -6,6 +6,7 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.*;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialect;
@@ -40,6 +41,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
+import java.nio.file.Files;
 import java.util.*;
 
 public final class AppPrefs {
@@ -175,6 +177,7 @@ public final class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.RDP)
             .build());
+    final StringProperty notesTemplate = new GlobalStringProperty(null);
     final DoubleProperty windowOpacity =
             map(Mapping.builder()
                     .property(new GlobalDoubleProperty(1.0))
@@ -428,6 +431,10 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public final ObservableStringValue notesTemplate() {
+        return notesTemplate;
+    }
 
     public ObservableBooleanValue disableHardwareAcceleration() {
         return disableHardwareAcceleration;
@@ -811,6 +818,15 @@ public final class AppPrefs {
             var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable.get();
             defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
         }
+
+        try {
+            var file = AppProperties.get().getDataDir().resolve("storage").resolve("notes.md");
+            if (Files.exists(file)) {
+                notesTemplate.set(Files.readString(file));
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -837,6 +853,14 @@ public final class AppPrefs {
         }
         if (globalStorageHandler.isInitialized()) {
             globalStorageHandler.save();
+        }
+
+        if (notesTemplate.get() != null) {
+            try {
+                Files.writeString(AppProperties.get().getDataDir().resolve("storage", "notes.md"), notesTemplate.getValue());
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
         }
     }
 

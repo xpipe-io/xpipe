@@ -1,7 +1,8 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.issue.TrackEvent;
 
+import io.xpipe.app.platform.OptionsBuilder;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -24,10 +25,13 @@ public class HostAddressChoice {
         var existing = value.getValue();
         var val = new SimpleObjectProperty<>(existing != null ? existing.get() : null);
         var list = FXCollections.observableArrayList(existing != null ? existing.getAvailable() : new ArrayList<>());
+        if (existing != null) {
+            list.remove(existing.get());
+        }
         // For updating the options builder binding on list change, it doesn't support observable lists
-        var sizeProp = new SimpleIntegerProperty(0);
+        var listHashProp = new SimpleIntegerProperty(0);
         list.addListener((ListChangeListener<? super String>) c -> {
-            sizeProp.set(c.getList().size());
+            listHashProp.set(c.getList().hashCode());
         });
         var options = new OptionsBuilder();
         if (includeDescription) {
@@ -35,9 +39,10 @@ public class HostAddressChoice {
         } else {
             options.name(translationKey);
         }
-        options.addComp(new HostAddressChoiceComp(val, list, allowMutation))
-                .addProperty(val)
-                .addProperty(sizeProp);
+        options.addComp(new HostAddressChoiceComp(val, list, allowMutation));
+        options.addProperty(val);
+        options.nonNull();
+        options.addProperty(listHashProp);
         options.bind(
                 () -> {
                     var fullList = new ArrayList<>(list);
@@ -45,9 +50,12 @@ public class HostAddressChoice {
                         fullList.add(val.getValue());
                     }
 
-                    var effectiveValue =
-                            val.getValue() != null ? val.getValue() : fullList.size() > 0 ? fullList.getFirst() : null;
-                    return HostAddress.of(effectiveValue, fullList);
+                    TrackEvent.withTrace("Host address update")
+                            .tag("address", val.getValue())
+                            .tag("list", fullList)
+                            .handle();
+
+                    return HostAddress.of(val.getValue(), fullList);
                 },
                 value);
         return options;

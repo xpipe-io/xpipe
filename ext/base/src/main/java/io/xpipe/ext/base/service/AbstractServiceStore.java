@@ -34,21 +34,13 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(getHost());
-        Validators.isType(getHost(), NetworkTunnelStore.class);
+        NetworkTunnelStore.checkTunneable(getHost());
         Validators.nonNull(remotePort);
         Validators.nonNull(serviceProtocolType);
     }
 
     public String getOpenTargetUrl() {
-        var s = getSession();
-        if (s == null) {
-            var host = getHost().getStore().getTunnelHostName() != null
-                    ? getHost().getStore().getTunnelHostName()
-                    : "localhost";
-            return host + ":" + remotePort;
-        }
-
-        return "localhost:" + s.getLocalPort();
+        return ServiceAddressRotation.getRotatedAddress(this);
     }
 
     public boolean requiresTunnel() {

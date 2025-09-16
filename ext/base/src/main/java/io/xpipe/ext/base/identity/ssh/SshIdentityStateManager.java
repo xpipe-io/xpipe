@@ -1,5 +1,8 @@
 package io.xpipe.ext.base.identity.ssh;
 
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -17,9 +20,21 @@ public class SshIdentityStateManager {
 
     private static RunningAgent runningAgent;
 
+    public static boolean checkNamedPipeExists(Path path) {
+        Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
+        // This will not break the named pipe compared to using a normal exists check
+        var r = Kernel32.INSTANCE.FindFirstFile(path.toString(), p);
+        if (!WinBase.INVALID_HANDLE_VALUE.equals(r)) {
+            Kernel32.INSTANCE.FindClose(r);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private static void stopWindowsAgents(boolean openssh, boolean gpg, boolean external) throws Exception {
         var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");
-        if (!Files.exists(pipePath)) {
+        if (!checkNamedPipeExists(pipePath)) {
             return;
         }
 
@@ -132,7 +147,7 @@ public class SshIdentityStateManager {
             stopWindowsAgents(true, true, false);
 
             var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");
-            var pipeExists = Files.exists(pipePath);
+            var pipeExists = checkNamedPipeExists(pipePath);
             if (!pipeExists) {
                 // No agent is running
                 throw ErrorEventFactory.expected(new IllegalStateException(

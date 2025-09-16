@@ -189,6 +189,7 @@ public class AppBaseMode extends AppOperationMode {
         TrackEvent.withInfo("Base mode shutdown started").build();
         AbstractAction.reset();
         AppMcpServer.reset();
+        AppPrefs.reset();
         DataStorage.reset();
         DataStorageSyncHandler.getInstance().reset();
         SshLocalBridge.reset();
@@ -196,7 +197,6 @@ public class AppBaseMode extends AppOperationMode {
         LocalShell.reset(false);
         BrowserLocalFileSystem.reset();
         ProcessControlProvider.get().reset();
-        AppPrefs.reset();
         AppBeaconServer.reset();
         KeePassXcPasswordManager.reset();
         StoreViewState.reset();

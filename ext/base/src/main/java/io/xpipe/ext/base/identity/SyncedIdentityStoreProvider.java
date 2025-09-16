@@ -58,11 +58,11 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
             }
 
             var source = Path.of(f.getFile().toAbsoluteFilePath(null).toString());
-            var target = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
+            var target = DataStorage.get().getDataDir().resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
 
             var pub = Path.of(source + ".pub");
-            var pubTarget = Path.of("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
+            var pubTarget = DataStorage.get().getDataDir().resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
             if (Files.exists(pub)) {
                 DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
             }

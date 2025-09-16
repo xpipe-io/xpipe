@@ -29,6 +29,8 @@ open module io.xpipe.ext.base {
     requires static io.xpipe.app;
     requires org.kordamp.ikonli.javafx;
     requires atlantafx.base;
+    requires com.sun.jna.platform;
+    requires com.sun.jna;
 
     provides ActionProvider with
             LocalIdentityConvertHubLeafProvider,

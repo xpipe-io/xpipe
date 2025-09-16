@@ -200,7 +200,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
-    private void startIfNeeded() throws Exception {
+    public void startIfNeeded() throws Exception {
         fileSystem.reinitIfNeeded();
     }
 
@@ -433,11 +433,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         // Assume that the path is normalized to improve performance!
         // path = FileSystemHelper.normalizeDirectoryPath(this, path);
 
+        loadFilesSync(path);
         filter.setValue(null);
         savedState.cd(path, true);
         history.updateCurrent(path);
         currentPath.set(path);
-        loadFilesSync(path);
     }
 
     private boolean loadFilesSync(FilePath dir) {

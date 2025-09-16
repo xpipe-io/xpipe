@@ -1,5 +1,8 @@
 package io.xpipe.ext.base.identity.ssh;
 
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -94,7 +97,7 @@ public class PageantStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {
         builder.environment("SSH_AUTH_SOCK", parent -> {
             if (parent.getOsType() == OsType.WINDOWS) {
-                return getPageantWindowsPipe(parent);
+                return getPageantWindowsPipe();
             }
 
             return null;
@@ -111,27 +114,17 @@ public class PageantStrategy implements SshIdentityStrategy {
                 new KeyValue("PKCS11Provider", "none"));
     }
 
-    private String getPageantWindowsPipe(ShellControl parent) throws Exception {
-        var name = parent.enforceDialect(ShellDialects.POWERSHELL, powershell -> {
-            var pipe = powershell.executeSimpleStringCommand(
-                    "Get-ChildItem \"\\\\.\\pipe\\\" -recurse | Where-Object {$_.Name -match \"pageant\"} | foreach {echo $_.Name}");
-            var lines = pipe.lines().toList();
-            if (lines.isEmpty()) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
-            }
+    private String getPageantWindowsPipe() {
+        Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
+        var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant*", p);
+        if (r == WinBase.INVALID_HANDLE_VALUE) {
+            throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
+        }
 
-            if (lines.size() > 1) {
-                var uname = powershell
-                        .getShellDialect()
-                        .printUsernameCommand(powershell)
-                        .readStdoutOrThrow();
-                return lines.stream().filter(s -> s.contains(uname)).findFirst().orElse(lines.getFirst());
-            }
+        WinBase.WIN32_FIND_DATA fd = new WinBase.WIN32_FIND_DATA(p);
+        Kernel32.INSTANCE.FindClose(r);
 
-            return lines.getFirst();
-        });
-
-        var file = "\\\\.\\pipe\\" + name;
+        var file = "\\\\.\\pipe\\" + fd.getFileName();
         return file;
     }
 }

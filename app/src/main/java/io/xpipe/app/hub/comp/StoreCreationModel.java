@@ -40,7 +40,6 @@ public class StoreCreationModel {
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     BooleanProperty finished = new SimpleBooleanProperty();
     ObservableValue<DataStoreEntry> entry;
-    BooleanProperty changedSinceError = new SimpleBooleanProperty();
     BooleanProperty skippable = new SimpleBooleanProperty();
     BooleanProperty connectable = new SimpleBooleanProperty();
     StringProperty name;
@@ -63,12 +62,6 @@ public class StoreCreationModel {
         this.existingEntry = existingEntry;
         this.staticDisplay = staticDisplay;
         this.consumer = consumer;
-        this.store.addListener((c, o, n) -> {
-            changedSinceError.setValue(true);
-        });
-        this.name.addListener((c, o, n) -> {
-            changedSinceError.setValue(true);
-        });
 
         this.provider.addListener((c, o, n) -> {
             store.unbind();
@@ -139,11 +132,9 @@ public class StoreCreationModel {
                         .orElse(DataStorage.get().getAllConnectionsCategory()));
 
         // Don't put it in the wrong root category
-        if ((provider.getValue().getCreationCategory() == null
-                || !provider.getValue().getCreationCategory().getCategory().equals(rootCategory.getUuid()))) {
-            targetCategory = provider.getValue().getCreationCategory() != null
-                    ? provider.getValue().getCreationCategory().getCategory()
-                    : DataStorage.ALL_CONNECTIONS_CATEGORY_UUID;
+        if ((provider.getValue().getCreationCategory() != null
+                && !provider.getValue().getCreationCategory().getCategory().equals(rootCategory.getUuid()))) {
+            targetCategory = provider.getValue().getCreationCategory().getCategory();
         }
 
         // Don't use the all connections category
@@ -216,12 +207,11 @@ public class StoreCreationModel {
                     .getFirst()
                     .getText();
             ErrorEventFactory.fromMessage(msg).expected().handle();
-            changedSinceError.setValue(false);
             return;
         }
 
         // We didn't change anything
-        if (!wasChanged()) {
+        if (store.getValue().isComplete() && !wasChanged()) {
             commit(false);
             return;
         }
@@ -251,8 +241,6 @@ public class StoreCreationModel {
                     // Cycles in connection graphs can fail hard but are expected
                     ErrorEventFactory.expected(ex);
                 }
-
-                changedSinceError.setValue(false);
 
                 ErrorEventFactory.fromThrowable(ex).handle();
             } finally {

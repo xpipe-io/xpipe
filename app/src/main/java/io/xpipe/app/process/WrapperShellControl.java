@@ -359,4 +359,9 @@ public class WrapperShellControl implements ShellControl {
     public void exitAndWait() throws IOException {
         parent.exitAndWait();
     }
+
+    @Override
+    public SudoCache getSudoCache() {
+        return parent.getSudoCache();
+    }
 }
