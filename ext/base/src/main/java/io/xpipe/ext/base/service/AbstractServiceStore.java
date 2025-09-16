@@ -34,7 +34,7 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(getHost());
-        NetworkTunnelStore.checkTunneable(getHost());
+        NetworkTunnelStore.checkTunnelable(getHost());
         Validators.nonNull(remotePort);
         Validators.nonNull(serviceProtocolType);
     }

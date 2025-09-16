@@ -20,7 +20,7 @@ public class SshIdentityStateManager {
 
     private static RunningAgent runningAgent;
 
-    public static boolean checkNamedPipeExists(Path path) {
+    private static boolean checkNamedPipeExists(Path path) {
         Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
         // This will not break the named pipe compared to using a normal exists check
         var r = Kernel32.INSTANCE.FindFirstFile(path.toString(), p);
