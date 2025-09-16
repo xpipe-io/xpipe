@@ -6,6 +6,7 @@ import io.xpipe.app.ext.PrefsHandler;
 import io.xpipe.app.ext.PrefsProvider;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.icon.SystemIconSource;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
@@ -38,7 +39,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
 
+import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 public final class AppPrefs {
@@ -112,6 +115,7 @@ public final class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.RDP)
             .build());
+    final StringProperty notesTemplate = new GlobalStringProperty(null);
     final DoubleProperty windowOpacity = mapLocal(new GlobalDoubleProperty(1.0), "windowOpacity", Double.class, false);
     final StringProperty customRdpClientCommand =
             mapLocal(new GlobalStringProperty(null), "customRdpClientCommand", String.class, false);
@@ -353,6 +357,10 @@ public final class AppPrefs {
 
         // Keep instance as we might need some values on shutdown, e.g. on update with terminals
         // INSTANCE = null;
+    }
+
+    public final ObservableStringValue notesTemplate() {
+        return notesTemplate;
     }
 
     public static AppPrefs get() {
@@ -744,6 +752,15 @@ public final class AppPrefs {
             var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable;
             defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
         }
+
+        try {
+            var file = AppProperties.get().getDataDir().resolve("storage").resolve("notes.md");
+            if (Files.exists(file)) {
+                notesTemplate.set(Files.readString(file));
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -770,6 +787,14 @@ public final class AppPrefs {
         }
         if (globalStorageHandler.isInitialized()) {
             globalStorageHandler.save();
+        }
+
+        if (notesTemplate.get() != null) {
+            try {
+                Files.writeString(AppProperties.get().getDataDir().resolve("storage", "notes.md"), notesTemplate.getValue());
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
         }
     }
 

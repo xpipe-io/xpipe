@@ -65,6 +65,7 @@ public class ContextualFileReferenceSync {
                                     return true;
                                 }
                             });
+                    event.expected();
                     event.handle();
 
                     if (rename.get()) {
