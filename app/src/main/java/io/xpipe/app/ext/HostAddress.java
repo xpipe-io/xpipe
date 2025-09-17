@@ -31,6 +31,11 @@ public class HostAddress {
         return new HostAddress(host.strip(), List.of(host));
     }
 
+    public static HostAddress of(@NonNull List<String> addresses) {
+        return new HostAddress(
+                addresses.getFirst().strip(), addresses.stream().map(s -> s.strip()).toList());
+    }
+
     public static HostAddress of(String host, @NonNull List<String> addresses) {
         if (host == null) {
             return null;

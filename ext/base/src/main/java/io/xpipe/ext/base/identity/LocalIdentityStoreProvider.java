@@ -43,7 +43,6 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
-                .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(false)
                 .perUserKeyFileCheck(() -> false)
                 .build();

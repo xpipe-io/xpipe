@@ -19,6 +19,7 @@ import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -81,7 +82,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                config.getProxy(),
+                                new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),

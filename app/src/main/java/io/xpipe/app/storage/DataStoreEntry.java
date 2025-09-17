@@ -163,6 +163,10 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Name is empty");
+        }
+
         var storeNode = DataStorageNode.ofNewStore(store);
         var storeFromNode = storeNode.parseStore();
         var validity = storeFromNode == null

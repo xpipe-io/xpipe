@@ -23,7 +23,6 @@ import lombok.Value;
 @AllArgsConstructor
 public class IdentityChoiceBuilder {
 
-    Property<DataStoreEntryRef<ShellStore>> host;
     ObjectProperty<IdentityValue> identity;
     boolean allowCustomUserInput;
     boolean requireUserInput;
@@ -33,16 +32,13 @@ public class IdentityChoiceBuilder {
     String userChoiceTranslationKey;
     String passwordChoiceTranslationKey;
 
-    public static OptionsBuilder ssh(
-            Property<DataStoreEntryRef<ShellStore>> host, ObjectProperty<IdentityValue> identity, boolean requireUser) {
-        var i = new IdentityChoiceBuilder(
-                host, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+    public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
+        var i = new IdentityChoiceBuilder(identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
-        var i = new IdentityChoiceBuilder(
-                null, identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+        var i = new IdentityChoiceBuilder(identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -85,11 +81,6 @@ public class IdentityChoiceBuilder {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(allowAgentForward)
-                .proxy(
-                        host != null
-                                ? host
-                                : new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> false)
                 .build();

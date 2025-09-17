@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 @Builder
 public class SshIdentityStrategyChoiceConfig {
 
-    Property<DataStoreEntryRef<ShellStore>> proxy;
     Supplier<Boolean> perUserKeyFileCheck;
     boolean allowKeyFileSync;
     boolean allowAgentForward;
