@@ -1,14 +1,13 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import java.util.Optional;
 
 public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
 
-    static void checkTunneable(DataStoreEntryRef<?> ref) throws ValidationException {
+    static void checkTunnelable(DataStoreEntryRef<?> ref) throws ValidationException {
         if (!(ref.getStore() instanceof NetworkTunnelStore t)) {
             throw new ValidationException(AppI18n.get("parentHostDoesNotSupportTunneling", ref.get().getName()));
         }

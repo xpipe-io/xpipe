@@ -89,8 +89,6 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                         if (newValue != null) {
                             if (!allAddresses.contains(newValue)) {
                                 allAddresses.set(index, newValue);
-                            } else {
-                                allAddresses.remove(index);
                             }
                         } else {
                             allAddresses.remove(index);
@@ -139,9 +137,16 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             var skin = new ComboBoxListViewSkin<>(struc.get());
             struc.get().setSkin(skin);
             skin.setHideOnClick(false);
-            struc.get().setVisibleRowCount(10);
+
+            // The focus seems to break on selection from the popup
+            struc.get().selectionModelProperty().get().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+                Platform.runLater(() -> {
+                    struc.get().getParent().requestFocus();
+                });
+            });
 
             allAddresses.addListener((ListChangeListener<? super String>) change -> {
+                struc.get().setVisibleRowCount(10);
                 if (!change.next()) {
                     return;
                 }

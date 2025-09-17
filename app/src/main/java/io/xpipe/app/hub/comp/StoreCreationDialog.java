@@ -149,15 +149,6 @@ public class StoreCreationDialog {
         modal.show();
     }
 
-    private static boolean showInvalidConfirmAlert() {
-        var retry = new SimpleBooleanProperty();
-        var modal = ModalOverlay.of("confirmInvalidStoreTitle", AppDialog.dialogTextKey("confirmInvalidStoreContent"));
-        modal.addButton(new ModalButton("retry", () -> retry.set(true), true, false));
-        modal.addButton(new ModalButton("skip", null, true, true));
-        modal.showAndWait();
-        return !retry.get();
-    }
-
     private static ModalOverlay createModalOverlay(StoreCreationModel model) {
         var comp = new StoreCreationComp(model);
         comp.prefWidth(650);
@@ -208,12 +199,8 @@ public class StoreCreationDialog {
         modal.addButton(new ModalButton(
                         "skip",
                         () -> {
-                            if (!model.wasChanged() || showInvalidConfirmAlert()) {
-                                model.commit(false);
-                                modal.close();
-                            } else {
-                                model.finish();
-                            }
+                            model.commit(false);
+                            modal.close();
                         },
                         false,
                         false))
