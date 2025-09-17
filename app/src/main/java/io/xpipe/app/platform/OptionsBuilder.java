@@ -409,7 +409,7 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        var comp = new OptionsComp(entries, buildEffectiveValidator());
+        var comp = new OptionsComp(entries, buildEffectiveValidator(), allChecks);
         for (Augment<CompStructure<VBox>> augment : augments) {
             comp.apply(augment);
         }
@@ -421,6 +421,6 @@ public class OptionsBuilder {
     }
 
     public GuiDialog buildDialog() {
-        return new GuiDialog(buildComp(), buildEffectiveValidator());
+        return new GuiDialog(this);
     }
 }

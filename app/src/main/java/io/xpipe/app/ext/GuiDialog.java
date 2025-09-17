@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 
 import lombok.AllArgsConstructor;
@@ -10,6 +11,5 @@ import lombok.Value;
 @AllArgsConstructor
 public class GuiDialog {
 
-    Comp<?> comp;
-    Validator validator;
+    OptionsBuilder options;
 }

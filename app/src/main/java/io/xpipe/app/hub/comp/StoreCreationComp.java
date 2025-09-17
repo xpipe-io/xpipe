@@ -36,10 +36,9 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         return model.getBusy();
     }
 
-    private Region createStoreProperties(Comp<?> providerComp, Validator providerVal, Validator propVal) {
+    private OptionsBuilder createStoreProperties() {
         var nameKey = model.storeTypeNameKey();
-        var built = new OptionsBuilder(propVal)
-                .addComp(providerComp, model.getStore())
+        var built = new OptionsBuilder()
                 .name(nameKey + "Name")
                 .description(nameKey + "NameDescription")
                 .addString(model.getName(), false)
@@ -50,10 +49,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                             && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
                             && s.equals(model.getExistingEntry().getName());
                     return !same;
-                }))
-                .buildComp();
-        var comp = new OptionsComp(built.getEntries(), new ChainedValidator(List.of(providerVal, propVal)));
-        return comp.styleClass("store-creator-options").createRegion();
+                }));
+        return built;
     }
 
     private Region createLayout() {
@@ -73,16 +70,21 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
-                if (d == null || d.getComp() == null || d.getValidator() == null) {
+                if (d == null) {
                     return;
                 }
 
-                var propVal = new SimpleValidator();
-                var propR = createStoreProperties(d.getComp(), d.getValidator(), propVal);
+                var propOptions = createStoreProperties();
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
-                valSp.getChildren().add(propR);
+
+                var full = new OptionsBuilder();
+                full.sub(d.getOptions());
+                full.sub(propOptions);
+
+                var region = full.buildComp().styleClass("store-creator-options").createRegion();
+                valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);
                 sp.setSkin(new ScrollPaneSkin(sp));
@@ -102,10 +104,10 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 layout.setCenter(vbox);
 
-                model.getValidator().setValue(new ChainedValidator(List.of(d.getValidator(), propVal)));
+                model.getValidator().setValue(full.buildEffectiveValidator());
 
                 Platform.runLater(() -> {
-                    propR.requestFocus();
+                    region.requestFocus();
                 });
             } else {
                 layout.setCenter(null);

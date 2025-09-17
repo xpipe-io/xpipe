@@ -56,10 +56,9 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
 
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        var val = new SimpleValidator();
         PodmanContainerStore st = (PodmanContainerStore) store.getValue();
 
-        var q = new OptionsBuilder()
+        return new OptionsBuilder()
                 .name("host")
                 .description("podmanHostDescription")
                 .addComp(StoreChoiceComp.host(
@@ -70,8 +69,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
                 .name("container")
                 .description("podmanContainerDescription")
                 .addStaticString(st.getContainerName())
-                .buildComp();
-        return new GuiDialog(q, val);
+                .buildDialog();
     }
 
     @Override

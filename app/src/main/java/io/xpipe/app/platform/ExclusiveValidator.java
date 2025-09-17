@@ -84,9 +84,4 @@ public final class ExclusiveValidator<T> implements Validator {
                 },
                 observables);
     }
-
-    @Override
-    public Collection<Check> getActiveChecks() {
-        return validators.get(obs.getValue()).getActiveChecks();
-    }
 }

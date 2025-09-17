@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.Check;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.util.Hyperlinks;
 
@@ -35,10 +36,12 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
     private final List<Entry> entries;
     private final Validator validator;
+    private final List<Check> checks;
 
-    public OptionsComp(List<Entry> entries, Validator validator) {
+    public OptionsComp(List<Entry> entries, Validator validator, List<Check> checks) {
         this.entries = entries;
         this.validator = validator;
+        this.checks = checks;
     }
 
     @Override
@@ -214,7 +217,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 return;
             }
 
-            var checks = validator.getActiveChecks();
             var failed = checks.stream()
                     .filter(check -> check.getValidationResult().getMessages().size() > 0)
                     .findFirst();

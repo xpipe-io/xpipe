@@ -108,13 +108,4 @@ public class ChainedValidator implements Validator {
                 },
                 observables);
     }
-
-    @Override
-    public Collection<Check> getActiveChecks() {
-        var all = new ArrayList<Check>();
-        for (var val : validators) {
-            all.addAll(val.getActiveChecks());
-        }
-        return all;
-    }
 }

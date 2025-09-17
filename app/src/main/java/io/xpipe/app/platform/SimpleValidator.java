@@ -123,11 +123,6 @@ public class SimpleValidator implements Validator {
                 validationResultProperty);
     }
 
-    @Override
-    public Collection<Check> getActiveChecks() {
-        return checks.keySet();
-    }
-
     private void refreshProperties() {
         ValidationResult nextResult = new ValidationResult();
         for (Check check : checks.keySet()) {

@@ -122,6 +122,4 @@ public interface Validator {
      * @param separator The string to separate consecutive validation messages with
      */
     StringBinding createStringBinding(String prefix, String separator);
-
-    Collection<Check> getActiveChecks();
 }
