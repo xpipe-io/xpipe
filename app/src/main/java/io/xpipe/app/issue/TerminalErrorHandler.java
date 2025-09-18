@@ -6,6 +6,7 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.PlatformInit;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.ThreadHelper;
@@ -72,6 +73,10 @@ public class TerminalErrorHandler extends GuiErrorHandlerBase implements ErrorHa
 
     private void handleProbableUpdate() {
         if (AppProperties.get().isDevelopmentEnvironment()) {
+            return;
+        }
+
+        if (!LocalShell.isInitialized()) {
             return;
         }
 

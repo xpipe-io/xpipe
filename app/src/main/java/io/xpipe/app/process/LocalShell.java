@@ -13,6 +13,10 @@ public class LocalShell {
     private static ShellControl localPowershell;
     private static boolean powershellInitialized;
 
+    public static synchronized boolean isInitialized() {
+        return local != null;
+    }
+
     public static synchronized void init() throws Exception {
         if (local == null) {
             local = ProcessControlProvider.get()
