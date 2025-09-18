@@ -293,6 +293,7 @@ public class OptionsBuilder {
         var prop = new SimpleStringProperty();
         s.subscribe(prop::set);
         var comp = new TextFieldComp(prop, false);
+        BindingsHelper.preserve(comp, s);
         comp.apply(struc -> {
             struc.get().setEditable(false);
             struc.get().setOpacity(0.9);
