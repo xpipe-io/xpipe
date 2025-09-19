@@ -41,7 +41,7 @@ public class AppMcpServer {
     @SneakyThrows
     public static void init() {
         var transportProvider = new HttpStreamableServerTransportProvider(
-                new JacksonMcpJsonMapper(JacksonMapper.getDefault()), "/mcp", false, (serverRequest) -> McpTransportContext.EMPTY, null);
+                new JacksonMcpJsonMapper(new ObjectMapper()), "/mcp", false, (serverRequest) -> McpTransportContext.EMPTY, null);
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())
