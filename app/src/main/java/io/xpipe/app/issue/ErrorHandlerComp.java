@@ -153,7 +153,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
+        var hasCustomActions = event.getCustomActions().size() > (event.getLink() != null ? 1 : 0);
         if (hasCustomActions) {
             actionBox.getChildren().add(createActionComp(ErrorAction.ignore(), busy));
         }

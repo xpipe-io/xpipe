@@ -48,10 +48,17 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api ('io.modelcontextprotocol.sdk:mcp:0.12.1')  {
+    api ('io.modelcontextprotocol.sdk:mcp-core:0.13.0')  {
+        exclude group: "com.ethlo.time", module: "itu"
+    }
+    api ('io.modelcontextprotocol.sdk:mcp-json:0.13.0')  {
+        exclude group: "com.ethlo.time", module: "itu"
+    }
+    api ('io.modelcontextprotocol.sdk:mcp-json-jackson2:0.13.0')  {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
+
     api "io.projectreactor:reactor-core:3.7.9"
     api "org.reactivestreams:reactive-streams:1.0.4"
     api ("com.networknt:json-schema-validator:1.5.8") {
@@ -67,6 +74,7 @@ dependencies {
     api 'io.sentry:sentry:8.20.0'
     api 'commons-io:commons-io:2.20.0'
     api "com.fasterxml.jackson.core:jackson-databind:2.20.0"
+    api "com.fasterxml.jackson.core:jackson-annotations:2.20"
     api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0"
     api "org.kordamp.ikonli:ikonli-material2-pack:12.4.0"
     api "org.kordamp.ikonli:ikonli-materialdesign2-pack:12.4.0"

@@ -3,7 +3,7 @@ tasks.withType(JavaCompile).configureEach {
     targetCompatibility = JavaVersion.VERSION_25
     modularity.inferModulePath = true
     options.encoding = 'UTF-8'
-    options.compilerArgs << "-Xlint:unchecked"
+    options.compilerArgs << "-Xlint:unchecked" << "-Xdiags:verbose"
     // options.compilerArgs << "--enable-preview"
 
     // These settings are explicitly specified as they can cause problems with annotation processors

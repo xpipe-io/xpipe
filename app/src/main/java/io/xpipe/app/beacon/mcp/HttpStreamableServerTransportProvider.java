@@ -4,16 +4,18 @@
 
 package io.xpipe.app.beacon.mcp;
 
-import io.xpipe.app.issue.TrackEvent;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
 import io.modelcontextprotocol.common.McpTransportContext;
+import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.McpTransportContextExtractor;
 import io.modelcontextprotocol.spec.*;
 import io.modelcontextprotocol.util.Assert;
 import io.modelcontextprotocol.util.KeepAliveScheduler;
+import io.xpipe.app.issue.TrackEvent;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.sun.net.httpserver.HttpExchange;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -43,7 +45,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
 
     private final boolean disallowDelete;
 
-    private final ObjectMapper objectMapper;
+    private final McpJsonMapper jsonMapper;
 
     private final ConcurrentHashMap<String, McpStreamableServerSession> sessions = new ConcurrentHashMap<>();
 
@@ -55,16 +57,16 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
     private KeepAliveScheduler keepAliveScheduler;
 
     HttpStreamableServerTransportProvider(
-            ObjectMapper objectMapper,
+            McpJsonMapper jsonMapper,
             String mcpEndpoint,
             boolean disallowDelete,
             McpTransportContextExtractor<HttpExchange> contextExtractor,
             Duration keepAliveInterval) {
-        Assert.notNull(objectMapper, "ObjectMapper must not be null");
+        Assert.notNull(jsonMapper, "ObjectMapper must not be null");
         Assert.notNull(mcpEndpoint, "MCP endpoint must not be null");
         Assert.notNull(contextExtractor, "Context extractor must not be null");
 
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
         this.mcpEndpoint = mcpEndpoint;
         this.disallowDelete = disallowDelete;
         this.contextExtractor = contextExtractor;
@@ -82,7 +84,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
     }
 
     public List<String> protocolVersions() {
-        return List.of(ProtocolVersions.MCP_2024_11_05, ProtocolVersions.MCP_2025_03_26);
+        return List.of(ProtocolVersions.MCP_2024_11_05, ProtocolVersions.MCP_2025_03_26, ProtocolVersions.MCP_2025_06_18);
     }
 
     @Override
@@ -266,7 +268,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         try {
             var body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
 
-            McpSchema.JSONRPCMessage message = McpSchema.deserializeJsonRpcMessage(objectMapper, body);
+            McpSchema.JSONRPCMessage message = McpSchema.deserializeJsonRpcMessage(jsonMapper, body);
 
             // Handle initialization request
             if (message instanceof McpSchema.JSONRPCRequest jsonrpcRequest
@@ -277,8 +279,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     return;
                 }
 
-                McpSchema.InitializeRequest initializeRequest =
-                        objectMapper.convertValue(jsonrpcRequest.params(), new TypeReference<>() {});
+                McpSchema.InitializeRequest initializeRequest = jsonMapper.convertValue(jsonrpcRequest.params(),
+                        new TypeRef<McpSchema.InitializeRequest>() {});
                 McpStreamableServerSession.McpStreamableServerSessionInit init =
                         this.sessionFactory.startSession(initializeRequest);
                 this.sessions.put(init.session().getId(), init.session());
@@ -286,7 +288,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                 try {
                     McpSchema.InitializeResult initResult = init.initResult().block();
 
-                    String jsonResponse = objectMapper.writeValueAsString(new McpSchema.JSONRPCResponse(
+                    String jsonResponse = jsonMapper.writeValueAsString(new McpSchema.JSONRPCResponse(
                             McpSchema.JSONRPC_VERSION, jsonrpcRequest.id(), initResult, null));
                     var jsonBytes = jsonResponse.getBytes(StandardCharsets.UTF_8);
 
@@ -457,6 +459,11 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         }
 
         @Override
+        public <T> T unmarshalFrom(Object data, TypeRef<T> typeRef) {
+            return jsonMapper.convertValue(data, typeRef);
+        }
+
+        @Override
         public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message, String messageId) {
             return Mono.fromRunnable(() -> {
                 if (this.closed) {
@@ -471,7 +478,7 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                         return;
                     }
 
-                    String jsonText = objectMapper.writeValueAsString(message);
+                    String jsonText = jsonMapper.writeValueAsString(message);
                     HttpStreamableServerTransportProvider.this.sendEvent(
                             writer, MESSAGE_EVENT_TYPE, jsonText, messageId != null ? messageId : this.sessionId);
                     logger.debug("Message sent to session {} with ID {}", this.sessionId, messageId);
@@ -516,11 +523,6 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
         @Override
         public Mono<Void> sendMessage(McpSchema.JSONRPCMessage message) {
             return sendMessage(message, null);
-        }
-
-        @Override
-        public <T> T unmarshalFrom(Object data, TypeReference<T> typeRef) {
-            return objectMapper.convertValue(data, typeRef);
         }
     }
 }

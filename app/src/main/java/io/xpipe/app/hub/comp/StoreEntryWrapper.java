@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.FixedHierarchyStore;
 import io.xpipe.app.ext.GroupStore;
@@ -154,7 +155,7 @@ public class StoreEntryWrapper {
 
     public synchronized void update() {
         // We are probably in shutdown then
-        if (StoreViewState.get() == null) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 

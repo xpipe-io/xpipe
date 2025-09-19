@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
@@ -124,7 +125,7 @@ public final class McpTools {
                     object.set("found", json);
 
                     return McpSchema.CallToolResult.builder()
-                            .structuredContent(JacksonMapper.getDefault().writeValueAsString(object))
+                            .structuredContent(new JacksonMcpJsonMapper(JacksonMapper.getDefault()), JacksonMapper.getDefault().writeValueAsString(object))
                             .build();
                 }))
                 .build();
@@ -229,13 +230,13 @@ public final class McpTools {
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
                     var fs = new ConnectionFileSystem(shellSession.getControl());
 
-                    if (!fs.fileExists(path)) {
-                        throw new BeaconClientException("File " + path + " does not exist");
+                    if (!fs.fileExists(path) && !fs.directoryExists(path)) {
+                        throw new BeaconClientException("Path " + path + " does not exist");
                     }
 
                     var entry = fs.getFileInfo(path);
                     if (entry.isEmpty()) {
-                        throw new BeaconClientException("File " + path + " does not exist");
+                        throw new BeaconClientException("Path " + path + " does not exist");
                     }
 
                     var map = new LinkedHashMap<String, Object>();

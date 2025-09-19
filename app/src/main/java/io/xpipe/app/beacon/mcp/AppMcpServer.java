@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon.mcp;
 
+import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -14,6 +15,7 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.xpipe.core.JacksonMapper;
 import lombok.SneakyThrows;
 import lombok.Value;
 
@@ -39,7 +41,7 @@ public class AppMcpServer {
     @SneakyThrows
     public static void init() {
         var transportProvider = new HttpStreamableServerTransportProvider(
-                new ObjectMapper(), "/mcp", false, (serverRequest) -> McpTransportContext.EMPTY, null);
+                new JacksonMcpJsonMapper(JacksonMapper.getDefault()), "/mcp", false, (serverRequest) -> McpTransportContext.EMPTY, null);
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())
