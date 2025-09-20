@@ -17,11 +17,16 @@ import java.util.stream.Stream;
 public class WrapperFileSystem implements FileSystem {
 
     private final FileSystem fs;
-    private final Supplier<Boolean> check;
+    private final Supplier<Boolean> runningCheck;
 
-    public WrapperFileSystem(FileSystem fs, Supplier<Boolean> check) {
+    public WrapperFileSystem(FileSystem fs, Supplier<Boolean> runningCheck) {
         this.fs = fs;
-        this.check = check;
+        this.runningCheck = runningCheck;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return fs.isRunning();
     }
 
     @Override
@@ -71,7 +76,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -80,7 +85,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void chown(FilePath path, String uid, boolean recursive) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -89,7 +94,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void chgrp(FilePath path, String gid, boolean recursive) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -98,7 +103,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void kill() {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -107,7 +112,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void cd(FilePath dir) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -116,7 +121,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public boolean requiresReinit() {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return false;
         }
 
@@ -125,16 +130,12 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void reinitIfNeeded() throws Exception {
-        if (!check.get()) {
-            return;
-        }
-
         fs.reinitIfNeeded();
     }
 
     @Override
     public String getFileSeparator() {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return "/";
         }
 
@@ -143,7 +144,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public FilePath makeFileSystemCompatible(FilePath filePath) {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return filePath;
         }
 
@@ -152,7 +153,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public Optional<FilePath> pwd() throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return Optional.empty();
         }
 
@@ -166,7 +167,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public long getFileSize(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return 0;
         }
 
@@ -175,7 +176,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public long getDirectorySize(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return 0;
         }
 
@@ -194,7 +195,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public InputStream openInput(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return InputStream.nullInputStream();
         }
 
@@ -203,7 +204,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return OutputStream.nullOutputStream();
         }
 
@@ -212,7 +213,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public boolean fileExists(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return false;
         }
 
@@ -221,7 +222,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void delete(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -230,7 +231,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void copy(FilePath file, FilePath newFile) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -239,7 +240,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void move(FilePath file, FilePath newFile) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -248,7 +249,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void mkdirs(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -257,7 +258,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void touch(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -266,7 +267,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void symbolicLink(FilePath linkFile, FilePath targetFile) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -275,7 +276,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public boolean directoryExists(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return false;
         }
 
@@ -284,7 +285,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public void directoryAccessible(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return;
         }
 
@@ -293,7 +294,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public Optional<FileEntry> getFileInfo(FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return Optional.empty();
         }
 
@@ -302,7 +303,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public Stream<FileEntry> listFiles(FileSystem system, FilePath file) throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return Stream.empty();
         }
 
@@ -311,7 +312,7 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listRoots() throws Exception {
-        if (!check.get()) {
+        if (!runningCheck.get()) {
             return List.of();
         }
 

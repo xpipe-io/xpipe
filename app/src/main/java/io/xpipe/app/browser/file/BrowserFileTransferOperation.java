@@ -275,6 +275,8 @@ public class BrowserFileTransferOperation {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
 
+        BrowserFileSystemHelper.validateDirectoryPath(target.getFileSystem(), target.getPath(), true);
+
         var flatFiles = new LinkedHashMap<FileEntry, FilePath>();
 
         // Prevent dropping directory into itself

@@ -32,6 +32,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean isRunning() {
+        return shellControl.isRunning(true);
+    }
+
+    @Override
     public boolean supportsLinkCreation() {
         return shellControl.getOsType() != OsType.WINDOWS;
     }
@@ -325,8 +330,8 @@ public class ConnectionFileSystem implements FileSystem {
     public void directoryAccessible(FilePath file) throws Exception {
         var current = shellControl.executeSimpleStringCommand(
                 shellControl.getShellDialect().getPrintWorkingDirectoryCommand());
-        shellControl.command(shellControl.getShellDialect().getCdCommand(file.toString()));
-        shellControl.command(shellControl.getShellDialect().getCdCommand(current));
+        shellControl.command(shellControl.getShellDialect().getCdCommand(file.toString())).execute();
+        shellControl.command(shellControl.getShellDialect().getCdCommand(current)).execute();
     }
 
     @Override

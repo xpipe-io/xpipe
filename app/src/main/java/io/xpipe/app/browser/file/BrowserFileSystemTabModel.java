@@ -328,7 +328,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
         var cps = currentPath.get() != null ? currentPath.get().toString() : null;
-        if (Objects.equals(path, cps)) {
+        if (Objects.equals(path, cps) && fileSystem.isRunning()) {
             return Optional.empty();
         }
 
@@ -418,7 +418,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         try {
-            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
+            BrowserFileSystemHelper.validateDirectoryPath(fileSystem, resolvedPath, true);
             cdSyncWithoutCheck(resolvedPath);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

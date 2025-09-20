@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 public interface FileSystem extends Closeable, AutoCloseable {
 
+    boolean isRunning();
+
     boolean supportsLinkCreation();
 
     boolean supportsOwnerColumn();

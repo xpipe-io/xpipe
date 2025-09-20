@@ -94,19 +94,19 @@ public class BrowserFileSystemHelper {
         return resolved.toDirectory();
     }
 
-    public static void validateDirectoryPath(BrowserFileSystemTabModel model, FilePath path, boolean verifyExists)
+    public static void validateDirectoryPath(FileSystem fs, FilePath path, boolean verifyExists)
             throws Exception {
         if (path == null) {
             return;
         }
 
-        if (verifyExists && !model.getFileSystem().directoryExists(path)) {
+        if (verifyExists && !fs.directoryExists(path)) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     String.format("Directory %s does not exist or is not accessible", path)));
         }
 
         try {
-            model.getFileSystem().directoryAccessible(path);
+            fs.directoryAccessible(path);
         } catch (Exception ex) {
             ErrorEventFactory.expected(ex);
             throw ex;
