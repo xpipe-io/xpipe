@@ -538,7 +538,7 @@ public class BrowserFileTransferOperation {
 
                 var incomplete = readCount.get() < expectedFileSize;
                 if (incomplete) {
-                    throw new IOException("Source file " + sourceFile + " input did end prematurely");
+                    throw new IOException("Source file " + sourceFile + " input size mismatch: Expected " + expectedFileSize + " but got " + readCount.get() + ". Did the source file get updated?");
                 }
             } catch (Exception ex) {
                 exception.set(ex);

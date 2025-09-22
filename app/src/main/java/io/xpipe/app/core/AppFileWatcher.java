@@ -171,6 +171,14 @@ public class AppFileWatcher {
             }
             Path file = path.resolve(ev.context());
 
+            // Check for outdated info
+            if (ev.kind() == StandardWatchEventKinds.ENTRY_CREATE || ev.kind() == StandardWatchEventKinds.ENTRY_MODIFY) {
+                var ex = Files.exists(file);
+                if (!ex) {
+                    return;
+                }
+            }
+
             // Add new watcher for directory
             if (ev.kind().equals(ENTRY_CREATE) && Files.isDirectory(file)) {
                 try {

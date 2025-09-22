@@ -1049,8 +1049,12 @@ public abstract class DataStorage {
     }
 
     public boolean getEffectiveReadOnlyState(DataStoreEntry entry) {
-        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
-        var catConfig = getEffectiveCategoryConfig(cat);
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        if (cat.isEmpty()) {
+            return false;
+        }
+
+        var catConfig = getEffectiveCategoryConfig(cat.get());
         return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isFreeze();
     }
 

@@ -70,25 +70,7 @@ public class ErrorHandlerComp extends SimpleComp {
     }
 
     private Region createTop() {
-        var desc = event.getDescription();
-
-        if (event.getThrowable() != null) {
-            var toAppend = event.getThrowable().getMessage() != null
-                    ? event.getThrowable().getMessage()
-                    : AppI18n.get(
-                            "errorTypeOccured", event.getThrowable().getClass().getSimpleName());
-            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
-        }
-
-        if (desc == null) {
-            desc = AppI18n.get("errorNoDetail");
-        }
-
-        desc = desc.strip();
-
-        if (event.isTerminal()) {
-            desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
-        }
+        var desc = getEventDescription();
 
         // Account for line wrapping of long lines
         var estimatedLineCount = desc.lines()
@@ -106,6 +88,32 @@ public class ErrorHandlerComp extends SimpleComp {
         text.setFillWidth(true);
         text.setSpacing(8);
         return text;
+    }
+
+    private String getEventDescription() {
+        var desc = event.getDescription();
+
+        Throwable t = event.getThrowable();
+        while (t != null) {
+            var toAppend =t.getMessage() != null
+                    ? t.getMessage()
+                    : AppI18n.get(
+                    "errorTypeOccured", t.getClass().getSimpleName());
+            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
+            t = t.getCause();
+        }
+
+        if (desc == null) {
+            desc = AppI18n.get("errorNoDetail");
+        }
+
+        desc = desc.strip();
+
+        if (event.isTerminal()) {
+            desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
+        }
+
+        return desc;
     }
 
     @Override
