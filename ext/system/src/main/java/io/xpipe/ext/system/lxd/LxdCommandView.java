@@ -158,7 +158,7 @@ public class LxdCommandView extends CommandViewBase {
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
                 throw ErrorEventFactory.expected(
-                        ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
+                        ProcessOutputException.withPrefix("Unsupported legacy LXD version", ex));
             } else {
                 throw ex;
             }
