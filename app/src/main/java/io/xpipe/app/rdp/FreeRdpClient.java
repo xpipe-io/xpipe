@@ -16,21 +16,22 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Jacksonized
 @Builder
-public class FreeRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
+public class FreeRdpClient implements ExternalRdpClient {
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        CommandSupport.isInPathOrThrow(
-                LocalShell.getShell(),
-                getExecutable(),
-                "XFreeRDP",
-                DataStorage.get().local());
+        var v3 = LocalShell.getShell().view().findProgram("xfreerdp3");
+        if (v3.isEmpty()) {
+            CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable(), "xfreerdp", DataStorage.get().local());
+        }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
+        // macOS uses xfreerdp3 by default
+        var isV3Executable = v3.isPresent() || OsType.ofLocal() == OsType.MACOS;
         var b = CommandBuilder.of()
-                .add(getExecutable())
+                .add(v3.isPresent() ? "xfreerdp3" : "xfreerdp")
                 .addFile(file.toString())
-                .add(OsType.ofLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
+                .add(isV3Executable ? "/cert:ignore" : "/cert-ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")
@@ -57,16 +58,6 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     @Override
     public String getWebsite() {
         return "https://www.freerdp.com/";
-    }
-
-    @Override
-    public String getExecutable() {
-        return "xfreerdp";
-    }
-
-    @Override
-    public boolean detach() {
-        return true;
     }
 
     @Override
