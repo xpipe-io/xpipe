@@ -22,7 +22,7 @@ public class FreeRdpClient implements ExternalRdpClient {
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var v3 = LocalShell.getShell().view().findProgram("xfreerdp3");
         if (v3.isEmpty()) {
-            CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable(), "xfreerdp", DataStorage.get().local());
+            CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp", "xfreerdp", DataStorage.get().local());
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
