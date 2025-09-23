@@ -409,6 +409,44 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro", "https://kiro.dev/");
 
+    WindowsType ZED_WINDOWS = new WindowsType() {
+
+        @Override
+        public String getWebsite() {
+            return "https://zed.dev/";
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Zed.exe";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            var nightly = AppSystemInfo.ofWindows().getLocalAppData().resolve("Programs", "Zed Nightly", "Zed.exe");
+            if (Files.exists(nightly)) {
+                return Optional.of(nightly);
+            }
+
+            var regular = AppSystemInfo.ofWindows().getLocalAppData().resolve("Programs", "Zed", "Zed.exe");
+            if (Files.exists(regular)) {
+                return Optional.of(regular);
+            }
+
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getId() {
+            return "app.zed";
+        }
+    };
+
     LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed", "https://zed.dev/");
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
@@ -493,6 +531,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             new GenericPathType("app.webstorm", "webstorm", false, "https://www.jetbrains.com/webstorm/");
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false, "https://www.jetbrains.com/clion/");
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(
+            ZED_WINDOWS,
             VOID_WINDOWS,
             CURSOR_WINDOWS,
             WINDSURF_WINDOWS,
