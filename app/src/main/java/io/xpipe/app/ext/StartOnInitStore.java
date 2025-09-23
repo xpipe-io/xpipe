@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -21,7 +22,12 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
                 if (e.getStore() instanceof StartOnInitStore i
                         && e.getValidity().isUsable()
                         && enabled.contains(i.getSelfEntry().ref())) {
-                    i.startOnInit();
+                    try {
+                        i.startOnInit();
+                    } catch (Throwable ex) {
+                        ErrorEventFactory.fromThrowable(ex).description("Unable to automatically start connection " +
+                                DataStorage.get().getStoreEntryDisplayName(i.getSelfEntry())).handle();
+                    }
                 }
             }
         });
