@@ -24,12 +24,6 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     }
 
     @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var t = createToggleComp(sec);
-        return StoreEntryComp.create(sec, t, preferLarge);
-    }
-
-    @Override
     public Comp<?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
@@ -68,40 +62,5 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     @Override
     public String getDisplayIconFileName(DataStore store) {
         return "base:serviceGroup_icon.svg";
-    }
-
-    private StoreToggleComp createToggleComp(StoreSection sec) {
-        var t = StoreToggleComp.<AbstractServiceGroupStore<?>>enableToggle(
-                null, sec, new SimpleBooleanProperty(false), (g, aBoolean) -> {
-                    var children =
-                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-                    ThreadHelper.runFailableAsync(() -> {
-                        for (DataStoreEntry child : children) {
-                            if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                                if (aBoolean) {
-                                    serviceStore.startSessionIfNeeded();
-                                } else {
-                                    serviceStore.stopSessionIfNeeded();
-                                }
-                            }
-                        }
-                    });
-                });
-        t.setCustomVisibility(Bindings.createBooleanBinding(
-                () -> {
-                    var children =
-                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-                    for (DataStoreEntry child : children) {
-                        if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                            if (serviceStore.getHost() != null
-                                    && serviceStore.getHost().getStore().requiresTunnel()) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                },
-                StoreViewState.get().getAllEntries().getList()));
-        return t;
     }
 }

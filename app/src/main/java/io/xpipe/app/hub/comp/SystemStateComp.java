@@ -5,6 +5,7 @@ import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.ShellStoreState;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -85,8 +86,12 @@ public class SystemStateComp extends SimpleComp {
         OTHER;
 
         public static ObservableValue<State> shellState(StoreEntryWrapper w) {
-            return BindingsHelper.map(w.getPersistentState(), o -> {
-                if (o instanceof ShellStoreState s) {
+            return Bindings.createObjectBinding(() -> {
+                if (!w.getValidity().getValue().isUsable()) {
+                    return null;
+                }
+
+                if (w.getPersistentState().getValue() instanceof ShellStoreState s) {
                     if (s.getShellDialect() != null
                             && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
                         return SUCCESS;
@@ -96,7 +101,7 @@ public class SystemStateComp extends SimpleComp {
                 }
 
                 return OTHER;
-            });
+            }, w.getPersistentState(), w.getValidity());
         }
     }
 }

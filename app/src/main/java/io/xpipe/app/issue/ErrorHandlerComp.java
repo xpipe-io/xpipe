@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.ThreadHelper;
@@ -95,12 +96,12 @@ public class ErrorHandlerComp extends SimpleComp {
 
         Throwable t = event.getThrowable();
         while (t != null) {
-            var toAppend =t.getMessage() != null
+            var toAppend = t.getMessage() != null
                     ? t.getMessage()
                     : AppI18n.get(
                     "errorTypeOccured", t.getClass().getSimpleName());
             desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
-            t = t.getCause();
+            t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
         }
 
         if (desc == null) {

@@ -163,12 +163,6 @@ public class AppLayoutModel {
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
         }
-        l.add(new Entry(
-                AppI18n.observable("mcp"),
-                new LabelGraphic.IconGraphic("mdi2r-robot"),
-                null,
-                () -> AppPrefs.get().selectCategory("mcp"),
-                null));
         return l;
     }
 

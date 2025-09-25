@@ -37,11 +37,13 @@ public class ProcessOutputException extends Exception {
     }
 
     public static ProcessOutputException withPrefix(String customPrefix, ProcessOutputException ex) {
-        return new ProcessOutputException(ex.getExitCode(), ex.getOutput(), customPrefix, null, ex);
+        var joined = customPrefix + (ex.prefix != null ? "\n" + ex.prefix : "");
+        return new ProcessOutputException(ex.getExitCode(), ex.getOutput(), joined, null, ex);
     }
 
     public static ProcessOutputException withSuffix(String customSuffix, ProcessOutputException ex) {
-        return new ProcessOutputException(ex.getExitCode(), ex.getOutput(), null, customSuffix, ex);
+        var joined = (ex.suffix != null ? ex.suffix + "\n" : "") + customSuffix;
+        return new ProcessOutputException(ex.getExitCode(), ex.getOutput(), null, joined, ex);
     }
 
     public static ProcessOutputException of(long exitCode, String... messages) {
