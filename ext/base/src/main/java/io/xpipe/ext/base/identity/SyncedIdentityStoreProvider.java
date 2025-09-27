@@ -38,7 +38,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
         var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
                 .anyMatch(dataStoreCategory ->
-                        dataStoreCategory.getUuid() == DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID);
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
         return inSynced ? target : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID;
     }
 
