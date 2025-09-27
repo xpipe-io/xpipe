@@ -49,6 +49,16 @@ public class RemminaHelper {
     }
 
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
+        var user = configuration
+                .getConfig()
+                .get("username")
+                .orElseThrow()
+                .getValue();
+        var domain = user.contains("\\") ? user.split("\\\\")[0] : null;
+        if (domain != null) {
+            user = user.split("\\\\")[1];
+        }
+
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
         // Use window size as remmina's autosize is broken
@@ -58,6 +68,7 @@ public class RemminaHelper {
                      protocol=RDP
                      name=%s
                      username=%s
+                     domain=%s
                      server=%s
                      password=%s
                      cert_ignore=1
@@ -67,11 +78,8 @@ public class RemminaHelper {
                      """
                         .formatted(
                                 configuration.getTitle(),
-                                configuration
-                                        .getConfig()
-                                        .get("username")
-                                        .orElseThrow()
-                                        .getValue(),
+                                user,
+                                domain != null ? domain : "",
                                 configuration
                                         .getConfig()
                                         .get("full address")
