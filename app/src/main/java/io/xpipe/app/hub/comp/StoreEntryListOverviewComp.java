@@ -89,12 +89,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Region createGroupListFilter() {
-        var filterProperty = new SimpleStringProperty();
-        filterProperty.addListener((observable, oldValue, newValue) -> {
-            ThreadHelper.runAsync(() -> {
-                StoreViewState.get().getFilterString().setValue(newValue);
-            });
-        });
         var filter = new FilterComp(StoreViewState.get().getFilterString()).createRegion();
         var add = createAddButton();
         var batchMode = createBatchModeButton().createRegion();

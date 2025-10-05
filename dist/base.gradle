@@ -35,6 +35,11 @@ if (os.isWindows()) {
 
             file("$distDir/base/app/.jpackage.xml").delete()
 
+            // Don't launch multiple exe instances: https://bugs.openjdk.org/browse/JDK-8340311
+            // We don't need the /app directory to be in the library path
+            def configFile = file("$distDir/base/app/${jpackageExecutableName}.cfg")
+            configFile.text = configFile.text.replace("[Application]", "[Application]\nwin.norestart=true")
+
             def batLauncherFile = file("$distDir/base/runtime/bin/${jpackageExecutableName}.bat")
             def batLauncherContent = batLauncherFile.text
             batLauncherContent = batLauncherContent.replace(" -p \"%~dp0/../app\"", "")
