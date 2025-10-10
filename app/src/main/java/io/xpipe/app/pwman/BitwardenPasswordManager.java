@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
@@ -59,14 +60,12 @@ public class BitwardenPasswordManager implements PasswordManager {
 
         // Copy existing file if possible to retain configuration
         var cacheDataFile = AppCache.getBasePath().resolve("data.json");
-        if (!Files.exists(cacheDataFile)) {
-            var def = getDefaultConfigPath();
-            if (Files.exists(def)) {
-                try {
-                    Files.copy(def, cacheDataFile);
-                } catch (IOException e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                }
+        var def = getDefaultConfigPath();
+        if (Files.exists(def)) {
+            try {
+                Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
 
