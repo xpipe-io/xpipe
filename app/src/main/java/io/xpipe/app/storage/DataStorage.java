@@ -542,6 +542,22 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+
+    public void moveCategoryToParent(DataStoreCategory cat, DataStoreCategory newParent) {
+        if (newParent.getUuid().equals(cat.getUuid())) {
+            return;
+        }
+
+        if (cat.getParentCategory() == null) {
+            return;
+        }
+
+        cat.setParentCategory(newParent.getUuid());
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        saveAsync();
+    }
+
     public void setOrderIndex(DataStoreEntry entry, int index) {
         entry.setOrderIndex(index);
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());

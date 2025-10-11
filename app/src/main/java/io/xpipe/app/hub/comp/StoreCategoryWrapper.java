@@ -99,6 +99,10 @@ public class StoreCategoryWrapper {
         });
     }
 
+    public void moveToParent(DataStoreCategory newParent) {
+        DataStorage.get().moveCategoryToParent(category, newParent);
+    }
+
     public void delete() {
         for (var c : children.getList()) {
             c.delete();

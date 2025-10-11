@@ -24,6 +24,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
@@ -239,6 +240,27 @@ public class StoreCategoryComp extends SimpleComp {
         contextMenu.getItems().add(rename);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
+
+        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+        StoreViewState.get()
+                .getSortedCategories(getCategory().getRoot())
+                .getList()
+                .forEach(storeCategoryWrapper -> {
+                    MenuItem m = new MenuItem();
+                    m.textProperty()
+                            .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                    + storeCategoryWrapper.getName().getValue());
+                    m.setOnAction(event -> {
+                        category.moveToParent(storeCategoryWrapper.getCategory());
+                        event.consume();
+                    });
+                    if (storeCategoryWrapper.getParent() == null) {
+                        m.setDisable(true);
+                    }
+
+                    move.getItems().add(m);
+                });
+        contextMenu.getItems().add(move);
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.setOnAction(event -> {
