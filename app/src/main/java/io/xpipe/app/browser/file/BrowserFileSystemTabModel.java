@@ -496,6 +496,19 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
+    public void duplicateFile(FileEntry entry) {
+        // Technically we would have to create an action to allow confirmations for this
+        // But in practice, this is almost a non mutable action, so we will save the effort
+        ThreadHelper.runFailableAsync(() -> {
+            BooleanScope.executeExclusive(busy, () -> {
+                startIfNeeded();
+                var adjusted = BrowserFileDuplicates.renameFileDuplicate(fileSystem, entry.getPath(), entry.getKind() == FileKind.DIRECTORY);
+                fileSystem.copy(entry.getPath(), adjusted);
+                refreshSync();
+            });
+        });
+    }
+
     public boolean isClosed() {
         return false;
     }

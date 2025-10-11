@@ -34,12 +34,13 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
             return;
         }
 
-        model.dropFilesIntoAsync(
-                target,
-                files.stream()
-                        .map(browserEntry -> browserEntry.getRawFileEntry())
-                        .toList(),
-                BrowserFileTransferMode.COPY);
+        var isDuplication = files.size() == 1 && target.getPath().equals(files.getFirst().getRawFileEntry().getPath().getParent());
+        if (isDuplication) {
+            model.duplicateFile(files.getFirst().getRawFileEntry());
+        } else {
+            model.dropFilesIntoAsync(target, files.stream().map(browserEntry -> browserEntry.getRawFileEntry()).toList(),
+                    BrowserFileTransferMode.COPY);
+        }
     }
 
     @Override

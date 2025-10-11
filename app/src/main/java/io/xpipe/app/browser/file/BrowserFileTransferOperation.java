@@ -214,7 +214,7 @@ public class BrowserFileTransferOperation {
 
         if (sourceFile.equals(targetFile)) {
             // Duplicate file by renaming it
-            targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+            targetFile = BrowserFileDuplicates.renameFileDuplicate(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
@@ -230,7 +230,7 @@ public class BrowserFileTransferOperation {
             }
 
             if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
-                targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+                targetFile = BrowserFileDuplicates.renameFileDuplicate(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
             }
         }
 
@@ -240,34 +240,6 @@ public class BrowserFileTransferOperation {
         } else {
             target.getFileSystem().copy(sourceFile, targetFile);
         }
-    }
-
-    private FilePath renameFileLoop(FileSystem fileSystem, FilePath target, boolean dir) throws Exception {
-        // Who has more than 10 copies?
-        for (int i = 0; i < 10; i++) {
-            target = renameFile(target);
-            if ((dir && !fileSystem.directoryExists(target)) || (!dir && !fileSystem.fileExists(target))) {
-                return target;
-            }
-        }
-        return target;
-    }
-
-    private FilePath renameFile(FilePath target) {
-        var name = target.getFileName();
-        var pattern = Pattern.compile("(.+) \\((\\d+)\\)\\.(.+?)");
-        var matcher = pattern.matcher(name);
-        if (matcher.matches()) {
-            try {
-                var number = Integer.parseInt(matcher.group(2));
-                var newFile = target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
-                return newFile;
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        var ext = target.getExtension();
-        return FilePath.of(target.getBaseName() + " (" + 1 + ")" + (ext.isPresent() ? "." + ext.get() : ""));
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
@@ -377,7 +349,7 @@ public class BrowserFileTransferOperation {
                         }
 
                         if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
-                            targetFile = renameFileLoop(targetFs, targetFile, false);
+                            targetFile = BrowserFileDuplicates.renameFileDuplicate(targetFs, targetFile, false);
                         }
                     }
 
