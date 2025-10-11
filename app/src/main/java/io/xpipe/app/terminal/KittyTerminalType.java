@@ -199,12 +199,20 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                 }
 
                 var time = System.currentTimeMillis();
-                sc.executeSimpleCommand(CommandBuilder.of()
+                sc.command(CommandBuilder.of()
                         .add("open", "-n", "-a", "kitty.app", "--args")
-                        .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
-                var elapsed = System.currentTimeMillis() - time;
-                // Good heuristic on how long to wait
-                ThreadHelper.sleep(15 * elapsed);
+                        .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()))
+                        .execute();
+                
+                for (int i = 0; i < 50; i++) {
+                    ThreadHelper.sleep(100);
+                    try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                        if (channel.connect(UnixDomainSocketAddress.of(socket.asLocalPath()))) {
+                            break;
+                        }
+                    } catch (IOException ignored) {}
+                }
+
                 return true;
             }
         }
