@@ -15,6 +15,7 @@ import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import java.io.IOException;
 import java.net.StandardProtocolFamily;
 import java.net.UnixDomainSocketAddress;
 import java.nio.channels.SocketChannel;
@@ -152,13 +153,13 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                                 "--detach"))
                         .execute();
 
-                while (true) {
+                for (int i = 0; i < 50; i++) {
                     ThreadHelper.sleep(100);
                     try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
                         if (channel.connect(UnixDomainSocketAddress.of(socket.asLocalPath()))) {
                             break;
                         }
-                    }
+                    } catch (IOException ignored) {}
                 }
 
                 return true;
