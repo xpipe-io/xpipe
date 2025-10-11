@@ -15,6 +15,10 @@ import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
+import java.net.StandardProtocolFamily;
+import java.net.UnixDomainSocketAddress;
+import java.nio.channels.SocketChannel;
+
 public interface KittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
     ExternalTerminalType KITTY_LINUX = new Linux();
@@ -138,18 +142,25 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                     return false;
                 }
 
-                var time = System.currentTimeMillis();
-                sc.executeSimpleCommand(CommandBuilder.of()
+                sc.command(CommandBuilder.of()
                         .add("kitty")
                         .add(
                                 "-o",
                                 "allow_remote_control=socket-only",
                                 "--listen-on",
                                 "unix:" + getSocket(),
-                                "--detach"));
-                var elapsed = System.currentTimeMillis() - time;
-                // Good heuristic on how long to wait
-                ThreadHelper.sleep(5 * elapsed);
+                                "--detach"))
+                        .execute();
+
+                while (true) {
+                    ThreadHelper.sleep(100);
+                    try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                        if (channel.connect(UnixDomainSocketAddress.of(socket.asLocalPath()))) {
+                            break;
+                        }
+                    }
+                }
+
                 return true;
             }
         }
