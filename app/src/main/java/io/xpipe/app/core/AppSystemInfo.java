@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import com.sun.jna.platform.win32.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.OsType;
@@ -74,6 +75,7 @@ public abstract class AppSystemInfo {
         private Path temp;
         private Path downloads;
         private Path desktop;
+        private Path documents;
 
         public Path getSystemRoot() {
             var root = AppSystemInfo.parsePath(System.getenv("SystemRoot"));
@@ -193,21 +195,33 @@ public abstract class AppSystemInfo {
                 return downloads;
             }
 
-            var fallback = getUserHome().resolve("Downloads");
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
-                return (downloads = fallback);
-            }
-
             try {
-                return (downloads = Path.of(shell.get()
-                        .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
-                        .readStdoutOrThrow()));
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Downloads);
+                // Replace 8.3 filename
+                return (downloads = Path.of(r).toRealPath());
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
+                var fallback = getUserHome().resolve("Downloads");
                 return (downloads = fallback);
             }
         }
+
+        public Path getDocuments() {
+            if (documents != null) {
+                return documents;
+            }
+
+            try {
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Documents);
+                // Replace 8.3 filename
+                return (documents = Path.of(r).toRealPath());
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+                var fallback = getUserHome().resolve("Documents");
+                return (documents = fallback);
+            }
+        }
+
 
         @Override
         public Path getDesktop() {
@@ -215,18 +229,13 @@ public abstract class AppSystemInfo {
                 return desktop;
             }
 
-            var fallback = getUserHome().resolve("Desktop");
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
-                return (desktop = fallback);
-            }
-
             try {
-                return (desktop = Path.of(shell.get()
-                        .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
-                        .readStdoutOrThrow()));
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Desktop);
+                // Replace 8.3 filename
+                return (desktop = Path.of(r).toRealPath());
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
+                var fallback = getUserHome().resolve("Desktop");
                 return (desktop = fallback);
             }
         }
