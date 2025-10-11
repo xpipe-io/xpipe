@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-@JsonTypeName("remoteDesktopApp")
+@JsonTypeName("microsoftRemoteDesktopApp")
 @Value
 @Jacksonized
 @Builder

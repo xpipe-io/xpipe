@@ -24,11 +24,12 @@ public class FlatpakCache {
 
     public static synchronized Optional<App> getApp(String id) throws Exception {
         if (apps.containsKey(id)) {
-            return Optional.of(apps.get(id));
+            return Optional.ofNullable(apps.get(id));
         }
 
         var info = LocalShell.getShell().command(CommandBuilder.of().add("flatpak", "info").addQuoted(id)).readStdoutIfPossible();
         if (info.isEmpty()) {
+            apps.put(id, null);
             return Optional.empty();
         }
 
