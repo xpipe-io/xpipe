@@ -8,6 +8,7 @@ import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
 
@@ -114,6 +115,30 @@ public interface ExternalApplicationType extends PrefsValue {
                 } else {
                     pc.executeSimpleCommand(args);
                 }
+            }
+        }
+    }
+
+    interface LinuxApplication extends PathApplication {
+
+        String getFlatpakId() throws Exception;
+
+        @Override
+        default void launch(CommandBuilder args) throws Exception {
+            if (getFlatpakId() == null || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
+                PathApplication.super.launch(args);
+                return;
+            }
+
+            var app = FlatpakCache.getApp(getFlatpakId());
+            if (app.isEmpty()) {
+                throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
+                        + " not found in PATH and flatkpak " + getFlatpakId() + " not installed. Install it and refresh the environment by restarting XPipe"));
+            }
+
+            try (ShellControl pc = LocalShell.getShell()) {
+                args.add(0, "flatpak", "run", "\"" + getFlatpakId() + "\"");
+                pc.executeSimpleCommand(args);
             }
         }
     }

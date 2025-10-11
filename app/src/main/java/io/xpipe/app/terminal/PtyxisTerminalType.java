@@ -2,8 +2,9 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.FlatpakCache;
 
-public class PtyxisTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
+public class PtyxisTerminalType implements ExternalApplicationType.LinuxApplication, TrackableTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -48,5 +49,15 @@ public class PtyxisTerminalType implements ExternalApplicationType.PathApplicati
     @Override
     public String getId() {
         return "app.ptyxis";
+    }
+
+    @Override
+    public String getFlatpakId() throws Exception {
+        var dev = FlatpakCache.getApp("org.gnome.Ptyxis.Devel");
+        if (dev.isPresent()) {
+            return "org.gnome.Ptyxis.Devel";
+        }
+
+        return "app.devsuite.Ptyxis";
     }
 }
