@@ -7,8 +7,11 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.ext.FileKind;
 
+import io.xpipe.core.FilePath;
+import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
@@ -18,6 +21,7 @@ import lombok.Getter;
 
 import java.nio.file.InvalidPathException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -29,8 +33,7 @@ public class BrowserFileListCompEntry {
     private final BrowserEntry item;
     private final BrowserFileListModel model;
 
-    private Point2D lastOver = new Point2D(-1, -1);
-    private Runnable activeTask;
+    private Instant lastHoverUpdate;
     private ContextMenu lastContextMenu;
 
     public BrowserFileListCompEntry(
@@ -237,6 +240,7 @@ public class BrowserFileListCompEntry {
         } else {
             model.getDraggedOverEmpty().setValue(false);
         }
+        lastHoverUpdate = null;
         event.consume();
     }
 
@@ -273,48 +277,41 @@ public class BrowserFileListCompEntry {
         }
     }
 
-    private void acceptDrag(DragEvent event) {
-        model.getDraggedOverEmpty()
-                .setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
-        model.getDraggedOverDirectory().setValue(item);
-        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-    }
-
-    private void handleHoverTimer(DragEvent event) {
-        if (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
-            return;
-        }
-
-        if (lastOver.getX() == event.getX() && lastOver.getY() == event.getY()) {
-            return;
-        }
-
-        lastOver = (new Point2D(event.getX(), event.getY()));
-        activeTask = new Runnable() {
-            @Override
-            public void run() {
-                if (activeTask != this) {
-                    return;
-                }
-
-                if (item != model.getDraggedOverDirectory().getValue()) {
-                    return;
-                }
-
-                model.getFileSystemModel()
-                        .cdAsync(item.getRawFileEntry().getPath().toString());
-            }
-        };
-        GlobalTimer.delayAsync(activeTask, Duration.ofMillis(1200));
-    }
-
     public void onDragEntered(DragEvent event) {
         event.consume();
         if (!acceptsDrop(event)) {
             return;
         }
 
-        acceptDrag(event);
+        model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+        model.getDraggedOverDirectory().setValue(item);
+
+        var timestamp = Instant.now();
+        lastHoverUpdate = timestamp;
+        // Reduce printed window updates
+        GlobalTimer.delay(
+                () -> {
+                    if (!timestamp.equals(lastHoverUpdate)) {
+                        return;
+                    }
+
+                    if (item != model.getDraggedOverDirectory().getValue()) {
+                        return;
+                    }
+
+                    model.getFileSystemModel().cdAsync(getItem().getRawFileEntry().getPath());
+                },
+                Duration.ofMillis(500));
+    }
+
+    public void onDragOver(DragEvent event) {
+        event.consume();
+        if (!acceptsDrop(event)) {
+            return;
+        }
+
+        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        event.consume();
     }
 
     @SuppressWarnings("unchecked")
@@ -332,15 +329,5 @@ public class BrowserFileListCompEntry {
         var tv = ((TableView<BrowserEntry>)
                 row.getParent().getParent().getParent().getParent());
         tv.getSelectionModel().select(item);
-    }
-
-    public void onDragOver(DragEvent event) {
-        event.consume();
-        if (!acceptsDrop(event)) {
-            return;
-        }
-
-        acceptDrag(event);
-        handleHoverTimer(event);
     }
 }

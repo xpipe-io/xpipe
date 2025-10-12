@@ -2,23 +2,31 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
 
+import javafx.css.PseudoClass;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Region;
 import javafx.util.Callback;
 
 import atlantafx.base.controls.Breadcrumbs;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BrowserBreadcrumbBar extends SimpleComp {
 
     private final BrowserFileSystemTabModel model;
+    private Instant lastHoverUpdate;
 
     public BrowserBreadcrumbBar(BrowserFileSystemTabModel model) {
         this.model = model;
@@ -33,9 +41,40 @@ public class BrowserBreadcrumbBar extends SimpleComp {
             var btn = new Button(name, null);
             btn.setMnemonicParsing(false);
             btn.setFocusTraversable(false);
+            btn.setOnDragEntered(event -> onDragEntered(btn, crumb.getValue()));
+            btn.setOnDragOver(event -> onDragOver(event));
+            btn.setOnDragExited(event -> onDragExited(btn));
             return btn;
         };
         return createBreadcrumbs(crumbFactory, null);
+    }
+
+    private void onDragEntered(Button button, FilePath path) {
+        button.pseudoClassStateChanged(PseudoClass.getPseudoClass("hover"), true);
+
+        var timestamp = Instant.now();
+        lastHoverUpdate = timestamp;
+        // Reduce printed window updates
+        GlobalTimer.delay(
+                () -> {
+                    if (!timestamp.equals(lastHoverUpdate)) {
+                        return;
+                    }
+
+                    model.cdAsync(path);
+                },
+                Duration.ofMillis(500));
+    }
+
+    private void onDragOver(DragEvent event) {
+        event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+        event.consume();
+    }
+
+    private void onDragExited(Button button) {
+        button.pseudoClassStateChanged(PseudoClass.getPseudoClass("hover"), false);
+
+        lastHoverUpdate = null;
     }
 
     private Region createBreadcrumbs(

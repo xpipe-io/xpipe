@@ -32,6 +32,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -154,6 +155,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             var fs = fileSystemFactory.apply(getEntry().asNeeded());
+            if (fs.getShell().isPresent()) {
+                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
+            }
             fs.open();
 
             // Listen to kill after init as the shell might get killed during init for certain reasons
