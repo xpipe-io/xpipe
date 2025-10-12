@@ -69,7 +69,7 @@ public class ActionConfigComp extends SimpleComp {
         singleProp.set((DataStoreEntryRef<DataStore>) s);
 
         singleProp.addListener((obs, o, n) -> {
-            if (action.getValue() instanceof StoreAction<?> sa) {
+            if (action.getValue() instanceof StoreAction<?> sa && n != null) {
                 action.setValue(sa.withRef(n.asNeeded()));
             }
         });

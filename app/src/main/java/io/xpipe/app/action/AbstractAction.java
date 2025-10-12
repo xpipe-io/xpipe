@@ -40,9 +40,11 @@ public abstract class AbstractAction {
 
         AppLayoutModel.get().getQueueEntries().add(queueEntry);
         pick = action -> {
-            cancelPick();
-            var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(action).prefWidth(600));
-            modal.show();
+            if (action instanceof SerializableAction) {
+                cancelPick();
+                var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(action).prefWidth(600));
+                modal.show();
+            }
         };
     }
 
