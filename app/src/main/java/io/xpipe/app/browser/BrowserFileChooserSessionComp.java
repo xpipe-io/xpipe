@@ -78,7 +78,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
         modal.show();
         ThreadHelper.runAsync(() -> {
-            model.openFileSystemAsync(store.get(), (sc) -> initialPath.get(), null);
+            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), null);
         });
     }
 
@@ -108,7 +108,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                 }
 
                 if (entry.getStore() instanceof ShellStore) {
-                    model.openFileSystemAsync(entry.ref(), null, busy);
+                    model.openFileSystemAsync(entry.ref(), null, null, busy);
                 }
             });
         };

@@ -21,11 +21,13 @@ import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.ext.FileKind;
+import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +40,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,7 +51,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
-    private final BooleanProperty inOverview = new SimpleBooleanProperty();
+    private final ObservableBooleanValue inOverview = Bindings.createBooleanBinding(
+            () -> {
+                return currentPath.get() == null;
+            },
+            currentPath);
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
@@ -56,6 +63,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             FXCollections.observableArrayList();
     private final LongProperty progressTransferSpeed = new SimpleLongProperty();
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
+    private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
     private BrowserFileSystemCache cache;
@@ -63,14 +71,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
             DataStoreEntryRef<? extends FileSystemStore> entry,
-            SelectionMode selectionMode) {
+            SelectionMode selectionMode,
+            FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory) {
         super(model, entry);
-        this.inOverview.bind(Bindings.createBooleanBinding(
-                () -> {
-                    return currentPath.get() == null;
-                },
-                currentPath));
-        fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileSystemFactory = fileSystemFactory;
     }
 
     public void updateProgress(BrowserTransferProgress n) {
@@ -148,14 +153,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
-            var fs = entry.getStore().createFileSystem();
-            if (fs.getShell().isPresent()) {
-                ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
-                var originalFs = fs;
-                fs = new WrapperFileSystem(
-                        originalFs, () -> originalFs.getShell().get().isRunning(true));
-            }
+            var fs = fileSystemFactory.apply(getEntry().asNeeded());
             fs.open();
+
             // Listen to kill after init as the shell might get killed during init for certain reasons
             if (fs.getShell().isPresent()) {
                 fs.getShell().get().onKill(() -> {

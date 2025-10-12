@@ -66,7 +66,7 @@ public class BrowseHubLeafProvider implements HubLeafProvider<FileSystemStore> {
             DataStoreEntryRef<FileSystemStore> replacement =
                     ProcessControlProvider.get().replace(ref);
             BrowserFullSessionModel.DEFAULT.openFileSystemSync(
-                    replacement, (m) -> path, new SimpleBooleanProperty(), true);
+                    replacement, null, (m) -> path, new SimpleBooleanProperty(), true);
             AppLayoutModel.get().selectBrowser();
         }
     }

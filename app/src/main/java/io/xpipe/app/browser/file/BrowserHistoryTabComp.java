@@ -127,7 +127,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
         open.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2f-folder-open-outline"));
         open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
-                    DataStorage.get().local().ref(), null, null);
+                    DataStorage.get().local().ref(), null, null, null);
         });
 
         var list = new IntroListComp(List.of(docs, open));
@@ -148,7 +148,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     ThreadHelper.runAsync(() -> {
                         var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
                         if (storageEntry.isPresent()) {
-                            model.openFileSystemAsync(storageEntry.get().ref(), null, disable);
+                            model.openFileSystemAsync(storageEntry.get().ref(), null, null, disable);
                         }
                     });
                 })

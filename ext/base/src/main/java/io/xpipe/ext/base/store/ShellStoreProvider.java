@@ -38,7 +38,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
     default FailableRunnable<Exception> launchBrowser(
             BrowserFullSessionModel sessionModel, DataStoreEntry store, BooleanProperty busy) {
         return () -> {
-            sessionModel.openFileSystemAsync(store.ref(), null, busy);
+            sessionModel.openFileSystemAsync(store.ref(), null, null, busy);
         };
     }
 

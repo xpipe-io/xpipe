@@ -45,6 +45,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
             } else {
                 model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
                         ref.asNeeded(),
+                        null,
                         model -> {
                             return getTargetDirectory(model);
                         },

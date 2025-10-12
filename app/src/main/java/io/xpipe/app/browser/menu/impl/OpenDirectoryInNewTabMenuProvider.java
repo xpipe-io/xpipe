@@ -22,7 +22,7 @@ public class OpenDirectoryInNewTabMenuProvider implements BrowserMenuLeafProvide
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         if (model.getBrowserModel() instanceof BrowserFullSessionModel bm) {
             bm.openFileSystemAsync(
-                    model.getEntry(), m -> entries.getFirst().getRawFileEntry().getPath(), null);
+                    model.getEntry(), null, m -> entries.getFirst().getRawFileEntry().getPath(), null);
         }
     }
 

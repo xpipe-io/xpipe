@@ -18,6 +18,7 @@ public class AppAotTrain {
         ThreadHelper.sleep(5000);
         BrowserFullSessionModel.DEFAULT.openFileSystemSync(
                 DataStorage.get().local().ref(),
+                null,
                 m -> m.getFileSystem().getShell().orElseThrow().view().userHome(),
                 null,
                 true);

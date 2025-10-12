@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
@@ -80,6 +81,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
+            FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> customFileSystemFactory,
             FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy) {
         if (store == null) {
@@ -91,7 +93,9 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
             try (var ignored =
                     new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-                model = new BrowserFileSystemTabModel(this, store, selectionMode);
+                model = new BrowserFileSystemTabModel(this, store, selectionMode, customFileSystemFactory != null ?
+                        customFileSystemFactory : ref -> ref.getStore()
+                        .createFileSystem());
                 model.init();
                 // Prevent multiple calls from interfering with each other
                 synchronized (BrowserFileChooserSessionModel.this) {
