@@ -48,10 +48,10 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api ('io.modelcontextprotocol.sdk:mcp-core:0.13.0')  {
+    api ('io.modelcontextprotocol.sdk:mcp-core:0.14.1')  {
         exclude group: "com.ethlo.time", module: "itu"
     }
-    api ('io.modelcontextprotocol.sdk:mcp-json:0.13.0')  {
+    api ('io.modelcontextprotocol.sdk:mcp-json:0.14.1')  {
         exclude group: "com.ethlo.time", module: "itu"
     }
     api ('io.modelcontextprotocol.sdk:mcp-json-jackson2:0.13.0')  {
