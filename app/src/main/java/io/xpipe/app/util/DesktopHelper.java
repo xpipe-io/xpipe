@@ -91,6 +91,7 @@ public class DesktopHelper {
             }
             case OsType.Bsd ignored -> {}
             case OsType.Solaris ignored -> {}
+            case OsType.Aix ignored -> {}
         }
     }
 

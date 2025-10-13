@@ -286,22 +286,22 @@ public class BrowserFileListCompEntry {
         model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
         model.getDraggedOverDirectory().setValue(item);
 
-        var timestamp = Instant.now();
-        lastHoverUpdate = timestamp;
-        // Reduce printed window updates
-        GlobalTimer.delay(
-                () -> {
-                    if (!timestamp.equals(lastHoverUpdate)) {
-                        return;
-                    }
+        if (item != null) {
+            var timestamp = Instant.now();
+            lastHoverUpdate = timestamp;
+            // Reduce printed window updates
+            GlobalTimer.delay(() -> {
+                if (!timestamp.equals(lastHoverUpdate)) {
+                    return;
+                }
 
-                    if (item != model.getDraggedOverDirectory().getValue()) {
-                        return;
-                    }
+                if (item != model.getDraggedOverDirectory().getValue()) {
+                    return;
+                }
 
-                    model.getFileSystemModel().cdAsync(getItem().getRawFileEntry().getPath());
-                },
-                Duration.ofMillis(500));
+                model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath());
+            }, Duration.ofMillis(500));
+        }
     }
 
     public void onDragOver(DragEvent event) {

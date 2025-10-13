@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="34.66mm"
+   height="29.790001mm"
+   version="1.1"
+   viewBox="0 0 34.66 29.790001"
+   id="svg7"
+   sodipodi:docname="aix.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="false"
+     inkscape:zoom="3.3893537"
+     inkscape:cx="62.696318"
+     inkscape:cy="27.881421"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg7" />
+  <title
+     id="title1">IBM AIX logo</title>
+  <desc
+     id="desc1">A series of proprietary Unix operating systems developed and sold by IBM</desc>
+  <defs
+     id="defs4">
+    <linearGradient
+       id="vlpb"
+       x1="0.1521"
+       x2="0.54680002"
+       y1="-0.58749998"
+       y2="-0.4003"
+       gradientTransform="matrix(70.15,-70.15,70.15,70.15,31.51,66.85)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         style="stop-color:#6fdc8c"
+         offset="0"
+         id="stop1" />
+      <stop
+         style="stop-color:#6fdc8c"
+         offset=".3049"
+         id="stop2" />
+      <stop
+         style="stop-color:#009d9a"
+         offset=".9279"
+         id="stop3" />
+      <stop
+         style="stop-color:#009d9a"
+         offset="1"
+         id="stop4" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#vlpb"
+       id="linearGradient7"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(70.15,-70.15,70.15,70.15,31.51,66.85)"
+       x1="0.1521"
+       y1="-0.58749998"
+       x2="0.54680002"
+       y2="-0.4003" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#vlpb"
+       id="linearGradient8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(70.15,-70.15,70.15,70.15,31.51,66.85)"
+       x1="0.1521"
+       y1="-0.58749998"
+       x2="0.54680002"
+       y2="-0.4003" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#vlpb"
+       id="linearGradient9"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(70.15,-70.15,70.15,70.15,31.51,66.85)"
+       x1="0.1521"
+       y1="-0.58749998"
+       x2="0.54680002"
+       y2="-0.4003" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#vlpb"
+       id="linearGradient10"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(70.15,-70.15,70.15,70.15,31.51,66.85)"
+       x1="0.1521"
+       y1="-0.58749998"
+       x2="0.54680002"
+       y2="-0.4003" />
+  </defs>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>IBM AIX logo</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="matrix(0.9865,0,0,0.9865,-0.95643474,6.5980207)"
+     id="g7">
+    <g
+       transform="scale(0.9942,1.006)"
+       style="fill:url(#linearGradient10);stroke-width:0.7367"
+       id="g6">
+      <path
+         d="M 10.91,14.79 9.9277,11.529 H 5.3497 L 4.3674,14.79 H 1.3424 L 5.8614,1.08 h 3.693 l 4.46,13.71 z M 7.668,3.79 H 7.56977 l -1.513,5.206 h 3.143 z"
+         style="fill:url(#linearGradient7);stroke-width:0.7367"
+         id="path4" />
+      <path
+         d="m 15.39,14.79 v -2.377 h 1.768 V 3.454 H 15.39 V 1.077 h 6.522 v 2.377 h -1.768 v 8.959 h 1.768 v 2.377 z"
+         style="fill:url(#linearGradient8);stroke-width:0.7367"
+         id="path5" />
+      <path
+         d="M 35.8,14.79 H 32.342 L 29.375,9.741 h -0.05894 l -2.888,5.049 h -3.222 l 4.401,-7.092 -4.185,-6.621 h 3.477 l 2.672,4.636 H 29.63 l 2.711,-4.636 h 3.222 l -4.224,6.68 z"
+         style="fill:url(#linearGradient9);stroke-width:0.7367"
+         id="path6" />
+    </g>
+  </g>
+</svg>

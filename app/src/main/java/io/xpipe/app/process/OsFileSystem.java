@@ -13,17 +13,21 @@ public interface OsFileSystem {
     MacOs MACOS = new MacOs();
 
     static OsFileSystem ofLocal() {
-        return of(OsType.ofLocal());
+        return switch (OsType.ofLocal()) {
+            case OsType.Windows ignored -> WINDOWS;
+            case OsType.Linux ignored -> UNIX;
+            case OsType.MacOs ignored -> MACOS;
+        };
     }
 
-    static OsFileSystem of(OsType osType) {
+    static OsFileSystem of(OsType.Any osType) {
         return switch (osType) {
             case OsType.Windows ignored -> WINDOWS;
             case OsType.Bsd ignored -> UNIX;
             case OsType.Linux ignored -> UNIX;
             case OsType.MacOs ignored -> MACOS;
             case OsType.Solaris ignored -> UNIX;
-            default -> throw new IllegalStateException();
+            case OsType.Aix ignored -> UNIX;
         };
     }
 

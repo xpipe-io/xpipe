@@ -592,7 +592,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
+    static List<ExternalTerminalType> getTypes(OsType.Local osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
         if (osType == null || osType == OsType.WINDOWS) {
             all.addAll(WINDOWS_TERMINALS);

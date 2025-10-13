@@ -57,7 +57,7 @@ public class OsLogoComp extends SimpleComp {
                 .createRegion();
     }
 
-    private String getImage(String name, OsType type) {
+    private String getImage(String name, OsType.Any type) {
         if (name == null) {
             return null;
         }
