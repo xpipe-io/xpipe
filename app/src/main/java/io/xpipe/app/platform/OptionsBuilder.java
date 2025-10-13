@@ -44,6 +44,12 @@ public class OptionsBuilder {
     private Comp<?> comp;
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
+    private boolean focusFirstIncomplete = true;
+
+    public OptionsBuilder disableFirstIncompleteFocus() {
+        focusFirstIncomplete = false;
+        return this;
+    }
 
     public OptionsBuilder() {
         this.ownValidator = new SimpleValidator();
@@ -146,7 +152,9 @@ public class OptionsBuilder {
     public OptionsBuilder sub(OptionsBuilder builder, Property<?> prop) {
         props.addAll(builder.props);
         allValidators.add(builder.buildEffectiveValidator());
-        allChecks.addAll(builder.allChecks);
+        if (builder.focusFirstIncomplete) {
+            allChecks.addAll(builder.allChecks);
+        }
         if (prop != null) {
             props.add(prop);
         }
@@ -410,7 +418,7 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        var comp = new OptionsComp(entries, buildEffectiveValidator(), allChecks);
+        var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of());
         for (Augment<CompStructure<VBox>> augment : augments) {
             comp.apply(augment);
         }

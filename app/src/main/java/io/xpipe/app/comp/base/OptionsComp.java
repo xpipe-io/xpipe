@@ -35,12 +35,10 @@ import java.util.List;
 public class OptionsComp extends Comp<CompStructure<VBox>> {
 
     private final List<Entry> entries;
-    private final Validator validator;
     private final List<Check> checks;
 
-    public OptionsComp(List<Entry> entries, Validator validator, List<Check> checks) {
+    public OptionsComp(List<Entry> entries, List<Check> checks) {
         this.entries = entries;
-        this.validator = validator;
         this.checks = checks;
     }
 

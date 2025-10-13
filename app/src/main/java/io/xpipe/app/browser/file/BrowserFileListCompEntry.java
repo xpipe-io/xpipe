@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
@@ -8,6 +9,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.ext.FileKind;
 
 import io.xpipe.core.FilePath;
+import io.xpipe.core.OsType;
 import javafx.css.PseudoClass;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -19,6 +21,7 @@ import javafx.scene.input.*;
 
 import lombok.Getter;
 
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.time.Duration;
 import java.time.Instant;
@@ -151,6 +154,18 @@ public class BrowserFileListCompEntry {
     private boolean acceptsDrop(DragEvent event) {
         // Accept drops from outside the app window
         if (event.getGestureSource() == null) {
+            // Don't accept 7zip temp files
+            if (OsType.ofLocal() == OsType.WINDOWS && event.getDragboard().getFiles().stream().anyMatch(file -> {
+                try {
+                    return file.toPath().toRealPath().startsWith(AppSystemInfo.ofWindows().getTemp()) &&
+                        file.toPath().getFileName().toString().matches("7z[A-Z0-9]+");
+                } catch (IOException ignored) {
+                    return false;
+                }
+            })) {
+                return false;
+            }
+
             return true;
         }
 

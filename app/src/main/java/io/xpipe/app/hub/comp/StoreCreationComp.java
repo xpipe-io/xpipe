@@ -83,6 +83,12 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(d.getOptions());
                 full.sub(propOptions);
 
+                // Start focus on top for newly created stores
+                if (model.getExistingEntry() == null) {
+                    d.getOptions().disableFirstIncompleteFocus();
+                    full.disableFirstIncompleteFocus();
+                }
+
                 var region = full.buildComp().styleClass("store-creator-options").createRegion();
                 valSp.getChildren().add(region);
 

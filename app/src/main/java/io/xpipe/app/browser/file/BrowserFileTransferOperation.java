@@ -508,7 +508,7 @@ public class BrowserFileTransferOperation {
                 outputStream.flush();
                 inputStream.transferTo(OutputStream.nullOutputStream());
 
-                var incomplete = readCount.get() < expectedFileSize;
+                var incomplete = !killStreams.get() && readCount.get() < expectedFileSize;
                 if (incomplete) {
                     throw new IOException("Source file " + sourceFile + " input size mismatch: Expected " + expectedFileSize + " but got " + readCount.get() + ". Did the source file get updated?");
                 }
