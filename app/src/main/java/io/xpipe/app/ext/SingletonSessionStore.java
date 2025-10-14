@@ -8,6 +8,10 @@ public interface SingletonSessionStore<T extends Session>
         stopSessionIfNeeded();
     }
 
+    default boolean supportsSession() {
+        return true;
+    }
+
     default boolean isSessionRunning() {
         return getCache("sessionRunning", Boolean.class, false);
     }
@@ -36,6 +40,10 @@ public interface SingletonSessionStore<T extends Session>
     }
 
     default T startSessionIfNeeded() throws Exception {
+        if (!supportsSession()) {
+            return null;
+        }
+
         synchronized (this) {
             var s = getSession();
             if (s != null) {

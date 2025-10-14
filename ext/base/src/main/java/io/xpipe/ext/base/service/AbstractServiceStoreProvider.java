@@ -96,22 +96,8 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var toggle = createToggleComp(sec);
-        toggle.setCustomVisibility(Bindings.createBooleanBinding(
-                () -> {
-                    AbstractServiceStore s =
-                            sec.getWrapper().getEntry().getStore().asNeeded();
-                    if (s.getHost() == null
-                            || !s.getHost().getStore().requiresTunnel()
-                            || !s.getHost().getStore().isLocallyTunnelable()) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                sec.getWrapper().getCache()));
-        return new DenseStoreEntryComp(sec, toggle);
+    public boolean showToggleWhenInactive(DataStore store) {
+        return false;
     }
 
     @Override

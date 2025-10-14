@@ -5,6 +5,7 @@ import io.xpipe.app.hub.action.impl.ToggleActionProvider;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.LabelGraphic;
 
+import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -32,6 +33,10 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
+                    if (!s.supportsSession()) {
+                        return SystemStateComp.State.SUCCESS;
+                    }
+
                     if (!s.isSessionEnabled() || (s.isSessionEnabled() && !s.isSessionRunning())) {
                         return SystemStateComp.State.OTHER;
                     }
@@ -71,7 +76,19 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
                 action.executeAsync();
             }
         });
+
+        t.setCustomVisibility(Bindings.createBooleanBinding(
+                () -> {
+                    SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
+                    return s.supportsSession() && (showToggleWhenInactive(sec.getWrapper().getStore().getValue()) || s.isSessionEnabled());
+                },
+                sec.getWrapper().getCache()));
+
         t.tooltipKey("enabled");
         return t;
+    }
+
+    default boolean showToggleWhenInactive(DataStore store) {
+        return true;
     }
 }
