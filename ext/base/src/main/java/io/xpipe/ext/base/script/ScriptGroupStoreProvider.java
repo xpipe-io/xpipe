@@ -51,10 +51,10 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
         ScriptGroupStore st = store.getValue().asNeeded();
 
         var group = new SimpleObjectProperty<>(st.getGroup());
-        Property<String> description = new SimpleObjectProperty<>(st.getDescription());
+        var description = new SimpleObjectProperty<>(st.getDescription());
         return new OptionsBuilder()
                 .name("description")
-                .description("descriptionDescription")
+                .description("scriptGroupDescriptionDescription")
                 .addString(description)
                 .name("scriptGroup")
                 .description("scriptGroupGroupDescription")
@@ -71,7 +71,7 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
                         () -> {
                             return ScriptGroupStore.builder()
                                     .group(group.get())
-                                    .description(st.getDescription())
+                                    .description(description.getValue())
                                     .build();
                         },
                         store)
