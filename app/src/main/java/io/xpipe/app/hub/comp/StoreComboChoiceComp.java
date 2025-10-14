@@ -42,8 +42,16 @@ import java.util.function.Predicate;
 public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
 
     @Value
-    @AllArgsConstructor
     public static class ComboValue<T extends DataStore> {
+
+        public static <T extends DataStore> ComboValue<T> of(String manualHost, DataStoreEntryRef<T> ref) {
+            var manualNull = manualHost == null ||  manualHost.isEmpty();
+            if (manualNull && ref == null) {
+                return null;
+            }
+
+            return manualNull ? new ComboValue<>(null, ref) :  new ComboValue<>(manualHost, null);
+        }
 
         String manualHost;
         DataStoreEntryRef<T> ref;
