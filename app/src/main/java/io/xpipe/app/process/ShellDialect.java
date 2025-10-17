@@ -50,6 +50,8 @@ public interface ShellDialect {
 
     String literalArgument(String s);
 
+    String prepareEnvironmentForCustomTerminalScripts();
+
     String fileArgument(String s);
 
     default String fileArgument(FilePath s) {

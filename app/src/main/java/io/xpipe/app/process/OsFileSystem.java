@@ -28,6 +28,7 @@ public interface OsFileSystem {
             case OsType.MacOs ignored -> MACOS;
             case OsType.Solaris ignored -> UNIX;
             case OsType.Aix ignored -> UNIX;
+            case OsType.OtherUnix ignored -> UNIX;
         };
     }
 

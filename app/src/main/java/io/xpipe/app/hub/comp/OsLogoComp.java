@@ -95,6 +95,10 @@ public class OsLogoComp extends SimpleComp {
             return "os/illumos.svg";
         }
 
+        if (type == OsType.UNIX) {
+            return "os/unix.svg";
+        }
+
         return "os/linux.svg";
     }
 }

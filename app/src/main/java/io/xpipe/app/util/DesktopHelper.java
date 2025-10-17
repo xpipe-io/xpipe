@@ -89,9 +89,7 @@ public class DesktopHelper {
                                 .addFile(path))
                         .execute();
             }
-            case OsType.Bsd ignored -> {}
-            case OsType.Solaris ignored -> {}
-            case OsType.Aix ignored -> {}
+            default -> {}
         }
     }
 
