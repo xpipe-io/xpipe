@@ -15,7 +15,6 @@ import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 

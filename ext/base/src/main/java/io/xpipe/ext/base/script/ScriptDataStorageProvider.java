@@ -17,6 +17,10 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
             return;
         }
 
+        if (AppProperties.get().isTest()) {
+            return;
+        }
+
         DataStorage.get()
                 .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
                         UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),

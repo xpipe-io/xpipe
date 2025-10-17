@@ -40,10 +40,6 @@ public interface SingletonSessionStore<T extends Session>
     }
 
     default T startSessionIfNeeded() throws Exception {
-        if (!supportsSession()) {
-            return null;
-        }
-
         synchronized (this) {
             var s = getSession();
             if (s != null) {

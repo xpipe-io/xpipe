@@ -34,13 +34,10 @@ public class UntarActionProvider implements BrowserActionProvider {
                 c.add(args);
                 c.addFile(entry.getRawFileEntry().getPath());
                 if (toDirectory) {
-                    c.add("-C").addFile(target);
-                }
-                if (toDirectory) {
                     model.getFileSystem().mkdirs(target);
                 }
                 sc.command(c)
-                        .withWorkingDirectory(model.getCurrentDirectory().getPath())
+                        .withWorkingDirectory(toDirectory ? target : model.getCurrentDirectory().getPath())
                         .execute();
             }
             model.refreshSync();

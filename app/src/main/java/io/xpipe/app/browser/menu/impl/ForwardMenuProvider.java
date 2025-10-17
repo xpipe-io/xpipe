@@ -5,6 +5,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.value.ObservableValue;
@@ -19,7 +20,9 @@ public class ForwardMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         ThreadHelper.runAsync(() -> {
-            model.forthSync(1);
+            BooleanScope.executeExclusive(model.getBusy(), () -> {
+                model.forthSync(1);
+            });
         });
     }
 

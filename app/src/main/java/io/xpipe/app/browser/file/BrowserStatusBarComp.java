@@ -100,6 +100,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                         return null;
                     }
 
+                    if (p.getTotal() == 0) {
+                        return HumanReadableFormat.byteCount(p.getTransferred());
+                    }
+
                     var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();
                     var show = elapsed > 3000;
                     if (!show) {
