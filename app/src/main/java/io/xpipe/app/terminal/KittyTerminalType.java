@@ -108,7 +108,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return CommandSupport.findProgram(pc, "kitty").isPresent();
+                return pc.view().findProgram("kitty").isPresent();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;

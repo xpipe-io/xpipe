@@ -3,7 +3,6 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 
 public interface WaveTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -15,7 +14,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     @Override
     default boolean isAvailable() {
         try (var sc = LocalShell.getShell().start()) {
-            var wsh = CommandSupport.findProgram(sc, "wsh");
+            var wsh = sc.view().findProgram("wsh");
             return wsh.isPresent();
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
@@ -46,10 +45,10 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
     @Override
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var wsh = CommandSupport.findProgram(sc, "wsh");
+            var wsh = sc.view().findProgram("wsh");
             var env = sc.view().getEnvironmentVariable("WAVETERM_JWT");
             if (wsh.isEmpty() || env.isEmpty()) {
-                var inPath = CommandSupport.findProgram(sc, "xpipe").isPresent();
+                var inPath = sc.view().findProgram("xpipe").isPresent();
                 var msg =
                         """
                           The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.

@@ -18,7 +18,7 @@ public class ShellControlCache {
     public boolean isApplicationInPath(String app) {
         if (!installedApplications.containsKey(app)) {
             try {
-                var b = CommandSupport.isInPath(shellControl, app);
+                var b = shellControl.view().findProgram(app).isPresent();
                 installedApplications.put(app, b);
             } catch (Exception e) {
                 installedApplications.put(app, false);

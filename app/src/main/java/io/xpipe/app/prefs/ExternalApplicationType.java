@@ -94,7 +94,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return CommandSupport.findProgram(pc, getExecutable()).isPresent();
+                String name = getExecutable();
+                return pc.view().findProgram(name).isPresent();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
@@ -103,7 +104,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void launch(CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
-                if (!CommandSupport.isInPath(pc, getExecutable())) {
+                String executable = getExecutable();
+                if (!pc.view().findProgram(executable).isPresent()) {
                     throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
                             + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute "
                             + "executable path using the custom terminal setting."));
@@ -152,7 +154,8 @@ public interface ExternalApplicationType extends PrefsValue {
         default Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var sc = LocalShell.getShell().start()) {
-                var out = CommandSupport.findProgram(sc, getExecutable());
+                String name = getExecutable();
+                var out = sc.view().findProgram(name);
                 if (out.isPresent()) {
                     return out.map(filePath -> Path.of(filePath.toString()));
                 }

@@ -7,7 +7,6 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.OsType;
 
@@ -27,11 +26,11 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         var sc = model.getFileSystem().getShell().orElseThrow();
 
-        var foundTar = CommandSupport.findProgram(sc, "tar");
+        var foundTar = sc.view().findProgram("tar");
         model.getCache().getInstalledApplications().put("tar", foundTar.isPresent());
 
         if (sc.getOsType() != OsType.WINDOWS) {
-            var found = CommandSupport.findProgram(sc, "zip");
+            var found = sc.view().findProgram("zip");
             model.getCache().getInstalledApplications().put("zip", found.isPresent());
         }
     }

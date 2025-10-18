@@ -143,7 +143,7 @@ public class SshLocalBridge {
     }
 
     private static FilePath getSshd(ShellControl sc) throws Exception {
-        var exec = CommandSupport.findProgram(sc, "sshd");
+        var exec = sc.view().findProgram("sshd");
         if (exec.isEmpty()) {
             throw ErrorEventFactory.expected(
                     new IllegalStateException(

@@ -4,6 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.WindowsRegistry;
@@ -75,8 +76,8 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
 
-            try (ShellControl pc = LocalShell.getShell()) {
-                if (pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"))) {
+            try {
+                if (CommandSupport.isInLocalPath("wezterm")) {
                     return Optional.of(Path.of("wezterm-gui"));
                 }
             } catch (Exception e) {
@@ -119,8 +120,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
-                        && pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
+                return CommandSupport.isInLocalPath("wezterm") && CommandSupport.isInLocalPath("wezterm-gui");
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;

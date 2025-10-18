@@ -101,8 +101,7 @@ public class TerminalLaunchConfiguration {
                     ShellDialects.POWERSHELL);
             return config;
         } else {
-            var found =
-                    sc.command(sc.getShellDialect().getWhichCommand("script")).executeAndCheck();
+            var found = sc.view().findProgram("script").isPresent();
             if (!found) {
                 var suffix = sc.getOsType() == OsType.MACOS
                         ? "This command is available in the util-linux package which can be installed via homebrew."

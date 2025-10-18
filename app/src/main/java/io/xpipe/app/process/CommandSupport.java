@@ -4,24 +4,10 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.FailableSupplier;
-import io.xpipe.core.FilePath;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class CommandSupport {
-
-    public static Optional<FilePath> findProgram(ShellControl processControl, String name) throws Exception {
-        var out = processControl
-                .command(processControl.getShellDialect().getWhichCommand(name))
-                .readStdoutIfPossible();
-        return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(FilePath::of);
-    }
-
-    public static boolean isInPath(ShellControl processControl, String executable) throws Exception {
-        return processControl.executeSimpleBooleanCommand(
-                processControl.getShellDialect().getWhichCommand(executable));
-    }
 
     public static void isInPathOrThrow(ShellControl processControl, String executable) throws Exception {
         isInPathOrThrow(processControl, executable, null);
@@ -43,7 +29,7 @@ public class CommandSupport {
     public static void isInPathOrThrow(
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
-        if (!isInPath(processControl, executable)) {
+        if (!processControl.view().findProgram(executable).isPresent()) {
             var prefix = displayName != null ? displayName + " executable " + executable : executable + " executable";
             throw ErrorEventFactory.expected(new IOException(
                     prefix + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));
@@ -60,8 +46,7 @@ public class CommandSupport {
 
     public static boolean isInLocalPath(String executable) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
-            var r = sc.command(sc.getShellDialect().getWhichCommand(executable)).executeAndCheck();
-            return r;
+            return sc.view().findProgram(executable).isPresent();
         }
     }
 
