@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
@@ -14,6 +15,7 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
 import io.xpipe.app.ext.FileInfo;
+import io.xpipe.app.util.HumanReadableFormat;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -83,6 +85,14 @@ public class BrowserFileOpener {
             return;
         }
 
+        var size = entry.getFileSizeLong().orElse(0L);
+        if (size > 1_000_000) {
+            var confirm = AppDialog.confirm("largeFileWarningTitle", AppI18n.observable("largeFileWarningContent", HumanReadableFormat.byteCount(size)));
+            if (!confirm) {
+                return;
+            }
+        }
+
         var file = entry.getPath();
         var key = calculateKey(model, entry);
         FileBridge.get()
@@ -91,8 +101,8 @@ public class BrowserFileOpener {
                         key,
                         new BooleanScope(model.getBusy()).exclusive(),
                         () -> BrowserFileInput.openFileInput(model, entry),
-                        (size) -> {
-                            return BrowserFileOutput.openFileOutput(model, entry, size);
+                        (os) -> {
+                            return BrowserFileOutput.openFileOutput(model, entry, os);
                         },
                         FileOpener::openInTextEditor);
     }

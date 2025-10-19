@@ -60,11 +60,12 @@ public interface BrowserFileOutput {
 
     private static boolean requiresSudo(BrowserFileSystemTabModel model, FileInfo.Unix info, FilePath filePath)
             throws Exception {
-        if (model.getFileSystem().getShell().isEmpty() || model.getCache() == null) {
+        if (model.getFileSystem().getShell().isEmpty()) {
             return false;
         }
 
-        if (model.getCache().isRoot()) {
+        var sc = model.getFileSystem().getShell().get();
+        if (sc.view().isRoot()) {
             return false;
         }
 
@@ -75,8 +76,8 @@ public interface BrowserFileOutput {
             }
 
             var userOwned = info.getUid() != null
-                    && model.getCache().getUidForUser(model.getCache().getUsername()) == info.getUid()
-                    || info.getUser() != null && model.getCache().getUsername().equals(info.getUser());
+                    && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
+                    || info.getUser() != null && sc.view().user().equals(info.getUser());
             var userWrite = info.getPermissions().charAt(1) == 'w';
             if (userOwned && userWrite) {
                 return false;

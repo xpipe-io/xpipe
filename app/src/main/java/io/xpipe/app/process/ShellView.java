@@ -1,12 +1,19 @@
 package io.xpipe.app.process;
 
+import io.xpipe.app.util.GroupFile;
+import io.xpipe.app.util.PasswdFile;
+import io.xpipe.core.FailableSupplier;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class ShellView {
 
@@ -14,6 +21,10 @@ public class ShellView {
     protected String user;
     protected FilePath userHome;
     protected Boolean root;
+    protected PasswdFile passwdFile;
+    protected GroupFile groupFile;
+    protected final Map<String, Boolean> installedApplications = new HashMap<>();
+    protected final Map<String, Boolean> genericCache = new HashMap<>();
 
     public ShellView(ShellControl shellControl) {
         this.shellControl = shellControl;
@@ -21,6 +32,33 @@ public class ShellView {
 
     protected ShellDialect getDialect() {
         return shellControl.getShellDialect();
+    }
+
+    public synchronized boolean getCachedPredicate(String key, FailableSupplier<Boolean> supplier) throws Exception {
+        var v = genericCache.get(key);
+        if (v != null) {
+            return v;
+        }
+
+        var supplied = supplier.get();
+        genericCache.put(key, supplied);
+        return supplied;
+    }
+
+    public synchronized PasswdFile getPasswdFile() throws Exception {
+        if (passwdFile == null) {
+            passwdFile = PasswdFile.parse(shellControl);
+        }
+
+        return passwdFile;
+    }
+
+    public synchronized GroupFile getGroupFile() throws Exception {
+        if (groupFile == null) {
+            groupFile = GroupFile.parse(shellControl);
+        }
+
+        return groupFile;
     }
 
     public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
@@ -130,9 +168,19 @@ public class ShellView {
         }
     }
 
-    public boolean isInPath(String executable) throws Exception {
-        return shellControl.executeSimpleBooleanCommand(
-                shellControl.getShellDialect().getWhichCommand(executable));
+    public synchronized boolean isInPath(String executable, boolean cache) throws Exception {
+        if (cache) {
+            var r = installedApplications.get(executable);
+            if (r != null) {
+                return r;
+            }
+
+            var found = findProgram(executable).isPresent();
+            installedApplications.put(executable, found);
+            return found;
+        }
+
+        return findProgram(executable).isPresent();
     }
 
     public void cd(FilePath directory) throws Exception {

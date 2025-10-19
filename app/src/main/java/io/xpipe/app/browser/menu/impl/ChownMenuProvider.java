@@ -16,19 +16,21 @@ import io.xpipe.app.ext.FileKind;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public class ChownMenuProvider implements BrowserMenuBranchProvider {
 
+    @SneakyThrows
     private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
         if (model.getFileSystem().getShell().isEmpty()) {
             return List.of(new CustomProvider(recursive));
         }
 
         var actions = Stream.<BrowserMenuItemProvider>concat(
-                        model.getCache().getUsers().entrySet().stream()
+                        model.getFileSystem().getShell().get().view().getPasswdFile().getUsers().entrySet().stream()
                                 .filter(e -> !e.getValue().equals("nohome")
                                         && !e.getValue().equals("nobody")
                                         && (e.getKey().equals(0) || e.getKey() >= 900))

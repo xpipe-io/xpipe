@@ -9,7 +9,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -58,7 +58,7 @@ public interface IdentityValue {
     static IdentityValue.InPlace none() {
         var s = LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.of(new NoneStrategy()))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy()))
                 .build();
         return of(s);
     }

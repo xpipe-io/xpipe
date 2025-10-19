@@ -10,7 +10,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
@@ -96,7 +96,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
                 .password(EncryptedValue.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.of(new NoneStrategy()))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy()))
                 .build();
     }
 

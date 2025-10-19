@@ -67,7 +67,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
-    private BrowserFileSystemCache cache;
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
@@ -168,8 +167,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             }
             this.fileSystem = fs;
 
+            // Cache for later usage
             if (fs.getShell().isPresent()) {
-                this.cache = new BrowserFileSystemCache(this);
+                fs.getShell().get().view().getPasswdFile();
+                fs.getShell().get().view().getGroupFile();
             }
 
             for (var a : ActionProvider.ALL) {

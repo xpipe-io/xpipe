@@ -24,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
+import lombok.SneakyThrows;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -220,6 +221,7 @@ public final class BrowserFileListComp extends SimpleComp {
         return Math.max(200, tableView.getWidth() - sum);
     }
 
+    @SneakyThrows
     private String formatOwner(BrowserEntry param) {
         FileInfo.Unix unix = param.getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u : null;
         if (unix == null) {
@@ -231,18 +233,20 @@ public final class BrowserFileListComp extends SimpleComp {
         }
 
         var m = fileList.getFileSystemModel();
+        var v = m.getFileSystem().getShell().isPresent() ? m.getFileSystem().getShell().get().view() : null;
+
         var user = unix.getUser() != null
                 ? unix.getUser()
-                : m.getCache() != null ? m.getCache().getUsers().getOrDefault(unix.getUid(), "?") : null;
+                : v != null ? v.getPasswdFile().getUsers().getOrDefault(unix.getUid(), "?") : null;
         var group = unix.getGroup() != null
                 ? unix.getGroup()
-                : m.getCache() != null ? m.getCache().getGroups().getOrDefault(unix.getGid(), "?") : null;
+                : v != null ? v.getGroupFile().getGroups().getOrDefault(unix.getGid(), "?") : null;
         var uid = unix.getUid() != null
                 ? String.valueOf(unix.getUid())
-                : m.getCache() != null ? m.getCache().getUidForUser(user) : null;
+                : v != null ? v.getPasswdFile().getUidForUser(user) : null;
         var gid = unix.getGid() != null
                 ? String.valueOf(unix.getGid())
-                : m.getCache() != null ? m.getCache().getGidForGroup(group) : null;
+                : v != null ? v.getGroupFile().getGidForGroup(group) : null;
 
         var userFormat = user + (uid != null ? " [" + uid + "]" : "");
         var groupFormat = group + (gid != null ? " [" + gid + "]" : "");

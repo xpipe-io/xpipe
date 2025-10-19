@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = NoneStrategy.class),
+    @JsonSubTypes.Type(value = NoIdentityStrategy.class),
     @JsonSubTypes.Type(value = KeyFileStrategy.class),
     @JsonSubTypes.Type(value = OpenSshAgentStrategy.class),
     @JsonSubTypes.Type(value = PageantStrategy.class),
@@ -37,7 +37,7 @@ public interface SshIdentityStrategy {
 
     static List<Class<?>> getSubclasses() {
         var l = new ArrayList<Class<?>>();
-        l.add(NoneStrategy.class);
+        l.add(NoIdentityStrategy.class);
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {

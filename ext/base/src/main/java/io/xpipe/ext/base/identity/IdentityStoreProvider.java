@@ -6,7 +6,7 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.secret.SecretNoneStrategy;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -46,7 +46,7 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
                 : "Anonymous User";
         var s = user
                 + (st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy ? "" : " + Password")
-                + (st.getSshIdentity() == null || st.getSshIdentity() instanceof NoneStrategy ? "" : " + Key");
+                + (st.getSshIdentity() == null || st.getSshIdentity() instanceof NoIdentityStrategy ? "" : " + Key");
         return new SimpleStringProperty(s);
     }
 }

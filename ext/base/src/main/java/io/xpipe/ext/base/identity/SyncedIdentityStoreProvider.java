@@ -15,7 +15,7 @@ import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
@@ -144,7 +144,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
                 .password(EncryptedValue.VaultKey.of(new SecretNoneStrategy()))
-                .sshIdentity(EncryptedValue.VaultKey.of(new NoneStrategy()))
+                .sshIdentity(EncryptedValue.VaultKey.of(new NoIdentityStrategy()))
                 .perUser(false)
                 .build();
     }

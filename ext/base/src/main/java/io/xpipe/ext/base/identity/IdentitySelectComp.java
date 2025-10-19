@@ -17,7 +17,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
 import javafx.application.Platform;
@@ -71,7 +71,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .findFirst();
         var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretNoneStrategy);
         var hasSshIdentity =
-                identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
+                identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoIdentityStrategy);
         if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
             var perUser = pwManIdentity.get().isPerUser();
             var id = PasswordManagerIdentityStore.builder()
@@ -93,7 +93,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             }
             var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
             if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new NoneStrategy());
+                ssh = EncryptedValue.VaultKey.of(new NoIdentityStrategy());
             }
             var id = SyncedIdentityStore.builder()
                     .username(inPlaceUser.getValue())
@@ -110,7 +110,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         }
         var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
         if (ssh == null) {
-            ssh = EncryptedValue.CurrentKey.of(new NoneStrategy());
+            ssh = EncryptedValue.CurrentKey.of(new NoIdentityStrategy());
         }
         var id = LocalIdentityStore.builder()
                 .username(inPlaceUser.getValue())

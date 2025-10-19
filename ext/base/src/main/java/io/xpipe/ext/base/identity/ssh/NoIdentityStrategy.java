@@ -11,7 +11,7 @@ import java.util.List;
 
 @JsonTypeName("none")
 @Value
-public class NoneStrategy implements SshIdentityStrategy {
+public class NoIdentityStrategy implements SshIdentityStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) {}

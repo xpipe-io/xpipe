@@ -11,7 +11,7 @@ import io.xpipe.app.secret.SecretQueryResult;
 import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -123,7 +123,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
     @Override
     public SshIdentityStrategy getSshIdentity() {
-        return new NoneStrategy();
+        return new NoIdentityStrategy();
     }
 
     @Override

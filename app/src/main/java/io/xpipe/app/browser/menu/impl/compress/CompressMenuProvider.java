@@ -13,6 +13,7 @@ import io.xpipe.core.OsType;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+import lombok.SneakyThrows;
 
 import java.util.List;
 
@@ -26,13 +27,8 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
         var sc = model.getFileSystem().getShell().orElseThrow();
 
-        var foundTar = sc.view().findProgram("tar");
-        model.getCache().getInstalledApplications().put("tar", foundTar.isPresent());
-
-        if (sc.getOsType() != OsType.WINDOWS) {
-            var found = sc.view().findProgram("zip");
-            model.getCache().getInstalledApplications().put("zip", found.isPresent());
-        }
+        sc.view().isInPath("tar", true);
+        sc.view().isInPath("zip", true);
     }
 
     @Override
@@ -221,8 +217,9 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
+        @SneakyThrows
         public boolean isActive(BrowserFileSystemTabModel model) {
-            return model.getCache().getInstalledApplications().get("tar");
+            return model.getFileSystem().getShell().orElseThrow().view().isInPath("tar", true);
         }
 
         @Override
