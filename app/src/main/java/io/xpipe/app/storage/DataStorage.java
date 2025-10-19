@@ -58,6 +58,7 @@ public abstract class DataStorage {
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
     private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
+    private final Map<DataStore, DataStore> storeMoveCache = new IdentityHashMap<>();
 
     @Getter
     @Setter
@@ -368,6 +369,11 @@ public abstract class DataStorage {
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
+        if (entry.getStore() != null && newEntry.getStore() != null && !entry.getStore().equals(newEntry.getStore())) {
+            synchronized (storeMoveCache) {
+                storeMoveCache.put(entry.getStore(), newEntry.getStore());
+            }
+        }
         entry.applyChanges(newEntry);
         entry.initializeEntry();
 
@@ -392,6 +398,21 @@ public abstract class DataStorage {
 
         refreshEntries();
         saveAsync();
+    }
+
+    public void updateEntryStore(DataStoreEntry entry, DataStore store) {
+        if (entry.getStore() == store) {
+            return;
+        }
+
+        entry.finalizeEntry();
+        if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
+            synchronized (storeMoveCache) {
+                storeMoveCache.put(entry.getStore(), store);
+            }
+        }
+        entry.setStoreInternal(store, false);
+        entry.initializeEntry();
     }
 
     public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
@@ -1222,9 +1243,22 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryInProgressIfPresent(@NonNull DataStore store) {
-        return storeEntriesInProgress.keySet().stream()
+        var found = storeEntriesInProgress.keySet().stream()
                 .filter(n -> n.getStore() == store)
                 .findFirst();
+        if (found.isPresent()) {
+            return found;
+        }
+
+        DataStore moved;
+        synchronized (storeMoveCache) {
+            moved = storeMoveCache.get(store);
+        }
+        if (moved != null) {
+            return getStoreEntryInProgressIfPresent(moved);
+        }
+
+        return Optional.empty();
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
@@ -1242,6 +1276,14 @@ public abstract class DataStorage {
                     return Optional.of(found);
                 }
             }
+        }
+
+        DataStore moved;
+        synchronized (storeMoveCache) {
+            moved = storeMoveCache.get(store);
+        }
+        if (moved != null) {
+            return getStoreEntryIfPresent(moved, identityOnly);
         }
 
         var found = storeEntriesSet.stream()

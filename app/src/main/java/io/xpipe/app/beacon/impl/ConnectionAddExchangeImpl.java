@@ -26,7 +26,7 @@ public class ConnectionAddExchangeImpl extends ConnectionAddExchange {
         }
 
         if (found.isPresent()) {
-            found.get().setStoreInternal(store, true);
+            DataStorage.get().updateEntryStore(found.get(), store);
             return Response.builder().connection(found.get().getUuid()).build();
         }
 

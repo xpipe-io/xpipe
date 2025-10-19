@@ -38,7 +38,7 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
                             DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID,
                             value.getName(),
                             store));
-            e.setStoreInternal(store, false);
+            DataStorage.get().updateEntryStore(e, store);
             e.setExpanded(value.isExpanded());
             value.setEntry(e.ref());
         }
@@ -47,7 +47,7 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
             var previous = DataStorage.get().getStoreEntryIfPresent(value.getUuid());
             var store = value.getScriptStore().get();
             if (previous.isPresent()) {
-                previous.get().setStoreInternal(store, false);
+                DataStorage.get().updateEntryStore(previous.get(), store);
                 value.setEntry(previous.get().ref());
             } else {
                 var e = DataStoreEntry.createNew(

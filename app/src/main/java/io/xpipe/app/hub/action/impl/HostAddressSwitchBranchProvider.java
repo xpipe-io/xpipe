@@ -7,6 +7,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -66,7 +67,7 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
         public void execute(DataStoreEntryRef<HostAddressSwitchStore> ref) {
             var newStore = ref.getStore().withAddress(address);
             if (newStore.isPresent()) {
-                ref.get().setStoreInternal(newStore.get(), true);
+                DataStorage.get().updateEntryStore(ref.get(), newStore.get());
             }
         }
 
