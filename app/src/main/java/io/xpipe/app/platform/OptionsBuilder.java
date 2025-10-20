@@ -312,11 +312,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder addString(Property<String> prop) {
-        return addString(prop, false);
-    }
-
-    public OptionsBuilder addString(Property<String> prop, boolean lazy) {
-        var comp = new TextFieldComp(prop, lazy);
+        var comp = new TextFieldComp(prop, false);
         pushComp(comp);
         props.add(prop);
         return this;

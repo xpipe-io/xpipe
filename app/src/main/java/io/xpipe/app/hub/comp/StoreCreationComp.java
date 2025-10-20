@@ -41,7 +41,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var built = new OptionsBuilder()
                 .name(nameKey + "Name")
                 .description(nameKey + "NameDescription")
-                .addString(model.getName(), false)
+                .addString(model.getName())
                 .nonNull()
                 .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
                     var same = s != null

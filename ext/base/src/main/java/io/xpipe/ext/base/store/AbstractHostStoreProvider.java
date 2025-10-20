@@ -44,6 +44,8 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
         Property<String> host = new SimpleObjectProperty<>(st.getHost());
 
         return new OptionsBuilder()
+                .nameAndDescription("abstractHostAddress")
+                .addString(host)
                 .bind(
                         () -> {
                             return AbstractHostStore.builder()
