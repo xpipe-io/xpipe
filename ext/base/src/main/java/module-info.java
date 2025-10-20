@@ -2,6 +2,9 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
+import io.xpipe.ext.base.host.AbstractHostCreationActionProvider;
+import io.xpipe.ext.base.host.AbstractHostStoreProvider;
+import io.xpipe.ext.base.host.HostAddressSwitchBranchProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
@@ -14,6 +17,7 @@ open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.service;
     exports io.xpipe.ext.base.identity;
     exports io.xpipe.ext.base.identity.ssh;
+    exports io.xpipe.ext.base.host;
 
     requires java.desktop;
     requires io.xpipe.core;
@@ -28,8 +32,11 @@ open module io.xpipe.ext.base {
     requires atlantafx.base;
     requires com.sun.jna.platform;
     requires com.sun.jna;
+    requires javafx.base;
 
     provides ActionProvider with
+            AbstractHostCreationActionProvider,
+            HostAddressSwitchBranchProvider,
             LocalIdentityConvertHubLeafProvider,
             RunBackgroundScriptActionProvider,
             RunHubBatchScriptActionProvider,

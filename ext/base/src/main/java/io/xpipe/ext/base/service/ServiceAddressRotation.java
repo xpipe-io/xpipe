@@ -27,10 +27,11 @@ public class ServiceAddressRotation {
     public static String getRotatedAddress(AbstractServiceStore serviceStore) {
         var s = serviceStore.getSession();
         if (s == null) {
-            var host = serviceStore.getHost().getStore().getTunnelHostName() != null
-                    ? serviceStore.getHost().getStore().getTunnelHostName()
-                    : "localhost";
-            return getRotatedLocalhost(host + ":" + serviceStore.getRemotePort());
+            var address = serviceStore.getAddress();
+            if (address == null) {
+                address = "localhost";
+            }
+            return getRotatedLocalhost(address + ":" + serviceStore.getRemotePort());
         }
 
         return getRotatedLocalhost("localhost:" + s.getLocalPort());

@@ -1,7 +1,6 @@
-package io.xpipe.app.hub.action.impl;
+package io.xpipe.ext.base.host;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.HostAddressSwitchStore;
 import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;

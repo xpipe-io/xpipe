@@ -5,17 +5,43 @@ import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreComboChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 
+import io.xpipe.ext.base.host.AbstractHostStore;
+import io.xpipe.ext.base.host.HostAddressStore;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
 
 public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
+
+    @Override
+    public DataStoreEntry getSyntheticParent(DataStoreEntry store) {
+        var c = (CustomServiceStore) store.getStore();
+        if (c.getHost() == null || c.getHost().getStore() instanceof AbstractHostStore) {
+            return null;
+        }
+
+        return super.getSyntheticParent(store);
+    }
+
+    @Override
+    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
+        var c = (CustomServiceStore) store.getStore();
+        if (c.getHost() != null && c.getHost().getStore() instanceof AbstractHostStore) {
+            return c.getHost().get();
+        }
+
+        return super.getDisplayParent(store);
+    }
 
     @Override
     public int getOrderPriority() {
@@ -30,20 +56,42 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         CustomServiceStore st = store.getValue().asNeeded();
-        var host = new SimpleObjectProperty<>(st.getHost());
+
+        var comboHost = new SimpleObjectProperty<>(StoreComboChoiceComp.ComboValue.of(
+                st.getAddress(),
+                st.getHost()
+        ));
+        var gateway = new SimpleObjectProperty<>(st.getGateway());
+        var hideGateway = BindingsHelper.map(comboHost, c -> c == null || c.getRef() != null);
+
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
         var remotePort = new SimpleObjectProperty<>(st.getRemotePort());
         var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
+
+        var hostChoice = new StoreComboChoiceComp<>(
+                hostStore -> hostStore.getHostAddress().get(),
+                entry,
+                comboHost,
+                NetworkTunnelStore.class,
+                n -> n.getStore() instanceof AbstractHostStore ||
+                        (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
+                StoreViewState.get().getAllConnectionsCategory()
+        );
+        var gatewayChoice = new StoreChoiceComp<>(
+                StoreChoiceComp.Mode.PROXY,
+                entry,
+                gateway,
+                NetworkTunnelStore.class,
+                ref -> !ref.get().equals(DataStorage.get().local()),
+                StoreViewState.get().getAllConnectionsCategory());
+
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
-                .addComp(
-                        StoreChoiceComp.other(
-                                host,
-                                NetworkTunnelStore.class,
-                                n -> n.getStore().isLocallyTunnelable(),
-                                StoreViewState.get().getAllConnectionsCategory()),
-                        host)
+                .addComp(hostChoice, comboHost)
                 .nonNull()
+                .nameAndDescription("gateway")
+                .addComp(gatewayChoice, gateway)
+                .hide(hideGateway)
                 .nameAndDescription("serviceRemotePort")
                 .addInteger(remotePort)
                 .nonNull()
@@ -54,7 +102,9 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 .bind(
                         () -> {
                             return CustomServiceStore.builder()
-                                    .host(host.get())
+                                    .address(comboHost.get() != null ? comboHost.get().getManualHost() : null)
+                                    .host(comboHost.get() != null ? comboHost.get().getRef() : null)
+                                    .gateway(gateway.get())
                                     .localPort(localPort.get())
                                     .remotePort(remotePort.get())
                                     .serviceProtocolType(serviceProtocolType.get())

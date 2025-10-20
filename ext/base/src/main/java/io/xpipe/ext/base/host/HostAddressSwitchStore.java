@@ -1,4 +1,6 @@
-package io.xpipe.app.ext;
+package io.xpipe.ext.base.host;
+
+import io.xpipe.app.ext.HostAddress;
 
 import java.util.Optional;
 

@@ -30,9 +30,18 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public boolean supportsSession(SingletonSessionStore<?> s) {
         var abs = (AbstractServiceStore) s;
-        return abs.getHost() == null
-                || !abs.getHost().getStore().requiresTunnel()
-                || !abs.getHost().getStore().isLocallyTunnelable();
+        if (abs.getHost() != null && (!(abs.getHost().getStore() instanceof NetworkTunnelStore t)
+                || !t.requiresTunnel()
+                || !t.isLocallyTunnelable())) {
+            return false;
+        }
+
+        if (abs.getHost() == null && (abs.getGateway() == null ||
+                !abs.getGateway().getStore().isLocallyTunnelable() || !abs.getGateway().getStore().requiresTunnel())) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

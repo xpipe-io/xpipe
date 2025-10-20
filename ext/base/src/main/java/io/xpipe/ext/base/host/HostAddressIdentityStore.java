@@ -1,6 +1,5 @@
-package io.xpipe.ext.base.store;
+package io.xpipe.ext.base.host;
 
-import io.xpipe.app.ext.HostAddressStore;
 import io.xpipe.ext.base.identity.IdentityValue;
 
 public interface HostAddressIdentityStore extends HostAddressStore {

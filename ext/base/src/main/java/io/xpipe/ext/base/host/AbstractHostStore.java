@@ -1,10 +1,9 @@
-package io.xpipe.ext.base.store;
+package io.xpipe.ext.base.host;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
-import io.xpipe.ext.base.identity.IdentityValue;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -15,9 +14,10 @@ import lombok.extern.jackson.Jacksonized;
 @SuperBuilder
 @Jacksonized
 @JsonTypeName("abstractHost")
-public class AbstractHostStore implements DataStore, HostAddressStore {
+public class AbstractHostStore implements DataStore, HostAddressStore, HostAddressGatewayStore {
 
     String host;
+    DataStoreEntryRef<NetworkTunnelStore> gateway;
 
     @Override
     public void checkComplete() throws Throwable {
@@ -27,5 +27,10 @@ public class AbstractHostStore implements DataStore, HostAddressStore {
     @Override
     public HostAddress getHostAddress() {
         return HostAddress.of(host);
+    }
+
+    @Override
+    public DataStoreEntryRef<NetworkTunnelStore> getGateway() {
+        return gateway;
     }
 }

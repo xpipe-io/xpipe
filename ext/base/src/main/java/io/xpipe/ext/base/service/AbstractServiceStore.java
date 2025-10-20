@@ -15,42 +15,15 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Getter
 @EqualsAndHashCode
 @ToString
 public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
 
-    private final Integer remotePort;
-    private final Integer localPort;
-    private final ServiceProtocolType serviceProtocolType;
-
-    public abstract DataStoreEntryRef<NetworkTunnelStore> getHost();
-
-    public boolean licenseRequired() {
-        return true;
-    }
-
-
-    @Override
-    public void checkComplete() throws Throwable {
-        Validators.nonNull(getHost());
-        NetworkTunnelStore.checkTunnelable(getHost());
-        Validators.nonNull(remotePort);
-        Validators.nonNull(serviceProtocolType);
-    }
-
-    public String getOpenTargetUrl() {
-        return ServiceAddressRotation.getRotatedAddress(this);
-    }
-
-    public boolean requiresTunnel() {
-        if (getHost() == null) {
-            return false;
-        }
-
-        if (!getHost().getStore().isLocallyTunnelable()) {
-            var parent = getHost().getStore().getNetworkParent();
+    public static boolean requiresTunnel(NetworkTunnelStore t) {
+        if (!t.isLocallyTunnelable()) {
+            var parent = t.getNetworkParent();
             if (!(parent instanceof NetworkTunnelStore nts)) {
                 return false;
             }
@@ -58,11 +31,78 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
             return nts.requiresTunnel();
         }
 
-        return getHost().getStore().requiresTunnel();
+        return t.requiresTunnel();
+    }
+
+    public static boolean requiresManualAddress(DataStore s) {
+        if (!(s instanceof NetworkTunnelStore t)) {
+            return true;
+        }
+
+        if (!t.isLocallyTunnelable()) {
+            var parent = t.getNetworkParent();
+            if (!(parent instanceof NetworkTunnelStore nts)) {
+                return false;
+            }
+
+            return nts.requiresTunnel();
+        }
+
+        return t.requiresTunnel();
+    }
+
+    private final Integer remotePort;
+    private final Integer localPort;
+    private final ServiceProtocolType serviceProtocolType;
+
+    public abstract String getAddress();
+
+    public abstract DataStoreEntryRef<NetworkTunnelStore> getGateway();
+
+    public abstract DataStoreEntryRef<?> getHost();
+
+    public boolean licenseRequired() {
+        return true;
+    }
+
+    @Override
+    public void checkComplete() throws Throwable {
+        Validators.nonNull(remotePort);
+        Validators.nonNull(serviceProtocolType);
+        if (getHost() != null) {
+            getHost().checkComplete();
+        } else {
+            Validators.nonNull(getAddress());
+        }
+    }
+
+    public String getOpenTargetUrl() {
+        return ServiceAddressRotation.getRotatedAddress(this);
+    }
+
+    public boolean requiresTunnel() {
+        if (getHost() == null || !(getHost().getStore() instanceof NetworkTunnelStore t)) {
+            return false;
+        }
+
+        if (!t.isLocallyTunnelable()) {
+            var parent = t.getNetworkParent();
+            if (!(parent instanceof NetworkTunnelStore nts)) {
+                return false;
+            }
+
+            return nts.requiresTunnel();
+        }
+
+        return t.requiresTunnel();
     }
 
     @Override
     public NetworkTunnelSession newSession() {
+        if (!(getHost().getStore() instanceof NetworkTunnelStore t)) {
+            return null;
+        }
+
         var f = LicenseProvider.get().getFeature("services");
         if (licenseRequired() && !f.isSupported()) {
             var active = DataStorage.get().getStoreEntries().stream()
@@ -78,13 +118,13 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
 
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
 
-        var parent = getHost().getStore().getNetworkParent();
-        if (!getHost().getStore().isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
+        var parent = t.getNetworkParent();
+        if (!t.isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
             return nts.createTunnelSession(
                     l, remotePort, nts.getTunnelHostName() != null ? nts.getTunnelHostName() : "localhost");
         }
 
-        return getHost().getStore().createTunnelSession(l, remotePort, "localhost");
+        return t.createTunnelSession(l, remotePort, "localhost");
     }
 
     @Override

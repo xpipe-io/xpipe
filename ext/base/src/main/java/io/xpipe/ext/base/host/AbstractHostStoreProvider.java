@@ -1,14 +1,15 @@
-package io.xpipe.ext.base.store;
+package io.xpipe.ext.base.host;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import lombok.SneakyThrows;
 
@@ -36,16 +37,46 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
         return DataStoreUsageCategory.GROUP;
     }
 
+    @Override
+    public ObservableValue<String> informationString(StoreSection section) {
+        return Bindings.createStringBinding(
+                () -> {
+                    var all = section.getAllChildren().getList();
+                    var shown = section.getShownChildren().getList();
+                    if (shown.size() == 0) {
+                        return null;
+                    }
+
+                    var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
+                    return all.size() > 0
+                            ? (all.size() == 1 ? AppI18n.get("abstractHostHasConnection", string) : AppI18n.get("abstractHostHasConnections", string))
+                            : AppI18n.get("abstractHostNoConnections");
+                },
+                section.getShownChildren().getList(),
+                section.getAllChildren().getList(),
+                AppI18n.activeLanguage());
+    }
+
     @SneakyThrows
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         AbstractHostStore st = store.getValue().asNeeded();
 
-        Property<String> host = new SimpleObjectProperty<>(st.getHost());
+        var host = new SimpleObjectProperty<>(st.getHost());
+        var gateway = new SimpleObjectProperty<>(st.getGateway());
 
         return new OptionsBuilder()
                 .nameAndDescription("abstractHostAddress")
                 .addString(host)
+                .nonNull()
+                .nameAndDescription("abstractHostGateway")
+                    .addComp(new StoreChoiceComp<>(StoreChoiceComp.Mode.PROXY,
+                        entry,
+                        gateway,
+                        NetworkTunnelStore.class,
+                        ref -> true,
+                        StoreViewState.get().getAllConnectionsCategory()
+                ), gateway)
                 .bind(
                         () -> {
                             return AbstractHostStore.builder()

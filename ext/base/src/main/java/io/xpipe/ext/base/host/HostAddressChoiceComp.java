@@ -1,4 +1,4 @@
-package io.xpipe.app.ext;
+package io.xpipe.ext.base.host;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;

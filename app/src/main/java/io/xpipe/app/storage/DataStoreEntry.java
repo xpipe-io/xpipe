@@ -673,14 +673,19 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        var newComplete = newStore.isComplete();
-        if (!newComplete) {
-            var changed = !Objects.equals(store, newStore) || validity != Validity.INCOMPLETE;
-            validity = Validity.INCOMPLETE;
-            store = newStore;
-            if (changed) {
-                notifyUpdate(false, false);
+        try {
+            var newComplete = newStore.isComplete();
+            if (!newComplete) {
+                var changed = !Objects.equals(store, newStore) || validity != Validity.INCOMPLETE;
+                validity = Validity.INCOMPLETE;
+                store = newStore;
+                if (changed) {
+                    notifyUpdate(false, false);
+                }
+                return;
             }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
             return;
         }
 
