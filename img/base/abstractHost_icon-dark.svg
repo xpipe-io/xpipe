@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.59 204.59"
+   version="1.1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs856">
+    <style
+       id="style854">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title858">ssh draft</title>
+  <path
+     class="cls-1"
+     d="M332.32,153.7H179.68a26,26,0,0,0-26,26V332.32a26,26,0,0,0,26,26H332.32a26,26,0,0,0,26-26V179.68A26,26,0,0,0,332.32,153.7Zm14,178.62a14,14,0,0,1-14,14H179.68a14,14,0,0,1-14-14V179.68a14,14,0,0,1,14-14H332.32a14,14,0,0,1,14,14Z"
+     transform="translate(-153.7 -153.7)"
+     id="path860"
+     style="fill:#479fff;fill-opacity:1" />
+  <metadata
+     id="metadata932">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>ssh draft</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+</svg>

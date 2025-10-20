@@ -5,10 +5,7 @@ import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
 import io.xpipe.ext.base.service.*;
-import io.xpipe.ext.base.store.StorePauseActionProvider;
-import io.xpipe.ext.base.store.StoreRestartActionProvider;
-import io.xpipe.ext.base.store.StoreStartActionProvider;
-import io.xpipe.ext.base.store.StoreStopActionProvider;
+import io.xpipe.ext.base.store.*;
 
 open module io.xpipe.ext.base {
     exports io.xpipe.ext.base.script;
@@ -57,7 +54,7 @@ open module io.xpipe.ext.base {
             DesktopApplicationStoreProvider,
             LocalIdentityStoreProvider,
             SyncedIdentityStoreProvider,
-            PasswordManagerIdentityStoreProvider,
+            PasswordManagerIdentityStoreProvider, AbstractHostStoreProvider,
             ScriptGroupStoreProvider;
     provides DataStorageExtensionProvider with
             ScriptDataStorageProvider;

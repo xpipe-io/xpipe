@@ -1,0 +1,83 @@
+package io.xpipe.ext.base.store;
+
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.ext.*;
+import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreEntry;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import lombok.SneakyThrows;
+
+import java.util.List;
+
+public class AbstractHostStoreProvider implements DataStoreProvider {
+
+    @Override
+    public int getOrderPriority() {
+        return 2;
+    }
+
+    @Override
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
+    }
+
+    @Override
+    public DataStoreCreationCategory getCreationCategory() {
+        return DataStoreCreationCategory.HOST;
+    }
+
+    @Override
+    public DataStoreUsageCategory getUsageCategory() {
+        return DataStoreUsageCategory.GROUP;
+    }
+
+    @SneakyThrows
+    @Override
+    public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
+        AbstractHostStore st = store.getValue().asNeeded();
+
+        Property<String> host = new SimpleObjectProperty<>(st.getHost());
+
+        return new OptionsBuilder()
+                .bind(
+                        () -> {
+                            return AbstractHostStore.builder()
+                                    .host(host.getValue())
+                                    .build();
+                        },
+                        store)
+                .buildDialog();
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        AbstractHostStore scriptStore =
+                wrapper.getEntry().getStore().asNeeded();
+        return scriptStore.getHost();
+    }
+
+    @Override
+    public String getDisplayIconFileName(DataStore store) {
+        return "base:abstractHost_icon.svg";
+    }
+
+    @Override
+    public DataStore defaultStore(DataStoreCategory category) {
+        return AbstractHostStore.builder().build();
+    }
+
+    @Override
+    public String getId() {
+        return "abstractHost";
+    }
+
+    @Override
+    public List<Class<?>> getStoreClasses() {
+        return List.of(AbstractHostStore.class);
+    }
+}
