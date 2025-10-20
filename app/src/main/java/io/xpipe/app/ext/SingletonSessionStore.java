@@ -8,10 +8,6 @@ public interface SingletonSessionStore<T extends Session>
         stopSessionIfNeeded();
     }
 
-    default boolean supportsSession() {
-        return true;
-    }
-
     default boolean isSessionRunning() {
         return getCache("sessionRunning", Boolean.class, false);
     }

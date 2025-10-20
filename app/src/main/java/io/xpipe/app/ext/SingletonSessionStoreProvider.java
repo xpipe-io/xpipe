@@ -33,7 +33,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();
-                    if (!s.supportsSession()) {
+                    if (!supportsSession(s)) {
                         return SystemStateComp.State.SUCCESS;
                     }
 
@@ -80,7 +80,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         t.setCustomVisibility(Bindings.createBooleanBinding(
                 () -> {
                     SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
-                    return s.supportsSession() && (showToggleWhenInactive(sec.getWrapper().getStore().getValue()) || s.isSessionEnabled());
+                    return supportsSession(s) && (showToggleWhenInactive(s) || s.isSessionEnabled());
                 },
                 sec.getWrapper().getCache()));
 
@@ -88,7 +88,11 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return t;
     }
 
-    default boolean showToggleWhenInactive(DataStore store) {
+    default boolean showToggleWhenInactive(SingletonSessionStore<?> store) {
+        return true;
+    }
+
+    default boolean supportsSession(SingletonSessionStore<?> store) {
         return true;
     }
 }

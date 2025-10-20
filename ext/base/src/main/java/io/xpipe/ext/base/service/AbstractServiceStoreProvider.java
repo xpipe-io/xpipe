@@ -2,10 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreUsageCategory;
-import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -28,6 +25,14 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SERVICES;
+    }
+
+    @Override
+    public boolean supportsSession(SingletonSessionStore<?> s) {
+        var abs = (AbstractServiceStore) s;
+        return abs.getHost() == null
+                || !abs.getHost().getStore().requiresTunnel()
+                || !abs.getHost().getStore().isLocallyTunnelable();
     }
 
     @Override
@@ -96,7 +101,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public boolean showToggleWhenInactive(DataStore store) {
+    public boolean showToggleWhenInactive(SingletonSessionStore<?> store) {
         return false;
     }
 

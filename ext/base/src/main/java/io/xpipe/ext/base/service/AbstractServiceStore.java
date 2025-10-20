@@ -31,12 +31,6 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         return true;
     }
 
-    @Override
-    public boolean supportsSession() {
-        return getHost() == null
-                || !getHost().getStore().requiresTunnel()
-                || !getHost().getStore().isLocallyTunnelable();
-    }
 
     @Override
     public void checkComplete() throws Throwable {
