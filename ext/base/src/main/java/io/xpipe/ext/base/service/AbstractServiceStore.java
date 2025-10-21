@@ -10,6 +10,7 @@ import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
 
+import io.xpipe.ext.base.host.HostAddressStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -20,36 +21,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode
 @ToString
 public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
-
-    public static boolean requiresTunnel(NetworkTunnelStore t) {
-        if (!t.isLocallyTunnelable()) {
-            var parent = t.getNetworkParent();
-            if (!(parent instanceof NetworkTunnelStore nts)) {
-                return false;
-            }
-
-            return nts.requiresTunnel();
-        }
-
-        return t.requiresTunnel();
-    }
-
-    public static boolean requiresManualAddress(DataStore s) {
-        if (!(s instanceof NetworkTunnelStore t)) {
-            return true;
-        }
-
-        if (!t.isLocallyTunnelable()) {
-            var parent = t.getNetworkParent();
-            if (!(parent instanceof NetworkTunnelStore nts)) {
-                return false;
-            }
-
-            return nts.requiresTunnel();
-        }
-
-        return t.requiresTunnel();
-    }
 
     private final Integer remotePort;
     private final Integer localPort;
@@ -81,6 +52,15 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     }
 
     public boolean requiresTunnel() {
+        if (getAddress() != null) {
+            var gateway = getGateway();
+            if (gateway != null) {
+                return gateway.getStore().requiresTunnel();
+            } else {
+                return false;
+            }
+        }
+
         if (getHost() == null || !(getHost().getStore() instanceof NetworkTunnelStore t)) {
             return false;
         }
@@ -92,15 +72,30 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
             }
 
             return nts.requiresTunnel();
+        } else {
+            return t.requiresTunnel();
         }
-
-        return t.requiresTunnel();
     }
 
     @Override
     public NetworkTunnelSession newSession() {
-        if (!(getHost().getStore() instanceof NetworkTunnelStore t)) {
-            return null;
+        if (getAddress() != null) {
+            if (getGateway() == null || !getGateway().getStore().isLocallyTunnelable()) {
+                return null;
+            }
+        }
+
+        if (getHost() != null) {
+            if (!(getHost().getStore() instanceof NetworkTunnelStore t)) {
+                return null;
+            }
+
+            if (!t.isLocallyTunnelable()) {
+                var parent = t.getNetworkParent();
+                if (!(parent instanceof NetworkTunnelStore)) {
+                    return null;
+                }
+            }
         }
 
         var f = LicenseProvider.get().getFeature("services");
@@ -118,10 +113,16 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
 
         var l = localPort != null ? localPort : HostHelper.findRandomOpenPortOnAllLocalInterfaces();
 
+        if (getAddress() != null) {
+            var gateway = getGateway();
+            return gateway.getStore().createTunnelSession(l, remotePort, getAddress());
+        }
+
+        var t = (NetworkTunnelStore) getHost().getStore();
         var parent = t.getNetworkParent();
         if (!t.isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
             return nts.createTunnelSession(
-                    l, remotePort, nts.getTunnelHostName() != null ? nts.getTunnelHostName() : "localhost");
+                    l, remotePort, t.getTunnelHostName() != null ? t.getTunnelHostName() : "localhost");
         }
 
         return t.createTunnelSession(l, remotePort, "localhost");

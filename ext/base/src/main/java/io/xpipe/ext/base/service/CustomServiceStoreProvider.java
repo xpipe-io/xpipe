@@ -69,7 +69,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
 
         var hostChoice = new StoreComboChoiceComp<>(
-                hostStore -> hostStore.getHostAddress().get(),
+                hostStore -> hostStore instanceof AbstractHostStore a ? a.getHostAddress().get() : hostStore instanceof NetworkTunnelStore t ? t.getTunnelHostName() : "?",
                 entry,
                 comboHost,
                 NetworkTunnelStore.class,

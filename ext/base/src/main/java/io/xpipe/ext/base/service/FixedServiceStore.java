@@ -7,6 +7,7 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.host.HostAddressStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

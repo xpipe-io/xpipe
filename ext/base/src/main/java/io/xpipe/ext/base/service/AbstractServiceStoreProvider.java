@@ -10,9 +10,11 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.FailableRunnable;
 
+import io.xpipe.ext.base.host.AbstractHostStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
@@ -30,19 +32,37 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public boolean supportsSession(SingletonSessionStore<?> s) {
         var abs = (AbstractServiceStore) s;
-        if (abs.getHost() != null && (!(abs.getHost().getStore() instanceof NetworkTunnelStore t)
-                || !t.requiresTunnel()
-                || !t.isLocallyTunnelable())) {
-            return false;
+        if (abs.getAddress() != null) {
+            return abs.getGateway() != null && abs.getGateway().getStore().isLocallyTunnelable() && abs.getGateway().getStore().requiresTunnel();
         }
 
-        if (abs.getHost() == null && (abs.getGateway() == null ||
-                !abs.getGateway().getStore().isLocallyTunnelable() || !abs.getGateway().getStore().requiresTunnel())) {
-            return false;
+        if (abs.getHost() != null) {
+            if (abs.getHost().getStore() instanceof AbstractHostStore a) {
+                return a.getGateway() != null && a.getGateway().getStore().requiresTunnel() && a.getGateway().getStore().isLocallyTunnelable();
+            }
+
+            if (abs.getHost().getStore() instanceof NetworkTunnelStore t) {
+                if (!t.requiresTunnel()) {
+                    return false;
+                }
+
+                if (t.isLocallyTunnelable()) {
+                    return true;
+                }
+
+                var parent = t.getNetworkParent();
+                if (!t.isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
+                    return nts.isLocallyTunnelable();
+                }
+
+                return false;
+            }
         }
 
-        return true;
+        return false;
     }
+
+
 
     @Override
     public FailableRunnable<Exception> launch(DataStoreEntry store) {
@@ -62,9 +82,15 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public List<String> getSearchableTerms(DataStore store) {
         AbstractServiceStore s = store.asNeeded();
-        return s.getLocalPort() != null
-                ? List.of("" + s.getRemotePort(), "" + s.getLocalPort())
-                : List.of("" + s.getRemotePort());
+        var l = new ArrayList<String>();
+        l.add("" + s.getRemotePort());
+        if (s.getLocalPort() != null) {
+            l.add("" + s.getLocalPort());
+        }
+        if (s.getAddress() != null) {
+            l.add(s.getAddress());
+        }
+        return l;
     }
 
     @Override
@@ -107,11 +133,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public String getDisplayIconFileName(DataStore store) {
         return "base:service_icon.svg";
-    }
-
-    @Override
-    public boolean showToggleWhenInactive(SingletonSessionStore<?> store) {
-        return false;
     }
 
     @Override

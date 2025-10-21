@@ -22,7 +22,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 public final class CustomServiceStore extends AbstractServiceStore implements AbstractHostTransformStore {
 
-    private final DataStoreEntryRef<HostAddressStore> host;
+    private final DataStoreEntryRef<DataStore> host;
     private final String address;
     private final DataStoreEntryRef<NetworkTunnelStore> gateway;
 
