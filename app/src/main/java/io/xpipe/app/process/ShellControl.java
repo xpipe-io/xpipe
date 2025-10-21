@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 
 public interface ShellControl extends ProcessControl {
 
+    void setExitTimeout(int timeout);
+
     void setUser(String user);
 
     boolean isExiting();

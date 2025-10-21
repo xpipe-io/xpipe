@@ -87,6 +87,11 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
+    public void setExitTimeout(int timeout) {
+        parent.setExitTimeout(timeout);
+    }
+
+    @Override
     public void setUser(String user) {
         parent.setUser(user);
     }
