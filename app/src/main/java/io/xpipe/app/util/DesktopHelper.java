@@ -10,6 +10,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -20,35 +21,25 @@ public class DesktopHelper {
     };
 
     public static void openUrl(String uri) {
-        try {
-            if (OsType.ofLocal() == OsType.WINDOWS) {
-                var pb = new ProcessBuilder("rundll32", "url.dll,FileProtocolHandler", uri);
-                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
-                pb.redirectErrorStream(true);
-                pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-                pb.start();
-            } else if (OsType.ofLocal() == OsType.LINUX) {
-                String browser = null;
-                for (String b : browsers) {
-                    if (browser == null
-                            && Runtime.getRuntime()
-                                            .exec(new String[] {"which", b})
-                                            .getInputStream()
-                                            .read()
-                                    != -1) {
-                        Runtime.getRuntime().exec(new String[] {browser = b, uri});
-                    }
-                }
-            } else {
-                var pb = new ProcessBuilder("open", uri);
-                pb.directory(AppSystemInfo.ofCurrent().getUserHome().toFile());
-                pb.redirectErrorStream(true);
-                pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-                pb.start();
-            }
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+        if (uri == null) {
+            return;
         }
+
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            return;
+        }
+
+        URI parsed;
+        try {
+            parsed = URI.create(uri);
+        } catch (IllegalArgumentException e) {
+            ErrorEventFactory.fromThrowable("Invalid URI: " + uri, e.getCause() != null ? e.getCause() : e).handle();
+            return;
+        }
+
+        ThreadHelper.runFailableAsync(() -> {
+            Desktop.getDesktop().browse(parsed);
+        });
     }
 
     public static void browsePathRemote(ShellControl sc, FilePath path, FileKind kind) throws Exception {
