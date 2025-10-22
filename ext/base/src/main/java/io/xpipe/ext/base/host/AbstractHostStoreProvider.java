@@ -81,6 +81,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                         () -> {
                             return AbstractHostStore.builder()
                                     .host(host.getValue())
+                                    .gateway(gateway.getValue())
                                     .build();
                         },
                         store)

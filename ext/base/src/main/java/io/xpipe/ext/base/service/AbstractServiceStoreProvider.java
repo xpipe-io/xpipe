@@ -11,6 +11,7 @@ import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.FailableRunnable;
 
 import io.xpipe.ext.base.host.AbstractHostStore;
+import io.xpipe.ext.base.host.HostAddressGatewayStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -37,7 +38,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
         }
 
         if (abs.getHost() != null) {
-            if (abs.getHost().getStore() instanceof AbstractHostStore a) {
+            if (abs.getHost().getStore() instanceof HostAddressGatewayStore a) {
                 return a.getGateway() != null && a.getGateway().getStore().requiresTunnel() && a.getGateway().getStore().isLocallyTunnelable();
             }
 
@@ -51,7 +52,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                 }
 
                 var parent = t.getNetworkParent();
-                if (!t.isLocallyTunnelable() && parent instanceof NetworkTunnelStore nts) {
+                if (!t.isLocallyTunnelable() && parent.getStore() instanceof NetworkTunnelStore nts) {
                     return nts.isLocallyTunnelable();
                 }
 

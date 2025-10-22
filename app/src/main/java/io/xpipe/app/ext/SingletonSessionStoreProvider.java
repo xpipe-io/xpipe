@@ -82,7 +82,8 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
                     SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
                     return supportsSession(s) && (showToggleWhenInactive(s) || s.isSessionEnabled());
                 },
-                sec.getWrapper().getCache()));
+                sec.getWrapper().getCache(),
+                enabled));
 
         t.tooltipKey("enabled");
         return t;
