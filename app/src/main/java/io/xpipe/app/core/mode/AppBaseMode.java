@@ -113,6 +113,8 @@ public class AppBaseMode extends AppOperationMode {
                     shellLoaded.await();
                     DataStorageSyncHandler.getInstance().init();
                     if (DataStorageSyncHandler.getInstance().supportsSync()) {
+                        AppMainWindow.loadingText("loadingGpg");
+                        DataStorageSyncHandler.getInstance().prepareGpgIfNeeded();
                         AppMainWindow.loadingText("loadingGit");
                     }
                     DataStorageSyncHandler.getInstance().retrieveSyncedData();
