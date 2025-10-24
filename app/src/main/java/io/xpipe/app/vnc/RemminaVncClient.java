@@ -31,15 +31,13 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
     public void launch(VncLaunchConfig configuration) throws Exception {
         var pw = configuration.retrievePassword();
         var encrypted = pw.isPresent() ? RemminaHelper.encryptPassword(pw.get()) : Optional.<String>empty();
-        if (encrypted.isPresent()) {
-            var file = RemminaHelper.writeRemminaVncConfigFile(configuration, encrypted.get());
-            launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-            ThreadHelper.runFailableAsync(() -> {
-                ThreadHelper.sleep(5000);
-                FileUtils.deleteQuietly(file.toFile());
-            });
-        }
-    }
+        var file = RemminaHelper.writeRemminaVncConfigFile(configuration, encrypted.orElse(null));
+        launch(CommandBuilder.of().add("-c").addFile(file.toString()));
+        ThreadHelper.runFailableAsync(() -> {
+            ThreadHelper.sleep(5000);
+            FileUtils.deleteQuietly(file.toFile());
+        });
+}
 
     @Override
     public boolean supportsPasswords() {
