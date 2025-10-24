@@ -7,6 +7,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
 
@@ -104,9 +105,22 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             boolean runGui = true;
             if (configuration.isPreferTabs()) {
+                CommandBuilder base;
+                if (CommandSupport.isInLocalPath("wezterm")) {
+                    base = CommandBuilder.of().addFile("wezterm");
+                } else {
+                    var flatpak = FlatpakCache.getApp("org.wezfurlong.wezterm");
+                    if (flatpak.isPresent()) {
+                        base = CommandBuilder.of().add("flatpak", "run").addQuoted("org.wezfurlong.wezterm");
+                    } else {
+                        base = CommandBuilder.of().addFile("wezterm");
+                    }
+                }
+
+
                 runGui = !LocalShell.getShell()
                         .command(CommandBuilder.of()
-                                .addFile("wezterm")
+                                .add(base)
                                 .add("cli", "spawn")
                                 .addFile(configuration.getScriptFile()))
                         .executeAndCheck();
@@ -119,7 +133,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
 
         public boolean isAvailable() {
-            try (ShellControl pc = LocalShell.getShell()) {
+            try {
                 return CommandSupport.isInLocalPath("wezterm") && CommandSupport.isInLocalPath("wezterm-gui");
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
@@ -131,6 +145,8 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public String getId() {
             return "app.wezterm";
         }
+
+
     }
 
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
