@@ -60,7 +60,7 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     private void initTable(TableView<List<SystemIcon>> table) {
-        if (SystemIconCache.isBuilt()) {
+        if (!SystemIconManager.isCacheOutdated()) {
             for (int i = 0; i < columns; i++) {
                 var col = new TableColumn<List<SystemIcon>, SystemIcon>("col" + i);
                 final int colIndex = i;
@@ -107,6 +107,11 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
+        if (SystemIconManager.isCacheOutdated()) {
+            table.getItems().clear();
+            return;
+        }
+
         var available = icons.stream()
                 .filter(systemIcon -> AppImages.hasNormalImage(
                         "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))

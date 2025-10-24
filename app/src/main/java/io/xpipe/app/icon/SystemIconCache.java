@@ -1,5 +1,7 @@
 package io.xpipe.app.icon;
 
+import com.github.weisj.jsvg.SVGRenderingHints;
+import com.github.weisj.jsvg.attributes.ViewBox;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
@@ -7,8 +9,6 @@ import io.xpipe.app.prefs.AppPrefs;
 
 import com.github.weisj.jsvg.SVGDocument;
 import com.github.weisj.jsvg.parser.SVGLoader;
-import com.github.weisj.jsvg.renderer.SVGRenderingHints;
-import com.github.weisj.jsvg.view.ViewBox;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 
@@ -27,27 +27,25 @@ public class SystemIconCache {
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[] {16, 24, 40, 80};
-    private static final int VERSION = 2;
-
-    @Getter
-    private static boolean built = false;
+    public static final int VERSION = 2;
 
     public static Path getDirectory(SystemIconSource source) {
         var target = DIRECTORY.resolve(source.getId());
         return target;
     }
 
-    public static void refreshBuilt() throws IOException {
-        if (!Files.exists(DIRECTORY)) {
-            return;
-        }
-
-        try (var stream = Files.walk(DIRECTORY)) {
-            built = stream.anyMatch(path -> Files.isRegularFile(path));
+    public static int getCacheSourceHash() {
+        try {
+            var hashFile = DIRECTORY.resolve("sourcehash");
+            var hash = Files.exists(hashFile) ? Files.readString(hashFile).strip() : null;
+            return hash != null ? Integer.parseInt(hash) : 0;
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
+            return 0;
         }
     }
 
-    public static void rebuildCache(Map<SystemIconSource, SystemIconSourceData> all) {
+    public static void rebuildCache(Map<SystemIconSource, SystemIconSourceData> all, int sourceHash) {
         try {
             var versionFile = DIRECTORY.resolve("version");
             var version =
@@ -60,6 +58,9 @@ public class SystemIconCache {
                 }
                 Files.writeString(versionFile, String.valueOf(VERSION));
             }
+
+            var hashFile = DIRECTORY.resolve("sourcehash");
+            Files.writeString(hashFile, String.valueOf(sourceHash));
 
             for (var e : all.entrySet()) {
                 var target = DIRECTORY.resolve(e.getKey().getId());
