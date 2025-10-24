@@ -2,6 +2,7 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 
 import java.util.Arrays;
@@ -51,6 +52,10 @@ public class ExternalApplicationHelper {
 
     public static void startAsync(CommandBuilder b) throws Exception {
         try (var sc = LocalShell.getShell().start()) {
+            var base = b.buildBaseParts(sc);
+            var exec = base.getFirst();
+            CommandSupport.isInPathOrThrow(sc, exec);
+
             var cmd = sc.getShellDialect().launchAsnyc(b);
             TrackEvent.withDebug("Executing local application")
                     .tag("command", b.buildFull(sc))
