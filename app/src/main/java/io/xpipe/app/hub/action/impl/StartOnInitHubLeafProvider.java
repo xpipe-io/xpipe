@@ -51,11 +51,12 @@ public class StartOnInitHubLeafProvider implements HubLeafProvider<StartOnInitSt
     public static class Action extends StoreAction<StartOnInitStore> {
 
         @Override
-        public void executeImpl() {
+        public void executeImpl() throws Exception {
             if (ref.getStore().isEnabled()) {
                 ref.getStore().disable();
             } else {
                 ref.getStore().enable();
+                ref.getStore().startOnInit();
             }
         }
     }

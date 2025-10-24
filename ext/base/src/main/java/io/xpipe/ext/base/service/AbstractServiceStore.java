@@ -1,9 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.NetworkTunnelSession;
-import io.xpipe.app.ext.NetworkTunnelStore;
-import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HostHelper;
@@ -22,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @EqualsAndHashCode
 @ToString
-public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore {
+public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore, StartOnInitStore {
 
     private final Integer remotePort;
     private final Integer localPort;
@@ -170,5 +167,10 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
     @Override
     public Class<?> getSessionClass() {
         return NetworkTunnelSession.class;
+    }
+
+    @Override
+    public void startOnInit() throws Exception {
+        startSessionIfNeeded();
     }
 }
