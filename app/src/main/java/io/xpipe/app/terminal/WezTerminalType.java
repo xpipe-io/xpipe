@@ -104,19 +104,18 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             boolean runGui = true;
+            var flatpak = FlatpakCache.getApp("org.wezfurlong.wezterm");
             if (configuration.isPreferTabs()) {
                 CommandBuilder base;
                 if (CommandSupport.isInLocalPath("wezterm")) {
                     base = CommandBuilder.of().addFile("wezterm");
                 } else {
-                    var flatpak = FlatpakCache.getApp("org.wezfurlong.wezterm");
                     if (flatpak.isPresent()) {
                         base = CommandBuilder.of().add("flatpak", "run").addQuoted("org.wezfurlong.wezterm");
                     } else {
                         base = CommandBuilder.of().addFile("wezterm");
                     }
                 }
-
 
                 runGui = !LocalShell.getShell()
                         .command(CommandBuilder.of()
@@ -127,8 +126,18 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
             }
 
             if (runGui) {
+                CommandBuilder base;
+                if (CommandSupport.isInLocalPath("wezterm-gui")) {
+                    base = CommandBuilder.of().addFile("wezterm-gui");
+                } else {
+                    if (flatpak.isPresent()) {
+                        base = CommandBuilder.of().add("flatpak", "run").addQuoted("org.wezfurlong.wezterm");
+                    } else {
+                        base = CommandBuilder.of().addFile("wezterm-gui");
+                    }
+                }
                 ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
+                        CommandBuilder.of().add(base).add("start").addFile(configuration.getScriptFile()));
             }
         }
 
