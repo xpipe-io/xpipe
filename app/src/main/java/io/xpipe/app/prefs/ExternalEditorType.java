@@ -462,7 +462,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
 
-    LinuxPathType MOUSEPAD = new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
+    LinuxType MOUSEPAD = new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
     ExternalEditorType TEXT_EDIT =
@@ -543,7 +543,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             VSCODE_WINDOWS,
             NOTEPADPLUSPLUS,
             NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(
+    List<GenericPathType> LINUX_EDITORS = List.of(
             ExternalEditorType.WINDSURF_LINUX,
             ExternalEditorType.KIRO_LINUX,
             VSCODIUM_LINUX,
