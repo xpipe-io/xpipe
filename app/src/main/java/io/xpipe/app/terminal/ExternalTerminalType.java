@@ -131,40 +131,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
-    ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://codeberg.org/dnkl/foot";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public boolean supportsEscapes() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("--title")
-                    .addQuoted(configuration.getColoredTitle())
-                    .addFile(configuration.getScriptFile());
-        }
-    };
+    ExternalTerminalType FOOT = new FootTerminalType();
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
 
         @Override

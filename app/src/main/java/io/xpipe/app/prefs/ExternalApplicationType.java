@@ -140,7 +140,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
             try (ShellControl pc = LocalShell.getShell()) {
                 args.add(0, "flatpak", "run", "\"" + getFlatpakId() + "\"");
-                pc.executeSimpleCommand(args);
+                pc.command(args).execute();
             }
         }
     }

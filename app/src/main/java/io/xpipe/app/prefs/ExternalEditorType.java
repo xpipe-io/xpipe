@@ -4,6 +4,7 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.process.LocalShell;
@@ -461,7 +462,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
 
-    LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start");
+    LinuxPathType MOUSEPAD = new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
     ExternalEditorType TEXT_EDIT =
@@ -727,6 +728,34 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public boolean isSelectable() {
             return OsType.ofLocal() == OsType.LINUX;
+        }
+    }
+
+    class LinuxType extends GenericPathType implements ExternalApplicationType.LinuxApplication {
+
+        private final String flatpakId;
+
+        public LinuxType(String id, String executable, String website, String flatpakId) {
+            super(id, executable, true, website);
+            this.flatpakId = flatpakId;
+        }
+
+        @Override
+        public void launch(Path file) throws Exception {
+            var exec = CommandSupport.isInLocalPath(getExecutable()) || getFlatpakId() == null ?
+                    CommandBuilder.of().addFile(getExecutable()) :
+                    CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId());
+            var builder = CommandBuilder.of().add(exec).addFile(file.toString());
+            if (detach()) {
+                ExternalApplicationHelper.startAsync(builder);
+            } else {
+                LocalShell.getShell().executeSimpleCommand(builder);
+            }
+        }
+
+        @Override
+        public String getFlatpakId() throws Exception {
+            return flatpakId;
         }
     }
 }
