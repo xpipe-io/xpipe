@@ -73,7 +73,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")
-    public static class Linux extends TigerVncClient implements ExternalApplicationType.PathApplication {
+    public static class Linux extends TigerVncClient implements ExternalApplicationType.LinuxApplication {
 
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
@@ -106,6 +106,11 @@ public abstract class TigerVncClient implements ExternalVncClient {
         @Override
         public boolean detach() {
             return true;
+        }
+
+        @Override
+        public String getFlatpakId() throws Exception {
+            return "org.tigervnc.vncviewer";
         }
     }
 

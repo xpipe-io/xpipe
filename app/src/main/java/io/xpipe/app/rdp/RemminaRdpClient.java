@@ -16,7 +16,7 @@ import java.util.*;
 @Value
 @Jacksonized
 @Builder
-public class RemminaRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
+public class RemminaRdpClient implements ExternalApplicationType.LinuxApplication, ExternalRdpClient {
 
     private List<String> toStrip() {
         return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
@@ -67,5 +67,10 @@ public class RemminaRdpClient implements ExternalApplicationType.PathApplication
     @Override
     public String getId() {
         return "app.remmina";
+    }
+
+    @Override
+    public String getFlatpakId() throws Exception {
+        return "org.remmina.Remmina";
     }
 }

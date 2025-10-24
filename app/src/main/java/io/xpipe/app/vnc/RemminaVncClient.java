@@ -15,7 +15,7 @@ import java.util.Optional;
 @Builder
 @Jacksonized
 @JsonTypeName("remmina")
-public class RemminaVncClient implements ExternalApplicationType.PathApplication, ExternalVncClient {
+public class RemminaVncClient implements ExternalApplicationType.LinuxApplication, ExternalVncClient {
 
     @Override
     public String getExecutable() {
@@ -49,5 +49,10 @@ public class RemminaVncClient implements ExternalApplicationType.PathApplication
     @Override
     public String getWebsite() {
         return "https://remmina.org/";
+    }
+
+    @Override
+    public String getFlatpakId() throws Exception {
+        return "org.remmina.Remmina";
     }
 }
