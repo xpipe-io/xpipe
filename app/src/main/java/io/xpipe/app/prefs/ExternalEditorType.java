@@ -751,7 +751,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            if (CommandSupport.isInLocalPath(getExecutable()) || getFlatpakId() == null) {
+            if (CommandSupport.isInLocalPath(getExecutable())) {
                 var builder = CommandBuilder.of().add(getExecutable()).addFile(file.toString());
                 if (detach()) {
                     ExternalApplicationHelper.startAsync(builder);
@@ -759,6 +759,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     LocalShell.getShell().command(builder).execute();
                 }
             } else {
+                if (flatpakId == null || FlatpakCache.getApp(flatpakId).isEmpty()) {
+                    CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
+                }
+
                 var builder = CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId()).addFile(file.toString());
                 ExternalApplicationHelper.startAsync(builder);
             }
