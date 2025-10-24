@@ -5,6 +5,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -20,18 +21,34 @@ public class FreeRdpClient implements ExternalRdpClient {
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        var v3 = LocalShell.getShell().view().findProgram("xfreerdp3");
-        if (v3.isEmpty()) {
-            CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp", "xfreerdp", DataStorage.get().local());
+        CommandBuilder exec;
+        var v3 = CommandSupport.isInLocalPath("xfreerdp3");
+        if (!v3) {
+            var v2 = CommandSupport.isInLocalPath("xfreerdp");
+            if (!v2 && OsType.ofLocal() == OsType.LINUX) {
+                var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
+                if (flatpak.isPresent()) {
+                    exec = CommandBuilder.of().add("flatpak", "run").addQuoted("com.freerdp.FreeRDP");
+                    v3 = true;
+                } else {
+                    CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
+                    exec = CommandBuilder.of().add("xfreerdp");
+                }
+            } else {
+                CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
+                exec = CommandBuilder.of().add("xfreerdp");
+                // macOS uses xfreerdp3 by default
+                v3 = true;
+            }
+        } else {
+            exec = CommandBuilder.of().add("xfreerdp3");
         }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
-        // macOS uses xfreerdp3 by default
-        var isV3Executable = v3.isPresent() || OsType.ofLocal() == OsType.MACOS;
         var b = CommandBuilder.of()
-                .add(v3.isPresent() ? "xfreerdp3" : "xfreerdp")
+                .add(exec)
                 .addFile(file.toString())
-                .add(isV3Executable ? "/cert:ignore" : "/cert-ignore")
+                .add(v3 ? "/cert:ignore" : "/cert-ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")
