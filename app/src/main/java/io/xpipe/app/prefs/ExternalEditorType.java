@@ -393,12 +393,15 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code", "https://code.visualstudio.com/") {
+    LinuxType VSCODE_LINUX = new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
         @Override
         public void launch(Path file) throws Exception {
+            var exec = CommandSupport.isInLocalPath(getExecutable()) || getFlatpakId() == null ?
+                    CommandBuilder.of().addFile(getExecutable()) :
+                    CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId());
             var builder = CommandBuilder.of()
                     .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
-                    .addFile(getExecutable())
+                    .add(exec)
                     .addFile(file.toString());
             ExternalApplicationHelper.startAsync(builder);
         }
@@ -448,17 +451,17 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed", "https://zed.dev/");
+    LinuxType ZED_LINUX = new LinuxType("app.zed", "zed", "https://zed.dev/", "dev.zed.Zed");
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
 
-    LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium", "https://vscodium.com/");
+    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium");
 
-    LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor", "https://vscodium.com/");
+    LinuxType GNOME = new LinuxType("app.gnomeTextEditor", "gnome-text-editor", "LinuxType", "org.gnome.TextEditor");
 
-    LinuxPathType KATE = new LinuxPathType("app.kate", "kate", "https://kate-editor.org");
+    LinuxType KATE = new LinuxType("app.kate", "kate", "https://kate-editor.org", "org.kde.kate");
 
-    LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit", "https://gedit-text-editor.org/");
+    LinuxType GEDIT = new LinuxType("app.gedit", "gedit", "https://gedit-text-editor.org/", "org.gnome.gedit");
 
     LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
 
@@ -742,14 +745,16 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public void launch(Path file) throws Exception {
-            var exec = CommandSupport.isInLocalPath(getExecutable()) || getFlatpakId() == null ?
-                    CommandBuilder.of().addFile(getExecutable()) :
-                    CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId());
-            var builder = CommandBuilder.of().add(exec).addFile(file.toString());
-            if (detach()) {
-                ExternalApplicationHelper.startAsync(builder);
+            if (CommandSupport.isInLocalPath(getExecutable()) || getFlatpakId() == null) {
+                var builder = CommandBuilder.of().add(getExecutable()).addFile(file.toString());
+                if (detach()) {
+                    ExternalApplicationHelper.startAsync(builder);
+                } else {
+                    LocalShell.getShell().command(builder).execute();
+                }
             } else {
-                LocalShell.getShell().executeSimpleCommand(builder);
+                var builder = CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId()).addFile(file.toString());
+                ExternalApplicationHelper.startAsync(builder);
             }
         }
 
