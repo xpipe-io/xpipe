@@ -401,7 +401,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     CommandBuilder.of().addFile(getExecutable()) :
                     CommandBuilder.of().add("flatpak", "run").addQuoted(getFlatpakId());
 
-            if (FlatpakCache.getApp(getId()).isEmpty()) {
+            if (FlatpakCache.getApp(getFlatpakId()).isEmpty()) {
                 CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
             }
 
