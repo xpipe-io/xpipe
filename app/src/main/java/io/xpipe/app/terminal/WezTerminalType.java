@@ -111,7 +111,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     base = CommandBuilder.of().addFile("wezterm");
                 } else {
                     if (flatpak.isPresent()) {
-                        base = CommandBuilder.of().add("flatpak", "run").addQuoted("org.wezfurlong.wezterm");
+                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
                     } else {
                         base = CommandBuilder.of().addFile("wezterm");
                     }
@@ -131,7 +131,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     base = CommandBuilder.of().addFile("wezterm-gui");
                 } else {
                     if (flatpak.isPresent()) {
-                        base = CommandBuilder.of().add("flatpak", "run").addQuoted("org.wezfurlong.wezterm");
+                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
                     } else {
                         base = CommandBuilder.of().addFile("wezterm-gui");
                     }

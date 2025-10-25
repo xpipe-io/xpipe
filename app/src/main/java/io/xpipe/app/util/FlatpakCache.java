@@ -42,6 +42,9 @@ public class FlatpakCache {
     }
 
     public static CommandBuilder runCommand(String id) throws Exception {
-        return CommandBuilder.of().add("flatpak", "run").addQuoted(id).add("--filesystem=" + AppSystemInfo.ofLinux().getTemp());
+        return CommandBuilder.of().add("flatpak", "run")
+                .add("--filesystem=" + AppSystemInfo.ofLinux().getTemp())
+                .add("--filesystem=host")
+                .addQuoted(id);
     }
 }
