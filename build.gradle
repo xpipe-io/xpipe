@@ -198,6 +198,7 @@ project.ext {
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
     ci = System.getenv('CI') != null
     obfuscate = true
+    fullVersion = file("$rootDir/private_files.txt").exists()
     bundleCds = ci && fullVersion
 
     // Names
@@ -241,7 +242,6 @@ project.ext {
             .filter(s -> file("$rootDir/ext/$s/build.gradle").exists())
             .filter(s -> s != 'base')
             .map(l -> project(":$l"))).toList()
-    fullVersion = file("$rootDir/private_files.txt").exists()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
 
     // Build config
