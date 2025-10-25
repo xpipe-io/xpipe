@@ -3,6 +3,7 @@ package io.xpipe.app.core;
 import com.sun.jna.platform.win32.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.OsType;
 
 import java.nio.file.Files;
@@ -245,9 +246,20 @@ public abstract class AppSystemInfo {
 
         private Path downloads;
         private Path desktop;
+        private Boolean vm;
 
         public boolean isDebianBased() {
             return Files.exists(Path.of("/etc/debian_version"));
+        }
+
+        public boolean isVirtualMachine() {
+            if (vm != null) {
+                return vm;
+            }
+
+            var out = LocalExec.readStdoutIfPossible("cat", "/proc/cpuinfo");
+            vm = out.map(s -> s.contains("hypervisor")).orElse(false);
+            return vm;
         }
 
         @Override
