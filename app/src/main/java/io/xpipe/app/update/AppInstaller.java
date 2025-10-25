@@ -2,11 +2,11 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

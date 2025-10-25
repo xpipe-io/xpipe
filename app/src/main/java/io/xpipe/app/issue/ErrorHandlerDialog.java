@@ -7,13 +7,13 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
-
 import io.xpipe.app.util.Deobfuscator;
-import javafx.application.Platform;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -99,5 +99,4 @@ public class ErrorHandlerDialog {
 
         return new Region();
     }
-
 }

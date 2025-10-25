@@ -1,39 +1,22 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ComboTextFieldComp;
-import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.StringProperty;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -45,12 +28,12 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
     public static class ComboValue<T extends DataStore> {
 
         public static <T extends DataStore> ComboValue<T> of(String manualHost, DataStoreEntryRef<T> ref) {
-            var manualNull = manualHost == null ||  manualHost.isEmpty();
+            var manualNull = manualHost == null || manualHost.isEmpty();
             if (manualNull && ref == null) {
                 return null;
             }
 
-            return manualNull ? new ComboValue<>(null, ref) :  new ComboValue<>(manualHost, null);
+            return manualNull ? new ComboValue<>(null, ref) : new ComboValue<>(manualHost, null);
         }
 
         String manualHost;
@@ -71,7 +54,8 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
         this.stringConverter = stringConverter;
         this.selected = selected;
 
-        var popoverProp = new SimpleObjectProperty<>(selected.getValue() != null ? selected.getValue().getRef() : null);
+        var popoverProp = new SimpleObjectProperty<>(
+                selected.getValue() != null ? selected.getValue().getRef() : null);
         popoverProp.subscribe(tDataStoreEntryRef -> {
             if (tDataStoreEntryRef != null) {
                 selected.setValue(new ComboValue<>(null, tDataStoreEntryRef));
@@ -87,7 +71,9 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
                 self, popoverProp, storeClass, applicableCheck, initialCategory, "selectConnection");
 
         this.selected.addListener((v, o, n) -> {
-            TrackEvent.withTrace("Store combo choice value changed").tag("value", n).handle();
+            TrackEvent.withTrace("Store combo choice value changed")
+                    .tag("value", n)
+                    .handle();
         });
     }
 
@@ -96,7 +82,10 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
             return null;
         }
 
-        return entry.getName() + (stringConverter != null ? " [" + stringConverter.apply(entry.getStore().asNeeded()) + "]" : "");
+        return entry.getName()
+                + (stringConverter != null
+                        ? " [" + stringConverter.apply(entry.getStore().asNeeded()) + "]"
+                        : "");
     }
 
     @Override

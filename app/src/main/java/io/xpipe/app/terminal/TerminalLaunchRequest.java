@@ -2,10 +2,10 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ProcessControl;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
-import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.core.FilePath;

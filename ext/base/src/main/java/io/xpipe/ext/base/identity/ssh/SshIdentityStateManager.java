@@ -1,8 +1,5 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.sun.jna.Memory;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinBase;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -12,7 +9,10 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
-import java.nio.file.Files;
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
+
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 

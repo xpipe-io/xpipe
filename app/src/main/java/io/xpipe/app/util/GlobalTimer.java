@@ -47,16 +47,18 @@ public class GlobalTimer {
 
     private static void schedule(TimerTask task, long delay) {
         try {
-            TIMER.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        task.run();
-                    } catch (Throwable t) {
-                        ErrorEventFactory.fromThrowable(t).handle();
-                    }
-                }
-            }, delay);
+            TIMER.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                task.run();
+                            } catch (Throwable t) {
+                                ErrorEventFactory.fromThrowable(t).handle();
+                            }
+                        }
+                    },
+                    delay);
         } catch (IllegalStateException e) {
             // The timer might be shutdown already
             ErrorEventFactory.fromThrowable(e).omit().expected().handle();

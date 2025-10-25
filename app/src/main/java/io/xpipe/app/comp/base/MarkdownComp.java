@@ -9,8 +9,8 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.MarkdownHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.process.ShellTemp;
+import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;

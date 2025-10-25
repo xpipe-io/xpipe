@@ -7,7 +7,6 @@ import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;

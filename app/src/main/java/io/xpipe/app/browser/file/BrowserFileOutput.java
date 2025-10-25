@@ -76,7 +76,7 @@ public interface BrowserFileOutput {
             }
 
             var userOwned = info.getUid() != null
-                    && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
+                            && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
                     || info.getUser() != null && sc.view().user().equals(info.getUser());
             var userWrite = info.getPermissions().charAt(1) == 'w';
             if (userOwned && userWrite) {
@@ -98,11 +98,11 @@ public interface BrowserFileOutput {
         var sc = shell.isEmpty()
                 ? null
                 : elevate
-                ? shell.orElseThrow()
-                .identicalDialectSubShell()
-                .elevated(ElevationFunction.elevated(null))
-                .start()
-                : model.getFileSystem().getShell().orElseThrow().start();
+                        ? shell.orElseThrow()
+                                .identicalDialectSubShell()
+                                .elevated(ElevationFunction.elevated(null))
+                                .start()
+                        : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
         var checkSudoersFile = shell.isPresent() && file.getPath().startsWith("/etc/sudo");
         var output = new BrowserFileOutput() {

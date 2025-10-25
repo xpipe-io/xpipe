@@ -5,10 +5,10 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.util.*;
 import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -233,7 +233,9 @@ public final class BrowserFileListComp extends SimpleComp {
         }
 
         var m = fileList.getFileSystemModel();
-        var v = m.getFileSystem().getShell().isPresent() ? m.getFileSystem().getShell().get().view() : null;
+        var v = m.getFileSystem().getShell().isPresent()
+                ? m.getFileSystem().getShell().get().view()
+                : null;
 
         var user = unix.getUser() != null
                 ? unix.getUser()

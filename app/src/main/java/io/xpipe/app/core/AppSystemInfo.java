@@ -1,10 +1,11 @@
 package io.xpipe.app.core;
 
-import com.sun.jna.platform.win32.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.OsType;
+
+import com.sun.jna.platform.win32.*;
 
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -222,7 +223,6 @@ public abstract class AppSystemInfo {
                 return (documents = fallback);
             }
         }
-
 
         @Override
         public Path getDesktop() {

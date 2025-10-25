@@ -1,13 +1,10 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
@@ -33,12 +30,14 @@ public class IdentityChoiceBuilder {
     String passwordChoiceTranslationKey;
 
     public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
-        var i = new IdentityChoiceBuilder(identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+        var i = new IdentityChoiceBuilder(
+                identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
-        var i = new IdentityChoiceBuilder(identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+        var i = new IdentityChoiceBuilder(
+                identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 

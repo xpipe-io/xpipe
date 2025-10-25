@@ -12,7 +12,6 @@ import net.synedra.validatorfx.Severity;
 import net.synedra.validatorfx.ValidationMessage;
 import net.synedra.validatorfx.ValidationResult;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

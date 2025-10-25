@@ -82,7 +82,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),

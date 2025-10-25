@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -94,8 +94,7 @@ public class BrowserFileSystemHelper {
         return resolved.toDirectory();
     }
 
-    public static void validateDirectoryPath(FileSystem fs, FilePath path, boolean verifyExists)
-            throws Exception {
+    public static void validateDirectoryPath(FileSystem fs, FilePath path, boolean verifyExists) throws Exception {
         if (path == null) {
             return;
         }

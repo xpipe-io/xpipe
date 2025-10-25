@@ -82,8 +82,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                                                 AppCache.getBasePath().toString())
                                 : null,
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login"
-                );
+                        "bw login");
                 TerminalLaunch.builder()
                         .title("Bitwarden login")
                         .localScript(script)
@@ -119,18 +118,29 @@ public class BitwardenPasswordManager implements PasswordManager {
             return null;
         }
     }
-    
+
     private Path getDefaultConfigPath() {
         return switch (OsType.ofLocal()) {
             case OsType.Linux linux -> {
                 if (System.getenv("XDG_CONFIG_HOME") != null) {
-                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI").resolve("data.json");
+                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI")
+                            .resolve("data.json");
                 } else {
-                    yield AppSystemInfo.ofLinux().getUserHome().resolve(".config", "Bitwarden CLI").resolve("data.json");
+                    yield AppSystemInfo.ofLinux()
+                            .getUserHome()
+                            .resolve(".config", "Bitwarden CLI")
+                            .resolve("data.json");
                 }
             }
-            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
-            case OsType.Windows windows -> AppSystemInfo.ofWindows().getRoamingAppData().resolve("Bitwarden CLI").resolve("data.json");
+            case OsType.MacOs macOs ->
+                AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+            case OsType.Windows windows ->
+                AppSystemInfo.ofWindows()
+                        .getRoamingAppData()
+                        .resolve("Bitwarden CLI")
+                        .resolve("data.json");
         };
     }
 

@@ -9,11 +9,9 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;

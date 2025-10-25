@@ -108,7 +108,8 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS, OsType.AIX, OsType.UNIX);
+            var stream = Stream.of(
+                    OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS, OsType.AIX, OsType.UNIX);
             var n = p.getValueAsString();
             return stream.filter(osType ->
                             osType.getName().equals(n) || osType.getId().equals(n))

@@ -3,7 +3,6 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -16,7 +15,6 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;

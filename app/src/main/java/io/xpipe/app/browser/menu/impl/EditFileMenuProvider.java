@@ -6,10 +6,10 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.FileKind;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;

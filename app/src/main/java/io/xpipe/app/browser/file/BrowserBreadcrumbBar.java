@@ -6,7 +6,6 @@ import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
 
 import javafx.css.PseudoClass;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;

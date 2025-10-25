@@ -1,30 +1,17 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ElevationFunction;
-import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.FileBridge;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.util.HumanReadableFormat;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import lombok.SneakyThrows;
 
-import java.io.OutputStream;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class BrowserFileOpener {
 
@@ -87,7 +74,9 @@ public class BrowserFileOpener {
 
         var size = entry.getFileSizeLong().orElse(0L);
         if (size > 1_000_000) {
-            var confirm = AppDialog.confirm("largeFileWarningTitle", AppI18n.observable("largeFileWarningContent", HumanReadableFormat.byteCount(size)));
+            var confirm = AppDialog.confirm(
+                    "largeFileWarningTitle",
+                    AppI18n.observable("largeFileWarningContent", HumanReadableFormat.byteCount(size)));
             if (!confirm) {
                 return;
             }

@@ -2,10 +2,10 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.BooleanProperty;
@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
 
@@ -214,7 +213,8 @@ public class BrowserFileTransferOperation {
 
         if (sourceFile.equals(targetFile)) {
             // Duplicate file by renaming it
-            targetFile = BrowserFileDuplicates.renameFileDuplicate(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+            targetFile = BrowserFileDuplicates.renameFileDuplicate(
+                    target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
@@ -230,7 +230,8 @@ public class BrowserFileTransferOperation {
             }
 
             if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
-                targetFile = BrowserFileDuplicates.renameFileDuplicate(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+                targetFile = BrowserFileDuplicates.renameFileDuplicate(
+                        target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
             }
         }
 
@@ -510,7 +511,8 @@ public class BrowserFileTransferOperation {
 
                 var incomplete = !killStreams.get() && readCount.get() < expectedFileSize;
                 if (incomplete) {
-                    throw new IOException("Source file " + sourceFile + " input size mismatch: Expected " + expectedFileSize + " but got " + readCount.get() + ". Did the source file get updated?");
+                    throw new IOException("Source file " + sourceFile + " input size mismatch: Expected "
+                            + expectedFileSize + " but got " + readCount.get() + ". Did the source file get updated?");
                 }
             } catch (Exception ex) {
                 exception.set(ex);

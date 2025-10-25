@@ -1,14 +1,8 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-
-import java.io.IOException;
-import java.nio.file.Files;
 
 public class FootTerminalType implements ExternalTerminalType, ExternalApplicationType.LinuxApplication {
 

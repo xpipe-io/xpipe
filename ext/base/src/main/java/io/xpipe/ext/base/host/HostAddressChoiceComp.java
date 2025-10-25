@@ -139,11 +139,15 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             skin.setHideOnClick(false);
 
             // The focus seems to break on selection from the popup
-            struc.get().selectionModelProperty().get().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-                Platform.runLater(() -> {
-                    struc.get().getParent().requestFocus();
-                });
-            });
+            struc.get()
+                    .selectionModelProperty()
+                    .get()
+                    .selectedIndexProperty()
+                    .addListener((observable, oldValue, newValue) -> {
+                        Platform.runLater(() -> {
+                            struc.get().getParent().requestFocus();
+                        });
+                    });
 
             allAddresses.addListener((ListChangeListener<? super String>) change -> {
                 struc.get().setVisibleRowCount(10);

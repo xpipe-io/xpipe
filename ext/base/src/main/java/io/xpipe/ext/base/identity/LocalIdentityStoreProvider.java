@@ -27,8 +27,8 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public UUID getTargetCategory(DataStore store, UUID target) {
         var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
         var inLocal = DataStorage.get().getCategoryParentHierarchy(cat).stream()
-                .anyMatch(
-                        dataStoreCategory -> dataStoreCategory.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
         return inLocal ? target : DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
     }
 

@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.OsType;
+
 import lombok.Getter;
 
 import java.util.LinkedHashMap;

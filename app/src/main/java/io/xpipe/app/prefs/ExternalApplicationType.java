@@ -5,9 +5,8 @@ import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
@@ -127,15 +126,17 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default void launch(CommandBuilder args) throws Exception {
-            if (getFlatpakId() == null || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
+            if (getFlatpakId() == null
+                    || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
                 PathApplication.super.launch(args);
                 return;
             }
 
             var app = FlatpakCache.getApp(getFlatpakId());
             if (app.isEmpty()) {
-                throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
-                        + " not found in PATH nor as a flatkpak " + getFlatpakId() + " not installed. Install it and refresh the environment by restarting XPipe"));
+                throw ErrorEventFactory.expected(new IOException(
+                        "Executable " + getExecutable() + " not found in PATH nor as a flatkpak " + getFlatpakId()
+                                + " not installed. Install it and refresh the environment by restarting XPipe"));
             }
 
             try (ShellControl pc = LocalShell.getShell()) {

@@ -2,18 +2,14 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.FileKind;
-
-import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import javafx.css.PseudoClass;
-import javafx.geometry.Point2D;
+
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
@@ -155,14 +151,18 @@ public class BrowserFileListCompEntry {
         // Accept drops from outside the app window
         if (event.getGestureSource() == null) {
             // Don't accept 7zip temp files
-            if (OsType.ofLocal() == OsType.WINDOWS && event.getDragboard().getFiles().stream().anyMatch(file -> {
-                try {
-                    return file.toPath().toRealPath().startsWith(AppSystemInfo.ofWindows().getTemp()) &&
-                        file.toPath().getFileName().toString().matches("7z[A-Z0-9]+");
-                } catch (IOException ignored) {
-                    return false;
-                }
-            })) {
+            if (OsType.ofLocal() == OsType.WINDOWS
+                    && event.getDragboard().getFiles().stream().anyMatch(file -> {
+                        try {
+                            return file.toPath()
+                                            .toRealPath()
+                                            .startsWith(
+                                                    AppSystemInfo.ofWindows().getTemp())
+                                    && file.toPath().getFileName().toString().matches("7z[A-Z0-9]+");
+                        } catch (IOException ignored) {
+                            return false;
+                        }
+                    })) {
                 return false;
             }
 
@@ -298,24 +298,28 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        model.getDraggedOverEmpty().setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+        model.getDraggedOverEmpty()
+                .setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
         model.getDraggedOverDirectory().setValue(item);
 
         if (item != null) {
             var timestamp = Instant.now();
             lastHoverUpdate = timestamp;
             // Reduce printed window updates
-            GlobalTimer.delay(() -> {
-                if (!timestamp.equals(lastHoverUpdate)) {
-                    return;
-                }
+            GlobalTimer.delay(
+                    () -> {
+                        if (!timestamp.equals(lastHoverUpdate)) {
+                            return;
+                        }
 
-                if (item != model.getDraggedOverDirectory().getValue()) {
-                    return;
-                }
+                        if (item != model.getDraggedOverDirectory().getValue()) {
+                            return;
+                        }
 
-                model.getFileSystemModel().cdAsync(item.getRawFileEntry().getPath());
-            }, Duration.ofMillis(500));
+                        model.getFileSystemModel()
+                                .cdAsync(item.getRawFileEntry().getPath());
+                    },
+                    Duration.ofMillis(500));
         }
     }
 

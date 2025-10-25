@@ -6,7 +6,6 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.Check;
-import io.xpipe.app.platform.Validator;
 import io.xpipe.app.util.Hyperlinks;
 
 import javafx.application.Platform;
@@ -23,7 +22,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 
-import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
@@ -109,8 +107,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         tt.setShowDelay(Duration.millis(1));
                         Tooltip.install(link, tt);
 
-                        var descriptionBox =
-                                new HBox(description, new Spacer(Orientation.HORIZONTAL), link);
+                        var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), link);
                         descriptionBox.getStyleClass().add("description-box");
                         descriptionBox.setSpacing(5);
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);

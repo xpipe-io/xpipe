@@ -6,10 +6,8 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.HostHelper;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
-
-import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -19,7 +17,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @EqualsAndHashCode
 @ToString
-public abstract class AbstractServiceStore implements SingletonSessionStore<NetworkTunnelSession>, DataStore, StartOnInitStore {
+public abstract class AbstractServiceStore
+        implements SingletonSessionStore<NetworkTunnelSession>, DataStore, StartOnInitStore {
 
     private final Integer remotePort;
     private final Integer localPort;
@@ -51,7 +50,9 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         if (s == null) {
             var address = getAddress();
 
-            if (address == null && (getHost().getStore() instanceof HostAddressGatewayStore g) && !(getHost().getStore() instanceof NetworkTunnelStore)) {
+            if (address == null
+                    && (getHost().getStore() instanceof HostAddressGatewayStore g)
+                    && !(getHost().getStore() instanceof NetworkTunnelStore)) {
                 address = g.getHostAddress().get();
             }
 
@@ -83,7 +84,8 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
             return false;
         }
 
-        if (getHost().getStore() instanceof HostAddressGatewayStore g && !(getHost().getStore() instanceof NetworkTunnelStore)) {
+        if (getHost().getStore() instanceof HostAddressGatewayStore g
+                && !(getHost().getStore() instanceof NetworkTunnelStore)) {
             var gw = g.getGateway();
             return gw != null && gw.getStore().requiresTunnel();
         }
@@ -113,10 +115,11 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         }
 
         if (getHost() != null) {
-            if (!(getHost().getStore() instanceof NetworkTunnelStore) && getHost().getStore() instanceof HostAddressGatewayStore g) {
-                if (g.getGateway() == null ||
-                        !g.getGateway().getStore().requiresTunnel() ||
-                        !g.getGateway().getStore().isLocallyTunnelable()) {
+            if (!(getHost().getStore() instanceof NetworkTunnelStore)
+                    && getHost().getStore() instanceof HostAddressGatewayStore g) {
+                if (g.getGateway() == null
+                        || !g.getGateway().getStore().requiresTunnel()
+                        || !g.getGateway().getStore().isLocallyTunnelable()) {
                     return null;
                 }
             } else if (getHost().getStore() instanceof NetworkTunnelStore t) {
@@ -154,14 +157,17 @@ public abstract class AbstractServiceStore implements SingletonSessionStore<Netw
         if (getHost().getStore() instanceof NetworkTunnelStore t) {
             var parent = t.getNetworkParent();
             if (!t.isLocallyTunnelable() && parent.getStore() instanceof NetworkTunnelStore nts) {
-                return nts.createTunnelSession(l, remotePort, t.getTunnelHostName() != null ? t.getTunnelHostName() : "localhost");
+                return nts.createTunnelSession(
+                        l, remotePort, t.getTunnelHostName() != null ? t.getTunnelHostName() : "localhost");
             }
 
             return t.createTunnelSession(l, remotePort, "localhost");
         }
 
         var g = (HostAddressGatewayStore) getHost().getStore();
-        return g.getGateway().getStore().createTunnelSession(l, remotePort, g.getHostAddress().get());
+        return g.getGateway()
+                .getStore()
+                .createTunnelSession(l, remotePort, g.getHostAddress().get());
     }
 
     @Override

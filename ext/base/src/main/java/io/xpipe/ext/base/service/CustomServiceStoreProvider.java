@@ -12,12 +12,10 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-
 import io.xpipe.ext.base.host.AbstractHostStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
 
@@ -57,10 +55,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         CustomServiceStore st = store.getValue().asNeeded();
 
-        var comboHost = new SimpleObjectProperty<>(StoreComboChoiceComp.ComboValue.of(
-                st.getAddress(),
-                st.getHost()
-        ));
+        var comboHost = new SimpleObjectProperty<>(StoreComboChoiceComp.ComboValue.of(st.getAddress(), st.getHost()));
         var gateway = new SimpleObjectProperty<>(st.getGateway());
         var hideGateway = BindingsHelper.map(comboHost, c -> c == null || c.getRef() != null);
 
@@ -69,14 +64,15 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
 
         var hostChoice = new StoreComboChoiceComp<>(
-                hostStore -> hostStore instanceof AbstractHostStore a ? a.getHostAddress().get() : hostStore instanceof NetworkTunnelStore t ? t.getTunnelHostName() : "?",
+                hostStore -> hostStore instanceof AbstractHostStore a
+                        ? a.getHostAddress().get()
+                        : hostStore instanceof NetworkTunnelStore t ? t.getTunnelHostName() : "?",
                 entry,
                 comboHost,
                 NetworkTunnelStore.class,
-                n -> n.getStore() instanceof AbstractHostStore ||
-                        (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
-                StoreViewState.get().getAllConnectionsCategory()
-        );
+                n -> n.getStore() instanceof AbstractHostStore
+                        || (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
+                StoreViewState.get().getAllConnectionsCategory());
         var gatewayChoice = new StoreChoiceComp<>(
                 StoreChoiceComp.Mode.PROXY,
                 entry,
@@ -102,8 +98,14 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 .bind(
                         () -> {
                             return CustomServiceStore.builder()
-                                    .address(comboHost.get() != null ? comboHost.get().getManualHost() : null)
-                                    .host(comboHost.get() != null ? comboHost.get().getRef() : null)
+                                    .address(
+                                            comboHost.get() != null
+                                                    ? comboHost.get().getManualHost()
+                                                    : null)
+                                    .host(
+                                            comboHost.get() != null
+                                                    ? comboHost.get().getRef()
+                                                    : null)
                                     .gateway(gateway.get())
                                     .localPort(localPort.get())
                                     .remotePort(remotePort.get())

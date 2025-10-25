@@ -6,9 +6,9 @@ import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.ext.FileKind;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;

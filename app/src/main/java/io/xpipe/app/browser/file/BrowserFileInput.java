@@ -4,24 +4,16 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileInfo;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ElevationFunction;
-import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Optional;
 
 public interface BrowserFileInput {
 
-     static BrowserFileInput openFileInput(BrowserFileSystemTabModel model, FileEntry file)
-            throws Exception {
+    static BrowserFileInput openFileInput(BrowserFileSystemTabModel model, FileEntry file) throws Exception {
         if (model.isClosed()) {
             return BrowserFileInput.none();
         }
@@ -66,7 +58,7 @@ public interface BrowserFileInput {
             }
 
             var userOwned = info.getUid() != null
-                    && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
+                            && sc.view().getPasswdFile().getUidForUser(sc.view().user()) == info.getUid()
                     || info.getUser() != null && sc.view().user().equals(info.getUser());
             var userWrite = info.getPermissions().charAt(0) == 'r';
             if (userOwned && userWrite) {
@@ -88,11 +80,11 @@ public interface BrowserFileInput {
         var sc = shell.isEmpty()
                 ? null
                 : elevate
-                ? shell.orElseThrow()
-                .identicalDialectSubShell()
-                .elevated(ElevationFunction.elevated(null))
-                .start()
-                : model.getFileSystem().getShell().orElseThrow().start();
+                        ? shell.orElseThrow()
+                                .identicalDialectSubShell()
+                                .elevated(ElevationFunction.elevated(null))
+                                .start()
+                        : model.getFileSystem().getShell().orElseThrow().start();
         var fs = elevate ? new ConnectionFileSystem(sc) : model.getFileSystem();
         var output = new BrowserFileInput() {
 
@@ -132,15 +124,15 @@ public interface BrowserFileInput {
     }
 
     static BrowserFileInput of(InputStream in) {
-         return new BrowserFileInput() {
-             @Override
-             public InputStream open() throws Exception {
-                 return in;
-             }
+        return new BrowserFileInput() {
+            @Override
+            public InputStream open() throws Exception {
+                return in;
+            }
 
-             @Override
-             public void onFinish() throws Exception {}
-         };
+            @Override
+            public void onFinish() throws Exception {}
+        };
     }
 
     InputStream open() throws Exception;

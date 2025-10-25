@@ -6,7 +6,6 @@ import io.xpipe.app.util.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Logger;
@@ -280,13 +279,14 @@ public class AppLogs {
                 // Only change this when debugging the logs of other libraries
                 return NOPLogger.NOP_LOGGER;
 
-//                                // Don't use fully qualified class names
-//                                var normalizedName = FilenameUtils.getExtension(name);
-//                                if (normalizedName == null || normalizedName.isEmpty()) {
-//                                    normalizedName = name;
-//                                }
-//
-//                                return loggers.computeIfAbsent(normalizedName, s -> new Slf4jLogger());
+                //                                // Don't use fully qualified class names
+                //                                var normalizedName = FilenameUtils.getExtension(name);
+                //                                if (normalizedName == null || normalizedName.isEmpty()) {
+                //                                    normalizedName = name;
+                //                                }
+                //
+                //                                return loggers.computeIfAbsent(normalizedName, s -> new
+                // Slf4jLogger());
             }
         };
 

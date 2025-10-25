@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 
 import net.synedra.validatorfx.ValidationResult;
 
-import java.util.Collection;
 import java.util.function.Predicate;
 
 public interface Validator {

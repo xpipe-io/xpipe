@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.menu;
 
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+
 import lombok.SneakyThrows;
 
 public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvider {

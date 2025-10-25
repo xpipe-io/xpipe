@@ -5,12 +5,12 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ProcessControl;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 

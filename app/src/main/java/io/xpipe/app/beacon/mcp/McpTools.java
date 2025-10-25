@@ -1,12 +1,13 @@
 package io.xpipe.app.beacon.mcp;
 
-import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ConnectionFileSystem;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
 import io.xpipe.app.process.WorkingDirectoryFunction;
@@ -14,13 +15,12 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageQuery;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.CommandDialog;
-import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.beacon.BeaconClientException;
-import io.xpipe.app.ext.FileInfo;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.Builder;
@@ -125,7 +125,9 @@ public final class McpTools {
                     object.set("found", json);
 
                     return McpSchema.CallToolResult.builder()
-                            .structuredContent(new JacksonMcpJsonMapper(JacksonMapper.getDefault()), JacksonMapper.getDefault().writeValueAsString(object))
+                            .structuredContent(
+                                    new JacksonMcpJsonMapper(JacksonMapper.getDefault()),
+                                    JacksonMapper.getDefault().writeValueAsString(object))
                             .build();
                 }))
                 .build();

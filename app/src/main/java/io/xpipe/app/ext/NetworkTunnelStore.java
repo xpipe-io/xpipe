@@ -9,12 +9,14 @@ public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
 
     static void checkTunnelable(DataStoreEntryRef<?> ref) throws ValidationException {
         if (!(ref.getStore() instanceof NetworkTunnelStore t)) {
-            throw new ValidationException(AppI18n.get("parentHostDoesNotSupportTunneling", ref.get().getName()));
+            throw new ValidationException(
+                    AppI18n.get("parentHostDoesNotSupportTunneling", ref.get().getName()));
         }
 
         var unsupported = t.getUnsupportedParent();
         if (unsupported.isPresent()) {
-            throw new ValidationException(AppI18n.get("parentHostDoesNotSupportTunneling", unsupported.get().get().getName()));
+            throw new ValidationException(AppI18n.get(
+                    "parentHostDoesNotSupportTunneling", unsupported.get().get().getName()));
         }
     }
 

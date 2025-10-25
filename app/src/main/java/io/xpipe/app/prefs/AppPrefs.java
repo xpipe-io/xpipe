@@ -78,7 +78,6 @@ public final class AppPrefs {
         return INSTANCE;
     }
 
-
     @Getter
     private final BooleanProperty requiresRestart = new GlobalBooleanProperty(false);
 
@@ -114,55 +113,48 @@ public final class AppPrefs {
             .requiresRestart(false)
             .documentationLink(DocumentationLink.MCP)
             .build());
-    final BooleanProperty enableMcpMutationTools =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(false))
-                    .key("enableMcpMutationTools")
-                    .valueClass(Boolean.class)
-                    .build());
+    final BooleanProperty enableMcpMutationTools = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("enableMcpMutationTools")
+            .valueClass(Boolean.class)
+            .build());
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultShared(new GlobalBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
             mapVaultShared(new GlobalBooleanProperty(false), "dontAcceptNewHostKeys", Boolean.class, false);
-    public final BooleanProperty performanceMode =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty())
-                    .key("performanceMode")
-                    .valueClass(Boolean.class)
-                    .build());
-    public final ObjectProperty<AppTheme.Theme> theme =
-            map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>())
-                    .key("theme")
-                    .valueClass(AppTheme.Theme.class)
-                    .build());
-    final BooleanProperty useSystemFont =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(OsType.ofLocal() != OsType.MACOS))
-                    .key("useSystemFont")
-                    .valueClass(Boolean.class)
-                    .build());
-    final Property<Integer> uiScale =
-            map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>())
-                    .key("uiScale")
-                    .valueClass(Integer.class)
-                    .requiresRestart(true)
-                    .build());
-    final BooleanProperty saveWindowLocation =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(true))
-                    .key("saveWindowLocation")
-                    .valueClass(Boolean.class)
-                    .requiresRestart(false)
-                    .build());
-    final BooleanProperty preferTerminalTabs =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(true))
-                    .key("preferTerminalTabs")
-                    .valueClass(Boolean.class)
-                    .requiresRestart(false)
-                    .build());
+    public final BooleanProperty performanceMode = map(Mapping.builder()
+            .property(new GlobalBooleanProperty())
+            .key("performanceMode")
+            .valueClass(Boolean.class)
+            .build());
+    public final ObjectProperty<AppTheme.Theme> theme = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("theme")
+            .valueClass(AppTheme.Theme.class)
+            .build());
+    final BooleanProperty useSystemFont = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(OsType.ofLocal() != OsType.MACOS))
+            .key("useSystemFont")
+            .valueClass(Boolean.class)
+            .build());
+    final Property<Integer> uiScale = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("uiScale")
+            .valueClass(Integer.class)
+            .requiresRestart(true)
+            .build());
+    final BooleanProperty saveWindowLocation = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("saveWindowLocation")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
+    final BooleanProperty preferTerminalTabs = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("preferTerminalTabs")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final ObjectProperty<ExternalTerminalType> terminalType = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("terminalType")
@@ -178,46 +170,41 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.RDP)
             .build());
     final StringProperty notesTemplate = new GlobalStringProperty(null);
-    final DoubleProperty windowOpacity =
-            map(Mapping.builder()
-                    .property(new GlobalDoubleProperty(1.0))
-                    .key("windowOpacity")
-                    .valueClass(Double.class)
-                    .requiresRestart(false)
-                    .build());
-    final StringProperty customTerminalCommand =
-            map(Mapping.builder()
-                    .property(new GlobalStringProperty(null))
-                    .key("customTerminalCommand")
-                    .valueClass(String.class)
-                    .requiresRestart(false)
-                    .build());
-    final BooleanProperty clearTerminalOnInit =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(true))
-                    .key("clearTerminalOnInit")
-                    .valueClass(Boolean.class)
-                    .requiresRestart(false)
-                    .build());
+    final DoubleProperty windowOpacity = map(Mapping.builder()
+            .property(new GlobalDoubleProperty(1.0))
+            .key("windowOpacity")
+            .valueClass(Double.class)
+            .requiresRestart(false)
+            .build());
+    final StringProperty customTerminalCommand = map(Mapping.builder()
+            .property(new GlobalStringProperty(null))
+            .key("customTerminalCommand")
+            .valueClass(String.class)
+            .requiresRestart(false)
+            .build());
+    final BooleanProperty clearTerminalOnInit = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("clearTerminalOnInit")
+            .valueClass(Boolean.class)
+            .requiresRestart(false)
+            .build());
     final Property<List<SystemIconSource>> iconSources = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(new ArrayList<>()))
             .key("iconSources")
             .valueType(TypeFactory.defaultInstance().constructType(new TypeReference<List<SystemIconSource>>() {}))
             .vaultSpecific(true)
             .build());
-    public final BooleanProperty disableCertutilUse =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(false))
-                    .key("disableCertutilUse")
-                    .valueClass(Boolean.class)
-                    .build());
-    public final BooleanProperty useLocalFallbackShell =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(false))
-                    .key("useLocalFallbackShell")
-                    .valueClass(Boolean.class)
-                    .requiresRestart(true)
-                    .build());
+    public final BooleanProperty disableCertutilUse = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("disableCertutilUse")
+            .valueClass(Boolean.class)
+            .build());
+    public final BooleanProperty useLocalFallbackShell = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("useLocalFallbackShell")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .build());
     final Property<ShellDialect> localShellDialect = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(
                     ProcessControlProvider.get().getAvailableLocalDialects().getFirst()))
@@ -231,12 +218,11 @@ public final class AppPrefs {
             new GlobalBooleanProperty(false), "disableTerminalRemotePasswordPreparation", Boolean.class, false);
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultShared(new GlobalObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
-    public final BooleanProperty focusWindowOnNotifications =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(false))
-                    .key("focusWindowOnNotifications")
-                    .valueClass(Boolean.class)
-                    .build());
+    public final BooleanProperty focusWindowOnNotifications = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("focusWindowOnNotifications")
+            .valueClass(Boolean.class)
+            .build());
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
@@ -271,12 +257,11 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
             .build());
-    final Property<Boolean> terminalAlwaysPauseOnExit =
-            map(Mapping.builder()
-                    .property(new GlobalBooleanProperty(false))
-                    .key("terminalAlwaysPauseOnExit")
-                    .valueClass(Boolean.class)
-                    .build());
+    final Property<Boolean> terminalAlwaysPauseOnExit = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(false))
+            .key("terminalAlwaysPauseOnExit")
+            .valueClass(Boolean.class)
+            .build());
     final Property<TerminalPrompt> terminalPrompt = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(null))
             .key("terminalPrompt")
@@ -284,13 +269,12 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
-    final ObjectProperty<StartupBehaviour> startupBehaviour =
-            map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
-                    .key("startupBehaviour")
-                    .valueClass(StartupBehaviour.class)
-                    .requiresRestart(true)
-                    .build());
+    final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
+            .key("startupBehaviour")
+            .valueClass(StartupBehaviour.class)
+            .requiresRestart(true)
+            .build());
     public final BooleanProperty enableGitStorage = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
             .key("enableGitStorage")
@@ -305,12 +289,11 @@ public final class AppPrefs {
             .requiresRestart(true)
             .documentationLink(DocumentationLink.SYNC)
             .build());
-    final ObjectProperty<CloseBehaviour> closeBehaviour =
-            map(Mapping.builder()
-                    .property(new GlobalObjectProperty<>(CloseBehaviour.QUIT))
-                    .key("closeBehaviour")
-                    .valueClass(CloseBehaviour.class)
-                    .build());
+    final ObjectProperty<CloseBehaviour> closeBehaviour = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(CloseBehaviour.QUIT))
+            .key("closeBehaviour")
+            .valueClass(CloseBehaviour.class)
+            .build());
     final ObjectProperty<ExternalEditorType> externalEditor =
             mapLocal(new GlobalObjectProperty<>(), "externalEditor", ExternalEditorType.class, false);
     final StringProperty customEditorCommand =
@@ -857,7 +840,8 @@ public final class AppPrefs {
 
         if (notesTemplate.get() != null) {
             try {
-                Files.writeString(AppProperties.get().getDataDir().resolve("storage", "notes.md"), notesTemplate.getValue());
+                Files.writeString(
+                        AppProperties.get().getDataDir().resolve("storage", "notes.md"), notesTemplate.getValue());
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).handle();
             }

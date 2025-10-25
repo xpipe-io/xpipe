@@ -1,9 +1,10 @@
 package io.xpipe.ext.base.host;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;

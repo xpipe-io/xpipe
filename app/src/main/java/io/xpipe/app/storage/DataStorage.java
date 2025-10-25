@@ -369,7 +369,9 @@ public abstract class DataStorage {
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
-        if (entry.getStore() != null && newEntry.getStore() != null && !entry.getStore().equals(newEntry.getStore())) {
+        if (entry.getStore() != null
+                && newEntry.getStore() != null
+                && !entry.getStore().equals(newEntry.getStore())) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), newEntry.getStore());
             }
@@ -562,7 +564,6 @@ public abstract class DataStorage {
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
     }
-
 
     public void moveCategoryToParent(DataStoreCategory cat, DataStoreCategory newParent) {
         if (newParent.getUuid().equals(cat.getUuid())) {

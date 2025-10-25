@@ -2,8 +2,8 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionToken;
-import io.xpipe.app.secret.VaultKeySecretValue;
 import io.xpipe.app.secret.PasswordLockSecretValue;
+import io.xpipe.app.secret.VaultKeySecretValue;
 import io.xpipe.core.EncryptedSecretValue;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;

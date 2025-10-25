@@ -7,10 +7,12 @@ import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.SneakyThrows;
 
 import java.util.List;
@@ -49,7 +51,9 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
 
                     var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
                     return all.size() > 0
-                            ? (all.size() == 1 ? AppI18n.get("abstractHostHasConnection", string) : AppI18n.get("abstractHostHasConnections", string))
+                            ? (all.size() == 1
+                                    ? AppI18n.get("abstractHostHasConnection", string)
+                                    : AppI18n.get("abstractHostHasConnections", string))
                             : AppI18n.get("abstractHostNoConnections");
                 },
                 section.getShownChildren().getList(),
@@ -70,13 +74,15 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .addString(host)
                 .nonNull()
                 .nameAndDescription("abstractHostGateway")
-                    .addComp(new StoreChoiceComp<>(StoreChoiceComp.Mode.PROXY,
-                        entry,
-                        gateway,
-                        NetworkTunnelStore.class,
-                        ref -> true,
-                        StoreViewState.get().getAllConnectionsCategory()
-                ), gateway)
+                .addComp(
+                        new StoreChoiceComp<>(
+                                StoreChoiceComp.Mode.PROXY,
+                                entry,
+                                gateway,
+                                NetworkTunnelStore.class,
+                                ref -> true,
+                                StoreViewState.get().getAllConnectionsCategory()),
+                        gateway)
                 .bind(
                         () -> {
                             return AbstractHostStore.builder()
@@ -90,8 +96,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        AbstractHostStore scriptStore =
-                wrapper.getEntry().getStore().asNeeded();
+        AbstractHostStore scriptStore = wrapper.getEntry().getStore().asNeeded();
         return scriptStore.getHost();
     }
 

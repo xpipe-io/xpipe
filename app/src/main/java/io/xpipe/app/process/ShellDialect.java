@@ -70,7 +70,8 @@ public interface ShellDialect {
 
     String changeTitleCommand(String newTitle);
 
-    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes) throws Exception;
+    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes)
+            throws Exception;
 
     default String getCdCommand(String directory) {
         return "cd \"" + directory + "\"";

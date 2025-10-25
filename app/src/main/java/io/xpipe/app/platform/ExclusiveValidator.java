@@ -10,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import net.synedra.validatorfx.ValidationResult;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 public final class ExclusiveValidator<T> implements Validator {

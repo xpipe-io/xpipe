@@ -2,9 +2,9 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.util.LocalExec;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

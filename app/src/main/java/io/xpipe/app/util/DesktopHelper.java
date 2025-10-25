@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -33,7 +32,8 @@ public class DesktopHelper {
         try {
             parsed = URI.create(uri);
         } catch (IllegalArgumentException e) {
-            ErrorEventFactory.fromThrowable("Invalid URI: " + uri, e.getCause() != null ? e.getCause() : e).handle();
+            ErrorEventFactory.fromThrowable("Invalid URI: " + uri, e.getCause() != null ? e.getCause() : e)
+                    .handle();
             return;
         }
 

@@ -2,9 +2,9 @@ package io.xpipe.app.ext;
 
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellStoreState;
+import io.xpipe.app.storage.DataStoreEntryRef;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import lombok.Value;
 
 @JsonTypeName("local")

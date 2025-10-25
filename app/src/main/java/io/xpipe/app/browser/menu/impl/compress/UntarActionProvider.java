@@ -37,7 +37,10 @@ public class UntarActionProvider implements BrowserActionProvider {
                     model.getFileSystem().mkdirs(target);
                 }
                 sc.command(c)
-                        .withWorkingDirectory(toDirectory ? target : model.getCurrentDirectory().getPath())
+                        .withWorkingDirectory(
+                                toDirectory
+                                        ? target
+                                        : model.getCurrentDirectory().getPath())
                         .execute();
             }
             model.refreshSync();

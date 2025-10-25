@@ -330,8 +330,12 @@ public class ConnectionFileSystem implements FileSystem {
     public void directoryAccessible(FilePath file) throws Exception {
         var current = shellControl.executeSimpleStringCommand(
                 shellControl.getShellDialect().getPrintWorkingDirectoryCommand());
-        shellControl.command(shellControl.getShellDialect().getCdCommand(file.toString())).execute();
-        shellControl.command(shellControl.getShellDialect().getCdCommand(current)).execute();
+        shellControl
+                .command(shellControl.getShellDialect().getCdCommand(file.toString()))
+                .execute();
+        shellControl
+                .command(shellControl.getShellDialect().getCdCommand(current))
+                .execute();
     }
 
     @Override

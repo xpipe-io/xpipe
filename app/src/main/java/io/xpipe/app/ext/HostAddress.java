@@ -33,7 +33,8 @@ public class HostAddress {
 
     public static HostAddress of(@NonNull List<String> addresses) {
         return new HostAddress(
-                addresses.getFirst().strip(), addresses.stream().map(s -> s.strip()).toList());
+                addresses.getFirst().strip(),
+                addresses.stream().map(s -> s.strip()).toList());
     }
 
     public static HostAddress of(String host, @NonNull List<String> addresses) {

@@ -35,7 +35,13 @@ public interface OsType {
     }
 
     sealed interface Any extends OsType
-            permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd, OsType.Aix, OsType.OtherUnix {}
+            permits OsType.Windows,
+                    OsType.Linux,
+                    OsType.MacOs,
+                    OsType.Solaris,
+                    OsType.Bsd,
+                    OsType.Aix,
+                    OsType.OtherUnix {}
 
     final class Windows implements OsType, Local, Any {
 

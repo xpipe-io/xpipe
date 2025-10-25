@@ -3,12 +3,10 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
@@ -20,8 +18,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-
-import org.apache.commons.lang3.SystemUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

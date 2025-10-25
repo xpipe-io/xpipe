@@ -5,7 +5,6 @@ import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
@@ -154,8 +153,6 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public String getId() {
             return "app.wezterm";
         }
-
-
     }
 
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {

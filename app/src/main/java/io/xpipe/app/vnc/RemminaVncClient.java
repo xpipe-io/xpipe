@@ -37,7 +37,7 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
             ThreadHelper.sleep(5000);
             FileUtils.deleteQuietly(file.toFile());
         });
-}
+    }
 
     @Override
     public boolean supportsPasswords() {

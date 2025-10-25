@@ -98,8 +98,7 @@ public class ErrorHandlerComp extends SimpleComp {
         while (t != null) {
             var toAppend = t.getMessage() != null
                     ? t.getMessage()
-                    : AppI18n.get(
-                    "errorTypeOccured", t.getClass().getSimpleName());
+                    : AppI18n.get("errorTypeOccured", t.getClass().getSimpleName());
             desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
             t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
         }

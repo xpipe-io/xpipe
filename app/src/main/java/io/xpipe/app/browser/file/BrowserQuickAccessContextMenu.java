@@ -4,11 +4,11 @@ import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.BooleanAnimationTimer;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.FileKind;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -41,7 +41,10 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {
-                                    struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("selected"), appPrefsCategory.equals(val));
+                                    struc.get()
+                                            .pseudoClassStateChanged(
+                                                    PseudoClass.getPseudoClass("selected"),
+                                                    appPrefsCategory.equals(val));
                                 });
                             })
                             .grow(true, false);

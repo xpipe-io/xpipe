@@ -2,8 +2,8 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellDialects;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

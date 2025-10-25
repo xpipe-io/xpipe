@@ -1,9 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.ChainedValidator;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
@@ -20,8 +18,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import net.synedra.validatorfx.GraphicDecorationStackPane;
-
-import java.util.List;
 
 public class StoreCreationComp extends ModalOverlayContentComp {
 
@@ -90,7 +86,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(d.getOptions());
                 full.sub(propOptions);
 
-                var region = full.buildComp().styleClass("store-creator-options").createRegion();
+                var region =
+                        full.buildComp().styleClass("store-creator-options").createRegion();
                 valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);

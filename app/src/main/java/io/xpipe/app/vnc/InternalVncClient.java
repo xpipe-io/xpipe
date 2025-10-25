@@ -30,8 +30,7 @@ public class InternalVncClient implements ExternalVncClient {
         }
 
         browserSession.openSync(
-                ProcessControlProvider.get()
-                        .createVncSession(browserSession, configuration.getEntry()),
+                ProcessControlProvider.get().createVncSession(browserSession, configuration.getEntry()),
                 browserSession.getBusy());
         AppLayoutModel.get().selectBrowser();
     }

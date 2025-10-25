@@ -4,6 +4,9 @@
 
 package io.xpipe.app.beacon.mcp;
 
+import io.xpipe.app.issue.TrackEvent;
+
+import com.sun.net.httpserver.HttpExchange;
 import io.modelcontextprotocol.common.McpTransportContext;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
@@ -11,11 +14,6 @@ import io.modelcontextprotocol.server.McpTransportContextExtractor;
 import io.modelcontextprotocol.spec.*;
 import io.modelcontextprotocol.util.Assert;
 import io.modelcontextprotocol.util.KeepAliveScheduler;
-import io.xpipe.app.issue.TrackEvent;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.sun.net.httpserver.HttpExchange;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -84,7 +82,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
     }
 
     public List<String> protocolVersions() {
-        return List.of(ProtocolVersions.MCP_2024_11_05, ProtocolVersions.MCP_2025_03_26, ProtocolVersions.MCP_2025_06_18);
+        return List.of(
+                ProtocolVersions.MCP_2024_11_05, ProtocolVersions.MCP_2025_03_26, ProtocolVersions.MCP_2025_06_18);
     }
 
     @Override
@@ -279,8 +278,8 @@ public class HttpStreamableServerTransportProvider implements McpStreamableServe
                     return;
                 }
 
-                McpSchema.InitializeRequest initializeRequest = jsonMapper.convertValue(jsonrpcRequest.params(),
-                        new TypeRef<McpSchema.InitializeRequest>() {});
+                McpSchema.InitializeRequest initializeRequest =
+                        jsonMapper.convertValue(jsonrpcRequest.params(), new TypeRef<McpSchema.InitializeRequest>() {});
                 McpStreamableServerSession.McpStreamableServerSessionInit init =
                         this.sessionFactory.startSession(initializeRequest);
                 this.sessions.put(init.session().getId(), init.session());

@@ -4,7 +4,6 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
@@ -59,8 +58,8 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getCmd().getStore().getHost().get().ref());
             var file = FilePath.of("/run/lxd/" + d.getContainerName() + "/lxc.conf");
-            var model =
-                    BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, null, m -> file.getParent(), null, true);
+            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                    elevatedRef, null, m -> file.getParent(), null, true);
             var found = model.findFile(file);
             if (found.isEmpty()) {
                 return;

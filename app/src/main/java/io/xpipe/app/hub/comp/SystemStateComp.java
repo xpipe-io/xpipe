@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.ShellStoreState;
 
@@ -86,22 +85,25 @@ public class SystemStateComp extends SimpleComp {
         OTHER;
 
         public static ObservableValue<State> shellState(StoreEntryWrapper w) {
-            return Bindings.createObjectBinding(() -> {
-                if (!w.getValidity().getValue().isUsable()) {
-                    return null;
-                }
+            return Bindings.createObjectBinding(
+                    () -> {
+                        if (!w.getValidity().getValue().isUsable()) {
+                            return null;
+                        }
 
-                if (w.getPersistentState().getValue() instanceof ShellStoreState s) {
-                    if (s.getShellDialect() != null
-                            && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                        return SUCCESS;
-                    }
+                        if (w.getPersistentState().getValue() instanceof ShellStoreState s) {
+                            if (s.getShellDialect() != null
+                                    && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                                return SUCCESS;
+                            }
 
-                    return s.getRunning() != null ? s.getRunning() ? SUCCESS : FAILURE : OTHER;
-                }
+                            return s.getRunning() != null ? s.getRunning() ? SUCCESS : FAILURE : OTHER;
+                        }
 
-                return OTHER;
-            }, w.getPersistentState(), w.getValidity());
+                        return OTHER;
+                    },
+                    w.getPersistentState(),
+                    w.getValidity());
         }
     }
 }

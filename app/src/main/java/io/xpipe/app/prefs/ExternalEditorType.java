@@ -5,9 +5,9 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
@@ -394,24 +394,25 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxType VSCODE_LINUX = new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
-        @Override
-        public void launch(Path file) throws Exception {
-            var exec = CommandSupport.isInLocalPath(getExecutable()) ?
-                    CommandBuilder.of().addFile(getExecutable()) :
-                    FlatpakCache.runCommand(getFlatpakId());
+    LinuxType VSCODE_LINUX =
+            new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
+                @Override
+                public void launch(Path file) throws Exception {
+                    var exec = CommandSupport.isInLocalPath(getExecutable())
+                            ? CommandBuilder.of().addFile(getExecutable())
+                            : FlatpakCache.runCommand(getFlatpakId());
 
-            if (FlatpakCache.getApp(getFlatpakId()).isEmpty()) {
-                CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
-            }
+                    if (FlatpakCache.getApp(getFlatpakId()).isEmpty()) {
+                        CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
+                    }
 
-            var builder = CommandBuilder.of()
-                    .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
-                    .add(exec)
-                    .addFile(file.toString());
-            ExternalApplicationHelper.startAsync(builder);
-        }
-    };
+                    var builder = CommandBuilder.of()
+                            .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
+                            .add(exec)
+                            .addFile(file.toString());
+                    ExternalApplicationHelper.startAsync(builder);
+                }
+            };
 
     LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf", "https://windsurf.com/editor");
 
@@ -471,7 +472,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
 
-    LinuxType MOUSEPAD = new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
+    LinuxType MOUSEPAD =
+            new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
     ExternalEditorType TEXT_EDIT =

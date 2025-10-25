@@ -5,7 +5,6 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.icon.SystemIcon;
-import io.xpipe.app.icon.SystemIconCache;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.BooleanScope;

@@ -2,8 +2,8 @@ package io.xpipe.ext.base.host;
 
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.issue.TrackEvent;
-
 import io.xpipe.app.platform.OptionsBuilder;
+
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

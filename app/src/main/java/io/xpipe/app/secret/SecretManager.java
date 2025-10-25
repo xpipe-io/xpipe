@@ -90,8 +90,9 @@ public class SecretManager {
     }
 
     public static synchronized List<SecretQueryProgress> completeRequest(UUID request) {
-        var found = progress.stream().filter(
-                secretQueryProgress -> secretQueryProgress.getRequestId().equals(request))
+        var found = progress.stream()
+                .filter(secretQueryProgress ->
+                        secretQueryProgress.getRequestId().equals(request))
                 .toList();
 
         if (progress.removeAll(found)) {

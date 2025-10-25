@@ -7,7 +7,7 @@ public class ServiceAddressRotation {
 
     private static final Map<String, String> replacedUrls = new HashMap<>();
     private static int counter = 0;
-    private static final String[] aliases = new String[]{ "localhost", "127.0.0.1" };
+    private static final String[] aliases = new String[] {"localhost", "127.0.0.1"};
 
     static String getRotatedLocalhost(String url) {
         if (!url.startsWith("localhost")) {

@@ -49,11 +49,7 @@ public class RemminaHelper {
     }
 
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
-        var user = configuration
-                .getConfig()
-                .get("username")
-                .orElseThrow()
-                .getValue();
+        var user = configuration.getConfig().get("username").orElseThrow().getValue();
         var domain = user.contains("\\") ? user.split("\\\\")[0] : null;
         if (domain != null) {
             user = user.split("\\\\")[1];

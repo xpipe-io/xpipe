@@ -3,11 +3,10 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
-import io.xpipe.ext.base.host.HostAddressStore;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -26,7 +25,6 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
     private final String address;
     private final DataStoreEntryRef<NetworkTunnelStore> gateway;
 
-
     @Override
     public boolean canConvertToAbstractHost() {
         return host == null;
@@ -39,6 +37,10 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
 
     @Override
     public AbstractHostTransformStore withNewParent(DataStoreEntryRef<AbstractHostStore> newParent) {
-        return toBuilder().address(null).gateway(null).host(newParent.asNeeded()).build();
+        return toBuilder()
+                .address(null)
+                .gateway(null)
+                .host(newParent.asNeeded())
+                .build();
     }
 }

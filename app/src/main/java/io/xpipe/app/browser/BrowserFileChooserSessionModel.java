@@ -93,9 +93,13 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
 
             try (var ignored =
                     new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
-                model = new BrowserFileSystemTabModel(this, store, selectionMode, customFileSystemFactory != null ?
-                        customFileSystemFactory : ref -> ref.getStore()
-                        .createFileSystem());
+                model = new BrowserFileSystemTabModel(
+                        this,
+                        store,
+                        selectionMode,
+                        customFileSystemFactory != null
+                                ? customFileSystemFactory
+                                : ref -> ref.getStore().createFileSystem());
                 model.init();
                 // Prevent multiple calls from interfering with each other
                 synchronized (BrowserFileChooserSessionModel.this) {

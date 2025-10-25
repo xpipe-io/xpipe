@@ -80,7 +80,9 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
             var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsFileSystem.ofLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
-                DataStorage.get().updateEntryStore(ref.get(), script.toBuilder().commands(s).build());
+                DataStorage.get()
+                        .updateEntryStore(
+                                ref.get(), script.toBuilder().commands(s).build());
             });
         }
     }

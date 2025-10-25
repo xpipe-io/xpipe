@@ -9,9 +9,8 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.FailableRunnable;
-
-import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
@@ -34,12 +33,16 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     public boolean supportsSession(SingletonSessionStore<?> s) {
         var abs = (AbstractServiceStore) s;
         if (abs.getAddress() != null) {
-            return abs.getGateway() != null && abs.getGateway().getStore().isLocallyTunnelable() && abs.getGateway().getStore().requiresTunnel();
+            return abs.getGateway() != null
+                    && abs.getGateway().getStore().isLocallyTunnelable()
+                    && abs.getGateway().getStore().requiresTunnel();
         }
 
         if (abs.getHost() != null) {
             if (abs.getHost().getStore() instanceof HostAddressGatewayStore a) {
-                if (a.getGateway() != null && a.getGateway().getStore().requiresTunnel() && a.getGateway().getStore().isLocallyTunnelable()) {
+                if (a.getGateway() != null
+                        && a.getGateway().getStore().requiresTunnel()
+                        && a.getGateway().getStore().isLocallyTunnelable()) {
                     return true;
                 }
             }
@@ -64,8 +67,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
 
         return false;
     }
-
-
 
     @Override
     public FailableRunnable<Exception> launch(DataStoreEntry store) {

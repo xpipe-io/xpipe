@@ -154,7 +154,8 @@ public class FileBridge {
             var existingFile = ext.get().file;
             try {
                 var input = inputSupplier.get();
-                try (var out = Files.newOutputStream(existingFile); var in = input.open()) {
+                try (var out = Files.newOutputStream(existingFile);
+                        var in = input.open()) {
                     in.transferTo(out);
                 } finally {
                     input.onFinish();
@@ -173,7 +174,8 @@ public class FileBridge {
         try {
             FileUtils.forceMkdirParent(file.toFile());
             var input = inputSupplier.get();
-            try (var out = Files.newOutputStream(file); var in = input.open()) {
+            try (var out = Files.newOutputStream(file);
+                    var in = input.open()) {
                 in.transferTo(out);
             } finally {
                 input.onFinish();

@@ -9,10 +9,10 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.WrapperFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -20,7 +20,6 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -31,8 +30,8 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.scene.control.SelectionMode;
+
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -41,7 +40,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -507,7 +505,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         ThreadHelper.runFailableAsync(() -> {
             BooleanScope.executeExclusive(busy, () -> {
                 startIfNeeded();
-                var adjusted = BrowserFileDuplicates.renameFileDuplicate(fileSystem, entry.getPath(), entry.getKind() == FileKind.DIRECTORY);
+                var adjusted = BrowserFileDuplicates.renameFileDuplicate(
+                        fileSystem, entry.getPath(), entry.getKind() == FileKind.DIRECTORY);
                 fileSystem.copy(entry.getPath(), adjusted);
                 refreshSync();
             });

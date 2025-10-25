@@ -5,7 +5,6 @@ import io.xpipe.app.hub.action.impl.ToggleActionProvider;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.LabelGraphic;
 
-import io.xpipe.app.storage.DataStorage;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -79,7 +78,8 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
 
         t.setCustomVisibility(Bindings.createBooleanBinding(
                 () -> {
-                    SingletonSessionStore<?> s = sec.getWrapper().getEntry().getStore().asNeeded();
+                    SingletonSessionStore<?> s =
+                            sec.getWrapper().getEntry().getStore().asNeeded();
                     return supportsSession(s) && (showToggleWhenInactive(s) || s.isSessionEnabled());
                 },
                 sec.getWrapper().getCache(),
