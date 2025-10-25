@@ -29,7 +29,7 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
 
     @Override
     public String getAddress() {
-        return "localhost";
+        return null;
     }
 
     @Override
