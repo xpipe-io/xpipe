@@ -28,7 +28,7 @@ public class FreeRdpClient implements ExternalRdpClient {
             if (!v2 && OsType.ofLocal() == OsType.LINUX) {
                 var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
                 if (flatpak.isPresent()) {
-                    exec = CommandBuilder.of().add("flatpak", "run").addQuoted("com.freerdp.FreeRDP");
+                    exec = FlatpakCache.runCommand("com.freerdp.FreeRDP");
                     v3 = true;
                 } else {
                     CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");

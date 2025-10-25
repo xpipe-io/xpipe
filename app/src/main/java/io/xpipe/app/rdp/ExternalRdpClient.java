@@ -90,7 +90,7 @@ public interface ExternalRdpClient extends PrefsChoiceValue {
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
         var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
-        var string = input.toString();
+        var string = input.toString() + "\n";
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.PropertiesFormatsParser;
@@ -38,5 +39,9 @@ public class FlatpakCache {
         var app = App.builder().id(id).name(name).build();
         apps.put(id, app);
         return Optional.ofNullable(app);
+    }
+
+    public static CommandBuilder runCommand(String id) throws Exception {
+        return CommandBuilder.of().add("flatpak", "run").addQuoted(id).add("--filesystem=" + AppSystemInfo.ofLinux().getTemp());
     }
 }
