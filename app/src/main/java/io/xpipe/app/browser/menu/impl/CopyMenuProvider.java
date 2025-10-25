@@ -41,9 +41,4 @@ public class CopyMenuProvider implements BrowserMenuLeafProvider {
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("copy");
     }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
-    }
 }

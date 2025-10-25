@@ -1,6 +1,7 @@
 package io.xpipe.app.process;
 
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -15,7 +16,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 public class ShellTemp {
 
     public static Path getLocalTempDataDirectory(String sub) {
-        var temp = FileUtils.getTempDirectory().toPath().resolve("xpipe");
+        var temp = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe");
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.ofLocal() == OsType.LINUX) {

@@ -51,6 +51,11 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        var clipboard = BrowserClipboard.retrieveCopy();
+        if (clipboard == null) {
+            return false;
+        }
+
         return (entries.size() == 1
                         && entries.stream()
                                 .allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY))

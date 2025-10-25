@@ -11,6 +11,7 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -40,6 +41,7 @@ public class BrowserOverviewComp extends SimpleComp {
                 .getList();
         var recentOverview = new BrowserFileOverviewComp(model, recent, true);
         var recentPane = new SimpleTitledPaneComp(AppI18n.observable("recent"), recentOverview, false);
+        recentPane.hide(Bindings.isEmpty(recent));
         list.add(recentPane);
 
         var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
@@ -64,6 +66,7 @@ public class BrowserOverviewComp extends SimpleComp {
         var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false)
                 .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+        commonPane.hide(Bindings.isEmpty(commonPlatform));
         list.add(commonPane);
 
         var rootPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
@@ -77,6 +80,7 @@ public class BrowserOverviewComp extends SimpleComp {
         });
         var rootsOverview = new BrowserFileOverviewComp(model, rootPlatform, false);
         var rootsPane = new SimpleTitledPaneComp(AppI18n.observable("roots"), rootsOverview, false);
+        rootsPane.hide(Bindings.isEmpty(rootPlatform));
         list.add(rootsPane);
 
         var vbox = new VerticalComp(list).styleClass("overview");
