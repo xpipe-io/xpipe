@@ -190,6 +190,12 @@ def getWindowsSchemaCanonicalVersion() {
     return v + "." + last
 }
 
+interface InjectedExecOps {
+    @javax.inject.Inject
+    ExecOperations getExecOps()
+}
+
+
 // Project variables
 
 project.ext {
@@ -284,6 +290,9 @@ project.ext {
 
     // Other
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
+
+    def injected = project.objects.newInstance(InjectedExecOps)
+    execOps = injected.execOps;
 }
 
 group = groupName
@@ -370,3 +379,4 @@ if (isFullRelease && rawVersion.contains("-")) {
 if (isStage && !rawVersion.contains("-")) {
     throw new IllegalArgumentException("Stage releases must have release numbers")
 }
+
