@@ -101,7 +101,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                     return new Label(model.getFileSystem().getFileSeparator());
                 });
 
-                var elements = createBreadcumbHierarchy(val);
+                var elements = createBreadcrumbHierarchy(val);
                 Breadcrumbs.BreadCrumbItem<FilePath> items =
                         Breadcrumbs.buildTreeModel(elements.toArray(FilePath[]::new));
                 breadcrumbs.setSelectedCrumb(items);
@@ -122,14 +122,14 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         return breadcrumbs;
     }
 
-    private List<FilePath> createBreadcumbHierarchy(FilePath filePath) {
+    private List<FilePath> createBreadcrumbHierarchy(FilePath filePath) {
         var f = filePath.toDirectory().toString();
         var list = new ArrayList<FilePath>();
         int lastElementStart = 0;
         for (int i = 0; i < f.length(); i++) {
             if (f.charAt(i) == '\\' || f.charAt(i) == '/') {
                 if (i - lastElementStart > 0) {
-                    list.add(FilePath.of(f.substring(0, i)));
+                    list.add(FilePath.of(f.substring(0, i)).toDirectory());
                 }
 
                 lastElementStart = i + 1;
