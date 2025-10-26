@@ -30,7 +30,6 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.SelectionMode;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -158,8 +157,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             fs.open();
 
             // Listen to kill after init as the shell might get killed during init for certain reasons
-            if (fs.getShell().isPresent()) {
-                fs.getShell().get().onKill(() -> {
+            if (fs.getRawShellControl().isPresent()) {
+                fs.getRawShellControl().get().onKill(() -> {
                     browserModel.closeAsync(this);
                 });
             }
@@ -330,8 +329,12 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
+        if (!fileSystem.isRunning()) {
+            return Optional.empty();
+        }
+
         var cps = currentPath.get() != null ? currentPath.get().toString() : null;
-        if (Objects.equals(path, cps) && fileSystem.isRunning()) {
+        if (Objects.equals(path, cps)) {
             return Optional.empty();
         }
 

@@ -33,7 +33,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
             var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "")
                     + model.getName().getValue();
             model.openTerminalAsync(
-                    name, dir, model.getFileSystem().terminalControl().orElseThrow(), dirs.size() == 1);
+                    name, dir, model.getFileSystem().getRawShellControl().orElseThrow(), dirs.size() == 1);
         }
     }
 

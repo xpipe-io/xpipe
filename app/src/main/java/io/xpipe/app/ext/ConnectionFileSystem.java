@@ -77,7 +77,7 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public Optional<ShellControl> terminalControl() {
+    public Optional<ShellControl> getRawShellControl() {
         return Optional.of(shellControl);
     }
 

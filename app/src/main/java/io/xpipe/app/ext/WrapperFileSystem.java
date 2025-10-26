@@ -70,8 +70,8 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public Optional<ShellControl> terminalControl() {
-        return fs.terminalControl();
+    public Optional<ShellControl> getRawShellControl() {
+        return fs.getRawShellControl();
     }
 
     @Override

@@ -32,7 +32,7 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     boolean supportsTerminalWorkingDirectory();
 
-    Optional<ShellControl> terminalControl();
+    Optional<ShellControl> getRawShellControl();
 
     void chmod(FilePath path, String mode, boolean recursive) throws Exception;
 
