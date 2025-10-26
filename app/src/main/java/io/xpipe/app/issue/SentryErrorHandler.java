@@ -13,7 +13,6 @@ import io.sentry.*;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
-import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -159,7 +158,8 @@ public class SentryErrorHandler implements ErrorHandler {
                             if (Files.isDirectory(d)) {
                                 toUse = AttachmentHelper.compressZipfile(
                                         d,
-                                        AppSystemInfo.ofCurrent().getTemp()
+                                        AppSystemInfo.ofCurrent()
+                                                .getTemp()
                                                 .resolve(d.getFileName().toString() + ".zip"));
                             }
                             return new Attachment(toUse.toString());

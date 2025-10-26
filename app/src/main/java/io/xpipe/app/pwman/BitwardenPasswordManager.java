@@ -121,7 +121,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private Path getDefaultConfigPath() {
         return switch (OsType.ofLocal()) {
-            case OsType.Linux linux -> {
+            case OsType.Linux ignored -> {
                 if (System.getenv("XDG_CONFIG_HOME") != null) {
                     yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI")
                             .resolve("data.json");
@@ -132,11 +132,11 @@ public class BitwardenPasswordManager implements PasswordManager {
                             .resolve("data.json");
                 }
             }
-            case OsType.MacOs macOs ->
+            case OsType.MacOs ignored ->
                 AppSystemInfo.ofMacOs()
                         .getUserHome()
                         .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
-            case OsType.Windows windows ->
+            case OsType.Windows ignored ->
                 AppSystemInfo.ofWindows()
                         .getRoamingAppData()
                         .resolve("Bitwarden CLI")

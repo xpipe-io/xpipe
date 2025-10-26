@@ -46,7 +46,7 @@ public class ContextualFileReferenceSync {
                                         }
 
                                         @Override
-                                        public boolean handle(ErrorEvent event) throws Exception {
+                                        public boolean handle(ErrorEvent event) {
                                             return true;
                                         }
                                     })
@@ -62,7 +62,7 @@ public class ContextualFileReferenceSync {
                                         }
 
                                         @Override
-                                        public boolean handle(ErrorEvent event) throws Exception {
+                                        public boolean handle(ErrorEvent event) {
                                             rename.set(true);
                                             return true;
                                         }

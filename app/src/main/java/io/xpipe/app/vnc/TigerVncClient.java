@@ -109,7 +109,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
         }
 
         @Override
-        public String getFlatpakId() throws Exception {
+        public String getFlatpakId() {
             return "org.tigervnc.vncviewer";
         }
     }

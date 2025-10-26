@@ -5,8 +5,6 @@ import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.FailableFunction;

@@ -16,7 +16,7 @@ import java.util.Optional;
 public class AsktextAlert {
 
     public static Optional<String> query(String prompt, String value) {
-        var prop = new SimpleObjectProperty<String>(value);
+        var prop = new SimpleObjectProperty<>(value);
         var r = AppSideWindow.showBlockingAlert(alert -> {
                     alert.setTitle(AppI18n.get("asktextAlertTitle"));
                     alert.setHeaderText(prompt);

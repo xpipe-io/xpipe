@@ -415,7 +415,7 @@ public final class AppPrefs {
 
     private AppPrefs() {}
 
-    public final ObservableStringValue notesTemplate() {
+    public ObservableStringValue notesTemplate() {
         return notesTemplate;
     }
 

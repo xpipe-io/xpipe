@@ -119,19 +119,19 @@ public interface BrowserFileInput {
             }
 
             @Override
-            public void onFinish() throws Exception {}
+            public void onFinish() {}
         };
     }
 
     static BrowserFileInput of(InputStream in) {
         return new BrowserFileInput() {
             @Override
-            public InputStream open() throws Exception {
+            public InputStream open() {
                 return in;
             }
 
             @Override
-            public void onFinish() throws Exception {}
+            public void onFinish() {}
         };
     }
 

@@ -116,7 +116,7 @@ public class SystemIconManager {
         });
     }
 
-    public static void initAdditional() throws Exception {
+    public static void initAdditional() {
         for (var source : getEffectiveSources()) {
             if (!LOADED.containsKey(source)) {
                 var data = SystemIconSourceData.of(source);

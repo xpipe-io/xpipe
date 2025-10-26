@@ -40,7 +40,7 @@ public class AbstractHostCreationActionProvider implements HubLeafProvider<Abstr
     public static class Action extends StoreAction<AbstractHostTransformStore> {
 
         @Override
-        public void executeImpl() throws Exception {
+        public void executeImpl() {
             var d = ref.getStore();
             var ah = d.createAbstractHostStore();
             var entry = DataStorage.get().addStoreIfNotPresent(ref.get().getName(), ah);

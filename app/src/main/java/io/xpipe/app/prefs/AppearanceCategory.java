@@ -70,14 +70,14 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.maxWidth(600 / 2);
+        c.maxWidth(600.0 / 2);
         return new OptionsBuilder().pref(prefs.theme).addComp(c, prefs.theme);
     }
 
     public static OptionsBuilder languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
-        c.maxWidth(600 / 2);
+        c.maxWidth(600.0 / 2);
         c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);

@@ -4,8 +4,6 @@ import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 

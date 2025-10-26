@@ -74,7 +74,7 @@ public class KonsoleTerminalType implements ExternalTerminalType, ExternalApplic
     }
 
     @Override
-    public String getFlatpakId() throws Exception {
+    public String getFlatpakId() {
         return "org.kde.konsole";
     }
 

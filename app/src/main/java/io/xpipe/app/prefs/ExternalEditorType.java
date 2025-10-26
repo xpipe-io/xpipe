@@ -771,7 +771,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
 
         @Override
-        public String getFlatpakId() throws Exception {
+        public String getFlatpakId() {
             return flatpakId;
         }
     }

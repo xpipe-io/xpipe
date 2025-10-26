@@ -41,7 +41,7 @@ public class FootTerminalType implements ExternalTerminalType, ExternalApplicati
     }
 
     @Override
-    public String getFlatpakId() throws Exception {
+    public String getFlatpakId() {
         return "page.codeberg.dnkl.foot";
     }
 
