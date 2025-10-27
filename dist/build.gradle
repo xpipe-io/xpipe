@@ -82,16 +82,18 @@ String getArtifactChecksumSha256Hex(String name) {
 }
 
 String getArtifactChecksumSha256Base64(String name) {
-    var cs = getArtifactChecksumSha256Hex(name)
+    var cs = "af167f949c517d88267277bb3e28fa51055da0700e36434d0ab2c5763d2a54b5" // getArtifactChecksumSha256Hex(name)
     if (cs.isEmpty()) {
         return ""
     }
 
-    BigInteger bigInt = new BigInteger(cs, 16)
     Base64.Encoder encoder = Base64.getEncoder();
-    byte[] bigIntegerBytes = bigInt.toByteArray();
-    return encoder.encodeToString(bigIntegerBytes)
+    byte[] bytes = HexFormat.of().parseHex(cs)
+    println(bytes.length)
+    return encoder.encodeToString(bytes)
 }
+
+println(getArtifactChecksumSha256Base64("xpipe-installer-windows-x86_64.msi"))
 
 clean {
     doFirst {
