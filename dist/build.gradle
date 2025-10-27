@@ -81,20 +81,6 @@ String getArtifactChecksumSha256Hex(String name) {
     return file.get().getAsFile().exists() ? file.get().getAsFile().text : ""
 }
 
-String getArtifactChecksumSha256Base64(String name) {
-    var cs = "af167f949c517d88267277bb3e28fa51055da0700e36434d0ab2c5763d2a54b5" // getArtifactChecksumSha256Hex(name)
-    if (cs.isEmpty()) {
-        return ""
-    }
-
-    Base64.Encoder encoder = Base64.getEncoder();
-    byte[] bytes = HexFormat.of().parseHex(cs)
-    println(bytes.length)
-    return encoder.encodeToString(bytes)
-}
-
-println(getArtifactChecksumSha256Base64("xpipe-installer-windows-x86_64.msi"))
-
 clean {
     doFirst {
         // Fix clean failing when file is read-only
