@@ -82,7 +82,15 @@ String getArtifactChecksumSha256Hex(String name) {
 }
 
 String getArtifactChecksumSha256Base64(String name) {
-    return Base64.getEncoder().encodeToString(HexFormat.of().parseHex(getArtifactChecksumSha256Hex(name)))
+    var cs = getArtifactChecksumSha256Hex(name)
+    if (cs.isEmpty()) {
+        return ""
+    }
+
+    BigInteger bigInt = new BigInteger(cs, 16)
+    Base64.Encoder encoder = Base64.getEncoder();
+    byte[] bigIntegerBytes = bigInt.toByteArray();
+    return encoder.encodeToString(bigIntegerBytes)
 }
 
 clean {
