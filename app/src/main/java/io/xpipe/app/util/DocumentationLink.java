@@ -30,6 +30,7 @@ public enum DocumentationLink {
     DOCKER("guide/docker"),
     PROXMOX("guide/proxmox"),
     TAILSCALE("guide/tailscale"),
+    NETBIRD("guide/netbird"),
     TELEPORT("guide/teleport"),
     LXC("guide/lxc"),
     APPLE_CONTAINERS("guide/apple-containers"),
