@@ -52,9 +52,9 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                     var string = all.size() == shown.size() ? all.size() : shown.size() + "/" + all.size();
                     return all.size() > 0
                             ? (all.size() == 1
-                                    ? AppI18n.get("abstractHostHasConnection", string)
-                                    : AppI18n.get("abstractHostHasConnections", string))
-                            : AppI18n.get("abstractHostNoConnections");
+                                    ? AppI18n.get("hostHasConnection", string)
+                                    : AppI18n.get("ahostHasConnections", string))
+                            : AppI18n.get("hostNoConnections");
                 },
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),

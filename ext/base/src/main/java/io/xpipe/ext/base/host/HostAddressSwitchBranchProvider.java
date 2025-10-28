@@ -34,7 +34,7 @@ public class HostAddressSwitchBranchProvider implements HubBranchProvider<HostAd
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<HostAddressSwitchStore> o) {
-        return !o.getStore().getHostAddress().isSingle();
+        return o.getStore().getHostAddress() != null && !o.getStore().getHostAddress().isSingle();
     }
 
     @Override

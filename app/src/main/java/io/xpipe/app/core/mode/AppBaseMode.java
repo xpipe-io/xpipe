@@ -60,8 +60,9 @@ public class AppBaseMode extends AppOperationMode {
         // if (true) throw new IllegalStateException();
 
         TrackEvent.info("Initializing base mode components ...");
-        AppMainWindow.loadingText("initializingApp");
+        AppMainWindow.loadingText("checkingLicense");
         LicenseProvider.get().init();
+        AppMainWindow.loadingText("initializingApp");
         AppWindowTitle.init();
         AppPathCorruptCheck.check();
         AppWindowsTempCheck.check();

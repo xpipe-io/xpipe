@@ -22,5 +22,9 @@ public interface LicensedFeature {
 
     boolean isSupported();
 
+    boolean supportsFeatureInPreview();
+
+    boolean recentlySupportedFeatureInPreview();
+
     void throwIfUnsupported() throws LicenseRequiredException;
 }

@@ -44,6 +44,7 @@ public enum DocumentationLink {
     SSH("guide/ssh"),
     SSH_GATEWAYS("guide/ssh#gateways-and-jump-servers"),
     SSH_HOST_KEYS("troubleshoot/ssh#no-matching-host-key-type-found"),
+    SSH_BAD_FILE_DESCRIPTOR("troubleshoot/ssh#bad-file-descriptor"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
