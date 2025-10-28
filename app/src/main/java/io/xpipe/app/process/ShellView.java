@@ -155,7 +155,7 @@ public class ShellView {
 
     public Optional<FilePath> findProgram(String name) throws Exception {
         var out = shellControl
-                .command(shellControl.getShellDialect().getWhichCommand(name))
+                .command(shellControl.getShellDialect().whichCommand(shellControl, name))
                 .readStdoutIfPossible();
         return out.flatMap(s -> s.lines().findFirst()).map(String::trim).map(s -> FilePath.of(s));
     }

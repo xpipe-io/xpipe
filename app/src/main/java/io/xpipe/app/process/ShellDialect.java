@@ -181,7 +181,7 @@ public interface ShellDialect {
 
     CommandControl getFileTouchCommand(ShellControl parent, String file);
 
-    String getWhichCommand(String executable);
+    String whichCommand(ShellControl sc, String executable) throws Exception;
 
     Charset determineCharset(ShellControl control) throws Exception;
 
