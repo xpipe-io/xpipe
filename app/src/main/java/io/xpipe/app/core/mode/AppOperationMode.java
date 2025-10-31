@@ -161,28 +161,31 @@ public abstract class AppOperationMode {
         return XPipeDaemonMode.GUI;
     }
 
-    @SneakyThrows
     public static void init(String[] args) {
         inStartup = true;
         setup(args);
 
-        if (AppProperties.get().isAotTrainMode()) {
-            AppOperationMode.switchToSyncOrThrow(BACKGROUND);
-            inStartup = false;
-            AppAotTrain.runTrainingMode();
-            AppOperationMode.shutdown(false);
-            return;
-        }
+        try {
+            if (AppProperties.get().isAotTrainMode()) {
+                AppOperationMode.switchToSyncOrThrow(BACKGROUND);
+                inStartup = false;
+                AppAotTrain.runTrainingMode();
+                AppOperationMode.shutdown(false);
+                return;
+            }
 
-        var startupMode = getStartupMode();
-        switchToSyncOrThrow(map(startupMode));
-        // If it doesn't find time, the JVM will not gc the startup workload
-        System.gc();
-        inStartup = false;
-        AppOpenArguments.init();
-        ThreadHelper.runAsync(() -> {
-            DataStorage.get().generateCaches();
-        });
+            var startupMode = getStartupMode();
+            switchToSyncOrThrow(map(startupMode));
+            // If it doesn't find time, the JVM will not gc the startup workload
+            System.gc();
+            inStartup = false;
+            AppOpenArguments.init();
+            ThreadHelper.runAsync(() -> {
+                DataStorage.get().generateCaches();
+            });
+        } catch (Throwable ex) {
+            ErrorEventFactory.fromThrowable(ex).term().handle();
+        }
     }
 
     public static void switchToAsync(AppOperationMode newMode) {
