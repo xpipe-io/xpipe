@@ -20,6 +20,8 @@ import javafx.util.Duration;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.lang.ref.WeakReference;
+
 public class AppModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
@@ -30,9 +32,11 @@ public class AppModifiedStage extends Stage {
         ObservableList<Window> list = Window.getWindows();
         list.addListener((ListChangeListener<Window>) c -> {
             if (c.next() && c.wasAdded()) {
-                var added = c.getAddedSubList().getFirst();
-                if (added instanceof Stage stage) {
-                    hookUpStage(stage);
+                var added = c.getAddedSubList();
+                for (Window window : added) {
+                    if (window instanceof Stage stage) {
+                        hookUpStage(stage);
+                    }
                 }
             }
         });
@@ -46,17 +50,30 @@ public class AppModifiedStage extends Stage {
 
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
+
+        // Fix GC not working when the stage is no longer needed
+        var ref = new WeakReference<>(stage);
+
         if (AppPrefs.get() != null) {
             AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
-                updateStage(stage);
+                var val = ref.get();
+                if (val != null) {
+                    updateStage(val);
+                }
             });
             AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
-                updateStage(stage);
+                var val = ref.get();
+                if (val != null) {
+                    updateStage(val);
+                }
             });
         }
         if (stage.getScene() != null) {
             stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
-                applyModes(stage);
+                var val = ref.get();
+                if (val != null) {
+                    applyModes(val);
+                }
             });
         }
     }
