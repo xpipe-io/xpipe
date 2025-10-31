@@ -15,10 +15,6 @@ import java.nio.file.Path;
 
 public class DesktopHelper {
 
-    private static final String[] browsers = {
-        "xdg-open", "google-chrome", "firefox", "opera", "konqueror", "mozilla", "gnome-open", "open"
-    };
-
     public static void openUrl(String uri) {
         if (uri == null) {
             return;
@@ -37,8 +33,82 @@ public class DesktopHelper {
             return;
         }
 
+        // This can be a blocking operation
         ThreadHelper.runFailableAsync(() -> {
             Desktop.getDesktop().browse(parsed);
+        });
+    }
+
+    public static void browseFile(Path file) {
+        if (file == null || !Files.exists(file)) {
+            return;
+        }
+
+        // This can be a blocking operation
+        ThreadHelper.runAsync(() -> {
+            var xdg = OsType.ofLocal() == OsType.LINUX;
+            if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(file.toFile().toURI());
+                    return;
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
+                }
+            }
+
+            if (xdg) {
+                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
+            }
+        });
+    }
+
+    public static void browseFileInDirectory(Path file) {
+        if (file == null || !Files.exists(file)) {
+            return;
+        }
+
+        // Windows does not support Action.BROWSE_FILE_DIR
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            // Explorer does not support single quotes, so use normal quotes
+            if (Files.isDirectory(file)) {
+                LocalExec.readStdoutIfPossible("explorer", "\"" + file + "\"");
+            } else {
+                LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
+            }
+            return;
+        }
+
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
+            browseFile(file.getParent());
+            return;
+        }
+
+        // This can be a blocking operation
+        ThreadHelper.runAsync(() -> {
+            var xdg = OsType.ofLocal() == OsType.LINUX;
+            try {
+                Desktop.getDesktop().browseFileDirectory(file.toFile());
+                return;
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
+            }
+
+            // Some basic linux systems have trouble with the API call
+            // As a fallback, use xdg-open
+            if (xdg) {
+                LocalExec.readStdoutIfPossible("xdg-open", file.getParent().toString());
+            }
+        });
+    }
+
+    public static void openFileInDefaultApplication(Path file) {
+        if (file == null || !Files.exists(file)) {
+            return;
+        }
+
+        // This can be a blocking operation
+        ThreadHelper.runFailableAsync(() -> {
+            Desktop.getDesktop().open(file.toFile());
         });
     }
 
@@ -50,7 +120,7 @@ public class DesktopHelper {
                     sc.command(CommandBuilder.of().add("explorer").addQuoted(path.toString()))
                             .execute();
                 } else {
-                    sc.command(CommandBuilder.of().add("explorer", "/select,\"" + path.toString() + "\""))
+                    sc.command(CommandBuilder.of().add("explorer", "/select,", "\"" + path.toString() + "\""))
                             .execute();
                 }
             }
@@ -82,55 +152,5 @@ public class DesktopHelper {
             }
             default -> {}
         }
-    }
-
-    public static void browsePathLocal(Path file) {
-        if (file == null) {
-            return;
-        }
-
-        if (!Files.exists(file)) {
-            return;
-        }
-
-        ThreadHelper.runAsync(() -> {
-            var xdg = OsType.ofLocal() == OsType.LINUX;
-            if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)
-                    && AppDistributionType.get() != AppDistributionType.WEBTOP) {
-                try {
-                    Desktop.getDesktop().browse(file.toFile().toURI());
-                    return;
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
-                }
-            }
-
-            if (xdg) {
-                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
-            }
-        });
-    }
-
-    public static void browseFileInDirectory(Path file) {
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
-            browsePathLocal(file.getParent());
-            return;
-        }
-
-        ThreadHelper.runAsync(() -> {
-            var xdg = OsType.ofLocal() == OsType.LINUX;
-            if (AppDistributionType.get() != AppDistributionType.WEBTOP) {
-                try {
-                    Desktop.getDesktop().browseFileDirectory(file.toFile());
-                    return;
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
-                }
-            }
-
-            if (xdg) {
-                LocalExec.readStdoutIfPossible("xdg-open", file.getParent().toString());
-            }
-        });
     }
 }

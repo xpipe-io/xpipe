@@ -212,7 +212,7 @@ public class StoreCategoryComp extends SimpleComp {
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(event ->
-                    DesktopHelper.browsePathLocal(category.getCategory().getDirectory()));
+                    DesktopHelper.browseFile(category.getCategory().getDirectory()));
             contextMenu.getItems().add(browse);
         }
 

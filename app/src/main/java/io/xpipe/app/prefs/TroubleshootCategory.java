@@ -104,7 +104,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
                                         e -> {
-                                            DesktopHelper.browsePathLocal(
+                                            DesktopHelper.browseFile(
                                                     AppInstallation.ofCurrent().getBaseInstallationPath());
                                             e.consume();
                                         })

@@ -74,7 +74,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .sub(prefs.getCustomOptions("gitVaultIdentityStrategy"))
                         .nameAndDescription("browseVault")
                         .addComp(new ButtonComp(AppI18n.observable("browseVaultButton"), () -> {
-                            DesktopHelper.browsePathLocal(DataStorage.get().getStorageDir());
+                            DesktopHelper.browseFile(DataStorage.get().getStorageDir());
                         })));
         return builder.buildComp();
     }

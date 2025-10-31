@@ -38,7 +38,7 @@ public class LoggingCategory extends AppPrefsCategory {
                                     var dir = AppProperties.get().getDataDir().resolve("sessions");
                                     try {
                                         Files.createDirectories(dir);
-                                        DesktopHelper.browsePathLocal(dir);
+                                        DesktopHelper.browseFile(dir);
                                     } catch (IOException e) {
                                         ErrorEventFactory.fromThrowable(e).handle();
                                     }

@@ -83,7 +83,7 @@ public interface SystemIconSource {
         @Override
         public void open() {
             if (Files.exists(path)) {
-                DesktopHelper.browsePathLocal(path);
+                DesktopHelper.browseFile(path);
             }
         }
     }
