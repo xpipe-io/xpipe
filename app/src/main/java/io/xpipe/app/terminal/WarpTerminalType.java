@@ -4,6 +4,8 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -82,7 +84,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
                                 .getScriptDialect()
                                 .runScriptCommand(
                                         sc, configuration.getScriptFile().toString());
-                var script = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
+                var script = URLEncoder.encode(ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command).toUnix().toString(), StandardCharsets.UTF_8);
                 if (!configuration.isPreferTabs()) {
                     DesktopHelper.openUrl("warp://action/new_window?path=" + script);
                 } else {

@@ -10,6 +10,7 @@ import io.xpipe.core.OsType;
 
 import java.awt.*;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -98,17 +99,6 @@ public class DesktopHelper {
             if (xdg) {
                 LocalExec.readStdoutIfPossible("xdg-open", file.getParent().toString());
             }
-        });
-    }
-
-    public static void openFileInDefaultApplication(Path file) {
-        if (file == null || !Files.exists(file)) {
-            return;
-        }
-
-        // This can be a blocking operation
-        ThreadHelper.runFailableAsync(() -> {
-            Desktop.getDesktop().open(file.toFile());
         });
     }
 
