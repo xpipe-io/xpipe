@@ -27,6 +27,7 @@ public class RemminaHelper {
 
         try (var sc = LocalShell.getShell().start()) {
             var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
+                    .sensitive()
                     .readStdoutIfPossible();
             if (prefSecretBase64.isEmpty()) {
                 return Optional.empty();
