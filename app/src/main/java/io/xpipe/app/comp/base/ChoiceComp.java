@@ -69,7 +69,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         range.subscribe(c -> {
             var list = FXCollections.observableArrayList(c.keySet());
             if (!list.contains(null) && includeNone) {
-                list.add(null);
+                list.addFirst(null);
             }
 
             cb.getItems().setAll(list);

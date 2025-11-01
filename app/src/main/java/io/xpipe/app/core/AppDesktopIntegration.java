@@ -25,19 +25,16 @@ public class AppDesktopIntegration {
 
                     @Override
                     public void systemAwoke(SystemSleepEvent e) {
-                        var handler = DataStorageUserHandler.getInstance();
-                        if (AppPrefs.get() != null
-                                && AppPrefs.get().lockVaultOnHibernation().get()
-                                && handler != null
-                                && handler.getActiveUser() != null) {
-                            // If we run this at the same time as the system is sleeping, there might be exceptions
-                            // because the platform does not like being shut down while sleeping
-                            // This assures that it will be run later, on system wake
-                            ThreadHelper.runAsync(() -> {
-                                ThreadHelper.sleep(1000);
-                                AppOperationMode.close();
-                            });
+                        if (AppPrefs.get() == null) {
+                            return;
                         }
+
+                        var b = AppPrefs.get().hibernateBehaviour().getValue();
+                        if (b == null) {
+                            return;
+                        }
+
+                        b.run();
                     }
                 });
             }

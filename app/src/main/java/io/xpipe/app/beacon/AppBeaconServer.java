@@ -76,6 +76,7 @@ public class AppBeaconServer {
             // Not terminal!
             // We can still continue without the running server
             ErrorEventFactory.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
+                    .documentationLink(DocumentationLink.BEACON_PORT_BIND)
                     .build()
                     .handle();
         }

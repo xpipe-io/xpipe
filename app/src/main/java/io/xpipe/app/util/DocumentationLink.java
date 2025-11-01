@@ -79,6 +79,7 @@ public enum DocumentationLink {
     SERIAL("guide/serial"),
     ICONS("guide/hub#icons"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
+    BEACON_PORT_BIND("troubleshoot/beacon-port"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),
     SERIAL_PORTS("guide/serial#serial-ports"),
     TERMINAL("guide/terminals#noteworthy-integrations"),

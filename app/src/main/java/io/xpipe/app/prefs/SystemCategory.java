@@ -37,6 +37,12 @@ public class SystemCategory extends AppPrefsCategory {
                                         PrefsChoiceValue.getSupported(CloseBehaviour.class),
                                         false)
                                 .maxWidth(getCompWidth()))
+                        .pref(prefs.hibernateBehaviour)
+                        .addComp(ChoiceComp.ofTranslatable(
+                                        prefs.hibernateBehaviour,
+                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class),
+                                        true)
+                                .maxWidth(getCompWidth()))
                         .pref(prefs.localShellDialect)
                         .addComp(
                                 new ShellDialectChoiceComp(

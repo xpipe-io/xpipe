@@ -324,8 +324,8 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
             mapLocal(new GlobalBooleanProperty(true), "showChildrenConnectionsInParentCategory", Boolean.class, false);
-    final BooleanProperty lockVaultOnHibernation =
-            mapLocal(new GlobalBooleanProperty(false), "lockVaultOnHibernation", Boolean.class, false);
+    final Property<HibernateBehaviour> hibernateBehaviour =
+            mapLocal(new GlobalObjectProperty<>(), "hibernateBehaviour", HibernateBehaviour.class, false);
     final BooleanProperty openConnectionSearchWindowOnConnectionCreation = mapLocal(
             new GlobalBooleanProperty(true), "openConnectionSearchWindowOnConnectionCreation", Boolean.class, false);
     final ObjectProperty<FilePath> downloadsDirectory =
@@ -584,8 +584,8 @@ public final class AppPrefs {
         return disableTerminalRemotePasswordPreparation;
     }
 
-    public ObservableBooleanValue lockVaultOnHibernation() {
-        return lockVaultOnHibernation;
+    public ObservableValue<HibernateBehaviour> hibernateBehaviour() {
+        return hibernateBehaviour;
     }
 
     public ObservableValue<Boolean> alwaysConfirmElevation() {

@@ -2,10 +2,12 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorageSyncHandler;
@@ -86,8 +88,6 @@ public class VaultCategory extends AppPrefsCategory {
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync())));
         builder.sub(new OptionsBuilder()
-                .pref(prefs.lockVaultOnHibernation)
-                .addToggle(prefs.lockVaultOnHibernation)
                 .pref(prefs.encryptAllVaultData)
                 .addToggle(encryptVault));
         return builder.buildComp();
