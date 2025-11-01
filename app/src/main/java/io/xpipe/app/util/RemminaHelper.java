@@ -32,8 +32,11 @@ public class RemminaHelper {
                 return Optional.empty();
             }
 
-            var paddedPassword = password.getSecretValue();
-            paddedPassword = paddedPassword + "\0".repeat(8 - paddedPassword.length() % 8);
+            var rawPassword = password.getSecretRaw();
+            var toPad = rawPassword.length % 8;
+            var paddedPassword = new byte[rawPassword.length + toPad];
+            System.arraycopy(rawPassword, 0, paddedPassword, 0, rawPassword.length);
+
             var prefSecret = Base64.getDecoder().decode(prefSecretBase64.get());
             var key = Arrays.copyOfRange(prefSecret, 0, 24);
             var iv = Arrays.copyOfRange(prefSecret, 24, prefSecret.length);
@@ -42,7 +45,7 @@ public class RemminaHelper {
             var keySpec = new SecretKeySpec(key, "DESede");
             var ivspec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivspec);
-            byte[] encryptedText = cipher.doFinal(paddedPassword.getBytes(StandardCharsets.UTF_8));
+            byte[] encryptedText = cipher.doFinal(paddedPassword);
             var base64Encrypted = Base64.getEncoder().encodeToString(encryptedText);
             return Optional.ofNullable(base64Encrypted);
         }
