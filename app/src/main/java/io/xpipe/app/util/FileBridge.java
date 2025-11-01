@@ -18,10 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
+import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -110,6 +107,9 @@ public class FileBridge {
                     in.transferTo(OutputStream.nullOutputStream());
                     var taken = Duration.between(started, Instant.now());
                     event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");
+                } catch (NoSuchFileException ex) {
+                    // The file might be removed meanwhile
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
                 }
             } else {
                 event("File doesn't seem to be changed");

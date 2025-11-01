@@ -109,7 +109,11 @@ public class BitwardenPasswordManager implements PasswordManager {
                     CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
-            var login = json.required("login");
+            var login = json.get("login");
+            if (login == null) {
+                throw new IllegalArgumentException("No usable login found for item name " + key);
+            }
+
             var user = login.required("username");
             var password = login.required("password");
             return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));

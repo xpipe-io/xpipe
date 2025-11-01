@@ -92,7 +92,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .grow(false, true);
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
-            if (!AppPrefs.get().enableGitStorage().get()) {
+            if (!DataStorageSyncHandler.getInstance().supportsSync()) {
                 AppLayoutModel.get().selectSettings();
                 AppPrefs.get().selectCategory("vaultSync");
                 return;

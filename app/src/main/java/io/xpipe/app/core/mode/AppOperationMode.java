@@ -80,6 +80,14 @@ public abstract class AppOperationMode {
                     return;
                 }
 
+                // It seems like a few exceptions are thrown in the quantum renderer
+                // when the screen configuration changes
+                if (Platform.isFxApplicationThread()
+                        && ex instanceof IllegalArgumentException
+                        && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
+                    return;
+                }
+
                 // There are some accessibility exceptions on macOS, nothing we can do about that
                 if (Platform.isFxApplicationThread()
                         && ex instanceof NullPointerException
