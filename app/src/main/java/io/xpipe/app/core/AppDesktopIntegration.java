@@ -5,8 +5,6 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
@@ -21,7 +19,18 @@ public class AppDesktopIntegration {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
                     @Override
-                    public void systemAboutToSleep(SystemSleepEvent e) {}
+                    public void systemAboutToSleep(SystemSleepEvent e) {
+                        if (AppPrefs.get() == null) {
+                            return;
+                        }
+
+                        var b = AppPrefs.get().hibernateBehaviour().getValue();
+                        if (b == null) {
+                            return;
+                        }
+
+                        b.runOnSleep();
+                    }
 
                     @Override
                     public void systemAwoke(SystemSleepEvent e) {
@@ -34,7 +43,7 @@ public class AppDesktopIntegration {
                             return;
                         }
 
-                        b.run();
+                        b.runOnWake();
                     }
                 });
             }
