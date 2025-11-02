@@ -214,6 +214,7 @@ public class AppBaseMode extends AppOperationMode {
         FileBridge.reset();
         AppFileWatcher.reset();
         GlobalTimer.reset();
+        LocalFileTracker.reset();
         TrackEvent.info("Base mode shutdown finished");
     }
 }

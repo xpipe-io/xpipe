@@ -283,7 +283,10 @@ public abstract class DataStorage {
     public boolean shouldSync(DataStoreCategory category) {
         // Don't sync lone identities category
         if (category.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)
-                && getStoreEntries().stream().noneMatch(e -> e.getCategoryUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID))) {
+                && getStoreEntries().stream().noneMatch(e -> {
+                    var hierarchy = getCategoryParentHierarchy(getStoreCategory(e));
+                    return hierarchy.stream().anyMatch(h -> h.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID));
+        })) {
             return false;
         }
 

@@ -9,6 +9,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -25,6 +26,7 @@ import java.util.Optional;
 @JsonSubTypes({
     @JsonSubTypes.Type(value = NoIdentityStrategy.class),
     @JsonSubTypes.Type(value = KeyFileStrategy.class),
+    @JsonSubTypes.Type(value = InPlaceKeyStrategy.class),
     @JsonSubTypes.Type(value = OpenSshAgentStrategy.class),
     @JsonSubTypes.Type(value = PageantStrategy.class),
     @JsonSubTypes.Type(value = CustomAgentStrategy.class),
@@ -39,6 +41,7 @@ public interface SshIdentityStrategy {
         var l = new ArrayList<Class<?>>();
         l.add(NoIdentityStrategy.class);
         l.add(KeyFileStrategy.class);
+        l.add(InPlaceKeyStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);

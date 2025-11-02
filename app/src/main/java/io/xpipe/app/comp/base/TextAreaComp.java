@@ -29,8 +29,15 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
         this.lastAppliedValue = value;
         this.currentValue = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
-        value.subscribe(val -> {
-            this.currentValue.setValue(val);
+        if (!lazy) {
+            currentValue.subscribe(val -> {
+                if (!Objects.equals(val, value.getValue())) {
+                    value.setValue(val);
+                }
+            });
+        }
+        lastAppliedValue.subscribe(val -> {
+            currentValue.setValue(val);
         });
     }
 

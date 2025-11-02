@@ -75,14 +75,20 @@ public class ShellTemp {
                     + AppProperties.get().getSessionId().toString().substring(0, 8));
             var newSession = !sc.view().fileExists(sessionFile);
             if (newSession) {
-                // The temp dir is a lot to clean on Windows potentially
-                // Also, the wildcard remove is very slow in PowerShell
-                var skipClear = OsType.ofLocal() == OsType.WINDOWS && sc.isLocal();
-                if (!skipClear) {
-                    clearFiles(sc, systemTemp.join("xpipe-"));
-                }
+                clearTemp(sc);
                 sc.view().touch(sessionFile);
             }
+        }
+    }
+
+    public static void clearTemp(ShellControl sc) throws Exception {
+        var systemTemp = sc.getSystemTemporaryDirectory();
+
+        // The temp dir is a lot to clean on Windows potentially
+        // Also, the wildcard remove is very slow in PowerShell
+        var skipClear = OsType.ofLocal() == OsType.WINDOWS && sc.isLocal();
+        if (!skipClear) {
+            clearFiles(sc, systemTemp.join("xpipe-"));
         }
     }
 
