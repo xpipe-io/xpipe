@@ -22,6 +22,7 @@ public enum AppDistributionType implements Translatable {
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
+    APP_IMAGE("appImage", false, () -> new PortableUpdater(true)),
     HOMEBREW("homebrew", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(
@@ -161,6 +162,10 @@ public enum AppDistributionType implements Translatable {
                                 .startsWith(
                                         AppSystemInfo.ofWindows().getUserHome().resolve("scoop"))) {
                     return SCOOP;
+                }
+
+                if (OsType.ofLocal() == OsType.LINUX && base.toString().startsWith("/mnt") && System.getenv("APPIMAGE") != null) {
+                    return APP_IMAGE;
                 }
 
                 return PORTABLE;

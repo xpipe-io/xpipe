@@ -8,6 +8,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
@@ -63,6 +64,16 @@ public class WorkspaceCreationDialog {
                                             shortcutName);
                                 }
                                 default -> {
+                                    // AppImages are mounted and can't be called normally
+                                    if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
+                                        var exec = System.getenv("APPIMAGE");
+                                        yield DesktopShortcuts.create(
+                                                exec,
+                                                "-Dio.xpipe.app.dataDir=\"" + path.get()
+                                                        + "\" -Dio.xpipe.app.acceptEula=true",
+                                                shortcutName);
+                                    }
+
                                     var exec = AppInstallation.ofCurrent()
                                             .getCliExecutablePath()
                                             .toString();
