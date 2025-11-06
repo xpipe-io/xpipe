@@ -153,6 +153,7 @@ open module io.xpipe.app {
             ToggleActionProvider,
             OpenTerminalInDirectoryMenuProvider,
             OpenNativeFileDetailsMenuProvider,
+            BrowseInNativeManagerMenuProvider,
             BrowseInNativeManagerActionProvider,
             ApplyFileEditActionProvider,
             TransferFilesActionProvider,

@@ -7,6 +7,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
@@ -37,5 +38,10 @@ public class BrowseInNativeManagerMenuProvider implements BrowserMenuLeafProvide
     @Override
     public boolean acceptsEmptySelection() {
         return true;
+    }
+
+    @Override
+    public LabelGraphic getIcon() {
+        return new LabelGraphic.IconGraphic("mdi2f-folder-eye-outline");
     }
 }

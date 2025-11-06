@@ -4,16 +4,23 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DesktopHelper;
-
+import io.xpipe.core.OsType;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
-public class BrowseInNativeManagerActionProvider implements BrowserActionProvider {
+public class OpenFileNativeManagerActionProvider implements BrowserActionProvider {
+
+    @Override
+    public String getId() {
+        return "openFileNativeManager";
+    }
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
@@ -21,16 +28,8 @@ public class BrowseInNativeManagerActionProvider implements BrowserActionProvide
             return false;
         }
 
-        return model.getFileSystem()
-                .getShell()
-                .orElseThrow()
-                .getLocalSystemAccess()
-                .supportsFileSystemAccess();
-    }
-
-    @Override
-    public String getId() {
-        return "browseInNativeFileManager";
+        var sc = model.getFileSystem().getShell().orElseThrow();
+        return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }
 
     @Jacksonized
@@ -39,7 +38,7 @@ public class BrowseInNativeManagerActionProvider implements BrowserActionProvide
 
         @Override
         public void executeImpl() throws Exception {
-            ShellControl sc = model.getFileSystem().getShell().orElseThrow();
+            ShellControl sc = model.getFileSystem().getShell().get();
             for (BrowserEntry entry : getEntries()) {
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);

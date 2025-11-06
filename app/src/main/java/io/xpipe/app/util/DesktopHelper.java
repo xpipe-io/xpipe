@@ -90,7 +90,7 @@ public class DesktopHelper {
                         : "org.freedesktop.FileManager1.ShowItems";
                 var args = List.of(
                         "dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.FileManager1", "--type=method_call",
-                        "/org/freedesktop/FileManager1", action, "array:string:\"file://" + file + "\"", "string:\"\""
+                        "/org/freedesktop/FileManager1", action, "array:string:file://" + file, "string:"
                 );
                 try {
                     var success = LocalExec.readStdoutIfPossible(args.toArray(String[]::new)).isPresent();
