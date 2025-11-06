@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.FilePath;
@@ -13,6 +14,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class DesktopHelper {
 
@@ -47,17 +49,17 @@ public class DesktopHelper {
 
         // This can be a blocking operation
         ThreadHelper.runAsync(() -> {
-            var xdg = OsType.ofLocal() == OsType.LINUX;
             if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
                 try {
                     Desktop.getDesktop().browse(file.toFile().toURI());
                     return;
                 } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
+                    // Some basic linux systems have trouble with the API call
+                    ErrorEventFactory.fromThrowable(e).expected().omitted(OsType.ofLocal() == OsType.LINUX).handle();
                 }
             }
 
-            if (xdg) {
+            if (OsType.ofLocal() == OsType.LINUX) {
                 LocalExec.readStdoutIfPossible("xdg-open", file.toString());
             }
         });
@@ -68,36 +70,51 @@ public class DesktopHelper {
             return;
         }
 
-        // Windows does not support Action.BROWSE_FILE_DIR
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            // Explorer does not support single quotes, so use normal quotes
-            if (Files.isDirectory(file)) {
-                LocalExec.readStdoutIfPossible("explorer", "\"" + file + "\"");
-            } else {
-                LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
-            }
-            return;
-        }
-
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
-            browseFile(file.getParent());
-            return;
-        }
-
         // This can be a blocking operation
         ThreadHelper.runAsync(() -> {
-            var xdg = OsType.ofLocal() == OsType.LINUX;
-            try {
-                Desktop.getDesktop().browseFileDirectory(file.toFile());
+            // Windows does not support Action.BROWSE_FILE_DIR
+            if (OsType.ofLocal() == OsType.WINDOWS) {
+                // Explorer does not support single quotes, so use normal quotes
+                if (Files.isDirectory(file)) {
+                    LocalExec.readStdoutIfPossible("explorer", "\"" + file + "\"");
+                } else {
+                    LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
+                }
                 return;
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).expected().omitted(xdg).handle();
             }
 
-            // Some basic linux systems have trouble with the API call
-            // As a fallback, use xdg-open
-            if (xdg) {
-                LocalExec.readStdoutIfPossible("xdg-open", file.getParent().toString());
+            // Linux does not support Action.BROWSE_FILE_DIR
+            if (OsType.ofLocal() == OsType.LINUX) {
+                var action = Files.isDirectory(file)
+                        ? "org.freedesktop.FileManager1.ShowFolders"
+                        : "org.freedesktop.FileManager1.ShowItems";
+                var args = List.of(
+                        "dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.FileManager1", "--type=method_call",
+                        "/org/freedesktop/FileManager1", action, "array:string:\"file://" + file + "\"", "string:\"\""
+                );
+                try {
+                    var success = LocalExec.readStdoutIfPossible(args.toArray(String[]::new)).isPresent();
+                    if (success) {
+                        return;
+                    }
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
+                }
+            }
+
+            if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE_FILE_DIR)) {
+                browseFile(file.getParent());
+                return;
+            }
+
+            try {
+                Desktop.getDesktop().browseFileDirectory(file.toFile());
+            } catch (Exception e) {
+                // Some basic linux systems have trouble with the API call
+                ErrorEventFactory.fromThrowable(e).expected().omitted(OsType.ofLocal() == OsType.LINUX).handle();
+                if (OsType.ofLocal() == OsType.LINUX) {
+                    browseFile(file.getParent());
+                }
             }
         });
     }

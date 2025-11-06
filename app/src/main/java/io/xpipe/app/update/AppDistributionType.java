@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -164,8 +165,14 @@ public enum AppDistributionType implements Translatable {
                     return SCOOP;
                 }
 
-                if (OsType.ofLocal() == OsType.LINUX && base.toString().startsWith("/mnt") && System.getenv("APPIMAGE") != null) {
-                    return APP_IMAGE;
+                if (OsType.ofLocal() == OsType.LINUX && System.getenv("APPDIR") != null && System.getenv("APPIMAGE") != null) {
+                    try {
+                        var dir = Path.of(System.getenv("APPDIR"));
+                        if (AppInstallation.ofCurrent().getBaseInstallationPath().startsWith(dir)) {
+                            return APP_IMAGE;
+                        }
+
+                    } catch (InvalidPathException ignored) {}
                 }
 
                 return PORTABLE;
