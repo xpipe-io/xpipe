@@ -54,6 +54,11 @@ public class ExternalApplicationHelper {
         try (var sc = LocalShell.getShell().start()) {
             var base = b.buildBaseParts(sc);
             var exec = base.getFirst();
+            if (exec.startsWith("\"") && exec.endsWith("\"")) {
+                exec = exec.substring(1, exec.length() - 1);
+            } else if (exec.startsWith("'") && exec.endsWith("'")) {
+                exec = exec.substring(1, exec.length() - 1);
+            }
             CommandSupport.isInPathOrThrow(sc, exec);
 
             var cmd = sc.getShellDialect().launchAsnyc(b);

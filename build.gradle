@@ -265,7 +265,7 @@ project.ext {
     jpackageMacOsBundleName = isStage ? groupName + '.ptb-app' : groupName + '.app'
     jpackageReleaseArguments = jvmRunArgs + [
             "-D" + propertyName("version") + "=" + versionString,
-            "-D" + propertyName("build") + "=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}\"",
+            "-D" + propertyName("build") + "=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}",
             "-D" + propertyName("buildId") + "=" + buildId,
             "-D" + propertyName("fullVersion") + "=" + fullVersion,
             "-D" + propertyName("staging") + "=" + isStage,

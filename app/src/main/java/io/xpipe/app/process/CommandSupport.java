@@ -29,7 +29,7 @@ public class CommandSupport {
     public static void isInPathOrThrow(
             ShellControl processControl, String executable, String displayName, DataStoreEntry connection)
             throws Exception {
-        if (!processControl.view().findProgram(executable).isPresent()) {
+        if (processControl.view().findProgram(executable).isEmpty()) {
             var prefix = displayName != null ? displayName + " executable " + executable : executable + " executable";
             throw ErrorEventFactory.expected(new IOException(
                     prefix + " not found in PATH" + (connection != null ? " on system " + connection.getName() : "")));

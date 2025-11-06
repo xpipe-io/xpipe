@@ -89,7 +89,7 @@ public class ModalOverlayComp extends SimpleComp {
         });
 
         modal.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ENTER) {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
                 if (actionRunning.get()) {
                     return;
                 }

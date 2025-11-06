@@ -95,13 +95,15 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
                         return;
                     }
 
-                    hbox.getChildren().addAll(children);
+                    if (hbox.getChildren().size() == 0) {
+                        hbox.getChildren().addAll(children);
+                    }
                 } else {
                     if (root.isVisible()) {
                         return;
                     }
 
-                    hbox.getChildren().removeAll(children);
+                    hbox.getChildren().clear();
                 }
             });
         });
