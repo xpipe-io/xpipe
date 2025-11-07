@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.Deobfuscator;
 
 import javafx.application.Platform;
@@ -88,6 +89,9 @@ public class ErrorHandlerDialog {
     private static Region createStrackTraceContent(ErrorEvent event) {
         if (event.getThrowable() != null) {
             String stackTrace = Deobfuscator.deobfuscateToString(event.getThrowable());
+            if (event.getThrowable() instanceof ProcessOutputException pex) {
+                stackTrace = stackTrace.replace(event.getThrowable().getMessage(), pex.getDetailedMessage());
+            }
             stackTrace = stackTrace.replace("\t", "");
             var tf = new TextArea(stackTrace);
             AppFontSizes.xs(tf);

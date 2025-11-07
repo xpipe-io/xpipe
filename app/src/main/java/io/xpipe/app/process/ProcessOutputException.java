@@ -52,24 +52,34 @@ public class ProcessOutputException extends Exception {
         return of(null, exitCode, messages);
     }
 
+    private static String formatMessage(String command, long exitCode, boolean includeCommand) {
+        var start = command != null && includeCommand ? "Command\n" + command + "\n" : "Process ";
+        var center = command != null && includeCommand ? "command\n" + command + "\n" : "process ";
+        var message =
+                switch ((int) exitCode) {
+                    case CommandControl.START_FAILED_EXIT_CODE ->
+                            start + "did not start up properly and had to be killed";
+                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for exit of " + center + "timed out";
+                    case CommandControl.UNASSIGNED_EXIT_CODE ->
+                            start + "exited with unknown state. Did an external process interfere?";
+                    case CommandControl.INTERNAL_ERROR_EXIT_CODE -> start + "execution failed";
+                    case CommandControl.ELEVATION_FAILED_EXIT_CODE -> start + "elevation failed";
+                    default -> start + "failed with exit code " + exitCode;
+                };
+        return message;
+    }
+
+    public String getDetailedMessage() {
+        return formatMessage(command, exitCode, true);
+    }
+
     public static ProcessOutputException of(String command, long exitCode, String... messages) {
         var combinedError = Arrays.stream(messages)
                 .filter(s -> s != null && !s.isBlank())
                 .map(s -> s.strip())
                 .collect(Collectors.joining("\n\n"))
                 .replaceAll("\r\n", "\n");
-        var base = command != null ? "Command [" + command + "]" : "Process";
-        var message =
-                switch ((int) exitCode) {
-                    case CommandControl.START_FAILED_EXIT_CODE ->
-                        base + " did not start up properly and had to be killed";
-                    case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for " + base + " exit timed out";
-                    case CommandControl.UNASSIGNED_EXIT_CODE ->
-                            base + " exited with unknown state. Did an external process interfere?";
-                    case CommandControl.INTERNAL_ERROR_EXIT_CODE -> base + " execution failed";
-                    case CommandControl.ELEVATION_FAILED_EXIT_CODE -> base + " elevation failed";
-                    default -> base + " failed with exit code " + exitCode;
-                };
+        var message = formatMessage(command, exitCode, false);
         return new ProcessOutputException(command, exitCode, combinedError, message, null, null);
     }
 
