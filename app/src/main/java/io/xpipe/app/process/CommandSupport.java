@@ -39,7 +39,7 @@ public class CommandSupport {
     public static void isSupported(FailableSupplier<Boolean> supplier, String displayName, DataStoreEntry connection)
             throws Exception {
         if (!supplier.get()) {
-            throw ErrorEventFactory.expected(new IOException(displayName + " is not supported"
+            throw ErrorEventFactory.expected(new IOException(displayName + " is not available"
                     + (connection != null ? " on system " + connection.getName() : "")));
         }
     }

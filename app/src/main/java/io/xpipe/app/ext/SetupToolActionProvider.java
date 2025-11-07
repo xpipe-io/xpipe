@@ -35,12 +35,19 @@ public class SetupToolActionProvider implements ActionProvider {
 
             var local = DataStorage.get().local();
             var sc = ((ShellStore) local.getStore()).getOrStartSession();
-            var op = provider.get().getScan().create(local, sc);
-            // Even if the op is disabled, we still add it as
-            // any store we add should be able to set up itself
-            if (op != null) {
-                provider.get().getScan().scan(local, sc);
+            var scan = provider.get().getScan();
+            var op = scan.create(local, sc);
+
+            if (op == null) {
+                return;
             }
+
+            if (op.isDisabled()) {
+                provider.get().handleUnsupported();
+                return;
+            }
+
+            scan.scan(local, sc);
         }
 
         @Override

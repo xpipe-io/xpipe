@@ -21,6 +21,8 @@ public interface CloudSetupProvider {
 
     ScanProvider getScan();
 
+    default void handleUnsupported() {}
+
     class Loader implements ModuleLayerLoader {
 
         @Override
