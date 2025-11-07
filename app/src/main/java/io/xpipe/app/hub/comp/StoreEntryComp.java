@@ -3,15 +3,14 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
 import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.platform.*;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -130,7 +129,6 @@ public abstract class StoreEntryComp extends SimpleComp {
 
         var button = new Button();
         button.setGraphic(r);
-        GrowAugment.create(true, false).augment(new SimpleCompStructure<>(r));
         button.getStyleClass().add("store-entry-comp");
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
@@ -183,9 +181,9 @@ public abstract class StoreEntryComp extends SimpleComp {
                 .augment(button);
 
         var loading = new LoadingOverlayComp(Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
-        } else if (OsType.getLocal() == OsType.LINUX) {
+        } else if (OsType.ofLocal() == OsType.LINUX) {
             AppFontSizes.xl(button);
         } else {
             AppFontSizes.apply(button, sizes -> {
@@ -450,7 +448,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 if (AppPrefs.get().developerMode().getValue()) {
                     var browse = new MenuItem(
                             AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-                    browse.setOnAction(event -> DesktopHelper.browsePathLocal(
+                    browse.setOnAction(event -> DesktopHelper.browseFile(
                             getWrapper().getEntry().getDirectory()));
                     items.add(browse);
                 }
@@ -646,9 +644,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var cs = leaf != null ? leaf : branch;
 
-        if (cs == null
-                || cs.isMajor(getWrapper().getEntry().ref())
-                || (leaf != null && leaf.isDefault(getWrapper().getEntry().ref()))) {
+        if (cs == null || cs.isMajor() || (leaf != null && leaf.isDefault())) {
             return null;
         }
 

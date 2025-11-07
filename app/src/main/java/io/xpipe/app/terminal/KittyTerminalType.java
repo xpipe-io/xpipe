@@ -5,15 +5,20 @@ import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ShellTemp;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import java.io.IOException;
+import java.net.StandardProtocolFamily;
+import java.net.UnixDomainSocketAddress;
+import java.nio.channels.SocketChannel;
 
 public interface KittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -103,7 +108,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         public boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return CommandSupport.findProgram(pc, "kitty").isPresent();
+                return pc.view().findProgram("kitty").isPresent();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
@@ -138,18 +143,26 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                     return false;
                 }
 
-                var time = System.currentTimeMillis();
-                sc.executeSimpleCommand(CommandBuilder.of()
-                        .add("kitty")
-                        .add(
-                                "-o",
-                                "allow_remote_control=socket-only",
-                                "--listen-on",
-                                "unix:" + getSocket(),
-                                "--detach"));
-                var elapsed = System.currentTimeMillis() - time;
-                // Good heuristic on how long to wait
-                ThreadHelper.sleep(5 * elapsed);
+                sc.command(CommandBuilder.of()
+                                .add("kitty")
+                                .add(
+                                        "-o",
+                                        "allow_remote_control=socket-only",
+                                        "--listen-on",
+                                        "unix:" + getSocket(),
+                                        "--detach"))
+                        .execute();
+
+                for (int i = 0; i < 50; i++) {
+                    ThreadHelper.sleep(100);
+                    try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                        if (channel.connect(UnixDomainSocketAddress.of(socket.asLocalPath()))) {
+                            break;
+                        }
+                    } catch (IOException ignored) {
+                    }
+                }
+
                 return true;
             }
         }
@@ -186,13 +199,21 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                     return false;
                 }
 
-                var time = System.currentTimeMillis();
-                sc.executeSimpleCommand(CommandBuilder.of()
-                        .add("open", "-n", "-a", "kitty.app", "--args")
-                        .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()));
-                var elapsed = System.currentTimeMillis() - time;
-                // Good heuristic on how long to wait
-                ThreadHelper.sleep(15 * elapsed);
+                sc.command(CommandBuilder.of()
+                                .add("open", "-n", "-a", "kitty.app", "--args")
+                                .add("-o", "allow_remote_control=socket-only", "--listen-on", "unix:" + getSocket()))
+                        .execute();
+
+                for (int i = 0; i < 50; i++) {
+                    ThreadHelper.sleep(100);
+                    try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                        if (channel.connect(UnixDomainSocketAddress.of(socket.asLocalPath()))) {
+                            break;
+                        }
+                    } catch (IOException ignored) {
+                    }
+                }
+
                 return true;
             }
         }

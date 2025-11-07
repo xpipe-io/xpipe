@@ -1,6 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.NonFinal;
@@ -75,7 +76,7 @@ public abstract class StorageElement {
         var changed = expanded != this.expanded;
         this.expanded = expanded;
         if (changed) {
-            notifyUpdate(false, true);
+            notifyUpdate(false, false);
         }
     }
 
@@ -122,6 +123,10 @@ public abstract class StorageElement {
 
     public void setName(String name) {
         if (name.equals(this.name)) {
+            return;
+        }
+
+        if (name.isBlank()) {
             return;
         }
 

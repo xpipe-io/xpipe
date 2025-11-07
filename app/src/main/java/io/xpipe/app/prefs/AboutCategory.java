@@ -5,10 +5,10 @@ import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.platform.JfxHelper;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.JfxHelper;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;

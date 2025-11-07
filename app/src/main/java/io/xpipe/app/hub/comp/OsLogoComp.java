@@ -57,7 +57,7 @@ public class OsLogoComp extends SimpleComp {
                 .createRegion();
     }
 
-    private String getImage(String name, OsType type) {
+    private String getImage(String name, OsType.Any type) {
         if (name == null) {
             return null;
         }
@@ -93,6 +93,10 @@ public class OsLogoComp extends SimpleComp {
 
         if (type == OsType.SOLARIS) {
             return "os/illumos.svg";
+        }
+
+        if (type == OsType.UNIX) {
+            return "os/unix.svg";
         }
 
         return "os/linux.svg";

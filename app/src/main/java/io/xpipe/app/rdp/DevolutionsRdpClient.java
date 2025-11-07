@@ -6,11 +6,19 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
+@JsonTypeName("devolutions")
+@Value
+@Jacksonized
+@Builder
 public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType, ExternalRdpClient {
 
     @Override

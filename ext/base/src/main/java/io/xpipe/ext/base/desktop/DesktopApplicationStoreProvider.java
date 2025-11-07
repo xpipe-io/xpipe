@@ -1,13 +1,16 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
+import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.comp.SystemStateComp;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.FailableRunnable;
 
 import javafx.beans.property.BooleanProperty;
@@ -113,5 +116,16 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     @Override
     public List<Class<?>> getStoreClasses() {
         return List.of(DesktopApplicationStore.class);
+    }
+
+    @Override
+    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+        return new SystemStateComp(SystemStateComp.State.SUCCESS);
+    }
+
+    @Override
+    public String summaryString(StoreEntryWrapper wrapper) {
+        var st = (DesktopApplicationStore) wrapper.getEntry().getStore();
+        return st.getPath() + (st.getArguments() != null ? " " + st.getArguments() : "");
     }
 }

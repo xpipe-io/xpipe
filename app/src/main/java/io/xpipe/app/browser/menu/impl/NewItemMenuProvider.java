@@ -12,11 +12,10 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +26,7 @@ import java.util.List;
 public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2p-plus-box-outline");
     }
 
@@ -87,7 +86,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 
@@ -134,7 +133,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultDirectoryIcon());
                     }
 
@@ -150,7 +149,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                         var linkName = new SimpleStringProperty();
                         var target = new SimpleStringProperty();
                         var modal = ModalOverlay.of(
-                                "base.newLink",
+                                "newLink",
                                 new OptionsBuilder()
                                         .name("linkName")
                                         .addString(linkName)
@@ -188,11 +187,11 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
 
                     @Override
                     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+                        return model.getFileSystem().supportsLinkCreation();
                     }
 
                     @Override
-                    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+                    public LabelGraphic getIcon() {
                         return new LabelGraphic.CompGraphic(BrowserIcons.createDefaultFileIcon());
                     }
 

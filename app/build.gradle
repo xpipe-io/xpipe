@@ -48,10 +48,17 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api ('io.modelcontextprotocol.sdk:mcp:0.11.2')  {
+    api ('io.modelcontextprotocol.sdk:mcp-core:0.14.1')  {
+        exclude group: "com.ethlo.time", module: "itu"
+    }
+    api ('io.modelcontextprotocol.sdk:mcp-json:0.14.1')  {
+        exclude group: "com.ethlo.time", module: "itu"
+    }
+    api ('io.modelcontextprotocol.sdk:mcp-json-jackson2:0.13.0')  {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
+
     api "io.projectreactor:reactor-core:3.7.9"
     api "org.reactivestreams:reactive-streams:1.0.4"
     api ("com.networknt:json-schema-validator:1.5.8") {
@@ -59,22 +66,23 @@ dependencies {
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
 
-    api "com.github.weisj:jsvg:1.7.1"
-    api 'io.xpipe:vernacular:1.15'
+    api "com.github.weisj:jsvg:1.7.2"
+    api 'io.xpipe:vernacular:1.16'
     api 'org.bouncycastle:bcprov-jdk18on:1.81'
     api 'info.picocli:picocli:4.7.7'
     api 'org.apache.commons:commons-lang3:3.18.0'
-    api 'io.sentry:sentry:8.13.3'
+    api 'io.sentry:sentry:8.20.0'
     api 'commons-io:commons-io:2.20.0'
-    api group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "2.19.2"
-    api group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "2.19.2"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-material2-pack', version: "12.4.0"
-    api group: 'org.kordamp.ikonli', name: 'ikonli-materialdesign2-pack', version: "12.4.0"
+    api "com.fasterxml.jackson.core:jackson-databind:2.20.0"
+    api "com.fasterxml.jackson.core:jackson-annotations:2.20"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0"
+    api "org.kordamp.ikonli:ikonli-material2-pack:12.4.0"
+    api "org.kordamp.ikonli:ikonli-materialdesign2-pack:12.4.0"
     api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
-    api group: 'org.kordamp.ikonli', name: 'ikonli-javafx', version: "12.4.0"
-    api group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
-    api group: 'org.slf4j', name: 'slf4j-jdk-platform-logging', version: '2.0.17'
-    api 'io.xpipe:modulefs:0.1.6'
+    api "org.kordamp.ikonli:ikonli-javafx:12.4.0"
+    api "org.slf4j:slf4j-api:2.0.17"
+    api "org.slf4j:slf4j-jdk-platform-logging:2.0.17"
+    api 'io.xpipe:modulefs:0.1.7'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
 }

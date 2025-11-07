@@ -3,7 +3,9 @@ package io.xpipe.app.core;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.JacksonMapper;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
@@ -45,8 +47,12 @@ public class AppCache {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static <T> T getNonNull(String key, Class<?> type, Supplier<T> notPresent) {
+        return getNonNull(key, TypeFactory.defaultInstance().constructType(type), notPresent);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T getNonNull(String key, JavaType type, Supplier<T> notPresent) {
         var path = getPath(key);
         if (Files.exists(path)) {
             try {
@@ -58,7 +64,7 @@ public class AppCache {
                 }
 
                 var r = (T) JacksonMapper.getDefault().treeToValue(tree, type);
-                if (r == null || !type.isAssignableFrom(r.getClass())) {
+                if (r == null) {
                     FileUtils.deleteQuietly(path.toFile());
                     return notPresent.get();
                 } else {

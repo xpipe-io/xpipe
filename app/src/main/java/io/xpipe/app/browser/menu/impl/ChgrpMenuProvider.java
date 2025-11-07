@@ -10,22 +10,28 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
-import io.xpipe.core.OsType;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+
+import lombok.SneakyThrows;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
 
+    @SneakyThrows
     private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return List.of(new CustomProvider(recursive));
+        }
+
         List<BrowserMenuItemProvider> actions = Stream.<BrowserMenuItemProvider>concat(
-                        model.getCache().getGroups().entrySet().stream()
+                        model.getFileSystem().getShell().get().view().getGroupFile().getGroups().entrySet().stream()
                                 .filter(e -> !e.getValue().equals("nohome")
                                         && !e.getValue().equals("nogroup")
                                         && !e.getValue().equals("nobody")
@@ -38,7 +44,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-account-group-outline");
     }
 
@@ -54,8 +60,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var os = model.getFileSystem().getShell().orElseThrow().getOsType();
-        return os != OsType.WINDOWS && os != OsType.MACOS;
+        return model.getFileSystem().supportsChgrp();
     }
 
     @Override
@@ -72,7 +77,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     private static class FlatProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
@@ -91,7 +96,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
     private static class RecursiveProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 

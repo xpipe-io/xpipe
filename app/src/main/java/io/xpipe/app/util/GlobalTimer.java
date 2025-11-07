@@ -28,11 +28,18 @@ public class GlobalTimer {
         return new TimerTask() {
             @Override
             public void run() {
-                if (!s.get()) {
-                    // Use this approach instead of scheduleAtFixedRate
-                    // to prevent it from being run rapidly in case the timer is trying
-                    // to catch up. For example with system hibernation
-                    TIMER.schedule(createDelayedTask(interval, s), interval.toMillis());
+                try {
+                    if (!s.get()) {
+                        // Use this approach instead of scheduleAtFixedRate
+                        // to prevent it from being run rapidly in case the timer is trying
+                        // to catch up. For example with system hibernation
+                        TIMER.schedule(createDelayedTask(interval, s), interval.toMillis());
+                    }
+                } catch (IllegalStateException e) {
+                    // The timer might be shutdown already
+                    ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+                } catch (Throwable t) {
+                    ErrorEventFactory.fromThrowable(t).handle();
                 }
             }
         };
@@ -40,9 +47,20 @@ public class GlobalTimer {
 
     private static void schedule(TimerTask task, long delay) {
         try {
-            // The timer might be shutdown already
-            TIMER.schedule(task, delay);
+            TIMER.schedule(
+                    new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                task.run();
+                            } catch (Throwable t) {
+                                ErrorEventFactory.fromThrowable(t).handle();
+                            }
+                        }
+                    },
+                    delay);
         } catch (IllegalStateException e) {
+            // The timer might be shutdown already
             ErrorEventFactory.fromThrowable(e).omit().expected().handle();
         }
     }

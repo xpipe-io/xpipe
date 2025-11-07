@@ -6,14 +6,15 @@ import io.xpipe.app.browser.menu.*;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextField;
+
+import lombok.SneakyThrows;
 
 import java.util.List;
 
@@ -21,19 +22,18 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public void init(BrowserFileSystemTabModel model) throws Exception {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return;
+        }
+
         var sc = model.getFileSystem().getShell().orElseThrow();
 
-        var foundTar = CommandSupport.findProgram(sc, "tar");
-        model.getCache().getInstalledApplications().put("tar", foundTar.isPresent());
-
-        if (sc.getOsType() != OsType.WINDOWS) {
-            var found = CommandSupport.findProgram(sc, "zip");
-            model.getCache().getInstalledApplications().put("zip", found.isPresent());
-        }
+        sc.view().isInPath("tar", true);
+        sc.view().isInPath("zip", true);
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-archive");
     }
 
@@ -49,6 +49,10 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         var ext = List.of("zip", "tar", "tar.gz", "tgz", "rar", "xar");
         if (entries.stream().anyMatch(browserEntry -> ext.stream().anyMatch(s -> browserEntry
                 .getRawFileEntry()
@@ -100,7 +104,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(
-                    "base.archiveName",
+                    "archiveName",
                     Comp.of(() -> {
                                 var creationName = new TextField();
                                 creationName.textProperty().bindBidirectional(name);
@@ -141,7 +145,7 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return directory
                     ? new LabelGraphic.IconGraphic("mdi2f-file-tree")
                     : new LabelGraphic.IconGraphic("mdi2f-file-outline");
@@ -214,8 +218,9 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
-        public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-            return model.getCache().getInstalledApplications().get("tar");
+        @SneakyThrows
+        public boolean isActive(BrowserFileSystemTabModel model) {
+            return model.getFileSystem().getShell().orElseThrow().view().isInPath("tar", true);
         }
 
         @Override

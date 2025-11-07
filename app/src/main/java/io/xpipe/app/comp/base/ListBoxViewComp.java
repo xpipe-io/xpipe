@@ -6,7 +6,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.util.DerivedObservableList;
+import io.xpipe.app.platform.DerivedObservableList;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
@@ -251,9 +251,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                 count++;
             }
         }
-        if (count > 10) {
-            // System.out.println("Visible: " + count);
-        }
+
+        //        if (count > 10) {
+        //            System.out.println("Visible: " + count);
+        //        }
     }
 
     private void refresh(

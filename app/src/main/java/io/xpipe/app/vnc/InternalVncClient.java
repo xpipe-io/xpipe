@@ -17,21 +17,21 @@ public class InternalVncClient implements ExternalVncClient {
 
     @Override
     public void launch(VncLaunchConfig configuration) throws Exception {
-        var open = BrowserFullSessionModel.DEFAULT.getSessionEntriesSnapshot().stream()
+        var browserSession = BrowserFullSessionModel.DEFAULT;
+        var open = browserSession.getSessionEntriesSnapshot().stream()
                 .filter(browserSessionTab -> browserSessionTab instanceof BrowserStoreSessionTab<?> st
                         && st.getEntry().get().equals(configuration.getEntry().get()))
                 .findFirst()
                 .orElse(null);
         if (open != null) {
             AppLayoutModel.get().selectBrowser();
-            BrowserFullSessionModel.DEFAULT.getSelectedEntry().setValue(open);
+            browserSession.getSelectedEntry().setValue(open);
             return;
         }
 
-        BrowserFullSessionModel.DEFAULT.openSync(
-                ProcessControlProvider.get()
-                        .createVncSession(BrowserFullSessionModel.DEFAULT, configuration.getEntry()),
-                null);
+        browserSession.openSync(
+                ProcessControlProvider.get().createVncSession(browserSession, configuration.getEntry()),
+                browserSession.getBusy());
         AppLayoutModel.get().selectBrowser();
     }
 

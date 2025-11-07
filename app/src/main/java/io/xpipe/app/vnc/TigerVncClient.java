@@ -4,7 +4,7 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -73,7 +73,7 @@ public abstract class TigerVncClient implements ExternalVncClient {
     @Builder
     @Jacksonized
     @JsonTypeName("tigerVnc")
-    public static class Linux extends TigerVncClient implements ExternalApplicationType.PathApplication {
+    public static class Linux extends TigerVncClient implements ExternalApplicationType.LinuxApplication {
 
         @Override
         public void launch(VncLaunchConfig configuration) throws Exception {
@@ -106,6 +106,11 @@ public abstract class TigerVncClient implements ExternalVncClient {
         @Override
         public boolean detach() {
             return true;
+        }
+
+        @Override
+        public String getFlatpakId() {
+            return "org.tigervnc.vncviewer";
         }
     }
 

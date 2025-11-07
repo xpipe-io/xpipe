@@ -3,7 +3,9 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
@@ -34,6 +36,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private final KeePassXcAssociationKey associationKey;
 
+    @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var prop = new SimpleObjectProperty<KeePassXcAssociationKey>();
         p.subscribe(keePassXcManager -> {
@@ -157,7 +160,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         }
 
         Optional<Path> found =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> {
                         var paths = List.of(
                                 Path.of("/usr/bin/keepassxc-proxy"),

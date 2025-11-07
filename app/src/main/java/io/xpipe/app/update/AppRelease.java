@@ -17,7 +17,7 @@ public class AppRelease {
     public static AppRelease of(String tag) {
         var type = AppInstaller.getSuitablePlatformAsset();
         var os =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> "linux";
                     case OsType.MacOs ignored -> "macos";
                     case OsType.Windows ignored -> "windows";

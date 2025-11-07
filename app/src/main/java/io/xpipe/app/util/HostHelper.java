@@ -3,7 +3,6 @@ package io.xpipe.app.util;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
-import java.util.Locale;
 
 public class HostHelper {
 
@@ -21,18 +20,6 @@ public class HostHelper {
         } catch (IOException e) {
             return randomPort();
         }
-    }
-
-    public static boolean isLocalHost(String host) {
-        if (host.equals("127.0.0.1")) {
-            return true;
-        }
-
-        if (host.toLowerCase(Locale.ROOT).equals("localhost")) {
-            return true;
-        }
-
-        return false;
     }
 
     public static boolean isLocalNetworkAddress(String host) {

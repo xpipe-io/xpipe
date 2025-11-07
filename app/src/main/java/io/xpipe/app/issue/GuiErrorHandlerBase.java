@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.platform.PlatformInit;
 
 import java.util.function.Consumer;
 
@@ -12,6 +12,15 @@ public class GuiErrorHandlerBase {
         try {
             AppProperties.init();
             AppExtensionManager.init();
+
+            if (PlatformInit.isLoadingThread()) {
+                return false;
+            }
+
+            if (App.getApp() == null) {
+                return false;
+            }
+
             PlatformInit.init(true);
             AppMainWindow.init(true);
         } catch (Throwable ex) {

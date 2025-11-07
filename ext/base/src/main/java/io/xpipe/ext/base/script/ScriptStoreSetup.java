@@ -6,7 +6,6 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.FilePath;
 
 import java.util.*;

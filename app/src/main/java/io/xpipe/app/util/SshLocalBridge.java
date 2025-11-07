@@ -6,9 +6,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.*;
 import io.xpipe.core.FilePath;
 
 import lombok.Getter;
@@ -145,7 +143,7 @@ public class SshLocalBridge {
     }
 
     private static FilePath getSshd(ShellControl sc) throws Exception {
-        var exec = CommandSupport.findProgram(sc, "sshd");
+        var exec = sc.view().findProgram("sshd");
         if (exec.isEmpty()) {
             throw ErrorEventFactory.expected(
                     new IllegalStateException(

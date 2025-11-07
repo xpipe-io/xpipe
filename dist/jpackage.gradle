@@ -3,28 +3,6 @@ apply from: "$rootDir/gradle/gradle_scripts/jna.gradle"
 
 def distDir = "${project.layout.buildDirectory.get()}/dist"
 
-def distJvmArgs = new ArrayList<String>(project(':app').jvmRunArgs)
-
-def releaseArguments = distJvmArgs + [
-        "-Dio.xpipe.app.version=$versionString",
-        "-Dio.xpipe.app.build=$versionString/${new Date().format('yyyy-MM-dd-HH-mm')}",
-        "-Dio.xpipe.app.buildId=$buildId",
-        "-Dio.xpipe.app.fullVersion=$fullVersion",
-        "-Dio.xpipe.app.staging=$isStage",
-        '-Dio.xpipe.app.sentryUrl=https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279',
-        '-Djna.nosys=false',
-        '-Djna.nounpack=true',
-        '-Djna.noclasspath=true'
-]
-
-if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-    releaseArguments += "-Xdock:name=$productName"
-}
-
-if (isFullRelease || isStage) {
-    releaseArguments.add("-XX:+DisableAttachMechanism")
-}
-
 // To remove warnings, the plugin probably does not expect the JPackage tasks to be in a separate project
 application {
     mainModule = packageName(null)
@@ -65,7 +43,7 @@ jlink {
             '--ignore-signing-information'
     ]
 
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+    if (os.isLinux()) {
         options.addAll('--strip-native-debug-symbols', 'exclude-debuginfo-files')
     }
 
@@ -89,17 +67,17 @@ jlink {
     launcher {
         moduleName = packageName(null)
         mainClass = packageName('Main')
-        name = 'xpiped'
-        jvmArgs = releaseArguments
+        name = jpackageExecutableName
+        jvmArgs = jpackageReleaseArguments
     }
 
     jpackage {
         imageOutputDir = file("$distDir/jpackage")
-        imageName = 'xpiped'
-        if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        imageName = jpackageExecutableName
+        if (os.isWindows()) {
             icon = "$rootDir/dist/logo/logo.ico"
-            appVersion = org.gradle.internal.os.OperatingSystem.current().isWindows() ? windowsSchemaCanonicalVersion : canonicalVersionString
-        } else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+            appVersion = os.isWindows() ? windowsSchemaCanonicalVersion : canonicalVersionString
+        } else if (os.isLinux()) {
             icon = "$rootDir/dist/logo/logo.png"
             appVersion = canonicalVersionString
         } else {
@@ -115,7 +93,7 @@ jlink {
 tasks.named('jlink').get().dependsOn(rootProject.getTasksByName("jar", true))
 tasks.named('jlink').get().dependsOn(extLibrariesTasks)
 
-def outputName = org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? 'xpiped.app/Contents/Resources' : 'xpiped'
+def outputName = os.isMacOsX() ? "${jpackageExecutableName}.app/Contents/Resources" : jpackageExecutableName
 tasks.register('copyBundledExtensions', DefaultTask) {
     dependsOn extLibrariesTasks
     doLast {
@@ -142,7 +120,7 @@ tasks.register('prepareMacOSResources', DefaultTask) {
                                                '__VERSION__',
                                                versionString,
                                                '__BUNDLE__',
-                                               isStage ? groupName + '.ptb-app' : groupName + '.app'))
+                                               jpackageMacOsBundleName))
             into file("${project.layout.buildDirectory.get()}/macos_resources")
         }
     }
@@ -155,11 +133,11 @@ tasks.register('finalizeMacOSResources', DefaultTask) {
             into file("$distDir/jpackage/$outputName")
         }
 
-        file("$distDir/jpackage/$outputName/xpiped.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
+        file("$distDir/jpackage/$outputName/${jpackageExecutableName}.icns").renameTo(file("$distDir/jpackage/$outputName/xpipe.icns"))
     }
 }
 
-if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+if (os.isMacOsX()) {
     jpackageImage.finalizedBy(finalizeMacOSResources)
     jpackageImage.dependsOn(prepareMacOSResources)
 }

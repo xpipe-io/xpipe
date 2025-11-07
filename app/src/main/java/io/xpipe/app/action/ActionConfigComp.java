@@ -10,8 +10,8 @@ import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreListChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.*;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -69,7 +69,7 @@ public class ActionConfigComp extends SimpleComp {
         singleProp.set((DataStoreEntryRef<DataStore>) s);
 
         singleProp.addListener((obs, o, n) -> {
-            if (action.getValue() instanceof StoreAction<?> sa) {
+            if (action.getValue() instanceof StoreAction<?> sa && n != null) {
                 action.setValue(sa.withRef(n.asNeeded()));
             }
         });

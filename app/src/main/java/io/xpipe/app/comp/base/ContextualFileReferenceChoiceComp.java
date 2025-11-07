@@ -9,12 +9,12 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.FilePath;
 
 import javafx.application.Platform;
@@ -92,7 +92,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 .grow(false, true);
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
-            if (!AppPrefs.get().enableGitStorage().get()) {
+            if (!DataStorageSyncHandler.getInstance().supportsSync()) {
                 AppLayoutModel.get().selectSettings();
                 AppPrefs.get().selectCategory("vaultSync");
                 return;
@@ -108,14 +108,15 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             }
 
             try {
-                var source = currentPath.asLocalPath();
-                if (!Files.exists(source)) {
-                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + source)
+                var rawSource = currentPath.asLocalPathIfPossible();
+                if (rawSource.isEmpty() || !Files.exists(rawSource.get())) {
+                    ErrorEventFactory.fromMessage("Unable to resolve local file path " + currentPath)
                             .expected()
                             .handle();
                     return;
                 }
 
+                var source = rawSource.get();
                 var target = sync.getTargetLocation().apply(source);
                 var shouldCopy = AppDialog.confirm("confirmGitShare");
                 if (!shouldCopy) {
@@ -126,8 +127,10 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 var syncedTarget =
                         handler.addDataFile(source, target, sync.getPerUser().get());
 
-                var sourceBase = source.toString().endsWith(".pem") ?
-                        Path.of(source.toString().substring(0, source.toString().length() - 4)) : source;
+                var sourceBase = source.toString().endsWith(".pem")
+                        ? Path.of(
+                                source.toString().substring(0, source.toString().length() - 4))
+                        : source;
 
                 var pubSource = Path.of(sourceBase + ".pub");
                 if (Files.exists(pubSource)) {

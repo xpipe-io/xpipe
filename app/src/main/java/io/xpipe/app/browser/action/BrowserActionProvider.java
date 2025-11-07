@@ -11,8 +11,4 @@ public interface BrowserActionProvider extends ActionProvider {
     default boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return true;
     }
-
-    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return true;
-    }
 }

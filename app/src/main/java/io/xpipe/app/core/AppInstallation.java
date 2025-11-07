@@ -30,7 +30,7 @@ public abstract class AppInstallation {
     }
 
     public static AppInstallation ofCurrent() {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Windows ignored -> WINDOWS;
             case OsType.Linux ignored -> LINUX;
             case OsType.MacOs ignored -> MACOS;
@@ -43,7 +43,7 @@ public abstract class AppInstallation {
 
     public static AppInstallation ofDefault(boolean stage) {
         var def = determineDefaultInstallationBasePath(stage);
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Windows ignored -> new Windows(def);
             case OsType.Linux ignored -> new Linux(def);
             case OsType.MacOs ignored -> new MacOs(def);
@@ -51,7 +51,7 @@ public abstract class AppInstallation {
     }
 
     private static Path determineDefaultInstallationBasePath(boolean stage) {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield Path.of(stage ? "/opt/xpipe-ptb" : "/opt/xpipe");
             }
@@ -105,7 +105,7 @@ public abstract class AppInstallation {
 
     private static Path getInstallationBasePathForDaemonExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield executable.getParent().getParent();
             }
@@ -120,7 +120,7 @@ public abstract class AppInstallation {
 
     private static Path getInstallationBasePathForJavaExecutable(Path executable) {
         // Resolve root path of installation relative to executable in a JPackage installation
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 yield executable.getParent().getParent().getParent().getParent();
             }
@@ -155,8 +155,6 @@ public abstract class AppInstallation {
 
     public abstract Path getDaemonDebugScriptPath();
 
-    public abstract Path getBundledFontsPath();
-
     public abstract Path getLangPath();
 
     public abstract Path getCliExecutablePath();
@@ -175,12 +173,8 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonDebugScriptPath() {
-            return getBaseInstallationPath().resolve("scripts", "xpiped_debug.bat");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            return getBaseInstallationPath().resolve("fonts");
+            return getBaseInstallationPath()
+                    .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.bat");
         }
 
         @Override
@@ -195,7 +189,7 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonExecutablePath() {
-            return getBaseInstallationPath().resolve("xpiped.exe");
+            return getBaseInstallationPath().resolve(AppNames.ofCurrent().getExecutableName() + ".exe");
         }
 
         @Override
@@ -219,11 +213,6 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
-        }
-
-        @Override
         public Path getLangPath() {
             return devBase.resolve("lang");
         }
@@ -242,16 +231,8 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonDebugScriptPath() {
-            return getBaseInstallationPath().resolve("scripts", "xpiped_debug.sh");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist", "fonts");
-            }
-
-            return getBaseInstallationPath().resolve("fonts");
+            return getBaseInstallationPath()
+                    .resolve("scripts", AppNames.ofCurrent().getExecutableName() + "_debug.sh");
         }
 
         @Override
@@ -266,7 +247,7 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonExecutablePath() {
-            return getBaseInstallationPath().resolve("bin", "xpiped");
+            return getBaseInstallationPath().resolve("bin", AppNames.ofCurrent().getExecutableName());
         }
 
         @Override
@@ -294,11 +275,6 @@ public abstract class AppInstallation {
         }
 
         @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
-        }
-
-        @Override
         public Path getLangPath() {
             return devBase.resolve("lang");
         }
@@ -312,16 +288,12 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonDebugScriptPath() {
-            return getBaseInstallationPath().resolve("Contents", "Resources", "scripts", "xpiped_debug.sh");
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            if (!AppProperties.get().isImage()) {
-                return getBaseInstallationPath().resolve("dist", "fonts");
-            }
-
-            return getBaseInstallationPath().resolve("Contents", "Resources", "fonts");
+            return getBaseInstallationPath()
+                    .resolve(
+                            "Contents",
+                            "Resources",
+                            "scripts",
+                            AppNames.ofCurrent().getExecutableName() + "_debug.sh");
         }
 
         @Override
@@ -340,7 +312,8 @@ public abstract class AppInstallation {
 
         @Override
         public Path getDaemonExecutablePath() {
-            return getBaseInstallationPath().resolve("Contents", "MacOS", "xpiped");
+            return getBaseInstallationPath()
+                    .resolve("Contents", "MacOS", AppNames.ofCurrent().getExecutableName());
         }
 
         @Override
@@ -368,11 +341,6 @@ public abstract class AppInstallation {
         private MacOsDev(Path base, Path devBase) {
             super(base);
             this.devBase = devBase;
-        }
-
-        @Override
-        public Path getBundledFontsPath() {
-            return devBase.resolve("dist").resolve("fonts");
         }
 
         @Override

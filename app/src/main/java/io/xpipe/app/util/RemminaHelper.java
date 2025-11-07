@@ -1,7 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
 import io.xpipe.core.SecretValue;
@@ -25,13 +27,17 @@ public class RemminaHelper {
 
         try (var sc = LocalShell.getShell().start()) {
             var prefSecretBase64 = sc.command("sed -n 's/^secret=//p' ~/.config/remmina/remmina.pref")
+                    .sensitive()
                     .readStdoutIfPossible();
             if (prefSecretBase64.isEmpty()) {
                 return Optional.empty();
             }
 
-            var paddedPassword = password.getSecretValue();
-            paddedPassword = paddedPassword + "\0".repeat(8 - paddedPassword.length() % 8);
+            var rawPassword = password.getSecretRaw();
+            var toPad = rawPassword.length % 8;
+            var paddedPassword = new byte[rawPassword.length + toPad];
+            System.arraycopy(rawPassword, 0, paddedPassword, 0, rawPassword.length);
+
             var prefSecret = Base64.getDecoder().decode(prefSecretBase64.get());
             var key = Arrays.copyOfRange(prefSecret, 0, 24);
             var iv = Arrays.copyOfRange(prefSecret, 24, prefSecret.length);
@@ -40,13 +46,19 @@ public class RemminaHelper {
             var keySpec = new SecretKeySpec(key, "DESede");
             var ivspec = new IvParameterSpec(iv);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivspec);
-            byte[] encryptedText = cipher.doFinal(paddedPassword.getBytes(StandardCharsets.UTF_8));
+            byte[] encryptedText = cipher.doFinal(paddedPassword);
             var base64Encrypted = Base64.getEncoder().encodeToString(encryptedText);
             return Optional.ofNullable(base64Encrypted);
         }
     }
 
     public static Path writeRemminaRdpConfigFile(RdpLaunchConfig configuration, String password) throws Exception {
+        var user = configuration.getConfig().get("username").orElseThrow().getValue();
+        var domain = user.contains("\\") ? user.split("\\\\")[0] : null;
+        if (domain != null) {
+            user = user.split("\\\\")[1];
+        }
+
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
         // Use window size as remmina's autosize is broken
@@ -56,6 +68,7 @@ public class RemminaHelper {
                      protocol=RDP
                      name=%s
                      username=%s
+                     domain=%s
                      server=%s
                      password=%s
                      cert_ignore=1
@@ -65,21 +78,16 @@ public class RemminaHelper {
                      """
                         .formatted(
                                 configuration.getTitle(),
-                                configuration
-                                        .getConfig()
-                                        .get("username")
-                                        .orElseThrow()
-                                        .getValue(),
+                                user,
+                                domain != null ? domain : "",
                                 configuration
                                         .getConfig()
                                         .get("full address")
                                         .orElseThrow()
                                         .getValue(),
                                 password != null ? password : "",
-                                Math.round(
-                                        AppMainWindow.getInstance().getStage().getWidth()),
-                                Math.round(
-                                        AppMainWindow.getInstance().getStage().getHeight()));
+                                Math.round(AppMainWindow.get().getStage().getWidth()),
+                                Math.round(AppMainWindow.get().getStage().getHeight()));
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

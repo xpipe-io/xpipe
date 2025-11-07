@@ -3,10 +3,10 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.SelfReferentialStore;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -85,7 +85,7 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
         Validators.nonNull(group);
         super.checkComplete();
         if (!initScript && !shellScript && !fileScript && !runnableScript) {
-            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+            throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
     }
 

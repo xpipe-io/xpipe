@@ -4,8 +4,9 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
 
@@ -25,7 +26,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
     @Override
     default boolean isRecommended() {
-        return OsType.getLocal() != OsType.WINDOWS;
+        return OsType.ofLocal() != OsType.WINDOWS;
     }
 
     @Override
@@ -75,8 +76,8 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 ErrorEventFactory.fromThrowable(ex).omit().handle();
             }
 
-            try (ShellControl pc = LocalShell.getShell()) {
-                if (pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"))) {
+            try {
+                if (CommandSupport.isInLocalPath("wezterm")) {
                     return Optional.of(Path.of("wezterm-gui"));
                 }
             } catch (Exception e) {
@@ -102,25 +103,46 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             boolean runGui = true;
+            var flatpak = FlatpakCache.getApp("org.wezfurlong.wezterm");
             if (configuration.isPreferTabs()) {
+                CommandBuilder base;
+                if (CommandSupport.isInLocalPath("wezterm")) {
+                    base = CommandBuilder.of().addFile("wezterm");
+                } else {
+                    if (flatpak.isPresent()) {
+                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
+                    } else {
+                        base = CommandBuilder.of().addFile("wezterm");
+                    }
+                }
+
                 runGui = !LocalShell.getShell()
                         .command(CommandBuilder.of()
-                                .addFile("wezterm")
+                                .add(base)
                                 .add("cli", "spawn")
                                 .addFile(configuration.getScriptFile()))
                         .executeAndCheck();
             }
 
             if (runGui) {
+                CommandBuilder base;
+                if (CommandSupport.isInLocalPath("wezterm-gui")) {
+                    base = CommandBuilder.of().addFile("wezterm-gui");
+                } else {
+                    if (flatpak.isPresent()) {
+                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
+                    } else {
+                        base = CommandBuilder.of().addFile("wezterm-gui");
+                    }
+                }
                 ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().addFile("wezterm-gui").add("start").addFile(configuration.getScriptFile()));
+                        CommandBuilder.of().add(base).add("start").addFile(configuration.getScriptFile()));
             }
         }
 
         public boolean isAvailable() {
-            try (ShellControl pc = LocalShell.getShell()) {
-                return pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm"))
-                        && pc.executeSimpleBooleanCommand(pc.getShellDialect().getWhichCommand("wezterm-gui"));
+            try {
+                return CommandSupport.isInLocalPath("wezterm") && CommandSupport.isInLocalPath("wezterm-gui");
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;

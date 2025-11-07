@@ -1,7 +1,7 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
-import io.xpipe.core.Deobfuscator;
+import io.xpipe.app.util.Deobfuscator;
 
 public class LogErrorHandler implements ErrorHandler {
 
@@ -23,7 +23,8 @@ public class LogErrorHandler implements ErrorHandler {
             System.err.println(event.getDescription());
         }
         if (event.getThrowable() != null) {
-            Deobfuscator.printStackTrace(event.getThrowable());
+            var s = Deobfuscator.deobfuscateToString(event.getThrowable());
+            System.err.println(s);
         }
     }
 }

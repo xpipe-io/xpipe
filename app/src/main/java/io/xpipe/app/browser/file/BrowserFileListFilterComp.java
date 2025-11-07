@@ -5,8 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.InputHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -51,8 +51,7 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
         Tooltip.install(
                 button,
                 TooltipHelper.create(
-                        AppI18n.observable("app.search"),
-                        new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)));
+                        AppI18n.observable("search"), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)));
         text.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && filterString.getValue() == null) {
                 if (button.isFocused()) {

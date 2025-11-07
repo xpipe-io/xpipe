@@ -3,13 +3,14 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.VerticalComp;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
+import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 public class AppPrefsComp extends SimpleComp {
 
@@ -32,7 +33,11 @@ public class AppPrefsComp extends SimpleComp {
                 .styleClass("prefs-box")
                 .createStructure()
                 .get();
-        var scrollPane = new ScrollPane(box);
+
+        var pane = new GraphicDecorationStackPane();
+        pane.getChildren().add(box);
+
+        var scrollPane = new ScrollPane(pane);
 
         var externalUpdate = new SimpleBooleanProperty();
 

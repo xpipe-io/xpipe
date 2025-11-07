@@ -2,12 +2,12 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.GlobalObjectProperty;
+import io.xpipe.app.platform.PlatformState;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.SupportedLocale;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.GlobalObjectProperty;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -122,11 +122,7 @@ public class AppI18n {
 
     private String getKey(String s) {
         var key = s;
-        if (s.startsWith("app.")
-                || s.startsWith("base.")
-                || s.startsWith("proc.")
-                || s.startsWith("uacc.")
-                || s.startsWith("system.")) {
+        if (s.startsWith("app.")) {
             key = key.substring(key.indexOf(".") + 1);
         }
         return key;
@@ -156,24 +152,24 @@ public class AppI18n {
         return key;
     }
 
-    public String getMarkdownDocumentation(String name) {
+    public String getMarkdownTranslation(String name) {
         if (name.contains(":")) {
             name = name.substring(name.indexOf(":") + 1);
         }
 
         if (currentLanguage.getValue() != null
-                && currentLanguage.getValue().getMarkdownDocumentations().containsKey(name)) {
+                && currentLanguage.getValue().getMarkdownTranslations().containsKey(name)) {
             var localisedString =
-                    currentLanguage.getValue().getMarkdownDocumentations().get(name);
+                    currentLanguage.getValue().getMarkdownTranslations().get(name);
             return localisedString;
         }
 
-        if (english.getMarkdownDocumentations().containsKey(name)) {
-            var localisedString = english.getMarkdownDocumentations().get(name);
+        if (english.getMarkdownTranslations().containsKey(name)) {
+            var localisedString = english.getMarkdownTranslations().get(name);
             return localisedString;
         }
 
-        TrackEvent.withWarn("Markdown documentation for key " + name + " not found")
+        TrackEvent.withWarn("Markdown translation for key " + name + " not found")
                 .handle();
         return "";
     }

@@ -6,7 +6,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.css.PseudoClass;
@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class AppPrefsSidebarComp extends SimpleComp {
-
-    private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
 
     @Override
     protected Region createSimple() {
@@ -43,7 +41,10 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                 struc.get().setTextAlignment(TextAlignment.LEFT);
                                 struc.get().setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {
-                                    struc.get().pseudoClassStateChanged(SELECTED, appPrefsCategory.equals(val));
+                                    struc.get()
+                                            .pseudoClassStateChanged(
+                                                    PseudoClass.getPseudoClass("selected"),
+                                                    appPrefsCategory.equals(val));
                                 });
                             })
                             .grow(true, false);
@@ -59,7 +60,10 @@ public class AppPrefsSidebarComp extends SimpleComp {
         buttons.add(Comp.vspacer());
         buttons.add(restartButton);
 
-        var vbox = new VerticalComp(buttons).styleClass("sidebar");
+        var vbox = new VerticalComp(buttons)
+                .styleClass("sidebar")
+                .styleClass("color-box")
+                .styleClass("gray");
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {

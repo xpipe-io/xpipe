@@ -32,7 +32,7 @@ public class AppAvCheck {
 
     public static void check() {
         // Only show this on first launch on windows
-        if (OsType.getLocal() != OsType.WINDOWS || !AppProperties.get().isInitialLaunch()) {
+        if (OsType.ofLocal() != OsType.WINDOWS || !AppProperties.get().isInitialLaunch()) {
             return;
         }
 

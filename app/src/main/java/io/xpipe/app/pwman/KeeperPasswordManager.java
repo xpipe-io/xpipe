@@ -3,10 +3,9 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
+import io.xpipe.app.secret.SecretManager;
+import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.SecretManager;
-import io.xpipe.app.util.SecretRetrievalStrategy;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
@@ -33,7 +32,7 @@ public class KeeperPasswordManager implements PasswordManager {
     private String getExecutable(ShellControl sc) {
         return sc.getShellDialect() == ShellDialects.CMD
                 ? "@keeper"
-                : (OsType.getLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
+                : (OsType.ofLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
     }
 
     @Override
@@ -63,7 +62,7 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var r = SecretManager.retrieve(
-                    new SecretRetrievalStrategy.Prompt(),
+                    new SecretPromptStrategy(),
                     "Enter your Keeper master password to unlock",
                     KEEPER_PASSWORD_ID,
                     0,

@@ -33,6 +33,7 @@ public class ShellDialects {
     public static ShellDialect CONSTRAINED_POWERSHELL;
     public static ShellDialect OVH_BASTION;
     public static ShellDialect HETZNER_BOX;
+    public static ShellDialect SFTP;
 
     public static List<ShellDialect> getStartableDialects() {
         return ALL.stream()
@@ -101,6 +102,7 @@ public class ShellDialects {
             CONSTRAINED_POWERSHELL = byId("constrainedPowershell");
             OVH_BASTION = byId("ovhBastion");
             HETZNER_BOX = byId("hetznerBox");
+            SFTP = byId("sftp");
         }
     }
 }

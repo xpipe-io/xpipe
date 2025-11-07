@@ -5,8 +5,10 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
@@ -50,7 +52,7 @@ public class WorkspaceCreationDialog {
                 try {
                     var shortcutName = name.get();
                     var file =
-                            switch (OsType.getLocal()) {
+                            switch (OsType.ofLocal()) {
                                 case OsType.Windows ignored -> {
                                     var exec = AppInstallation.ofCurrent()
                                             .getDaemonExecutablePath()
@@ -62,6 +64,16 @@ public class WorkspaceCreationDialog {
                                             shortcutName);
                                 }
                                 default -> {
+                                    // AppImages are mounted and can't be called normally
+                                    if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
+                                        var exec = System.getenv("APPIMAGE");
+                                        yield DesktopShortcuts.create(
+                                                exec,
+                                                "-Dio.xpipe.app.dataDir=\"" + path.get()
+                                                        + "\" -Dio.xpipe.app.acceptEula=true",
+                                                shortcutName);
+                                    }
+
                                     var exec = AppInstallation.ofCurrent()
                                             .getCliExecutablePath()
                                             .toString();
@@ -69,8 +81,11 @@ public class WorkspaceCreationDialog {
                                             exec, "open -d \"" + path.get() + "\" --accept-eula", shortcutName);
                                 }
                             };
+
+                    // This is an async action, so sleep
                     DesktopHelper.browseFileInDirectory(file);
-                    OperationMode.close();
+                    ThreadHelper.sleep(1000);
+                    AppOperationMode.close();
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();
                 }

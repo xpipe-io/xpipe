@@ -5,6 +5,10 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.EncryptionToken;
+import io.xpipe.app.secret.PasswordLockSecretValue;
+import io.xpipe.app.secret.VaultKeySecretValue;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
@@ -104,7 +108,8 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public OsType.Any deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            var stream = Stream.of(OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS);
+            var stream = Stream.of(
+                    OsType.WINDOWS, OsType.LINUX, OsType.BSD, OsType.SOLARIS, OsType.MACOS, OsType.AIX, OsType.UNIX);
             var n = p.getValueAsString();
             return stream.filter(osType ->
                             osType.getName().equals(n) || osType.getId().equals(n))

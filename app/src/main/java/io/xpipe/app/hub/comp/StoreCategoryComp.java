@@ -6,14 +6,14 @@ import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.ClipboardHelper;
-import io.xpipe.app.util.ContextMenuHelper;
 import io.xpipe.app.util.DesktopHelper;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -24,6 +24,7 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyCode;
@@ -83,9 +84,9 @@ public class StoreCategoryComp extends SimpleComp {
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setFocusTraversable(false);
-                    if (OsType.getLocal() == OsType.WINDOWS) {
+                    if (OsType.ofLocal() == OsType.WINDOWS) {
                         HBox.setMargin(struc.get(), new Insets(0, 0, 2.3, 0));
-                    } else if (OsType.getLocal() == OsType.MACOS) {
+                    } else if (OsType.ofLocal() == OsType.MACOS) {
                         HBox.setMargin(struc.get(), new Insets(0, 0, 1.8, 0));
                     }
                 })
@@ -211,7 +212,7 @@ public class StoreCategoryComp extends SimpleComp {
         if (AppPrefs.get().developerMode().getValue()) {
             var browse = new MenuItem(AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
             browse.setOnAction(event ->
-                    DesktopHelper.browsePathLocal(category.getCategory().getDirectory()));
+                    DesktopHelper.browseFile(category.getCategory().getDirectory()));
             contextMenu.getItems().add(browse);
         }
 
@@ -239,6 +240,27 @@ public class StoreCategoryComp extends SimpleComp {
         contextMenu.getItems().add(rename);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
+
+        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+        StoreViewState.get()
+                .getSortedCategories(getCategory().getRoot())
+                .getList()
+                .forEach(storeCategoryWrapper -> {
+                    MenuItem m = new MenuItem();
+                    m.textProperty()
+                            .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                    + storeCategoryWrapper.getName().getValue());
+                    m.setOnAction(event -> {
+                        category.moveToParent(storeCategoryWrapper.getCategory());
+                        event.consume();
+                    });
+                    if (storeCategoryWrapper.getParent() == null) {
+                        m.setDisable(true);
+                    }
+
+                    move.getItems().add(m);
+                });
+        contextMenu.getItems().add(move);
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.setOnAction(event -> {

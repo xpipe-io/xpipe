@@ -6,11 +6,11 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.MarkdownHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.MarkdownHelper;
-import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.ShellTemp;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -143,7 +143,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     public CompStructure<StackPane> createBase() {
         var sp = new StackPane();
 
-        if (OsType.getLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64")) {
+        if (OsType.ofLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64")) {
             WEB_VIEW_SUPPORTED = false;
         }
 

@@ -22,7 +22,7 @@
 
 .context-menu .menu-up-arrow, .context-menu .menu-down-arrow {
     -fx-padding: 5;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .context-menu .scroll-arrow {

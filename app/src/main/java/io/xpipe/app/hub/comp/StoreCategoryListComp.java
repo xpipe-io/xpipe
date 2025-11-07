@@ -23,7 +23,7 @@ public class StoreCategoryListComp extends SimpleComp {
         sp.apply(struc -> {
             Region content = (Region) struc.get().getContent();
             struc.get().setFitToWidth(true);
-            if (OsType.getLocal() == OsType.MACOS) {
+            if (OsType.ofLocal() == OsType.MACOS) {
                 AppFontSizes.lg(struc.get());
             }
             struc.get()

@@ -31,11 +31,6 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public void resetData() {
-        parent.resetData();
-    }
-
-    @Override
     public String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception {
         return parent.prepareTerminalOpen(config, workingDirectory);
@@ -89,6 +84,11 @@ public class WrapperShellControl implements ShellControl {
     @Override
     public Charset getCharset() {
         return parent.getCharset();
+    }
+
+    @Override
+    public void setExitTimeout(int timeout) {
+        parent.setExitTimeout(timeout);
     }
 
     @Override

@@ -8,11 +8,11 @@ import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.ContextMenuHelper;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -211,7 +211,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
                 for (var a : c.getAddedSubList()) {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        try (var b = new BooleanScope(addingTab).start()) {
+                        try (var ignored = new BooleanScope(addingTab).start()) {
                             var t = createTab(tabs, a);
                             map.put(a, t);
                             tabs.getTabs().add(t);
@@ -307,7 +307,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
                             },
                             model.getGlobalPinnedTab())));
             unpin.setOnAction(event -> {
-                model.unpinTab(tabModel);
+                model.unpinTab();
                 event.consume();
             });
             cm.getItems().add(unpin);
@@ -511,6 +511,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
                     var color = tabModel.getColor();
                     if (color != null) {
                         c.getStyleClass().add(color.getId());
+                    } else {
+                        c.getStyleClass().add("gray");
                     }
                     c.addEventHandler(DragEvent.DRAG_ENTERED, de -> {
                         // Prevent switch when dragging local files into app

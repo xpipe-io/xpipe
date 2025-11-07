@@ -1,7 +1,7 @@
 package io.xpipe.app.vnc;
 
+import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ClipboardHelper;
 import io.xpipe.core.OsType;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -31,7 +31,7 @@ public interface ExternalVncClient {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(InternalVncClient.class);
-        switch (OsType.getLocal()) {
+        switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 l.add(RemminaVncClient.class);
                 l.add(TigerVncClient.Linux.class);

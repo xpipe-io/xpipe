@@ -1,12 +1,11 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.BooleanProperty;
@@ -25,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 public class BrowserFileTransferOperation {
 
@@ -82,17 +80,9 @@ public class BrowserFileTransferOperation {
         return new BrowserFileTransferOperation(target, entries, transferMode, checkConflicts, progress, cancelled);
     }
 
-    private void restartShellIfNeeded() throws Exception {
-        var source = getFiles().getFirst().getFileSystem().getShell().orElseThrow();
-        var target = getTarget().getFileSystem().getShell().orElseThrow();
-
-        if (source.isAnyStreamClosed()) {
-            source.restart();
-        }
-
-        if (target.isAnyStreamClosed()) {
-            target.restart();
-        }
+    private void reinitFileSystemsIfNeeded() throws Exception {
+        getFiles().getFirst().getFileSystem().reinitIfNeeded();
+        getTarget().getFileSystem().reinitIfNeeded();
     }
 
     private void updateProgress(BrowserTransferProgress progress) {
@@ -118,7 +108,7 @@ public class BrowserFileTransferOperation {
                 return BrowserDialogs.FileConflictChoice.SKIP;
             }
 
-            var choice = BrowserDialogs.showFileConflictAlert(target, multiple);
+            var choice = BrowserDialogs.showFileConflictDialog(target, multiple);
             if (choice == BrowserDialogs.FileConflictChoice.CANCEL) {
                 lastConflictChoice = BrowserDialogs.FileConflictChoice.CANCEL;
                 return BrowserDialogs.FileConflictChoice.CANCEL;
@@ -149,7 +139,7 @@ public class BrowserFileTransferOperation {
     }
 
     private boolean cancelled() {
-        return cancelled.get() || OperationMode.isInShutdown();
+        return cancelled.get() || AppOperationMode.isInShutdown();
     }
 
     public boolean isMove() {
@@ -169,7 +159,7 @@ public class BrowserFileTransferOperation {
             return;
         }
 
-        restartShellIfNeeded();
+        reinitFileSystemsIfNeeded();
 
         cancelled.set(false);
 
@@ -186,13 +176,12 @@ public class BrowserFileTransferOperation {
                     handleSingleOnSameFileSystem(file);
                 } else {
                     // Transfers might change the working directory
-                    var currentDir =
-                            file.getFileSystem().getShell().orElseThrow().view().pwd();
+                    var currentDir = file.getFileSystem().pwd();
                     handleSingleAcrossFileSystems(file);
 
                     // Expect a kill
-                    if (!file.getFileSystem().getShell().orElseThrow().isAnyStreamClosed()) {
-                        file.getFileSystem().getShell().orElseThrow().view().cd(currentDir);
+                    if (currentDir.isPresent() && !file.getFileSystem().requiresReinit()) {
+                        file.getFileSystem().cd(currentDir.get());
                     }
                 }
             }
@@ -224,7 +213,8 @@ public class BrowserFileTransferOperation {
 
         if (sourceFile.equals(targetFile)) {
             // Duplicate file by renaming it
-            targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+            targetFile = BrowserFileDuplicates.renameFileDuplicate(
+                    target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
         }
 
         if (source.getKind() == FileKind.DIRECTORY && target.getFileSystem().directoryExists(targetFile)) {
@@ -240,7 +230,8 @@ public class BrowserFileTransferOperation {
             }
 
             if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
-                targetFile = renameFileLoop(target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
+                targetFile = BrowserFileDuplicates.renameFileDuplicate(
+                        target.getFileSystem(), targetFile, source.getKind() == FileKind.DIRECTORY);
             }
         }
 
@@ -252,40 +243,14 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private FilePath renameFileLoop(FileSystem fileSystem, FilePath target, boolean dir) throws Exception {
-        // Who has more than 10 copies?
-        for (int i = 0; i < 10; i++) {
-            target = renameFile(target);
-            if ((dir && !fileSystem.directoryExists(target)) || (!dir && !fileSystem.fileExists(target))) {
-                return target;
-            }
-        }
-        return target;
-    }
-
-    private FilePath renameFile(FilePath target) {
-        var name = target.getFileName();
-        var pattern = Pattern.compile("(.+) \\((\\d+)\\)\\.(.+?)");
-        var matcher = pattern.matcher(name);
-        if (matcher.matches()) {
-            try {
-                var number = Integer.parseInt(matcher.group(2));
-                var newFile = target.getParent().join(matcher.group(1) + " (" + (number + 1) + ")." + matcher.group(3));
-                return newFile;
-            } catch (NumberFormatException ignored) {
-            }
-        }
-
-        var ext = target.getExtension();
-        return FilePath.of(target.getBaseName() + " (" + 1 + ")" + (ext.isPresent() ? "." + ext.get() : ""));
-    }
-
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
         if (target.getKind() != FileKind.DIRECTORY) {
             throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
         }
 
-        var flatFiles = new LinkedHashMap<FileEntry, String>();
+        BrowserFileSystemHelper.validateDirectoryPath(target.getFileSystem(), target.getPath(), true);
+
+        var flatFiles = new LinkedHashMap<FileEntry, FilePath>();
 
         // Prevent dropping directory into itself
         if (source.getFileSystem().equals(target.getFileSystem())
@@ -302,7 +267,7 @@ public class BrowserFileTransferOperation {
             }
 
             var directoryName = source.getPath().getFileName();
-            flatFiles.put(source, directoryName);
+            flatFiles.put(source, FilePath.of(directoryName));
 
             var baseRelative = source.getPath().getParent().toDirectory();
             var list = new ArrayList<FileEntry>();
@@ -312,7 +277,7 @@ public class BrowserFileTransferOperation {
                     return false;
                 }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -329,7 +294,7 @@ public class BrowserFileTransferOperation {
                     return;
                 }
 
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix().toString();
+                var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
                 flatFiles.put(fileEntry, rel);
                 if (fileEntry.getKind() == FileKind.FILE) {
                     // This one is up-to-date and does not need to be recalculated
@@ -345,7 +310,7 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            flatFiles.put(source, source.getPath().getFileName());
+            flatFiles.put(source, FilePath.of(source.getPath().getFileName()));
             // If we don't have a size, it doesn't matter that much as the total size is only for display
             totalSize.addAndGet(source.getFileSizeLong().orElse(0));
         }
@@ -367,8 +332,7 @@ public class BrowserFileTransferOperation {
                 }
 
                 var sourceFile = e.getKey();
-                var os = targetFs.getShell().orElseThrow().getOsType();
-                var fixedRelPath = OsFileSystem.of(os).makeFileSystemCompatible(FilePath.of(e.getValue()));
+                var fixedRelPath = targetFs.makeFileSystemCompatible(e.getValue());
                 var targetFile = target.getPath().join(fixedRelPath.toString());
                 if (sourceFile.getFileSystem().equals(targetFs)) {
                     throw new IllegalStateException();
@@ -386,7 +350,7 @@ public class BrowserFileTransferOperation {
                         }
 
                         if (fileConflictChoice == BrowserDialogs.FileConflictChoice.RENAME) {
-                            targetFile = renameFileLoop(targetFs, targetFile, false);
+                            targetFile = BrowserFileDuplicates.renameFileDuplicate(targetFs, targetFile, false);
                         }
                     }
 
@@ -470,8 +434,8 @@ public class BrowserFileTransferOperation {
                 return;
             }
 
-            sourceFs.getShell().orElseThrow().killExternal();
-            targetFs.getShell().orElseThrow().killExternal();
+            sourceFs.kill();
+            targetFs.kill();
         };
         cancelled.addListener(closeCancelListener);
 
@@ -545,9 +509,10 @@ public class BrowserFileTransferOperation {
                 outputStream.flush();
                 inputStream.transferTo(OutputStream.nullOutputStream());
 
-                var incomplete = readCount.get() < expectedFileSize;
+                var incomplete = !killStreams.get() && readCount.get() < expectedFileSize;
                 if (incomplete) {
-                    throw new IOException("Source file " + sourceFile + " input did end prematurely");
+                    throw new IOException("Source file " + sourceFile + " input size mismatch: Expected "
+                            + expectedFileSize + " but got " + readCount.get() + ". Did the source file get updated?");
                 }
             } catch (Exception ex) {
                 exception.set(ex);
@@ -588,13 +553,7 @@ public class BrowserFileTransferOperation {
         var targetFs = target.getFileSystem();
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
         if (!same) {
-            var sourceShell = sourceFs.getShell().orElseThrow();
-            var targetShell = targetFs.getShell().orElseThrow();
-            // Check for null on shell reset
-            return sourceShell.getStdout() != null
-                    && !sourceShell.getStdout().isClosed()
-                    && targetShell.getStdin() != null
-                    && !targetShell.getStdin().isClosed();
+            return !sourceFs.requiresReinit() && !targetFs.requiresReinit();
         } else {
             return true;
         }
@@ -611,20 +570,26 @@ public class BrowserFileTransferOperation {
                 var nowTransferred = transferred.get();
                 var stuck = initialTransferred == nowTransferred;
                 if (stuck) {
-                    sourceFs.getShell().orElseThrow().killExternal();
-                    targetFs.getShell().orElseThrow().killExternal();
+                    sourceFs.kill();
+                    targetFs.kill();
                     return;
                 }
             }
         }
 
         if (!same) {
-            var sourceShell = sourceFs.getShell().orElseThrow();
-            var targetShell = targetFs.getShell().orElseThrow();
-            try {
-                sourceShell.closeStdout();
-            } finally {
-                targetShell.closeStdin();
+            if (sourceFs.getShell().isPresent()) {
+                try {
+                    sourceFs.getShell().get().closeStdout();
+                } catch (Exception ignored) {
+                }
+            }
+
+            if (targetFs.getShell().isPresent()) {
+                try {
+                    targetFs.getShell().get().closeStdin();
+                } catch (Exception ignored) {
+                }
             }
         }
     }

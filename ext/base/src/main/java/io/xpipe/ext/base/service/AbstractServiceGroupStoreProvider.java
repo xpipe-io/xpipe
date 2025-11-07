@@ -6,13 +6,10 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.hub.comp.*;
-import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -21,12 +18,6 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SERVICES;
-    }
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var t = createToggleComp(sec);
-        return StoreEntryComp.create(sec, t, preferLarge);
     }
 
     @Override
@@ -68,40 +59,5 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     @Override
     public String getDisplayIconFileName(DataStore store) {
         return "base:serviceGroup_icon.svg";
-    }
-
-    private StoreToggleComp createToggleComp(StoreSection sec) {
-        var t = StoreToggleComp.<AbstractServiceGroupStore<?>>enableToggle(
-                null, sec, new SimpleBooleanProperty(false), (g, aBoolean) -> {
-                    var children =
-                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-                    ThreadHelper.runFailableAsync(() -> {
-                        for (DataStoreEntry child : children) {
-                            if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                                if (aBoolean) {
-                                    serviceStore.startSessionIfNeeded();
-                                } else {
-                                    serviceStore.stopSessionIfNeeded();
-                                }
-                            }
-                        }
-                    });
-                });
-        t.setCustomVisibility(Bindings.createBooleanBinding(
-                () -> {
-                    var children =
-                            DataStorage.get().getStoreChildren(sec.getWrapper().getEntry());
-                    for (DataStoreEntry child : children) {
-                        if (child.getStore() instanceof AbstractServiceStore serviceStore) {
-                            if (serviceStore.getHost() != null
-                                    && serviceStore.getHost().getStore().requiresTunnel()) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                },
-                StoreViewState.get().getAllEntries().getList()));
-        return t;
     }
 }

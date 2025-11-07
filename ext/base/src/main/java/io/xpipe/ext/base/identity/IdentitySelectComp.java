@@ -6,18 +6,18 @@ import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.EncryptedValue;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
 import javafx.application.Platform;
@@ -69,8 +69,9 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 .map(entry -> entry.getStore() instanceof PasswordManagerIdentityStore p ? p : null)
                 .filter(s -> s != null)
                 .findFirst();
-        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretRetrievalStrategy.None);
-        var hasSshIdentity = identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoneStrategy);
+        var hasPassword = password.getValue() != null && !(password.getValue() instanceof SecretNoneStrategy);
+        var hasSshIdentity =
+                identityStrategy.getValue() != null && !(identityStrategy.getValue() instanceof NoIdentityStrategy);
         if (hasPwMan && pwManIdentity.isPresent() && !hasPassword && !hasSshIdentity) {
             var perUser = pwManIdentity.get().isPerUser();
             var id = PasswordManagerIdentityStore.builder()
@@ -88,11 +89,11 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         if (synced.isPresent()) {
             var pass = EncryptedValue.VaultKey.of(password.getValue());
             if (pass == null) {
-                pass = EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None());
+                pass = EncryptedValue.VaultKey.of(new SecretNoneStrategy());
             }
             var ssh = EncryptedValue.VaultKey.of(identityStrategy.getValue());
             if (ssh == null) {
-                ssh = EncryptedValue.VaultKey.of(new NoneStrategy());
+                ssh = EncryptedValue.VaultKey.of(new NoIdentityStrategy());
             }
             var id = SyncedIdentityStore.builder()
                     .username(inPlaceUser.getValue())
@@ -105,11 +106,11 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
         var pass = EncryptedValue.CurrentKey.of(password.getValue());
         if (pass == null) {
-            pass = EncryptedValue.CurrentKey.of(new SecretRetrievalStrategy.None());
+            pass = EncryptedValue.CurrentKey.of(new SecretNoneStrategy());
         }
         var ssh = EncryptedValue.CurrentKey.of(identityStrategy.getValue());
         if (ssh == null) {
-            ssh = EncryptedValue.CurrentKey.of(new NoneStrategy());
+            ssh = EncryptedValue.CurrentKey.of(new NoIdentityStrategy());
         }
         var id = LocalIdentityStore.builder()
                 .username(inPlaceUser.getValue())

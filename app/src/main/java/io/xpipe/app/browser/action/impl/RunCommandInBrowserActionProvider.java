@@ -2,6 +2,8 @@ package io.xpipe.app.browser.action.impl;
 
 import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
+import io.xpipe.app.browser.file.BrowserEntry;
+import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.util.CommandDialog;
 
 import lombok.NonNull;
@@ -9,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RunCommandInBrowserActionProvider implements BrowserActionProvider {
@@ -16,6 +19,11 @@ public class RunCommandInBrowserActionProvider implements BrowserActionProvider 
     @Override
     public String getId() {
         return "runCommandInBrowser";
+    }
+
+    @Override
+    public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return model.getFileSystem().getShell().isPresent();
     }
 
     @Jacksonized

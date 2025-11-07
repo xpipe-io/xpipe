@@ -2,20 +2,19 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.DataStoreProvider;
-import io.xpipe.app.ext.DataStoreUsageCategory;
-import io.xpipe.app.ext.SingletonSessionStoreProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.StoreStateFormat;
 import io.xpipe.core.FailableRunnable;
+import io.xpipe.ext.base.host.HostAddressGatewayStore;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractServiceStoreProvider implements SingletonSessionStoreProvider, DataStoreProvider {
@@ -28,6 +27,45 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public DocumentationLink getHelpLink() {
         return DocumentationLink.SERVICES;
+    }
+
+    @Override
+    public boolean supportsSession(SingletonSessionStore<?> s) {
+        var abs = (AbstractServiceStore) s;
+        if (abs.getAddress() != null) {
+            return abs.getGateway() != null
+                    && abs.getGateway().getStore().isLocallyTunnelable()
+                    && abs.getGateway().getStore().requiresTunnel();
+        }
+
+        if (abs.getHost() != null) {
+            if (abs.getHost().getStore() instanceof HostAddressGatewayStore a) {
+                if (a.getGateway() != null
+                        && a.getGateway().getStore().requiresTunnel()
+                        && a.getGateway().getStore().isLocallyTunnelable()) {
+                    return true;
+                }
+            }
+
+            if (abs.getHost().getStore() instanceof NetworkTunnelStore t) {
+                if (!t.requiresTunnel()) {
+                    return false;
+                }
+
+                if (t.isLocallyTunnelable()) {
+                    return true;
+                }
+
+                var parent = t.getNetworkParent();
+                if (!t.isLocallyTunnelable() && parent.getStore() instanceof NetworkTunnelStore nts) {
+                    return nts.isLocallyTunnelable();
+                }
+
+                return false;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -48,9 +86,15 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public List<String> getSearchableTerms(DataStore store) {
         AbstractServiceStore s = store.asNeeded();
-        return s.getLocalPort() != null
-                ? List.of("" + s.getRemotePort(), "" + s.getLocalPort())
-                : List.of("" + s.getRemotePort());
+        var l = new ArrayList<String>();
+        l.add("" + s.getRemotePort());
+        if (s.getLocalPort() != null) {
+            l.add("" + s.getLocalPort());
+        }
+        if (s.getAddress() != null) {
+            l.add(s.getAddress());
+        }
+        return l;
     }
 
     @Override
@@ -84,7 +128,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
                             : s.isSessionRunning()
                                     ? AppI18n.get("active")
                                     : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, desc, type, state).format();
+                    return new StoreStateFormat(List.of(), desc, type, state).format();
                 },
                 section.getWrapper().getCache(),
                 AppI18n.activeLanguage());
@@ -93,25 +137,6 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     @Override
     public String getDisplayIconFileName(DataStore store) {
         return "base:service_icon.svg";
-    }
-
-    @Override
-    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var toggle = createToggleComp(sec);
-        toggle.setCustomVisibility(Bindings.createBooleanBinding(
-                () -> {
-                    AbstractServiceStore s =
-                            sec.getWrapper().getEntry().getStore().asNeeded();
-                    if (s.getHost() == null
-                            || !s.getHost().getStore().requiresTunnel()
-                            || !s.getHost().getStore().isLocallyTunnelable()) {
-                        return false;
-                    }
-
-                    return true;
-                },
-                sec.getWrapper().getCache()));
-        return new DenseStoreEntryComp(sec, toggle);
     }
 
     @Override

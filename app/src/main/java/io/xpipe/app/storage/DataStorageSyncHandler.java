@@ -21,6 +21,8 @@ public interface DataStorageSyncHandler {
 
     void init();
 
+    void prepareGpgIfNeeded();
+
     void retrieveSyncedData();
 
     void refreshRemoteData();

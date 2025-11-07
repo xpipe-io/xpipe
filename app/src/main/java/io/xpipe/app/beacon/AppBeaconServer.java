@@ -76,6 +76,7 @@ public class AppBeaconServer {
             // Not terminal!
             // We can still continue without the running server
             ErrorEventFactory.fromThrowable("Unable to start local http server on port " + INSTANCE.getPort(), ex)
+                    .documentationLink(DocumentationLink.BEACON_PORT_BIND)
                     .build()
                     .handle();
         }
@@ -122,7 +123,7 @@ public class AppBeaconServer {
         var file = BeaconConfig.getLocalBeaconAuthFile();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-rw----"));
         }
         localAuthSecret = id;

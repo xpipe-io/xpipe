@@ -6,6 +6,7 @@ import io.xpipe.core.OsType;
 import java.util.List;
 import java.util.stream.Stream;
 
+@SuppressWarnings("unused")
 public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
 
     PasswordManagerCommandTemplate BITWARDEN = new PasswordManagerCommandTemplate() {
@@ -55,7 +56,7 @@ public interface PasswordManagerCommandTemplate extends PrefsChoiceValue {
     PasswordManagerCommandTemplate KEEPER = new PasswordManagerCommandTemplate() {
         @Override
         public String getTemplate() {
-            var exec = OsType.getLocal() == OsType.WINDOWS ? "@keeper" : "keeper";
+            var exec = OsType.ofLocal() == OsType.WINDOWS ? "@keeper" : "keeper";
             return exec + " get $KEY --format password --unmask";
         }
 

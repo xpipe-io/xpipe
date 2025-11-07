@@ -1,16 +1,12 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.sun.jna.Memory;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinBase;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -19,6 +15,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -61,7 +60,7 @@ public class PageantStrategy implements SshIdentityStrategy {
             return supported;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return true;
         } else {
             try {

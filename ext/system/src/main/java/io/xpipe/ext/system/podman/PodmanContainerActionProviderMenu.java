@@ -3,8 +3,8 @@ package io.xpipe.ext.system.podman;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.HubBranchProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.ext.base.store.StoreRestartActionProvider;
 import io.xpipe.ext.base.store.StoreStartActionProvider;
 import io.xpipe.ext.base.store.StoreStopActionProvider;
@@ -16,7 +16,7 @@ import java.util.List;
 public class PodmanContainerActionProviderMenu implements HubBranchProvider<PodmanContainerStore> {
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<PodmanContainerStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

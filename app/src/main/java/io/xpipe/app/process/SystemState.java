@@ -4,7 +4,7 @@ import io.xpipe.core.OsType;
 
 public interface SystemState {
 
-    OsType getOsType();
+    OsType.Any getOsType();
 
     String getOsName();
 

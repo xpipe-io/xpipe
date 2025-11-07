@@ -1,27 +1,52 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.core.OsType;
 
-public class FreeRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+
+@JsonTypeName("freeRdp")
+@Value
+@Jacksonized
+@Builder
+public class FreeRdpClient implements ExternalRdpClient {
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
-        CommandSupport.isInPathOrThrow(
-                LocalShell.getShell(),
-                getExecutable(),
-                "XFreeRDP",
-                DataStorage.get().local());
+        CommandBuilder exec;
+        var v3 = CommandSupport.isInLocalPath("xfreerdp3");
+        if (!v3) {
+            var v2 = CommandSupport.isInLocalPath("xfreerdp");
+            if (!v2 && OsType.ofLocal() == OsType.LINUX) {
+                var flatpak = FlatpakCache.getApp("com.freerdp.FreeRDP");
+                if (flatpak.isPresent()) {
+                    exec = FlatpakCache.runCommand("com.freerdp.FreeRDP");
+                    v3 = true;
+                } else {
+                    CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
+                    exec = CommandBuilder.of().add("xfreerdp");
+                }
+            } else {
+                CommandSupport.isInPathOrThrow(LocalShell.getShell(), "xfreerdp");
+                exec = CommandBuilder.of().add("xfreerdp");
+                // macOS uses xfreerdp3 by default
+                v3 = true;
+            }
+        } else {
+            exec = CommandBuilder.of().add("xfreerdp3");
+        }
 
         var file = writeRdpConfigFile(configuration.getTitle(), configuration.getConfig());
         var b = CommandBuilder.of()
-                .add(getExecutable())
+                .add(exec)
                 .addFile(file.toString())
-                .add(OsType.getLocal() == OsType.LINUX ? "/cert-ignore" : "/cert:ignore")
+                .add(v3 ? "/cert:ignore" : "/cert-ignore")
                 .add("/dynamic-resolution")
                 .add("/network:auto")
                 .add("/compression")
@@ -48,16 +73,6 @@ public class FreeRdpClient implements ExternalApplicationType.PathApplication, E
     @Override
     public String getWebsite() {
         return "https://www.freerdp.com/";
-    }
-
-    @Override
-    public String getExecutable() {
-        return "xfreerdp";
-    }
-
-    @Override
-    public boolean detach() {
-        return true;
     }
 
     @Override

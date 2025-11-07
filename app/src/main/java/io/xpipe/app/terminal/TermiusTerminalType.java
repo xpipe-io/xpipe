@@ -61,7 +61,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
     @Override
     public boolean isAvailable() {
         try {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Linux ignored -> {
                     yield Files.exists(Path.of("/opt/Termius"));
                 }
@@ -89,7 +89,7 @@ public class TermiusTerminalType implements ExternalTerminalType {
         var b = SshLocalBridge.get();
         var keyContent = Files.readString(b.getIdentityKey());
         var activated =
-                AppI18n.get().getMarkdownDocumentation("app:termiusSetup").formatted(b.getIdentityKey(), keyContent);
+                AppI18n.get().getMarkdownTranslation("app:termiusSetup").formatted(b.getIdentityKey(), keyContent);
         var modal = ModalOverlay.of("termiusSetup", new MarkdownComp(activated, s -> s, false).prefWidth(550));
         modal.addButton(ModalButton.ok(() -> {
             AppCache.update("termiusSetup", true);

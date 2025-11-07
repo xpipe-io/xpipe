@@ -12,7 +12,7 @@ import javafx.scene.layout.Region;
 
 public class UpdateCheckComp extends SimpleComp {
 
-    private void showAlert() {
+    private void showDialog() {
         ThreadHelper.runFailableAsync(() -> {
             AppDistributionType.get().getUpdateHandler().refreshUpdateCheckSilent(false, false);
             UpdateAvailableDialog.showIfNeeded(false);
@@ -96,7 +96,7 @@ public class UpdateCheckComp extends SimpleComp {
         return new TileButtonComp(name, description, graphic, actionEvent -> {
                     actionEvent.consume();
                     if (uh.getPreparedUpdate().getValue() != null) {
-                        showAlert();
+                        showDialog();
                         return;
                     }
 

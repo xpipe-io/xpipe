@@ -28,7 +28,8 @@ if (hasProperty("customJavaFxPath")) {
         javafx fileTree(dir: customJavaFxPath, include: '*.jar')
     }
 } else if (!bundledJdkJavaFx) {
-    // Always use maven version for now
+    // Always use maven version for development
+    // The jpackage script uses the jmod sdk files for JavaFX
     dependencies {
         javafx "org.openjfx:javafx-base:${devJavafxVersion}:${platform}"
         javafx "org.openjfx:javafx-controls:${devJavafxVersion}:${platform}"

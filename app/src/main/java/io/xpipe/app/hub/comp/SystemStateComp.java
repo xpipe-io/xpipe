@@ -1,10 +1,10 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.ShellStoreState;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
@@ -85,18 +85,25 @@ public class SystemStateComp extends SimpleComp {
         OTHER;
 
         public static ObservableValue<State> shellState(StoreEntryWrapper w) {
-            return BindingsHelper.map(w.getPersistentState(), o -> {
-                if (o instanceof ShellStoreState s) {
-                    if (s.getShellDialect() != null
-                            && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                        return SUCCESS;
-                    }
+            return Bindings.createObjectBinding(
+                    () -> {
+                        if (!w.getValidity().getValue().isUsable()) {
+                            return null;
+                        }
 
-                    return s.getRunning() != null ? s.getRunning() ? SUCCESS : FAILURE : OTHER;
-                }
+                        if (w.getPersistentState().getValue() instanceof ShellStoreState s) {
+                            if (s.getShellDialect() != null
+                                    && !s.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
+                                return SUCCESS;
+                            }
 
-                return OTHER;
-            });
+                            return s.getRunning() != null ? s.getRunning() ? SUCCESS : FAILURE : OTHER;
+                        }
+
+                        return OTHER;
+                    },
+                    w.getPersistentState(),
+                    w.getValidity());
         }
     }
 }

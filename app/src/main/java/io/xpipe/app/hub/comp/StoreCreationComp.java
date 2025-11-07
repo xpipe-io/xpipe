@@ -1,10 +1,11 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.SimpleValidator;
+import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.*;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
@@ -17,8 +18,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import net.synedra.validatorfx.GraphicDecorationStackPane;
-
-import java.util.List;
 
 public class StoreCreationComp extends ModalOverlayContentComp {
 
@@ -33,13 +32,12 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         return model.getBusy();
     }
 
-    private Region createStoreProperties(Comp<?> providerComp, Validator providerVal, Validator propVal) {
+    private OptionsBuilder createStoreProperties() {
         var nameKey = model.storeTypeNameKey();
-        var built = new OptionsBuilder(propVal)
-                .addComp(providerComp, model.getStore())
+        var built = new OptionsBuilder()
                 .name(nameKey + "Name")
                 .description(nameKey + "NameDescription")
-                .addString(model.getName(), false)
+                .addString(model.getName())
                 .nonNull()
                 .check(val -> Validator.create(val, AppI18n.observable("readOnlyStoreError"), model.getName(), s -> {
                     var same = s != null
@@ -47,10 +45,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                             && DataStorage.get().getEffectiveReadOnlyState(model.getExistingEntry())
                             && s.equals(model.getExistingEntry().getName());
                     return !same;
-                }))
-                .buildComp();
-        var comp = new OptionsComp(built.getEntries(), new ChainedValidator(List.of(providerVal, propVal)));
-        return comp.styleClass("store-creator-options").createRegion();
+                }));
+        return built;
     }
 
     private Region createLayout() {
@@ -70,16 +66,29 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
-                if (d == null || d.getComp() == null || d.getValidator() == null) {
+                if (d == null) {
                     return;
                 }
 
-                var propVal = new SimpleValidator();
-                var propR = createStoreProperties(d.getComp(), d.getValidator(), propVal);
+                var propOptions = createStoreProperties();
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
-                valSp.getChildren().add(propR);
+
+                var full = new OptionsBuilder();
+
+                // Start focus on top for newly created stores
+                if (model.getExistingEntry() == null) {
+                    d.getOptions().disableFirstIncompleteFocus();
+                    full.disableFirstIncompleteFocus();
+                }
+
+                full.sub(d.getOptions());
+                full.sub(propOptions);
+
+                var region =
+                        full.buildComp().styleClass("store-creator-options").createRegion();
+                valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);
                 sp.setSkin(new ScrollPaneSkin(sp));
@@ -99,10 +108,10 @@ public class StoreCreationComp extends ModalOverlayContentComp {
 
                 layout.setCenter(vbox);
 
-                model.getValidator().setValue(new ChainedValidator(List.of(d.getValidator(), propVal)));
+                model.getValidator().setValue(full.buildEffectiveValidator());
 
                 Platform.runLater(() -> {
-                    propR.requestFocus();
+                    region.requestFocus();
                 });
             } else {
                 layout.setCenter(null);

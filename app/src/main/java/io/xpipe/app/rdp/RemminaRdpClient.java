@@ -4,11 +4,19 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.*;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.util.*;
 
-public class RemminaRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
+@JsonTypeName("remmina")
+@Value
+@Jacksonized
+@Builder
+public class RemminaRdpClient implements ExternalApplicationType.LinuxApplication, ExternalRdpClient {
 
     private List<String> toStrip() {
         return List.of("auto connect", "password 51", "prompt for credentials", "smart sizing");
@@ -59,5 +67,10 @@ public class RemminaRdpClient implements ExternalApplicationType.PathApplication
     @Override
     public String getId() {
         return "app.remmina";
+    }
+
+    @Override
+    public String getFlatpakId() {
+        return "org.remmina.Remmina";
     }
 }

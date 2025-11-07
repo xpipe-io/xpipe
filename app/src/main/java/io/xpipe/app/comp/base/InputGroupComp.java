@@ -4,11 +4,10 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 
-import io.xpipe.app.core.AppFontSizes;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
-import javafx.scene.layout.Region;
 import lombok.Setter;
 
 import java.util.List;
@@ -22,10 +21,6 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
 
     public InputGroupComp(List<Comp<?>> comps) {
         entries = List.copyOf(comps);
-    }
-
-    public Comp<CompStructure<InputGroup>> spacing(double spacing) {
-        return apply(struc -> struc.get().setSpacing(spacing));
     }
 
     @Override

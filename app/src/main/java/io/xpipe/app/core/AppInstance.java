@@ -1,7 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.util.ThreadHelper;
@@ -43,7 +43,7 @@ public class AppInstance {
                 TrackEvent.info(
                         "Data directory " + AppProperties.get().getDataDir().toString()
                                 + " is already locked. Is another instance running?");
-                OperationMode.halt(1);
+                AppOperationMode.halt(1);
             }
 
             // We are good to start up!
@@ -57,7 +57,7 @@ public class AppInstance {
             // We still should check whether it is somehow occupied, otherwise beacon server startup will fail
             TrackEvent.info(
                     "Another instance is already running on this port as another user or is not reachable. Quitting ...");
-            OperationMode.halt(1);
+            AppOperationMode.halt(1);
             return;
         }
 
@@ -93,7 +93,7 @@ public class AppInstance {
                     .handle();
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             Desktop.getDesktop().setOpenURIHandler(e -> {
                 try {
                     client.get()
@@ -107,6 +107,6 @@ public class AppInstance {
             ThreadHelper.sleep(1000);
         }
         TrackEvent.info("Another instance is already running on this port. Quitting ...");
-        OperationMode.halt(1);
+        AppOperationMode.halt(1);
     }
 }

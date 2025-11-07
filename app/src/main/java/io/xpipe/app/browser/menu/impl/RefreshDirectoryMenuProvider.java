@@ -4,7 +4,8 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.value.ObservableValue;
@@ -19,7 +20,9 @@ public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         ThreadHelper.runAsync(() -> {
-            model.refreshSync();
+            BooleanScope.executeExclusive(model.getBusy(), () -> {
+                model.refreshSync();
+            });
         });
     }
 
@@ -33,7 +36,7 @@ public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdmz-refresh");
     }
 
@@ -48,7 +51,7 @@ public class RefreshDirectoryMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         return !model.getInOverview().get();
     }
 }

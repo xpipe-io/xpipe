@@ -5,9 +5,9 @@ import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.Translatable;
 import io.xpipe.core.OsType;
 
@@ -81,7 +81,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.MACOS;
+            return OsType.ofLocal() == OsType.MACOS;
         }
     }
 
@@ -93,7 +93,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default boolean isAvailable() {
             try (ShellControl pc = LocalShell.getShell()) {
-                return CommandSupport.findProgram(pc, getExecutable()).isPresent();
+                String name = getExecutable();
+                return pc.view().findProgram(name).isPresent();
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
@@ -102,7 +103,8 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void launch(CommandBuilder args) throws Exception {
             try (ShellControl pc = LocalShell.getShell()) {
-                if (!CommandSupport.isInPath(pc, getExecutable())) {
+                String executable = getExecutable();
+                if (!pc.view().findProgram(executable).isPresent()) {
                     throw ErrorEventFactory.expected(new IOException("Executable " + getExecutable()
                             + " not found in PATH. Either add it to the PATH and refresh the environment by restarting XPipe, or specify an absolute "
                             + "executable path using the custom terminal setting."));
@@ -118,6 +120,32 @@ public interface ExternalApplicationType extends PrefsValue {
         }
     }
 
+    interface LinuxApplication extends PathApplication {
+
+        String getFlatpakId() throws Exception;
+
+        @Override
+        default void launch(CommandBuilder args) throws Exception {
+            if (getFlatpakId() == null
+                    || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
+                PathApplication.super.launch(args);
+                return;
+            }
+
+            var app = FlatpakCache.getApp(getFlatpakId());
+            if (app.isEmpty()) {
+                throw ErrorEventFactory.expected(new IOException(
+                        "Executable " + getExecutable() + " not found in PATH nor as a flatkpak " + getFlatpakId()
+                                + " not installed. Install it and refresh the environment by restarting XPipe"));
+            }
+
+            try (ShellControl pc = LocalShell.getShell()) {
+                args.add(0, FlatpakCache.runCommand(getFlatpakId()));
+                pc.command(args).execute();
+            }
+        }
+    }
+
     interface InstallLocationType extends ExternalApplicationType {
 
         String getExecutable();
@@ -127,7 +155,8 @@ public interface ExternalApplicationType extends PrefsValue {
         default Optional<Path> determineFromPath() {
             // Try to locate if it is in the Path
             try (var sc = LocalShell.getShell().start()) {
-                var out = CommandSupport.findProgram(sc, getExecutable());
+                String name = getExecutable();
+                var out = sc.view().findProgram(name);
                 if (out.isPresent()) {
                     return out.map(filePath -> Path.of(filePath.toString()));
                 }
@@ -180,7 +209,7 @@ public interface ExternalApplicationType extends PrefsValue {
 
         @Override
         default boolean isSelectable() {
-            return OsType.getLocal() == OsType.WINDOWS;
+            return OsType.ofLocal() == OsType.WINDOWS;
         }
     }
 }

@@ -6,11 +6,11 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.app.util.StoreStateFormat;
 
 import javafx.beans.binding.Bindings;
@@ -102,7 +102,7 @@ public class ServiceControlStoreProvider implements SingletonSessionStoreProvide
                     var state = s.isSessionRunning()
                             ? AppI18n.get("active")
                             : s.isSessionEnabled() ? AppI18n.get("starting") : AppI18n.get("inactive");
-                    return new StoreStateFormat(null, state).format();
+                    return new StoreStateFormat(List.of(), state).format();
                 },
                 section.getWrapper().getCache(),
                 AppPrefs.get().language());

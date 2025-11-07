@@ -5,8 +5,8 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -34,7 +34,7 @@ public class FollowLinkMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2a-arrow-top-right-thick");
     }
 

@@ -9,6 +9,10 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -120,7 +124,7 @@ public class TerminalCategory extends AppPrefsCategory {
 
         var builder = new OptionsBuilder().pref(prefs.terminalType);
         if (!docsLink) {
-            builder.longDescription((DocumentationLink) null);
+            builder.documentationLink((DocumentationLink) null);
         }
         builder.addComp(h, prefs.terminalType);
         builder.pref(prefs.customTerminalCommand)
@@ -185,7 +189,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                 .hide(tabsSettingSupported.not())
                                 .pref(prefs.enableTerminalStartupBell)
                                 .addToggle(prefs.enableTerminalStartupBell)
-                                .hide(OsType.getLocal() == OsType.WINDOWS)
+                                .hide(OsType.ofLocal() == OsType.WINDOWS)
                         //                        .pref(prefs.terminalPromptForRestart)
                         //                        .addToggle(prefs.terminalPromptForRestart)
                         )
@@ -223,9 +227,10 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .nameAndDescription("terminalEnvironment")
                 .addComp(proxyChoice, ref)
-                .hide(OsType.getLocal() != OsType.WINDOWS);
+                .hide(OsType.ofLocal() != OsType.WINDOWS);
     }
 
+    @SuppressWarnings("unused")
     private OptionsBuilder terminalInitScript() {
         var prefs = AppPrefs.get();
         var ref = new SimpleObjectProperty<DataStoreEntryRef<ShellStore>>();
@@ -280,12 +285,12 @@ public class TerminalCategory extends AppPrefsCategory {
         var options = new OptionsBuilder()
                 .name("terminalMultiplexer")
                 .description(
-                        OsType.getLocal() == OsType.WINDOWS
+                        OsType.ofLocal() == OsType.WINDOWS
                                 ? "terminalMultiplexerWindowsDescription"
                                 : "terminalMultiplexerDescription")
-                .longDescription(DocumentationLink.TERMINAL_MULTIPLEXER)
+                .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
                 .addComp(choice);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             options.disable(BindingsHelper.map(prefs.terminalProxy(), uuid -> uuid == null));
         }
         return options;
@@ -323,7 +328,7 @@ public class TerminalCategory extends AppPrefsCategory {
         choice.maxWidth(getCompWidth());
         return new OptionsBuilder()
                 .nameAndDescription("terminalPrompt")
-                .longDescription(DocumentationLink.TERMINAL_PROMPT)
+                .documentationLink(DocumentationLink.TERMINAL_PROMPT)
                 .addComp(choice, prefs.terminalPrompt);
     }
 }

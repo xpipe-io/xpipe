@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 import lombok.Getter;
 
@@ -64,7 +64,7 @@ public class BrowserEntry {
         if (fileType != null) {
             return fileType.getIcon();
         } else if (directoryType != null) {
-            return directoryType.getIcon(rawFileEntry);
+            return directoryType.getIcon();
         } else {
             return rawFileEntry != null && rawFileEntry.resolved().getKind() == FileKind.DIRECTORY
                     ? "browser/default_folder.svg"

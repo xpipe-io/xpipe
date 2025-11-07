@@ -4,12 +4,12 @@ import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
-import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefsComp;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -162,12 +162,6 @@ public class AppLayoutModel {
                     () -> Hyperlinks.open(Hyperlinks.GITHUB_WEBTOP),
                     null));
         }
-        l.add(new Entry(
-                AppI18n.observable("mcp"),
-                new LabelGraphic.IconGraphic("mdi2r-robot"),
-                null,
-                () -> AppPrefs.get().selectCategory("mcp"),
-                null));
         return l;
     }
 

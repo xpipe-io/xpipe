@@ -4,18 +4,18 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppearanceCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.scene.layout.Region;
 
 public class AppConfigurationDialog {
 
     public static void showIfNeeded() {
-        if (!AppProperties.get().isInitialLaunch()) {
+        if (!AppProperties.get().isInitialLaunch() || AppProperties.get().isTest()) {
             return;
         }
 

@@ -1,6 +1,7 @@
 package io.xpipe.ext.system.incus;
 
 import io.xpipe.app.ext.*;
+import io.xpipe.app.process.BaseElevationHandler;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;

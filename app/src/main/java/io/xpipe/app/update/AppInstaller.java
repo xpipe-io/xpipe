@@ -1,12 +1,12 @@
 package io.xpipe.app.update;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -21,17 +21,17 @@ import java.nio.file.Path;
 public class AppInstaller {
 
     public static InstallerAssetType getSuitablePlatformAsset() {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return new InstallerAssetType.Msi();
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             return AppSystemInfo.ofLinux().isDebianBased()
                     ? new InstallerAssetType.Debian()
                     : new InstallerAssetType.Rpm();
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             return new InstallerAssetType.Pkg();
         }
 
@@ -67,7 +67,7 @@ public class AppInstaller {
                         ? getCmdCommand(file.toString(), logFile.toString())
                         : getPowershellCommand(file.toString(), logFile.toString(), systemWide);
 
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     try (var sc = LocalShell.getShell().start()) {
                         String toRun;
                         if (cmdScript) {
@@ -165,7 +165,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
@@ -201,7 +201,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)
@@ -237,7 +237,7 @@ public class AppInstaller {
                                                             fi
                                                             """,
                         file, file, AppRestart.getTerminalRestartCommand()));
-                OperationMode.executeAfterShutdown(() -> {
+                AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
                             .localScript(command)

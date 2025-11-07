@@ -4,12 +4,12 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.Validator;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 

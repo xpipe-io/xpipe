@@ -4,12 +4,11 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.value.ObservableValue;
@@ -59,13 +58,12 @@ public class LxdContainerEditRunConfigActionProvider implements HubLeafProvider<
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getCmd().getStore().getHost().get().ref());
             var file = FilePath.of("/run/lxd/" + d.getContainerName() + "/lxc.conf");
-            var model =
-                    BrowserFullSessionModel.DEFAULT.openFileSystemSync(elevatedRef, m -> file.getParent(), null, true);
+            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                    elevatedRef, null, m -> file.getParent(), null, true);
             var found = model.findFile(file);
             if (found.isEmpty()) {
                 return;
             }
-            AppLayoutModel.get().selectBrowser();
             BrowserFileOpener.openInTextEditor(model, found.get());
         }
 

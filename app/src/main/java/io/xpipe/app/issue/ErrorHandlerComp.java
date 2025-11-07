@@ -1,11 +1,11 @@
 package io.xpipe.app.issue;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.app.util.ThreadHelper;
@@ -66,30 +66,12 @@ public class ErrorHandlerComp extends SimpleComp {
             });
         });
         b.disable(busy);
-        b.apply(GrowAugment.create(true, false));
+        b.maxWidth(2000);
         return b.createRegion();
     }
 
     private Region createTop() {
-        var desc = event.getDescription();
-
-        if (event.getThrowable() != null) {
-            var toAppend = event.getThrowable().getMessage() != null
-                    ? event.getThrowable().getMessage()
-                    : AppI18n.get(
-                            "errorTypeOccured", event.getThrowable().getClass().getSimpleName());
-            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
-        }
-
-        if (desc == null) {
-            desc = AppI18n.get("errorNoDetail");
-        }
-
-        desc = desc.strip();
-
-        if (event.isTerminal()) {
-            desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
-        }
+        var desc = getEventDescription();
 
         // Account for line wrapping of long lines
         var estimatedLineCount = desc.lines()
@@ -107,6 +89,31 @@ public class ErrorHandlerComp extends SimpleComp {
         text.setFillWidth(true);
         text.setSpacing(8);
         return text;
+    }
+
+    private String getEventDescription() {
+        var desc = event.getDescription();
+
+        Throwable t = event.getThrowable();
+        while (t != null) {
+            var toAppend = t.getMessage() != null
+                    ? t.getMessage()
+                    : AppI18n.get("errorTypeOccured", t.getClass().getSimpleName());
+            desc = desc != null ? desc + "\n\n" + toAppend : toAppend;
+            t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
+        }
+
+        if (desc == null) {
+            desc = AppI18n.get("errorNoDetail");
+        }
+
+        desc = desc.strip();
+
+        if (event.isTerminal()) {
+            desc = desc + "\n\n" + AppI18n.get("terminalErrorDescription");
+        }
+
+        return desc;
     }
 
     @Override
@@ -154,7 +161,7 @@ public class ErrorHandlerComp extends SimpleComp {
             actionBox.getChildren().add(ac);
         }
 
-        var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
+        var hasCustomActions = event.getCustomActions().size() > (event.getLink() != null ? 1 : 0);
         if (hasCustomActions) {
             actionBox.getChildren().add(createActionComp(ErrorAction.ignore(), busy));
         }

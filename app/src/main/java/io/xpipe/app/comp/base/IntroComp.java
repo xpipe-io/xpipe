@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -57,18 +57,18 @@ public class IntroComp extends SimpleComp {
         var hbox = new HBox(img, text);
         hbox.setSpacing(55);
         hbox.setAlignment(Pos.CENTER);
+        var v = new VBox(hbox);
 
-        var button = new ButtonComp(
-                AppI18n.observable(translationsKey + "Button"),
-                buttonGraphic != null ? buttonGraphic.createGraphicNode() : null,
-                buttonAction);
-        if (buttonDefault) {
-            button.styleClass(Styles.ACCENT);
+        if (buttonAction != null) {
+            var button = new ButtonComp(AppI18n.observable(translationsKey + "Button"), buttonGraphic, buttonAction);
+            if (buttonDefault) {
+                button.styleClass(Styles.ACCENT);
+            }
+            var buttonPane = new StackPane(button.createRegion());
+            buttonPane.setAlignment(Pos.CENTER);
+            v.getChildren().add(buttonPane);
         }
-        var buttonPane = new StackPane(button.createRegion());
-        buttonPane.setAlignment(Pos.CENTER);
 
-        var v = new VBox(hbox, buttonPane);
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);
         v.setMinHeight(Region.USE_PREF_SIZE);

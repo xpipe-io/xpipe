@@ -20,25 +20,25 @@ public class Validators {
 
     public static void nonNull(Object object) throws ValidationException {
         if (object == null) {
-            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+            throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
     }
 
     public static void nonNull(Object object, String name) throws ValidationException {
         if (object == null) {
-            throw new ValidationException(AppI18n.get("app.mustNotBeEmpty", name));
+            throw new ValidationException(AppI18n.get("mustNotBeEmpty", name));
         }
     }
 
     public static void contentNonNull(List<?> object) throws ValidationException {
         if (object.stream().anyMatch(o -> o == null)) {
-            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+            throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
     }
 
     public static void notEmpty(String string) throws ValidationException {
         if (string.strip().length() == 0) {
-            throw new ValidationException(AppI18n.get("app.valueMustNotBeEmpty"));
+            throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
     }
 }

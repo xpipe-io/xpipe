@@ -12,8 +12,8 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -75,7 +75,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        delayedStack.hide(AppMainWindow.getInstance().getStage().widthProperty().lessThan(1000));
+        delayedStack.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
         var splitPane = new LeftSplitPaneComp(delayedStack, loadingStack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
                 .withOnDividerChange(d -> {

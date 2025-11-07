@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AppWindowBounds {
 
     public static void fixInvalidStagePosition(Stage stage) {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             return;
         }
 

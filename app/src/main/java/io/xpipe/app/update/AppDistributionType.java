@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import lombok.Getter;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -22,6 +23,7 @@ public enum AppDistributionType implements Translatable {
     DEVELOPMENT("development", true, () -> new GitHubUpdater(false)),
     PORTABLE("portable", false, () -> new PortableUpdater(true)),
     NATIVE_INSTALLATION("install", true, () -> new GitHubUpdater(true)),
+    APP_IMAGE("appImage", false, () -> new PortableUpdater(true)),
     HOMEBREW("homebrew", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(
@@ -130,7 +132,7 @@ public enum AppDistributionType implements Translatable {
 
     public static AppDistributionType determine() {
         var base = AppInstallation.ofCurrent().getBaseInstallationPath();
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             if (!base.equals(AppInstallation.ofDefault().getBaseInstallationPath())) {
                 return PORTABLE;
             }
@@ -151,11 +153,11 @@ public enum AppDistributionType implements Translatable {
         } else {
             var file = base.resolve("installation");
             if (!Files.exists(file)) {
-                if (OsType.getLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {
+                if (OsType.ofLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {
                     return AUR;
                 }
 
-                if (OsType.getLocal() == OsType.WINDOWS
+                if (OsType.ofLocal() == OsType.WINDOWS
                         && AppInstallation.ofCurrent()
                                 .getBaseInstallationPath()
                                 .startsWith(
@@ -163,15 +165,25 @@ public enum AppDistributionType implements Translatable {
                     return SCOOP;
                 }
 
+                if (OsType.ofLocal() == OsType.LINUX && System.getenv("APPDIR") != null && System.getenv("APPIMAGE") != null) {
+                    try {
+                        var dir = Path.of(System.getenv("APPDIR"));
+                        if (AppInstallation.ofCurrent().getBaseInstallationPath().startsWith(dir)) {
+                            return APP_IMAGE;
+                        }
+
+                    } catch (InvalidPathException ignored) {}
+                }
+
                 return PORTABLE;
             }
         }
 
-        if (OsType.getLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
+        if (OsType.ofLocal() == OsType.LINUX && Files.isDirectory(Path.of("/kclient"))) {
             return WEBTOP;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
+        if (OsType.ofLocal() == OsType.WINDOWS && !AppProperties.get().isStaging()) {
             var chocoOut = LocalExec.readStdoutIfPossible("choco", "list", "xpipe");
             if (chocoOut.isPresent()) {
                 if (chocoOut.get().contains("xpipe")
@@ -181,7 +193,7 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             var out = LocalExec.readStdoutIfPossible("/opt/homebrew/bin/brew", "list", "--casks", "--versions");
             if (out.isPresent()) {
                 if (out.get().lines().anyMatch(s -> {
@@ -195,9 +207,10 @@ public enum AppDistributionType implements Translatable {
             }
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             if (base.startsWith("/opt")) {
-                var aptOut = LocalExec.readStdoutIfPossible("apt", "show", "xpipe");
+                var aptOut = LocalExec.readStdoutIfPossible(
+                        "apt", "show", AppNames.ofCurrent().getKebapName());
                 if (aptOut.isPresent()) {
                     var fromRepo = aptOut.get().lines().anyMatch(s -> {
                         return s.contains("APT-Sources") && s.contains("apt.xpipe.io");
@@ -215,7 +228,7 @@ public enum AppDistributionType implements Translatable {
         }
 
         // Fix for community AUR builds that use the RPM dist
-        if (OsType.getLocal() == OsType.LINUX && Files.exists(Path.of("/etc/arch-release"))) {
+        if (OsType.ofLocal() == OsType.LINUX && Files.exists(Path.of("/etc/arch-release"))) {
             return PORTABLE;
         }
 

@@ -1,12 +1,10 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.Main;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformState;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.PlatformState;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
@@ -21,30 +19,38 @@ public class AppDesktopIntegration {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().addAppEventListener(new SystemSleepListener() {
                     @Override
-                    public void systemAboutToSleep(SystemSleepEvent e) {}
+                    public void systemAboutToSleep(SystemSleepEvent e) {
+                        if (AppPrefs.get() == null) {
+                            return;
+                        }
+
+                        var b = AppPrefs.get().hibernateBehaviour().getValue();
+                        if (b == null) {
+                            return;
+                        }
+
+                        b.runOnSleep();
+                    }
 
                     @Override
                     public void systemAwoke(SystemSleepEvent e) {
-                        var handler = DataStorageUserHandler.getInstance();
-                        if (AppPrefs.get() != null
-                                && AppPrefs.get().lockVaultOnHibernation().get()
-                                && handler != null
-                                && handler.getActiveUser() != null) {
-                            // If we run this at the same time as the system is sleeping, there might be exceptions
-                            // because the platform does not like being shut down while sleeping
-                            // This assures that it will be run later, on system wake
-                            ThreadHelper.runAsync(() -> {
-                                ThreadHelper.sleep(1000);
-                                OperationMode.close();
-                            });
+                        if (AppPrefs.get() == null) {
+                            return;
                         }
+
+                        var b = AppPrefs.get().hibernateBehaviour().getValue();
+                        if (b == null) {
+                            return;
+                        }
+
+                        b.runOnWake();
                     }
                 });
             }
 
             // This will initialize the toolkit on macOS and create the dock icon
             // macOS does not like applications that run fully in the background, so always do it
-            if (OsType.getLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
+            if (OsType.ofLocal() == OsType.MACOS && Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().setPreferencesHandler(e -> {
                     if (PlatformState.getCurrent() != PlatformState.RUNNING) {
                         return;
@@ -63,12 +69,12 @@ public class AppDesktopIntegration {
                 Desktop.getDesktop().addAppEventListener(new AppReopenedListener() {
                     @Override
                     public void appReopened(AppReopenedEvent e) {
-                        OperationMode.switchToAsync(OperationMode.GUI);
+                        AppOperationMode.switchToAsync(AppOperationMode.GUI);
                     }
                 });
 
                 // Set dock icon explicitly on macOS
-                // This is necessary in case XPipe was started through a script as it will have no icon otherwise
+                // This is necessary in case the app was started through a script as it will have no icon otherwise
                 if (AppProperties.get().isDeveloperMode()
                         && AppLogs.get().isWriteToSysout()
                         && Taskbar.isTaskbarSupported()) {

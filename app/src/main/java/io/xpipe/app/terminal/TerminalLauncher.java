@@ -7,8 +7,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -136,7 +134,7 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
         var config = TerminalLaunchConfiguration.create(
-                request, entry, cleanTitle, adjustedTitle, effectivePreferTabs, alwaysPromptRestart);
+                request, entry, cleanTitle, adjustedTitle, enableLogging, effectivePreferTabs, alwaysPromptRestart);
 
         synchronized (TerminalLauncher.class) {
             // There will be timing issues when launching multiple tabs in a short time span
@@ -198,7 +196,7 @@ public class TerminalLauncher {
                 .add("terminal-register", "--request", request.toString())
                 .buildFull(LocalShell.getShell());
         var bellLine = "printf \"\\a\"";
-        var printBell = OsType.getLocal() != OsType.WINDOWS
+        var printBell = OsType.ofLocal() != OsType.WINDOWS
                 && AppPrefs.get().enableTerminalStartupBell().get();
         var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
         return lines.toString();

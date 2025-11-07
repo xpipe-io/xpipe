@@ -2,7 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -46,7 +46,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
         });
 
         r.focusedProperty().addListener((c, o, n) -> {
-            if (n && OsType.getLocal() != OsType.WINDOWS) {
+            if (n && OsType.ofLocal() != OsType.WINDOWS) {
                 Platform.runLater(() -> {
                     r.selectEnd();
                 });

@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 
 import javafx.beans.property.Property;
 import javafx.scene.control.Button;
@@ -27,10 +27,6 @@ public class ModalButton {
         this.defaultButton = defaultButton;
     }
 
-    public static ModalButton finish(Runnable action) {
-        return new ModalButton("finish", action, true, true);
-    }
-
     public static ModalButton ok(Runnable action) {
         return new ModalButton("ok", action, true, true);
     }
@@ -47,10 +43,6 @@ public class ModalButton {
         return new ModalButton("cancel", action, true, false);
     }
 
-    public static ModalButton skip() {
-        return new ModalButton("skip", null, true, false);
-    }
-
     public static ModalButton confirm(Runnable action) {
         return new ModalButton("confirm", action, true, true);
     }
@@ -59,7 +51,7 @@ public class ModalButton {
         return new ModalButton(
                 "quit",
                 () -> {
-                    OperationMode.halt(1);
+                    AppOperationMode.halt(1);
                 },
                 true,
                 false);

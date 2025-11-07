@@ -8,12 +8,12 @@ import io.xpipe.app.hub.action.*;
 import io.xpipe.app.hub.action.impl.RefreshActionProvider;
 import io.xpipe.app.hub.comp.StoreCategoryConfigComp;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -31,7 +31,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<ShellStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

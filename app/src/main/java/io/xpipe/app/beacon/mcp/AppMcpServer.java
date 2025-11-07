@@ -9,6 +9,8 @@ import io.xpipe.app.util.ThreadHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import io.modelcontextprotocol.common.McpTransportContext;
+import io.modelcontextprotocol.json.jackson.JacksonMcpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.spec.HttpHeaders;
@@ -38,7 +40,11 @@ public class AppMcpServer {
     @SneakyThrows
     public static void init() {
         var transportProvider = new HttpStreamableServerTransportProvider(
-                new ObjectMapper(), "/mcp", false, (req, context) -> context, null);
+                new JacksonMcpJsonMapper(new ObjectMapper()),
+                "/mcp",
+                false,
+                (serverRequest) -> McpTransportContext.EMPTY,
+                null);
 
         McpSyncServer syncServer = io.modelcontextprotocol.server.McpServer.sync(transportProvider)
                 .serverInfo(AppNames.ofCurrent().getName(), AppProperties.get().getVersion())

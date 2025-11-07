@@ -4,8 +4,6 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.core.OsType;
 
 import lombok.NonNull;
 import lombok.experimental.SuperBuilder;
@@ -17,8 +15,7 @@ public class ChownActionProvider implements BrowserActionProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        var os = model.getFileSystem().getShell().orElseThrow().getOsType();
-        return os != OsType.WINDOWS && os != OsType.MACOS;
+        return model.getFileSystem().supportsChown();
     }
 
     @Override
@@ -37,19 +34,9 @@ public class ChownActionProvider implements BrowserActionProvider {
 
         @Override
         public void executeImpl() throws Exception {
-            model.getFileSystem()
-                    .getShell()
-                    .orElseThrow()
-                    .executeSimpleCommand(CommandBuilder.of()
-                            .add("chown")
-                            .addIf(recursive, "-R")
-                            .addLiteral(owner)
-                            .addFiles(getEntries().stream()
-                                    .map(browserEntry -> browserEntry
-                                            .getRawFileEntry()
-                                            .getPath()
-                                            .toString())
-                                    .toList()));
+            for (BrowserEntry entry : getEntries()) {
+                model.getFileSystem().chown(entry.getRawFileEntry().getPath(), owner, recursive);
+            }
             model.refreshBrowserEntriesSync(getEntries());
         }
 

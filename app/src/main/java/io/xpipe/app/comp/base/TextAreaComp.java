@@ -2,7 +2,7 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -29,8 +29,15 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
         this.lastAppliedValue = value;
         this.currentValue = new SimpleStringProperty(value.getValue());
         this.lazy = lazy;
-        value.subscribe(val -> {
-            this.currentValue.setValue(val);
+        if (!lazy) {
+            currentValue.subscribe(val -> {
+                if (!Objects.equals(val, value.getValue())) {
+                    value.setValue(val);
+                }
+            });
+        }
+        lastAppliedValue.subscribe(val -> {
+            currentValue.setValue(val);
         });
     }
 

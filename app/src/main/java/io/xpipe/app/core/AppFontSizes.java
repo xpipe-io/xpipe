@@ -108,7 +108,7 @@ public class AppFontSizes {
         }
     }
 
-    private static AppFontSizes interSize(AppFontSizes s) {
+    private static AppFontSizes fallbackFontSize(AppFontSizes s) {
         if (s == BASE_10) {
             return BASE_10;
         } else if (s == BASE_10_5) {
@@ -123,12 +123,12 @@ public class AppFontSizes {
     public static AppFontSizes forOs(AppFontSizes windows, AppFontSizes linux, AppFontSizes mac) {
         var inter = AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue();
         var r =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> linux;
                     case OsType.MacOs ignored -> mac;
                     case OsType.Windows ignored -> windows;
                 };
-        return inter ? interSize(r) : r;
+        return inter ? fallbackFontSize(r) : r;
     }
 
     public static AppFontSizes getDefault() {

@@ -22,11 +22,13 @@ public class BrowserMenuProviders {
             BrowserMenuItemProvider browserAction, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return browserAction instanceof BrowserMenuLeafProvider
                 ? List.of((BrowserMenuLeafProvider) browserAction)
-                : ((BrowserMenuBranchProvider) browserAction)
-                        .getBranchingActions(model, entries).stream()
-                                .map(action -> getFlattened(action, model, entries))
-                                .flatMap(List::stream)
-                                .toList();
+                : browserAction.isApplicable(model, entries)
+                        ? ((BrowserMenuBranchProvider) browserAction)
+                                .getBranchingActions(model, entries).stream()
+                                        .map(action -> getFlattened(action, model, entries))
+                                        .flatMap(List::stream)
+                                        .toList()
+                        : List.of();
     }
 
     public static BrowserMenuLeafProvider byId(String id, BrowserFileSystemTabModel model, List<BrowserEntry> entries) {

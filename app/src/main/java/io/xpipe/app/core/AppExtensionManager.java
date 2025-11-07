@@ -110,7 +110,7 @@ public class AppExtensionManager {
     public Set<Module> getContentModules() {
         return Stream.concat(
                         Stream.of(ModuleLayer.boot()
-                                .findModule(AppNames.packageName(null))
+                                .findModule(AppNames.packageName())
                                 .orElseThrow()),
                         loadedModules.stream())
                 .collect(Collectors.toSet());

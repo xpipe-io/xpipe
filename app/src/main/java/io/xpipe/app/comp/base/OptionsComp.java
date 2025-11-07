@@ -4,9 +4,9 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.Check;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.Validator;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -22,7 +22,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
 
-import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
@@ -34,11 +33,11 @@ import java.util.List;
 public class OptionsComp extends Comp<CompStructure<VBox>> {
 
     private final List<Entry> entries;
-    private final Validator validator;
+    private final List<Check> checks;
 
-    public OptionsComp(List<Entry> entries, Validator validator) {
+    public OptionsComp(List<Entry> entries, List<Check> checks) {
         this.entries = entries;
-        this.validator = validator;
+        this.checks = checks;
     }
 
     @Override
@@ -50,10 +49,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
         Region firstComp = null;
         for (var entry : getEntries()) {
-            Region compRegion = null;
-            if (entry.comp() != null) {
-                compRegion = entry.comp().createRegion();
-            }
+            Region compRegion = entry.comp() != null ? entry.comp().createRegion() : new Region();
+
             if (firstComp == null) {
                 compRegion.getStyleClass().add("first");
                 firstComp = compRegion;
@@ -71,17 +68,15 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setMinHeight(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
-                if (compRegion != null) {
-                    VBox.setVgrow(line, VBox.getVgrow(compRegion));
-                    line.spacingProperty()
-                            .bind(Bindings.createDoubleBinding(
-                                    () -> {
-                                        return name.isManaged() ? 2.0 : 0.0;
-                                    },
-                                    name.managedProperty()));
-                    name.visibleProperty().bind(compRegion.visibleProperty());
-                    name.managedProperty().bind(compRegion.managedProperty());
-                }
+                VBox.setVgrow(line, VBox.getVgrow(compRegion));
+                line.spacingProperty()
+                        .bind(Bindings.createDoubleBinding(
+                                () -> {
+                                    return name.isManaged() ? 2.0 : 0.0;
+                                },
+                                name.managedProperty()));
+                name.visibleProperty().bind(compRegion.visibleProperty());
+                name.managedProperty().bind(compRegion.managedProperty());
                 line.getChildren().add(name);
                 VBox.setMargin(name, new Insets(0, 0, 0, 1));
 
@@ -92,61 +87,35 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                     description.textProperty().bind(entry.description());
                     description.setAlignment(Pos.CENTER_LEFT);
                     description.setMinHeight(Region.USE_PREF_SIZE);
-                    if (compRegion != null) {
-                        description.visibleProperty().bind(compRegion.visibleProperty());
-                        description.managedProperty().bind(compRegion.managedProperty());
-                    }
+                    description.visibleProperty().bind(compRegion.visibleProperty());
+                    description.managedProperty().bind(compRegion.managedProperty());
 
-                    if (entry.longDescription() != null) {
-                        Popover popover;
-                        if (!entry.longDescription().startsWith("http")) {
-                            var markDown = new MarkdownComp(entry.longDescription(), s -> s, true)
-                                    .apply(struc -> struc.get().setMaxWidth(500))
-                                    .apply(struc -> struc.get().setMaxHeight(400));
-                            popover = new Popover(markDown.createRegion());
-                            popover.setCloseButtonEnabled(false);
-                            popover.setHeaderAlwaysVisible(false);
-                            popover.setDetachable(true);
-                            AppFontSizes.xs(popover.getContentNode());
-                        } else {
-                            popover = null;
-                        }
-
-                        var extendedDescription = new Button("... ?");
-                        extendedDescription.setMinWidth(Region.USE_PREF_SIZE);
-                        extendedDescription.getStyleClass().add(Styles.BUTTON_OUTLINED);
-                        extendedDescription.getStyleClass().add(Styles.ACCENT);
-                        extendedDescription.getStyleClass().add("long-description");
-                        extendedDescription.setAccessibleText("Help");
-                        AppFontSizes.xl(extendedDescription);
-                        extendedDescription.setOnAction(e -> {
-                            if (entry.longDescription().startsWith("http")) {
-                                Hyperlinks.open(entry.longDescription());
-                            } else if (popover != null) {
-                                popover.show(extendedDescription);
-                            }
+                    if (entry.documentationLink() != null) {
+                        var link = new Button("... ?");
+                        link.setMinWidth(Region.USE_PREF_SIZE);
+                        link.getStyleClass().add(Styles.BUTTON_OUTLINED);
+                        link.getStyleClass().add(Styles.ACCENT);
+                        link.getStyleClass().add("long-description");
+                        link.setAccessibleText("Help");
+                        AppFontSizes.xl(link);
+                        link.setOnAction(e -> {
+                            Hyperlinks.open(entry.documentationLink());
                             e.consume();
                         });
 
-                        if (entry.longDescription().startsWith("http")) {
-                            var tt = TooltipHelper.create(new SimpleStringProperty(entry.longDescription()), null);
-                            tt.setShowDelay(Duration.millis(1));
-                            Tooltip.install(extendedDescription, tt);
-                        }
+                        var tt = TooltipHelper.create(new SimpleStringProperty(entry.documentationLink()), null);
+                        tt.setShowDelay(Duration.millis(1));
+                        Tooltip.install(link, tt);
 
-                        var descriptionBox =
-                                new HBox(description, new Spacer(Orientation.HORIZONTAL), extendedDescription);
+                        var descriptionBox = new HBox(description, new Spacer(Orientation.HORIZONTAL), link);
                         descriptionBox.getStyleClass().add("description-box");
                         descriptionBox.setSpacing(5);
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                         descriptionBox.setAlignment(Pos.TOP_LEFT);
                         line.getChildren().add(descriptionBox);
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
-
-                        if (compRegion != null) {
-                            descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
-                            descriptionBox.managedProperty().bind(compRegion.managedProperty());
-                        }
+                        descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
+                        descriptionBox.managedProperty().bind(compRegion.managedProperty());
                     } else {
                         line.getChildren().add(description);
                         line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
@@ -154,14 +123,12 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                     }
                 }
 
-                if (compRegion != null) {
-                    compRegion.accessibleTextProperty().bind(name.textProperty());
-                    if (entry.description() != null) {
-                        compRegion.accessibleHelpProperty().bind(entry.description());
-                    }
-                    line.getChildren().add(compRegion);
-                    compRegion.getStyleClass().add("options-content");
+                compRegion.accessibleTextProperty().bind(name.textProperty());
+                if (entry.description() != null) {
+                    compRegion.accessibleHelpProperty().bind(entry.description());
                 }
+                line.getChildren().add(compRegion);
+                compRegion.getStyleClass().add("options-content");
 
                 pane.getChildren().add(line);
             } else if (entry.name() != null) {
@@ -245,7 +212,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 return;
             }
 
-            var checks = validator.getActiveChecks();
             var failed = checks.stream()
                     .filter(check -> check.getValidationResult().getMessages().size() > 0)
                     .findFirst();
@@ -268,7 +234,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
     public record Entry(
             String key,
             ObservableValue<String> description,
-            String longDescription,
+            String documentationLink,
             ObservableValue<String> name,
             Comp<?> comp) {}
 }

@@ -1,13 +1,13 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.EncryptionKey;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
@@ -63,7 +63,7 @@ public class StandardStorage extends DataStorage {
     }
 
     public void reloadContent() {
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 
@@ -584,7 +584,7 @@ public class StandardStorage extends DataStorage {
         var file = dir.resolve("systeminfo");
         if (Files.exists(file)) {
             var read = Files.readString(file);
-            if (!OsType.getLocal().getName().equals(read)) {
+            if (!OsType.ofLocal().getName().equals(read)) {
                 ErrorEventFactory.fromMessage(
                                 "This vault was originally created on a different system running " + read
                                         + ". Sharing the same data directory between systems directly will cause some problems."
@@ -592,12 +592,12 @@ public class StandardStorage extends DataStorage {
                         .documentationLink(DocumentationLink.SYNC_LOCAL)
                         .expected()
                         .handle();
-                var s = OsType.getLocal().getName();
+                var s = OsType.ofLocal().getName();
                 Files.writeString(file, s);
             }
         } else {
             FileUtils.forceMkdir(dir.toFile());
-            var s = OsType.getLocal().getName();
+            var s = OsType.ofLocal().getName();
             Files.writeString(file, s);
         }
     }

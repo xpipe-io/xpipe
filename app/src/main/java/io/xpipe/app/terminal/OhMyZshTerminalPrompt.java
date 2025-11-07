@@ -1,11 +1,11 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.Property;

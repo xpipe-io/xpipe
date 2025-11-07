@@ -1,6 +1,6 @@
 package io.xpipe.app.test;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.core.OsType;
 
 import lombok.SneakyThrows;
@@ -11,11 +11,11 @@ public class LocalExtensionTest extends ExtensionTest {
     @BeforeAll
     @SneakyThrows
     public static void setup() {
-        if (OperationMode.get() != null) {
+        if (AppOperationMode.get() != null) {
             return;
         }
 
-        var mode = OsType.getLocal() == OsType.WINDOWS ? "tray" : "background";
-        OperationMode.init(new String[] {"-Dio.xpipe.app.mode=" + mode});
+        var mode = OsType.ofLocal() == OsType.WINDOWS ? "tray" : "background";
+        AppOperationMode.init(new String[] {"-Dio.xpipe.app.mode=" + mode});
     }
 }

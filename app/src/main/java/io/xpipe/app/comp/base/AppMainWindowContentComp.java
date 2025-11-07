@@ -6,8 +6,9 @@ import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.ColorHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.animation.*;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -40,12 +41,15 @@ public class AppMainWindowContentComp extends SimpleComp {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(80);
             loadingIcon.setFitHeight(80);
-            loadingIcon.setOpacity(0.9);
 
-            var color =
-                    AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark()
-                            ? Color.web("#0b898aff").darker()
-                            : Color.web("#0b898aff");
+            var dark =
+                    AppPrefs.get() != null && AppPrefs.get().theme().getValue().isDark();
+            loadingIcon.setOpacity(dark ? 0.95 : 0.93);
+
+            var color = AppPrefs.get() != null
+                    ? ColorHelper.withOpacity(
+                            AppPrefs.get().theme().getValue().getEmphasisColor().get(), dark ? 0.7 : 0.85)
+                    : Color.TRANSPARENT;
             DropShadow shadow = new DropShadow();
             shadow.setRadius(10);
             shadow.setColor(color);
@@ -126,7 +130,7 @@ public class AppMainWindowContentComp extends SimpleComp {
 
             overlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 if (c.next() && c.wasAdded()) {
-                    AppMainWindow.getInstance().focus();
+                    AppMainWindow.get().focus();
 
                     // Close blocking modal windows
                     var childWindows = Window.getWindows().stream()

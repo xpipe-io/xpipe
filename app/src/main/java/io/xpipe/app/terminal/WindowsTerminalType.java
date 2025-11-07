@@ -6,7 +6,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 

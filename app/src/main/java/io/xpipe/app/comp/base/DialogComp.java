@@ -5,8 +5,6 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
@@ -70,13 +68,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         return new SimpleCompStructure<>(vbox);
     }
 
-    protected ObservableValue<Boolean> busy() {
-        return new SimpleBooleanProperty(false);
-    }
-
     protected abstract void finish();
-
-    protected abstract void discard();
 
     public abstract Comp<?> content();
 

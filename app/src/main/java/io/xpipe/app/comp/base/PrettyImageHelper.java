@@ -3,7 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.binding.Bindings;
@@ -37,9 +37,8 @@ public class PrettyImageHelper {
 
     private static ObservableValue<String> rasterizedImageIfExistsScaled(
             String img, int height, int... availableSizes) {
-        ObservableDoubleValue obs = AppMainWindow.getInstance() != null
-                ? AppMainWindow.getInstance().displayScale()
-                : new SimpleDoubleProperty(1.0);
+        ObservableDoubleValue obs =
+                AppMainWindow.get() != null ? AppMainWindow.get().displayScale() : new SimpleDoubleProperty(1.0);
         return Bindings.createStringBinding(
                 () -> {
                     if (img == null) {

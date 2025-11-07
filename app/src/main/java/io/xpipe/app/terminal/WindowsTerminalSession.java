@@ -1,6 +1,6 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.util.NativeWinWindowControl;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 
 import lombok.AccessLevel;

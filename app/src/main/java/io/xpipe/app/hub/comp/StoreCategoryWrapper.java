@@ -1,12 +1,12 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -97,6 +97,10 @@ public class StoreCategoryWrapper {
         PlatformThread.runLaterIfNeeded(() -> {
             StoreViewState.get().getActiveCategory().setValue(this);
         });
+    }
+
+    public void moveToParent(DataStoreCategory newParent) {
+        DataStorage.get().moveCategoryToParent(category, newParent);
     }
 
     public void delete() {

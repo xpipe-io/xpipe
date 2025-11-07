@@ -1,5 +1,5 @@
 .tile-button-comp.update-button {
-    -fx-border-width: 0.05em;
+    -fx-border-width: 1;
     -fx-border-radius: 4px;
     -fx-background-radius: 4px;
     -fx-border-color: -color-border-default;

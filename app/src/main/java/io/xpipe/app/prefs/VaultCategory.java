@@ -2,16 +2,18 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
-import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -65,7 +67,7 @@ public class VaultCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
-                        .longDescription(DocumentationLink.TEAM_VAULTS)
+                        .documentationLink(DocumentationLink.TEAM_VAULTS)
                         .addComp(Comp.empty())
                         .name("userManagement")
                         .description(
@@ -86,8 +88,6 @@ public class VaultCategory extends AppPrefsCategory {
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync())));
         builder.sub(new OptionsBuilder()
-                .pref(prefs.lockVaultOnHibernation)
-                .addToggle(prefs.lockVaultOnHibernation)
                 .pref(prefs.encryptAllVaultData)
                 .addToggle(encryptVault));
         return builder.buildComp();

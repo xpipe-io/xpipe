@@ -5,9 +5,9 @@ import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -23,7 +23,7 @@ public class ServiceRefreshHubProvider
     }
 
     @Override
-    public boolean isMajor(DataStoreEntryRef<FixedServiceCreatorStore> o) {
+    public boolean isMajor() {
         return true;
     }
 

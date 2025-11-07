@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 public abstract class AppPrefsCategory {
 

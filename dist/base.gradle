@@ -17,20 +17,16 @@ tasks.register('licenses', DefaultTask) {
 
 def debugArguments = file("$projectDir/debug/debug_arguments.txt").text.lines().map(s -> '"' + s + '"').collect(Collectors.joining(' '))
 
-if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+if (os.isWindows()) {
     tasks.register('baseDist', DefaultTask) {
         doLast {
             copy {
-                from "$distDir/jpackage/xpiped"
+                from "$distDir/jpackage/${jpackageExecutableName}"
                 into "$distDir/base"
             }
             copy {
                 from "$projectDir/logo/logo.ico"
                 into "$distDir/base"
-            }
-            copy {
-                from "$projectDir/fonts"
-                into "$distDir/base/fonts"
             }
             copy {
                 from "$rootDir/lang"
@@ -39,15 +35,20 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
 
             file("$distDir/base/app/.jpackage.xml").delete()
 
-            def batLauncherFile = file("$distDir/base/runtime/bin/xpiped.bat")
+            // Don't launch multiple exe instances: https://bugs.openjdk.org/browse/JDK-8340311
+            // We don't need the /app directory to be in the library path
+            def configFile = file("$distDir/base/app/${jpackageExecutableName}.cfg")
+            configFile.text = configFile.text.replace("[Application]", "[Application]\nwin.norestart=true")
+
+            def batLauncherFile = file("$distDir/base/runtime/bin/${jpackageExecutableName}.bat")
             def batLauncherContent = batLauncherFile.text
             batLauncherContent = batLauncherContent.replace(" -p \"%~dp0/../app\"", "")
             batLauncherFile.text = batLauncherContent
-            file("$distDir/base/runtime/bin/xpiped").delete()
+            file("$distDir/base/runtime/bin/${jpackageExecutableName}").delete()
 
             file("$distDir/base/scripts").mkdirs()
-            def debug = file("$distDir/base/scripts/xpiped_debug.bat")
-            debug.text = file("$projectDir/debug/windows/xpiped_debug.bat").text.replace(
+            def debug = file("$distDir/base/scripts/${jpackageExecutableName}_debug.bat")
+            debug.text = file("$projectDir/debug/windows/${jpackageExecutableName}_debug.bat").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true)
@@ -58,11 +59,11 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
             }
         }
     }
-} else if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
+} else if (os.isLinux()) {
     tasks.register('baseDist', DefaultTask) {
         doLast {
             copy {
-                from "$distDir/jpackage/xpiped"
+                from "$distDir/jpackage/${jpackageExecutableName}"
                 into "$distDir/base/"
             }
             copy {
@@ -78,15 +79,15 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/base/lang"
             }
 
-            def shLauncherFile = file("$distDir/base/lib/runtime/bin/xpiped")
+            def shLauncherFile = file("$distDir/base/lib/runtime/bin/${jpackageExecutableName}")
             def shLauncherContent = shLauncherFile.text
             shLauncherContent = shLauncherContent.replace(" -p \"\$DIR/../app\"", "")
             shLauncherFile.text = shLauncherContent
-            file("$distDir/base/lib/runtime/bin/xpiped.bat").delete()
+            file("$distDir/base/lib/runtime/bin/${jpackageExecutableName}.bat").delete()
 
             file("$distDir/base/scripts").mkdirs()
-            def debug = file("$distDir/base/scripts/xpiped_debug.sh")
-            debug.text = file("$projectDir/debug/linux/xpiped_debug.sh").text.replace(
+            def debug = file("$distDir/base/scripts/${jpackageExecutableName}_debug.sh")
+            debug.text = file("$projectDir/debug/linux/${jpackageExecutableName}_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)
@@ -102,7 +103,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
         doLast {
             def app = "${productName}.app"
             copy {
-                from "$distDir/jpackage/xpiped.app/Contents"
+                from "$distDir/jpackage/${jpackageExecutableName}.app/Contents"
                 into "$distDir/$app/Contents/"
             }
             copy {
@@ -110,23 +111,19 @@ if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
                 into "$distDir/$app/Contents/Resources/licenses"
             }
             copy {
-                from "$projectDir/fonts"
-                into "$distDir/$app/Contents/Resources/fonts"
-            }
-            copy {
                 from "$rootDir/lang"
                 into "$distDir/$app/Contents/Resources/lang"
             }
 
-            def shLauncherFile = file("$distDir/$app/Contents/runtime/Contents/Home/bin/xpiped")
+            def shLauncherFile = file("$distDir/$app/Contents/runtime/Contents/Home/bin/${jpackageExecutableName}")
             def shLauncherContent = shLauncherFile.text
             shLauncherContent = shLauncherContent.replace(" -p \"\$DIR/../app\"", "")
             shLauncherFile.text = shLauncherContent
-            file("$distDir/$app/Contents/runtime/Contents/Home/bin/xpiped.bat").delete()
+            file("$distDir/$app/Contents/runtime/Contents/Home/bin/${jpackageExecutableName}.bat").delete()
 
             file("$distDir/$app/Contents/Resources/scripts").mkdirs()
-            def debug = file("$distDir/$app/Contents/Resources/scripts/xpiped_debug.sh")
-            debug.text = file("$projectDir/debug/mac/xpiped_debug.sh").text.replace(
+            def debug = file("$distDir/$app/Contents/Resources/scripts/${jpackageExecutableName}_debug.sh")
+            debug.text = file("$projectDir/debug/mac/${jpackageExecutableName}_debug.sh").text.replace(
                     'JVM-ARGS',
                     debugArguments)
             debug.setExecutable(true, false)

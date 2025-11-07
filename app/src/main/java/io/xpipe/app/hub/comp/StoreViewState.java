@@ -1,16 +1,16 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
-import io.xpipe.app.util.DerivedObservableList;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -296,7 +296,7 @@ public class StoreViewState {
     }
 
     public void triggerStoreListVisibilityUpdate() {
-        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInStartup() || AppOperationMode.isInShutdown()) {
             return;
         }
 
@@ -306,7 +306,7 @@ public class StoreViewState {
     }
 
     public void triggerStoreListUpdate() {
-        if (OperationMode.isInStartup() || OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInStartup() || AppOperationMode.isInShutdown()) {
             return;
         }
 
@@ -595,6 +595,7 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+    @SuppressWarnings("unused")
     public StoreCategoryWrapper getAllMacrosCategory() {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->

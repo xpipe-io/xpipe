@@ -1,17 +1,17 @@
 package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.augment.Augment;
-import io.xpipe.app.comp.augment.GrowAugment;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCombination;
@@ -67,10 +67,6 @@ public abstract class Comp<S extends CompStructure<?>> {
         return of(() -> new Separator(Orientation.HORIZONTAL));
     }
 
-    public static Comp<CompStructure<Separator>> vseparator() {
-        return of(() -> new Separator(Orientation.VERTICAL));
-    }
-
     @SuppressWarnings("unchecked")
     public <T extends Comp<S>> T apply(Augment<S> augment) {
         if (augments == null) {
@@ -80,11 +76,11 @@ public abstract class Comp<S extends CompStructure<?>> {
         return (T) this;
     }
 
-    public Comp<S> prefWidth(int width) {
+    public Comp<S> prefWidth(double width) {
         return apply(struc -> struc.get().setPrefWidth(width));
     }
 
-    public Comp<S> prefHeight(int height) {
+    public Comp<S> prefHeight(double height) {
         return apply(struc -> struc.get().setPrefHeight(height));
     }
 
@@ -116,11 +112,11 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().setMinHeight(height));
     }
 
-    public Comp<S> maxWidth(int width) {
+    public Comp<S> maxWidth(double width) {
         return apply(struc -> struc.get().setMaxWidth(width));
     }
 
-    public Comp<S> maxHeight(int height) {
+    public Comp<S> maxHeight(double height) {
         return apply(struc -> struc.get().setMaxHeight(height));
     }
 
@@ -154,10 +150,6 @@ public abstract class Comp<S extends CompStructure<?>> {
                 });
             });
         });
-    }
-
-    public Comp<S> disable(boolean o) {
-        return disable(new ReadOnlyBooleanWrapper(o));
     }
 
     public Comp<S> disable(ObservableValue<Boolean> o) {
@@ -211,7 +203,63 @@ public abstract class Comp<S extends CompStructure<?>> {
     }
 
     public Comp<S> grow(boolean width, boolean height) {
-        return apply(GrowAugment.create(width, height));
+        return apply(struc -> {
+            struc.get().parentProperty().addListener((c, o, n) -> {
+                if (o instanceof Region) {
+                    if (width) {
+                        struc.get().prefWidthProperty().unbind();
+                    }
+                    if (height) {
+                        struc.get().prefHeightProperty().unbind();
+                    }
+                }
+
+                bindGrow(struc.get(), n, width, height);
+            });
+
+            bindGrow(struc.get(), struc.get().getParent(), width, height);
+        });
+    }
+
+    private void bindGrow(Region r, Node parent, boolean width, boolean height) {
+        if (!(parent instanceof Region p)) {
+            return;
+        }
+
+        if (width) {
+            r.prefWidthProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                var val = p.getWidth()
+                                        - p.getInsets().getLeft()
+                                        - p.getInsets().getRight();
+                                if (val <= 0) {
+                                    return Region.USE_COMPUTED_SIZE;
+                                }
+
+                                // Floor to prevent rounding issues which cause an infinite growing
+                                return Math.floor(val);
+                            },
+                            p.widthProperty(),
+                            p.insetsProperty()));
+        }
+        if (height) {
+            r.prefHeightProperty()
+                    .bind(Bindings.createDoubleBinding(
+                            () -> {
+                                var val = p.getHeight()
+                                        - p.getInsets().getTop()
+                                        - p.getInsets().getBottom();
+                                if (val <= 0) {
+                                    return Region.USE_COMPUTED_SIZE;
+                                }
+
+                                // Floor to prevent rounding issues which cause an infinite growing
+                                return Math.floor(val);
+                            },
+                            p.heightProperty(),
+                            p.insetsProperty()));
+        }
     }
 
     public Comp<S> tooltip(ObservableValue<String> text) {

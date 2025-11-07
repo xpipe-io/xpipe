@@ -10,9 +10,8 @@ import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
-import io.xpipe.core.OsType;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +21,7 @@ import java.util.List;
 
 public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
-    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel model, boolean recursive) {
+    private static List<BrowserMenuItemProvider> getLeafActions(BrowserFileSystemTabModel ignored, boolean recursive) {
         var custom = new CustomProvider(recursive);
         return List.of(
                 new FixedProvider("400", recursive),
@@ -37,7 +36,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2w-wrench-outline");
     }
 
@@ -53,7 +52,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return model.getFileSystem().getShell().orElseThrow().getOsType() != OsType.WINDOWS;
+        return model.getFileSystem().supportsChmod();
     }
 
     @Override
@@ -70,7 +69,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
     private static class FlatProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-outline");
         }
 
@@ -89,7 +88,7 @@ public class ChmodMenuProvider implements BrowserMenuBranchProvider {
     private static class RecursiveProvider implements BrowserMenuBranchProvider {
 
         @Override
-        public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        public LabelGraphic getIcon() {
             return new LabelGraphic.IconGraphic("mdi2f-file-tree");
         }
 

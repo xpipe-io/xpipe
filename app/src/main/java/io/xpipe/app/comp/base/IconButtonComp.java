@@ -3,8 +3,8 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
@@ -26,10 +26,6 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
 
     public IconButtonComp(String defaultVal, Runnable listener) {
         this(new SimpleObjectProperty<>(new LabelGraphic.IconGraphic(defaultVal)), listener);
-    }
-
-    public IconButtonComp(LabelGraphic defaultVal) {
-        this(new SimpleObjectProperty<>(defaultVal), null);
     }
 
     public IconButtonComp(ObservableValue<? extends LabelGraphic> icon) {

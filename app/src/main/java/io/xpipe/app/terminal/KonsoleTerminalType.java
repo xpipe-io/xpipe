@@ -3,16 +3,13 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
-
-    public KonsoleTerminalType() {
-        super("app.konsole", "konsole", true);
-    }
+public class KonsoleTerminalType implements ExternalTerminalType, ExternalApplicationType.LinuxApplication {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -38,18 +35,14 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
     @Override
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         configureSingleInstanceMode();
-        super.launch(configuration);
-    }
-
-    @Override
-    protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         // Note for later: When debugging konsole launches, it will always open as a child process of
         // IntelliJ/XPipe even though we try to detach it.
         // This is not the case for production where it works as expected
-        return CommandBuilder.of()
+        var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--new-tab")
                 .add("-e")
                 .addFile(configuration.getScriptFile());
+        launch(toExecute);
     }
 
     private synchronized void configureSingleInstanceMode() {
@@ -78,5 +71,25 @@ public class KonsoleTerminalType extends ExternalTerminalType.SimplePathType {
         } catch (IOException e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }
+    }
+
+    @Override
+    public String getFlatpakId() {
+        return "org.kde.konsole";
+    }
+
+    @Override
+    public String getExecutable() {
+        return "konsole";
+    }
+
+    @Override
+    public boolean detach() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return "app.konsole";
     }
 }

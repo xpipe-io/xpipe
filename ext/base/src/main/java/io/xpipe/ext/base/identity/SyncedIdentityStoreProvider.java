@@ -5,10 +5,17 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.platform.Validator;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
@@ -31,7 +38,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
         var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
                 .anyMatch(dataStoreCategory ->
-                        dataStoreCategory.getUuid() == DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID);
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
         return inSynced ? target : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID;
     }
 
@@ -51,11 +58,15 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
             }
 
             var source = Path.of(f.getFile().toAbsoluteFilePath(null).toString());
-            var target = DataStorage.get().getDataDir().resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
+            var target = DataStorage.get()
+                    .getDataDir()
+                    .resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName());
             DataStorageSyncHandler.getInstance().addDataFile(source, target, newValue);
 
             var pub = Path.of(source + ".pub");
-            var pubTarget = DataStorage.get().getDataDir().resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
+            var pubTarget = DataStorage.get()
+                    .getDataDir()
+                    .resolve("keys", f.getFile().toAbsoluteFilePath(null).getFileName() + ".pub");
             if (Files.exists(pub)) {
                 DataStorageSyncHandler.getInstance().addDataFile(pub, pubTarget, newValue);
             }
@@ -63,9 +74,17 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
-                .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> perUser.get())
+                .build();
+
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
                 .build();
 
         return new OptionsBuilder()
@@ -73,10 +92,10 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription(DocumentationLink.SSH_KEYS)
+                .documentationLink(DocumentationLink.SSH_KEYS)
                 .sub(
                         OptionsChoiceBuilder.builder()
                                 .allowNull(false)
@@ -128,8 +147,8 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return SyncedIdentityStore.builder()
-                .password(EncryptedValue.VaultKey.of(new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.VaultKey.of(new NoneStrategy()))
+                .password(EncryptedValue.VaultKey.of(new SecretNoneStrategy()))
+                .sshIdentity(EncryptedValue.VaultKey.of(new NoIdentityStrategy()))
                 .perUser(false)
                 .build();
     }

@@ -4,9 +4,7 @@ import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
 import io.xpipe.core.InPlaceSecretValue;
@@ -18,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @JsonTypeName("bitwarden")
 public class BitwardenPasswordManager implements PasswordManager {
@@ -43,7 +42,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static boolean moveAppDir() throws Exception {
         var path = SHELL.view().findProgram("bw");
-        return OsType.getLocal() != OsType.LINUX
+        return OsType.ofLocal() != OsType.LINUX
                 || path.isEmpty()
                 || !path.get().toString().contains("snap");
     }
@@ -61,14 +60,12 @@ public class BitwardenPasswordManager implements PasswordManager {
 
         // Copy existing file if possible to retain configuration
         var cacheDataFile = AppCache.getBasePath().resolve("data.json");
-        if (!Files.exists(cacheDataFile)) {
-            var def = getDefaultConfigPath();
-            if (Files.exists(def)) {
-                try {
-                    Files.copy(def, cacheDataFile);
-                } catch (IOException e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                }
+        var def = getDefaultConfigPath();
+        if (Files.exists(def)) {
+            try {
+                Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).handle();
             }
         }
 
@@ -85,8 +82,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                                                 AppCache.getBasePath().toString())
                                 : null,
                         sc.getShellDialect().getEchoCommand("Log in into your Bitwarden account from the CLI:", false),
-                        "bw login"
-                );
+                        "bw login");
                 TerminalLaunch.builder()
                         .title("Bitwarden login")
                         .localScript(script)
@@ -113,7 +109,11 @@ public class BitwardenPasswordManager implements PasswordManager {
                     CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
-            var login = json.required("login");
+            var login = json.get("login");
+            if (login == null) {
+                throw new IllegalArgumentException("No usable login found for item name " + key);
+            }
+
             var user = login.required("username");
             var password = login.required("password");
             return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));
@@ -122,18 +122,29 @@ public class BitwardenPasswordManager implements PasswordManager {
             return null;
         }
     }
-    
+
     private Path getDefaultConfigPath() {
-        return switch (OsType.getLocal()) {
-            case OsType.Linux linux -> {
+        return switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> {
                 if (System.getenv("XDG_CONFIG_HOME") != null) {
-                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI").resolve("data.json");
+                    yield Path.of(System.getenv("XDG_CONFIG_HOME"), "Bitwarden CLI")
+                            .resolve("data.json");
                 } else {
-                    yield AppSystemInfo.ofLinux().getUserHome().resolve(".config", "Bitwarden CLI").resolve("data.json");
+                    yield AppSystemInfo.ofLinux()
+                            .getUserHome()
+                            .resolve(".config", "Bitwarden CLI")
+                            .resolve("data.json");
                 }
             }
-            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
-            case OsType.Windows windows -> AppSystemInfo.ofWindows().getRoamingAppData().resolve("Bitwarden CLI").resolve("data.json");
+            case OsType.MacOs ignored ->
+                AppSystemInfo.ofMacOs()
+                        .getUserHome()
+                        .resolve("Library", "Application Support", "Bitwarden CLI", "data.json");
+            case OsType.Windows ignored ->
+                AppSystemInfo.ofWindows()
+                        .getRoamingAppData()
+                        .resolve("Bitwarden CLI")
+                        .resolve("data.json");
         };
     }
 

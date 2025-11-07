@@ -4,10 +4,10 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.TerminalInitFunction;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import lombok.Getter;
@@ -131,40 +131,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addFile(configuration.getScriptFile());
         }
     };
-    ExternalTerminalType FOOT = new SimplePathType("app.foot", "foot", true) {
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://codeberg.org/dnkl/foot";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return AppPrefs.get().terminalMultiplexer().getValue() != null;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        public boolean supportsEscapes() {
-            return false;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("--title")
-                    .addQuoted(configuration.getColoredTitle())
-                    .addFile(configuration.getScriptFile());
-        }
-    };
+    ExternalTerminalType FOOT = new FootTerminalType();
     ExternalTerminalType ELEMENTARY = new SimplePathType("app.elementaryTerminal", "io.elementary.terminal", true) {
 
         @Override
@@ -562,7 +529,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);
-    List<ExternalTerminalType> ALL = getTypes(OsType.getLocal(), true);
+    List<ExternalTerminalType> ALL = getTypes(OsType.ofLocal(), true);
     List<ExternalTerminalType> ALL_ON_ALL_PLATFORMS = getTypes(null, true);
 
     static ExternalTerminalType determineFallbackTerminalToOpen(ExternalTerminalType type) {
@@ -576,7 +543,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
 
         // Fallback to an available default
-        switch (OsType.getLocal()) {
+        switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
                 // This should not be termius or wave as all others take precedence
                 var def = determineDefault(null);
@@ -592,7 +559,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         }
     }
 
-    static List<ExternalTerminalType> getTypes(OsType osType, boolean custom) {
+    static List<ExternalTerminalType> getTypes(OsType.Local osType, boolean custom) {
         var all = new ArrayList<ExternalTerminalType>();
         if (osType == null || osType == OsType.WINDOWS) {
             all.addAll(WINDOWS_TERMINALS);
@@ -634,11 +601,11 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         // Check if detection failed for some reason
         if (r == null) {
-            var def = OsType.getLocal() == OsType.WINDOWS
+            var def = OsType.ofLocal() == OsType.WINDOWS
                     ? (LocalShell.getDialect() == ShellDialects.CMD
                             ? ExternalTerminalType.CMD
                             : ExternalTerminalType.POWERSHELL)
-                    : OsType.getLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;
+                    : OsType.ofLocal() == OsType.MACOS ? ExternalTerminalType.MACOS_TERMINAL : null;
             r = def;
         }
 

@@ -4,7 +4,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.EncryptionToken;
+import io.xpipe.app.secret.EncryptionToken;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 

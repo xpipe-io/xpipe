@@ -19,22 +19,17 @@ public interface CommandControl extends ProcessControl {
     int INTERNAL_ERROR_EXIT_CODE = 163;
     int ELEVATION_FAILED_EXIT_CODE = 164;
 
+    String getDisplayCommand();
+
     CommandBuilder getTerminalCommand();
 
     CommandControl sensitive();
 
     CommandControl withExceptionConverter(ProcessExceptionConverter converter);
 
-    @Override
     CommandControl start() throws Exception;
 
     CommandControl withErrorFormatter(Function<String, String> formatter);
-
-    CommandControl terminalExitMode(TerminalExitMode mode);
-
-    CommandControl doesNotObeyReturnValueConvention();
-
-    CommandControl complex();
 
     CommandControl notComplex();
 
@@ -89,10 +84,5 @@ public interface CommandControl extends ProcessControl {
         } catch (Exception ex) {
             return false;
         }
-    }
-
-    enum TerminalExitMode {
-        KEEP_OPEN,
-        CLOSE
     }
 }

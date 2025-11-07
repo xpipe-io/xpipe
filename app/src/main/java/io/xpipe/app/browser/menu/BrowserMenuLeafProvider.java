@@ -75,7 +75,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         });
         var name = getName(model, selected);
         Tooltip.install(b, TooltipHelper.create(name, getShortcut()));
-        var graphic = getIcon(model, selected);
+        var graphic = getIcon();
         if (graphic != null) {
             b.setGraphic(graphic.createGraphicNode());
         }
@@ -88,9 +88,9 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
             }
         });
 
-        b.setDisable(!isActive(model, selected));
+        b.setDisable(!isActive(model));
         model.getCurrentPath().addListener((observable, oldValue, newValue) -> {
-            b.setDisable(!isActive(model, selected));
+            b.setDisable(!isActive(model));
         });
 
         return b;
@@ -111,12 +111,12 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         if (getShortcut() != null) {
             mi.setAccelerator(getShortcut());
         }
-        var graphic = getIcon(model, selected);
+        var graphic = getIcon();
         if (graphic != null) {
             mi.setGraphic(graphic.createGraphicNode());
         }
         mi.setMnemonicParsing(false);
-        mi.setDisable(!isActive(model, selected));
+        mi.setDisable(!isActive(model));
 
         return mi;
     }

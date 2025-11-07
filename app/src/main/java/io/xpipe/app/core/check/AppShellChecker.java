@@ -3,11 +3,11 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ProcessOutputException;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellSpawnException;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 
 import lombok.Value;
 

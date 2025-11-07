@@ -28,7 +28,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
 
     private String getFile() {
         var file =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
                     case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
                     case OsType.Windows ignored -> {

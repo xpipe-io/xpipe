@@ -6,7 +6,7 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
@@ -23,7 +23,7 @@ public class CopyMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdoal-file_copy");
     }
 
@@ -40,10 +40,5 @@ public class CopyMenuProvider implements BrowserMenuLeafProvider {
     @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         return AppI18n.observable("copy");
-    }
-
-    @Override
-    public boolean acceptsEmptySelection() {
-        return true;
     }
 }

@@ -13,12 +13,12 @@
 }
 
 .category-button:hover, .root:key-navigation .category-button:focused {
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .category:selected .category-button {
     -fx-border-color: -color-border-default;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-transparent;
 }
 
 .category:selected .category-button .name {

@@ -4,11 +4,13 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.UserReportComp;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.update.AppDistributionType;
@@ -67,7 +69,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                         null)
                 .addComp(
                         new TileButtonComp("launchDebugMode", "launchDebugModeDescription", "mdmz-refresh", e -> {
-                                    OperationMode.executeAfterShutdown(() -> {
+                                    AppOperationMode.executeAfterShutdown(() -> {
                                         var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
                                                 .title(AppNames.ofCurrent().getName() + " Debug")
@@ -102,7 +104,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         "openInstallationDirectoryDescription",
                                         "mdomz-snippet_folder",
                                         e -> {
-                                            DesktopHelper.browsePathLocal(
+                                            DesktopHelper.browseFile(
                                                     AppInstallation.ofCurrent().getBaseInstallationPath());
                                             e.consume();
                                         })
@@ -133,7 +135,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                             FileUtils.deleteQuietly(path.toFile());
                                                         }
                                                     }
-                                                    OperationMode.halt(0);
+                                                    AppOperationMode.halt(0);
                                                 });
                                             });
                                             modal.show();
@@ -162,7 +164,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                 .grow(true, false),
                         null);
 
-        if (OsType.getLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
+        if (OsType.ofLocal() == OsType.MACOS && AppDistributionType.get() == AppDistributionType.NATIVE_INSTALLATION) {
             b.addComp(
                     new TileButtonComp(
                                     "uninstallApplication",
@@ -175,7 +177,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                                 .resolve("Resources")
                                                 .resolve("scripts")
                                                 .resolve("uninstall.sh");
-                                        OperationMode.executeAfterShutdown(() -> {
+                                        AppOperationMode.executeAfterShutdown(() -> {
                                             TerminalLaunch.builder()
                                                     .title("Uninstall")
                                                     .localScript(sc -> ShellScript.lines(

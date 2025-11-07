@@ -3,7 +3,7 @@ package io.xpipe.app.browser.menu;
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.MenuItem;
@@ -30,7 +30,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
                 : selected;
     }
 
-    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default LabelGraphic getIcon() {
         return null;
     }
 
@@ -52,7 +52,7 @@ public interface BrowserMenuItemProvider extends ActionProvider {
         return true;
     }
 
-    default boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default boolean isActive(BrowserFileSystemTabModel model) {
         return true;
     }
 }

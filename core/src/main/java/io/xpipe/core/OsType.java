@@ -9,8 +9,10 @@ public interface OsType {
     MacOs MACOS = new MacOs();
     Bsd BSD = new Bsd();
     Solaris SOLARIS = new Solaris();
+    Aix AIX = new Aix();
+    OtherUnix UNIX = new OtherUnix();
 
-    static Local getLocal() {
+    static Local ofLocal() {
         String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if ((osName.contains("mac")) || (osName.contains("darwin"))) {
             return MACOS;
@@ -33,7 +35,13 @@ public interface OsType {
     }
 
     sealed interface Any extends OsType
-            permits OsType.Windows, OsType.Linux, OsType.MacOs, OsType.Solaris, OsType.Bsd {}
+            permits OsType.Windows,
+                    OsType.Linux,
+                    OsType.MacOs,
+                    OsType.Solaris,
+                    OsType.Bsd,
+                    OsType.Aix,
+                    OsType.OtherUnix {}
 
     final class Windows implements OsType, Local, Any {
 
@@ -71,6 +79,32 @@ public interface OsType {
         @Override
         public String getName() {
             return "Solaris";
+        }
+    }
+
+    final class Aix implements Any {
+
+        @Override
+        public String getId() {
+            return "aix";
+        }
+
+        @Override
+        public String getName() {
+            return "AIX";
+        }
+    }
+
+    final class OtherUnix implements Any {
+
+        @Override
+        public String getId() {
+            return "unix";
+        }
+
+        @Override
+        public String getName() {
+            return "Unix";
         }
     }
 

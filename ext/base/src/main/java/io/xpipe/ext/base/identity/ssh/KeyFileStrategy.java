@@ -5,19 +5,21 @@ import io.xpipe.app.comp.base.ContextualFileReferenceSync;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.OptionsBuilder;
-import io.xpipe.app.util.SecretRetrievalStrategy;
-import io.xpipe.app.util.SecretRetrievalStrategyHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -26,7 +28,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @Value
@@ -62,14 +63,27 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         var keyPasswordProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
 
-        var sync = ContextualFileReferenceSync.of(DataStorage.get().getDataDir().resolve("keys"), file -> file.getFileName().toString(), config.getPerUserKeyFileCheck());
+        var sync = ContextualFileReferenceSync.of(
+                DataStorage.get().getDataDir().resolve("keys"),
+                file -> file.getFileName().toString(),
+                config.getPerUserKeyFileCheck());
+
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(keyPasswordProperty)
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
 
         return new OptionsBuilder()
                 .name("location")
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                config.getProxy(),
+                                new ReadOnlyObjectWrapper<>(
+                                        DataStorage.get().local().ref()),
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),
@@ -78,7 +92,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .nonNull()
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(keyPasswordProperty, true), keyPasswordProperty)
+                .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .bind(
                         () -> {

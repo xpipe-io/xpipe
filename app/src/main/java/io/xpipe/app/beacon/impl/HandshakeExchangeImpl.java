@@ -2,6 +2,7 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BeaconSession;
+import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.beacon.BeaconAuthMethod;
 import io.xpipe.beacon.BeaconClientException;
@@ -19,12 +20,16 @@ public class HandshakeExchangeImpl extends HandshakeExchange {
     }
 
     @Override
-    public Object handle(HttpExchange exchange, Request body) throws BeaconClientException {
-        if (!checkAuth(body.getAuth())) {
+    public Object handle(HttpExchange exchange, Request request) throws BeaconClientException {
+        if (!checkAuth(request.getAuth())) {
             throw new BeaconClientException("Authentication failed");
         }
 
-        var session = new BeaconSession(body.getClient(), UUID.randomUUID().toString());
+        TrackEvent.withTrace("Handshake request received")
+                .tag("client", request.getClient().toDisplayString())
+                .handle();
+
+        var session = new BeaconSession(request.getClient(), UUID.randomUUID().toString());
         AppBeaconServer.get().addSession(session);
         return Response.builder().sessionToken(session.getToken()).build();
     }

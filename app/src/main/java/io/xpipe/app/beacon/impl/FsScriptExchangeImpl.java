@@ -2,7 +2,7 @@ package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.beacon.BlobManager;
-import io.xpipe.app.util.ScriptHelper;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.beacon.api.FsScriptExchange;
 
 import com.sun.net.httpserver.HttpExchange;

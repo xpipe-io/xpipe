@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.core.Deobfuscator;
+import io.xpipe.app.util.Deobfuscator;
 
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
@@ -279,13 +279,14 @@ public class AppLogs {
                 // Only change this when debugging the logs of other libraries
                 return NOPLogger.NOP_LOGGER;
 
-                //                // Don't use fully qualified class names
-                //                var normalizedName = FilenameUtils.getExtension(name);
-                //                if (normalizedName == null || normalizedName.isEmpty()) {
-                //                    normalizedName = name;
-                //                }
+                //                                // Don't use fully qualified class names
+                //                                var normalizedName = FilenameUtils.getExtension(name);
+                //                                if (normalizedName == null || normalizedName.isEmpty()) {
+                //                                    normalizedName = name;
+                //                                }
                 //
-                //                return loggers.computeIfAbsent(normalizedName, s -> new Slf4jLogger());
+                //                                return loggers.computeIfAbsent(normalizedName, s -> new
+                // Slf4jLogger());
             }
         };
 

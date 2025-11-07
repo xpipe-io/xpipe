@@ -5,9 +5,9 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -47,9 +47,9 @@ public class ModalOverlayComp extends SimpleComp {
         var bgRegion = background.createRegion();
         var modal = new ModalPane();
         modal.setInTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
+                OsType.ofLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
         modal.setOutTransitionFactory(
-                OsType.getLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
+                OsType.ofLocal() == OsType.LINUX ? null : node -> Animations.fadeOut(node, Duration.millis(50)));
         modal.focusedProperty().addListener((observable, oldValue, newValue) -> {
             var c = modal.getContent();
             if (newValue && c != null) {
@@ -89,7 +89,7 @@ public class ModalOverlayComp extends SimpleComp {
         });
 
         modal.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ENTER) {
+            if (event.getCode() == KeyCode.ENTER || event.getCode() == KeyCode.SPACE) {
                 if (actionRunning.get()) {
                     return;
                 }

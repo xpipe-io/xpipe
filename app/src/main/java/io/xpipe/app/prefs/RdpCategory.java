@@ -2,22 +2,19 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ChoiceComp;
-import io.xpipe.app.comp.base.HorizontalComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
 
-import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 
 import org.kordamp.ikonli.javafx.FontIcon;
-
-import java.util.List;
 
 public class RdpCategory extends AppPrefsCategory {
 
@@ -35,37 +32,34 @@ public class RdpCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         var prefs = AppPrefs.get();
 
-        var choice = ChoiceComp.ofTranslatable(
-                prefs.rdpClientType, PrefsChoiceValue.getSupported(ExternalRdpClient.class), false);
+        var choiceBuilder = OptionsChoiceBuilder.builder()
+                .property(prefs.rdpClientType)
+                .available(ExternalRdpClient.getClasses())
+                .allowNull(false)
+                .transformer(entryComboBox -> {
+                    var websiteLinkButton =
+                            new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
+                                var c = prefs.rdpClientType.getValue();
+                                if (c != null && c.getWebsite() != null) {
+                                    Hyperlinks.open(c.getWebsite());
+                                }
+                            });
+                    websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-        var visit = new ButtonComp(AppI18n.observable("website"), new FontIcon("mdi2w-web"), () -> {
-            var t = prefs.rdpClientType().getValue();
-            if (t == null || t.getWebsite() == null) {
-                return;
-            }
-
-            Hyperlinks.open(t.getWebsite());
-        });
-
-        var h = new HorizontalComp(List.of(choice.hgrow(), visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
-        });
-        h.maxWidth(600);
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    hbox.setMaxWidth(600);
+                    HBox.setHgrow(entryComboBox, Priority.ALWAYS);
+                    hbox.setSpacing(10);
+                    return hbox;
+                })
+                .build();
 
         return new OptionsBuilder()
                 .addTitle("rdpConfiguration")
                 .sub(new OptionsBuilder()
                         .nameAndDescription("rdpClient")
-                        .longDescription(DocumentationLink.RDP)
-                        .addComp(h, prefs.rdpClientType)
-                        .nameAndDescription("customRdpClientCommand")
-                        .addComp(
-                                new TextFieldComp(prefs.customRdpClientCommand, true)
-                                        .apply(struc -> struc.get().setPromptText("myrdpclient -c $FILE"))
-                                        .hide(prefs.rdpClientType.isNotEqualTo(ExternalRdpClient.CUSTOM))
-                                        .prefWidth(600),
-                                prefs.customRdpClientCommand))
+                        .documentationLink(DocumentationLink.RDP)
+                        .sub(choiceBuilder.build(), prefs.rdpClientType))
                 .buildComp();
     }
 }

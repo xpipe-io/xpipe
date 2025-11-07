@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -63,12 +63,6 @@ public class ModalOverlay {
     public ModalButton addButton(ModalButton button) {
         buttons.add(button);
         return button;
-    }
-
-    public void hideable(ObservableValue<String> name, LabelGraphic icon, Runnable action) {
-        setHideAction(() -> {
-            AppLayoutModel.get().getQueueEntries().add(new AppLayoutModel.QueueEntry(name, icon, action));
-        });
     }
 
     public void hideable(AppLayoutModel.QueueEntry entry) {

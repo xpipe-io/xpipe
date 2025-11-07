@@ -2,8 +2,8 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.core.Deobfuscator;
+import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.util.Deobfuscator;
 
 import java.nio.file.Path;
 
@@ -36,7 +36,7 @@ public class EventHandlerImpl extends EventHandler {
         if (AppProperties.get() != null && AppProperties.get().isAotTrainMode()) {
             new LogErrorHandler().handle(ee);
             if (ee.isTerminal()) {
-                OperationMode.halt(1);
+                AppOperationMode.halt(1);
             }
             return;
         }
@@ -47,15 +47,15 @@ public class EventHandlerImpl extends EventHandler {
         }
 
         // Don't block shutdown
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             handleOnShutdown(ee);
             return;
         }
 
-        if (OperationMode.get() == null) {
-            OperationMode.BACKGROUND.getErrorHandler().handle(ee);
+        if (AppOperationMode.get() == null) {
+            AppOperationMode.BACKGROUND.getErrorHandler().handle(ee);
         } else {
-            OperationMode.get().getErrorHandler().handle(ee);
+            AppOperationMode.get().getErrorHandler().handle(ee);
         }
     }
 

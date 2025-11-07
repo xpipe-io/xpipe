@@ -7,13 +7,11 @@ import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -76,7 +74,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                 createDateSortButton().createRegion(),
                 Comp.hspacer(2).createRegion(),
                 createAlphabeticalSortButton().createRegion());
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.xxxl(label);
             AppFontSizes.xxxl(c);
         } else {
@@ -89,12 +87,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Region createGroupListFilter() {
-        var filterProperty = new SimpleStringProperty();
-        filterProperty.addListener((observable, oldValue, newValue) -> {
-            ThreadHelper.runAsync(() -> {
-                StoreViewState.get().getFilterString().setValue(newValue);
-            });
-        });
         var filter = new FilterComp(StoreViewState.get().getFilterString()).createRegion();
         var add = createAddButton();
         var batchMode = createBatchModeButton().createRegion();

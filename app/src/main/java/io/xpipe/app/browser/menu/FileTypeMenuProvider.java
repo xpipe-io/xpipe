@@ -4,14 +4,14 @@ import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.icon.BrowserIconFileType;
 import io.xpipe.app.browser.icon.BrowserIcons;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 
 import java.util.List;
 
 public interface FileTypeMenuProvider extends BrowserMenuItemProvider {
 
     @Override
-    default LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    default LabelGraphic getIcon() {
         return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(getType()));
     }
 

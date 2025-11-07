@@ -1,10 +1,10 @@
 package io.xpipe.app.core.window;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.NativeMacOsWindowControl;
+import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.NativeMacOsWindowControl;
-import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.animation.PauseTransition;
@@ -20,6 +20,8 @@ import javafx.util.Duration;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.lang.ref.WeakReference;
+
 public class AppModifiedStage extends Stage {
 
     public static boolean mergeFrame() {
@@ -30,9 +32,11 @@ public class AppModifiedStage extends Stage {
         ObservableList<Window> list = Window.getWindows();
         list.addListener((ListChangeListener<Window>) c -> {
             if (c.next() && c.wasAdded()) {
-                var added = c.getAddedSubList().getFirst();
-                if (added instanceof Stage stage) {
-                    hookUpStage(stage);
+                var added = c.getAddedSubList();
+                for (Window window : added) {
+                    if (window instanceof Stage stage) {
+                        hookUpStage(stage);
+                    }
                 }
             }
         });
@@ -46,17 +50,32 @@ public class AppModifiedStage extends Stage {
 
     private static void hookUpStage(Stage stage) {
         applyModes(stage);
+
+        // Fix GC not working when the stage is no longer needed
+        var ref = new WeakReference<>(stage);
+
         if (AppPrefs.get() != null) {
             AppPrefs.get().theme().addListener((observable, oldValue, newValue) -> {
-                updateStage(stage);
+                var val = ref.get();
+                if (val != null) {
+                    updateStage(val);
+                }
             });
             AppPrefs.get().performanceMode().addListener((observable, oldValue, newValue) -> {
-                updateStage(stage);
+                var val = ref.get();
+                if (val != null) {
+                    updateStage(val);
+                }
             });
         }
-        stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
-            applyModes(stage);
-        });
+        if (stage.getScene() != null) {
+            stage.getScene().rootProperty().addListener((observable, oldValue, newValue) -> {
+                var val = ref.get();
+                if (val != null) {
+                    applyModes(val);
+                }
+            });
+        }
     }
 
     @SneakyThrows
@@ -69,7 +88,7 @@ public class AppModifiedStage extends Stage {
             return;
         }
 
-        var applyToStage = (OsType.getLocal() == OsType.WINDOWS) || (OsType.getLocal() == OsType.MACOS);
+        var applyToStage = (OsType.ofLocal() == OsType.WINDOWS) || (OsType.ofLocal() == OsType.MACOS);
         if (!applyToStage || AppPrefs.get() == null || AppPrefs.get().theme().getValue() == null) {
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("seamless-frame"), false);
             stage.getScene().getRoot().pseudoClassStateChanged(PseudoClass.getPseudoClass("separate-frame"), true);
@@ -77,12 +96,12 @@ public class AppModifiedStage extends Stage {
         }
 
         try {
-            switch (OsType.getLocal()) {
+            switch (OsType.ofLocal()) {
                 case OsType.Linux ignored -> {}
                 case OsType.MacOs ignored -> {
                     var ctrl = new NativeMacOsWindowControl(stage);
-                    var seamlessFrame = AppMainWindow.getInstance() != null
-                            && AppMainWindow.getInstance().getStage() == stage
+                    var seamlessFrame = AppMainWindow.get() != null
+                            && AppMainWindow.get().getStage() == stage
                             && !AppPrefs.get().performanceMode().get()
                             && mergeFrame();
                     var seamlessFrameApplied = ctrl.setAppearance(
@@ -106,8 +125,8 @@ public class AppModifiedStage extends Stage {
                     boolean seamlessFrame;
                     if (AppPrefs.get().performanceMode().get()
                             || !mergeFrame()
-                            || AppMainWindow.getInstance() == null
-                            || stage != AppMainWindow.getInstance().getStage()) {
+                            || AppMainWindow.get() == null
+                            || stage != AppMainWindow.get().getStage()) {
                         seamlessFrame = false;
                     } else {
                         // This is not available on Windows 10
@@ -137,7 +156,7 @@ public class AppModifiedStage extends Stage {
             transition.setOnFinished(e -> {
                 applyModes(stage);
                 // We only need to update the frame by resizing on Windows
-                if (OsType.getLocal() == OsType.WINDOWS) {
+                if (OsType.ofLocal() == OsType.WINDOWS) {
                     stage.setWidth(stage.getWidth() - 1);
                     Platform.runLater(() -> {
                         stage.setWidth(stage.getWidth() + 1);

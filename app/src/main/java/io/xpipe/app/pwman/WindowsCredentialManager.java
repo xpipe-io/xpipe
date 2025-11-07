@@ -1,7 +1,7 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

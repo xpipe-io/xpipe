@@ -2,7 +2,8 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
@@ -12,7 +13,6 @@ import io.sentry.*;
 import io.sentry.protocol.Geo;
 import io.sentry.protocol.SentryId;
 import io.sentry.protocol.User;
-import org.apache.commons.io.FileUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -158,8 +158,8 @@ public class SentryErrorHandler implements ErrorHandler {
                             if (Files.isDirectory(d)) {
                                 toUse = AttachmentHelper.compressZipfile(
                                         d,
-                                        FileUtils.getTempDirectory()
-                                                .toPath()
+                                        AppSystemInfo.ofCurrent()
+                                                .getTemp()
                                                 .resolve(d.getFileName().toString() + ".zip"));
                             }
                             return new Attachment(toUse.toString());
@@ -197,7 +197,7 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? AppPrefs.get().checkForSecurityUpdates().getValue().toString()
                         : "unknown");
-        s.setTag("initError", String.valueOf(OperationMode.isInStartup()));
+        s.setTag("initError", String.valueOf(AppOperationMode.isInStartup()));
         s.setTag(
                 "developerMode",
                 AppPrefs.get() != null
@@ -209,8 +209,8 @@ public class SentryErrorHandler implements ErrorHandler {
                 "logs",
                 Boolean.toString(
                         ee.isShouldSendDiagnostics() && !ee.getAttachments().isEmpty()));
-        s.setTag("inStartup", Boolean.toString(OperationMode.isInStartup()));
-        s.setTag("inShutdown", Boolean.toString(OperationMode.isInShutdown()));
+        s.setTag("inStartup", Boolean.toString(AppOperationMode.isInStartup()));
+        s.setTag("inShutdown", Boolean.toString(AppOperationMode.isInShutdown()));
         s.setTag("unhandled", Boolean.toString(ee.isUnhandled()));
 
         s.setTag("diagnostics", Boolean.toString(ee.isShouldSendDiagnostics()));

@@ -2,8 +2,8 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,7 @@ public class AppCertutilCheck {
             return;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return;
         }
 

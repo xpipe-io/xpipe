@@ -8,8 +8,8 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.DataStoreFormatter;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.LicensedFeature;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -40,9 +40,11 @@ public abstract class AbstractAction {
 
         AppLayoutModel.get().getQueueEntries().add(queueEntry);
         pick = action -> {
-            cancelPick();
-            var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(action).prefWidth(600));
-            modal.show();
+            if (action instanceof SerializableAction) {
+                cancelPick();
+                var modal = ModalOverlay.of("actionShortcuts", new ActionPickComp(action).prefWidth(600));
+                modal.show();
+            }
         };
     }
 

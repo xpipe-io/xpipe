@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;

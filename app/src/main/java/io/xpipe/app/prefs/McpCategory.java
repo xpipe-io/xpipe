@@ -4,8 +4,8 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;

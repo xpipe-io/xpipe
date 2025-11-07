@@ -4,7 +4,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.core.OsType;
 
 import java.util.Locale;

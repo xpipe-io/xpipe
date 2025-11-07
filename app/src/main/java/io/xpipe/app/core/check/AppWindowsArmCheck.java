@@ -8,7 +8,7 @@ import io.xpipe.core.OsType;
 public class AppWindowsArmCheck {
 
     public static void check() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return;
         }
 

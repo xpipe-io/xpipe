@@ -1,15 +1,13 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.browser.action.BrowserActionProvider;
-import io.xpipe.app.browser.action.impl.OpenTerminalActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.value.ObservableValue;
@@ -32,14 +30,11 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
                         ? List.of(model.getCurrentDirectory().getPath())
                         : Collections.singletonList((FilePath) null);
         for (var dir : dirs) {
-            var name = (dir != null ? dir + " - " : "") + model.getName().getValue();
-            model.openTerminalAsync(name, dir, model.getFileSystem().getShell().orElseThrow(), dirs.size() == 1);
+            var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "")
+                    + model.getName().getValue();
+            model.openTerminalAsync(
+                    name, dir, model.getFileSystem().getRawShellControl().orElseThrow(), dirs.size() == 1);
         }
-    }
-
-    @Override
-    public Class<? extends BrowserActionProvider> getDelegateActionProvider() {
-        return OpenTerminalActionProvider.class;
     }
 
     @Override
@@ -52,7 +47,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2c-console");
     }
 
@@ -72,7 +67,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
     }
 
     @Override
-    public boolean isActive(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public boolean isActive(BrowserFileSystemTabModel model) {
         var t = AppPrefs.get().terminalType().getValue();
         return t != null;
     }

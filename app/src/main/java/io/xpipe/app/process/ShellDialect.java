@@ -50,6 +50,8 @@ public interface ShellDialect {
 
     String literalArgument(String s);
 
+    String prepareEnvironmentForCustomTerminalScripts();
+
     String fileArgument(String s);
 
     default String fileArgument(FilePath s) {
@@ -68,7 +70,8 @@ public interface ShellDialect {
 
     String changeTitleCommand(String newTitle);
 
-    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes);
+    CommandControl createStreamFileWriteCommand(ShellControl shellControl, String file, long totalBytes)
+            throws Exception;
 
     default String getCdCommand(String directory) {
         return "cd \"" + directory + "\"";
@@ -178,7 +181,7 @@ public interface ShellDialect {
 
     CommandControl getFileTouchCommand(ShellControl parent, String file);
 
-    String getWhichCommand(String executable);
+    String whichCommand(ShellControl sc, String executable) throws Exception;
 
     Charset determineCharset(ShellControl control) throws Exception;
 

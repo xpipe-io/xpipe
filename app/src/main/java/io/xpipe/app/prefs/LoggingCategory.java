@@ -5,6 +5,8 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.*;
 
 import java.io.IOException;
@@ -29,14 +31,14 @@ public class LoggingCategory extends AppPrefsCategory {
                 .addTitle("sessionLogging")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableTerminalLogging)
-                        .longDescription(DocumentationLink.API)
+                        .documentationLink(DocumentationLink.API)
                         .addToggle(prefs.enableTerminalLogging)
                         .nameAndDescription("terminalLoggingDirectory")
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
                                     var dir = AppProperties.get().getDataDir().resolve("sessions");
                                     try {
                                         Files.createDirectories(dir);
-                                        DesktopHelper.browsePathLocal(dir);
+                                        DesktopHelper.browseFile(dir);
                                     } catch (IOException e) {
                                         ErrorEventFactory.fromThrowable(e).handle();
                                     }

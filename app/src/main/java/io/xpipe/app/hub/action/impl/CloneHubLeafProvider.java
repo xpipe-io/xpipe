@@ -6,10 +6,10 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -32,7 +32,7 @@ public class CloneHubLeafProvider implements HubLeafProvider<DataStore> {
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<DataStore> store) {
-        return AppI18n.observable("base.clone");
+        return AppI18n.observable("clone");
     }
 
     @Override

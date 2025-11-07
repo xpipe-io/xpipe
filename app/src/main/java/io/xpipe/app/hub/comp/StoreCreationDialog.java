@@ -2,21 +2,19 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -173,9 +171,7 @@ public class StoreCreationDialog {
             }
 
             modal.hide();
-            AppLayoutModel.get()
-                    .getQueueEntries()
-                    .add(queueEntry);
+            AppLayoutModel.get().getQueueEntries().add(queueEntry);
         });
         modal.setRequireCloseButtonForClose(true);
         modal.addButton(new ModalButton(

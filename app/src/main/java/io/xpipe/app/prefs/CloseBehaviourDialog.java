@@ -7,7 +7,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
 
 import javafx.beans.property.Property;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CloseBehaviourDialog {
 
     public static boolean showIfNeeded() {
-        if (OperationMode.isInShutdown()) {
+        if (AppOperationMode.isInShutdown()) {
             return true;
         }
 

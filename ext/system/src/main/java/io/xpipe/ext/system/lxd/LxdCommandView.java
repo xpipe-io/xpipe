@@ -5,7 +5,6 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.CommandViewBase;
 import io.xpipe.core.FilePath;
 import io.xpipe.ext.base.identity.IdentityValue;
 
@@ -158,7 +157,7 @@ public class LxdCommandView extends CommandViewBase {
         } catch (ProcessOutputException ex) {
             if (ex.getOutput().contains("Error: unknown shorthand flag: 'f' in -f")) {
                 throw ErrorEventFactory.expected(
-                        ProcessOutputException.withParagraph("Unsupported legacy LXD version", ex));
+                        ProcessOutputException.withPrefix("Unsupported legacy LXD version", ex));
             } else {
                 throw ex;
             }

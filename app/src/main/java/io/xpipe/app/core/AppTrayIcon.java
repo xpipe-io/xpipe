@@ -1,6 +1,6 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.OsType;
 
@@ -20,7 +20,7 @@ public class AppTrayIcon {
         tray = SystemTray.getSystemTray();
 
         var image =
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Windows ignored -> "img/logo/full/logo_16x16.png";
                     case OsType.Linux ignored -> "img/logo/full/logo_24x24.png";
                     case OsType.MacOs ignored -> "img/logo/padded/logo_24x24.png";
@@ -37,7 +37,7 @@ public class AppTrayIcon {
             var open = new MenuItem(AppI18n.get("open"));
             open.addActionListener(e -> {
                 tray.remove(trayIcon);
-                OperationMode.switchToAsync(OperationMode.GUI);
+                AppOperationMode.switchToAsync(AppOperationMode.GUI);
             });
             popupMenu.add(open);
         }
@@ -46,15 +46,15 @@ public class AppTrayIcon {
             var quit = new MenuItem(AppI18n.get("quit"));
             quit.addActionListener(e -> {
                 tray.remove(trayIcon);
-                OperationMode.close();
+                AppOperationMode.close();
             });
             popupMenu.add(quit);
         }
 
         trayIcon.addActionListener(e -> {
-            if (OsType.getLocal() != OsType.MACOS) {
+            if (OsType.ofLocal() != OsType.MACOS) {
                 tray.remove(trayIcon);
-                OperationMode.switchToAsync(OperationMode.GUI);
+                AppOperationMode.switchToAsync(AppOperationMode.GUI);
             }
         });
     }
@@ -95,7 +95,7 @@ public class AppTrayIcon {
     }
 
     public void showErrorMessage(String title, String message) {
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             showMacAlert(title, message, "Error");
         } else {
             EventQueue.invokeLater(() -> this.trayIcon.displayMessage(title, message, TrayIcon.MessageType.ERROR));

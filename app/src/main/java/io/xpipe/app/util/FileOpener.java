@@ -1,9 +1,11 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.OsType;
@@ -45,7 +47,7 @@ public class FileOpener {
 
     public static void openWithAnyApplication(String localFile) {
         try {
-            switch (OsType.getLocal()) {
+            switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> {
                     // See https://learn.microsoft.com/en-us/windows/win32/api/shellapi/ns-shellapi-shellexecuteinfoa
                     var struct = new ShellAPI.SHELLEXECUTEINFO();
@@ -104,7 +106,7 @@ public class FileOpener {
                         id.toString(),
                         id,
                         null,
-                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        () -> BrowserFileInput.of(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))),
                         null,
                         v -> openInTextEditor(v));
     }
@@ -120,7 +122,7 @@ public class FileOpener {
                         keyName,
                         key,
                         null,
-                        () -> new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)),
+                        () -> BrowserFileInput.of(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8))),
                         (size) -> {
                             return new BrowserFileOutput() {
                                 @Override

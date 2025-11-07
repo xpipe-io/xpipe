@@ -5,11 +5,11 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.util.DerivedObservableList;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -127,13 +127,11 @@ public class BrowserHistoryTabComp extends SimpleComp {
         open.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2f-folder-open-outline"));
         open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(
-                    DataStorage.get().local().ref(), null, null);
+                    DataStorage.get().local().ref(), null, null, null);
         });
 
-        var v = new VerticalComp(List.of(docs, open));
-        v.spacing(70);
-        v.apply(struc -> struc.get().setAlignment(Pos.CENTER));
-        return v;
+        var list = new IntroListComp(List.of(docs, open));
+        return list;
     }
 
     private Comp<?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
@@ -150,7 +148,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     ThreadHelper.runAsync(() -> {
                         var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
                         if (storageEntry.isPresent()) {
-                            model.openFileSystemAsync(storageEntry.get().ref(), null, disable);
+                            model.openFileSystemAsync(storageEntry.get().ref(), null, null, disable);
                         }
                     });
                 })

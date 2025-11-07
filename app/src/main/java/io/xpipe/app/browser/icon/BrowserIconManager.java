@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 
 public class BrowserIconManager {
 
@@ -30,7 +30,7 @@ public class BrowserIconManager {
         } else {
             for (var f : BrowserIconDirectoryType.getAll()) {
                 if (f.matches(r)) {
-                    return f.getIcon(r);
+                    return f.getIcon();
                 }
             }
         }

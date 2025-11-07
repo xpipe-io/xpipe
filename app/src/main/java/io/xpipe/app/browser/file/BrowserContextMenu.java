@@ -4,7 +4,7 @@ import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.util.InputHelper;
+import io.xpipe.app.platform.InputHelper;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SeparatorMenuItem;

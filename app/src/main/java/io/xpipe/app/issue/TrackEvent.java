@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Singular;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 @Getter
 public class TrackEvent {
 
-    private final Thread thread = Thread.currentThread();
     private final Instant instant = Instant.now();
     private String type;
     private String message;
@@ -104,15 +102,6 @@ public class TrackEvent {
     }
 
     public static class TrackEventBuilder {
-
-        public TrackEventBuilder copy() {
-            var copy = builder();
-            copy.message = message;
-            copy.tags$key = new ArrayList<>(tags$key);
-            copy.tags$value = new ArrayList<>(tags$value);
-            copy.type = type;
-            return copy;
-        }
 
         public void handle() {
             build().handle();

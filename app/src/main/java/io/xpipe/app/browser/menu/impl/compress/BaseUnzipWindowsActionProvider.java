@@ -8,8 +8,8 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.core.OsType;
 
 import javafx.beans.value.ObservableValue;
@@ -25,7 +25,7 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")));
     }
 
@@ -49,6 +49,10 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         return entries.stream()
                         .allMatch(entry ->
                                 entry.getRawFileEntry().getPath().toString().endsWith(".zip"))

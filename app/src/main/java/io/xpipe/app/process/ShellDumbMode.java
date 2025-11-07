@@ -20,6 +20,8 @@ public interface ShellDumbMode {
 
     default void prepareInlineShellSwitch(ShellControl shellControl) throws Exception {}
 
+    default void prepareImmediateDumbInit(ShellControl shellControl) throws Exception {}
+
     default void prepareDumbInit(ShellControl shellControl) throws Exception {}
 
     default void prepareDumbExit(ShellControl shellControl) throws IOException {

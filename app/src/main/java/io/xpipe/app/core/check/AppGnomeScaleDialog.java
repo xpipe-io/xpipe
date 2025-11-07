@@ -15,7 +15,7 @@ public class AppGnomeScaleDialog {
             return;
         }
 
-        if (AppMainWindow.getInstance() == null) {
+        if (AppMainWindow.get() == null) {
             return;
         }
 

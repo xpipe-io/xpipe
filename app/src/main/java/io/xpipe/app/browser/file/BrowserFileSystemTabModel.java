@@ -9,10 +9,10 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.WrapperFileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
@@ -20,12 +20,13 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.FileKind;
+import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,7 +49,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
     private final BrowserFileSystemHistory history = new BrowserFileSystemHistory();
-    private final BooleanProperty inOverview = new SimpleBooleanProperty();
+    private final ObservableBooleanValue inOverview = Bindings.createBooleanBinding(
+            () -> {
+                return currentPath.get() == null;
+            },
+            currentPath);
     private final ObservableList<UUID> terminalRequests = FXCollections.observableArrayList();
     private final BooleanProperty transferCancelled = new SimpleBooleanProperty();
     private final Property<BrowserTransferProgress> progress = new SimpleObjectProperty<>();
@@ -56,21 +61,18 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             FXCollections.observableArrayList();
     private final LongProperty progressTransferSpeed = new SimpleLongProperty();
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
+    private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
-    private BrowserFileSystemCache cache;
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
             DataStoreEntryRef<? extends FileSystemStore> entry,
-            SelectionMode selectionMode) {
+            SelectionMode selectionMode,
+            FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory) {
         super(model, entry);
-        this.inOverview.bind(Bindings.createBooleanBinding(
-                () -> {
-                    return currentPath.get() == null;
-                },
-                currentPath));
-        fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileSystemFactory = fileSystemFactory;
     }
 
     public void updateProgress(BrowserTransferProgress n) {
@@ -148,23 +150,26 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
-            var fs = entry.getStore().createFileSystem();
+            var fs = fileSystemFactory.apply(getEntry().asNeeded());
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
-                var originalFs = fs;
-                fs = new WrapperFileSystem(
-                        originalFs, () -> originalFs.getShell().get().isRunning(true));
             }
             fs.open();
+
             // Listen to kill after init as the shell might get killed during init for certain reasons
-            if (fs.getShell().isPresent()) {
-                fs.getShell().get().onKill(() -> {
+            if (fs.getRawShellControl().isPresent()) {
+                fs.getRawShellControl().get().onKill(() -> {
                     browserModel.closeAsync(this);
                 });
             }
             this.fileSystem = fs;
 
-            this.cache = new BrowserFileSystemCache(this);
+            // Cache for later usage
+            if (fs.getShell().isPresent()) {
+                fs.getShell().get().view().getPasswdFile();
+                fs.getShell().get().view().getGroupFile();
+            }
+
             for (var a : ActionProvider.ALL) {
                 if (a instanceof BrowserMenuItemProvider ba) {
                     ba.init(this);
@@ -198,13 +203,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void startIfNeeded() throws Exception {
-        var s = fileSystem.getShell();
-        if (s.isPresent()) {
-            s.get().start();
-            if (s.get().isAnyStreamClosed()) {
-                s.get().restart();
-            }
-        }
+        fileSystem.reinitIfNeeded();
     }
 
     public void killTransfer() {
@@ -300,11 +299,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return false;
         }
 
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return false;
         }
 
-        if (AppMainWindow.getInstance().getStage().getWidth() <= 1380) {
+        if (AppMainWindow.get().getStage().getWidth() <= 1380) {
             return false;
         }
 
@@ -330,6 +329,10 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public Optional<String> cdSyncOrRetry(String path, boolean customInput) {
+        if (!fileSystem.isRunning()) {
+            return Optional.empty();
+        }
+
         var cps = currentPath.get() != null ? currentPath.get().toString() : null;
         if (Objects.equals(path, cps)) {
             return Optional.empty();
@@ -421,7 +424,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         try {
-            BrowserFileSystemHelper.validateDirectoryPath(this, resolvedPath, true);
+            BrowserFileSystemHelper.validateDirectoryPath(fileSystem, resolvedPath, true);
             cdSyncWithoutCheck(resolvedPath);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
@@ -499,6 +502,20 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         });
     }
 
+    public void duplicateFile(FileEntry entry) {
+        // Technically we would have to create an action to allow confirmations for this
+        // But in practice, this is almost a non mutable action, so we will save the effort
+        ThreadHelper.runFailableAsync(() -> {
+            BooleanScope.executeExclusive(busy, () -> {
+                startIfNeeded();
+                var adjusted = BrowserFileDuplicates.renameFileDuplicate(
+                        fileSystem, entry.getPath(), entry.getKind() == FileKind.DIRECTORY);
+                fileSystem.copy(entry.getPath(), adjusted);
+                refreshSync();
+            });
+        });
+    }
+
     public boolean isClosed() {
         return false;
     }
@@ -559,6 +576,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     @Getter
+    @SuppressWarnings("unused")
     public enum SelectionMode {
         SINGLE_FILE(false, true, false),
         MULTIPLE_FILE(true, true, false),

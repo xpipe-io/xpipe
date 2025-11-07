@@ -3,6 +3,7 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -125,9 +126,9 @@ public class DesktopShortcuts {
 
     public static Path create(String executable, String args, String name) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return createWindowsShortcut(executable, args, compat);
-        } else if (OsType.getLocal() == OsType.LINUX) {
+        } else if (OsType.ofLocal() == OsType.LINUX) {
             return createLinuxShortcut(executable, args, compat);
         } else {
             return createMacOSShortcut(executable, args, compat);

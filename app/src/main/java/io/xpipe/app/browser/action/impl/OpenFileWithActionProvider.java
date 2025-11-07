@@ -5,7 +5,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.core.OsType;
 
 import lombok.experimental.SuperBuilder;
@@ -22,7 +22,7 @@ public class OpenFileWithActionProvider implements BrowserActionProvider {
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return OsType.getLocal() == OsType.WINDOWS
+        return OsType.ofLocal() == OsType.WINDOWS
                 && entries.size() == 1
                 && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.FILE);
     }

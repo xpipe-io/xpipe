@@ -1,18 +1,16 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import com.sun.jna.Memory;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinBase;
 import io.xpipe.app.issue.ErrorAction;
 import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
-import io.xpipe.app.util.CommandSupport;
-import io.xpipe.app.util.LocalShell;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
-import java.nio.file.Files;
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
+
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -143,7 +141,7 @@ public class SshIdentityStateManager {
             return;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             stopWindowsAgents(true, true, false);
 
             var pipePath = Path.of("\\\\.\\pipe\\openssh-ssh-agent");
@@ -172,8 +170,8 @@ public class SshIdentityStateManager {
             FilePath dir;
             if (sc.getOsType() == OsType.WINDOWS) {
                 stopWindowsAgents(true, false, true);
-                var appdata =
-                        FilePath.of(sc.view().getEnvironmentVariable("APPDATA")).join("gnupg");
+                var appdata = FilePath.of(sc.view().getEnvironmentVariableOrThrow("APPDATA"))
+                        .join("gnupg");
                 dir = appdata;
             } else {
                 dir = sc.view().userHome().join(".gnupg");

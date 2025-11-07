@@ -32,11 +32,23 @@ public class BeaconConfig {
     }
 
     public static int getDefaultBeaconPort() {
+        var customPortVar = System.getenv("XPIPE_BEACON_PORT");
+        Integer customPort = null;
+        if (customPortVar != null) {
+            try {
+                customPort = Integer.parseInt(customPortVar);
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        var effectivePortBase = customPort != null ? customPort : 21721;
+
         var staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         var offset = staging ? 1 : 0;
-        return 21721 + offset;
+
+        return effectivePortBase + offset;
     }
 
     public static Path getLocalBeaconAuthFile() {

@@ -8,9 +8,9 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.util.BindingsHelper;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.HumanReadableFormat;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
@@ -98,6 +98,10 @@ public class BrowserStatusBarComp extends SimpleComp {
                     var expected = model.getProgressRemaining().getValue();
                     if (p == null || expected == null) {
                         return null;
+                    }
+
+                    if (p.getTotal() == 0) {
+                        return HumanReadableFormat.byteCount(p.getTransferred());
                     }
 
                     var elapsed = (p.getTotal() - p.getTransferred() / (double) p.getTotal()) * expected.toMillis();

@@ -3,9 +3,9 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
-import io.xpipe.app.core.AppActionLinkDetector;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.AppOpenArguments;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -18,6 +18,7 @@ import javafx.scene.input.MouseButton;
 import atlantafx.base.controls.CustomTextField;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.List;
 import java.util.Objects;
 
 public class FilterComp extends Comp<CompStructure<CustomTextField>> {
@@ -76,7 +77,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
         filter.textProperty().addListener((observable, oldValue, n) -> {
             // Handle pasted xpipe URLs
             if (n != null && n.startsWith("xpipe://")) {
-                AppActionLinkDetector.handle(n, false);
+                AppOpenArguments.handle(List.of(n));
                 filter.setText(null);
                 return;
             }

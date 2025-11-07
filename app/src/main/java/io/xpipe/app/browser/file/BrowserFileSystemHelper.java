@@ -1,9 +1,9 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -94,24 +94,18 @@ public class BrowserFileSystemHelper {
         return resolved.toDirectory();
     }
 
-    public static void validateDirectoryPath(BrowserFileSystemTabModel model, FilePath path, boolean verifyExists)
-            throws Exception {
+    public static void validateDirectoryPath(FileSystem fs, FilePath path, boolean verifyExists) throws Exception {
         if (path == null) {
             return;
         }
 
-        var shell = model.getFileSystem().getShell();
-        if (shell.isEmpty()) {
-            return;
-        }
-
-        if (verifyExists && !model.getFileSystem().directoryExists(path)) {
+        if (verifyExists && !fs.directoryExists(path)) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     String.format("Directory %s does not exist or is not accessible", path)));
         }
 
         try {
-            model.getFileSystem().directoryAccessible(path);
+            fs.directoryAccessible(path);
         } catch (Exception ex) {
             ErrorEventFactory.expected(ex);
             throw ex;

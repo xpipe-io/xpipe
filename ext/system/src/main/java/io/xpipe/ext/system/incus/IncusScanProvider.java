@@ -14,7 +14,7 @@ public class IncusScanProvider extends ScanProvider {
             return null;
         }
 
-        return new ScanOpportunity("system.incusContainers", !new IncusCommandView(sc).isSupported());
+        return new ScanOpportunity("incusContainers", !new IncusCommandView(sc).isSupported());
     }
 
     @Override

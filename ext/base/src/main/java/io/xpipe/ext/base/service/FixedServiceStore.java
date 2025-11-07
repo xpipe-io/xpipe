@@ -27,6 +27,16 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     private final DataStoreEntryRef<? extends DataStore> displayParent;
 
     @Override
+    public String getAddress() {
+        return null;
+    }
+
+    @Override
+    public DataStoreEntryRef<NetworkTunnelStore> getGateway() {
+        return null;
+    }
+
+    @Override
     public DataStoreEntryRef<NetworkTunnelStore> getHost() {
         return host;
     }

@@ -1,8 +1,6 @@
-# FxComps - Compound Components for JavaFX
+# Compound Components
 
-The FxComps library provides a new approach to creating JavaFX interfaces and
-offers a quicker and more robust user interface development workflow.
-This library is compatible and can be used with any other JavaFX library.
+As a basis, JavaFX nodes are created and manage via comps (compound components). 
 
 ## Principles
 
@@ -12,11 +10,6 @@ It is advantageous to define a certain component to be a factory
 that can create an instances of a JavaFX Node each time it is called.
 By using this factory architecture, the scene contents can
 be rebuilt entirely by invoking the root component factory.
-See the [hot reload](#Hot-Reload) section on how this can be used.
-
-Of course, if a component is a compound component that has children,
-the parent factory has to incorporate the child factories into its creation process.
-This can be done in fxcomps.
 
 #### A comp should produce a transparent representation of Regions and Controls
 
@@ -86,44 +79,3 @@ If you for example bind your IDE Hot Reload to F4 and your Scene reload listener
 you can almost instantly apply any changes made to your GUI code without restarting.
 You can also implement a similar solution to also reload your stylesheets and translations.
 
-## Library contents
-
-Aside from the base classes needed to implement the principles listed above,
-this library also comes with a few very basic Comp implementations and some Augments.
-These are very general implementations and can be seen as example implementations.
-
-#### Comps
-
-- [HorizontalComp](src/main/java/io/xpipe/fxcomps/comp/HorizontalComp.java) /
-  [VerticalComp](src/main/java/io/xpipe/fxcomps/comp/VerticalComp.java): Simple Comp implementation to create a
-  HBox/VBox using Comps as input
-- [StackComp](src/main/java/io/xpipe/fxcomps/comp/StackComp.java): Simple Comp implementation to easily create a stack
-  pane using Comps as input
-- [StackComp](src/main/java/io/xpipe/fxcomps/comp/LabelComp.java): Simple Comp implementation for a label
-
-#### Augments
-
-- [GrowAugment](src/main/java/io/xpipe/fxcomps/augment/GrowAugment.java): Binds the width/height of a Comp to its
-  parent, adjusted for parent padding
-- [PopupMenuComp](src/main/java/io/xpipe/fxcomps/augment/PopupMenuAugment.java): Allows you to show a context menu when
-  a comp is left-clicked in addition to right-click
-
-## Creating a basic comp
-
-As the central idea of this library is that you create your own Comps, it is designed to be very simple:
-
-````java
-        var b = Comp.of(() -> new Button("Button"));
-        var l = Comp.of(() -> new Label("Label"));
-        
-        // Create an HBox factory and apply some Augments to it
-        var layoutFactory = new HorizontalComp(List.of(b, l))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER))
-                .apply(GrowAugment.create(true, true))
-                .styleClass("layout");
-        
-        // You can now create node instances of your layout
-        var region = layoutFactory.createRegion();
-````
-
-Most simple Comp definitions can be defined inline with the `Comp.of(...)` method.

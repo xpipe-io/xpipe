@@ -10,10 +10,6 @@ public interface ProcessControl extends AutoCloseable {
 
     UUID getUuid();
 
-    ProcessControl withExceptionConverter(ProcessExceptionConverter converter);
-
-    void resetData();
-
     String prepareTerminalOpen(TerminalInitScriptConfig config, WorkingDirectoryFunction workingDirectory)
             throws Exception;
 
@@ -35,8 +31,6 @@ public interface ProcessControl extends AutoCloseable {
     void kill();
 
     void killExternal();
-
-    ProcessControl start() throws Exception;
 
     InputStream getStdout();
 

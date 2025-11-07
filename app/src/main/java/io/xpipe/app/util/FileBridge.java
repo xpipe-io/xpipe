@@ -1,11 +1,13 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
+import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellTemp;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FailableSupplier;
 
@@ -16,10 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
+import java.nio.file.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -108,6 +107,9 @@ public class FileBridge {
                     in.transferTo(OutputStream.nullOutputStream());
                     var taken = Duration.between(started, Instant.now());
                     event("Wrote " + HumanReadableFormat.byteCount(actualSize) + " in " + taken.toMillis() + "ms");
+                } catch (NoSuchFileException ex) {
+                    // The file might be removed meanwhile
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
                 }
             } else {
                 event("File doesn't seem to be changed");
@@ -144,16 +146,19 @@ public class FileBridge {
             String keyName,
             Object key,
             BooleanScope scope,
-            FailableSupplier<InputStream> input,
-            FailableFunction<Long, BrowserFileOutput, Exception> output,
+            FailableSupplier<BrowserFileInput> inputSupplier,
+            FailableFunction<Long, BrowserFileOutput, Exception> outputSupplier,
             Consumer<String> consumer) {
         var ext = getForKey(key);
         if (ext.isPresent()) {
             var existingFile = ext.get().file;
             try {
+                var input = inputSupplier.get();
                 try (var out = Files.newOutputStream(existingFile);
-                        var in = input.get()) {
+                        var in = input.open()) {
                     in.transferTo(out);
+                } finally {
+                    input.onFinish();
                 }
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).handle();
@@ -168,9 +173,12 @@ public class FileBridge {
                 .resolve(OsFileSystem.ofLocal().makeFileSystemCompatible(keyName));
         try {
             FileUtils.forceMkdirParent(file.toFile());
+            var input = inputSupplier.get();
             try (var out = Files.newOutputStream(file);
-                    var in = input.get()) {
+                    var in = input.open()) {
                 in.transferTo(out);
+            } finally {
+                input.onFinish();
             }
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
@@ -178,16 +186,16 @@ public class FileBridge {
         }
 
         var entry = new Entry(file, key, keyName, scope, (in, size) -> {
-            if (output != null) {
+            if (outputSupplier != null) {
                 var effectiveScope = scope != null ? scope : BooleanScope.noop();
                 try (var ignored = effectiveScope.start()) {
-                    var outSupplier = output.apply(size);
+                    var outSupplier = outputSupplier.apply(size);
                     if (!outSupplier.hasOutput()) {
                         return;
                     }
 
                     var action = ApplyFileEditActionProvider.Action.builder()
-                            .input(in)
+                            .input(BrowserFileInput.of(in))
                             .output(outSupplier)
                             .target(file.getFileName().toString())
                             .build();

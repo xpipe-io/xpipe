@@ -2,10 +2,10 @@ package io.xpipe.ext.base.identity.ssh;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -37,7 +37,7 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("agentSocket")
                 .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
-                .hide(OsType.getLocal() == OsType.WINDOWS)
+                .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()

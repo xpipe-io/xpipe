@@ -90,7 +90,7 @@ public class AppProperties {
                 .map(UUID::fromString)
                 .orElse(UUID.randomUUID());
         sentryUrl = System.getProperty(AppNames.propertyName("sentryUrl"));
-        arch = System.getProperty(AppNames.propertyName("arch"));
+        arch = System.getProperty("os.arch").equals("amd64") ? "x86_64" : "arm64";
         staging = Optional.ofNullable(System.getProperty(AppNames.propertyName("staging")))
                 .map(Boolean::parseBoolean)
                 .orElse(false);

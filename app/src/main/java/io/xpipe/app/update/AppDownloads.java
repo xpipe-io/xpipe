@@ -2,6 +2,7 @@ package io.xpipe.app.update;
 
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
@@ -34,7 +35,7 @@ public class AppDownloads {
                 throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
             }
 
-            var downloadFile = FileUtils.getTempDirectory().toPath().resolve(release.getFile());
+            var downloadFile = AppSystemInfo.ofCurrent().getTemp().resolve(release.getFile());
             // Fix file name to not be included in temp dir clean
             var fixedFile = Path.of(downloadFile.toString().replaceAll("-", "_"));
             Files.write(fixedFile, response.body());
@@ -85,7 +86,7 @@ public class AppDownloads {
             req.put("securityOnly", securityOnly);
             req.put("initial", AppProperties.get().isInitialLaunch() && first);
             req.put("ptb", AppProperties.get().isStaging());
-            req.put("os", OsType.getLocal().getId());
+            req.put("os", OsType.ofLocal().getId());
             req.put("arch", AppProperties.get().getArch());
             req.put("uuid", AppProperties.get().getUuid().toString());
             req.put("version", AppProperties.get().getVersion());

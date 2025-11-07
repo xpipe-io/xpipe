@@ -2,9 +2,7 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.ext.FileEntry;
-import io.xpipe.core.FileKind;
-
-import lombok.Getter;
+import io.xpipe.app.ext.FileKind;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -24,18 +22,13 @@ public abstract class BrowserIconDirectoryType {
         ALL.add(new BrowserIconDirectoryType() {
 
             @Override
-            public String getId() {
-                return "root";
-            }
-
-            @Override
             public boolean matches(FileEntry entry) {
                 return entry.getPath().toString().equals("/")
                         || entry.getPath().toString().matches("\\w:\\\\");
             }
 
             @Override
-            public String getIcon(FileEntry entry) {
+            public String getIcon() {
                 return "browser/default_root_folder.svg";
             }
         });
@@ -46,7 +39,6 @@ public abstract class BrowserIconDirectoryType {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     var split = line.split("\\|");
-                    var id = split[0].strip();
                     var filter = Arrays.stream(split[1].split(","))
                             .map(s -> {
                                 return s.strip();
@@ -56,7 +48,7 @@ public abstract class BrowserIconDirectoryType {
                     var closedIcon = "browser/" + split[2].strip();
                     var lightClosedIcon = split.length > 4 ? "browser/" + split[4].strip() : closedIcon;
 
-                    ALL.add(new Simple(id, new BrowserIconVariant(lightClosedIcon, closedIcon), filter));
+                    ALL.add(new Simple(new BrowserIconVariant(lightClosedIcon, closedIcon), filter));
                 }
             }
         });
@@ -66,22 +58,16 @@ public abstract class BrowserIconDirectoryType {
         return ALL;
     }
 
-    public abstract String getId();
-
     public abstract boolean matches(FileEntry entry);
 
-    public abstract String getIcon(FileEntry entry);
+    public abstract String getIcon();
 
     public static class Simple extends BrowserIconDirectoryType {
-
-        @Getter
-        private final String id;
 
         private final BrowserIconVariant closed;
         private final Set<String> names;
 
-        public Simple(String id, BrowserIconVariant closed, Set<String> names) {
-            this.id = id;
+        public Simple(BrowserIconVariant closed, Set<String> names) {
             this.closed = closed;
             this.names = names;
         }
@@ -97,7 +83,7 @@ public abstract class BrowserIconDirectoryType {
         }
 
         @Override
-        public String getIcon(FileEntry entry) {
+        public String getIcon() {
             return this.closed.getIcon();
         }
     }

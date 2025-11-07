@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.menu.impl;
 
-import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.impl.DeleteActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
@@ -8,8 +7,8 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.core.FileKind;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 import javafx.scene.input.KeyCode;
@@ -31,7 +30,7 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
     }
 
     @Override
-    public LabelGraphic getIcon(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+    public LabelGraphic getIcon() {
         return new LabelGraphic.IconGraphic("mdi2d-delete");
     }
 
@@ -50,8 +49,8 @@ public class DeleteMenuProvider implements BrowserMenuLeafProvider {
         return AppI18n.observable(
                 "deleteFile",
                 entries.stream()
-                        .anyMatch(browserEntry ->
-                                browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
+                                .anyMatch(browserEntry ->
+                                        browserEntry.getRawFileEntry().getKind() == FileKind.LINK)
                         ? "link"
                         : "");
     }

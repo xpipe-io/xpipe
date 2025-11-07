@@ -7,9 +7,9 @@ import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppTheme;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
 import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -70,14 +70,14 @@ public class AppearanceCategory extends AppPrefsCategory {
                 return cell.get();
             });
         });
-        c.maxWidth(600 / 2);
+        c.maxWidth(600.0 / 2);
         return new OptionsBuilder().pref(prefs.theme).addComp(c, prefs.theme);
     }
 
     public static OptionsBuilder languageChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.language, Arrays.asList(SupportedLocale.values()), false);
-        c.maxWidth(600 / 2);
+        c.maxWidth(600.0 / 2);
         c.hgrow();
         var visit = new ButtonComp(AppI18n.observable("translate"), new FontIcon("mdi2w-web"), () -> {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
@@ -115,7 +115,7 @@ public class AppearanceCategory extends AppPrefsCategory {
                                     struc.get().setPromptText("100");
                                 }),
                                 prefs.uiScale)
-                        .hide(new SimpleBooleanProperty(OsType.getLocal() == OsType.MACOS))
+                        .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
                         .pref(prefs.useSystemFont)
                         .addToggle(prefs.useSystemFont)
                         .pref(prefs.censorMode)

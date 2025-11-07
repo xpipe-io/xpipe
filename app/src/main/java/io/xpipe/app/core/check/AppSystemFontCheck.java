@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 public class AppSystemFontCheck {
 
     public static void init() {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             return;
         }
 
@@ -18,7 +18,10 @@ public class AppSystemFontCheck {
 
         System.setProperty(
                 "prism.fontdir",
-                AppInstallation.ofCurrent().getBundledFontsPath().toString());
+                AppInstallation.ofCurrent()
+                        .getBaseInstallationPath()
+                        .resolve("fonts")
+                        .toString());
         System.setProperty("prism.embeddedfonts", "true");
     }
 

@@ -3,13 +3,13 @@ package io.xpipe.app.storage;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.FixedChildStore;
+import io.xpipe.app.ext.FixedHierarchyStore;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.NameableStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.app.util.SecretManager;
+import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.StorePath;
 
@@ -58,6 +58,7 @@ public abstract class DataStorage {
     private final Map<DataStoreEntry, DataStoreEntry> storeEntriesInProgress = new ConcurrentHashMap<>();
     private final Map<DataStore, DataStoreEntry> identityStoreEntryMapCache = new IdentityHashMap<>();
     private final Map<DataStore, DataStoreEntry> storeEntryMapCache = new HashMap<>();
+    private final Map<DataStore, DataStore> storeMoveCache = new IdentityHashMap<>();
 
     @Getter
     @Setter
@@ -123,6 +124,7 @@ public abstract class DataStorage {
         return getStoreCategoryIfPresent(ALL_IDENTITIES_CATEGORY_UUID).orElseThrow();
     }
 
+    @SuppressWarnings("unused")
     public DataStoreCategory getAllMacrosCategory() {
         return getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID).orElseThrow();
     }
@@ -281,10 +283,10 @@ public abstract class DataStorage {
     public boolean shouldSync(DataStoreCategory category) {
         // Don't sync lone identities category
         if (category.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)
-                && storeCategories.stream()
-                        .filter(dataStoreCategory ->
-                                !dataStoreCategory.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID))
-                        .noneMatch(dataStoreCategory -> shouldSync(dataStoreCategory))) {
+                && getStoreEntries().stream().noneMatch(e -> {
+                    var hierarchy = getCategoryParentHierarchy(getStoreCategory(e));
+                    return hierarchy.stream().anyMatch(h -> h.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID));
+        })) {
             return false;
         }
 
@@ -367,6 +369,13 @@ public abstract class DataStorage {
 
         var categoryChanged = !entry.getCategoryUuid().equals(newEntry.getCategoryUuid());
 
+        if (entry.getStore() != null
+                && newEntry.getStore() != null
+                && !entry.getStore().equals(newEntry.getStore())) {
+            synchronized (storeMoveCache) {
+                storeMoveCache.put(entry.getStore(), newEntry.getStore());
+            }
+        }
         entry.applyChanges(newEntry);
         entry.initializeEntry();
 
@@ -391,6 +400,21 @@ public abstract class DataStorage {
 
         refreshEntries();
         saveAsync();
+    }
+
+    public void updateEntryStore(DataStoreEntry entry, DataStore store) {
+        if (entry.getStore() == store) {
+            return;
+        }
+
+        entry.finalizeEntry();
+        if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
+            synchronized (storeMoveCache) {
+                storeMoveCache.put(entry.getStore(), store);
+            }
+        }
+        entry.setStoreInternal(store, false);
+        entry.initializeEntry();
     }
 
     public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {
@@ -536,6 +560,21 @@ public abstract class DataStorage {
 
             child.setCategoryUuid(newCategory.getUuid());
         });
+        listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
+        listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
+        saveAsync();
+    }
+
+    public void moveCategoryToParent(DataStoreCategory cat, DataStoreCategory newParent) {
+        if (newParent.getUuid().equals(cat.getUuid())) {
+            return;
+        }
+
+        if (cat.getParentCategory() == null) {
+            return;
+        }
+
+        cat.setParentCategory(newParent.getUuid());
         listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();
@@ -1048,8 +1087,12 @@ public abstract class DataStorage {
     }
 
     public boolean getEffectiveReadOnlyState(DataStoreEntry entry) {
-        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid()).orElseThrow();
-        var catConfig = getEffectiveCategoryConfig(cat);
+        var cat = getStoreCategoryIfPresent(entry.getCategoryUuid());
+        if (cat.isEmpty()) {
+            return false;
+        }
+
+        var catConfig = getEffectiveCategoryConfig(cat.get());
         return catConfig.getFreezeConfigurations() != null ? catConfig.getFreezeConfigurations() : entry.isFreeze();
     }
 
@@ -1201,9 +1244,22 @@ public abstract class DataStorage {
     }
 
     public Optional<DataStoreEntry> getStoreEntryInProgressIfPresent(@NonNull DataStore store) {
-        return storeEntriesInProgress.keySet().stream()
+        var found = storeEntriesInProgress.keySet().stream()
                 .filter(n -> n.getStore() == store)
                 .findFirst();
+        if (found.isPresent()) {
+            return found;
+        }
+
+        DataStore moved;
+        synchronized (storeMoveCache) {
+            moved = storeMoveCache.get(store);
+        }
+        if (moved != null) {
+            return getStoreEntryInProgressIfPresent(moved);
+        }
+
+        return Optional.empty();
     }
 
     public Optional<DataStoreEntry> getStoreEntryIfPresent(@NonNull DataStore store, boolean identityOnly) {
@@ -1221,6 +1277,14 @@ public abstract class DataStorage {
                     return Optional.of(found);
                 }
             }
+        }
+
+        DataStore moved;
+        synchronized (storeMoveCache) {
+            moved = storeMoveCache.get(store);
+        }
+        if (moved != null) {
+            return getStoreEntryIfPresent(moved, identityOnly);
         }
 
         var found = storeEntriesSet.stream()

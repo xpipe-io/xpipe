@@ -6,11 +6,11 @@ import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategoryConfig;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.OptionsBuilder;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;

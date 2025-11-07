@@ -2,14 +2,19 @@ package io.xpipe.app.core.check;
 
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
 
 public class AppTestCommandCheck {
 
     public static void check() throws Exception {
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            return;
+        }
+
+        if (AppDistributionType.get() == AppDistributionType.DEVELOPMENT) {
             return;
         }
 

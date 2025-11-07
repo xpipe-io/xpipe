@@ -22,8 +22,8 @@ public class AppStyle {
     private static final Map<Path, String> STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final Map<AppTheme.Theme, String> THEME_SPECIFIC_STYLESHEET_CONTENTS = new LinkedHashMap<>();
     private static final Map<AppTheme.Theme, String> THEME_PREFERENCES_STYLESHEET_CONTENTS = new LinkedHashMap<>();
-    private static final List<Scene> scenes = new ArrayList<>();
-    private static String FONT_CONTENTS = "";
+    private static final WeakHashMap<Scene, Object> scenes = new WeakHashMap<>();
+    private static String FONT_CONTENTS = null;
 
     public static void init() {
         if (STYLESHEET_CONTENTS.size() > 0) {
@@ -46,6 +46,12 @@ public class AppStyle {
         fxPrefs.accentColorProperty().addListener((c, o, n) -> {
             changePlatformPreferences();
         });
+    }
+
+    private static void add(Scene scene, String stylesheet) {
+        if (stylesheet != null && !stylesheet.isBlank()) {
+            scene.getStylesheets().add(stylesheet);
+        }
     }
 
     private static void loadStylesheets() {
@@ -107,11 +113,11 @@ public class AppStyle {
 
     private static void changeFontUsage(boolean use) {
         if (!use) {
-            scenes.forEach(scene -> {
-                scene.getStylesheets().add(FONT_CONTENTS);
+            scenes.keySet().forEach(scene -> {
+                add(scene, FONT_CONTENTS);
             });
         } else {
-            scenes.forEach(scene -> {
+            scenes.keySet().forEach(scene -> {
                 scene.getStylesheets().remove(FONT_CONTENTS);
             });
         }
@@ -127,7 +133,7 @@ public class AppStyle {
             return;
         }
 
-        scenes.forEach(scene -> {
+        scenes.keySet().forEach(scene -> {
             scene.getStylesheets().remove(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
         });
         THEME_PREFERENCES_STYLESHEET_CONTENTS.clear();
@@ -135,17 +141,17 @@ public class AppStyle {
             THEME_PREFERENCES_STYLESHEET_CONTENTS.put(
                     theme, Styles.toDataURI(theme.getPlatformPreferencesStylesheet()));
         }
-        scenes.forEach(scene -> {
-            scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
+        scenes.keySet().forEach(scene -> {
+            add(scene, THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
         });
     }
 
     private static void changeTheme(AppTheme.Theme theme) {
-        scenes.forEach(scene -> {
+        scenes.keySet().forEach(scene -> {
             scene.getStylesheets().removeAll(THEME_SPECIFIC_STYLESHEET_CONTENTS.values());
             scene.getStylesheets().removeAll(THEME_PREFERENCES_STYLESHEET_CONTENTS.values());
-            scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(theme));
-            scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(theme));
+            add(scene, THEME_SPECIFIC_STYLESHEET_CONTENTS.get(theme));
+            add(scene, THEME_PREFERENCES_STYLESHEET_CONTENTS.get(theme));
         });
     }
 
@@ -162,21 +168,21 @@ public class AppStyle {
 
     public static void addStylesheets(Scene scene) {
         if (AppPrefs.get() != null && !AppPrefs.get().useSystemFont().getValue()) {
-            scene.getStylesheets().add(FONT_CONTENTS);
+            add(scene, FONT_CONTENTS);
         }
 
         STYLESHEET_CONTENTS.values().forEach(s -> {
-            scene.getStylesheets().add(s);
+            add(scene, s);
         });
         if (AppPrefs.get() != null) {
             var t = AppPrefs.get().theme().getValue();
             if (t != null) {
-                scene.getStylesheets().add(THEME_SPECIFIC_STYLESHEET_CONTENTS.get(t));
-                scene.getStylesheets().add(THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
+                add(scene, THEME_SPECIFIC_STYLESHEET_CONTENTS.get(t));
+                add(scene, THEME_PREFERENCES_STYLESHEET_CONTENTS.get(t));
             }
         }
         TrackEvent.debug("Added stylesheets for scene");
 
-        scenes.add(scene);
+        scenes.put(scene, null);
     }
 }

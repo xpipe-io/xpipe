@@ -5,7 +5,9 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStorage;
@@ -13,8 +15,6 @@ import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.app.util.ScriptHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
@@ -48,12 +48,13 @@ public class TerminalLaunchConfiguration {
             DataStoreEntry entry,
             String cleanTitle,
             String adjustedTitle,
+            boolean enableLogging,
             boolean preferTabs,
             boolean alwaysPromptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
 
-        if (!AppPrefs.get().enableTerminalLogging().get()) {
+        if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var d = LocalShell.getDialect();
             var launcherScript = d.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
             var config = new TerminalLaunchConfiguration(
@@ -101,8 +102,7 @@ public class TerminalLaunchConfiguration {
                     ShellDialects.POWERSHELL);
             return config;
         } else {
-            var found =
-                    sc.command(sc.getShellDialect().getWhichCommand("script")).executeAndCheck();
+            var found = sc.view().findProgram("script").isPresent();
             if (!found) {
                 var suffix = sc.getOsType() == OsType.MACOS
                         ? "This command is available in the util-linux package which can be installed via homebrew."

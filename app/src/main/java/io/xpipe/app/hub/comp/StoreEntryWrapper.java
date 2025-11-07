@@ -1,7 +1,9 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.ext.FixedHierarchyStore;
 import io.xpipe.app.ext.GroupStore;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.ext.ShellStore;
@@ -11,13 +13,12 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.FixedHierarchyStore;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -154,7 +155,7 @@ public class StoreEntryWrapper {
 
     public synchronized void update() {
         // We are probably in shutdown then
-        if (StoreViewState.get() == null) {
+        if (AppOperationMode.isInShutdown()) {
             return;
         }
 
@@ -277,7 +278,7 @@ public class StoreEntryWrapper {
                                 && def.getApplicableClass()
                                         .isAssignableFrom(entry.getStore().getClass())
                                 && def.isApplicable(entry.ref())
-                                && def.isDefault(entry.ref()))
+                                && def.isDefault())
                         .findFirst()
                         .or(() -> {
                             if (entry.getStore() instanceof GroupStore<?>) {
@@ -351,14 +352,14 @@ public class StoreEntryWrapper {
                     && leaf.getApplicableClass()
                             .isAssignableFrom(entry.getStore().getClass())
                     && leaf.isApplicable(entry.ref())
-                    && (!major || leaf.isMajor(entry.ref()));
+                    && (!major || leaf.isMajor());
         }
 
         if (p instanceof HubBranchProvider<?> branch
                 && entry.getStore() != null
                 && branch.getApplicableClass().isAssignableFrom(entry.getStore().getClass())
                 && branch.isApplicable(entry.ref())
-                && (!major || branch.isMajor(entry.ref()))) {
+                && (!major || branch.isMajor())) {
             return branch.getChildren(entry.ref()).stream().anyMatch(child -> {
                 return showActionProvider(child, false);
             });
@@ -408,13 +409,6 @@ public class StoreEntryWrapper {
                         .setValue(StoreViewState.get()
                                 .getCategoryWrapper(DataStorage.get().getStoreCategory(entry)));
             });
-        });
-    }
-
-    public void refreshChildren() {
-        var hasChildren = DataStorage.get().refreshChildren(entry);
-        PlatformThread.runLaterIfNeeded(() -> {
-            expanded.set(hasChildren);
         });
     }
 

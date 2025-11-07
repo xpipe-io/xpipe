@@ -66,7 +66,10 @@ extraJavaModuleInfo {
 }
 
 extraJavaModuleInfo {
-    module("io.modelcontextprotocol.sdk:mcp", "io.modelcontextprotocol.sdk.mcp") {
+    module("io.modelcontextprotocol.sdk:mcp-core", "io.modelcontextprotocol.sdk.mcp") {
+        mergeJar("io.modelcontextprotocol.sdk:mcp-json")
+        mergeJar("io.modelcontextprotocol.sdk:mcp-json-jackson2")
+        overrideModuleName()
         exportAllPackages()
         requires("com.fasterxml.jackson.core")
         requires("com.fasterxml.jackson.databind")
@@ -75,6 +78,8 @@ extraJavaModuleInfo {
         requires("reactor.core")
         requires("org.reactivestreams")
         requires("com.networknt.schema")
+        uses("io.modelcontextprotocol.json.McpJsonMapperSupplier")
+        uses("io.modelcontextprotocol.json.schema.JsonSchemaValidatorSupplier")
     }
 }
 

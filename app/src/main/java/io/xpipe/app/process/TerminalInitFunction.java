@@ -7,11 +7,6 @@ public interface TerminalInitFunction {
     static TerminalInitFunction of(FailableFunction<ShellControl, String, Exception> f) {
         return new TerminalInitFunction() {
             @Override
-            public boolean isFixed() {
-                return false;
-            }
-
-            @Override
             public boolean isSpecified() {
                 return true;
             }
@@ -25,11 +20,6 @@ public interface TerminalInitFunction {
 
     static TerminalInitFunction fixed(String s) {
         return new TerminalInitFunction() {
-            @Override
-            public boolean isFixed() {
-                return true;
-            }
-
             @Override
             public boolean isSpecified() {
                 return true;
@@ -45,11 +35,6 @@ public interface TerminalInitFunction {
     static TerminalInitFunction none() {
         return new TerminalInitFunction() {
             @Override
-            public boolean isFixed() {
-                return true;
-            }
-
-            @Override
             public boolean isSpecified() {
                 return false;
             }
@@ -60,8 +45,6 @@ public interface TerminalInitFunction {
             }
         };
     }
-
-    boolean isFixed();
 
     boolean isSpecified();
 

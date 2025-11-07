@@ -4,10 +4,10 @@ import io.xpipe.app.browser.action.BrowserAction;
 import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.util.LocalShell;
-import io.xpipe.core.FileKind;
 import io.xpipe.core.OsType;
 
 import lombok.experimental.SuperBuilder;
@@ -24,6 +24,10 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        if (model.getFileSystem().getShell().isEmpty()) {
+            return false;
+        }
+
         var sc = model.getFileSystem().getShell().orElseThrow();
         return sc.getLocalSystemAccess().supportsFileSystemAccess();
     }
@@ -38,7 +42,7 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
             for (BrowserEntry entry : getEntries()) {
                 var e = entry.getRawFileEntry().getPath();
                 var localFile = sc.getLocalSystemAccess().translateToLocalSystemPath(e);
-                switch (OsType.getLocal()) {
+                switch (OsType.ofLocal()) {
                     case OsType.Windows ignored -> {
                         var shell = LocalShell.getLocalPowershell();
                         if (shell.isEmpty()) {
@@ -59,7 +63,8 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // as
                         // long as the parent process is running.
                         // So let's keep one process running
-                        shell.get().command(content).notComplex().execute();
+                        // Ignore exit value as this can fail somehow (maybe if the system blocks shell com objects?)
+                        shell.get().command(content).notComplex().executeAndCheck();
                     }
                     case OsType.Linux ignored -> {
                         var dbus = String.format(

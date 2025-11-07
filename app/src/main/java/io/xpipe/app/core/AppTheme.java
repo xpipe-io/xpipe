@@ -4,9 +4,9 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.ColorHelper;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.util.ColorHelper;
-import io.xpipe.app.util.PlatformThread;
 import io.xpipe.core.OsType;
 
 import javafx.animation.Interpolator;
@@ -20,6 +20,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.css.PseudoClass;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -32,6 +33,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Supplier;
@@ -46,42 +48,68 @@ public class AppTheme {
     private static boolean init;
 
     public static void initThemeHandlers(Stage stage) {
-        stage.getScene().rootProperty().subscribe(root -> {
-            if (root == null) {
-                return;
-            }
+        if (stage.getScene() == null) {
+            return;
+        }
 
-            root.pseudoClassStateChanged(
-                    PseudoClass.getPseudoClass(OsType.getLocal().getId()), true);
-            if (AppPrefs.get() == null) {
-                var def = Theme.getDefaultLightTheme();
-                root.pseudoClassStateChanged(PseudoClass.getPseudoClass(def.getCssId()), true);
-                root.pseudoClassStateChanged(LIGHT, true);
-                root.pseudoClassStateChanged(DARK, false);
-                root.pseudoClassStateChanged(PRETTY, true);
-                root.pseudoClassStateChanged(PERFORMANCE, false);
-                return;
-            }
+        if (AppPrefs.get() == null) {
+            var root = stage.getScene().getRoot();
+            applyClasses(root, Theme.getDefaultLightTheme(), false);
+            return;
+        }
 
-            AppPrefs.get().theme().subscribe(t -> {
-                Theme.ALL.forEach(theme -> {
-                    root.pseudoClassStateChanged(
-                            PseudoClass.getPseudoClass(theme.getCssId()),
-                            theme.getCssId().equals(t.getCssId()));
-                });
-                if (t == null) {
-                    return;
-                }
-
-                root.pseudoClassStateChanged(LIGHT, !t.isDark());
-                root.pseudoClassStateChanged(DARK, t.isDark());
-            });
-
-            AppPrefs.get().performanceMode().subscribe(val -> {
-                root.pseudoClassStateChanged(PRETTY, !val);
-                root.pseudoClassStateChanged(PERFORMANCE, val);
-            });
+        stage.getScene().rootProperty().subscribe(parent -> {
+            applyClasses(parent, AppPrefs.get().theme().getValue(), AppPrefs.get().performanceMode().getValue());
         });
+
+
+        // Allow for GC
+        var ref = new WeakReference<>(stage);
+
+        AppPrefs.get().theme().subscribe(t -> {
+            var val = ref.get();
+            if (val != null) {
+                var scene = val.getScene();
+                if (scene != null) {
+                    var r = scene.getRoot();
+                    applyClasses(r, t, AppPrefs.get().performanceMode().get());
+                }
+            }
+        });
+
+        AppPrefs.get().performanceMode().subscribe(pm -> {
+            var val = ref.get();
+            if (val != null) {
+                var scene = val.getScene();
+                if (scene != null) {
+                    var r = scene.getRoot();
+                    applyClasses(r, AppPrefs.get().theme().getValue(), pm);
+                }
+            }
+        });
+    }
+
+    private static void applyClasses(Node r, Theme t, boolean perf) {
+        if (r == null) {
+            return;
+        }
+
+        r.pseudoClassStateChanged(
+                PseudoClass.getPseudoClass(OsType.ofLocal().getId()), true);
+
+        Theme.ALL.forEach(theme -> {
+            r.pseudoClassStateChanged(
+                    PseudoClass.getPseudoClass(theme.getCssId()),
+                    theme.getCssId().equals(t.getCssId()));
+        });
+
+        if (t != null) {
+            r.pseudoClassStateChanged(LIGHT, !t.isDark());
+            r.pseudoClassStateChanged(DARK, t.isDark());
+        }
+
+        r.pseudoClassStateChanged(PRETTY, !perf);
+        r.pseudoClassStateChanged(PERFORMANCE, perf);
     }
 
     public static void init() {
@@ -143,7 +171,7 @@ public class AppTheme {
     }
 
     private static void updateThemeToThemeName(Object oldName, Object newName) {
-        if (OsType.getLocal() == OsType.LINUX && newName != null) {
+        if (OsType.ofLocal() == OsType.LINUX && newName != null) {
             var toDark = (oldName == null || !oldName.toString().contains("-dark"))
                     && newName.toString().contains("-dark");
             var toLight = (oldName == null || oldName.toString().contains("-dark"))
@@ -215,7 +243,7 @@ public class AppTheme {
         }
 
         PlatformThread.runLaterIfNeeded(() -> {
-            var window = AppMainWindow.getInstance();
+            var window = AppMainWindow.get();
             if (window == null) {
                 return;
             }
@@ -267,9 +295,19 @@ public class AppTheme {
                 Color baseColor,
                 Color borderColor,
                 Supplier<Color> contextMenuColor,
+                Supplier<Color> emphasisColor,
                 int displayBorderRadius,
                 int skipLines) {
-            super(id, cssId, theme, sizes, baseColor, borderColor, contextMenuColor, displayBorderRadius);
+            super(
+                    id,
+                    cssId,
+                    theme,
+                    sizes,
+                    baseColor,
+                    borderColor,
+                    contextMenuColor,
+                    emphasisColor,
+                    displayBorderRadius);
             this.name = name;
             this.skipLines = skipLines;
         }
@@ -316,6 +354,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme PRIMER_DARK = new Theme(
                 "dark",
@@ -331,6 +370,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme NORD_LIGHT = new Theme(
                 "nordLight",
@@ -346,6 +386,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 0);
         public static final Theme NORD_DARK = new Theme(
                 "nordDark",
@@ -361,6 +402,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 0);
         public static final Theme CUPERTINO_LIGHT = new Theme(
                 "cupertinoLight",
@@ -376,6 +418,7 @@ public class AppTheme {
                                 .desaturate()
                                 .brighter(),
                         0.3),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme CUPERTINO_DARK = new Theme(
                 "cupertinoDark",
@@ -391,6 +434,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4);
         public static final Theme DRACULA = new Theme(
                 "dracula",
@@ -406,6 +450,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 6);
         public static final Theme MOCHA = new DerivedTheme(
                 "mocha",
@@ -422,6 +467,7 @@ public class AppTheme {
                                 .desaturate()
                                 .darker(),
                         0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4,
                 91);
 
@@ -437,6 +483,7 @@ public class AppTheme {
                 Color.web("#24292f"),
                 () -> ColorHelper.withOpacity(
                         Platform.getPreferences().getAccentColor().desaturate().desaturate(), 0.2),
+                () -> Platform.getPreferences().getAccentColor(),
                 4,
                 91);
 
@@ -463,10 +510,13 @@ public class AppTheme {
         protected final Supplier<Color> contextMenuColor;
 
         @Getter
+        protected final Supplier<Color> emphasisColor;
+
+        @Getter
         protected final int displayBorderRadius;
 
         static Theme getDefaultLightTheme() {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> PRIMER_LIGHT;
                 case OsType.Linux ignored -> PRIMER_LIGHT;
                 case OsType.MacOs ignored -> CUPERTINO_LIGHT;
@@ -474,7 +524,7 @@ public class AppTheme {
         }
 
         static Theme getDefaultDarkTheme() {
-            return switch (OsType.getLocal()) {
+            return switch (OsType.ofLocal()) {
                 case OsType.Windows ignored -> PRIMER_DARK;
                 case OsType.Linux ignored -> PRIMER_DARK;
                 case OsType.MacOs ignored -> CUPERTINO_DARK;
@@ -490,9 +540,28 @@ public class AppTheme {
         }
 
         protected String getPlatformPreferencesStylesheet() {
-            var c = contextMenuColor.get();
-            var hex = ColorHelper.toWeb(c);
-            var s = "* { -color-context-menu: " + hex + "; }";
+            var s =
+                    """
+                    * {
+                        -color-context-menu: %s;
+                        -color-accent-fg: %s;
+                        -color-accent-emphasis: %s;
+                        -color-accent-muted: %s;
+                        -color-accent-subtle: %s;
+                    }
+                    """
+                            .formatted(
+                                    ColorHelper.toWeb(contextMenuColor.get()),
+                                    ColorHelper.toWeb(emphasisColor.get()),
+                                    ColorHelper.toWeb(emphasisColor.get().darker()),
+                                    ColorHelper.toWeb(emphasisColor.get().desaturate()),
+                                    ColorHelper.toWeb(ColorHelper.withOpacity(
+                                            emphasisColor
+                                                    .get()
+                                                    .darker()
+                                                    .desaturate()
+                                                    .desaturate(),
+                                            0.2)));
             return s;
         }
 

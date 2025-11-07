@@ -15,7 +15,7 @@ public class AppPreloader extends Preloader {
     @Override
     @SneakyThrows
     public void start(Stage primaryStage) {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             return;
         }
 

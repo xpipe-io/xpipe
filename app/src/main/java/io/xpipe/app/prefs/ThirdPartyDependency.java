@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppResources;
 
 import org.apache.commons.io.FilenameUtils;
@@ -16,34 +15,32 @@ public record ThirdPartyDependency(String name, String version, String licenseNa
     private static final List<ThirdPartyDependency> ALL = new ArrayList<>();
 
     public static void init() {
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            AppResources.with(module.getName(), "third-party", path -> {
-                if (!Files.exists(path)) {
-                    return;
-                }
+        AppResources.with(AppResources.MAIN_MODULE, "third-party", path -> {
+            if (!Files.exists(path)) {
+                return;
+            }
 
-                try (var list = Files.list(path)) {
-                    for (var p : list.filter(p -> p.getFileName().toString().endsWith(".properties"))
-                            .sorted(Comparator.comparing(path1 -> path1.toString()))
-                            .toList()) {
-                        var props = new Properties();
-                        try (var in = Files.newInputStream(p)) {
-                            props.load(in);
-                        }
-
-                        var textFile = p.resolveSibling(
-                                FilenameUtils.getBaseName(p.getFileName().toString()) + ".license");
-                        var text = Files.readString(textFile);
-                        ALL.add(new ThirdPartyDependency(
-                                props.getProperty("name"),
-                                props.getProperty("version"),
-                                props.getProperty("license"),
-                                text,
-                                props.getProperty("link")));
+            try (var list = Files.list(path)) {
+                for (var p : list.filter(p -> p.getFileName().toString().endsWith(".properties"))
+                        .sorted(Comparator.comparing(path1 -> path1.toString()))
+                        .toList()) {
+                    var props = new Properties();
+                    try (var in = Files.newInputStream(p)) {
+                        props.load(in);
                     }
+
+                    var textFile = p.resolveSibling(
+                            FilenameUtils.getBaseName(p.getFileName().toString()) + ".license");
+                    var text = Files.readString(textFile);
+                    ALL.add(new ThirdPartyDependency(
+                            props.getProperty("name"),
+                            props.getProperty("version"),
+                            props.getProperty("license"),
+                            text,
+                            props.getProperty("link")));
                 }
-            });
-        }
+            }
+        });
     }
 
     public static List<ThirdPartyDependency> getAll() {

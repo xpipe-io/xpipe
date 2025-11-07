@@ -1,8 +1,11 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.OsType;
+
+import com.sun.jna.platform.win32.*;
 
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -15,7 +18,7 @@ public abstract class AppSystemInfo {
     private static final MacOs MACOS = new MacOs();
 
     public static AppSystemInfo ofCurrent() {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> ofLinux();
             case OsType.MacOs ignored -> ofMacOs();
             case OsType.Windows ignored -> ofWindows();
@@ -23,7 +26,7 @@ public abstract class AppSystemInfo {
     }
 
     public static Windows ofWindows() {
-        if (OsType.getLocal() != OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             throw new IllegalStateException();
         }
 
@@ -31,7 +34,7 @@ public abstract class AppSystemInfo {
     }
 
     public static Linux ofLinux() {
-        if (OsType.getLocal() != OsType.LINUX) {
+        if (OsType.ofLocal() != OsType.LINUX) {
             throw new IllegalStateException();
         }
 
@@ -39,7 +42,7 @@ public abstract class AppSystemInfo {
     }
 
     public static MacOs ofMacOs() {
-        if (OsType.getLocal() != OsType.MACOS) {
+        if (OsType.ofLocal() != OsType.MACOS) {
             throw new IllegalStateException();
         }
 
@@ -74,6 +77,7 @@ public abstract class AppSystemInfo {
         private Path temp;
         private Path downloads;
         private Path desktop;
+        private Path documents;
 
         public Path getSystemRoot() {
             var root = AppSystemInfo.parsePath(System.getenv("SystemRoot"));
@@ -193,19 +197,30 @@ public abstract class AppSystemInfo {
                 return downloads;
             }
 
-            var fallback = getUserHome().resolve("Downloads");
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
+            try {
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Downloads);
+                // Replace 8.3 filename
+                return (downloads = Path.of(r).toRealPath());
+            } catch (Throwable e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+                var fallback = getUserHome().resolve("Downloads");
                 return (downloads = fallback);
+            }
+        }
+
+        public Path getDocuments() {
+            if (documents != null) {
+                return documents;
             }
 
             try {
-                return (downloads = Path.of(shell.get()
-                        .command("(New-Object -ComObject Shell.Application).NameSpace('shell:Downloads').Self.Path")
-                        .readStdoutOrThrow()));
-            } catch (Exception e) {
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Documents);
+                // Replace 8.3 filename
+                return (documents = Path.of(r).toRealPath());
+            } catch (Throwable e) {
                 ErrorEventFactory.fromThrowable(e).handle();
-                return (downloads = fallback);
+                var fallback = getUserHome().resolve("Documents");
+                return (documents = fallback);
             }
         }
 
@@ -215,18 +230,13 @@ public abstract class AppSystemInfo {
                 return desktop;
             }
 
-            var fallback = getUserHome().resolve("Desktop");
-            var shell = LocalShell.getLocalPowershell();
-            if (shell.isEmpty()) {
-                return (desktop = fallback);
-            }
-
             try {
-                return (desktop = Path.of(shell.get()
-                        .command("[Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)")
-                        .readStdoutOrThrow()));
-            } catch (Exception e) {
+                var r = Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_Desktop);
+                // Replace 8.3 filename
+                return (desktop = Path.of(r).toRealPath());
+            } catch (Throwable e) {
                 ErrorEventFactory.fromThrowable(e).handle();
+                var fallback = getUserHome().resolve("Desktop");
                 return (desktop = fallback);
             }
         }
@@ -236,9 +246,20 @@ public abstract class AppSystemInfo {
 
         private Path downloads;
         private Path desktop;
+        private Boolean vm;
 
         public boolean isDebianBased() {
             return Files.exists(Path.of("/etc/debian_version"));
+        }
+
+        public boolean isVirtualMachine() {
+            if (vm != null) {
+                return vm;
+            }
+
+            var out = LocalExec.readStdoutIfPossible("cat", "/proc/cpuinfo");
+            vm = out.map(s -> s.contains("hypervisor")).orElse(false);
+            return vm;
         }
 
         @Override

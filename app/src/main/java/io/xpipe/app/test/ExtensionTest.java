@@ -10,6 +10,7 @@ import java.nio.file.Path;
 public class ExtensionTest {
 
     @SneakyThrows
+    @SuppressWarnings("unused")
     public static Path getResourcePath(Class<?> c, String name) {
         var loc = Path.of(c.getProtectionDomain().getCodeSource().getLocation().toURI());
         var testName = FilePath.of(loc.getFileName()).getBaseName().toString().split("-")[1];

@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.Translatable;
 
 import javafx.beans.property.Property;
@@ -50,7 +50,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
             @Override
             public String toString(T object) {
                 if (object == null) {
-                    return AppI18n.get("app.none");
+                    return AppI18n.get("none");
                 }
 
                 var found = range.getValue().get(object);
@@ -69,7 +69,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
         range.subscribe(c -> {
             var list = FXCollections.observableArrayList(c.keySet());
             if (!list.contains(null) && includeNone) {
-                list.add(null);
+                list.addFirst(null);
             }
 
             cb.getItems().setAll(list);

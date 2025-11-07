@@ -5,10 +5,10 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
+import io.xpipe.app.ext.FileInfo;
+import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FileInfo;
-import io.xpipe.core.FileKind;
-import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -24,6 +24,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
+import lombok.SneakyThrows;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -146,17 +147,21 @@ public final class BrowserFileListComp extends SimpleComp {
         table.setAccessibleText("Directory contents");
 
         var placeholder = new Label();
-        var placeholderText = Bindings.createStringBinding(() -> {
-            if (fileList.getFileSystemModel().getCurrentPath().get() == null) {
-                return null;
-            }
+        var placeholderText = Bindings.createStringBinding(
+                () -> {
+                    if (fileList.getFileSystemModel().getCurrentPath().get() == null) {
+                        return null;
+                    }
 
-            if (fileList.getFileSystemModel().getBusy().get()) {
-                return null;
-            }
+                    if (fileList.getFileSystemModel().getBusy().get()) {
+                        return null;
+                    }
 
-            return AppI18n.get("emptyDirectory");
-        }, AppI18n.activeLanguage(), fileList.getFileSystemModel().getBusy(), fileList.getFileSystemModel().getCurrentPath());
+                    return AppI18n.get("emptyDirectory");
+                },
+                AppI18n.activeLanguage(),
+                fileList.getFileSystemModel().getBusy(),
+                fileList.getFileSystemModel().getCurrentPath());
         placeholder.textProperty().bind(PlatformThread.sync(placeholderText));
         table.setPlaceholder(placeholder);
         AppFontSizes.base(placeholder);
@@ -189,18 +194,12 @@ public final class BrowserFileListComp extends SimpleComp {
             TableColumn<BrowserEntry, String> modeCol,
             TableColumn<BrowserEntry, String> ownerCol,
             TableColumn<BrowserEntry, String> sizeCol) {
-        var os = fileList.getFileSystemModel()
-                .getFileSystem()
-                .getShell()
-                .map(shellControl -> shellControl.getOsType())
-                .orElse(null);
         table.widthProperty().subscribe((newValue) -> {
-            if (os != OsType.WINDOWS && os != OsType.MACOS) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
                 ownerCol.setVisible(newValue.doubleValue() > 1000);
             }
 
-            var shell = fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-            if (!OsType.WINDOWS.equals(shell.getOsType()) && !OsType.MACOS.equals(shell.getOsType())) {
+            if (fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                 modeCol.setVisible(newValue.doubleValue() > 600);
             }
 
@@ -222,6 +221,7 @@ public final class BrowserFileListComp extends SimpleComp {
         return Math.max(200, tableView.getWidth() - sum);
     }
 
+    @SneakyThrows
     private String formatOwner(BrowserEntry param) {
         FileInfo.Unix unix = param.getRawFileEntry().resolved().getInfo() instanceof FileInfo.Unix u ? u : null;
         if (unix == null) {
@@ -233,20 +233,35 @@ public final class BrowserFileListComp extends SimpleComp {
         }
 
         var m = fileList.getFileSystemModel();
+        var v = m.getFileSystem().getShell().isPresent()
+                ? m.getFileSystem().getShell().get().view()
+                : null;
+
         var user = unix.getUser() != null
                 ? unix.getUser()
-                : m.getCache().getUsers().getOrDefault(unix.getUid(), "?");
+                : v != null ? v.getPasswdFile().getUsers().getOrDefault(unix.getUid(), "?") : null;
         var group = unix.getGroup() != null
                 ? unix.getGroup()
-                : m.getCache().getGroups().getOrDefault(unix.getGid(), "?");
-        var uid = String.valueOf(
-                unix.getUid() != null ? unix.getUid() : m.getCache().getUidForUser(user));
-        var gid = String.valueOf(
-                unix.getGid() != null ? unix.getGid() : m.getCache().getGidForGroup(group));
-        if (uid.equals(gid) && user.equals(group)) {
-            return user + " [" + uid + "]";
+                : v != null ? v.getGroupFile().getGroups().getOrDefault(unix.getGid(), "?") : null;
+        var uid = unix.getUid() != null
+                ? String.valueOf(unix.getUid())
+                : v != null ? v.getPasswdFile().getUidForUser(user) : null;
+        var gid = unix.getGid() != null
+                ? String.valueOf(unix.getGid())
+                : v != null ? v.getGroupFile().getGidForGroup(group) : null;
+
+        var userFormat = user + (uid != null ? " [" + uid + "]" : "");
+        var groupFormat = group + (gid != null ? " [" + gid + "]" : "");
+
+        if (uid != null && uid.equals(gid) && user != null && user.equals(group)) {
+            return userFormat;
         }
-        return user + " [" + uid + "] / " + group + " [" + gid + "]";
+
+        if (uid == null && gid == null && user != null && user.equals(group)) {
+            return userFormat;
+        }
+
+        return userFormat + "  / " + groupFormat;
     }
 
     private void prepareTypedSelectionModel(TableView<BrowserEntry> table) {
@@ -394,7 +409,7 @@ public final class BrowserFileListComp extends SimpleComp {
             var selected = fileList.getSelection();
             var action = BrowserMenuProviders.getFlattened(fileList.getFileSystemModel(), selected).stream()
                     .filter(browserAction -> browserAction.isApplicable(fileList.getFileSystemModel(), selected)
-                            && browserAction.isActive(fileList.getFileSystemModel(), selected))
+                            && browserAction.isActive(fileList.getFileSystemModel()))
                     .filter(browserAction -> browserAction.getShortcut() != null)
                     .filter(browserAction -> browserAction.getShortcut().match(event))
                     .findAny();
@@ -585,13 +600,15 @@ public final class BrowserFileListComp extends SimpleComp {
                     ownerCol.setPrefWidth(0);
                 }
 
-                var shell =
-                        fileList.getFileSystemModel().getFileSystem().getShell().orElseThrow();
-                if (OsType.WINDOWS.equals(shell.getOsType()) || OsType.MACOS.equals(shell.getOsType())) {
+                if (!fileList.getFileSystemModel().getFileSystem().supportsModeColumn()) {
                     modeCol.setVisible(false);
-                    ownerCol.setVisible(false);
                 } else {
                     modeCol.setVisible(table.getWidth() > 600);
+                }
+
+                if (!fileList.getFileSystemModel().getFileSystem().supportsOwnerColumn()) {
+                    ownerCol.setVisible(false);
+                } else {
                     if (table.getWidth() > 1000) {
                         ownerCol.setVisible(hasOwner);
                     } else if (!hasOwner) {

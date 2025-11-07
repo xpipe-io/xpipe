@@ -116,7 +116,15 @@ public class KeePassXcProxyClient {
 
             // Send the message directly
             long startTime = System.currentTimeMillis();
-            sendNativeMessage(keyExchangeMessage);
+            try {
+                sendNativeMessage(keyExchangeMessage);
+            } catch (IOException e) {
+                var ex = new IllegalStateException(
+                        "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?", e);
+                ErrorEventFactory.preconfigure(
+                        ErrorEventFactory.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
+                throw ex;
+            }
 
             // Wait for a direct response rather than using CompletableFuture
             // This is a special case because we can't use the encryption yet

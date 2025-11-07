@@ -2,7 +2,7 @@ package io.xpipe.ext.base.service;
 
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;

@@ -19,6 +19,7 @@ public enum DataStoreUsageCategory {
     SERIAL,
     @JsonProperty("identity")
     IDENTITY,
+    @SuppressWarnings("unused")
     @JsonProperty("macro")
     MACRO
 }

@@ -1,8 +1,8 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.core.AppOpenArguments;
-import io.xpipe.app.core.mode.OperationMode;
-import io.xpipe.app.util.PlatformInit;
+import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.beacon.BeaconServerException;
 import io.xpipe.beacon.api.DaemonOpenExchange;
 import io.xpipe.core.OsType;
@@ -31,11 +31,11 @@ public class DaemonOpenExchangeImpl extends DaemonOpenExchange {
 
             // The open command is used as a default opener on Linux
             // We don't want to overwrite the default startup mode
-            if (OsType.getLocal() == OsType.LINUX && openCounter++ == 0) {
+            if (OsType.ofLocal() == OsType.LINUX && openCounter++ == 0) {
                 return Response.builder().build();
             }
 
-            OperationMode.switchToAsync(OperationMode.GUI);
+            AppOperationMode.switchToAsync(AppOperationMode.GUI);
         } else {
             AppOpenArguments.handle(msg.getArguments());
         }

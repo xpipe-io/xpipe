@@ -163,6 +163,10 @@ public class DataStoreEntry extends StorageElement {
     @SneakyThrows
     public static DataStoreEntry createNew(
             @NonNull UUID uuid, @NonNull UUID categoryUuid, @NonNull String name, @NonNull DataStore store) {
+        if (name.isBlank()) {
+            throw new IllegalArgumentException("Name is empty");
+        }
+
         var storeNode = DataStorageNode.ofNewStore(store);
         var storeFromNode = storeNode.parseStore();
         var validity = storeFromNode == null
@@ -589,7 +593,7 @@ public class DataStoreEntry extends StorageElement {
         notifyUpdate(false, true);
     }
 
-    public void setStoreInternal(DataStore store, boolean updateTime) {
+    void setStoreInternal(DataStore store, boolean updateTime) {
         var changed = !Objects.equals(this.store, store);
         if (!changed) {
             return;
@@ -669,14 +673,19 @@ public class DataStoreEntry extends StorageElement {
             return;
         }
 
-        var storeChanged = !Objects.equals(store, newStore);
-        var newComplete = newStore.isComplete();
-        if (!newComplete) {
-            validity = Validity.INCOMPLETE;
-            store = newStore;
-            if (storeChanged) {
-                notifyUpdate(false, false);
+        try {
+            var newComplete = newStore.isComplete();
+            if (!newComplete) {
+                var changed = !Objects.equals(store, newStore) || validity != Validity.INCOMPLETE;
+                validity = Validity.INCOMPLETE;
+                store = newStore;
+                if (changed) {
+                    notifyUpdate(false, false);
+                }
+                return;
             }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).handle();
             return;
         }
 
@@ -685,12 +694,13 @@ public class DataStoreEntry extends StorageElement {
             newPerUser = newStore instanceof UserScopeStore u && u.isPerUser();
         } catch (Exception ignored) {
         }
-        var perUserChanged = isPerUserStore() != newPerUser;
+        var storeChanged = !Objects.equals(store, newStore);
         if (storeChanged) {
             store = newStore;
         }
+        var changed = storeChanged || validity != Validity.COMPLETE || isPerUserStore() != newPerUser;
         validity = Validity.COMPLETE;
-        if (storeChanged || perUserChanged) {
+        if (changed) {
             notifyUpdate(false, false);
         }
     }

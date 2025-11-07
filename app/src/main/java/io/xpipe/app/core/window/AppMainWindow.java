@@ -3,15 +3,15 @@ package io.xpipe.app.core.window;
 import io.xpipe.app.comp.base.AppLayoutComp;
 import io.xpipe.app.comp.base.AppMainWindowContentComp;
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.mode.OperationMode;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.CloseBehaviourDialog;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.NativeWinWindowControl;
-import io.xpipe.app.util.PlatformThread;
-import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
@@ -35,7 +35,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import javax.imageio.ImageIO;
 
 public class AppMainWindow {
@@ -52,7 +51,6 @@ public class AppMainWindow {
     private final Stage stage;
 
     private final BooleanProperty windowActive = new SimpleBooleanProperty(false);
-    private Thread thread;
     private volatile Instant lastUpdate;
     private boolean shown = false;
 
@@ -84,12 +82,13 @@ public class AppMainWindow {
         stage.setMinWidth(500);
         stage.setMinHeight(400);
         INSTANCE = new AppMainWindow(stage);
+        AppModifiedStage.prepareStage(stage);
 
         var content = new AppMainWindowContentComp(stage).createRegion();
         content.opacityProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
-                            if (OsType.getLocal() != OsType.MACOS) {
+                            if (OsType.ofLocal() != OsType.MACOS) {
                                 return 1.0;
                             }
                             return stage.isFocused() ? 1.0 : 0.8;
@@ -100,16 +99,16 @@ public class AppMainWindow {
         content.prefHeightProperty().bind(scene.heightProperty());
         scene.setFill(Color.TRANSPARENT);
 
-        AppModifiedStage.prepareStage(stage);
         stage.setScene(scene);
         if (AppPrefs.get() != null) {
             stage.opacityProperty().bind(PlatformThread.sync(AppPrefs.get().windowOpacity()));
         }
-        AppWindowHelper.addIcons(stage);
-        AppWindowHelper.setupStylesheets(stage.getScene());
-        AppWindowHelper.setupClickShield(stage);
-        AppWindowHelper.addMaximizedPseudoClass(stage);
-        AppWindowHelper.addFontSize(stage);
+        AppWindowStyle.addIcons(stage);
+        AppWindowStyle.addStylesheets(stage.getScene());
+        AppWindowStyle.addNavigationPseudoClasses(stage.getScene());
+        AppWindowStyle.addClickShield(stage);
+        AppWindowStyle.addMaximizedPseudoClass(stage);
+        AppWindowStyle.addFontSize(stage);
         AppTheme.initThemeHandlers(stage);
 
         AppWindowTitle.getTitle().subscribe(s -> {
@@ -147,7 +146,7 @@ public class AppMainWindow {
         });
     }
 
-    public static AppMainWindow getInstance() {
+    public static AppMainWindow get() {
         return INSTANCE;
     }
 
@@ -161,7 +160,7 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-        if (OsType.getLocal() == OsType.WINDOWS && !shown) {
+        if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
             var ctrl = new NativeWinWindowControl(stage);
             NativeWinWindowControl.MAIN_WINDOW = ctrl;
             AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
@@ -186,29 +185,20 @@ public class AppMainWindow {
     }
 
     private synchronized void onChange() {
-        lastUpdate = Instant.now();
-        if (thread == null) {
-            thread = ThreadHelper.unstarted(() -> {
-                while (true) {
-                    var toStop = lastUpdate.plus(Duration.of(1, ChronoUnit.SECONDS));
-                    if (Instant.now().isBefore(toStop)) {
-                        var toSleep = Duration.between(Instant.now(), toStop);
-                        if (!toSleep.isNegative()) {
-                            var ms = toSleep.toMillis();
-                            ThreadHelper.sleep(ms);
-                        }
-                    } else {
-                        break;
+        var timestamp = Instant.now();
+        lastUpdate = timestamp;
+        // Reduce printed window updates
+        GlobalTimer.delay(
+                () -> {
+                    if (!timestamp.equals(lastUpdate)) {
+                        return;
                     }
-                }
 
-                synchronized (AppMainWindow.this) {
-                    logChange();
-                    thread = null;
-                }
-            });
-            thread.start();
-        }
+                    synchronized (AppMainWindow.this) {
+                        logChange();
+                    }
+                },
+                Duration.ofSeconds(1));
     }
 
     private void logChange() {
@@ -272,7 +262,9 @@ public class AppMainWindow {
         });
 
         stage.setOnCloseRequest(e -> {
-            if (!OperationMode.isInStartup() && !OperationMode.isInShutdown() && !CloseBehaviourDialog.showIfNeeded()) {
+            if (!AppOperationMode.isInStartup()
+                    && !AppOperationMode.isInShutdown()
+                    && !CloseBehaviourDialog.showIfNeeded()) {
                 e.consume();
                 return;
             }
@@ -285,28 +277,28 @@ public class AppMainWindow {
 
             // Iconifying stages on Windows will break if the window is closed
             // Work around this issue it by re-showing it immediately before hiding it again
-            if (OsType.getLocal() == OsType.WINDOWS) {
+            if (OsType.ofLocal() == OsType.WINDOWS) {
                 stage.setIconified(false);
             }
 
             // Close self
             stage.close();
-            OperationMode.onWindowClose();
+            AppOperationMode.onWindowClose();
             e.consume();
         });
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.Q, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 stage.close();
-                OperationMode.onWindowClose();
+                AppOperationMode.onWindowClose();
                 event.consume();
             }
         });
 
-        if (OsType.getLocal() == OsType.LINUX || OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.LINUX || OsType.ofLocal() == OsType.MACOS) {
             stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, event -> {
                 if (new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN).match(event)) {
-                    OperationMode.onWindowClose();
+                    AppOperationMode.onWindowClose();
                     event.consume();
                 }
             });

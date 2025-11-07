@@ -2,14 +2,19 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretNoneStrategy;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.NoneStrategy;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -22,8 +27,8 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     public UUID getTargetCategory(DataStore store, UUID target) {
         var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
         var inLocal = DataStorage.get().getCategoryParentHierarchy(cat).stream()
-                .anyMatch(
-                        dataStoreCategory -> dataStoreCategory.getUuid() == DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID);
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID));
         return inLocal ? target : DataStorage.LOCAL_IDENTITIES_CATEGORY_UUID;
     }
 
@@ -37,9 +42,17 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
-                .proxy(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .allowKeyFileSync(false)
                 .perUserKeyFileCheck(() -> false)
+                .build();
+
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
                 .build();
 
         return new OptionsBuilder()
@@ -47,10 +60,10 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .addString(user)
                 .name("passwordAuthentication")
                 .description("passwordAuthenticationDescription")
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
-                .longDescription(DocumentationLink.SSH_KEYS)
+                .documentationLink(DocumentationLink.SSH_KEYS)
                 .sub(
                         OptionsChoiceBuilder.builder()
                                 .allowNull(false)
@@ -82,8 +95,8 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return LocalIdentityStore.builder()
-                .password(EncryptedValue.of(new SecretRetrievalStrategy.None()))
-                .sshIdentity(EncryptedValue.of(new NoneStrategy()))
+                .password(EncryptedValue.of(new SecretNoneStrategy()))
+                .sshIdentity(EncryptedValue.of(new NoIdentityStrategy()))
                 .build();
     }
 

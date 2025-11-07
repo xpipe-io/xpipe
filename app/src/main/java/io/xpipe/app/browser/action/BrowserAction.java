@@ -45,6 +45,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
             } else {
                 model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
                         ref.asNeeded(),
+                        null,
                         model -> {
                             return getTargetDirectory(model);
                         },
@@ -57,8 +58,8 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
 
         model.getBusy().set(true);
 
-        // Start shell in case we exited
-        model.getFileSystem().getShell().orElseThrow().start();
+        // Restart in case we exited
+        model.getFileSystem().reinitIfNeeded();
 
         return true;
     }

@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -35,15 +34,6 @@ public class ContextualFileReference {
         }
 
         return lastDataDir = FilePath.of(DataStorage.get().getDataDir()).toUnix();
-    }
-
-    public static Optional<FilePath> resolveIfInDataDirectory(ShellControl shellControl, String s) {
-        if (s.startsWith("<DATA>")) {
-            var cf = of(s);
-            return Optional.of(cf.toAbsoluteFilePath(shellControl));
-        } else {
-            return Optional.empty();
-        }
     }
 
     public static ContextualFileReference of(FilePath p) {

@@ -6,11 +6,11 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
-import io.xpipe.app.util.LabelGraphic;
 
 import javafx.beans.value.ObservableValue;
 
@@ -28,7 +28,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<SimpleScriptStore> store) {
-        return AppI18n.observable("base.edit");
+        return AppI18n.observable("edit");
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     }
 
     @Override
-    public boolean isDefault(DataStoreEntryRef<SimpleScriptStore> o) {
+    public boolean isDefault() {
         return true;
     }
 
@@ -80,7 +80,9 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
             var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsFileSystem.ofLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
-                ref.get().setStoreInternal(script.toBuilder().commands(s).build(), true);
+                DataStorage.get()
+                        .updateEntryStore(
+                                ref.get(), script.toBuilder().commands(s).build());
             });
         }
     }

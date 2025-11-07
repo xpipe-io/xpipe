@@ -2,7 +2,7 @@ package io.xpipe.app.action;
 
 import io.xpipe.app.comp.base.ModalOverlayContentComp;
 import io.xpipe.app.comp.base.ScrollComp;
-import io.xpipe.app.util.OptionsBuilder;
+import io.xpipe.app.platform.OptionsBuilder;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.layout.Region;

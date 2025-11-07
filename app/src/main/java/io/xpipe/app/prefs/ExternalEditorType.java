@@ -4,9 +4,11 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
 
@@ -392,16 +394,25 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    LinuxPathType VSCODE_LINUX = new LinuxPathType("app.vscode", "code", "https://code.visualstudio.com/") {
-        @Override
-        public void launch(Path file) throws Exception {
-            var builder = CommandBuilder.of()
-                    .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
-                    .addFile(getExecutable())
-                    .addFile(file.toString());
-            ExternalApplicationHelper.startAsync(builder);
-        }
-    };
+    LinuxType VSCODE_LINUX =
+            new LinuxType("app.vscode", "code", "https://code.visualstudio.com/", "com.visualstudio.code") {
+                @Override
+                public void launch(Path file) throws Exception {
+                    var exec = CommandSupport.isInLocalPath(getExecutable())
+                            ? CommandBuilder.of().addFile(getExecutable())
+                            : FlatpakCache.runCommand(getFlatpakId());
+
+                    if (FlatpakCache.getApp(getFlatpakId()).isEmpty()) {
+                        CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
+                    }
+
+                    var builder = CommandBuilder.of()
+                            .fixedEnvironment("DONT_PROMPT_WSL_INSTALL", "No_Prompt_please")
+                            .add(exec)
+                            .addFile(file.toString());
+                    ExternalApplicationHelper.startAsync(builder);
+                }
+            };
 
     LinuxPathType WINDSURF_LINUX = new LinuxPathType("app.windsurf", "windsurf", "https://windsurf.com/editor");
 
@@ -409,21 +420,60 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro", "https://kiro.dev/");
 
-    LinuxPathType ZED_LINUX = new LinuxPathType("app.zed", "zed", "https://zed.dev/");
+    WindowsType ZED_WINDOWS = new WindowsType() {
+
+        @Override
+        public String getWebsite() {
+            return "https://zed.dev/";
+        }
+
+        @Override
+        public String getExecutable() {
+            return "Zed.exe";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            var nightly = AppSystemInfo.ofWindows().getLocalAppData().resolve("Programs", "Zed Nightly", "Zed.exe");
+            if (Files.exists(nightly)) {
+                return Optional.of(nightly);
+            }
+
+            var regular = AppSystemInfo.ofWindows().getLocalAppData().resolve("Programs", "Zed", "Zed.exe");
+            if (Files.exists(regular)) {
+                return Optional.of(regular);
+            }
+
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getId() {
+            return "app.zed";
+        }
+    };
+
+    LinuxType ZED_LINUX = new LinuxType("app.zed", "zed", "https://zed.dev/", "dev.zed.Zed");
 
     ExternalEditorType ZED_MACOS = new MacOsEditor("app.zed", "Zed", "https://zed.dev/");
 
-    LinuxPathType VSCODIUM_LINUX = new LinuxPathType("app.vscodium", "codium", "https://vscodium.com/");
+    LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium");
 
-    LinuxPathType GNOME = new LinuxPathType("app.gnomeTextEditor", "gnome-text-editor", "https://vscodium.com/");
+    LinuxType GNOME = new LinuxType("app.gnomeTextEditor", "gnome-text-editor", "LinuxType", "org.gnome.TextEditor");
 
-    LinuxPathType KATE = new LinuxPathType("app.kate", "kate", "https://kate-editor.org");
+    LinuxType KATE = new LinuxType("app.kate", "kate", "https://kate-editor.org", "org.kde.kate");
 
-    LinuxPathType GEDIT = new LinuxPathType("app.gedit", "gedit", "https://gedit-text-editor.org/");
+    LinuxType GEDIT = new LinuxType("app.gedit", "gedit", "https://gedit-text-editor.org/", "org.gnome.gedit");
 
     LinuxPathType LEAFPAD = new LinuxPathType("app.leafpad", "leafpad", "https://snapcraft.io/leafpad");
 
-    LinuxPathType MOUSEPAD = new LinuxPathType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start");
+    LinuxType MOUSEPAD =
+            new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
     ExternalEditorType TEXT_EDIT =
@@ -493,6 +543,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             new GenericPathType("app.webstorm", "webstorm", false, "https://www.jetbrains.com/webstorm/");
     ExternalEditorType CLION = new GenericPathType("app.clion", "clion", false, "https://www.jetbrains.com/clion/");
     List<ExternalEditorType> WINDOWS_EDITORS = List.of(
+            ZED_WINDOWS,
             VOID_WINDOWS,
             CURSOR_WINDOWS,
             WINDSURF_WINDOWS,
@@ -503,7 +554,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             VSCODE_WINDOWS,
             NOTEPADPLUSPLUS,
             NOTEPAD);
-    List<LinuxPathType> LINUX_EDITORS = List.of(
+    List<GenericPathType> LINUX_EDITORS = List.of(
             ExternalEditorType.WINDSURF_LINUX,
             ExternalEditorType.KIRO_LINUX,
             VSCODIUM_LINUX,
@@ -533,13 +584,13 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     @SuppressWarnings({"unused", "TrivialFunctionalExpressionUsage"})
     List<ExternalEditorType> ALL = ((Supplier<List<ExternalEditorType>>) () -> {
                 var all = new ArrayList<ExternalEditorType>();
-                if (OsType.getLocal() == OsType.WINDOWS) {
+                if (OsType.ofLocal() == OsType.WINDOWS) {
                     all.addAll(WINDOWS_EDITORS);
                 }
-                if (OsType.getLocal() == OsType.LINUX) {
+                if (OsType.ofLocal() == OsType.LINUX) {
                     all.addAll(LINUX_EDITORS);
                 }
-                if (OsType.getLocal() == OsType.MACOS) {
+                if (OsType.ofLocal() == OsType.MACOS) {
                     all.addAll(MACOS_EDITORS);
                 }
                 all.addAll(CROSS_PLATFORM_EDITORS);
@@ -554,21 +605,21 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             return existing;
         }
 
-        if (OsType.getLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() == OsType.WINDOWS) {
             return WINDOWS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
                     .orElse(NOTEPAD);
         }
 
-        if (OsType.getLocal() == OsType.LINUX) {
+        if (OsType.ofLocal() == OsType.LINUX) {
             return LINUX_EDITORS.stream()
                     .filter(ExternalApplicationType.PathApplication::isAvailable)
                     .findFirst()
                     .orElse(null);
         }
 
-        if (OsType.getLocal() == OsType.MACOS) {
+        if (OsType.ofLocal() == OsType.MACOS) {
             return MACOS_EDITORS.stream()
                     .filter(PrefsChoiceValue::isAvailable)
                     .findFirst()
@@ -687,7 +738,41 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public boolean isSelectable() {
-            return OsType.getLocal() == OsType.LINUX;
+            return OsType.ofLocal() == OsType.LINUX;
+        }
+    }
+
+    class LinuxType extends GenericPathType implements ExternalApplicationType.LinuxApplication {
+
+        private final String flatpakId;
+
+        public LinuxType(String id, String executable, String website, String flatpakId) {
+            super(id, executable, true, website);
+            this.flatpakId = flatpakId;
+        }
+
+        @Override
+        public void launch(Path file) throws Exception {
+            if (CommandSupport.isInLocalPath(getExecutable())) {
+                var builder = CommandBuilder.of().add(getExecutable()).addFile(file.toString());
+                if (detach()) {
+                    ExternalApplicationHelper.startAsync(builder);
+                } else {
+                    LocalShell.getShell().command(builder).execute();
+                }
+            } else {
+                if (flatpakId == null || FlatpakCache.getApp(flatpakId).isEmpty()) {
+                    CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
+                }
+
+                var builder = FlatpakCache.runCommand(getFlatpakId()).addFile(file.toString());
+                ExternalApplicationHelper.startAsync(builder);
+            }
+        }
+
+        @Override
+        public String getFlatpakId() {
+            return flatpakId;
         }
     }
 }

@@ -5,10 +5,10 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.MultiStoreAction;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.LabelGraphic;
 import io.xpipe.app.util.ScanDialog;
 import io.xpipe.app.util.ScanDialogAction;
 

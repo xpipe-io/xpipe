@@ -5,9 +5,9 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppStyle;
-import io.xpipe.app.core.window.AppWindowHelper;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.PlatformThread;
+import io.xpipe.app.core.window.AppWindowStyle;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,7 +42,7 @@ public class BrowserFileSelectionListComp extends SimpleComp {
     public static Image snapshot(ObservableList<BrowserEntry> list) {
         var r = new BrowserFileSelectionListComp(list).styleClass("drag").createRegion();
         var scene = new Scene(r);
-        AppWindowHelper.setupStylesheets(scene);
+        AppWindowStyle.addStylesheets(scene);
         AppStyle.addStylesheets(scene);
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);

@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.ext.ShellStore;
-import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.secret.EncryptedValue;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
@@ -18,7 +20,6 @@ import lombok.Value;
 @AllArgsConstructor
 public class IdentityChoiceBuilder {
 
-    Property<DataStoreEntryRef<ShellStore>> host;
     ObjectProperty<IdentityValue> identity;
     boolean allowCustomUserInput;
     boolean requireUserInput;
@@ -28,16 +29,15 @@ public class IdentityChoiceBuilder {
     String userChoiceTranslationKey;
     String passwordChoiceTranslationKey;
 
-    public static OptionsBuilder ssh(
-            Property<DataStoreEntryRef<ShellStore>> host, ObjectProperty<IdentityValue> identity, boolean requireUser) {
+    public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
         var i = new IdentityChoiceBuilder(
-                host, identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+                identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
         var i = new IdentityChoiceBuilder(
-                null, identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+                identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -58,23 +58,28 @@ public class IdentityChoiceBuilder {
         var ref = new SimpleObjectProperty<>(existing instanceof IdentityValue.Ref r ? r.getRef() : null);
         var inPlaceSelected = ref.isNull();
         var refSelected = ref.isNotNull();
+
+        var passwordChoice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(pass)
+                .customConfiguration(
+                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                .available(SecretRetrievalStrategy.getSubclasses())
+                .build()
+                .build();
+
         var options = new OptionsBuilder()
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
                 .nameAndDescription(passwordChoiceTranslationKey)
-                .sub(SecretRetrievalStrategyHelper.comp(pass, true), pass)
+                .sub(passwordChoice, pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .hide(refSelected)
                 .addProperty(ref);
 
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(allowAgentForward)
-                .proxy(
-                        host != null
-                                ? host
-                                : new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()))
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> false)
                 .build();
@@ -82,7 +87,7 @@ public class IdentityChoiceBuilder {
         if (keyInput) {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
-                    .longDescription(DocumentationLink.SSH_KEYS)
+                    .documentationLink(DocumentationLink.SSH_KEYS)
                     .sub(
                             OptionsChoiceBuilder.builder()
                                     .allowNull(false)

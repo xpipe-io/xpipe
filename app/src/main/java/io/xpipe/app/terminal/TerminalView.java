@@ -1,9 +1,9 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.util.NativeWinWindowControl;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.OsType;
 
@@ -23,17 +23,13 @@ public class TerminalView {
     private final List<TerminalSession> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
 
-    public static boolean isSupported() {
-        return OsType.getLocal() == OsType.WINDOWS;
-    }
-
     public static void focus(TerminalSession term) {
         var control = term.controllable();
         if (control.isPresent()) {
             control.get().show();
             control.get().focus();
         } else {
-            if (OsType.getLocal() == OsType.MACOS) {
+            if (OsType.ofLocal() == OsType.MACOS) {
                 // Just focus the app, this is correct most of the time
                 var terminalType = AppPrefs.get().terminalType().getValue();
                 if (terminalType instanceof ExternalApplicationType.MacApplication m) {
@@ -123,7 +119,7 @@ public class TerminalView {
     }
 
     private Optional<TerminalSession> createTerminalSession(ProcessHandle terminalProcess) {
-        return switch (OsType.getLocal()) {
+        return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.MacOs ignored -> Optional.of(new TerminalSession(terminalProcess));
             case OsType.Windows ignored -> {

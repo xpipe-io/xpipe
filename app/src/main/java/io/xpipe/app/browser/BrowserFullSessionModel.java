@@ -4,6 +4,8 @@ import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.browser.file.BrowserHistoryTabModel;
 import io.xpipe.app.browser.file.BrowserTransferModel;
+import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
@@ -61,7 +63,10 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
-                    DEFAULT, DataStorage.get().local().ref(), BrowserFileSystemTabModel.SelectionMode.ALL);
+                    DEFAULT,
+                    DataStorage.get().local().ref(),
+                    BrowserFileSystemTabModel.SelectionMode.ALL,
+                    ref -> ref.getStore().createFileSystem());
             try {
                 DEFAULT.openSync(tab, null);
                 DEFAULT.pinTab(tab);
@@ -150,7 +155,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         }
     }
 
-    public void unpinTab(BrowserSessionTab tab) {
+    public void unpinTab() {
         ThreadHelper.runFailableAsync(() -> {
             globalPinnedTab.setValue(null);
         });
@@ -170,7 +175,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
     public void restoreStateAsync(BrowserHistorySavedState.Entry e, BooleanProperty busy) {
         var storageEntry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         storageEntry.ifPresent(entry -> {
-            openFileSystemAsync(entry.ref(), model -> e.getPath(), busy);
+            openFileSystemAsync(entry.ref(), null, model -> e.getPath(), busy);
         });
     }
 
@@ -202,6 +207,7 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
 
     public void openFileSystemAsync(
             DataStoreEntryRef<? extends FileSystemStore> store,
+            FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> customFileSystemFactory,
             FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy) {
         if (store == null) {
@@ -209,12 +215,13 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         }
 
         ThreadHelper.runFailableAsync(() -> {
-            openFileSystemSync(store, path, externalBusy, true);
+            openFileSystemSync(store, customFileSystemFactory, path, externalBusy, true);
         });
     }
 
     public BrowserFileSystemTabModel openFileSystemSync(
             DataStoreEntryRef<? extends FileSystemStore> store,
+            FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> customFileSystemFactory,
             FailableFunction<BrowserFileSystemTabModel, FilePath, Exception> path,
             BooleanProperty externalBusy,
             boolean select)
@@ -223,12 +230,19 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         try (var ignored =
                 new BooleanScope(externalBusy != null ? externalBusy : new SimpleBooleanProperty()).start()) {
             try (var ignored2 = new BooleanScope(busy).exclusive().start()) {
-                model = new BrowserFileSystemTabModel(this, store, BrowserFileSystemTabModel.SelectionMode.ALL);
+                model = new BrowserFileSystemTabModel(
+                        this,
+                        store,
+                        BrowserFileSystemTabModel.SelectionMode.ALL,
+                        customFileSystemFactory != null
+                                ? customFileSystemFactory
+                                : ref -> ref.getStore().createFileSystem());
                 model.init();
                 // Prevent multiple calls from interfering with each other
                 synchronized (BrowserFullSessionModel.this) {
                     sessionEntries.add(model);
                     if (select) {
+                        AppLayoutModel.get().selectBrowser();
                         // The tab pane doesn't automatically select new tabs
                         selectedEntry.setValue(model);
                     }

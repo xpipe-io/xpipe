@@ -3,6 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.util.*;
 

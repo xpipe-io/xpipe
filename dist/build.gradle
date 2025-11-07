@@ -76,13 +76,9 @@ tasks.register('createChecksums', Checksum) {
     }
 }
 
-def getArtifactChecksumSha256Hex(String name) {
+String getArtifactChecksumSha256Hex(String name) {
     var file = layout.buildDirectory.file("dist/checksums/artifacts/${name}.sha256")
     return file.get().getAsFile().exists() ? file.get().getAsFile().text : ""
-}
-
-def getArtifactChecksumSha256Base64(String name) {
-    return Base64.getEncoder().encodeToString(HexFormat.of().parseHex(getArtifactChecksumSha256Hex(name)))
 }
 
 clean {
@@ -103,23 +99,23 @@ if (fullVersion) {
     apply from: 'cli.gradle'
     apply from: 'portable.gradle'
     apply from: 'proguard.gradle'
-
-    if (org.gradle.internal.os.OperatingSystem.current().isLinux()) {
-        apply from: 'linux_packages.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
-        apply from: 'msi.gradle'
-    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        apply from: 'pkg.gradle'
-    }
-
     apply from: 'github.gradle'
-    apply from: 'aur.gradle'
-    apply from: 'nix.gradle'
-    apply from: 'choco.gradle'
-    apply from: 'homebrew.gradle'
-    apply from: 'winget.gradle'
     apply from: 'install.gradle'
     apply from: 'i18n.gradle'
+
+    if (os.isLinux()) {
+        apply from: 'linux_packages.gradle'
+        apply from: 'appimage/app_image.gradle'
+        apply from: 'nix/nix.gradle'
+        apply from: 'aur/aur.gradle'
+        apply from: 'homebrew/homebrew.gradle'
+    } else if (os.isWindows()) {
+        apply from: 'msi/msi.gradle'
+        apply from: 'winget/winget.gradle'
+        apply from: 'choco/choco.gradle'
+    } else if (os.isMacOsX()) {
+        apply from: 'pkg/pkg.gradle'
+    }
 
     signing {
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)

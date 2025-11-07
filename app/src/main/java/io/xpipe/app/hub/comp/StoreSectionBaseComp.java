@@ -4,10 +4,11 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.util.BindingsHelper;
-import io.xpipe.app.util.LabelGraphic;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
@@ -88,11 +89,23 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         var children = new ArrayList<>(hbox.getChildren());
         hbox.getChildren().clear();
         root.visibleProperty().subscribe((newValue) -> {
-            if (newValue) {
-                hbox.getChildren().addAll(children);
-            } else {
-                hbox.getChildren().removeAll(children);
-            }
+            Platform.runLater(() -> {
+                if (newValue) {
+                    if (!root.isVisible()) {
+                        return;
+                    }
+
+                    if (hbox.getChildren().size() == 0) {
+                        hbox.getChildren().addAll(children);
+                    }
+                } else {
+                    if (root.isVisible()) {
+                        return;
+                    }
+
+                    hbox.getChildren().clear();
+                }
+            });
         });
     }
 

@@ -2,7 +2,7 @@ package io.xpipe.app.issue;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
-import io.xpipe.app.util.LabelGraphic;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 

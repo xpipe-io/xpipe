@@ -1,17 +1,44 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.util.LocalShell;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.RdpConfig;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.SecretValue;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.io.FileUtils;
 
 import java.util.Map;
 
+@JsonTypeName("mstsc")
+@Value
+@Jacksonized
+@Builder
 public class MstscRdpClient implements ExternalApplicationType.PathApplication, ExternalRdpClient {
+
+    @SuppressWarnings("unused")
+    static OptionsBuilder createOptions(Property<MstscRdpClient> property) {
+        var smartSizing = new SimpleObjectProperty<>(property.getValue().isSmartSizing());
+        return new OptionsBuilder()
+                .nameAndDescription("rdpSmartSizing")
+                .addToggle(smartSizing)
+                .bind(
+                        () -> MstscRdpClient.builder()
+                                .smartSizing(smartSizing.get())
+                                .build(),
+                        property);
+    }
+
+    boolean smartSizing;
 
     @Override
     public void launch(RdpLaunchConfig configuration) throws Exception {
@@ -37,28 +64,18 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
     private RdpConfig getAdaptedConfig(RdpLaunchConfig configuration) throws Exception {
         var input = configuration.getConfig();
-        if (input.get("password 51").isPresent()) {
-            return input;
-        }
-
-        if (input.get("username").isEmpty()) {
-            // return input;
-        }
-
-        if (!supportsPasswordPassing()) {
-            return input;
-        }
-
         var pass = configuration.getPassword();
-        if (pass == null) {
-            return input;
+        if (input.get("password 51").isPresent() || !supportsPasswordPassing() || pass == null) {
+            return input.overlay(Map.of("smart sizing", new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
         }
 
         var adapted = input.overlay(Map.of(
                 "password 51",
                 new RdpConfig.TypedValue("b", encrypt(pass)),
                 "prompt for credentials",
-                new RdpConfig.TypedValue("i", "0")));
+                new RdpConfig.TypedValue("i", "0"),
+                "smart sizing",
+                new RdpConfig.TypedValue("i", smartSizing ? "1" : "0")));
         return adapted;
     }
 

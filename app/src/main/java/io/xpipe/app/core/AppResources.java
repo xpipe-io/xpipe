@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AppResources {
 
-    public static final String MAIN_MODULE = AppNames.packageName(null);
+    public static final String MAIN_MODULE = AppNames.packageName();
 
     private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
 
@@ -42,18 +42,29 @@ public class AppResources {
 
         // Only cache file systems with extended layer
         if (layer != null && fileSystems.containsKey(module)) {
-            return fileSystems.get(module);
+            var v = fileSystems.get(module);
+            if (v == null) {
+                throw new IOException("Unable to load module file system " + module);
+            }
+
+            return v;
         }
 
         if (layer == null) {
             layer = ModuleLayer.boot();
         }
 
-        var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
-        if (AppExtensionManager.getInstance() != null) {
-            fileSystems.put(module, fs);
+        try {
+            var fs = (ModuleFileSystem)
+                    FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+            if (AppExtensionManager.getInstance() != null) {
+                fileSystems.put(module, fs);
+            }
+            return fs;
+        } catch (Throwable ex) {
+            fileSystems.put(module, null);
+            throw ex;
         }
-        return fs;
     }
 
     public static Optional<URL> getResourceURL(String module, String file) {

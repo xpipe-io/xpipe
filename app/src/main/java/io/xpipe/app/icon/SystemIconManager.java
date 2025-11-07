@@ -19,6 +19,12 @@ public class SystemIconManager {
 
     private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
+    private static int cacheSourceHash;
+    private static int sourceHash;
+
+    public static boolean isCacheOutdated() {
+        return cacheSourceHash == 0 || sourceHash != cacheSourceHash;
+    }
 
     public static List<SystemIconSource> getAllSources() {
         var prefs = AppPrefs.get().getIconSources().getValue();
@@ -82,13 +88,35 @@ public class SystemIconManager {
         }
     }
 
-    public static void init() throws Exception {
-        reloadSources();
-        SystemIconCache.refreshBuilt();
-        reloadImages();
+    private static synchronized int calculateSourceHash(Map<SystemIconSource, SystemIconSourceData> all) {
+        var total = 0;
+        var set = false;
+        for (var e : all.entrySet()) {
+            for (SystemIconSourceFile icon : e.getValue().getIcons()) {
+                total += icon.getFile().toString().hashCode();
+                set = true;
+            }
+        }
+
+        if (set) {
+            total += AppPrefs.get().preferMonochromeIcons().get() ? 1 : 0;
+            total += SystemIconCache.VERSION;
+        }
+
+        return total != 0 ? total : set ? -1 : 0;
     }
 
-    public static void initAdditional() throws Exception {
+    public static void init() throws Exception {
+        cacheSourceHash = SystemIconCache.getCacheSourceHash();
+        reloadSources();
+        sourceHash = calculateSourceHash(LOADED);
+        reloadImages();
+        AppPrefs.get().preferMonochromeIcons().addListener((observableValue, o, n) -> {
+            sourceHash = calculateSourceHash(LOADED);
+        });
+    }
+
+    public static void initAdditional() {
         for (var source : getEffectiveSources()) {
             if (!LOADED.containsKey(source)) {
                 var data = SystemIconSourceData.of(source);
@@ -105,7 +133,7 @@ public class SystemIconManager {
                 }
             }
         }
-        SystemIconCache.refreshBuilt();
+        sourceHash = calculateSourceHash(LOADED);
     }
 
     public static synchronized void reloadSources() throws Exception {
@@ -146,8 +174,9 @@ public class SystemIconManager {
             }
         }
         reloadSources();
-        SystemIconCache.rebuildCache(LOADED);
-        SystemIconCache.refreshBuilt();
+        sourceHash = calculateSourceHash(LOADED);
+        SystemIconCache.rebuildCache(LOADED, sourceHash);
+        cacheSourceHash = sourceHash;
         reloadImages();
     }
 

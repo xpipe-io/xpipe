@@ -3,10 +3,10 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
-import io.xpipe.app.util.LabelGraphic;
-import io.xpipe.app.util.OptionsBuilder;
 
 public class LinksCategory extends AppPrefsCategory {
 
