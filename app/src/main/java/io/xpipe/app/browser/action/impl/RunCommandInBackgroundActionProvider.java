@@ -56,7 +56,7 @@ public class RunCommandInBackgroundActionProvider implements BrowserActionProvid
 
             // Only throw actual error output
             if (exitCode != 0) {
-                throw ErrorEventFactory.expected(ProcessOutputException.of(exitCode, out.get(), err.get()));
+                throw ErrorEventFactory.expected(ProcessOutputException.of(command, exitCode, out.get(), err.get()));
             }
         }
 

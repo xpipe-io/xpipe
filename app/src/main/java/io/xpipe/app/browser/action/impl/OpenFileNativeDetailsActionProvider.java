@@ -63,7 +63,8 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         // as
                         // long as the parent process is running.
                         // So let's keep one process running
-                        shell.get().command(content).notComplex().execute();
+                        // Ignore exit value as this can fail somehow (maybe if the system blocks shell com objects?)
+                        shell.get().command(content).notComplex().executeAndCheck();
                     }
                     case OsType.Linux ignored -> {
                         var dbus = String.format(

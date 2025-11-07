@@ -134,7 +134,7 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
         var config = TerminalLaunchConfiguration.create(
-                request, entry, cleanTitle, adjustedTitle, effectivePreferTabs, alwaysPromptRestart);
+                request, entry, cleanTitle, adjustedTitle, enableLogging, effectivePreferTabs, alwaysPromptRestart);
 
         synchronized (TerminalLauncher.class) {
             // There will be timing issues when launching multiple tabs in a short time span

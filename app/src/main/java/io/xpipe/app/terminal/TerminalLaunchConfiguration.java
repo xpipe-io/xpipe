@@ -48,12 +48,13 @@ public class TerminalLaunchConfiguration {
             DataStoreEntry entry,
             String cleanTitle,
             String adjustedTitle,
+            boolean enableLogging,
             boolean preferTabs,
             boolean alwaysPromptRestart)
             throws Exception {
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
 
-        if (!AppPrefs.get().enableTerminalLogging().get()) {
+        if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var d = LocalShell.getDialect();
             var launcherScript = d.terminalLauncherScript(request, adjustedTitle, alwaysPromptRestart);
             var config = new TerminalLaunchConfiguration(
