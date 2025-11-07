@@ -81,7 +81,10 @@ public class WorkspaceCreationDialog {
                                             exec, "open -d \"" + path.get() + "\" --accept-eula", shortcutName);
                                 }
                             };
+
+                    // This is an async action, so sleep
                     DesktopHelper.browseFileInDirectory(file);
+                    ThreadHelper.sleep(1000);
                     AppOperationMode.close();
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();

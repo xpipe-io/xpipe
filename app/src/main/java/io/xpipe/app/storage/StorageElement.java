@@ -76,7 +76,7 @@ public abstract class StorageElement {
         var changed = expanded != this.expanded;
         this.expanded = expanded;
         if (changed) {
-            notifyUpdate(false, true);
+            notifyUpdate(false, false);
         }
     }
 
