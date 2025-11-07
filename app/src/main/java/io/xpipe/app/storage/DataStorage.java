@@ -286,7 +286,7 @@ public abstract class DataStorage {
                 && getStoreEntries().stream().noneMatch(e -> {
                     var hierarchy = getCategoryParentHierarchy(getStoreCategory(e));
                     return hierarchy.stream().anyMatch(h -> h.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID));
-        })) {
+                })) {
             return false;
         }
 

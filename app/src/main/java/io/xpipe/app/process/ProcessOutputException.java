@@ -14,7 +14,8 @@ public class ProcessOutputException extends Exception {
     private final String prefix;
     private final String suffix;
 
-    private ProcessOutputException(String command, long exitCode, String output, String prefix, String suffix, Exception cause) {
+    private ProcessOutputException(
+            String command, long exitCode, String output, String prefix, String suffix, Exception cause) {
         super(cause);
         this.exitCode = exitCode;
         this.output = output;
@@ -58,10 +59,10 @@ public class ProcessOutputException extends Exception {
         var message =
                 switch ((int) exitCode) {
                     case CommandControl.START_FAILED_EXIT_CODE ->
-                            start + "did not start up properly and had to be killed";
+                        start + "did not start up properly and had to be killed";
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for exit of " + center + "timed out";
                     case CommandControl.UNASSIGNED_EXIT_CODE ->
-                            start + "exited with unknown state. Did an external process interfere?";
+                        start + "exited with unknown state. Did an external process interfere?";
                     case CommandControl.INTERNAL_ERROR_EXIT_CODE -> start + "execution failed";
                     case CommandControl.ELEVATION_FAILED_EXIT_CODE -> start + "elevation failed";
                     default -> start + "failed with exit code " + exitCode;

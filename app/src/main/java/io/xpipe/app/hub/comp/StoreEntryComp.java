@@ -448,8 +448,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                 if (AppPrefs.get().developerMode().getValue()) {
                     var browse = new MenuItem(
                             AppI18n.get("browseInternalStorage"), new FontIcon("mdi2f-folder-open-outline"));
-                    browse.setOnAction(event -> DesktopHelper.browseFile(
-                            getWrapper().getEntry().getDirectory()));
+                    browse.setOnAction(event ->
+                            DesktopHelper.browseFile(getWrapper().getEntry().getDirectory()));
                     items.add(browse);
                 }
 

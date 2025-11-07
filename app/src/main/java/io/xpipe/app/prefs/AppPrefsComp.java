@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
+
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 public class AppPrefsComp extends SimpleComp {

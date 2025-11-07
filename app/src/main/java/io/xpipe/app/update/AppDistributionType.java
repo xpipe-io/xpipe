@@ -165,14 +165,19 @@ public enum AppDistributionType implements Translatable {
                     return SCOOP;
                 }
 
-                if (OsType.ofLocal() == OsType.LINUX && System.getenv("APPDIR") != null && System.getenv("APPIMAGE") != null) {
+                if (OsType.ofLocal() == OsType.LINUX
+                        && System.getenv("APPDIR") != null
+                        && System.getenv("APPIMAGE") != null) {
                     try {
                         var dir = Path.of(System.getenv("APPDIR"));
-                        if (AppInstallation.ofCurrent().getBaseInstallationPath().startsWith(dir)) {
+                        if (AppInstallation.ofCurrent()
+                                .getBaseInstallationPath()
+                                .startsWith(dir)) {
                             return APP_IMAGE;
                         }
 
-                    } catch (InvalidPathException ignored) {}
+                    } catch (InvalidPathException ignored) {
+                    }
                 }
 
                 return PORTABLE;

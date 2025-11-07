@@ -3,15 +3,12 @@ package io.xpipe.app.util;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import java.awt.*;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -55,7 +52,10 @@ public class DesktopHelper {
                     return;
                 } catch (Exception e) {
                     // Some basic linux systems have trouble with the API call
-                    ErrorEventFactory.fromThrowable(e).expected().omitted(OsType.ofLocal() == OsType.LINUX).handle();
+                    ErrorEventFactory.fromThrowable(e)
+                            .expected()
+                            .omitted(OsType.ofLocal() == OsType.LINUX)
+                            .handle();
                 }
             }
 
@@ -89,11 +89,18 @@ public class DesktopHelper {
                         ? "org.freedesktop.FileManager1.ShowFolders"
                         : "org.freedesktop.FileManager1.ShowItems";
                 var args = List.of(
-                        "dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.FileManager1", "--type=method_call",
-                        "/org/freedesktop/FileManager1", action, "array:string:file://" + file, "string:"
-                );
+                        "dbus-send",
+                        "--session",
+                        "--print-reply",
+                        "--dest=org.freedesktop.FileManager1",
+                        "--type=method_call",
+                        "/org/freedesktop/FileManager1",
+                        action,
+                        "array:string:file://" + file,
+                        "string:");
                 try {
-                    var success = LocalExec.readStdoutIfPossible(args.toArray(String[]::new)).isPresent();
+                    var success = LocalExec.readStdoutIfPossible(args.toArray(String[]::new))
+                            .isPresent();
                     if (success) {
                         return;
                     }
@@ -111,7 +118,10 @@ public class DesktopHelper {
                 Desktop.getDesktop().browseFileDirectory(file.toFile());
             } catch (Exception e) {
                 // Some basic linux systems have trouble with the API call
-                ErrorEventFactory.fromThrowable(e).expected().omitted(OsType.ofLocal() == OsType.LINUX).handle();
+                ErrorEventFactory.fromThrowable(e)
+                        .expected()
+                        .omitted(OsType.ofLocal() == OsType.LINUX)
+                        .handle();
                 if (OsType.ofLocal() == OsType.LINUX) {
                     browseFile(file.getParent());
                 }

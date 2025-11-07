@@ -59,9 +59,11 @@ public class AppTheme {
         }
 
         stage.getScene().rootProperty().subscribe(parent -> {
-            applyClasses(parent, AppPrefs.get().theme().getValue(), AppPrefs.get().performanceMode().getValue());
+            applyClasses(
+                    parent,
+                    AppPrefs.get().theme().getValue(),
+                    AppPrefs.get().performanceMode().getValue());
         });
-
 
         // Allow for GC
         var ref = new WeakReference<>(stage);
@@ -94,8 +96,7 @@ public class AppTheme {
             return;
         }
 
-        r.pseudoClassStateChanged(
-                PseudoClass.getPseudoClass(OsType.ofLocal().getId()), true);
+        r.pseudoClassStateChanged(PseudoClass.getPseudoClass(OsType.ofLocal().getId()), true);
 
         Theme.ALL.forEach(theme -> {
             r.pseudoClassStateChanged(

@@ -4,7 +4,6 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.*;
 import io.xpipe.app.util.*;
-import io.xpipe.core.FilePath;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -89,7 +88,8 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
                 // Move to subdir as Warp tries to index the parent dir, which would be temp in this case
                 var scriptFile = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
-                var movedScriptFile = AppSystemInfo.ofCurrent().getTemp().resolve("warp").resolve(scriptFile.getFileName());
+                var movedScriptFile =
+                        AppSystemInfo.ofCurrent().getTemp().resolve("warp").resolve(scriptFile.getFileName());
                 Files.createDirectories(movedScriptFile.getParent());
                 Files.move(scriptFile.asLocalPath(), movedScriptFile);
 

@@ -5,7 +5,6 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.update.AppDistributionType;
-import io.xpipe.app.util.DesktopShortcuts;
 import io.xpipe.core.OsType;
 
 import java.util.List;

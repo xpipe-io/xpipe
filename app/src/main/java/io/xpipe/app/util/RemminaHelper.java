@@ -8,7 +8,6 @@ import io.xpipe.app.rdp.RdpLaunchConfig;
 import io.xpipe.app.vnc.VncLaunchConfig;
 import io.xpipe.core.SecretValue;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;

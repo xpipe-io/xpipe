@@ -120,7 +120,8 @@ public class KeePassXcProxyClient {
                 sendNativeMessage(keyExchangeMessage);
             } catch (IOException e) {
                 var ex = new IllegalStateException(
-                        "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?", e);
+                        "KeePassXC client did not respond. Is the browser integration enabled for your KeePassXC database?",
+                        e);
                 ErrorEventFactory.preconfigure(
                         ErrorEventFactory.fromThrowable(ex).expected().documentationLink(DocumentationLink.KEEPASSXC));
                 throw ex;

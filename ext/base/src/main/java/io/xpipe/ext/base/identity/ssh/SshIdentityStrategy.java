@@ -9,7 +9,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
