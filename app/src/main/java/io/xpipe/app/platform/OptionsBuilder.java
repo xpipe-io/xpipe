@@ -36,7 +36,6 @@ public class OptionsBuilder {
     private final List<Check> allChecks = new ArrayList<>();
     private final List<OptionsComp.Entry> entries = new ArrayList<>();
     private final List<Property<?>> props = new ArrayList<>();
-    private final List<Augment<CompStructure<VBox>>> augments = new ArrayList<>();
 
     private ObservableValue<String> name;
     private ObservableValue<String> description;
@@ -415,9 +414,6 @@ public class OptionsBuilder {
     public OptionsComp buildComp() {
         finishCurrent();
         var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of());
-        for (Augment<CompStructure<VBox>> augment : augments) {
-            comp.apply(augment);
-        }
         return comp;
     }
 

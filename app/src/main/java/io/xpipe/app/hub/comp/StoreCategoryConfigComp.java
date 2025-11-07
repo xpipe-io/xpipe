@@ -74,7 +74,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
                     super.updateItem(color, empty);
                     if (color == null) {
                         setText(AppI18n.get("none"));
-                        setGraphic(DataStoreColor.createDisplayGraphic(color));
+                        setGraphic(DataStoreColor.createDisplayGraphic(null));
                         return;
                     }
 

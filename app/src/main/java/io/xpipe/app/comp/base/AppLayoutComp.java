@@ -76,11 +76,6 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
     public record Structure(BorderPane pane, StackPane stack, Region sidebar, List<Node> children)
             implements CompStructure<BorderPane> {
 
-        public void prepareAddition() {
-            stack.getChildren().clear();
-            sidebar.setDisable(true);
-        }
-
         public void show() {
             stack.getChildren().add(children.getFirst());
             for (int i = 1; i < children.size(); i++) {

@@ -37,8 +37,7 @@ public class BeaconConfig {
         if (customPortVar != null) {
             try {
                 customPort = Integer.parseInt(customPortVar);
-            } catch (NumberFormatException e) {
-            }
+            } catch (NumberFormatException ignored) {}
         }
 
         var effectivePortBase = customPort != null ? customPort : 21721;
