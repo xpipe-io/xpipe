@@ -1,13 +1,16 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -41,10 +44,26 @@ public class DesktopShortcuts {
         return shortcutPath;
     }
 
+    private static Path getOrCreateIcon() throws IOException {
+        if (AppDistributionType.get() != AppDistributionType.APP_IMAGE) {
+            return AppInstallation.ofCurrent().getLogoPath();
+        }
+
+        var target = AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "icons", "256x256", "apps");
+        var file = target.resolve(AppNames.ofCurrent().getKebapName() + ".png");
+        if (Files.exists(file)) {
+            return file;
+        }
+
+        Files.createDirectories(target);
+        Files.copy(AppInstallation.ofCurrent().getLogoPath(), file);
+        return file;
+    }
+
     private static Path createLinuxShortcut(String executable, String args, String name) throws Exception {
         // Linux .desktop names are very restrictive
         var fixedName = name.replaceAll("[^\\w _]", "");
-        var icon = AppInstallation.ofCurrent().getLogoPath();
+        var icon = getOrCreateIcon();
         var content = String.format(
                 """
                                     [Desktop Entry]
