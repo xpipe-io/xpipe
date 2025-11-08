@@ -39,7 +39,7 @@ public interface SingletonSessionStore<T extends Session>
         synchronized (this) {
             var s = getSession();
             if (s != null) {
-                if (s.isRunning()) {
+                if (s.checkAliveQuiet()) {
                     return s;
                 }
 

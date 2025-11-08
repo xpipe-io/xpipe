@@ -29,16 +29,9 @@ public abstract class Session implements AutoCloseable {
                     return;
                 }
 
-                try {
-                    var r = checkAlive();
-                    if (r) {
-                        return;
-                    }
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).omit().handle();
+                if (!checkAliveQuiet()) {
+                    handleSessionDeath();
                 }
-
-                handleSessionDeath();
             });
             return false;
         });
@@ -52,11 +45,20 @@ public abstract class Session implements AutoCloseable {
         }
     }
 
-    public abstract boolean isRunning();
+    protected abstract boolean isRunning();
 
     public abstract void start() throws Exception;
 
     public abstract void stop() throws Exception;
+
+    public boolean checkAliveQuiet() {
+        try {
+            return checkAlive();
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().handle();
+            return false;
+        }
+    }
 
     public abstract boolean checkAlive() throws Exception;
 

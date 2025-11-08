@@ -90,6 +90,10 @@ public class ShellSession extends Session {
             return false;
         }
 
+        if (!shellControl.isRunning(true)) {
+            return false;
+        }
+
         // If a subshell is active, then we are alive
         if (shellControl.isSubShellActive()) {
             return true;

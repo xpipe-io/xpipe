@@ -15,17 +15,11 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         var existingSession = getSession();
         if (existingSession != null) {
             existingSession.getShellControl().refreshRunningState();
-            if (!existingSession.isRunning()) {
+            if (!existingSession.checkAliveQuiet()) {
                 stopSessionIfNeeded();
             } else {
-                try {
-                    existingSession.getShellControl().waitForSubShellExit();
-                    existingSession.getShellControl().command(" echo xpipetest").execute();
-                    return new StubShellControl(existingSession.getShellControl());
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).expected().omit().handle();
-                    stopSessionIfNeeded();
-                }
+                existingSession.getShellControl().waitForSubShellExit();
+                return new StubShellControl(existingSession.getShellControl());
             }
         }
 
@@ -36,26 +30,6 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
         // getSession()
 
         return new StubShellControl(session.getShellControl());
-    }
-
-    default boolean checkSessionAlive() {
-        var session = getSession();
-        if (session == null || !session.isRunning()) {
-            return false;
-        }
-
-        try {
-            session.getShellControl().command(" echo xpipetest").execute();
-            return true;
-        } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).expected().omit().handle();
-            try {
-                stopSessionIfNeeded();
-            } catch (Exception se) {
-                ErrorEventFactory.fromThrowable(se).expected().omit().handle();
-            }
-            return false;
-        }
     }
 
     @Override
