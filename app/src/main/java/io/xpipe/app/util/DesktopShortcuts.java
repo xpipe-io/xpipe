@@ -49,7 +49,7 @@ public class DesktopShortcuts {
             return AppInstallation.ofCurrent().getLogoPath();
         }
 
-        var target = AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "icons", "256x256", "apps");
+        var target = AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "icons", "128x128", "apps");
         var file = target.resolve(AppNames.ofCurrent().getKebapName() + ".png");
         if (Files.exists(file)) {
             return file;
