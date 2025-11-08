@@ -98,9 +98,11 @@ public interface ShellControl extends ProcessControl {
 
     default <T extends ShellStoreState> ShellControl withShellStateInit(StatefulDataStore<T> store) {
         return onInit(shellControl -> {
-            var s = store.getState().toBuilder()
+            var or = shellControl.getOriginalShellDialect();
+            var oldState = store.getState();
+            var s = oldState.toBuilder()
                     .osType(shellControl.getOsType())
-                    .shellDialect(shellControl.getOriginalShellDialect())
+                    .shellDialect(or.isMarkerDialect() ? oldState.getShellDialect() : or)
                     .ttyState(shellControl.getTtyState())
                     .running(true)
                     .osName(shellControl.getOsName())

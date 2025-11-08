@@ -14,6 +14,10 @@ import java.util.stream.Stream;
 
 public interface ShellDialect {
 
+    default boolean isMarkerDialect() {
+        return false;
+    }
+
     String unsetEnvironmentVariableCommand(String var);
 
     CommandBuilder launchAsnyc(CommandBuilder cmd);
