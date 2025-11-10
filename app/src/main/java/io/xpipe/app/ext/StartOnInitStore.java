@@ -21,7 +21,8 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
             for (DataStoreEntry e : DataStorage.get().getStoreEntries()) {
                 if (e.getStore() instanceof StartOnInitStore i
                         && e.getValidity().isUsable()
-                        && enabled.contains(i.getSelfEntry().ref())) {
+                        && enabled.contains(i.getSelfEntry().ref())
+                        && i.canAutomaticallyStart()) {
                     try {
                         i.startOnInit();
                     } catch (Throwable ex) {
@@ -69,6 +70,10 @@ public interface StartOnInitStore extends SelfReferentialStore, DataStore {
             enabled.remove(getSelfEntry().ref());
             setEnabledStores(enabled);
         }
+    }
+
+    default boolean canAutomaticallyStart() {
+        return true;
     }
 
     void startOnInit() throws Exception;

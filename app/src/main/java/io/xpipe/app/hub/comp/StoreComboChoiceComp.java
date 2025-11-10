@@ -82,10 +82,9 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
             return null;
         }
 
-        return entry.getName()
-                + (stringConverter != null
-                        ? " [" + stringConverter.apply(entry.getStore().asNeeded()) + "]"
-                        : "");
+        var converted = stringConverter != null ? stringConverter.apply(entry.getStore().asNeeded()) : null;
+        var convertedString = converted != null ? " [" + converted + "]" : "";
+        return entry.getName() + convertedString;
     }
 
     @Override

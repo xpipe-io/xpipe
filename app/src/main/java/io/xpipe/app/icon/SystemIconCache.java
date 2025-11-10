@@ -165,6 +165,11 @@ public class SystemIconCache {
     }
 
     private static boolean refreshChecksum(Path source, Path dir, String name, boolean dark) throws Exception {
+        // Might have been deleted at some point
+        if (!Files.exists(source)) {
+            return true;
+        }
+
         var md5Name = name + (dark ? "-dark" : "") + ".md5";
         var bytes = Files.readAllBytes(source);
         var md = MessageDigest.getInstance("MD5");
@@ -311,7 +316,7 @@ public class SystemIconCache {
         }
 
         mean /= counter * 3;
-        if (mean < 60) {
+        if (mean < 50) {
             return ImageColorScheme.DARK;
         } else if (mean > 195) {
             return ImageColorScheme.LIGHT;

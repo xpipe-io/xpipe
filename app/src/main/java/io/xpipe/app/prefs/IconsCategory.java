@@ -70,7 +70,7 @@ public class IconsCategory extends AppPrefsCategory {
         var refreshButton = new TileButtonComp("refreshSources", "refreshSourcesDescription", "mdi2r-refresh", e -> {
             ThreadHelper.runFailableAsync(() -> {
                 try (var ignored = new BooleanScope(busy).start()) {
-                    SystemIconManager.reload();
+                    SystemIconManager.rebuild();
                 }
             });
             e.consume();

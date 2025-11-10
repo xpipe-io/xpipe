@@ -35,6 +35,11 @@ public abstract class AbstractServiceStore
     }
 
     @Override
+    public boolean canAutomaticallyStart() {
+        return requiresTunnel();
+    }
+
+    @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(remotePort);
         Validators.nonNull(serviceProtocolType);

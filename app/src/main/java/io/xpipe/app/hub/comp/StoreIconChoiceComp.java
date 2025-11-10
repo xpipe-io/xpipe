@@ -85,7 +85,7 @@ public class StoreIconChoiceComp extends SimpleComp {
                 () -> {
                     ThreadHelper.runFailableAsync(() -> {
                         try (var ignored = new BooleanScope(busy).start()) {
-                            SystemIconManager.reload();
+                            SystemIconManager.rebuild();
                         }
                         reshow.run();
                     });

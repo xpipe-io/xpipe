@@ -566,7 +566,7 @@ public abstract class DataStorage {
     }
 
     public void moveCategoryToParent(DataStoreCategory cat, DataStoreCategory newParent) {
-        if (newParent.getUuid().equals(cat.getUuid())) {
+        if (newParent.getUuid().equals(cat.getUuid()) || newParent.getUuid().equals(cat.getParentCategory())) {
             return;
         }
 
@@ -575,6 +575,8 @@ public abstract class DataStorage {
         }
 
         cat.setParentCategory(newParent.getUuid());
+        listeners.forEach(storageListener -> storageListener.onCategoryRemove(cat));
+        listeners.forEach(storageListener -> storageListener.onCategoryAdd(cat));
         listeners.forEach(storageListener -> storageListener.onEntryCategoryChange());
         listeners.forEach(storageListener -> storageListener.onStoreListUpdate());
         saveAsync();

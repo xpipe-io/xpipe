@@ -6,6 +6,7 @@ import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,8 +29,11 @@ public class StoreIconChoiceDialog {
     }
 
     public static void show(DataStoreEntry entry) {
-        var dialog = new StoreIconChoiceDialog(entry);
-        dialog.getOverlay().show();
+        ThreadHelper.runFailableAsync(() -> {
+            SystemIconManager.reloadSourceHashes();
+            var dialog = new StoreIconChoiceDialog(entry);
+            dialog.getOverlay().show();
+        });
     }
 
     private ModalOverlay createOverlay() {

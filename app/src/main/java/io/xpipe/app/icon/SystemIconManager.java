@@ -164,7 +164,7 @@ public class SystemIconManager {
         }
     }
 
-    public static synchronized void reload() throws Exception {
+    public static synchronized void rebuild() throws Exception {
         Files.createDirectories(DIRECTORY);
         for (var source : getEffectiveSources()) {
             try {
@@ -178,6 +178,12 @@ public class SystemIconManager {
         SystemIconCache.rebuildCache(LOADED, sourceHash);
         cacheSourceHash = sourceHash;
         reloadImages();
+    }
+
+    public static synchronized void reloadSourceHashes() throws Exception {
+        Files.createDirectories(DIRECTORY);
+        reloadSources();
+        sourceHash = calculateSourceHash(LOADED);
     }
 
     public static Path getPoolPath() {

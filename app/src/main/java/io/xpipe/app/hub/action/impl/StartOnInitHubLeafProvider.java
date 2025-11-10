@@ -37,6 +37,11 @@ public class StartOnInitHubLeafProvider implements HubLeafProvider<StartOnInitSt
     }
 
     @Override
+    public boolean isApplicable(DataStoreEntryRef<StartOnInitStore> o) {
+        return o.getStore().isEnabled() || o.getStore().canAutomaticallyStart();
+    }
+
+    @Override
     public Class<StartOnInitStore> getApplicableClass() {
         return StartOnInitStore.class;
     }
