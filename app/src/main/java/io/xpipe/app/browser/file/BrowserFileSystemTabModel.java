@@ -381,7 +381,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 && !FilePath.of(evaluatedPath).isAbsolute()
                 && fileSystem.getShell().isPresent()) {
             var directory = currentPath.get();
-            var name = adjustedPath + " - " + entry.get().getName();
+            var name = adjustedPath;
             ThreadHelper.runFailableAsync(() -> {
                 if (ShellDialects.getStartableDialects().stream().anyMatch(dialect -> adjustedPath
                         .toLowerCase()

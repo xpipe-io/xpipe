@@ -30,8 +30,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
                         ? List.of(model.getCurrentDirectory().getPath())
                         : Collections.singletonList((FilePath) null);
         for (var dir : dirs) {
-            var name = (model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir + " - " : "")
-                    + model.getName().getValue();
+            var name = model.getFileSystem().supportsTerminalWorkingDirectory() && dir != null ? dir.toString() : null;
             model.openTerminalAsync(
                     name, dir, model.getFileSystem().getRawShellControl().orElseThrow(), dirs.size() == 1);
         }

@@ -39,8 +39,8 @@ public class TerminalLaunch {
 
     public String getFullTitle() {
         return entry != null
-                ? DataStorage.get().getStoreEntryDisplayName(entry) + (title != null ? " - " + title : "")
-                : title != null ? title : "?";
+                ? (title != null ? title + " - " : "") + DataStorage.get().getStoreEntryDisplayName(entry)
+                : title != null ? title : "";
     }
 
     public void launch() throws Exception {
