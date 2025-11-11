@@ -74,10 +74,19 @@ public abstract class StorageElement {
 
     public void setExpanded(boolean expanded) {
         var changed = expanded != this.expanded;
-        this.expanded = expanded;
-        if (changed) {
-            notifyUpdate(false, false);
+        if (!changed) {
+            return;
         }
+
+        this.expanded = expanded;
+
+        // Update state but don't register updated time for expanded change
+        this.dirty = true;
+        synchronized (listeners) {
+            listeners.forEach(l -> l.onUpdate());
+        }
+        // Save changes instantly
+        DataStorage.get().saveAsync();
     }
 
     public abstract Path[] getShareableFiles();
