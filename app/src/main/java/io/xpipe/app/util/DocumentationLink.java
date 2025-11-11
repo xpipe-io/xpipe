@@ -41,6 +41,7 @@ public enum DocumentationLink {
     HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
     VNC("guide/vnc"),
+    ABSTRACT_HOSTS("guide/abstract-hosts"),
     REAL_VNC("guide/vnc#realvnc-server"),
     SSH("guide/ssh"),
     SSH_GATEWAYS("guide/ssh#gateways-and-jump-servers"),

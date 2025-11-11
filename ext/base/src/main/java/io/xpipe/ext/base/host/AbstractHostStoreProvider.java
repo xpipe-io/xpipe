@@ -8,6 +8,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 
+import io.xpipe.app.util.DocumentationLink;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,6 +19,11 @@ import lombok.SneakyThrows;
 import java.util.List;
 
 public class AbstractHostStoreProvider implements DataStoreProvider {
+
+    @Override
+    public DocumentationLink getHelpLink() {
+        return DocumentationLink.ABSTRACT_HOSTS;
+    }
 
     @Override
     public int getOrderPriority() {
@@ -53,7 +59,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                     return all.size() > 0
                             ? (all.size() == 1
                                     ? AppI18n.get("hostHasConnection", string)
-                                    : AppI18n.get("ahostHasConnections", string))
+                                    : AppI18n.get("hostHasConnections", string))
                             : AppI18n.get("hostNoConnections");
                 },
                 section.getShownChildren().getList(),
