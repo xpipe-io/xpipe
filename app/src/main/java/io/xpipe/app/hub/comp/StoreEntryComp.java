@@ -19,7 +19,9 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
@@ -35,6 +37,7 @@ import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,6 +72,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
     protected final Comp<?> content;
+    protected final IntegerProperty contextMenuCount = new SimpleIntegerProperty();
 
     public StoreEntryComp(StoreSection section, Comp<?> content) {
         this.section = section;
@@ -385,8 +389,20 @@ public abstract class StoreEntryComp extends SimpleComp {
         return c;
     }
 
+    private void handleContextMenuCount(ContextMenu contextMenu) {
+        var ref = new WeakReference<>(contextMenu);
+        contextMenuCount.set(contextMenuCount.get() + 1);
+        contextMenuCount.addListener((observable, oldValue, newValue) -> {
+            var cm = ref.get();
+            if (cm != null) {
+                cm.hide();
+            }
+        });
+    }
+
     protected ContextMenu createContextMenu(Region name) {
         var contextMenu = ContextMenuHelper.create();
+        handleContextMenuCount(contextMenu);
 
         var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
         cats.addFirst(null);
