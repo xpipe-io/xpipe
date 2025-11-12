@@ -28,8 +28,9 @@ public interface ShellStoreProvider extends DataStoreProvider {
             var replacement = ProcessControlProvider.get().replace(entry.ref());
             ShellStore store = replacement.getStore().asNeeded();
             var control = store.standaloneControl();
-            ScriptStoreSetup.controlWithDefaultScripts(control);
+            // These prepend scripts, not append
             TerminalPromptManager.configurePromptScript(control);
+            ScriptStoreSetup.controlWithDefaultScripts(control);
             TerminalLaunch.builder().entry(replacement.get()).command(control).launch();
         };
     }

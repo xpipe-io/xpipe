@@ -13,10 +13,10 @@ import java.util.*;
 public class ScriptStoreSetup {
 
     public static void controlWithDefaultScripts(ShellControl pc) {
-        controlWithScripts(pc, getEnabledScripts());
+        controlWithScripts(pc, getEnabledScripts(), false);
     }
 
-    public static void controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts) {
+    public static void controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
         try {
             var dialect = pc.getShellDialect();
             if (dialect == null) {
@@ -34,10 +34,16 @@ public class ScriptStoreSetup {
                     .filter(store -> store.getStore().isInitScript())
                     .filter(store -> finalDialect == null || store.getStore().isCompatible(finalDialect))
                     .toList();
+            if (!append) {
+                initFlattened = initFlattened.reversed();
+            }
             var bringFlattened = flatten(enabledScripts).stream()
                     .filter(store -> store.getStore().isShellScript())
                     .filter(store -> finalDialect == null || store.getStore().isCompatible(finalDialect))
                     .toList();
+            if (!append) {
+                bringFlattened = bringFlattened.reversed();
+            }
 
             // Optimize if we have nothing to do
             if (initFlattened.isEmpty() && bringFlattened.isEmpty()) {
@@ -55,9 +61,10 @@ public class ScriptStoreSetup {
                     public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
                         return s.getStore().isCompatible(dialect);
                     }
-                });
+                }, append);
             });
             if (!bringFlattened.isEmpty()) {
+                var finalBringFlattened = bringFlattened;
                 pc.withInitSnippet(new ShellTerminalInitCommand() {
 
                     String dir;
@@ -65,7 +72,7 @@ public class ScriptStoreSetup {
                     @Override
                     public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
                         if (dir == null) {
-                            dir = initScriptsDirectory(shellControl, bringFlattened);
+                            dir = initScriptsDirectory(shellControl, finalBringFlattened);
                         }
 
                         if (dir == null) {
@@ -80,7 +87,7 @@ public class ScriptStoreSetup {
                     public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
                         return true;
                     }
-                });
+                }, append);
             }
         } catch (StackOverflowError t) {
             throw ErrorEventFactory.expected(

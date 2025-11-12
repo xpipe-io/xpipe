@@ -13,7 +13,7 @@ public class TerminalPromptManager {
         }
 
         try {
-            sc.withInitSnippet(p.terminalCommand());
+            sc.withInitSnippet(p.terminalCommand(), false);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
         }

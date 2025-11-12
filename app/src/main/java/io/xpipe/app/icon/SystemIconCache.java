@@ -26,7 +26,7 @@ public class SystemIconCache {
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("raster");
     private static final int[] sizes = new int[] {16, 24, 40, 80};
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
 
     public static Path getDirectory(SystemIconSource source) {
         var target = DIRECTORY.resolve(source.getId());

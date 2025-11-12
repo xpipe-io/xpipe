@@ -190,7 +190,7 @@ public interface ShellControl extends ProcessControl {
 
     ShellControl elevated(ElevationFunction elevationFunction);
 
-    ShellControl withInitSnippet(ShellTerminalInitCommand snippet);
+    ShellControl withInitSnippet(ShellTerminalInitCommand snippet, boolean append);
 
     Optional<ShellControl> getActiveReplacementBackgroundSession() throws Exception;
 

@@ -341,8 +341,8 @@ public class WrapperShellControl implements ShellControl {
     }
 
     @Override
-    public ShellControl withInitSnippet(ShellTerminalInitCommand snippet) {
-        return parent.withInitSnippet(snippet);
+    public ShellControl withInitSnippet(ShellTerminalInitCommand snippet, boolean append) {
+        return parent.withInitSnippet(snippet, append);
     }
 
     @Override
