@@ -51,37 +51,10 @@ public class WorkspaceCreationDialog {
 
                 try {
                     var shortcutName = name.get();
-                    var file =
-                            switch (OsType.ofLocal()) {
-                                case OsType.Windows ignored -> {
-                                    var exec = AppInstallation.ofCurrent()
-                                            .getDaemonExecutablePath()
-                                            .toString();
-                                    yield DesktopShortcuts.create(
-                                            exec,
-                                            "-Dio.xpipe.app.dataDir=\"" + path.get()
-                                                    + "\" -Dio.xpipe.app.acceptEula=true",
-                                            shortcutName);
-                                }
-                                default -> {
-                                    // AppImages are mounted and can't be called normally
-                                    if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
-                                        var exec = System.getenv("APPIMAGE");
-                                        yield DesktopShortcuts.create(
-                                                exec,
-                                                "-Dio.xpipe.app.dataDir=\"" + path.get()
-                                                        + "\" -Dio.xpipe.app.acceptEula=true",
-                                                shortcutName);
-                                    }
-
-                                    var exec = AppInstallation.ofCurrent()
-                                            .getCliExecutablePath()
-                                            .toString();
-                                    yield DesktopShortcuts.create(
-                                            exec, "open -d \"" + path.get() + "\" --accept-eula", shortcutName);
-                                }
-                            };
-
+                    var file = DesktopShortcuts.createOpen(shortcutName,
+                            "open -d \"" + path.get() + "\" --accept-eula",
+                            "-Dio.xpipe.app.dataDir=\"" + path.get()
+                                    + "\" -Dio.xpipe.app.acceptEula=true");
                     // This is an async action, so sleep
                     DesktopHelper.browseFileInDirectory(file);
                     ThreadHelper.sleep(1000);

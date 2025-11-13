@@ -82,10 +82,7 @@ public class ActionShortcutComp extends SimpleComp {
         });
         var copyButton = new ButtonComp(null, new FontIcon("mdi2f-file-move-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var exec = AppInstallation.ofCurrent()
-                                .getCliExecutablePath()
-                                .toString();
-                        var file = DesktopShortcuts.create(exec, "open \"" + url.getValue() + "\"", name.getValue());
+                        var file = DesktopShortcuts.createOpen(name.getValue(), "open \"" + url.getValue() + "\"", null);
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })

@@ -3,6 +3,8 @@ package io.xpipe.app.util;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.issue.ErrorEvent;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
@@ -13,6 +15,7 @@ import io.xpipe.core.OsType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 public class DesktopShortcuts {
 
@@ -45,7 +48,7 @@ public class DesktopShortcuts {
     }
 
     private static Path getOrCreateIcon() throws IOException {
-        if (AppDistributionType.get() != AppDistributionType.APP_IMAGE) {
+        if (AppDistributionType.get() != AppDistributionType.APP_IMAGE && AppDistributionType.get() != AppDistributionType.NIX) {
             return AppInstallation.ofCurrent().getLogoPath();
         }
 
@@ -143,14 +146,46 @@ public class DesktopShortcuts {
         return base;
     }
 
-    public static Path create(String executable, String args, String name) throws Exception {
+    public static Path createOpen(String name, String cliArgs, String desktopArgs) throws Exception {
         var compat = OsFileSystem.ofLocal().makeFileSystemCompatible(name);
         if (OsType.ofLocal() == OsType.WINDOWS) {
-            return createWindowsShortcut(executable, args, compat);
+            var exec = AppInstallation.ofCurrent()
+                    .getCliExecutablePath()
+                    .toString();
+            return createWindowsShortcut(exec, cliArgs, compat);
         } else if (OsType.ofLocal() == OsType.LINUX) {
-            return createLinuxShortcut(executable, args, compat);
+            // AppImages are mounted and can't be called normally
+            if (AppDistributionType.get() == AppDistributionType.APP_IMAGE) {
+                if (desktopArgs == null) {
+                    throw ErrorEventFactory.expected(new UnsupportedOperationException("This desktop shortcut operation is not supported in the "
+                            + AppDistributionType.get().toTranslatedString().getValue() + " distribution"));
+                }
+
+                var exec = System.getenv("APPIMAGE");
+                return createLinuxShortcut(
+                        exec,
+                        desktopArgs,
+                        compat);
+            }
+
+            // Nix store locations change on updates
+            // These installations always add the executable to the path
+            if (AppDistributionType.get() == AppDistributionType.NIX) {
+                return createLinuxShortcut(
+                        AppInstallation.ofCurrent().getCliExecutablePath().getFileName().toString(),
+                        cliArgs,
+                        compat);
+            }
+
+            var exec = AppInstallation.ofCurrent()
+                    .getCliExecutablePath()
+                    .toString();
+            return createLinuxShortcut(exec, cliArgs, compat);
         } else {
-            return createMacOSShortcut(executable, args, compat);
+            var exec = AppInstallation.ofCurrent()
+                    .getCliExecutablePath()
+                    .toString();
+            return createMacOSShortcut(exec, cliArgs, compat);
         }
     }
 }
