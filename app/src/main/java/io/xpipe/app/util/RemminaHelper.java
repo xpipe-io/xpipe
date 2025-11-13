@@ -33,7 +33,7 @@ public class RemminaHelper {
             }
 
             var rawPassword = password.getSecretRaw();
-            var toPad = rawPassword.length % 8;
+            var toPad = 8 - (rawPassword.length % 8);
             var paddedPassword = new byte[rawPassword.length + toPad];
             System.arraycopy(rawPassword, 0, paddedPassword, 0, rawPassword.length);
 
