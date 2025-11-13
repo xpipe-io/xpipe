@@ -59,7 +59,7 @@ public class RemminaHelper {
         }
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
-        var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
+        var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
         // Use window size as remmina's autosize is broken
         var string =
                 """
@@ -94,7 +94,7 @@ public class RemminaHelper {
 
     public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
-        var file = ShellTemp.getLocalTempDataDirectory(null).resolve(name + ".remmina");
+        var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
         var string =
                 """
                      [remmina]

@@ -32,10 +32,6 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
             if (encrypted.isPresent()) {
                 var file = RemminaHelper.writeRemminaRdpConfigFile(configuration, encrypted.get());
                 launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-                ThreadHelper.runFailableAsync(() -> {
-                    ThreadHelper.sleep(5000);
-                    FileUtils.deleteQuietly(file.toFile());
-                });
                 return;
             }
         }

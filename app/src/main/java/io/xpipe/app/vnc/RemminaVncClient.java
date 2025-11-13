@@ -33,10 +33,6 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
         var encrypted = pw.isPresent() ? RemminaHelper.encryptPassword(pw.get()) : Optional.<String>empty();
         var file = RemminaHelper.writeRemminaVncConfigFile(configuration, encrypted.orElse(null));
         launch(CommandBuilder.of().add("-c").addFile(file.toString()));
-        ThreadHelper.runFailableAsync(() -> {
-            ThreadHelper.sleep(5000);
-            FileUtils.deleteQuietly(file.toFile());
-        });
     }
 
     @Override

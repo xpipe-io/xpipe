@@ -172,7 +172,7 @@ public class DesktopShortcuts {
             // These installations always add the executable to the path
             if (AppDistributionType.get() == AppDistributionType.NIX) {
                 return createLinuxShortcut(
-                        AppInstallation.ofCurrent().getCliExecutablePath().getFileName().toString(),
+                        AppNames.ofCurrent().getKebapName(),
                         cliArgs,
                         compat);
             }

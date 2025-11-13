@@ -38,10 +38,11 @@ public class ActionShortcutComp extends SimpleComp {
     protected Region createSimple() {
         var options = new OptionsBuilder();
         options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
-        options.nameAndDescription(
-                        AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled")
-                .addComp(createUrlComp())
-                .disable(!AppDistributionType.get().isSupportsUrls());
+        options.name(AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled");
+        options.description(AppDistributionType.get().isSupportsUrls() ?
+                        AppI18n.observable("actionUrlShortcutDescription") :
+                AppI18n.observable("actionUrlShortcutDisabledDescription", AppDistributionType.get().toTranslatedString().getValue()));
+        options.addComp(createUrlComp()).disable(!AppDistributionType.get().isSupportsUrls());
         options.nameAndDescription("actionApiCall").addComp(createApiComp());
         //        options.nameAndDescription("actionMacro")
         //                .addComp(createMacroComp());
