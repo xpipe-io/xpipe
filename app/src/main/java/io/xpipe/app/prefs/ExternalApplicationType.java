@@ -139,9 +139,11 @@ public interface ExternalApplicationType extends PrefsValue {
                                 + " not installed. Install it and refresh the environment by restarting XPipe"));
             }
 
-            try (ShellControl pc = LocalShell.getShell()) {
-                args.add(0, FlatpakCache.runCommand(getFlatpakId()));
-                pc.command(args).execute();
+            args.add(0, FlatpakCache.runCommand(getFlatpakId()));
+            if (detach()) {
+                ExternalApplicationHelper.startAsync(args);
+            } else {
+                LocalShell.getShell().command(args).execute();
             }
         }
     }
