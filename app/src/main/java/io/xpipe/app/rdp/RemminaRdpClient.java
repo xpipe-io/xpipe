@@ -38,6 +38,7 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
 
         var file = writeRdpConfigFile(configuration.getTitle(), c);
         launch(CommandBuilder.of().add("-c").addFile(file.toString()));
+        LocalFileTracker.deleteOnExit(file);
     }
 
     @Override

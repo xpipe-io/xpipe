@@ -2,6 +2,7 @@ package io.xpipe.app.vnc;
 
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.RemminaHelper;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -33,6 +34,7 @@ public class RemminaVncClient implements ExternalApplicationType.LinuxApplicatio
         var encrypted = pw.isPresent() ? RemminaHelper.encryptPassword(pw.get()) : Optional.<String>empty();
         var file = RemminaHelper.writeRemminaVncConfigFile(configuration, encrypted.orElse(null));
         launch(CommandBuilder.of().add("-c").addFile(file.toString()));
+        LocalFileTracker.deleteOnExit(file);
     }
 
     @Override

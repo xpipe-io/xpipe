@@ -108,6 +108,7 @@ open module io.xpipe.app {
     requires org.kordamp.ikonli.materialdesign2;
     requires org.kordamp.ikonli.bootstrapicons;
     requires jdk.zipfs;
+    requires io.xpipe.app;
 
     uses TerminalLauncher;
     uses ActionProvider;
