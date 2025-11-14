@@ -28,6 +28,8 @@ public abstract class ProcessControlProvider {
         return INSTANCE;
     }
 
+    public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
+
     public abstract BrowserStoreSessionTab<?> createVncSession(
             BrowserFullSessionModel model, DataStoreEntryRef<VncBaseStore> ref);
 

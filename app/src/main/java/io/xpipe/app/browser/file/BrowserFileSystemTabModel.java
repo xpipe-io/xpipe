@@ -8,14 +8,12 @@ import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileKind;
-import io.xpipe.app.ext.FileSystem;
-import io.xpipe.app.ext.FileSystemStore;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import io.xpipe.app.util.BooleanScope;
@@ -358,6 +356,11 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             return Optional.of(adjustedPath);
         }
 
+        // Open UNC paths in another tab if needed
+        if (handleUncPath(path)) {
+            return Optional.ofNullable(cps);
+        }
+
         // Evaluate optional expressions
         String evaluatedPath;
         if (customInput) {
@@ -432,6 +435,22 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         return Optional.empty();
+    }
+
+    private boolean handleUncPath(String path) {
+        if (path.startsWith("\\\\") &&
+                getBrowserModel() instanceof BrowserFullSessionModel bm && getFileSystem().getShell()
+                .map(shellControl -> shellControl.getShellDialect()).orElse(null) == ShellDialects.CMD) {
+            var env = ProcessControlProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
+            var entry = DataStoreEntry.createNew(getName().getValue() + " (PowerShell)", env);
+            entry.setColor(DataStorage.get().getEffectiveColor(getEntry().get()));
+            entry.setCategoryUuid(getEntry().get().getCategoryUuid());
+            bm.openFileSystemAsync(
+                    entry.ref(), null, m -> FilePath.of(path), null);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void cdSyncWithoutCheck(FilePath path) {

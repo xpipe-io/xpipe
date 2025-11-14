@@ -3,8 +3,10 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 
+import javafx.application.Platform;
 import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -21,6 +23,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BrowserBreadcrumbBar extends SimpleComp {
 
@@ -116,7 +119,16 @@ public class BrowserBreadcrumbBar extends SimpleComp {
         }
 
         breadcrumbs.selectedCrumbProperty().addListener((obs, old, val) -> {
-            model.cdAsync(val != null ? val.getValue() : null);
+            ThreadHelper.runAsync(() -> {
+                model.cdSync(val != null ? val.getValue().toString() : null);
+                var now = model.getCurrentPath().getValue();
+                // If we initiated a cd from the navbar, but it was rejected, reflect the changes
+                if (!Objects.equals(now ,val != null ? val.getValue() : null)) {
+                    Platform.runLater(() -> {
+                        breadcrumbs.setSelectedCrumb(old);
+                    });
+                }
+            });
         });
 
         return breadcrumbs;
