@@ -258,7 +258,7 @@ public final class AppPrefs {
             .documentationLink(DocumentationLink.TERMINAL_MULTIPLEXER)
             .build());
     final Property<Boolean> terminalAlwaysPauseOnExit = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(false))
+            .property(new GlobalBooleanProperty(true))
             .key("terminalAlwaysPauseOnExit")
             .valueClass(Boolean.class)
             .build());
