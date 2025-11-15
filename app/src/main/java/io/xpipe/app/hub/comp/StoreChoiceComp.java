@@ -46,7 +46,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         this.selected = selected;
 
         this.popover = new StoreChoicePopover<>(
-                self, selected, storeClass, applicableCheck, initialCategory, "selectConnection");
+                self, selected, storeClass, applicableCheck, initialCategory, "selectConnection", "noCompatibleConnection");
     }
 
     public static <T extends DataStore> StoreChoiceComp<T> other(

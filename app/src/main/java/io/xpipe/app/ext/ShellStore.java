@@ -33,10 +33,9 @@ public interface ShellStore extends DataStore, FileSystemStore, ValidatableStore
     }
 
     @Override
-    default ShellSession newSession() throws Exception {
+    default ShellSession newSession() {
         var func = shellFunction();
-        var c = func.control();
-        var session = new ShellSession(() -> c);
+        var session = new ShellSession(() -> func.control());
         session.addListener(this);
         return session;
     }

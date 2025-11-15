@@ -300,7 +300,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     IdentityStore.class,
                     null,
                     StoreViewState.get().getAllIdentitiesCategory(),
-                    "selectIdentity");
+                    "selectIdentity",
+                    "noCompatibleIdentity");
             ((Region) popover.getPopover().getContentNode()).setMaxHeight(350);
             var skin = new ComboBoxListViewSkin<>(struc.get()) {
                 @Override

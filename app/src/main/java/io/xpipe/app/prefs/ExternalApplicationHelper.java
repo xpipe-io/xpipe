@@ -1,10 +1,13 @@
 package io.xpipe.app.prefs;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.core.FilePath;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -59,7 +62,19 @@ public class ExternalApplicationHelper {
             } else if (exec.startsWith("'") && exec.endsWith("'")) {
                 exec = exec.substring(1, exec.length() - 1);
             }
-            CommandSupport.isInPathOrThrow(sc, exec);
+
+            // Some commands might be joined together without splitting into multiple elements
+            // e.g. user-provided commands
+            if (!exec.contains(" ")) {
+                var execFile = FilePath.of(exec);
+                if (execFile.isAbsolute()) {
+                    if (!sc.view().fileExists(execFile)) {
+                        throw ErrorEventFactory.expected(new IOException("Executable " + execFile + " does not exist"));
+                    }
+                } else {
+                    CommandSupport.isInPathOrThrow(sc, exec);
+                }
+            }
 
             var cmd = sc.getShellDialect().launchAsnyc(b);
             TrackEvent.withDebug("Executing local application")

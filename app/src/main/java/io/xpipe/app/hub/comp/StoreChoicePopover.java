@@ -42,6 +42,7 @@ public class StoreChoicePopover<T extends DataStore> {
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper initialCategory;
     private final String titleKey;
+    private final String noMatchKey;
     private Popover popover;
 
     public void show(Node node) {
@@ -176,7 +177,7 @@ public class StoreChoicePopover<T extends DataStore> {
                         var count = StoreViewState.get().getAllEntries().getList().stream()
                                 .filter(applicable)
                                 .count();
-                        return count == 0 ? AppI18n.get("noCompatibleConnection") : null;
+                        return count == 0 ? AppI18n.get(noMatchKey) : null;
                     },
                     StoreViewState.get().getAllEntries().getList());
             var emptyLabel =

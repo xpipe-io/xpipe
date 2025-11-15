@@ -68,7 +68,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
         });
 
         this.popover = new StoreChoicePopover<>(
-                self, popoverProp, storeClass, applicableCheck, initialCategory, "selectConnection");
+                self, popoverProp, storeClass, applicableCheck, initialCategory, "selectConnection", "noCompatibleConnection");
 
         this.selected.addListener((v, o, n) -> {
             TrackEvent.withTrace("Store combo choice value changed")
