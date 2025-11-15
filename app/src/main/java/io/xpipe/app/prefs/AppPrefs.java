@@ -219,7 +219,7 @@ public final class AppPrefs {
     public final Property<Boolean> alwaysConfirmElevation =
             mapVaultShared(new GlobalObjectProperty<>(false), "alwaysConfirmElevation", Boolean.class, false);
     public final BooleanProperty focusWindowOnNotifications = map(Mapping.builder()
-            .property(new GlobalBooleanProperty(false))
+            .property(new GlobalBooleanProperty(true))
             .key("focusWindowOnNotifications")
             .valueClass(Boolean.class)
             .build());
