@@ -48,6 +48,7 @@ public class DashlanePasswordManager implements PasswordManager {
                         .title("Dashlane login")
                         .localScript(script)
                         .logIfEnabled(false)
+                        .alwaysKeepOpen(true)
                         .launch();
                 return null;
             }

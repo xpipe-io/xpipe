@@ -54,6 +54,7 @@ public class LastpassPasswordManager implements PasswordManager {
                             .title("LastPass login")
                             .localScript(script)
                             .logIfEnabled(false)
+                            .alwaysKeepOpen(true)
                             .launch();
                 }
                 return null;

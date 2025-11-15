@@ -49,6 +49,7 @@ public class PodmanContainerLogsActionProvider implements HubLeafProvider<Podman
             var d = (PodmanContainerStore) ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
             TerminalLaunch.builder()
+                    .alwaysKeepOpen(true)
                     .entry(ref.get())
                     .title("Logs")
                     .command(view.logs(d.getContainerName()))

@@ -30,6 +30,7 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
                     .entry(ref.get())
                     .title(scriptStore.get().getName())
                     .command(sc.command(script))
+                    .alwaysKeepOpen(true)
                     .launch();
         }
 

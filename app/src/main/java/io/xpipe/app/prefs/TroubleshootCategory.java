@@ -73,6 +73,7 @@ public class TroubleshootCategory extends AppPrefsCategory {
                                         var script = AppInstallation.ofCurrent().getDaemonDebugScriptPath();
                                         TerminalLaunch.builder()
                                                 .title(AppNames.ofCurrent().getName() + " Debug")
+                                                .alwaysKeepOpen(true)
                                                 .localScript(sc -> new ShellScript(
                                                         sc.getShellDialect().runScriptCommand(sc, script.toString())))
                                                 .launch();

@@ -115,6 +115,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                                     "If you can read this, the terminal integration works", false)))
                                     .preferTabs(false)
                                     .logIfEnabled(false)
+                                    .alwaysKeepOpen(true)
                                     .launch();
                         }
                     });

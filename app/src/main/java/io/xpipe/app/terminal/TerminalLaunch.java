@@ -35,6 +35,9 @@ public class TerminalLaunch {
     @Builder.Default
     boolean logIfEnabled = true;
 
+    @Builder.Default
+    boolean alwaysKeepOpen = false;
+
     ExternalTerminalType terminal;
 
     public String getFullTitle() {
@@ -67,6 +70,7 @@ public class TerminalLaunch {
                 request != null ? request : UUID.randomUUID(),
                 preferTabs,
                 logIfEnabled,
+                alwaysKeepOpen,
                 type);
     }
 
