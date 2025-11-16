@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
@@ -100,6 +101,20 @@ public class SentryErrorHandler implements ErrorHandler {
                 var patternField = PatternSyntaxException.class.getDeclaredField("pattern");
                 patternField.setAccessible(true);
                 patternField.set(copy, "");
+            }
+
+            if (copy instanceof ProcessOutputException) {
+                var prefixField = ProcessOutputException.class.getDeclaredField("prefix");
+                prefixField.setAccessible(true);
+                prefixField.set(copy, null);
+
+                var suffixField = ProcessOutputException.class.getDeclaredField("suffix");
+                suffixField.setAccessible(true);
+                suffixField.set(copy, null);
+
+                var outputField = ProcessOutputException.class.getDeclaredField("output");
+                outputField.setAccessible(true);
+                outputField.set(copy, "");
             }
 
             var causeField = Throwable.class.getDeclaredField("cause");

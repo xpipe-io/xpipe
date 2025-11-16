@@ -33,6 +33,10 @@ public class ProcessOutputException extends Exception {
 
     @Override
     public String getMessage() {
+        if (prefix == null && suffix == null && "".equals(output)) {
+            return null;
+        }
+
         var messagePrefix = prefix != null ? prefix + "\n\n" : "";
         var messageSuffix = suffix != null ? "\n\n" + suffix : "";
         var message = messagePrefix + output + messageSuffix;
