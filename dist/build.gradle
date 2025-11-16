@@ -109,10 +109,10 @@ if (fullVersion) {
         apply from: 'nix/nix.gradle'
         apply from: 'aur/aur.gradle'
         apply from: 'homebrew/homebrew.gradle'
+        apply from: 'choco/choco.gradle'
     } else if (os.isWindows()) {
         apply from: 'msi/msi.gradle'
         apply from: 'winget/winget.gradle'
-        apply from: 'choco/choco.gradle'
     } else if (os.isMacOsX()) {
         apply from: 'pkg/pkg.gradle'
     }
