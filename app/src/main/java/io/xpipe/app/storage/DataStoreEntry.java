@@ -685,7 +685,7 @@ public class DataStoreEntry extends StorageElement {
                 return;
             }
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return;
         }
 
