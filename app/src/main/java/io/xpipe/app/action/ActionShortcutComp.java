@@ -7,7 +7,6 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -39,9 +38,12 @@ public class ActionShortcutComp extends SimpleComp {
         var options = new OptionsBuilder();
         options.nameAndDescription("actionDesktopShortcut").addComp(createDesktopComp());
         options.name(AppDistributionType.get().isSupportsUrls() ? "actionUrlShortcut" : "actionUrlShortcutDisabled");
-        options.description(AppDistributionType.get().isSupportsUrls() ?
-                        AppI18n.observable("actionUrlShortcutDescription") :
-                AppI18n.observable("actionUrlShortcutDisabledDescription", AppDistributionType.get().toTranslatedString().getValue()));
+        options.description(
+                AppDistributionType.get().isSupportsUrls()
+                        ? AppI18n.observable("actionUrlShortcutDescription")
+                        : AppI18n.observable(
+                                "actionUrlShortcutDisabledDescription",
+                                AppDistributionType.get().toTranslatedString().getValue()));
         options.addComp(createUrlComp()).disable(!AppDistributionType.get().isSupportsUrls());
         options.nameAndDescription("actionApiCall").addComp(createApiComp());
         //        options.nameAndDescription("actionMacro")
@@ -83,7 +85,8 @@ public class ActionShortcutComp extends SimpleComp {
         });
         var copyButton = new ButtonComp(null, new FontIcon("mdi2f-file-move-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var file = DesktopShortcuts.createOpen(name.getValue(), "open \"" + url.getValue() + "\"", null);
+                        var file =
+                                DesktopShortcuts.createOpen(name.getValue(), "open \"" + url.getValue() + "\"", null);
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })

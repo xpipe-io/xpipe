@@ -1,8 +1,6 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.augment.Augment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
@@ -17,7 +15,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
 

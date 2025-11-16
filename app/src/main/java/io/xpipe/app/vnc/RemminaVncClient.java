@@ -4,12 +4,10 @@ import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.RemminaHelper;
-import io.xpipe.app.util.ThreadHelper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
-import org.apache.commons.io.FileUtils;
 
 import java.util.Optional;
 

@@ -68,7 +68,13 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
         });
 
         this.popover = new StoreChoicePopover<>(
-                self, popoverProp, storeClass, applicableCheck, initialCategory, "selectConnection", "noCompatibleConnection");
+                self,
+                popoverProp,
+                storeClass,
+                applicableCheck,
+                initialCategory,
+                "selectConnection",
+                "noCompatibleConnection");
 
         this.selected.addListener((v, o, n) -> {
             TrackEvent.withTrace("Store combo choice value changed")
@@ -82,7 +88,8 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
             return null;
         }
 
-        var converted = stringConverter != null ? stringConverter.apply(entry.getStore().asNeeded()) : null;
+        var converted =
+                stringConverter != null ? stringConverter.apply(entry.getStore().asNeeded()) : null;
         var convertedString = converted != null ? " [" + converted + "]" : "";
         return entry.getName() + convertedString;
     }

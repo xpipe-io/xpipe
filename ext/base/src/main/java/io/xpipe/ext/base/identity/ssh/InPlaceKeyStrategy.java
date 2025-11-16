@@ -96,11 +96,13 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
 
         parent.view().touch(file);
         if (parent.getOsType() != OsType.WINDOWS) {
-            parent.command(CommandBuilder.of().add("chmod", "600").addFile(file)).execute();
+            parent.command(CommandBuilder.of().add("chmod", "600").addFile(file))
+                    .execute();
         }
         parent.view().writeTextFile(file, key.getSecretValue());
         if (parent.getOsType() != OsType.WINDOWS) {
-            parent.command(CommandBuilder.of().add("chmod", "400").addFile(file)).execute();
+            parent.command(CommandBuilder.of().add("chmod", "400").addFile(file))
+                    .execute();
         }
 
         LocalFileTracker.deleteOnExit(file.asLocalPath());

@@ -438,15 +438,19 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private boolean handleUncPath(String path) {
-        if (path.startsWith("\\\\") &&
-                getBrowserModel() instanceof BrowserFullSessionModel bm && getFileSystem().getShell()
-                .map(shellControl -> shellControl.getShellDialect()).orElse(null) == ShellDialects.CMD) {
-            var env = ProcessControlProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
+        if (path.startsWith("\\\\")
+                && getBrowserModel() instanceof BrowserFullSessionModel bm
+                && getFileSystem()
+                                .getShell()
+                                .map(shellControl -> shellControl.getShellDialect())
+                                .orElse(null)
+                        == ShellDialects.CMD) {
+            var env =
+                    ProcessControlProvider.get().subShellEnvironment(getEntry().asNeeded(), ShellDialects.POWERSHELL);
             var entry = DataStoreEntry.createNew(getName().getValue() + " (PowerShell)", env);
             entry.setColor(DataStorage.get().getEffectiveColor(getEntry().get()));
             entry.setCategoryUuid(getEntry().get().getCategoryUuid());
-            bm.openFileSystemAsync(
-                    entry.ref(), null, m -> FilePath.of(path), null);
+            bm.openFileSystemAsync(entry.ref(), null, m -> FilePath.of(path), null);
             return true;
         } else {
             return false;

@@ -129,7 +129,8 @@ public class TerminalLauncher {
                         && AppPrefs.get().clearTerminalOnInit().get()
                         && !AppPrefs.get().developerPrintInitFiles().get(),
                 cc instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-        var alwaysPromptRestart = alwaysKeepOpen || AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
+        var alwaysPromptRestart =
+                alwaysKeepOpen || AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
         var latch = TerminalLauncherManager.submitAsync(request, cc, terminalConfig, directory);
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();

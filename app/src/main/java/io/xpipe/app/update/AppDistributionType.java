@@ -167,7 +167,9 @@ public enum AppDistributionType implements Translatable {
                 }
 
                 if (AppInstallation.ofCurrent()
-                        .getBaseInstallationPath().toString().startsWith("/nix/store")) {
+                        .getBaseInstallationPath()
+                        .toString()
+                        .startsWith("/nix/store")) {
                     return NIX;
                 }
 

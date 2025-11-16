@@ -123,7 +123,7 @@ public class BrowserBreadcrumbBar extends SimpleComp {
                 model.cdSync(val != null ? val.getValue().toString() : null);
                 var now = model.getCurrentPath().getValue();
                 // If we initiated a cd from the navbar, but it was rejected, reflect the changes
-                if (!Objects.equals(now ,val != null ? val.getValue() : null)) {
+                if (!Objects.equals(now, val != null ? val.getValue() : null)) {
                     Platform.runLater(() -> {
                         breadcrumbs.setSelectedCrumb(old);
                     });

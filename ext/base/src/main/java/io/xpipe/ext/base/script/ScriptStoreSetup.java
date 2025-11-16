@@ -16,7 +16,8 @@ public class ScriptStoreSetup {
         controlWithScripts(pc, getEnabledScripts(), false);
     }
 
-    public static void controlWithScripts(ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
+    public static void controlWithScripts(
+            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
         try {
             var dialect = pc.getShellDialect();
             if (dialect == null) {
@@ -51,43 +52,47 @@ public class ScriptStoreSetup {
             }
 
             initFlattened.forEach(s -> {
-                pc.withInitSnippet(new ShellTerminalInitCommand() {
-                    @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) {
-                        return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
-                    }
+                pc.withInitSnippet(
+                        new ShellTerminalInitCommand() {
+                            @Override
+                            public Optional<String> terminalContent(ShellControl shellControl) {
+                                return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl));
+                            }
 
-                    @Override
-                    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-                        return s.getStore().isCompatible(dialect);
-                    }
-                }, append);
+                            @Override
+                            public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                                return s.getStore().isCompatible(dialect);
+                            }
+                        },
+                        append);
             });
             if (!bringFlattened.isEmpty()) {
                 var finalBringFlattened = bringFlattened;
-                pc.withInitSnippet(new ShellTerminalInitCommand() {
+                pc.withInitSnippet(
+                        new ShellTerminalInitCommand() {
 
-                    String dir;
+                            String dir;
 
-                    @Override
-                    public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
-                        if (dir == null) {
-                            dir = initScriptsDirectory(shellControl, finalBringFlattened);
-                        }
+                            @Override
+                            public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
+                                if (dir == null) {
+                                    dir = initScriptsDirectory(shellControl, finalBringFlattened);
+                                }
 
-                        if (dir == null) {
-                            return Optional.empty();
-                        }
+                                if (dir == null) {
+                                    return Optional.empty();
+                                }
 
-                        return Optional.ofNullable(
-                                shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
-                    }
+                                return Optional.ofNullable(
+                                        shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                            }
 
-                    @Override
-                    public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
-                        return true;
-                    }
-                }, append);
+                            @Override
+                            public boolean canPotentiallyRunInDialect(ShellDialect dialect) {
+                                return true;
+                            }
+                        },
+                        append);
             }
         } catch (StackOverflowError t) {
             throw ErrorEventFactory.expected(

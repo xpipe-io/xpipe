@@ -3,14 +3,11 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
-import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -51,10 +48,10 @@ public class WorkspaceCreationDialog {
 
                 try {
                     var shortcutName = name.get();
-                    var file = DesktopShortcuts.createOpen(shortcutName,
+                    var file = DesktopShortcuts.createOpen(
+                            shortcutName,
                             "open -d \"" + path.get() + "\" --accept-eula",
-                            "-Dio.xpipe.app.dataDir=\"" + path.get()
-                                    + "\" -Dio.xpipe.app.acceptEula=true");
+                            "-Dio.xpipe.app.dataDir=\"" + path.get() + "\" -Dio.xpipe.app.acceptEula=true");
                     // This is an async action, so sleep
                     DesktopHelper.browseFileInDirectory(file);
                     ThreadHelper.sleep(1000);

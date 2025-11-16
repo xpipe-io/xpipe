@@ -254,7 +254,9 @@ public class StoreCategoryComp extends SimpleComp {
                         category.moveToParent(storeCategoryWrapper.getCategory());
                         event.consume();
                     });
-                    if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(category) || storeCategoryWrapper.equals(category.getParent())) {
+                    if (storeCategoryWrapper.getParent() == null
+                            || storeCategoryWrapper.equals(category)
+                            || storeCategoryWrapper.equals(category.getParent())) {
                         m.setDisable(true);
                     }
 
