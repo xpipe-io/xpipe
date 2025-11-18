@@ -34,8 +34,21 @@ public class DesktopHelper {
         }
 
         // This can be a blocking operation
-        ThreadHelper.runFailableAsync(() -> {
-            Desktop.getDesktop().browse(parsed);
+        ThreadHelper.runAsync(() -> {
+            try {
+                Desktop.getDesktop().browse(parsed);
+                return;
+            } catch (Exception e) {
+                // Some basic linux systems have trouble with the API call
+                ErrorEventFactory.fromThrowable(e)
+                        .expected()
+                        .omitted(OsType.ofLocal() == OsType.LINUX)
+                        .handle();
+            }
+
+            if (OsType.ofLocal() == OsType.LINUX) {
+                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+            }
         });
     }
 
