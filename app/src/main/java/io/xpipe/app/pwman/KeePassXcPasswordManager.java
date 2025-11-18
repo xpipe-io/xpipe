@@ -9,6 +9,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 
@@ -47,7 +48,9 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 .addComp(new ButtonComp(AppI18n.observable("keePassXcNotAssociatedButton"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
                         var r = associate();
-                        prop.setValue(r);
+                        Platform.runLater(() -> {
+                            prop.setValue(r);
+                        });
                     });
                 }))
                 .hide(prop.isNotNull())
