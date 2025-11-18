@@ -200,15 +200,6 @@ interface InjectedExecOps {
 // Project variables
 
 project.ext {
-    // Build config
-    os = org.gradle.internal.os.OperatingSystem.current()
-    groupName = 'io.xpipe'
-    artifactName = 'app'
-    arch = getArchName()
-    jvmRunArgs = getJvmArgs()
-    useBundledJna = fullVersion
-    sentryUrl = "https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279"
-
     // Release pipeline config
     isFullRelease = System.getenv('RELEASE') != null && Boolean.parseBoolean(System.getenv('RELEASE'))
     isStage = System.getenv('STAGE') != null && Boolean.parseBoolean(System.getenv('STAGE'))
@@ -216,7 +207,7 @@ project.ext {
     obfuscate = true
     fullVersion = file("$rootDir/private_files.txt").exists()
     // TODO: Disable AOT for now on Windows due to rare crashes
-    bundleCds = ci && fullVersion && !os.isWindows()
+    bundleCds = ci && fullVersion && !org.gradle.internal.os.OperatingSystem.current().isWindows()
 
     // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'
@@ -260,6 +251,15 @@ project.ext {
             .filter(s -> s != 'base')
             .map(l -> project(":$l"))).toList()
     privateExtensions = file("$rootDir/private_extensions.txt").exists() ? file("$rootDir/private_extensions.txt").readLines() : []
+
+    // Build config
+    os = org.gradle.internal.os.OperatingSystem.current()
+    groupName = 'io.xpipe'
+    artifactName = 'app'
+    arch = getArchName()
+    jvmRunArgs = getJvmArgs()
+    useBundledJna = fullVersion
+    sentryUrl = "https://fd5f67ff10764b7e8a704bec9558c8fe@o1084459.ingest.sentry.io/6094279"
 
     // JPackage config
     jpackageExecutableName = "xpiped"

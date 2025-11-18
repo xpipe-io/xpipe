@@ -87,6 +87,42 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
+
+    WindowsType ANTIGRAVITY_WINDOWS = new WindowsType() {
+
+        @Override
+        public String getWebsite() {
+            return "https://antigravity.google/";
+        }
+
+        @Override
+        public String getId() {
+            return "app.antigravity";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "antigravity.cmd";
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            return Optional.of(AppSystemInfo.ofWindows()
+                            .getLocalAppData()
+                            .resolve("Programs")
+                            .resolve("Antigravity")
+                            .resolve("bin")
+                            .resolve("antigravity.cmd"))
+                    .filter(path -> Files.exists(path));
+        }
+    };
+
+
     WindowsType CURSOR_WINDOWS = new WindowsType() {
 
         @Override
@@ -464,6 +500,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxType VSCODIUM_LINUX = new LinuxType("app.vscodium", "codium", "https://vscodium.com/", "com.vscodium.codium");
 
+    LinuxType ANTIGRAVITY_LINUX = new LinuxType("app.antigravity", "antigravity", "https://antigravity.google/", null);
+
     LinuxType GNOME = new LinuxType("app.gnomeTextEditor", "gnome-text-editor", "LinuxType", "org.gnome.TextEditor");
 
     LinuxType KATE = new LinuxType("app.kate", "kate", "https://kate-editor.org", "org.kde.kate");
@@ -483,6 +521,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType VSCODE_MACOS =
             new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium", "https://vscodium.com/");
+    ExternalEditorType ANTIGRAVITY_MACOS = new MacOsEditor("app.antigravity", "Antigravity", "https://antigravity.google/");
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor", "https://cursor.com/");
     ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void", "https://voideditor.com/");
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf", "https://windsurf.com/editor");
@@ -549,6 +588,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             WINDSURF_WINDOWS,
             TRAE_WINDOWS,
             KIRO_WINDOWS,
+            ANTIGRAVITY_WINDOWS,
             VSCODIUM_WINDOWS,
             VSCODE_INSIDERS_WINDOWS,
             VSCODE_WINDOWS,
@@ -558,6 +598,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             ExternalEditorType.WINDSURF_LINUX,
             ExternalEditorType.KIRO_LINUX,
             VSCODIUM_LINUX,
+            ANTIGRAVITY_LINUX,
             VSCODE_LINUX,
             ZED_LINUX,
             KATE,
@@ -575,6 +616,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             TRAE_MACOS,
             BBEDIT,
             VSCODIUM_MACOS,
+            ANTIGRAVITY_MACOS,
             VSCODE_MACOS,
             SUBLIME_MACOS,
             ZED_MACOS,
