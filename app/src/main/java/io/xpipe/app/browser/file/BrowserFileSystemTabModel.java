@@ -22,6 +22,7 @@ import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableBooleanValue;
@@ -60,6 +61,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final LongProperty progressTransferSpeed = new SimpleLongProperty();
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
     private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
+    private final StringProperty fileSystemNameSuffix = new SimpleStringProperty();
     private FileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
 
@@ -71,6 +73,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         super(model, entry);
         this.fileList = new BrowserFileListModel(selectionMode, this);
         this.fileSystemFactory = fileSystemFactory;
+    }
+
+    @Override
+    public ObservableValue<String> getName() {
+        var name = super.getName();
+        return Bindings.createStringBinding(() -> {
+            var suffix = fileSystemNameSuffix.get();
+            return name.getValue() + (suffix != null ? " [" + suffix + "]" : "");
+        });
     }
 
     public void updateProgress(BrowserTransferProgress n) {
@@ -149,6 +160,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
             var fs = fileSystemFactory.apply(getEntry().asNeeded());
+            Platform.runLater(() -> {
+                getFileSystemNameSuffix().set(fs.getSuffix());
+            });
             if (fs.getShell().isPresent()) {
                 ProcessControlProvider.get().withDefaultScripts(fs.getShell().get());
             }

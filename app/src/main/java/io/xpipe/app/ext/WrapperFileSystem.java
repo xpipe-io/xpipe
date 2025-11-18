@@ -25,6 +25,11 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public String getSuffix() {
+        return fs.getSuffix();
+    }
+
+    @Override
     public boolean isRunning() {
         return fs.isRunning();
     }

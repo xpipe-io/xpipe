@@ -32,6 +32,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public String getSuffix() {
+        return null;
+    }
+
+    @Override
     public boolean isRunning() {
         return shellControl.isRunning(true);
     }
