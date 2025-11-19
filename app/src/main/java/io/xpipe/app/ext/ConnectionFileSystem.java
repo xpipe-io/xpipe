@@ -12,6 +12,8 @@ import io.xpipe.core.OsType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -232,7 +234,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public InputStream openInput(FilePath file) throws Exception {
         if (shellControl.isLocal()) {
-            return Files.newInputStream(file.asLocalPath());
+            return new BufferedInputStream(Files.newInputStream(file.asLocalPath()));
         }
 
         return shellControl
@@ -244,7 +246,7 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public OutputStream openOutput(FilePath file, long totalBytes) throws Exception {
         if (shellControl.isLocal()) {
-            return Files.newOutputStream(file.asLocalPath());
+            return new BufferedOutputStream(Files.newOutputStream(file.asLocalPath()));
         }
 
         var cmd =

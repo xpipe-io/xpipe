@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -228,19 +229,29 @@ public class StoreViewState {
     }
 
     private void initFilterListener() {
-        var all = getAllConnectionsCategory();
         filter.addListener((observable, oldValue, newValue) -> {
-            categories.getList().forEach(e -> e.update());
-            var matchingCats = categories.getList().stream()
-                    .filter(storeCategoryWrapper ->
-                            storeCategoryWrapper.getRoot().equals(all))
-                    .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().getList().stream()
-                            .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
-                    .toList();
-            if (matchingCats.size() == 1) {
-                activeCategory.setValue(matchingCats.getFirst());
-            }
+            ThreadHelper.runAsync(() -> {
+                onFilterUpdate(newValue);
+            });
         });
+    }
+
+    private void onFilterUpdate(String newValue) {
+        var all = getAllConnectionsCategory();
+        categories.getList().forEach(e -> {
+            Platform.runLater(() -> {
+                e.update();
+            });
+        });
+        var matchingCats = categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getRoot().equals(all))
+                .filter(storeCategoryWrapper -> storeCategoryWrapper.getDirectContainedEntries().getList().stream()
+                        .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
+                .toList();
+        if (matchingCats.size() == 1) {
+            activeCategory.setValue(matchingCats.getFirst());
+        }
     }
 
     private void initBatchListeners() {

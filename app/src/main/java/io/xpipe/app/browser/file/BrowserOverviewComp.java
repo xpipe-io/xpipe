@@ -10,6 +10,7 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.util.ThreadHelper;
 
+import io.xpipe.core.FilePath;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -46,22 +47,22 @@ public class BrowserOverviewComp extends SimpleComp {
 
         var commonPlatform = FXCollections.<FileEntry>synchronizedObservableList(FXCollections.observableArrayList());
         ThreadHelper.runFailableAsync(() -> {
-            var common = model.getFileSystem().listCommonDirectories().stream()
-                    .map(s -> FileEntry.ofDirectory(model.getFileSystem(), s))
-                    .filter(entry -> {
-                        var fs = model.getFileSystem();
-
-                        try {
-                            return fs.directoryExists(entry.getPath());
-                        } catch (Exception e) {
-                            ErrorEventFactory.fromThrowable(e).handle();
-                            return false;
-                        }
-                    })
-                    .toList();
-            Platform.runLater(() -> {
-                commonPlatform.setAll(common);
-            });
+            try {
+                var all = new ArrayList<FileEntry>();
+                for (FilePath cd : model.getFileSystem().listCommonDirectories()) {
+                    var entry = FileEntry.ofDirectory(model.getFileSystem(), cd);
+                    var fs = model.getFileSystem();
+                    if (fs.directoryExists(entry.getPath())) {
+                        all.add(entry);
+                    }
+                }
+                Platform.runLater(() -> {
+                    commonPlatform.setAll(all);
+                });
+            } catch (Exception e) {
+                // The file system can die
+                ErrorEventFactory.fromThrowable(e).expected().omit().handle();
+            }
         });
         var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false)
