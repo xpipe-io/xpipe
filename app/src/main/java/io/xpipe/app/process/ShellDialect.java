@@ -38,7 +38,7 @@ public interface ShellDialect {
 
     String queryVersion(ShellControl shellControl) throws Exception;
 
-    CommandControl queryFileSize(ShellControl shellControl, String file);
+    CommandControl queryFileSize(ShellControl shellControl, String file) throws Exception;
 
     long queryDirectorySize(ShellControl shellControl, String file) throws Exception;
 

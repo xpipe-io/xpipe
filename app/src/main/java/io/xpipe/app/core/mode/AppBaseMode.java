@@ -67,7 +67,6 @@ public class AppBaseMode extends AppOperationMode {
         AppPathCorruptCheck.check();
         AppWindowsTempCheck.check();
         AppDirectoryPermissionsCheck.checkDirectory(AppSystemInfo.ofCurrent().getTemp());
-        AppHomebrewCoreutilsCheck.check();
         WindowsRegistry.init();
         AppAvCheck.check();
         AppJavaOptionsCheck.check();
