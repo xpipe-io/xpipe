@@ -14,10 +14,12 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileReference;
+import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 
@@ -25,6 +27,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -116,7 +121,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         var category = new SimpleObjectProperty<>(
                 StoreViewState.get().getActiveCategory().getValue());
         var filter = new SimpleStringProperty();
-        var bookmarkTopBar = new BrowserConnectionListFilterComp(category, filter);
+        var filterTrigger = new ObservableSubscriber();
+        var bookmarkTopBar = new BrowserConnectionListFilterComp(filterTrigger, category, filter);
         var bookmarksList = new BrowserConnectionListComp(
                 BindingsHelper.map(
                         model.getSelectedEntry(), v -> v != null ? v.getEntry().get() : null),
@@ -146,6 +152,10 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                         s.getChildren().clear();
                     }
                 });
+            });
+            InputHelper.onKeyCombination(s, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                filterTrigger.trigger();
+                keyEvent.consume();
             });
             return s;
         });

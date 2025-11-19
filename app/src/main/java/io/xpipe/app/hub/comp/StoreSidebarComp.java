@@ -4,16 +4,21 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.VerticalComp;
 
+import io.xpipe.app.util.ObservableSubscriber;
 import javafx.scene.layout.Region;
 
 import java.util.List;
 
 public class StoreSidebarComp extends SimpleComp {
 
+    private final ObservableSubscriber filterTrigger;
+
+    public StoreSidebarComp(ObservableSubscriber filterTrigger) {this.filterTrigger = filterTrigger;}
+
     @Override
     protected Region createSimple() {
         var sideBar = new VerticalComp(List.of(
-                new StoreEntryListOverviewComp()
+                new StoreEntryListOverviewComp(filterTrigger)
                         .styleClass("color-box")
                         .styleClass("gray")
                         .styleClass("bar"),

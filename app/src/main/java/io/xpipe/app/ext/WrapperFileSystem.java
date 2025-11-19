@@ -25,6 +25,11 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception {
+        return fs.writeInstantIfPossible(sourceFs, sourceFile, targetFile);
+    }
+
+    @Override
     public String getSuffix() {
         return fs.getSuffix();
     }

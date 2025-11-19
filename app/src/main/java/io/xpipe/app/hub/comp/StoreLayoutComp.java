@@ -7,6 +7,11 @@ import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 
+import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.util.ObservableSubscriber;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 
 public class StoreLayoutComp extends SimpleComp {
@@ -20,7 +25,8 @@ public class StoreLayoutComp extends SimpleComp {
     }
 
     private Region createContent() {
-        var left = new StoreSidebarComp();
+        var filterTrigger = new ObservableSubscriber();
+        var left = new StoreSidebarComp(filterTrigger);
         left.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
         left.minWidth(270);
         left.maxWidth(500);
@@ -35,6 +41,12 @@ public class StoreLayoutComp extends SimpleComp {
                     AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);
                 });
         comp.styleClass("store-layout");
+        comp.apply(struc -> {
+            InputHelper.onKeyCombination(struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                filterTrigger.trigger();
+                keyEvent.consume();
+            });
+        });
         return comp.createRegion();
     }
 }

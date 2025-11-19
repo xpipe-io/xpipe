@@ -5,6 +5,7 @@ import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -36,6 +37,18 @@ public class MultiContentComp extends SimpleComp {
             }
         });
 
+        stack.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                var selected = content.entrySet().stream()
+                        .filter(e -> e.getValue().getValue())
+                        .map(e -> m.get(e.getKey()))
+                        .findFirst();
+                if (selected.isPresent()) {
+                    selected.get().requestFocus();
+                }
+            }
+        });
+
         for (Map.Entry<Comp<?>, ObservableValue<Boolean>> e : content.entrySet()) {
             var name = e.getKey().getClass().getSimpleName();
             if (log) {
@@ -49,6 +62,11 @@ public class MultiContentComp extends SimpleComp {
                 PlatformThread.runLaterIfNeeded(() -> {
                     r.setManaged(val);
                     r.setVisible(val);
+                    if (val) {
+                        Platform.runLater(() -> {
+                            r.requestFocus();
+                        });
+                    }
                 });
             });
             m.put(e.getKey(), r);

@@ -90,6 +90,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
             }
             PlatformThread.runNestedLoopIteration();
             sidebar.setDisable(false);
+            stack.requestFocus();
         }
 
         @Override

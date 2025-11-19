@@ -100,6 +100,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                         return null;
                     }
 
+                    // Handle unknown transfers
                     if (p.getTotal() == 0) {
                         return HumanReadableFormat.byteCount(p.getTransferred());
                     }
@@ -132,6 +133,16 @@ public class BrowserStatusBarComp extends SimpleComp {
                 return null;
             } else {
                 var transferred = HumanReadableFormat.progressByteCount(p.getTransferred());
+
+                // Handle unknown transfers
+                if (p.getTotal() == 0) {
+                    if (p.getTransferred() == 0) {
+                        return "...";
+                    } else {
+                        return transferred;
+                    }
+                }
+
                 var all = HumanReadableFormat.byteCount(p.getTotal());
                 return transferred + " / " + all;
             }

@@ -13,7 +13,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
+import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -23,6 +25,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
@@ -42,7 +47,8 @@ public class BrowserFullSessionComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        var left = Comp.of(() -> createLeftSide());
+        var filterTrigger = new ObservableSubscriber();
+        var left = Comp.of(() -> createLeftSide(filterTrigger));
 
         var leftSplit = new SimpleDoubleProperty();
         var rightSplit = new SimpleDoubleProperty();
@@ -103,12 +109,18 @@ public class BrowserFullSessionComp extends SimpleComp {
                 }
             });
         });
+        splitPane.apply(struc -> {
+            InputHelper.onKeyCombination(struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                filterTrigger.trigger();
+                keyEvent.consume();
+            });
+        });
         splitPane.styleClass("browser");
         var r = splitPane.createRegion();
         return r;
     }
 
-    private Region createLeftSide() {
+    private Region createLeftSide(ObservableSubscriber filterTrigger) {
         Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
             if (!storeEntryWrapper.getEntry().getValidity().isUsable()) {
                 return false;
@@ -138,7 +150,7 @@ public class BrowserFullSessionComp extends SimpleComp {
         var category = new SimpleObjectProperty<>(
                 StoreViewState.get().getActiveCategory().getValue());
         var filter = new SimpleStringProperty();
-        var bookmarkTopBar = new BrowserConnectionListFilterComp(category, filter);
+        var bookmarkTopBar = new BrowserConnectionListFilterComp(filterTrigger, category, filter);
         var bookmarksList = new BrowserConnectionListComp(
                 BindingsHelper.map(
                         model.getSelectedEntry(),

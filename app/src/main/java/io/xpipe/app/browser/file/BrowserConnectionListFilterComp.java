@@ -8,6 +8,7 @@ import io.xpipe.app.hub.comp.DataStoreCategoryChoiceComp;
 import io.xpipe.app.hub.comp.StoreCategoryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
 
+import io.xpipe.app.util.ObservableSubscriber;
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public final class BrowserConnectionListFilterComp extends SimpleComp {
 
+    private final ObservableSubscriber filterTrigger;
     private final Property<StoreCategoryWrapper> category;
     private final Property<String> filter;
 
@@ -40,6 +42,9 @@ public final class BrowserConnectionListFilterComp extends SimpleComp {
                 .hgrow()
                 .apply(struc -> {
                     AppFontSizes.base(struc.get());
+                    filterTrigger.subscribe(() -> {
+                        struc.get().requestFocus();
+                    });
                 });
 
         var top = new HorizontalComp(List.of(category, filter))

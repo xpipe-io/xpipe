@@ -33,6 +33,11 @@ public class DelayedInitComp extends SimpleComp {
             });
             return true;
         });
+        stack.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue && !stack.getChildren().isEmpty()) {
+                stack.getChildren().getFirst().requestFocus();
+            }
+        });
         return stack;
     }
 }

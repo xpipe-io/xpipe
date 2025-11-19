@@ -60,7 +60,6 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
         filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {
                 filter.clear();
-                filter.getScene().getRoot().requestFocus();
                 event.consume();
             }
         });

@@ -34,6 +34,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) {
+        return false;
+    }
+
+    @Override
     public String getSuffix() {
         return null;
     }
