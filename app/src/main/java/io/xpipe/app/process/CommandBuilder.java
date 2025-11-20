@@ -6,6 +6,7 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.nio.file.Path;
@@ -21,6 +22,7 @@ public class CommandBuilder {
     private final List<FailableConsumer<ShellControl, Exception>> setup = new ArrayList<>();
 
     @Getter
+    @Setter
     private CountDown countDown;
 
     @Getter
@@ -247,7 +249,9 @@ public class CommandBuilder {
     }
 
     public List<String> buildBaseParts(ShellControl sc) throws Exception {
-        countDown = CountDown.of();
+        if (countDown == null) {
+            countDown = CountDown.of();
+        }
         uuid = UUID.randomUUID();
 
         for (FailableConsumer<ShellControl, Exception> s : setup) {
