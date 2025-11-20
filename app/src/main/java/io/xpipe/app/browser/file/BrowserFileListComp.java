@@ -436,8 +436,8 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableEntries(TableView<BrowserEntry> table) {
         var emptyEntry = new BrowserFileListCompEntry(table, table, null, fileList);
-        table.setOnMouseClicked(e -> {
-            emptyEntry.onMouseClick(e);
+        table.setOnMouseClicked(event -> {
+            emptyEntry.onMouseClick(event);
         });
         table.setOnMouseDragEntered(event -> {
             emptyEntry.onMouseDragEntered(event);
@@ -515,8 +515,8 @@ public final class BrowserFileListComp extends SimpleComp {
                 table.pseudoClassStateChanged(DRAG_INTO_CURRENT, newValue);
             });
 
-            row.setOnMouseClicked(e -> {
-                listEntry.get().onMouseClick(e);
+            row.setOnMouseClicked(event -> {
+                listEntry.get().onMouseClick(event);
             });
             row.setOnMouseDragEntered(event -> {
                 listEntry.get().onMouseDragEntered(event);
