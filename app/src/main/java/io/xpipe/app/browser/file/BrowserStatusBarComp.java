@@ -210,7 +210,7 @@ public class BrowserStatusBarComp extends SimpleComp {
     }
 
     private void simulateEmptyCell(Region r) {
-        var emptyEntry = new BrowserFileListCompEntry(null, null, r, null, model.getFileList());
+        var emptyEntry = new BrowserFileListCompEntry(null, r, null, model.getFileList());
         r.setOnMouseClicked(e -> {
             emptyEntry.onMouseClick(e);
         });

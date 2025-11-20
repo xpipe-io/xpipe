@@ -27,17 +27,16 @@ import java.util.Objects;
 @Getter
 public class BrowserFileListCompEntry {
 
-    private final BrowserFileListComp owner;
     private final TableView<BrowserEntry> tv;
     private final Node row;
     private final BrowserEntry item;
     private final BrowserFileListModel model;
 
     private Instant lastHoverUpdate;
+    private ContextMenu lastContextMenu;
 
     public BrowserFileListCompEntry(
-            BrowserFileListComp owner, TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
-        this.owner = owner;
+            TableView<BrowserEntry> tv, Node row, BrowserEntry item, BrowserFileListModel model) {
         this.tv = tv;
         this.row = row;
         this.item = item;
@@ -45,12 +44,15 @@ public class BrowserFileListCompEntry {
     }
 
     public void onMouseClick(MouseEvent t) {
-        owner.closeLastContextMenu();
+        if (lastContextMenu != null) {
+            lastContextMenu.hide();
+            lastContextMenu = null;
+        }
 
         if (showContextMenu(t)) {
             var cm = new BrowserContextMenu(model.getFileSystemModel(), item, false);
             cm.show(row, t.getScreenX(), t.getScreenY());
-            owner.setLastContextMenu(cm);
+            lastContextMenu = cm;
             t.consume();
             return;
         }

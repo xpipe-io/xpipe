@@ -24,7 +24,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
-import lombok.Setter;
 import lombok.SneakyThrows;
 
 import java.time.Duration;
@@ -49,24 +48,8 @@ public final class BrowserFileListComp extends SimpleComp {
     private final BrowserFileListModel fileList;
     private final StringProperty typedSelection = new SimpleStringProperty("");
 
-    @Setter
-    private ContextMenu lastContextMenu;
-
     public BrowserFileListComp(BrowserFileListModel fileList) {
         this.fileList = fileList;
-
-        fileList.getEditing().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                closeLastContextMenu();
-            }
-        });
-    }
-
-    public void closeLastContextMenu() {
-        if (lastContextMenu != null) {
-            lastContextMenu.hide();
-            lastContextMenu = null;
-        }
     }
 
     private static void prepareTableScrollFix(TableView<BrowserEntry> table) {
@@ -452,7 +435,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableEntries(TableView<BrowserEntry> table) {
-        var emptyEntry = new BrowserFileListCompEntry(this, table, table, null, fileList);
+        var emptyEntry = new BrowserFileListCompEntry(table, table, null, fileList);
         table.setOnMouseClicked(event -> {
             emptyEntry.onMouseClick(event);
         });
@@ -501,7 +484,7 @@ public final class BrowserFileListComp extends SimpleComp {
                             },
                             row.itemProperty()));
             var listEntry = Bindings.createObjectBinding(
-                    () -> new BrowserFileListCompEntry(this, table, row, row.getItem(), fileList), row.itemProperty());
+                    () -> new BrowserFileListCompEntry(table, row, row.getItem(), fileList), row.itemProperty());
 
             // Don't let the list view see this event
             // otherwise it unselects everything as it doesn't understand shift clicks
