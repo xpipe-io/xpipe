@@ -87,15 +87,15 @@ public final class BrowserContextMenu extends ContextMenu {
                 if (item != null) {
                     getItems().add(item);
 
-                    addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-                        if (a.getShortcut() == null) {
-                            return;
-                        } else if (!a.getShortcut().match(event)) {
-                            return;
-                        }
+                    if (a.getShortcut() != null) {
+                        addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                            if (!a.getShortcut().match(event)) {
+                                return;
+                            }
 
-                        hide();
-                    });
+                            hide();
+                        });
+                    }
                 }
             }
         }
