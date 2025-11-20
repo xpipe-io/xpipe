@@ -529,6 +529,16 @@ public class StoreEntryWrapper {
             return true;
         }
 
+        var is = information.getValue();
+        if (is != null && is.toLowerCase().contains(filter.toLowerCase())) {
+            return true;
+        }
+
+        var ss = summary.getValue();
+        if (ss != null && ss.toLowerCase().contains(filter.toLowerCase())) {
+            return true;
+        }
+
         return false;
     }
 
