@@ -35,18 +35,17 @@ public class AppDownloads {
                 throw new IOException(new String(response.body(), StandardCharsets.UTF_8));
             }
 
-            var downloadFile = AppSystemInfo.ofCurrent().getTemp().resolve(release.getFile());
-            // Fix file name to not be included in temp dir clean
-            var fixedFile = Path.of(downloadFile.toString().replaceAll("-", "_"));
-            Files.write(fixedFile, response.body());
+            // Fix file name to not have dashes to not be included in temp dir clean
+            var downloadFile = AppSystemInfo.ofCurrent().getTemp().resolve(release.getFile().replaceAll("-", "_"));
+            Files.write(downloadFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
                     .tag("version", version)
                     .tag("url", release.getUrl())
                     .tag("size", FileUtils.byteCountToDisplaySize(response.body().length))
-                    .tag("target", fixedFile)
+                    .tag("target", downloadFile)
                     .handle();
 
-            return fixedFile;
+            return downloadFile;
         } catch (IOException ex) {
             // All sorts of things can go wrong when downloading, this is expected
             ErrorEventFactory.expected(ex);
