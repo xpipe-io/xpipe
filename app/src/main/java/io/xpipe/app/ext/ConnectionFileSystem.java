@@ -34,7 +34,7 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) {
+    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception {
         return false;
     }
 

@@ -230,18 +230,14 @@ public class StoreViewState {
 
     private void initFilterListener() {
         filter.addListener((observable, oldValue, newValue) -> {
-            ThreadHelper.runAsync(() -> {
-                onFilterUpdate(newValue);
-            });
+            onFilterUpdate(newValue);
         });
     }
 
     private void onFilterUpdate(String newValue) {
         var all = getAllConnectionsCategory();
         categories.getList().forEach(e -> {
-            Platform.runLater(() -> {
-                e.update();
-            });
+            e.update();
         });
         var matchingCats = categories.getList().stream()
                 .filter(storeCategoryWrapper ->
