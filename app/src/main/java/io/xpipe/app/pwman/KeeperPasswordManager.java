@@ -1,11 +1,13 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.terminal.TerminalLaunch;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
@@ -37,6 +39,9 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
+        // The copy UID button copies the whole URL in the Keeper UI. Why? ...
+        key = key.replace("https://keepersecurity.eu/vault/#detail/", "");
+
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");
         } catch (Exception e) {
@@ -80,7 +85,14 @@ public class KeeperPasswordManager implements PasswordManager {
                             .addLiteral(r.getSecretValue()))
                     .sensitive()
                     .readStdoutOrThrow();
-            var tree = JacksonMapper.getDefault().readTree(out);
+            JsonNode tree;
+            try {
+                tree = JacksonMapper.getDefault().readTree(out);
+            } catch (JsonProcessingException e) {
+                ErrorEventFactory.fromMessage(out).expected().handle();
+                return null;
+            }
+
             var fields = tree.required("fields");
             if (!fields.isArray()) {
                 return null;
