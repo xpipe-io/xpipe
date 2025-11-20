@@ -45,12 +45,16 @@ public class BrowserFileListCompEntry {
     }
 
     public void onMouseClick(MouseEvent t) {
-        owner.closeLastContextMenu();
+        if (owner != null) {
+            owner.closeLastContextMenu();
+        }
 
         if (showContextMenu(t)) {
             var cm = new BrowserContextMenu(model.getFileSystemModel(), item, false);
             cm.show(row, t.getScreenX(), t.getScreenY());
-            owner.setLastContextMenu(cm);
+            if (owner != null) {
+                owner.setLastContextMenu(cm);
+            }
             t.consume();
             return;
         }
