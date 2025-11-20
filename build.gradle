@@ -206,8 +206,7 @@ project.ext {
     ci = System.getenv('CI') != null
     obfuscate = true
     fullVersion = file("$rootDir/private_files.txt").exists()
-    // TODO: Disable AOT for now on Windows due to rare crashes
-    bundleCds = ci && fullVersion && !org.gradle.internal.os.OperatingSystem.current().isWindows()
+    bundleCds = ci && fullVersion
 
     // Names
     productName = isStage ? 'XPipe PTB' : 'XPipe'
