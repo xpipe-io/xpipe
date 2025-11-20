@@ -75,6 +75,16 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         field.textProperty().addListener((c, o, n) -> {
             value.setValue(n != null && n.length() > 0 ? encrypt(n.toCharArray()) : null);
         });
+
+        var capsPopover = new Popover();
+        var label = new Label();
+        label.textProperty().bind(AppI18n.observable("capslockWarning"));
+        label.setGraphic(new FontIcon("mdi2i-information-outline"));
+        label.setPadding(new Insets(0, 10, 0, 10));
+        capsPopover.setContentNode(label);
+        capsPopover.setArrowLocation(Popover.ArrowLocation.BOTTOM_CENTER);
+        capsPopover.setDetachable(false);
+
         value.addListener((c, o, n) -> {
             PlatformThread.runLaterIfNeeded(() -> {
                 // Check if control value is the same. Then don't set it as that might cause bugs
@@ -85,28 +95,17 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
                 field.setText(n != null ? n.getSecretValue() : null);
             });
-        });
-        HBox.setHgrow(field, Priority.ALWAYS);
-
-        field.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                return;
-            }
 
             var capslock = Platform.isKeyLocked(KeyCode.CAPS);
             if (!capslock.orElse(false)) {
+                capsPopover.hide();
                 return;
             }
-
-            var popover = new Popover();
-            var label = new Label();
-            label.textProperty().bind(AppI18n.observable("capslockWarning"));
-            label.setGraphic(new FontIcon("mdi2i-information-outline"));
-            label.setPadding(new Insets(0, 10, 0, 10));
-            popover.setContentNode(label);
-            popover.setArrowLocation(Popover.ArrowLocation.BOTTOM_CENTER);
-            popover.show(field);
+            if (!capsPopover.isShowing()) {
+                capsPopover.show(field);
+            }
         });
+        HBox.setHgrow(field, Priority.ALWAYS);
 
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue());
