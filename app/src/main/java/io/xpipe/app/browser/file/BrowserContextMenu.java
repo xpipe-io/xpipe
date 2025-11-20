@@ -8,6 +8,7 @@ import io.xpipe.app.platform.InputHelper;
 
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.KeyEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,16 @@ public final class BrowserContextMenu extends ContextMenu {
                 var item = a.toMenuItem(model, used);
                 if (item != null) {
                     getItems().add(item);
+
+                    addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                        if (a.getShortcut() == null) {
+                            return;
+                        } else if (!a.getShortcut().match(event)) {
+                            return;
+                        }
+
+                        hide();
+                    });
                 }
             }
         }
