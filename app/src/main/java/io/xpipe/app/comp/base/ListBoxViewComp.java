@@ -200,7 +200,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             return false;
         }
 
-        var paneHeight = pane.getHeight();
+        // Preload items at the edges by enlarging the height
+        var paneHeight = pane.getHeight() * 1.4;
         var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
         var minBoundsHeight = scrollCenter - paneHeight;
         var maxBoundsHeight = scrollCenter + paneHeight;

@@ -1,13 +1,18 @@
 package io.xpipe.app.comp.base;
 
+import atlantafx.base.controls.Popover;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.InPlaceSecretValue;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -83,28 +88,50 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         });
         HBox.setHgrow(field, Priority.ALWAYS);
 
+        field.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                return;
+            }
+
+            var capslock = Platform.isKeyLocked(KeyCode.CAPS);
+            if (!capslock.orElse(false)) {
+                return;
+            }
+
+            var popover = new Popover();
+            var label = new Label();
+            label.textProperty().bind(AppI18n.observable("capslockWarning"));
+            label.setGraphic(new FontIcon("mdi2i-information-outline"));
+            label.setPadding(new Insets(0, 10, 0, 10));
+            popover.setContentNode(label);
+            popover.setArrowLocation(Popover.ArrowLocation.BOTTOM_CENTER);
+            popover.show(field);
+        });
+
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue());
                 })
                 .grow(false, true)
-                .tooltipKey("copyPassword")
-                .createRegion();
+                .tooltipKey("copyPassword");
 
-        var ig = new InputGroup(field);
-        ig.setFillHeight(true);
-        ig.getStyleClass().add("secret-field-comp");
+        var list = new ArrayList<Comp<?>>();
+        list.add(Comp.of(() -> field));
         if (allowCopy) {
-            ig.getChildren().add(copyButton);
+            list.add(copyButton);
         }
-        additionalButtons.forEach(comp -> ig.getChildren().add(comp.createRegion()));
+        list.addAll(additionalButtons);
 
-        ig.focusedProperty().addListener((c, o, n) -> {
-            if (n) {
-                field.requestFocus();
-            }
+        var ig = new InputGroupComp(list);
+        ig.styleClass("secret-field-comp");
+        ig.apply(struc -> {
+            struc.get().focusedProperty().addListener((c, o, n) -> {
+                if (n) {
+                    field.requestFocus();
+                }
+            });
         });
 
-        return new Structure(ig, field);
+        return new Structure(ig.createBase().get(), field);
     }
 
     @AllArgsConstructor
