@@ -1,5 +1,5 @@
 /* For development
-*:focused {
+.root *:focused {
     -fx-border-width: 1;
     -fx-border-color: red;
 }
