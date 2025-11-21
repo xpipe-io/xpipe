@@ -201,7 +201,10 @@ public interface ExternalApplicationType extends PrefsValue {
 
         default void launch(CommandBuilder builder) throws Exception {
             var location = findExecutable();
-            builder.add(0, sc -> sc.getShellDialect().fileArgument(location.toString()));
+            builder.add(0, sc -> {
+                return sc != null ? sc.getShellDialect().fileArgument(location.toString())
+                        : "\"" + location + "\"";
+            });
             if (detach()) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
