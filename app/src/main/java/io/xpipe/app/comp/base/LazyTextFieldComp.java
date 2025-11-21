@@ -39,7 +39,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
             }
 
             if (ke.getCode().equals(KeyCode.ENTER) || ke.getCode().equals(KeyCode.ESCAPE)) {
-                r.getScene().getRoot().requestFocus();
+                r.getParent().getParent().requestFocus();
             }
 
             ke.consume();
