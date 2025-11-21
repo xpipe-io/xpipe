@@ -74,9 +74,4 @@ public class FreeRdpClient implements ExternalRdpClient {
     public String getWebsite() {
         return "https://www.freerdp.com/";
     }
-
-    @Override
-    public String getId() {
-        return "app.xfreeRdp";
-    }
 }

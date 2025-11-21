@@ -39,9 +39,4 @@ public class RemoteDesktopAppRdpClient implements ExternalApplicationType.MacApp
     public String getApplicationName() {
         return "Microsoft Remote Desktop";
     }
-
-    @Override
-    public String getId() {
-        return "app.microsoftRemoteDesktopApp";
-    }
 }

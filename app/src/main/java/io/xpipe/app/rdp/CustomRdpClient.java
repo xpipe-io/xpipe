@@ -67,9 +67,4 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
     public boolean isAvailable() {
         return true;
     }
-
-    @Override
-    public String getId() {
-        return "app.custom";
-    }
 }

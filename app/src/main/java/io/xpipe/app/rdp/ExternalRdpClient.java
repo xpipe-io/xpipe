@@ -1,6 +1,7 @@
 package io.xpipe.app.rdp;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellTemp;
@@ -14,7 +15,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-public interface ExternalRdpClient extends PrefsChoiceValue {
+public interface ExternalRdpClient extends PrefsValue {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

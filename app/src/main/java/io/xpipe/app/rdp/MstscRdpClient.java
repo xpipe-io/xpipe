@@ -97,9 +97,4 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     public boolean detach() {
         return false;
     }
-
-    @Override
-    public String getId() {
-        return "app.mstsc";
-    }
 }

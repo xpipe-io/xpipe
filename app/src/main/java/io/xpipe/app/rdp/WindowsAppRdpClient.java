@@ -40,9 +40,4 @@ public class WindowsAppRdpClient implements ExternalApplicationType.MacApplicati
     public String getApplicationName() {
         return "Windows App";
     }
-
-    @Override
-    public String getId() {
-        return "app.windowsApp";
-    }
 }

@@ -5,6 +5,7 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.EncryptionToken;
 import io.xpipe.app.secret.PasswordLockSecretValue;
@@ -78,6 +79,7 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());
         context.registerSubtypes(ExternalVncClient.getClasses());
+        context.registerSubtypes(ExternalRdpClient.getClasses());
 
         context.addSerializers(_serializers);
         context.addDeserializers(_deserializers);

@@ -64,9 +64,4 @@ public class DevolutionsRdpClient implements ExternalApplicationType.WindowsType
     public String getWebsite() {
         return "https://devolutions.net/remote-desktop-manager/";
     }
-
-    @Override
-    public String getId() {
-        return "app.devolutions";
-    }
 }

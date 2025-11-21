@@ -61,11 +61,6 @@ public class RemminaRdpClient implements ExternalApplicationType.LinuxApplicatio
     }
 
     @Override
-    public String getId() {
-        return "app.remmina";
-    }
-
-    @Override
     public String getFlatpakId() {
         return "org.remmina.Remmina";
     }
