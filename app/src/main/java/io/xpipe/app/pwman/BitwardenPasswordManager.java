@@ -112,7 +112,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
             var login = json.get("login");
             if (login == null) {
-                throw new IllegalArgumentException("No usable login found for item name " + key);
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("No usable login found for item name " + key));
             }
 
             var user = login.required("username");

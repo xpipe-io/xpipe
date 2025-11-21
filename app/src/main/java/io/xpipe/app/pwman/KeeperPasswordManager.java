@@ -40,7 +40,7 @@ public class KeeperPasswordManager implements PasswordManager {
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
-        key = key.replace("https://keepersecurity.eu/vault/#detail/", "");
+        key = key.replaceFirst("https://keepersecurity\\.\\w+/vault/#detail/", "");
 
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");

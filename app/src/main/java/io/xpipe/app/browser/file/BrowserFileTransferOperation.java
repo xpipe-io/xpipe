@@ -383,11 +383,12 @@ public class BrowserFileTransferOperation {
 
         var fileSize = sourceFs.getFileSize(sourceFile);
 
-        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), 0, 0));
-        if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile) || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
-            updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), fileSize));
-            return;
-        }
+        // TODO: this is not ready yet
+//        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), 0, 0));
+//        if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile) || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
+//            updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), fileSize));
+//            return;
+//        }
 
         InputStream inputStream = null;
         OutputStream outputStream = null;
