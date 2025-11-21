@@ -30,6 +30,11 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception {
+        return fs.readInstantIfPossible(sourceFile, targetFs, targetFile);
+    }
+
+    @Override
     public String getSuffix() {
         return fs.getSuffix();
     }

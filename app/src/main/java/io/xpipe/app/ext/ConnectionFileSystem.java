@@ -39,6 +39,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception {
+        return false;
+    }
+
+    @Override
     public String getSuffix() {
         return null;
     }

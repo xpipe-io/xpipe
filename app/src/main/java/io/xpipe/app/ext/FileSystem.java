@@ -16,6 +16,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception;
 
+    boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception;
+
     String getSuffix();
 
     boolean isRunning();
