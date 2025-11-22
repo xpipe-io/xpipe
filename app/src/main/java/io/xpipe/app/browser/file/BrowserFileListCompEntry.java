@@ -189,7 +189,7 @@ public class BrowserFileListCompEntry {
                 && cb.getBaseDirectory()
                         .getPath()
                         .equals(model.getFileSystemModel().getCurrentDirectory().getPath())
-                && (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY)) {
+                && (item == null || item.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY)) {
             return false;
         }
 
@@ -298,12 +298,10 @@ public class BrowserFileListCompEntry {
             return;
         }
 
-        model.getDraggedOverEmpty()
-                .setValue(item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY);
+        var isDir = item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY;
+        model.getDraggedOverEmpty().setValue(!isDir);
         model.getDraggedOverDirectory().setValue(item);
-
-
-        if (item == null || item.getRawFileEntry().getKind() != FileKind.DIRECTORY) {
+        if (!isDir) {
             return;
         }
 
@@ -321,7 +319,7 @@ public class BrowserFileListCompEntry {
                     }
 
                     model.getFileSystemModel()
-                            .cdAsync(item.getRawFileEntry().getPath());
+                            .cdAsync(item.getRawFileEntry().resolved().getPath());
                 },
                 Duration.ofMillis(500));
     }

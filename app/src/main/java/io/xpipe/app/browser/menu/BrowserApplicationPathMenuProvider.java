@@ -1,8 +1,11 @@
 package io.xpipe.app.browser.menu;
 
+import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 
 import lombok.SneakyThrows;
+
+import java.util.List;
 
 public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvider {
 
@@ -16,6 +19,11 @@ public interface BrowserApplicationPathMenuProvider extends BrowserMenuItemProvi
 
         // Cache result for later calls
         model.getFileSystem().getShell().get().view().isInPath(getExecutable(), true);
+    }
+
+    @Override
+    default boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
+        return model.getFileSystem().getShell().isPresent();
     }
 
     @Override

@@ -101,7 +101,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         BooleanScope.executeExclusive(model.getBusy(), () -> {
             var dir = entry.getRawFileEntry().resolved().getPath();
             try (var stream = model.getFileSystem().listFiles(model.getFileSystem(), dir)) {
-                var l = stream.map(fileEntry -> fileEntry.resolved()).toList();
+                var l = stream.map(fileEntry -> fileEntry).toList();
                 // Wait until all files are listed, i.e. do not skip the stream elements
                 list.addAll(l.subList(0, Math.min(l.size(), 150)));
             }
