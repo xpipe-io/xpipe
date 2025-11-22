@@ -281,8 +281,9 @@ public class OptionsBuilder {
 
     public OptionsBuilder addYesNoToggle(Property<Boolean> prop) {
         var map = new LinkedHashMap<Boolean, ObservableValue<String>>();
-        map.put(Boolean.FALSE, AppI18n.observable("app.no"));
-        map.put(Boolean.TRUE, AppI18n.observable("app.yes"));
+        map.put(Boolean.FALSE, AppI18n.observable("no"));
+        map.put(null, AppI18n.observable("inherit"));
+        map.put(Boolean.TRUE, AppI18n.observable("yes"));
         var comp = new ToggleGroupComp<>(prop, new SimpleObjectProperty<>(map));
         pushComp(comp);
         props.add(prop);

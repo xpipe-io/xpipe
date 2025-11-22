@@ -359,7 +359,7 @@
     -fx-background-color: -color-success-1;
 }
 
-.browser .table-row-cell:folder:drag-over {
+.browser .table-row-cell:drag-over {
     -fx-background-color: -color-success-muted;
 }
 

@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleButton;
@@ -14,6 +15,7 @@ import javafx.scene.layout.HBox;
 import atlantafx.base.theme.Styles;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
 
@@ -39,8 +41,11 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                 box.getChildren().clear();
                 for (var entry : val.entrySet()) {
                     var b = new ToggleButton(entry.getValue().getValue());
+                    if (entry.getKey() == null) {
+                        b.disableProperty().bind(b.selectedProperty());
+                    }
                     b.setOnAction(e -> {
-                        if (entry.getKey().equals(value.getValue())) {
+                        if (Objects.equals(entry.getKey(), value.getValue())) {
                             value.setValue(null);
                         } else {
                             value.setValue(entry.getKey());
@@ -49,9 +54,15 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
                     });
                     group.getToggles().add(b);
                     box.getChildren().add(b);
-                    if (entry.getKey().equals(value.getValue())) {
+                    if (Objects.equals(entry.getKey(), value.getValue())) {
                         b.setSelected(true);
                     }
+
+                    value.addListener((observable, oldValue, newValue) -> {
+                        if (Objects.equals(newValue, entry.getKey())) {
+                            b.setSelected(true);
+                        }
+                    });
                 }
 
                 if (box.getChildren().size() > 0) {

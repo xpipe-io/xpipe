@@ -156,6 +156,7 @@
 
 .toggle-group-comp .toggle-button {
     -fx-padding: 3 10;
+    -fx-opacity: 1.0;
 }
 
 .root .ikonli-font-icon.graphic.supported {
