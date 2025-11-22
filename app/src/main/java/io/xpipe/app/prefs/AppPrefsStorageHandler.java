@@ -108,6 +108,10 @@ public class AppPrefsStorageHandler {
             return defaultObject;
         }
 
+        if (tree.isNull()) {
+            return null;
+        }
+
         if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {
             List<T> all = (List<T>) getAll(type.getRawClass());
             if (all != null) {
