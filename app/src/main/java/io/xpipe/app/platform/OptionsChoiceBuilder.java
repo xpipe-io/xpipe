@@ -27,7 +27,6 @@ public class OptionsChoiceBuilder {
 
     private final Property<?> property;
     private final List<Class<?>> available;
-    private final List<Class<?>> selectable;
     private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
     private final boolean allowNull;
     private final Object customConfiguration;

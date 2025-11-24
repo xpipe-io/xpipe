@@ -8,15 +8,20 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.storage.DataStorageGroupStrategy;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import lombok.SneakyThrows;
+
+import java.util.Arrays;
 
 public class VaultCategory extends AppPrefsCategory {
 
@@ -67,24 +72,31 @@ public class VaultCategory extends AppPrefsCategory {
                         .description("vaultTypeContent" + vaultTypeKey)
                         .documentationLink(DocumentationLink.TEAM_VAULTS)
                         .addComp(Comp.empty())
-                        .name("userManagement")
-                        .description(
-                                uh.getActiveUser() != null
-                                        ? "userManagementDescription"
-                                        : "userManagementDescriptionEmpty")
+                        .pref( uh.getActiveUser() != null
+                                ? "userManagement"
+                                : "userManagementEmpty", true, null, null)
                         .addComp(uh.createOverview().maxWidth(getCompWidth()))
-                        .nameAndDescription("teamVaults")
-                        .addComp(Comp.empty())
-                        .licenseRequirement("team")
-                        .disable(!LicenseProvider.get().getFeature("team").isSupported())
-                        .hide(new SimpleBooleanProperty(uh.getUserCount() > 1))
                         .nameAndDescription("syncTeamVaults")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()
                                 .selectCategory("vaultSync")))
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
                         .hide(new SimpleBooleanProperty(
-                                DataStorageSyncHandler.getInstance().supportsSync())));
+                                DataStorageSyncHandler.getInstance().supportsSync()))
+                        .pref(prefs.groupSecretStrategy)
+                        .addComp(OptionsChoiceBuilder.builder().property(prefs.groupSecretStrategy)
+                                .allowNull(false).available(DataStorageGroupStrategy.getClasses())
+                                .build().build().buildComp().maxWidth(getCompWidth()),
+                                prefs.groupSecretStrategy)
+                        .licenseRequirement("team")
+                        .nameAndDescription("teamVaults")
+                        .addComp(Comp.empty())
+                        .licenseRequirement("team")
+                        .disable(!LicenseProvider.get().getFeature("team").isSupported())
+                        .hide(Bindings.createBooleanBinding(() -> {
+                            return uh.getUserCount() > 1 || !(prefs.groupSecretStrategy.get() instanceof DataStorageGroupStrategy.None);
+                        }, prefs.groupSecretStrategy))
+                );
         builder.sub(new OptionsBuilder().pref(prefs.encryptAllVaultData).addToggle(encryptVault));
         return builder.buildComp();
     }

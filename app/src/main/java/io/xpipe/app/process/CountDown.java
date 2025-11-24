@@ -20,11 +20,12 @@ public class CountDown {
         return new CountDown();
     }
 
-    public synchronized void start(long millisecondsLeft) {
+    public synchronized CountDown start(long millisecondsLeft) {
         this.millisecondsLeft = millisecondsLeft;
         this.maxMillis = millisecondsLeft;
         lastMillis = System.currentTimeMillis();
         active = true;
+        return this;
     }
 
     public void pause() {

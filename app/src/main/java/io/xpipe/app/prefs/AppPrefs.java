@@ -14,6 +14,7 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageGroupStrategy;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
@@ -269,6 +270,13 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
+    final ObjectProperty<DataStorageGroupStrategy> groupSecretStrategy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(new DataStorageGroupStrategy.None()))
+            .key("groupSecretStrategy")
+            .valueClass(DataStorageGroupStrategy.class)
+            .requiresRestart(true)
+            .licenseFeatureId("team")
+            .build());
     final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
             .key("startupBehaviour")
@@ -414,6 +422,10 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public ObservableValue<DataStorageGroupStrategy> groupSecretStrategy() {
+        return groupSecretStrategy;
+    }
 
     public ObservableStringValue notesTemplate() {
         return notesTemplate;
