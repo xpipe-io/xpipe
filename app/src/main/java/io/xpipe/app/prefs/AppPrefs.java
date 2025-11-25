@@ -17,6 +17,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
+import io.xpipe.app.terminal.TerminalSplitStrategy;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
@@ -262,6 +263,11 @@ public final class AppPrefs {
             .key("terminalAlwaysPauseOnExit")
             .valueClass(Boolean.class)
             .build());
+    final Property<TerminalSplitStrategy> terminalSplitStrategy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(TerminalSplitStrategy.BALANCED))
+            .key("terminalSplitStrategy")
+            .valueClass(TerminalSplitStrategy.class)
+            .build());
     final Property<TerminalPrompt> terminalPrompt = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(null))
             .key("terminalPrompt")
@@ -414,6 +420,10 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public ObservableValue<TerminalSplitStrategy> terminalSplitStrategy() {
+        return terminalSplitStrategy;
+    }
 
     public ObservableStringValue notesTemplate() {
         return notesTemplate;

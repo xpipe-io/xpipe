@@ -1,15 +1,11 @@
 package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
-import io.xpipe.app.hub.action.BatchStoreAction;
 import io.xpipe.app.hub.action.MultiStoreAction;
-import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
@@ -23,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class MultiTerminalHubBatchProvider implements BatchHubProvider<ShellStore> {
+public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
     public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {

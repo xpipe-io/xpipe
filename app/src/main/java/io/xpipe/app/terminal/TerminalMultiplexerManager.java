@@ -73,10 +73,19 @@ public class TerminalMultiplexerManager {
         lastCheck = Instant.now();
     }
 
-    public static Optional<TerminalView.TerminalSession> getActiveTerminalSession(UUID requestUuid) {
+    public static void registerSessionLaunch(UUID requestUuid) {
         var mult = getEffectiveMultiplexer();
         if (mult.isEmpty()) {
             connectionHubRequests.put(requestUuid, null);
+            return;
+        }
+
+        connectionHubRequests.put(requestUuid, mult.orElse(null));
+    }
+
+    public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession() {
+        var mult = getEffectiveMultiplexer();
+        if (mult.isEmpty()) {
             return Optional.empty();
         }
 
@@ -84,7 +93,6 @@ public class TerminalMultiplexerManager {
                 .filter(shellSession -> shellSession.getTerminal().isRunning()
                         && mult.get() == connectionHubRequests.get(shellSession.getRequest()))
                 .findFirst();
-        connectionHubRequests.put(requestUuid, mult.get());
         return session.map(shellSession -> shellSession.getTerminal());
     }
 }

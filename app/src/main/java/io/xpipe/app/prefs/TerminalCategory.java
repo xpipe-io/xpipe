@@ -32,6 +32,7 @@ import javafx.scene.layout.Region;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class TerminalCategory extends AppPrefsCategory {
@@ -181,6 +182,12 @@ public class TerminalCategory extends AppPrefsCategory {
                 // .sub(terminalInitScript())
                 .sub(
                         new OptionsBuilder()
+                                .pref(prefs.terminalSplitStrategy)
+                                .addComp(ChoiceComp.ofTranslatable(
+                                        prefs.terminalSplitStrategy,
+                                        Arrays.asList(TerminalSplitStrategy.values()),
+                                        false).maxWidth(getCompWidth()), prefs.terminalSplitStrategy
+                                )
                                 .pref(prefs.terminalAlwaysPauseOnExit)
                                 .addToggle(prefs.terminalAlwaysPauseOnExit)
                                 .pref(prefs.clearTerminalOnInit)
