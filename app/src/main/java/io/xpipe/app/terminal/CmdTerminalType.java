@@ -41,11 +41,12 @@ public class CmdTerminalType
     }
 
     private CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-        if (configuration.getScriptDialect() == ShellDialects.CMD) {
-            return CommandBuilder.of().add("/c").addFile(configuration.getScriptFile());
+        var pane = configuration.single();
+        if (pane.getScriptDialect() == ShellDialects.CMD) {
+            return CommandBuilder.of().add("/c").addFile(pane.getScriptFile());
         }
 
-        return CommandBuilder.of().add("/c").add(configuration.getDialectLaunchCommand());
+        return CommandBuilder.of().add("/c").add(pane.getDialectLaunchCommand());
     }
 
     @Override

@@ -43,7 +43,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            launch(CommandBuilder.of().add("start").add(configuration.getDialectLaunchCommand()));
+            launch(CommandBuilder.of().add("start").add(configuration.single().getDialectLaunchCommand()));
         }
 
         @Override
@@ -120,7 +120,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                         .command(CommandBuilder.of()
                                 .add(base)
                                 .add("cli", "spawn")
-                                .addFile(configuration.getScriptFile()))
+                                .addFile(configuration.single().getScriptFile()))
                         .executeAndCheck();
             }
 
@@ -136,7 +136,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     }
                 }
                 ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().add(base).add("start").addFile(configuration.getScriptFile()));
+                        CommandBuilder.of().add(base).add("start").addFile(configuration.single().getScriptFile()));
             }
         }
 
@@ -179,7 +179,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                             .resolve("wezterm")
                                             .toString())
                                     .add("cli", "spawn", "--pane-id", "0")
-                                    .addFile(configuration.getScriptFile()))
+                                    .addFile(configuration.single().getScriptFile()))
                             .executeAndCheck();
                 }
                 if (runGui) {
@@ -189,7 +189,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                     .resolve("wezterm-gui")
                                     .toString())
                             .add("start")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.single().getScriptFile()));
                 }
             }
         }

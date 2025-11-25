@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
+
 @Builder
 @Jacksonized
 @JsonTypeName("screen")
@@ -26,25 +28,30 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchForExistingSession(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
         // Screen has a limit of 100 chars for commands
-        var effectiveCommand = command.length() > 90
-                ? ScriptHelper.createExecScript(control, command).toString()
-                : command;
-        return ShellScript.lines("screen -S xpipe -X screen -t \"" + escape(config.getDisplayName(), true) + "\" "
-                + escape(effectiveCommand, false));
+//        var effectiveCommand = command.length() > 90
+//                ? ScriptHelper.createExecScript(control, command).toString()
+//                : command;
+//        return ShellScript.lines("screen -S xpipe -X screen -t \"" + escape(config.getDisplayName(), true) + "\" "
+//                + escape(effectiveCommand, false));
+        return ShellScript.lines();
     }
 
     @Override
-    public ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config) {
-        // Screen has a limit of 100 chars for commands
-        var effectiveCommand = command.length() > 90
-                ? ScriptHelper.createExecScript(control, command).toString()
-                : command;
-        return ShellScript.lines(
-                "for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done",
-                "screen -S xpipe -t \"" + escape(config.getDisplayName(), true) + "\" "
-                        + escape(effectiveCommand, false));
+    public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
+        var list = new ArrayList<String>();
+        list.add("for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done");
+        for (TerminalPaneConfiguration pane : config.getPanes()) {
+            var command = pane.getDialectLaunchCommand().buildFull(control);
+            // Screen has a limit of 100 chars for commands
+            var effectiveCommand = command.length() > 90
+                    ? ScriptHelper.createExecScript(control, command).toString()
+                    : command;
+            list.add("screen -S xpipe -t \"" + escape(pane.getTitle(), true) + "\" "
+                    + escape(effectiveCommand, false));
+        }
+        return ShellScript.lines(list);
     }
 
     private String escape(String s, boolean quotes) {

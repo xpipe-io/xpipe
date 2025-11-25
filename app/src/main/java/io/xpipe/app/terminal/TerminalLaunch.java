@@ -17,6 +17,7 @@ import io.xpipe.core.FilePath;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.List;
 import java.util.UUID;
 
 @Value
@@ -62,15 +63,10 @@ public class TerminalLaunch {
             return;
         }
 
+        var pane = new TerminalLauncher.Config(entry, getFullTitle(), directory, request != null ? request : UUID.randomUUID(), logIfEnabled, alwaysKeepOpen, command);
         TerminalLauncher.open(
-                entry,
-                getFullTitle(),
-                directory,
-                command,
-                request != null ? request : UUID.randomUUID(),
+                List.of(pane),
                 preferTabs,
-                logIfEnabled,
-                alwaysKeepOpen,
                 type);
     }
 

@@ -27,7 +27,7 @@ public class MacOsTerminalType implements ExternalApplicationType.MacApplication
                 .executeSimpleCommand(CommandBuilder.of()
                         .add("open", "-a")
                         .addQuoted("Terminal.app")
-                        .addFile(configuration.getScriptFile()));
+                        .addFile(configuration.single().getScriptFile()));
     }
 
     @Override

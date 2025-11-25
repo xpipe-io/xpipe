@@ -36,7 +36,7 @@ public class FootTerminalType implements ExternalTerminalType, ExternalApplicati
         var toExecute = CommandBuilder.of()
                 .add("--title")
                 .addQuoted(configuration.getColoredTitle())
-                .addFile(configuration.getScriptFile());
+                .addFile(configuration.single().getScriptFile());
         launch(toExecute);
     }
 

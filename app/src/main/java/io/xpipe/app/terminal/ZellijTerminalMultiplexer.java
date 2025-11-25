@@ -25,25 +25,27 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchForExistingSession(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
         return ShellScript.lines(
-                "zellij attach --create-background xpipe",
-                "zellij -s xpipe action new-tab --name \"" + escape(config.getDisplayName(), false, true) + "\"",
-                "zellij -s xpipe action write-chars -- " + escape(" " + command, true, true) + "\\;exit",
-                "zellij -s xpipe action write 10",
-                "zellij -s xpipe action clear");
+//                "zellij attach --create-background xpipe",
+//                "zellij -s xpipe action new-tab --name \"" + escape(config.getDisplayName(), false, true) + "\"",
+//                "zellij -s xpipe action write-chars -- " + escape(" " + command, true, true) + "\\;exit",
+//                "zellij -s xpipe action write 10",
+//                "zellij -s xpipe action clear"
+        );
     }
 
     @Override
-    public ShellScript launchNewSession(ShellControl control, String command, TerminalInitScriptConfig config) {
+    public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
         return ShellScript.lines(
-                "zellij delete-session -f xpipe > /dev/null 2>&1",
-                "zellij attach --create-background xpipe",
-                "sleep 0.5",
-                "zellij -s xpipe run -c --name \"" + escape(config.getDisplayName(), false, true) + "\" -- "
-                        + escape(" " + command, false, false),
-                "sleep 0.5",
-                "zellij attach xpipe");
+//                "zellij delete-session -f xpipe > /dev/null 2>&1",
+//                "zellij attach --create-background xpipe",
+//                "sleep 0.5",
+//                "zellij -s xpipe run -c --name \"" + escape(config.getDisplayName(), false, true) + "\" -- "
+//                        + escape(" " + command, false, false),
+//                "sleep 0.5",
+//                "zellij attach xpipe"
+        );
     }
 
     private String escape(String s, boolean spaces, boolean quotes) {

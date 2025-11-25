@@ -45,7 +45,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
-            b.add("-t").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.getDialectLaunchCommand());
+            b.add("-t").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.single().getDialectLaunchCommand());
             launch(b);
         }
 
@@ -88,7 +88,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
             launch(b);
         }
     }
@@ -119,7 +119,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                             .add("-n", "--args", "-t")
                             .addQuoted(configuration.getCleanTitle())
                             .add("-e")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.single().getScriptFile()));
         }
 
         @Override

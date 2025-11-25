@@ -37,7 +37,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
-            var args = configuration.getDialectLaunchCommand().buildBaseParts(sc);
+            var args = configuration.single().getDialectLaunchCommand().buildBaseParts(sc);
             var argsArray = payload.putArray("args");
             args.forEach(argsArray::add);
             payload.put("tab_title", configuration.getColoredTitle());

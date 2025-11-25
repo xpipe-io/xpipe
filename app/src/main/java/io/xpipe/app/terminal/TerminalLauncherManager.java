@@ -37,11 +37,11 @@ public class TerminalLauncherManager {
     }
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory) {
+            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory, CountDownLatch latch) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {
-                req = new TerminalLaunchRequest(request, processControl, config, directory, -1, null, false, null);
+                req = new TerminalLaunchRequest(request, processControl, config, directory, -1, null, false, latch);
                 entries.put(request, req);
             } else {
                 req.setResult(null);
@@ -101,7 +101,7 @@ public class TerminalLauncherManager {
         }
 
         if (req.isSetupCompleted()) {
-            submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory());
+            submitAsync(req.getRequest(), req.getProcessControl(), req.getConfig(), req.getWorkingDirectory(), null);
         }
         try {
             req.waitForCompletion();
@@ -167,7 +167,7 @@ public class TerminalLauncherManager {
         }
 
         var config = new TerminalInitScriptConfig(ref.get().getName(), false, TerminalInitFunction.none());
-        submitAsync(request, control, config, null);
+        submitAsync(request, control, config, null, null);
         waitExchange(request);
         var script = launchExchange(request);
         try (var sc = LocalShell.getShell().start()) {
