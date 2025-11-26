@@ -28,7 +28,7 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
             return false;
         }
 
-        return type.supportsSplitOpen() || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
+        return type.supportsSplitView() || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
     }
 
     @Override

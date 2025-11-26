@@ -622,7 +622,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         return null;
     }
 
-    default boolean supportsSplitOpen() {
+    default boolean supportsSplitView() {
         return false;
     }
 

@@ -26,6 +26,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     ExternalTerminalType KITTY_LINUX = new Linux();
     ExternalTerminalType KITTY_MACOS = new MacOs();
 
+    @Override
+    default boolean supportsSplitView() {
+        return true;
+    }
+
     private static FilePath getSocket() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);

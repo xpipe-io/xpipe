@@ -81,7 +81,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     @Override
-    default boolean supportsSplitOpen() {
+    default boolean supportsSplitView() {
         return true;
     }
 
