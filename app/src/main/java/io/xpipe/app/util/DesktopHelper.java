@@ -20,10 +20,6 @@ public class DesktopHelper {
             return;
         }
 
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            return;
-        }
-
         URI parsed;
         try {
             parsed = URI.create(uri);
@@ -31,6 +27,13 @@ public class DesktopHelper {
             ErrorEventFactory.fromThrowable("Invalid URI: " + uri, e.getCause() != null ? e.getCause() : e)
                     .handle();
             return;
+        }
+
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            if (OsType.ofLocal() == OsType.LINUX) {
+                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+                return;
+            }
         }
 
         // This can be a blocking operation
