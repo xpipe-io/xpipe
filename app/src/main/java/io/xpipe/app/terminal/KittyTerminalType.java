@@ -81,7 +81,9 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
-            payload.put("layout", layout);
+            var layoutArray = JsonNodeFactory.instance.arrayNode();
+            layoutArray.add(layout);
+            payload.set("layout", layoutArray);
 
             var json = JsonNodeFactory.instance.objectNode();
             json.put("cmd", "set-enabled-layouts");
@@ -111,10 +113,11 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             var jsonString = json.toString();
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
-            sc.executeSimpleCommand(CommandBuilder.of()
+            sc.command(CommandBuilder.of()
                     .add("printf", echoString, "|")
                     .add(socketWrite)
-                    .addFile(getSocket()));
+                    .addFile(getSocket()))
+                    .execute();
         }
     }
 
