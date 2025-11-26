@@ -84,6 +84,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             var layoutArray = JsonNodeFactory.instance.arrayNode();
             layoutArray.add(layout);
             payload.set("layout", layoutArray);
+            payload.put("configured", true);
 
             var json = JsonNodeFactory.instance.objectNode();
             json.put("cmd", "set-enabled-layouts");
