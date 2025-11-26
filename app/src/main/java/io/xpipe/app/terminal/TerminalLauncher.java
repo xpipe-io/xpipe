@@ -148,35 +148,28 @@ public class TerminalLauncher {
             var paneConfig = TerminalPaneConfiguration.create(config.getRequest(),
                     entry, config.getTitle(), paneIndex, effectivePreferTabs,
                     alwaysPromptRestart);
-            var changedDialect = paneConfig.getScriptDialect() != LocalShell.getDialect();
-            var paneWithRegister = paneConfig.withScript(
-                    LocalShell.getDialect(),
-                    getTerminalRegisterCommand(paneConfig.getRequest()) + "\n"
-                            + (changedDialect
-                            ? paneConfig.getDialectLaunchCommand().buildSimple()
-                            : paneConfig.getScriptContent()));
-            paneList.add(paneWithRegister);
+            paneList.add(paneConfig);
         }
 
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
-        synchronized (TerminalLauncher.class) {
-            // There will be timing issues when launching multiple tabs in a short time span
-            TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
+        if (effectivePreferTabs) {
+            synchronized (TerminalLauncher.class) {
+                // There will be timing issues when launching multiple tabs in a short time span
+                TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
 
-            for (TerminalPaneConfiguration pane : paneList) {
-                // Let multiplexer know we launched something, even if there is no multiplexer
-                TerminalMultiplexerManager.registerSessionLaunch(pane.getRequest());
-            };
+                for (TerminalPaneConfiguration pane : paneList) {
+                    // Let multiplexer know we launched something, even if there is no multiplexer
+                    TerminalMultiplexerManager.registerSessionLaunch(pane.getRequest());
+                }
 
-            if (effectivePreferTabs && launchMultiplexerTabInExistingTerminal(launchConfig)) {
-                latch.await();
-                return;
-            }
+                if (launchMultiplexerTabInExistingTerminal(launchConfig)) {
+                    latch.await();
+                    return;
+                }
 
-            if (effectivePreferTabs) {
                 var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig);
                 if (multiplexerConfig.isPresent()) {
                     for (TerminalPaneConfiguration pane : paneList) {
@@ -213,19 +206,6 @@ public class TerminalLauncher {
             throw ErrorEventFactory.expected(new IOException(
                     "Unable to launch terminal " + type.toTranslatedString().getValue() + ": " + modMsg, ex));
         }
-    }
-
-    private static String getTerminalRegisterCommand(UUID request) throws Exception {
-        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
-        var registerLine = CommandBuilder.of()
-                .addFile(exec)
-                .add("terminal-register", "--request", request.toString())
-                .buildFull(LocalShell.getShell());
-        var bellLine = "printf \"\\a\"";
-        var printBell = OsType.ofLocal() != OsType.WINDOWS
-                && AppPrefs.get().enableTerminalStartupBell().get();
-        var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
-        return lines.toString();
     }
 
     private static boolean launchMultiplexerTabInExistingTerminal(TerminalLaunchConfiguration launchConfiguration)
@@ -285,8 +265,7 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
-            var fullLocalCommand = getTerminalRegisterCommand(multiplexerLaunchRequest) + "\n" + proxyLaunchCommand;
-            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, fullLocalCommand, LocalShell.getDialect());
+            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, proxyLaunchCommand, LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
                     null,
                     AppNames.ofCurrent().getName(),
@@ -303,8 +282,7 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(multiplexerCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
-            var fullLocalCommand = getTerminalRegisterCommand(multiplexerLaunchRequest) + "\n" + launchCommand;
-            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, fullLocalCommand, LocalShell.getDialect());
+            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, launchCommand, LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
                     null,
                     AppNames.ofCurrent().getName(),
@@ -332,26 +310,9 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
-            var fullLocalCommand = getTerminalRegisterCommand(pane.getRequest()) + "\n" + launchCommand;
-            panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));
+            panes.add(pane.withScript(LocalShell.getDialect(), launchCommand));
         }
 
         return Optional.ofNullable(launchConfiguration.withPanes(panes));
-    }
-
-    private static TerminalLaunchConfiguration launchNormal(
-            TerminalLaunchConfiguration launchConfiguration) throws Exception {
-        var panes = new ArrayList<TerminalPaneConfiguration>();
-        for (TerminalPaneConfiguration pane : launchConfiguration.getPanes()) {
-            var changedDialect = pane.getScriptDialect() != LocalShell.getDialect();
-            var changedPane = pane.withScript(
-                    LocalShell.getDialect(),
-                    getTerminalRegisterCommand(pane.getRequest()) + "\n"
-                            + (changedDialect
-                            ? pane.getDialectLaunchCommand().buildSimple()
-                            : pane.getScriptContent()));
-            panes.add(changedPane);
-        }
-        return launchConfiguration.withPanes(panes);
     }
 }

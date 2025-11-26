@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
@@ -36,26 +37,60 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     private static void open(TerminalLaunchConfiguration configuration, CommandBuilder socketWrite, boolean preferTab)
             throws Exception {
         try (var sc = LocalShell.getShell().start()) {
+            for (int i = 0; i < configuration.getPanes().size(); i++) {
+                var payload = JsonNodeFactory.instance.objectNode();
+                var args = configuration.single().getDialectLaunchCommand().buildBaseParts(sc);
+                var argsArray = payload.putArray("args");
+                args.forEach(argsArray::add);
+                payload.put("tab_title", configuration.getColoredTitle());
+                
+                var type = i == 0 ? (preferTab ? "tab" : "os-window") : "window";
+                payload.put("type", type);
+
+                var json = JsonNodeFactory.instance.objectNode();
+                json.put("cmd", "launch");
+                json.set("payload", payload);
+                json.putArray("version").add(0).add(14).add(2);
+                var jsonString = json.toString();
+                var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
+
+                sc.command(CommandBuilder.of()
+                        .add("printf", echoString, "|")
+                        .add(socketWrite)
+                        .addFile(getSocket()))
+                        .execute();
+
+                if (i == 0) {
+                    setLayout(socketWrite);
+                }
+            }
+        }
+    }
+
+    private static void setLayout(CommandBuilder socketWrite) throws Exception {
+        var layout = switch (AppPrefs.get().terminalSplitStrategy().getValue()) {
+            case HORIZONTAL -> "horizontal";
+            case VERTICAL -> "vertical";
+            case BALANCED -> "grid";
+        };
+
+        try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
-            var args = configuration.single().getDialectLaunchCommand().buildBaseParts(sc);
-            var argsArray = payload.putArray("args");
-            args.forEach(argsArray::add);
-            payload.put("tab_title", configuration.getColoredTitle());
-            payload.put("type", preferTab ? "tab" : "os-window");
-            payload.put("logo_alpha", 0.01);
-            payload.put("logo", AppInstallation.ofCurrent().getLogoPath().toString());
+            payload.put("layout", layout);
 
             var json = JsonNodeFactory.instance.objectNode();
-            json.put("cmd", "launch");
+            json.put("cmd", "set-enabled-layouts");
             json.set("payload", payload);
             json.putArray("version").add(0).add(14).add(2);
+
             var jsonString = json.toString();
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
-            sc.executeSimpleCommand(CommandBuilder.of()
-                    .add("printf", echoString, "|")
-                    .add(socketWrite)
-                    .addFile(getSocket()));
+            sc.command(CommandBuilder.of()
+                            .add("printf", echoString, "|")
+                            .add(socketWrite)
+                            .addFile(getSocket()))
+                    .execute();
         }
     }
 
