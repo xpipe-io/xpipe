@@ -17,7 +17,7 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
     private final List<Comp<?>> entries;
 
     @Setter
-    private Comp<?> heightReference;
+    private Comp<?> mainReference;
 
     public InputGroupComp(List<Comp<?>> comps) {
         entries = List.copyOf(comps);
@@ -32,8 +32,8 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
         }
         b.setAlignment(Pos.CENTER);
 
-        if (heightReference != null && entries.contains(heightReference)) {
-            var refIndex = entries.indexOf(heightReference);
+        if (mainReference != null && entries.contains(mainReference)) {
+            var refIndex = entries.indexOf(mainReference);
             var ref = b.getChildren().get(refIndex);
             if (ref instanceof Region refR) {
                 for (int i = 0; i < entries.size(); i++) {
@@ -51,6 +51,12 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
                     entryR.prefHeightProperty().bind(refR.heightProperty());
                 }
             }
+
+            b.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue) {
+                    ref.requestFocus();
+                }
+            });
         }
 
         return new SimpleCompStructure<>(b);

@@ -101,7 +101,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 capsPopover.hide();
                 return;
             }
-            if (!capsPopover.isShowing()) {
+            if (!capsPopover.isShowing() && field.getScene() != null) {
                 capsPopover.show(field);
             }
         });
@@ -114,13 +114,15 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 .tooltipKey("copyPassword");
 
         var list = new ArrayList<Comp<?>>();
-        list.add(Comp.of(() -> field));
+        var fieldComp = Comp.of(() -> field);
+        list.add(fieldComp);
         if (allowCopy) {
             list.add(copyButton);
         }
         list.addAll(additionalButtons);
 
         var ig = new InputGroupComp(list);
+        ig.setMainReference(fieldComp);
         ig.styleClass("secret-field-comp");
         ig.apply(struc -> {
             struc.get().focusedProperty().addListener((c, o, n) -> {
