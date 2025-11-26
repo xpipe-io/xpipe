@@ -41,7 +41,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                                 model.getSelected()),
                         (v1, v2) -> v2,
                         LinkedHashMap::new));
-        var multi = new MultiContentComp(map, true);
+        var multi = new MultiContentComp(true, map, true);
         multi.styleClass("background");
 
         var pane = new BorderPane();

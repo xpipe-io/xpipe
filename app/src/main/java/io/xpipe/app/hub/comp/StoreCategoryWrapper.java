@@ -182,10 +182,18 @@ public class StoreCategoryWrapper {
         }
 
         var directFiltered = directContainedEntries.getList().stream()
-                .filter(storeEntryWrapper -> storeEntryWrapper.includeInConnectionCount()
-                        && storeEntryWrapper.matchesFilter(
-                                StoreViewState.get().getFilterString().getValue()))
+                .filter(storeEntryWrapper -> {
+                    var filter = StoreViewState.get().getFilterString().getValue();
+                    if (filter != null) {
+                        var matches = storeEntryWrapper.matchesFilter(filter);
+                        return matches;
+                    }
+
+                    return storeEntryWrapper.includeInConnectionCount();
+                })
                 .count();
+        // Due to always including filtered entries, there is the possibility of exceeding the direct count
+        directFiltered = Math.min(directFiltered, direct);
         var subFiltered = children.getList().stream()
                 .mapToInt(value -> value.shownContainedEntriesCount.get())
                 .sum();
