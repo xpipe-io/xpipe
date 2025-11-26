@@ -170,8 +170,8 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                     .add(base)
                                     .add("cli", "split-pane")
                                     .addIf(direction == TerminalSplitStrategy.HORIZONTAL, "--horizontal")
-                                    .addIf(direction == TerminalSplitStrategy.VERTICAL, "--verical")
-                                    .addFile(configuration.getPanes().getFirst().getScriptFile()))
+                                    .addIf(direction == TerminalSplitStrategy.VERTICAL, "--vertical")
+                                    .addFile(configuration.getPanes().get(i).getScriptFile()))
                             .executeAndCheck();
                 }
             }
