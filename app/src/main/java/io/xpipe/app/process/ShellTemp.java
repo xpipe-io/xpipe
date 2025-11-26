@@ -42,13 +42,12 @@ public class ShellTemp {
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join("xpipe");
-            proc.command(proc.getShellDialect().getMkdirsCommand(base.toString()))
-                    .execute();
+            proc.view().mkdir(base);
             // We have to make sure that also other users can create files here
             // This command should work in all shells
             proc.command("chmod 777 " + proc.getShellDialect().fileArgument(base))
                     .executeAndCheck();
-            var user = proc.getShellDialect().printUsernameCommand(proc).readStdoutOrThrow();
+            var user = proc.view().user();
             base = base.join(user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();

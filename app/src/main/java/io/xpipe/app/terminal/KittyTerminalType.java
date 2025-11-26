@@ -34,7 +34,6 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     private static FilePath getSocket() throws Exception {
         try (var sc = LocalShell.getShell().start()) {
             var temp = ShellTemp.createUserSpecificTempDataDirectory(sc, null);
-            sc.executeSimpleCommand(sc.getShellDialect().getMkdirsCommand(temp.toString()));
             return temp.join(AppNames.ofCurrent().getSnakeName() + "_kitty");
         }
     }
@@ -134,7 +133,6 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
 
     @Override
     default boolean isRecommended() {
-        // There are some race conditions with the socket, although that should be fixed to some degree
         return true;
     }
 

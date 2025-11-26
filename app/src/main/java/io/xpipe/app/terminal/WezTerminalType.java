@@ -1,12 +1,14 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.OsType;
 
@@ -96,6 +98,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     class Linux implements ExternalApplicationType, WezTerminalType {
 
         @Override
+        public boolean supportsSplitView() {
+            return true;
+        }
+
+        @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
         }
@@ -110,7 +117,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     base = CommandBuilder.of().addFile("wezterm");
                 } else {
                     if (flatpak.isPresent()) {
-                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
+                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
                     } else {
                         base = CommandBuilder.of().addFile("wezterm");
                     }
@@ -120,23 +127,53 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                         .command(CommandBuilder.of()
                                 .add(base)
                                 .add("cli", "spawn")
-                                .addFile(configuration.single().getScriptFile()))
+                                .addFile(configuration.getPanes().getFirst().getScriptFile()))
                         .executeAndCheck();
             }
 
             if (runGui) {
+                var start = System.currentTimeMillis();
                 CommandBuilder base;
                 if (CommandSupport.isInLocalPath("wezterm-gui")) {
                     base = CommandBuilder.of().addFile("wezterm-gui");
                 } else {
                     if (flatpak.isPresent()) {
-                        base = FlatpakCache.runCommand("org.wezfurlong.wezterm");
+                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
                     } else {
                         base = CommandBuilder.of().addFile("wezterm-gui");
                     }
                 }
                 ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().add(base).add("start").addFile(configuration.single().getScriptFile()));
+                        CommandBuilder.of().add(base).add("start").addFile(configuration.getPanes().getFirst().getScriptFile()));
+                var elapsed = System.currentTimeMillis() - start;
+                // Is there a better way?
+                ThreadHelper.sleep(elapsed * 10);
+            }
+
+            if (configuration.getPanes().size() > 1) {
+                CommandBuilder base;
+                if (CommandSupport.isInLocalPath("wezterm")) {
+                    base = CommandBuilder.of().addFile("wezterm");
+                } else {
+                    if (flatpak.isPresent()) {
+                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
+                    } else {
+                        base = CommandBuilder.of().addFile("wezterm");
+                    }
+                }
+
+                var direction = AppPrefs.get().terminalSplitStrategy().getValue();
+
+                for (int i = 1; i < configuration.getPanes().size(); i++) {
+                    LocalShell.getShell()
+                            .command(CommandBuilder.of()
+                                    .add(base)
+                                    .add("cli", "split-pane")
+                                    .addIf(direction == TerminalSplitStrategy.HORIZONTAL, "--horizontal")
+                                    .addIf(direction == TerminalSplitStrategy.VERTICAL, "--verical")
+                                    .addFile(configuration.getPanes().getFirst().getScriptFile()))
+                            .executeAndCheck();
+                }
             }
         }
 
@@ -156,6 +193,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     }
 
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
+
+        @Override
+        public boolean supportsSplitView() {
+            return true;
+        }
 
         @Override
         public TerminalOpenFormat getOpenFormat() {
