@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
@@ -10,9 +11,17 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
+import java.io.IOException;
+import java.net.StandardProtocolFamily;
+import java.net.UnixDomainSocketAddress;
+import java.nio.channels.SocketChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.Optional;
 
 public interface WezTerminalType extends ExternalTerminalType, TrackableTerminalType {
@@ -22,13 +31,23 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     ExternalTerminalType WEZTERM_MAC_OS = new MacOs();
 
     @Override
+    default TerminalOpenFormat getOpenFormat() {
+        return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
+    }
+
+    @Override
     default String getWebsite() {
         return "https://wezfurlong.org/wezterm/index.html";
     }
 
     @Override
     default boolean isRecommended() {
-        return OsType.ofLocal() != OsType.WINDOWS;
+        return true;
+    }
+
+    @Override
+    default boolean supportsSplitView() {
+        return true;
     }
 
     @Override
@@ -36,26 +55,119 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         return true;
     }
 
+    default Path getSocketDir() {
+        return AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "wezterm");
+    }
+
+    default Optional<Path> waitForInstanceStart(int count) {
+        Path dir = getSocketDir();
+        if (!Files.exists(dir)) {
+            return Optional.empty();
+        }
+
+        for (int i = 0; i < count; i++) {
+            ThreadHelper.sleep(100);
+            var active = getActiveSocket();
+            if (active.isPresent()) {
+                return active;
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    default Optional<Path> getActiveSocket() {
+        Path dir = getSocketDir();
+        if (!Files.exists(dir)) {
+            return Optional.empty();
+        }
+
+        try (var stream = Files.list(dir)) {
+            var files = stream.sorted(Comparator.<Path, Instant>comparing(path -> {
+                try {
+                    return Files.getLastModifiedTime(path).toInstant();
+                } catch (IOException e) {
+                    return Instant.MIN;
+                }
+            }).reversed()).toList();
+            for (Path file : files) {
+                if (file.getFileName().toString().contains("gui-sock")) {
+                    try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
+                        if (channel.connect(UnixDomainSocketAddress.of(file))) {
+                            if (channel.isConnected()) {
+                                return Optional.of(file);
+                            }
+                        }
+                    } catch (IOException ignored) {}
+                }
+            }
+        } catch (IOException ignored) {}
+
+        return Optional.empty();
+    }
+
+    @Override
+    default void launch(TerminalLaunchConfiguration configuration) throws Exception {
+        var base = getWeztermCommandBase();
+
+        var activeSocket = waitForInstanceStart(1);
+        // Always start a new window for split panes as we can't find the pane index to start with
+        if (activeSocket.isEmpty() || configuration.getPanes().size() > 1) {
+            var command = CommandBuilder.of()
+                    .add(base).add("start", "--always-new-process").add(configuration.getPanes().getFirst().getDialectLaunchCommand());
+            ExternalApplicationHelper.startAsync(command);
+        } else {
+            var command = CommandBuilder.of()
+                    .add(base).add("cli", "spawn")
+                    .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
+            command.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
+            LocalShell.getShell().command(command)
+                    .withWorkingDirectory(FilePath.of(getSocketDir())).execute();
+        }
+
+        if (configuration.getPanes().size() > 1) {
+            activeSocket = waitForInstanceStart(50);
+            if (activeSocket.isEmpty()) {
+                return;
+            }
+
+            var direction = AppPrefs.get().terminalSplitStrategy().getValue();
+            var directionIterator = direction.iterator();
+            for (int i = 1; i < configuration.getPanes().size(); i++) {
+                LocalShell.getShell()
+                        .command(CommandBuilder.of()
+                                .add(base)
+                                .add("cli", "split-pane")
+                                .addIf(directionIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL, "--horizontal")
+                                .addIf(directionIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL, "--bottom")
+                                .add("--pane-id", "" + directionIterator.getTargetPaneIndex())
+                                .add("--percent", "50")
+                                .add(configuration.getPanes().get(i).getDialectLaunchCommand())
+                                .fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString()))
+                        .withWorkingDirectory(FilePath.of(getSocketDir()))
+                        .execute();
+                directionIterator.next();
+            }
+        }
+    }
+
+    CommandBuilder getWeztermCommandBase() throws Exception;
+
     class Windows implements ExternalApplicationType.WindowsType, ExternalTerminalType, WezTerminalType {
 
         @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            launch(CommandBuilder.of().add("start").add(configuration.single().getDialectLaunchCommand()));
+        public CommandBuilder getWeztermCommandBase() {
+            return CommandBuilder.of().addFile(findExecutable());
         }
 
         @Override
         public boolean detach() {
-            return false;
+            return true;
         }
 
         @Override
         public String getExecutable() {
-            return "wezterm-gui";
+            return "wezterm";
         }
 
         @Override
@@ -71,7 +183,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                             .readStringValueIfPresent(
                                     foundKey.get().getHkey(), foundKey.get().getKey(), "InstallLocation");
                     if (installKey.isPresent()) {
-                        return installKey.map(p -> p + "\\wezterm-gui.exe").map(Path::of);
+                        return installKey.map(p -> p + "\\wezterm.exe").map(Path::of);
                     }
                 }
             } catch (Exception ex) {
@@ -80,7 +192,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
             try {
                 if (CommandSupport.isInLocalPath("wezterm")) {
-                    return Optional.of(Path.of("wezterm-gui"));
+                    return Optional.of(Path.of("wezterm"));
                 }
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
@@ -95,91 +207,26 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         }
     }
 
-    class Linux implements ExternalApplicationType, WezTerminalType {
+    class Linux implements ExternalApplicationType.LinuxApplication, WezTerminalType {
 
         @Override
-        public boolean supportsSplitView() {
+        public CommandBuilder getWeztermCommandBase() throws Exception {
+            return getCommandBase();
+        }
+
+        @Override
+        public String getExecutable() {
+            return "wezterm";
+        }
+
+        @Override
+        public boolean detach() {
             return true;
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
-
-        @Override
-        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            boolean runGui = true;
-            var flatpak = FlatpakCache.getApp("org.wezfurlong.wezterm");
-            if (configuration.isPreferTabs()) {
-                CommandBuilder base;
-                if (CommandSupport.isInLocalPath("wezterm")) {
-                    base = CommandBuilder.of().addFile("wezterm");
-                } else {
-                    if (flatpak.isPresent()) {
-                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
-                    } else {
-                        base = CommandBuilder.of().addFile("wezterm");
-                    }
-                }
-
-                runGui = !LocalShell.getShell()
-                        .command(CommandBuilder.of()
-                                .add(base)
-                                .add("cli", "spawn")
-                                .addFile(configuration.getPanes().getFirst().getScriptFile()))
-                        .executeAndCheck();
-            }
-
-            if (runGui) {
-                var start = System.currentTimeMillis();
-                CommandBuilder base;
-                if (CommandSupport.isInLocalPath("wezterm-gui")) {
-                    base = CommandBuilder.of().addFile("wezterm-gui");
-                } else {
-                    if (flatpak.isPresent()) {
-                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
-                    } else {
-                        base = CommandBuilder.of().addFile("wezterm-gui");
-                    }
-                }
-                ExternalApplicationHelper.startAsync(
-                        CommandBuilder.of().add(base).add("start").addFile(configuration.getPanes().getFirst().getScriptFile()));
-                var elapsed = System.currentTimeMillis() - start;
-                // Is there a better way?
-                ThreadHelper.sleep(elapsed * 10);
-            }
-
-            if (configuration.getPanes().size() > 1) {
-                CommandBuilder base;
-                if (CommandSupport.isInLocalPath("wezterm")) {
-                    base = CommandBuilder.of().addFile("wezterm");
-                } else {
-                    if (flatpak.isPresent()) {
-                        base = FlatpakCache.getRunCommand("org.wezfurlong.wezterm");
-                    } else {
-                        base = CommandBuilder.of().addFile("wezterm");
-                    }
-                }
-
-                var direction = AppPrefs.get().terminalSplitStrategy().getValue();
-
-                for (int i = 1; i < configuration.getPanes().size(); i++) {
-                    LocalShell.getShell()
-                            .command(CommandBuilder.of()
-                                    .add(base)
-                                    .add("cli", "split-pane")
-                                    .addIf(direction == TerminalSplitStrategy.HORIZONTAL, "--horizontal")
-                                    .addIf(direction == TerminalSplitStrategy.VERTICAL, "--vertical")
-                                    .addFile(configuration.getPanes().get(i).getScriptFile()))
-                            .executeAndCheck();
-                }
-            }
         }
 
         public boolean isAvailable() {
             try {
-                return CommandSupport.isInLocalPath("wezterm") && CommandSupport.isInLocalPath("wezterm-gui");
+                return CommandSupport.isInLocalPath("wezterm");
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().handle();
                 return false;
@@ -190,19 +237,14 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         public String getId() {
             return "app.wezterm";
         }
+
+        @Override
+        public String getFlatpakId() throws Exception {
+            return "org.wezfurlong.wezterm";
+        }
     }
 
     class MacOs implements ExternalApplicationType.MacApplication, WezTerminalType {
-
-        @Override
-        public boolean supportsSplitView() {
-            return true;
-        }
-
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
-        }
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
@@ -233,6 +275,17 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                             .add("start")
                             .addFile(configuration.single().getScriptFile()));
                 }
+            }
+        }
+
+        @Override
+        public CommandBuilder getWeztermCommandBase() throws Exception {
+            try (var sc = LocalShell.getShell()) {
+                var pathOut = sc.command(
+                        String.format("mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
+                                getApplicationName())).readStdoutOrThrow();
+                var path = Path.of(pathOut);
+                return CommandBuilder.of().addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm"));
             }
         }
 

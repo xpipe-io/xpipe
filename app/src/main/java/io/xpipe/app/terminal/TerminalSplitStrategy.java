@@ -7,17 +7,12 @@ import lombok.Getter;
 public enum TerminalSplitStrategy implements PrefsChoiceValue {
     HORIZONTAL("horizontal") {
         @Override
-        public Iterator iterator() {
-            return new Iterator() {
+        public SplitIterator iterator() {
+            return new OrderedSplitIterator() {
 
                 @Override
                 public SplitDirection getSplitDirection() {
                     return SplitDirection.HORIZONTAL;
-                }
-
-                @Override
-                public SwitchDirection getSwitchDirection() {
-                    return SwitchDirection.STAY;
                 }
             };
         }
@@ -25,17 +20,12 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
 
     VERTICAL("vertical") {
         @Override
-        public Iterator iterator() {
-            return new Iterator() {
+        public SplitIterator iterator() {
+            return new OrderedSplitIterator() {
 
                 @Override
                 public SplitDirection getSplitDirection() {
                     return SplitDirection.VERTICAL;
-                }
-
-                @Override
-                public SwitchDirection getSwitchDirection() {
-                    return SwitchDirection.STAY;
                 }
             };
         }
@@ -43,24 +33,12 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
 
     BALANCED("balanced") {
         @Override
-        public Iterator iterator() {
-            return new Iterator() {
-
-                private int counter;
-
-                @Override
-                public void next() {
-                    counter++;
-                }
+        public SplitIterator iterator() {
+            return new OrderedSplitIterator() {
 
                 @Override
                 public SplitDirection getSplitDirection() {
-                    return counter % 2 == 0 ? SplitDirection.HORIZONTAL : SplitDirection.VERTICAL;
-                }
-
-                @Override
-                public SwitchDirection getSwitchDirection() {
-                    return counter % 2 != 0 ? SwitchDirection.NEXT : SwitchDirection.PREVIOUS;
+                    return level % 2 == 0 ? SplitDirection.HORIZONTAL : SplitDirection.VERTICAL;
                 }
             };
         }
@@ -72,25 +50,39 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
         this.id = id;
     }
 
-    public abstract Iterator iterator();
+    public abstract SplitIterator iterator();
 
     public static enum SplitDirection {
         HORIZONTAL,
         VERTICAL;
     }
 
-    public static enum SwitchDirection {
-        STAY,
-        PREVIOUS,
-        NEXT;
-    }
-
-    public static abstract class Iterator {
+    public static abstract class SplitIterator {
 
         public void next() {}
 
         public abstract SplitDirection getSplitDirection();
 
-        public abstract SwitchDirection getSwitchDirection();
+        public abstract int getTargetPaneIndex();
+    }
+
+    public static abstract class OrderedSplitIterator extends SplitIterator {
+
+        private int counter;
+        protected int level;
+
+        @Override
+        public void next() {
+            counter++;
+            if (counter >= Math.powExact(2, level)) {
+                counter = 0;
+                level++;
+            }
+        }
+
+        @Override
+        public int getTargetPaneIndex() {
+            return counter;
+        }
     }
 }

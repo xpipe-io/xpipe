@@ -124,6 +124,22 @@ public interface ExternalApplicationType extends PrefsValue {
 
         String getFlatpakId() throws Exception;
 
+        default CommandBuilder getCommandBase() throws Exception {
+            if (getFlatpakId() == null
+                    || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
+                return CommandBuilder.of().add(getExecutable());
+            }
+
+            var app = FlatpakCache.getApp(getFlatpakId());
+            if (app.isEmpty()) {
+                throw ErrorEventFactory.expected(new IOException(
+                        "Executable " + getExecutable() + " not found in PATH nor as a flatkpak " + getFlatpakId()
+                                + " not installed. Install it and refresh the environment by restarting XPipe"));
+            }
+
+            return FlatpakCache.getRunCommand(getFlatpakId());
+        }
+
         @Override
         default void launch(CommandBuilder args) throws Exception {
             if (getFlatpakId() == null
