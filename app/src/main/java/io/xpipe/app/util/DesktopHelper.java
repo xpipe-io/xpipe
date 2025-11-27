@@ -29,6 +29,13 @@ public class DesktopHelper {
             return;
         }
 
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            if (OsType.ofLocal() == OsType.LINUX) {
+                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+                return;
+            }
+        }
+
         // This can be a blocking operation
         ThreadHelper.runAsync(() -> {
             try {
