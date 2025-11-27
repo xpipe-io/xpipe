@@ -13,6 +13,7 @@ import io.xpipe.core.OsType;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -160,7 +161,14 @@ public interface ExternalApplicationType extends PrefsValue {
                 String name = getExecutable();
                 var out = sc.view().findProgram(name);
                 if (out.isPresent()) {
-                    return out.map(filePath -> Path.of(filePath.toString()));
+                    return out.flatMap(filePath -> {
+                        try {
+                            return Optional.of(Path.of(filePath.toString()));
+                        } catch (InvalidPathException ex) {
+                            ErrorEventFactory.fromThrowable(ex).omit().handle();
+                            return Optional.empty();
+                        }
+                    });
                 }
             } catch (Exception ex) {
                 ErrorEventFactory.fromThrowable(ex).omit().handle();

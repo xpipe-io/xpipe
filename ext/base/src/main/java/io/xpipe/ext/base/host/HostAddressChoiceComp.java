@@ -64,13 +64,9 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             nodes.add(addButton);
         }
 
-        var layout = new InputGroupComp(nodes).apply(struc -> struc.get().setFillHeight(true));
-        layout.apply(struc -> {
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
-                struc.get().getChildren().getFirst().requestFocus();
-            });
-        });
-
+        var layout = new InputGroupComp(nodes);
+        layout.setMainReference(combo);
+        layout.apply(struc -> struc.get().setFillHeight(true));
         return new SimpleCompStructure<>(layout.createStructure().get());
     }
 
