@@ -109,17 +109,28 @@ public interface FileSystem extends Closeable, AutoCloseable {
             base = filesStream.toList();
         }
 
-        for (FileEntry fileEntry : base) {
-            if (!visitor.test(fileEntry)) {
-                return;
-            }
+        if (base.size() != 1) {
+            for (FileEntry fileEntry : base) {
+                if (!visitor.test(fileEntry)) {
+                    continue;
+                }
 
-            if (fileEntry.getKind() != FileKind.DIRECTORY) {
-                continue;
-            }
+                if (fileEntry.getKind() != FileKind.DIRECTORY) {
+                    continue;
+                }
 
-            traverseFilesRecursively(system, fileEntry.getPath(), visitor);
+                traverseFilesRecursively(system, fileEntry.getPath(), visitor);
+            }
+            return;
         }
+
+        // Optimize this call to use tail recursion if possible
+
+        if (!visitor.test(base.getFirst()) || base.getFirst().getKind() != FileKind.DIRECTORY) {
+            return;
+        }
+
+        traverseFilesRecursively(system, base.getFirst().getPath(), visitor);
     }
 
     List<FilePath> listRoots() throws Exception;
