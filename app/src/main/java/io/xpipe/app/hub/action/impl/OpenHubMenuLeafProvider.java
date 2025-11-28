@@ -9,6 +9,7 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
@@ -69,6 +70,9 @@ public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, Batc
         public void executeImpl() throws Exception {
             var r = ref.get().getProvider().launch(ref.get());
             r.run();
+
+            // Terminal launching is done async, so to show the busy marker, just wait here
+            ThreadHelper.sleep(1000);
         }
     }
 }
