@@ -64,7 +64,7 @@ public class TerminalPaneConfiguration {
             throws Exception {
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var d = LocalShell.getDialect();
-            var register = getTerminalRegisterCommand(request);
+            var register = TerminalLauncher.getTerminalRegisterCommand(request);
             var powershell = ShellDialects.isPowershell(d);
             var launcherScript = (powershell ? "& " + register : register) + "\n" + d.terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, d);
@@ -95,7 +95,7 @@ public class TerminalPaneConfiguration {
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
-                            .formatted(getTerminalRegisterCommand(request), logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
+                            .formatted(TerminalLauncher.getTerminalRegisterCommand(request), logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
             var config = new TerminalPaneConfiguration(
                     request,
                     title,
@@ -141,7 +141,7 @@ public class TerminalPaneConfiguration {
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """
                             .formatted(
-                                    getTerminalRegisterCommand(request),
+                                    TerminalLauncher.getTerminalRegisterCommand(request),
                                     logFile.getFileName(),
                                     scriptCommand,
                                     logFile.getFileName(),
@@ -152,19 +152,6 @@ public class TerminalPaneConfiguration {
             config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
             return config;
         }
-    }
-
-    private static String getTerminalRegisterCommand(UUID request) throws Exception {
-        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
-        var registerLine = CommandBuilder.of()
-                .addFile(exec)
-                .add("terminal-register", "--request", request.toString())
-                .buildSimple();
-        var bellLine = "printf \"\\a\"";
-        var printBell = OsType.ofLocal() != OsType.WINDOWS
-                && AppPrefs.get().enableTerminalStartupBell().get();
-        var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
-        return lines.toString();
     }
 
     public TerminalPaneConfiguration withScript(ShellDialect d, String content) {

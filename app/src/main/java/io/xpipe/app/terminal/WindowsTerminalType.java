@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellDialect;
@@ -50,11 +51,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
         }
 
-        var splitDir = false;
-
         // We assume that all scripts are located in the same dir
         var spaces = configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
+        var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
         for (int i = 0; i < configuration.getPanes().size(); i++) {
+            splitIterator.next();
+
             var pane = configuration.getPanes().get(i);
             var scriptFile = spaces
                     ? pane.getScriptFile().getFileName()
@@ -63,18 +65,21 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             if (i > 0) {
                 cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
                 cmd.add("sp");
+                // The names are not intuitive
+                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL, "--horizontal");
+                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL, "--vertical");
             }
             cmd.add("--title").addQuoted(getFixedTitle(configuration.getColoredTitle()));
             cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
             cmd.add(scriptOpenCommand);
-            if (i > 0) {
+
+            var targetPaneIndex = splitIterator.getTargetPaneIndex();
+            cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
+            cmd.add("mf", targetPaneIndex == 0 ? "first" : "previousInOrder");
+            if (targetPaneIndex > 0) {
                 cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
-                if (i < configuration.getPanes().size() - 1) {
-                    cmd.add("mf", splitDir ? "nextInOrder" : "previousInOrder");
-                    splitDir = !splitDir;
-                } else {
-                    cmd.add("mf", "first");
-                }
+                cmd.add("mf");
+                cmd.add("previousInOrder");
             }
         }
         return cmd;

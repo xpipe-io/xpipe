@@ -125,17 +125,16 @@ public class TerminalLauncher {
             boolean preferTabs,
             ExternalTerminalType type)
             throws Exception {
-        var title = configs.size() == 1 ? configs.getFirst().getTitle() : null;
-        var entry = configs.size() == 1 ? configs.getFirst().getEntry() : null;
-
-        var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
-        var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
-        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
-        var adjustedTitle = prefix + cleanTitle;
 
         var latch = new CountDownLatch(configs.size());
         var paneList = new ArrayList<TerminalPaneConfiguration>();
         for (Config config : configs) {
+            var entry = config.getEntry();
+            var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
+            var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
+            var cleanTitle = (config.getTitle() != null ? config.getTitle() : entry != null ? entry.getName() : "Unknown");
+            var adjustedTitle = prefix + cleanTitle;
+
             var log = config.isEnableLogging() && AppPrefs.get().enableTerminalLogging().get();
             var terminalConfig = new TerminalInitScriptConfig(adjustedTitle,
                     !log && type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get() && !AppPrefs.get().developerPrintInitFiles().get(),
@@ -151,9 +150,18 @@ public class TerminalLauncher {
             paneList.add(paneConfig);
         }
 
+        var title = configs.size() == 1 ? configs.getFirst().getTitle() : AppNames.ofCurrent().getName() + " (" + configs.size() + " tabs)";
+        var entry = configs.size() == 1 ? configs.getFirst().getEntry() : null;
+        var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
+        var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
+        var cleanTitle = (title != null ? title : entry != null ? entry.getName() : "Unknown");
+        var adjustedTitle = prefix + cleanTitle;
+
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
+
+        var launchRequest = UUID.randomUUID();
 
         if (effectivePreferTabs) {
             synchronized (TerminalLauncher.class) {
@@ -293,7 +301,7 @@ public class TerminalLauncher {
     }
 
     private static Optional<TerminalLaunchConfiguration> launchProxy(
-            TerminalLaunchConfiguration launchConfiguration) throws Exception {
+            TerminalLaunchConfiguration launchConfiguration, UUID launchRequest) throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {
             return Optional.empty();
@@ -308,11 +316,26 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(openCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
+            var fullLocalCommand = getTerminalRegisterCommand(launchRequest) + "\n" + launchCommand;
             // Restart for the next time
             proxyControl.get().start();
-            panes.add(pane.withScript(LocalShell.getDialect(), launchCommand));
+            panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));
         }
 
         return Optional.ofNullable(launchConfiguration.withPanes(panes));
     }
+
+    public static String getTerminalRegisterCommand(UUID request) throws Exception {
+        var exec = AppInstallation.ofCurrent().getCliExecutablePath();
+        var registerLine = CommandBuilder.of()
+                .addFile(exec)
+                .add("terminal-register", "--request", request.toString())
+                .buildSimple();
+        var bellLine = "printf \"\\a\"";
+        var printBell = OsType.ofLocal() != OsType.WINDOWS
+                && AppPrefs.get().enableTerminalStartupBell().get();
+        var lines = ShellScript.lines(registerLine, printBell ? bellLine : null);
+        return lines.toString();
+    }
+
 }

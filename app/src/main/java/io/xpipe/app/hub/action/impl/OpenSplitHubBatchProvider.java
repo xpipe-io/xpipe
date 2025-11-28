@@ -2,6 +2,7 @@ package io.xpipe.app.hub.action.impl;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
@@ -9,6 +10,7 @@ import io.xpipe.app.hub.action.MultiStoreAction;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
 import javafx.beans.value.ObservableValue;
@@ -76,7 +78,8 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
                 TerminalPromptManager.configurePromptScript(control);
                 ProcessControlProvider.get().withDefaultScripts(control);
 
-                var config = new TerminalLauncher.Config(ref.get(), "abc", null, UUID.randomUUID(), true, true, control);
+                var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
+                var config = new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
                 panes.add(config);
             }
             TerminalLauncher.open(panes, true, type);
