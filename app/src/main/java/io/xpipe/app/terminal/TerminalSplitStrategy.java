@@ -68,21 +68,21 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
 
     public static abstract class OrderedSplitIterator extends SplitIterator {
 
-        private int counter;
+        private int index;
         protected int level;
 
         @Override
         public void next() {
-            counter++;
-            if (counter >= Math.powExact(2, level)) {
-                counter = 0;
+            index++;
+            if (index >= Math.powExact(2, level)) {
+                index = 0;
                 level++;
             }
         }
 
         @Override
         public int getTargetPaneIndex() {
-            return counter;
+            return index;
         }
     }
 }

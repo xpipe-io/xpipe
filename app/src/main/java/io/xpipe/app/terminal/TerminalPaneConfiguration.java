@@ -64,9 +64,8 @@ public class TerminalPaneConfiguration {
             throws Exception {
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var d = LocalShell.getDialect();
-            var register = TerminalLauncher.getTerminalRegisterCommand(request);
-            var powershell = ShellDialects.isPowershell(d);
-            var launcherScript = (powershell ? "& " + register : register) + "\n" + d.terminalLauncherScript(request, title, alwaysPromptRestart);
+            var register = TerminalLauncher.getTerminalRegisterCommand(request, d);
+            var launcherScript = register + "\n" + d.terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, d);
             return config;
         }
@@ -88,14 +87,14 @@ public class TerminalPaneConfiguration {
                     ShellDialects.POWERSHELL.terminalLauncherScript(request, title, alwaysPromptRestart));
             var content =
                     """
-                          & %s
+                          %s
                           echo 'Transcript started, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" > $Out-Null
                           & "%s"
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
-                            .formatted(TerminalLauncher.getTerminalRegisterCommand(request), logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
+                            .formatted(TerminalLauncher.getTerminalRegisterCommand(request, ShellDialects.POWERSHELL), logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
             var config = new TerminalPaneConfiguration(
                     request,
                     title,
@@ -141,7 +140,7 @@ public class TerminalPaneConfiguration {
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """
                             .formatted(
-                                    TerminalLauncher.getTerminalRegisterCommand(request),
+                                    TerminalLauncher.getTerminalRegisterCommand(request, sc.getShellDialect()),
                                     logFile.getFileName(),
                                     scriptCommand,
                                     logFile.getFileName(),
