@@ -24,13 +24,8 @@ import java.util.UUID;
 public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-        var type = AppPrefs.get().terminalType().getValue();
-        if (type == null) {
-            return false;
-        }
-
-        return type.supportsSplitView() || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
+    public boolean isActive(DataStoreEntryRef<ShellStore> o) {
+        return TerminalSplitStrategy.getEffectiveSplitStrategy().isPresent();
     }
 
     @Override

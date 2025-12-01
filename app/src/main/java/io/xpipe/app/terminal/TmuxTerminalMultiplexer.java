@@ -19,6 +19,11 @@ import java.util.List;
 public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
+    public boolean supportsSplitView() {
+        return true;
+    }
+
+    @Override
     public String getDocsLink() {
         return "https://github.com/tmux/tmux/wiki/Getting-Started";
     }

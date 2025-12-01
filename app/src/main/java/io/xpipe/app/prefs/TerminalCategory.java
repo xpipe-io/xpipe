@@ -188,6 +188,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                         Arrays.asList(TerminalSplitStrategy.values()),
                                         false).maxWidth(getCompWidth()), prefs.terminalSplitStrategy
                                 )
+                                .disable(Bindings.isNull(TerminalSplitStrategy.getEffectiveSplitStrategyObservable()))
                                 .pref(prefs.terminalAlwaysPauseOnExit)
                                 .addToggle(prefs.terminalAlwaysPauseOnExit)
                                 .pref(prefs.clearTerminalOnInit)

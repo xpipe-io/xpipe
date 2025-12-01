@@ -20,6 +20,8 @@ public interface TerminalMultiplexer {
         return l;
     }
 
+    boolean supportsSplitView();
+
     String getDocsLink();
 
     void checkSupported(ShellControl sc) throws Exception;

@@ -20,6 +20,11 @@ import java.util.List;
 public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
     @Override
+    public boolean supportsSplitView() {
+        return true;
+    }
+
+    @Override
     public String getDocsLink() {
         return "https://zellij.dev/";
     }

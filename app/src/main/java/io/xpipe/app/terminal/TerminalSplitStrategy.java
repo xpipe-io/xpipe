@@ -1,7 +1,13 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.prefs.AppPrefs;
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.value.ObservableValue;
 import lombok.Getter;
+
+import java.util.Optional;
 
 @Getter
 public enum TerminalSplitStrategy implements PrefsChoiceValue {
@@ -43,6 +49,53 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
             };
         }
     };
+
+    public static Optional<TerminalSplitStrategy> getEffectiveSplitStrategy() {
+        var prefsValue = AppPrefs.get().terminalSplitStrategy().getValue();
+        if (prefsValue == null) {
+            return Optional.empty();
+        }
+
+        var term = AppPrefs.get().terminalType().getValue();
+        if (term == null || !term.supportsSplitView()) {
+            return Optional.empty();
+        }
+
+        var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+        if (multiplexer != null && !multiplexer.supportsSplitView()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(prefsValue);
+    }
+
+    private static ObservableObjectValue<TerminalSplitStrategy> splitStrategy = null;
+
+    public static synchronized ObservableObjectValue<TerminalSplitStrategy> getEffectiveSplitStrategyObservable() {
+        if (splitStrategy != null) {
+            return splitStrategy;
+        }
+
+        splitStrategy = Bindings.createObjectBinding(() -> {
+            var prefsValue = AppPrefs.get().terminalSplitStrategy().getValue();
+            if (prefsValue == null) {
+                return null;
+            }
+
+            var term = AppPrefs.get().terminalType().getValue();
+            if (term == null || !term.supportsSplitView()) {
+                return null;
+            }
+
+            var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+            if (multiplexer != null && !multiplexer.supportsSplitView()) {
+                return null;
+            }
+
+            return prefsValue;
+        }, AppPrefs.get().terminalSplitStrategy(), AppPrefs.get().terminalMultiplexer(), AppPrefs.get().terminalType());
+        return splitStrategy;
+    }
 
     private final String id;
 

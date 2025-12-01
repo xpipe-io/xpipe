@@ -107,7 +107,7 @@ public class ActionJacksonMapper {
         if (provider instanceof BatchHubProvider<?> h
                 && (!h.getApplicableClass()
                                 .isAssignableFrom(entry.get().getStore().getClass())
-                        || !h.isApplicable(entry.get().ref()))) {
+                        || !h.isActive(entry.get().ref()) || !h.isApplicable(entry.get().ref()))) {
             throw ErrorEventFactory.expected(new IllegalArgumentException(
                     "Store " + DataStorage.get().getStorePath(entry.get()) + " is not applicable for action type"));
         }
