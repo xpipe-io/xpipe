@@ -25,7 +25,7 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
 
     @Override
     public boolean isActive(DataStoreEntryRef<ShellStore> o) {
-        return TerminalSplitStrategy.getEffectiveSplitStrategy().isPresent();
+        return TerminalSplitStrategy.getEffectiveSplitStrategyObservable().getValue() != null;
     }
 
     @Override

@@ -50,25 +50,6 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
         }
     };
 
-    public static Optional<TerminalSplitStrategy> getEffectiveSplitStrategy() {
-        var prefsValue = AppPrefs.get().terminalSplitStrategy().getValue();
-        if (prefsValue == null) {
-            return Optional.empty();
-        }
-
-        var term = AppPrefs.get().terminalType().getValue();
-        if (term == null || !term.supportsSplitView()) {
-            return Optional.empty();
-        }
-
-        var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-        if (multiplexer != null && !multiplexer.supportsSplitView()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(prefsValue);
-    }
-
     private static ObservableObjectValue<TerminalSplitStrategy> splitStrategy = null;
 
     public static synchronized ObservableObjectValue<TerminalSplitStrategy> getEffectiveSplitStrategyObservable() {
@@ -82,13 +63,13 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
                 return null;
             }
 
-            var term = AppPrefs.get().terminalType().getValue();
-            if (term == null || !term.supportsSplitView()) {
-                return null;
+            var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+            if (multiplexer != null && multiplexer.supportsSplitView()) {
+                return prefsValue;
             }
 
-            var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-            if (multiplexer != null && !multiplexer.supportsSplitView()) {
+            var term = AppPrefs.get().terminalType().getValue();
+            if (term == null || !term.supportsSplitView()) {
                 return null;
             }
 

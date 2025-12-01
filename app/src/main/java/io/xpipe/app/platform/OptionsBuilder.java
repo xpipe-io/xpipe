@@ -319,6 +319,12 @@ public class OptionsBuilder {
         return addComp(Comp.of(() -> new Spacer(size, Orientation.VERTICAL)));
     }
 
+    public OptionsBuilder name(ObservableValue<String> name) {
+        finishCurrent();
+        this.name = name;
+        return this;
+    }
+
     public OptionsBuilder name(String nameKey) {
         finishCurrent();
         name = AppI18n.observable(nameKey);

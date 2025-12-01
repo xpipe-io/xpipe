@@ -31,9 +31,9 @@ public class LoggingCategory extends AppPrefsCategory {
                 .addTitle("sessionLogging")
                 .sub(new OptionsBuilder()
                         .pref(prefs.enableTerminalLogging)
-                        .documentationLink(DocumentationLink.API)
                         .addToggle(prefs.enableTerminalLogging)
                         .nameAndDescription("terminalLoggingDirectory")
+                        .documentationLink(DocumentationLink.TERMINAL_LOGGING_FILES)
                         .addComp(new ButtonComp(AppI18n.observable("openSessionLogs"), () -> {
                                     var dir = AppProperties.get().getDataDir().resolve("sessions");
                                     try {
