@@ -187,3 +187,8 @@
 .creation-menu.menu-button .separator {
     -fx-padding: 2 0;
 }
+
+.loading-text {
+    -fx-font-family: Roboto;
+}
+
