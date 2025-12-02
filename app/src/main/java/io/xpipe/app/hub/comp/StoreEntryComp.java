@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
+import io.xpipe.app.browser.action.impl.ChmodActionProvider;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -19,12 +20,10 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -238,6 +237,17 @@ public abstract class StoreEntryComp extends SimpleComp {
         return name;
     }
 
+    protected Comp<?> createTags() {
+        var tagsProp = Bindings.createStringBinding(() -> {
+            return getWrapper().getTags().stream().map(s -> {
+                return "[" + s + "]";
+            }).collect(Collectors.joining(" "));
+        }, getWrapper().getTags());
+        var tagsLabel = new LabelComp(tagsProp);
+        tagsLabel.apply(struc -> struc.get().setOpacity(0.85));
+        return tagsLabel;
+    }
+
     protected Comp<?> createOrderIndex() {
         var prop = new SimpleStringProperty();
         getWrapper().getOrderIndex().subscribe(number -> {
@@ -247,6 +257,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         var comp = new LabelComp(prop);
         comp.styleClass("orderIndex");
+        comp.apply(struc -> struc.get().setOpacity(0.85));
         return comp;
     }
 
@@ -260,6 +271,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
+        button.apply(struc -> struc.get().setOpacity(0.85));
         return button;
     }
 
@@ -272,6 +284,7 @@ public abstract class StoreEntryComp extends SimpleComp {
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPinToTop()));
+        button.apply(struc -> struc.get().setOpacity(0.85));
         return button;
     }
 
@@ -502,6 +515,48 @@ public abstract class StoreEntryComp extends SimpleComp {
                 }
 
                 {
+                    var tags = new Menu(AppI18n.get("tags"), new FontIcon("mdi2t-tag-text-outline"));
+
+                    var allTags = StoreViewState.get().getAllAvailableTags();
+                    for (String tag : allTags) {
+                        var tagItem = new MenuItem(tag);
+                        if (getWrapper().getTags().contains(tag)) {
+                            tagItem.setGraphic(new FontIcon("mdi2c-check"));
+                        }
+                        tagItem.addEventFilter(ActionEvent.ACTION, event -> {
+                            getWrapper().toggleTag(tag);
+                            event.consume();
+                        });
+                        tags.getItems().add(tagItem);
+                    }
+
+                    if (allTags.size() > 0) {
+                        tags.getItems().add(new SeparatorMenuItem());
+                    }
+
+                    var index = ContextMenuHelper.item(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
+                    index.setOnAction(event -> {
+                        var tagName = new SimpleStringProperty();
+                        var modal = ModalOverlay.of(
+                                "addNewTag",
+                                Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(tagName);
+                                            return creationName;
+                                        })
+                                        .prefWidth(350));
+                        modal.withDefaultButtons(() -> {
+                            getWrapper().getEntry().addTag(tagName.getValue());
+                        });
+                        modal.show();
+                        event.consume();
+                    });
+                    tags.getItems().add(index);
+
+                    items.add(tags);
+                }
+
+                    {
                     var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2f-format-list-bulleted"));
 
                     var index = new MenuItem(AppI18n.get("index"), new FontIcon("mdi2o-order-numeric-ascending"));

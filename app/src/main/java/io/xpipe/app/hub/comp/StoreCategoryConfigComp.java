@@ -104,11 +104,7 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
-                        StoreChoiceComp.other(
-                                ref,
-                                DataStore.class,
-                                s -> true,
-                                StoreViewState.get().getAllIdentitiesCategory()),
+                        new StoreChoiceComp<>(null, ref, DataStore.class, null, StoreViewState.get().getAllIdentitiesCategory()),
                         ref)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryColor")

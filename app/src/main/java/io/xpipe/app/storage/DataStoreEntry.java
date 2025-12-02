@@ -88,6 +88,8 @@ public class DataStoreEntry extends StorageElement {
     @NonFinal
     UUID breakOutCategory;
 
+    List<String> tags;
+
     private DataStoreEntry(
             Path directory,
             UUID uuid,
@@ -107,7 +109,8 @@ public class DataStoreEntry extends StorageElement {
             boolean freeze,
             boolean pinToTop,
             int orderIndex,
-            UUID breakOutCategory) {
+            UUID breakOutCategory, List<String> tags
+    ) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;
@@ -123,6 +126,7 @@ public class DataStoreEntry extends StorageElement {
         this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
         this.breakOutCategory = breakOutCategory;
+        this.tags = tags;
     }
 
     public static DataStoreEntry createTempWrapper(@NonNull DataStore store) {
@@ -147,7 +151,8 @@ public class DataStoreEntry extends StorageElement {
                 false,
                 false,
                 0,
-                null);
+                null,
+                new ArrayList<>());
     }
 
     public static DataStoreEntry createNew(@NonNull NameableStore store) {
@@ -191,7 +196,8 @@ public class DataStoreEntry extends StorageElement {
                 false,
                 false,
                 0,
-                null);
+                null,
+                new ArrayList<>());
         return entry;
     }
 
@@ -243,6 +249,18 @@ public class DataStoreEntry extends StorageElement {
         var pinToTop = Optional.ofNullable(json.get("pinToTop"))
                 .map(jsonNode -> jsonNode.booleanValue())
                 .orElse(false);
+        var tags = Optional.ofNullable(json.get("tags"))
+                .map(jsonNode -> {
+                    List<String> l = new ArrayList<>();
+                    for (JsonNode node : jsonNode) {
+                        var tag = node.asText();
+                        if (!tag.isBlank()) {
+                            l.add(tag);
+                        }
+                    }
+                    return l;
+                })
+                .orElse(new ArrayList<>());
 
         var iconNode = json.get("icon");
         String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
@@ -322,7 +340,8 @@ public class DataStoreEntry extends StorageElement {
                 freeze,
                 pinToTop,
                 orderIndex,
-                breakOutCategory));
+                breakOutCategory,
+                tags));
     }
 
     public String getEffectiveIconFile() {
@@ -471,6 +490,33 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
+    public void addTag(String tag) {
+        if (tags == null || tag.isBlank()) {
+            return;
+        }
+
+        tag = tag.strip();
+
+        if (tags.contains(tag)) {
+            return;
+        }
+
+        tags.add(tag);
+        notifyUpdate(false, true);
+    }
+
+    public void removeTag(String tag) {
+        if (tags == null || tag.isBlank()) {
+            return;
+        }
+
+        tag = tag.strip();
+
+        if (tags.remove(tag)) {
+            notifyUpdate(false, true);
+        }
+    }
+
     public void setCategoryUuid(UUID categoryUuid) {
         var changed = !Objects.equals(this.categoryUuid, categoryUuid);
         this.categoryUuid = categoryUuid;
@@ -509,6 +555,11 @@ public class DataStoreEntry extends StorageElement {
         obj.put("freeze", freeze);
         obj.put("pinToTop", pinToTop);
         obj.put("orderIndex", orderIndex);
+
+        var tagsArray = obj.putArray("tags");
+        for (String tag : tags) {
+            tagsArray.add(tag);
+        }
 
         ObjectNode stateObj = JsonNodeFactory.instance.objectNode();
         stateObj.put("lastUsed", lastUsed.toString());

@@ -30,6 +30,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var name = createName().createRegion();
+        var tags = createTags().createRegion();
         var index = createOrderIndex().createRegion();
         var notes = new StoreNotesComp(getWrapper()).createRegion();
         var userIcon = createUserIcon().createRegion();
@@ -55,8 +56,8 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, index, userIcon, pinIcon, notes);
-        nameBox.setSpacing(6);
+        var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
+        nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameBox, 2, 0);
         GridPane.setVgrow(nameBox, Priority.ALWAYS);

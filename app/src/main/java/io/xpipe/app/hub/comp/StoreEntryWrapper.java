@@ -13,6 +13,8 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -27,6 +29,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 
+import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -71,6 +74,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
     private final IntegerProperty orderIndex = new SimpleIntegerProperty();
     private final BooleanProperty effectiveBusy = new SimpleBooleanProperty();
+    private final ObservableList<String> tags = FXCollections.observableArrayList();
     private boolean effectiveBusyProviderBound = false;
 
     public StoreEntryWrapper(DataStoreEntry entry) {
@@ -211,6 +215,9 @@ public class StoreEntryWrapper {
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
         pinToTop.setValue(entry.isPinToTop());
+
+        var orderedTags = entry.getTags().stream().sorted().toList();
+        DerivedObservableList.wrap(tags, true).setContent(orderedTags);
 
         var storeChanged = store.getValue() != entry.getStore();
         store.setValue(entry.getStore());
@@ -400,6 +407,14 @@ public class StoreEntryWrapper {
         return Optional.of(StoreViewState.get().getCategoryWrapper(cat.get()));
     }
 
+    public void toggleTag(String tag) {
+        if (tags.contains(tag)) {
+            entry.removeTag(tag);
+        }  else {
+            entry.addTag(tag);
+        }
+    }
+
     public void mergeBreakOutCategory() {
         ThreadHelper.runAsync(() -> {
             DataStorage.get().mergeBreakOutCategory(entry);
@@ -536,6 +551,10 @@ public class StoreEntryWrapper {
 
         var ss = summary.getValue();
         if (ss != null && ss.toLowerCase().contains(filter.toLowerCase())) {
+            return true;
+        }
+
+        if (tags.stream().anyMatch(s -> s.toLowerCase().contains(filter.toLowerCase()))) {
             return true;
         }
 
