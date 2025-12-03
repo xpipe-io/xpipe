@@ -288,21 +288,6 @@ public class BrowserFileTransferOperation {
                 list.add(fileEntry);
                 return true;
             });
-
-            for (FileEntry fileEntry : list) {
-                if (cancelled()) {
-                    return;
-                }
-
-                var rel = fileEntry.getPath().relativize(baseRelative).toUnix();
-                flatFiles.put(fileEntry, rel);
-                if (fileEntry.getKind() == FileKind.FILE) {
-                    // This one is up-to-date and does not need to be recalculated
-                    // If we don't have a size, it doesn't matter that much as the total size is only for display
-                    totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
-                    progress.accept(new BrowserTransferProgress(source.getName(), 0, totalSize.get()));
-                }
-            }
         } else {
             // Source might have been deleted meanwhile
             var exists = source.getFileSystem().fileExists(source.getPath());
