@@ -7,6 +7,7 @@ import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.BooleanProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -24,6 +25,7 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
     private final DataStoreEntryRef<DataStore> host;
     private final String address;
     private final DataStoreEntryRef<NetworkTunnelStore> gateway;
+    private final Boolean tunnelToLocalhost;
 
     @Override
     public boolean canConvertToAbstractHost() {
@@ -42,5 +44,10 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
                 .gateway(null)
                 .host(newParent.asNeeded())
                 .build();
+    }
+
+    @Override
+    public boolean shouldTunnel() {
+        return tunnelToLocalhost == null || tunnelToLocalhost;
     }
 }
