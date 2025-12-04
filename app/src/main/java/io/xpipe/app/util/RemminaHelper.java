@@ -58,10 +58,9 @@ public class RemminaHelper {
             user = user.split("\\\\")[1];
         }
 
-        var sx = AppMainWindow.get().displayScale().get();
-        var sy = AppMainWindow.get().displayScale().get();
-        var w = Math.round(AppMainWindow.get().getStage().getWidth() * sx);
-        var h = Math.round(AppMainWindow.get().getStage().getHeight() * sy);
+        var w = Math.round(AppMainWindow.get().getStage().getWidth());
+        // Remmina's height calculation does not take the titlebar into account
+        var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
