@@ -58,6 +58,11 @@ public class RemminaHelper {
             user = user.split("\\\\")[1];
         }
 
+        var sx = AppMainWindow.get().displayScale().get();
+        var sy = AppMainWindow.get().displayScale().get();
+        var w = Math.round(AppMainWindow.get().getStage().getWidth() * sx);
+        var h = Math.round(AppMainWindow.get().getStage().getHeight() * sy);
+
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
         // Use window size as remmina's autosize is broken
@@ -85,8 +90,8 @@ public class RemminaHelper {
                                         .orElseThrow()
                                         .getValue(),
                                 password != null ? password : "",
-                                Math.round(AppMainWindow.get().getStage().getWidth()),
-                                Math.round(AppMainWindow.get().getStage().getHeight()));
+                                w,
+                                h);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
