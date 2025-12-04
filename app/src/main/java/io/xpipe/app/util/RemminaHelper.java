@@ -58,14 +58,14 @@ public class RemminaHelper {
             user = user.split("\\\\")[1];
         }
 
+        // Use window size as remmina's autosize is broken
         var w = Math.round(AppMainWindow.get().getStage().getWidth());
         // Remmina's height calculation does not take the titlebar into account
         var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
-        var maximize = AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
+        var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
-        // Use window size as remmina's autosize is broken
         var string =
                 """
                      [remmina]
@@ -102,6 +102,13 @@ public class RemminaHelper {
     public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
+
+        var w = Math.round(AppMainWindow.get().getStage().getWidth());
+        // Remmina's height calculation does not take the titlebar into account
+        var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
+        // Use window size as remmina's autosize is broken
+        var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
+
         var string =
                 """
                      [remmina]
@@ -111,12 +118,18 @@ public class RemminaHelper {
                      server=%s
                      password=%s
                      colordepth=32
+                     window_width=%s
+                     window_height=%s
+                     window_maximize=%s
                      """
                         .formatted(
                                 configuration.getTitle(),
                                 configuration.retrieveUsername().orElse(""),
                                 configuration.getHost() + ":" + configuration.getPort(),
-                                password != null ? password : "");
+                                password != null ? password : "",
+                                w,
+                                h,
+                                maximize);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
