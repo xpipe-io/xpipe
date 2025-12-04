@@ -126,6 +126,7 @@ open module io.xpipe.app {
     uses CloudSetupProvider;
 
     provides ActionProvider with
+            RefreshHubLeafProvider,
             SetupToolActionProvider,
             XPipeUrlProvider,
             OpenHubMenuLeafProvider,
