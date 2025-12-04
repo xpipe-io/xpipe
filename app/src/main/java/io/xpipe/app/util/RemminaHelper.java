@@ -58,10 +58,10 @@ public class RemminaHelper {
             user = user.split("\\\\")[1];
         }
 
-        // Use window size as remmina's autosize is broken
         var w = Math.round(AppMainWindow.get().getStage().getWidth());
         // Remmina's height calculation does not take the titlebar into account
         var h = Math.round(AppMainWindow.get().getStage().getHeight()) - 38;
+        // Use window size as remmina's autosize is broken
         var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
