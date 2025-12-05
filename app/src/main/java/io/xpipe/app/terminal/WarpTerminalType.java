@@ -56,7 +56,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public int getProcessHierarchyOffset() {
-            return 1;
+            return 0;
         }
 
         @Override

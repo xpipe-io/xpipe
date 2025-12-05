@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
 import java.util.stream.Stream;
@@ -32,7 +33,12 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
                         .showQueueEntry(
                                 new AppLayoutModel.QueueEntry(
                                         AppI18n.observable("errorOccurred"),
-                                        new LabelGraphic.IconGraphic("mdoal-error_outline"),
+                                        new LabelGraphic.NodeGraphic(() -> {
+                                            var graphic = new FontIcon("mdoal-error_outline");
+                                            graphic.getStyleClass().add("graphic");
+                                            graphic.getStyleClass().add("error");
+                                            return graphic;
+                                        }),
                                         () -> {
                                             handleGui(event);
                                         }),
