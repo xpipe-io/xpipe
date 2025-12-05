@@ -23,7 +23,9 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Value
 @Jacksonized
@@ -99,7 +101,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             parent.command(CommandBuilder.of().add("chmod", "600").addFile(file))
                     .execute();
         }
-        parent.view().writeTextFile(file, key.getSecretValue());
+        // Make sure that the line endings are in LF
+        // to support older SSH clients that break with CRLF
+        var bytes = key.getSecretValue().lines().collect(Collectors.joining("\n")).getBytes(StandardCharsets.UTF_8);
+        parent.view().writeRawFileDeterministic(file, bytes);
         if (parent.getOsType() != OsType.WINDOWS) {
             parent.command(CommandBuilder.of().add("chmod", "400").addFile(file))
                     .execute();
