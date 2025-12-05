@@ -104,7 +104,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         // Make sure that the line endings are in LF
         // to support older SSH clients that break with CRLF
         var bytes = (key.getSecretValue().lines().collect(Collectors.joining("\n")) + "\n").getBytes(StandardCharsets.UTF_8);
-        parent.view().writeRawFileDeterministic(file, bytes);
+        parent.view().writeRawFile(file, bytes);
         if (parent.getOsType() != OsType.WINDOWS) {
             parent.command(CommandBuilder.of().add("chmod", "400").addFile(file))
                     .execute();
