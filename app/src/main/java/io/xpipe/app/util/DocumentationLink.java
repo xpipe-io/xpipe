@@ -72,6 +72,7 @@ public enum DocumentationLink {
     SSH_MACS("troubleshoot/ssh#no-matching-mac-found"),
     SSH_JUMP_SERVERS("guide/ssh#gateways-and-jump-servers"),
     SSH_CUSTOM("guide/ssh-config#custom-ssh-connections"),
+    SSH_CUSTOM_ORDER("guide/ssh-config#jump-hosts"),
     KEEPASSXC("guide/password-manager#keepassxc"),
     PASSWORD_MANAGER("guide/password-manager"),
     VNC_CLIENTS("guide/vnc#external-clients"),

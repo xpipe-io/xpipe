@@ -111,8 +111,9 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
         if (base.size() != 1) {
             for (FileEntry fileEntry : base) {
+                // False will cancel the whole traversal
                 if (!visitor.test(fileEntry)) {
-                    continue;
+                    return;
                 }
 
                 if (fileEntry.getKind() != FileKind.DIRECTORY) {

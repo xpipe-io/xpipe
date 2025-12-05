@@ -156,6 +156,13 @@
 
 .toggle-group-comp .toggle-button {
     -fx-padding: 3 10;
+}
+
+.root .toggle-group-comp:disabled .toggle-button:disabled {
+    -fx-opacity: 0.6;
+}
+
+.toggle-group-comp .toggle-button:disabled {
     -fx-opacity: 1.0;
 }
 

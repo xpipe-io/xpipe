@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.core.OsType;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,11 +12,8 @@ import java.nio.file.Path;
 public class Deobfuscator {
 
     public static String deobfuscateToString(Throwable t) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        t.printStackTrace(pw);
-        String stackTrace = sw.toString();
-        stackTrace = stackTrace.replaceAll("at .+/(.+)", "at $1");
+        String stackTrace = ExceptionUtils.getStackTrace(t);
+        stackTrace = stackTrace.replaceAll("\tat .+/(.+)", "\tat $1");
 
         try {
             if (!canDeobfuscate()) {
