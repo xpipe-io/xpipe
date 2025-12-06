@@ -7,8 +7,11 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.vnc.VncBaseStore;
+import io.xpipe.core.SecretValue;
+import javafx.beans.property.Property;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -27,6 +30,10 @@ public abstract class ProcessControlProvider {
     public static ProcessControlProvider get() {
         return INSTANCE;
     }
+
+    public abstract String generatePublicSshKey(SecretValue privateKey, SecretRetrievalStrategy passphrase);
+
+    public abstract void showSshKeygenDialog(String commentDefault, Property<?> identityProperty);
 
     public abstract ShellStore subShellEnvironment(DataStoreEntryRef<ShellStore> s, ShellDialect dialect);
 

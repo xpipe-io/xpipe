@@ -128,13 +128,6 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         };
 
         scroll.vvalueProperty().addListener((observable, oldValue, newValue) -> {
-            // Fix scrollbar resetting on fast scroll
-            // If one node within has focus and moves out of focus fast,
-            // the scrollbar will try to focus another one and move it into view
-            // This can result in flicker when scrolling fast enough
-            if (scroll.isFocusWithin()) {
-                scroll.requestFocus();
-            }
             dirty.set(true);
         });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {

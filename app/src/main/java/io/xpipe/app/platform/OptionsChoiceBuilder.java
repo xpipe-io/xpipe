@@ -138,6 +138,7 @@ public class OptionsChoiceBuilder {
                 var c = sub.get(i);
                 if (c.isAssignableFrom(newValue.getClass())) {
                     properties.get(i + (allowNull ? 1 : 0)).setValue(newValue);
+                    selected.setValue(i + (allowNull ? 1 : 0));
                 }
             }
         });
@@ -157,7 +158,7 @@ public class OptionsChoiceBuilder {
             }
         }
 
-        return new OptionsBuilder()
+        var options = new OptionsBuilder()
                 .choice(selected, map, transformer)
                 .bindChoice(
                         () -> {
@@ -169,5 +170,6 @@ public class OptionsChoiceBuilder {
                             return (Property<? extends T>) prop;
                         },
                         s);
+        return options;
     }
 }

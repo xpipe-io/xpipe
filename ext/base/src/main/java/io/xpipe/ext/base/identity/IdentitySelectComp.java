@@ -302,7 +302,16 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     StoreViewState.get().getAllIdentitiesCategory(),
                     "selectIdentity",
                     "noCompatibleIdentity");
-            ((Region) popover.getPopover().getContentNode()).setMaxHeight(350);
+
+            popover.withPopover(po -> {
+                ((Region) po.getContentNode()).setMaxHeight(350);
+                po.showingProperty().addListener((o, oldValue, newValue) -> {
+                    if (!newValue) {
+                        struc.get().hide();
+                    }
+                });
+            });
+
             var skin = new ComboBoxListViewSkin<>(struc.get()) {
                 @Override
                 public void show() {
@@ -314,11 +323,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     popover.hide();
                 }
             };
-            popover.getPopover().showingProperty().addListener((o, oldValue, newValue) -> {
-                if (!newValue) {
-                    struc.get().hide();
-                }
-            });
             struc.get().setSkin(skin);
         });
 

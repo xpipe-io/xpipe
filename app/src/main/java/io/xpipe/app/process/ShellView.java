@@ -6,11 +6,9 @@ import io.xpipe.core.FailableSupplier;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -61,17 +59,6 @@ public class ShellView {
         return groupFile;
     }
 
-    public FilePath writeRawFileDeterministic(FilePath base, byte[] data) throws Exception {
-        var hash = Math.abs(Arrays.hashCode(data));
-        var ext = base.getExtension();
-        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + (ext.isPresent() ? "." + ext.get() : ""));
-        if (fileExists(target)) {
-            return target;
-        }
-        writeRawFile(target, data);
-        return target;
-    }
-
     public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
         var hash = Math.abs(text.hashCode());
         var ext = base.getExtension();
@@ -91,10 +78,6 @@ public class ShellView {
     public String readTextFile(FilePath path) throws Exception {
         var s = getDialect().getFileReadCommand(shellControl, path.toString()).readStdoutOrThrow();
         return s;
-    }
-
-    public void writeRawFile(FilePath path, byte[] data) throws Exception {
-        writeStreamFile(path, new ByteArrayInputStream(data), data.length);
     }
 
     public void writeTextFile(FilePath path, String text) throws Exception {

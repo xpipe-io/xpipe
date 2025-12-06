@@ -1,8 +1,13 @@
 package io.xpipe.ext.base.identity.ssh;
 
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
@@ -23,9 +28,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Value
 @Jacksonized
@@ -36,10 +39,9 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<InPlaceKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var key = new SimpleStringProperty(
-                p.getValue().getKey() != null ? p.getValue().getKey().getSecretValue() : null);
-        var keyPasswordProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
+        var key = OptionsBuilder.map(p, InPlaceKeyStrategy::getKey, SecretValue::getSecretValue);
+        var publicKey = OptionsBuilder.map(p, InPlaceKeyStrategy::getPublicKey);
+        var keyPasswordProperty = OptionsBuilder.map(p, InPlaceKeyStrategy::getPassword);
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
@@ -49,6 +51,18 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .available(SecretRetrievalStrategy.getSubclasses())
                 .build()
                 .build();
+        var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
+            struc.get()
+                    .setPromptText("ssh-... ABCDEF....");
+        });
+        var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
+            var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
+            if (generated != null) {
+                publicKey.set(generated);
+            }
+        }).disable(key.isNull());
+        var publicKeyBox = new InputGroupComp(List.of(publicKeyField, generateButton));
+        publicKeyBox.setMainReference(publicKeyField);
 
         return new OptionsBuilder()
                 .nameAndDescription("inPlaceKeyText")
@@ -64,6 +78,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         }),
                         key)
                 .nonNull()
+                .nameAndDescription("inPlacePublicKey")
+                .addComp(
+                        publicKeyBox,
+                        publicKey)
                 .name("keyPassword")
                 .description("sshConfigHost.identityPassphraseDescription")
                 .sub(passwordChoice, keyPasswordProperty)
@@ -71,13 +89,15 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .bind(
                         () -> {
                             return new InPlaceKeyStrategy(
-                                    key.get() != null ? InPlaceSecretValue.of(key.get()) : null,
-                                    keyPasswordProperty.get());
+                                    key.getValue() != null ? InPlaceSecretValue.of(key.getValue()) : null,
+                                    publicKey.get(),
+                                    keyPasswordProperty.getValue());
                         },
                         p);
     }
 
     SecretValue key;
+    String publicKey;
     SecretRetrievalStrategy password;
 
     public void checkComplete() throws ValidationException {
@@ -101,10 +121,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             parent.command(CommandBuilder.of().add("chmod", "600").addFile(file))
                     .execute();
         }
-        // Make sure that the line endings are in LF
-        // to support older SSH clients that break with CRLF
-        var bytes = (key.getSecretValue().lines().collect(Collectors.joining("\n")) + "\n").getBytes(StandardCharsets.UTF_8);
-        parent.view().writeRawFile(file, bytes);
+        parent.view().writeTextFile(file, key.getSecretValue());
         if (parent.getOsType() != OsType.WINDOWS) {
             parent.command(CommandBuilder.of().add("chmod", "400").addFile(file))
                     .execute();

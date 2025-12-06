@@ -64,11 +64,10 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
                 .name("scanAlertChoiceHeader")
                 .description("scanAlertChoiceHeaderDescription")
                 .addComp(new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.OTHER,
                                 null,
                                 entry,
                                 ShellStore.class,
-                                store1 -> true,
+                                null,
                                 StoreViewState.get().getAllConnectionsCategory())
                         .disable(base.getBusy().or(new SimpleBooleanProperty(initialStore != null))))
                 .name("scanAlertHeader")

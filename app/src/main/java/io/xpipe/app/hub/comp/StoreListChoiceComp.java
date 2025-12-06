@@ -101,8 +101,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                 .apply(struc -> struc.get().setMinHeight(0))
                 .apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
-        var add = new StoreChoiceComp<>(
-                StoreChoiceComp.Mode.OTHER, null, selected, storeClass, applicableCheck, initialCategory);
+        var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory);
         selected.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 if (!selectedList.contains(newValue) && (applicableCheck == null || applicableCheck.test(newValue))) {

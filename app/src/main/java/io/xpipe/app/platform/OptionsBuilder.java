@@ -28,6 +28,24 @@ import java.util.function.Supplier;
 
 public class OptionsBuilder {
 
+    public static <V, T> ObjectProperty<T> map(Property<V> prop, Function<V, T> function) {
+        var mapped = new SimpleObjectProperty<T>();
+        prop.subscribe(v -> {
+            mapped.setValue(function.apply(v));
+        });
+        return mapped;
+    }
+
+    public static <V, T, R> ObjectProperty<R> map(Property<V> prop, Function<V, T> function, Function<T, R> subFunction) {
+        var mapped = new SimpleObjectProperty<R>();
+        prop.subscribe(v -> {
+            T t = function.apply(v);
+            R r = t != null ? subFunction.apply(t) : null;
+            mapped.setValue(r);
+        });
+        return mapped;
+    }
+
     private final Validator ownValidator;
     private final List<Validator> allValidators = new ArrayList<>();
     private final List<Check> allChecks = new ArrayList<>();
@@ -83,6 +101,9 @@ public class OptionsBuilder {
             if (newValue != null) {
                 validatorList.get(list.indexOf(newValue)).validate();
             }
+        });
+        selectedIndex.addListener((observable, oldValue, newValue) -> {
+            selected.setValue(list.get(newValue.intValue()));
         });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {

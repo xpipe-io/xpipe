@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -13,6 +14,7 @@ import io.xpipe.ext.base.identity.IdentityChoiceBuilder;
 import io.xpipe.ext.base.store.ShellStoreProvider;
 
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -76,8 +78,9 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var q = new OptionsBuilder()
                 .name("host")
                 .description("lxdHostDescription")
-                .addComp(StoreChoiceComp.host(
-                        new SimpleObjectProperty<>(st.getCmd().getStore().getHost()),
+                .addComp(
+                        new StoreChoiceComp<>(entry,
+                        new ReadOnlyObjectWrapper<>(st.getCmd().getStore().getHost()), ShellStore.class, null,
                         StoreViewState.get().getAllConnectionsCategory()))
                 .disable()
                 .name("container")

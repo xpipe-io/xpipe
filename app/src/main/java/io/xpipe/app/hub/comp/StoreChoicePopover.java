@@ -31,6 +31,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -43,7 +44,12 @@ public class StoreChoicePopover<T extends DataStore> {
     private final StoreCategoryWrapper initialCategory;
     private final String titleKey;
     private final String noMatchKey;
+    private Consumer<Popover> consumer;
     private Popover popover;
+
+    public void withPopover(Consumer<Popover> consumer) {
+        this.consumer = consumer;
+    }
 
     public void show(Node node) {
         var p = getPopover();
@@ -60,7 +66,7 @@ public class StoreChoicePopover<T extends DataStore> {
         }
     }
 
-    public Popover getPopover() {
+    private Popover getPopover() {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
         // changed
         if (popover == null || applicableCheck != null) {
@@ -208,6 +214,10 @@ public class StoreChoicePopover<T extends DataStore> {
             AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 popover.hide();
             });
+
+            if (consumer != null) {
+                consumer.accept(popover);
+            }
         }
 
         return popover;
