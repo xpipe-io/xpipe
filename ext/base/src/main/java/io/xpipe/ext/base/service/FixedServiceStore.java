@@ -25,6 +25,7 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
 
     private final DataStoreEntryRef<NetworkTunnelStore> host;
     private final DataStoreEntryRef<? extends DataStore> displayParent;
+    private final Boolean tunnelToLocalhost;
 
     @Override
     public String getAddress() {
@@ -56,5 +57,10 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     @Override
     public OptionalInt getFixedId() {
         return OptionalInt.of(getRemotePort());
+    }
+
+    @Override
+    public boolean shouldTunnel() {
+        return tunnelToLocalhost == null || tunnelToLocalhost;
     }
 }

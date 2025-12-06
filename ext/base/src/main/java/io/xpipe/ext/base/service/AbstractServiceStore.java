@@ -24,6 +24,8 @@ public abstract class AbstractServiceStore
     private final Integer localPort;
     private final ServiceProtocolType serviceProtocolType;
 
+    public abstract boolean shouldTunnel();
+
     public abstract String getAddress();
 
     public abstract DataStoreEntryRef<NetworkTunnelStore> getGateway();
@@ -105,9 +107,9 @@ public abstract class AbstractServiceStore
                 return false;
             }
 
-            return nts.requiresTunnel();
+            return shouldTunnel() && nts.requiresTunnel();
         } else {
-            return t.requiresTunnel();
+            return shouldTunnel() && t.requiresTunnel();
         }
     }
 
@@ -133,6 +135,10 @@ public abstract class AbstractServiceStore
                     if (!(parent.getStore() instanceof NetworkTunnelStore)) {
                         return null;
                     }
+                }
+
+                if (!shouldTunnel()) {
+                    return null;
                 }
             } else {
                 return null;

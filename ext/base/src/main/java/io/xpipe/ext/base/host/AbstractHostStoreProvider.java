@@ -82,11 +82,10 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .nameAndDescription("abstractHostGateway")
                 .addComp(
                         new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.PROXY,
                                 entry,
                                 gateway,
                                 NetworkTunnelStore.class,
-                                ref -> true,
+                                null,
                                 StoreViewState.get().getAllConnectionsCategory()),
                         gateway)
                 .bind(
