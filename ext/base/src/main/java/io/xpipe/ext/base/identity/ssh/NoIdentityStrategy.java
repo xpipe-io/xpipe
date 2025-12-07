@@ -28,4 +28,9 @@ public class NoIdentityStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", "none"),
                 new KeyValue("PKCS11Provider", "none"));
     }
+
+    @Override
+    public String getPublicKey() throws Exception {
+        return null;
+    }
 }

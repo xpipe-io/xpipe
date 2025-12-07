@@ -96,4 +96,6 @@ public interface SshIdentityStrategy {
     default SecretRetrievalStrategy getAskpassStrategy() {
         return new SecretNoneStrategy();
     }
+
+    String getPublicKey() throws Exception;
 }
