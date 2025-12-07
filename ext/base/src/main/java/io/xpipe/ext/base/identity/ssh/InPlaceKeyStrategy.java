@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
@@ -27,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
@@ -39,9 +41,11 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<InPlaceKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var key = OptionsBuilder.map(p, InPlaceKeyStrategy::getKey, SecretValue::getSecretValue);
-        var publicKey = OptionsBuilder.map(p, InPlaceKeyStrategy::getPublicKey);
-        var keyPasswordProperty = OptionsBuilder.map(p, InPlaceKeyStrategy::getPassword);
+        var options = new OptionsBuilder();
+
+        var key = options.map(p, InPlaceKeyStrategy::getKey, SecretValue::getSecretValue);
+        var publicKey = options.map(p, InPlaceKeyStrategy::getPublicKey);
+        var keyPasswordProperty = options.map(p, InPlaceKeyStrategy::getPassword);
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
@@ -52,19 +56,25 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .build()
                 .build();
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get()
-                    .setPromptText("ssh-... ABCDEF....");
+            struc.get().setPromptText("ssh-... ABCDEF....");
+            struc.get().setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
             var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
             if (generated != null) {
                 publicKey.set(generated);
             }
-        }).disable(key.isNull());
-        var publicKeyBox = new InputGroupComp(List.of(publicKeyField, generateButton));
+        }).tooltipKey("generatePublicKey").disable(key.isNull().or(publicKey.isNotNull()));
+        var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
+            ClipboardHelper.copyText(publicKey.get());
+        })
+                .disable(publicKey.isNull())
+                .tooltipKey("copyPublicKey");
+
+        var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);
 
-        return new OptionsBuilder()
+        return options
                 .nameAndDescription("inPlaceKeyText")
                 .addComp(
                         new TextAreaComp(key).apply(struc -> {

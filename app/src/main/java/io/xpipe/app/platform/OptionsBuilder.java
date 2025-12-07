@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
@@ -28,20 +29,32 @@ import java.util.function.Supplier;
 
 public class OptionsBuilder {
 
-    public static <V, T> ObjectProperty<T> map(Property<V> prop, Function<V, T> function) {
+    public <V, T> ObjectProperty<T> map(Property<V> prop, Function<V, T> function) {
         var mapped = new SimpleObjectProperty<T>();
         prop.subscribe(v -> {
-            mapped.setValue(function.apply(v));
+            if (mappingUpdate.get()) {
+                return;
+            }
+
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(function.apply(v));
+            }
         });
         return mapped;
     }
 
-    public static <V, T, R> ObjectProperty<R> map(Property<V> prop, Function<V, T> function, Function<T, R> subFunction) {
+    public <V, T, R> ObjectProperty<R> map(Property<V> prop, Function<V, T> function, Function<T, R> subFunction) {
         var mapped = new SimpleObjectProperty<R>();
         prop.subscribe(v -> {
+            if (mappingUpdate.get()) {
+                return;
+            }
+
             T t = function.apply(v);
             R r = t != null ? subFunction.apply(t) : null;
-            mapped.setValue(r);
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(r);
+            }
         });
         return mapped;
     }
@@ -59,6 +72,8 @@ public class OptionsBuilder {
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
+
+    private BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 
     public OptionsBuilder disableFirstIncompleteFocus() {
         focusFirstIncomplete = false;
@@ -404,6 +419,10 @@ public class OptionsBuilder {
     public final <T, V extends T> OptionsBuilder bind(Supplier<V> creator, Property<T>... toSet) {
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 for (Property<T> p : toSet) {
                     p.setValue(creator.get());
                 }
@@ -421,12 +440,20 @@ public class OptionsBuilder {
         var listener = new ChangeListener<V>() {
             @Override
             public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 toSet.setValue(newValue);
             }
         };
         current.get().addListener(listener);
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 current.get().removeListener(listener);
                 current.set(creator.get());
                 toSet.setValue(current.get().getValue());
