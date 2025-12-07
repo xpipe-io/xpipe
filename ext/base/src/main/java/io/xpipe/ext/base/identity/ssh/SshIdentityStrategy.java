@@ -97,5 +97,5 @@ public interface SshIdentityStrategy {
         return new SecretNoneStrategy();
     }
 
-    String getPublicKey() throws Exception;
+    String getPublicKey();
 }
