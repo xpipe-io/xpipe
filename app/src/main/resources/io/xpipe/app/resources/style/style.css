@@ -199,3 +199,14 @@
     -fx-font-family: Roboto;
 }
 
+.root .label.success .ikonli-font-icon.graphic {
+    -fx-icon-color: -color-success-fg;
+}
+
+.root .label.warning .ikonli-font-icon.graphic {
+    -fx-icon-color: -color-warning-fg;
+}
+
+.root .label.danger .ikonli-font-icon.graphic {
+    -fx-icon-color: -color-danger-fg;
+}

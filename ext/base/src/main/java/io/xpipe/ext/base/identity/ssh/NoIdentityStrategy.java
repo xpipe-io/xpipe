@@ -30,7 +30,7 @@ public class NoIdentityStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public String getPublicKey() throws Exception {
+    public String getPublicKey() {
         return null;
     }
 }

@@ -1,21 +1,22 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.app.util.ScanDialog;
-import io.xpipe.ext.base.identity.IdentityStore;
+import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class IdentityExportHubLeafProvider implements HubLeafProvider<IdentityStore> {
+public class IdentityApplyHubLeafProvider implements HubLeafProvider<IdentityStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -41,12 +42,12 @@ public class IdentityExportHubLeafProvider implements HubLeafProvider<IdentitySt
 
     @Override
     public ObservableValue<String> getName(DataStoreEntryRef<IdentityStore> store) {
-        return AppI18n.observable("scanConnections");
+        return AppI18n.observable("applyIdentityToHost");
     }
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<IdentityStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2l-layers-plus");
+        return new LabelGraphic.IconGraphic("mdi2e-export");
     }
 
     @Override
@@ -61,7 +62,7 @@ public class IdentityExportHubLeafProvider implements HubLeafProvider<IdentitySt
 
     @Override
     public String getId() {
-        return "exportIdentity";
+        return "applyIdentity";
     }
 
     @Jacksonized
@@ -70,7 +71,13 @@ public class IdentityExportHubLeafProvider implements HubLeafProvider<IdentitySt
 
         @Override
         public void executeImpl() {
-            ScanDialog.showSingleAsync(ref.get());
+            if (ref.getStore().getSshIdentity() != null && !(ref.getStore().getSshIdentity() instanceof NoIdentityStrategy) && ref.getStore().getSshIdentity().getPublicKey() == null) {
+                AppDialog.confirm("identityApplyMissingPublicKey");
+                StoreCreationDialog.showEdit(ref.get());
+                return;
+            }
+
+            IdentityApplyDialog.show(ref.getStore());
         }
     }
 }

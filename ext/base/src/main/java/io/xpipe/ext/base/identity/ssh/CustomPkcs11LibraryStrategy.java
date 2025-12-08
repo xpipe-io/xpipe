@@ -96,7 +96,7 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public String getPublicKey() throws Exception {
+    public String getPublicKey() {
         return null;
     }
 }
