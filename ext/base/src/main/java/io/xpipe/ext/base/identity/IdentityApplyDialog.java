@@ -10,18 +10,20 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
@@ -31,14 +33,6 @@ import java.util.List;
 
 public class IdentityApplyDialog {
 
-    private static FilePath getSystemConfigPath(ShellControl sc) throws Exception {
-        if (sc.getOsType() == OsType.WINDOWS) {
-            var base = sc.view().getEnvironmentVariableOrThrow("programdata");
-            return FilePath.of(base).join("ssh", "ssh_config");
-        }
-
-        return FilePath.of("/etc/ssh/ssh_config");
-    }
 
     @Data
     private static class SystemState {
@@ -54,23 +48,31 @@ public class IdentityApplyDialog {
         boolean keyAuthInMethods;
         boolean passwordAuthEnabled;
         boolean passwordAuthInMethods;
-        boolean keyboardInteractiveAuthEnabled;
         boolean rootLoginEnabled;
+        boolean mightRequireAdministratorAuthorizedKeys;
+
+        FilePath configFile;
+        FilePath authorizedKeysFile;
 
         private void init(ShellControl sc, IdentityStore identity) throws Exception {
             var hasPassword = identity.getPassword() != null && identity.getPassword().expectsQuery();
             var hasIdentity = identity.getSshIdentity() != null && identity.getSshIdentity().getPublicKey() != null;
 
+            configFile = getSystemConfigPath(sc);
+            authorizedKeysFile = getAuthorizedKeysFile(sc);
+
             var configContent = getSshdConfigContent(sc);
             keyAuthEnabled = isSet(configContent, "PubkeyAuthentication", "yes", true,false);
             passwordAuthEnabled = isSet(configContent, "PasswordAuthentication", "yes", true, false);
-            keyboardInteractiveAuthEnabled = isSet(configContent, "KbdInteractiveAuthentication", "yes", false, false);
             rootLoginEnabled = isSet(configContent, "PermitRootLogin", "yes", !hasPassword, false) ||
                     (!hasPassword &&
                             !isSet(configContent, "PermitRootLogin", "forced-commands-only", true, false) &&
                             isSet(configContent, "PermitRootLogin", "prohibit-password", true, true));
             keyAuthInMethods = isSet(configContent, "AuthenticationMethods", "publickey", true, false);
             passwordAuthInMethods = isSet(configContent, "AuthenticationMethods", "password", true, false);
+            mightRequireAdministratorAuthorizedKeys = sc.getOsType() == OsType.WINDOWS &&
+                    isSet(configContent, "Match", "Group administrators", false, false) &&
+                    isSet(configContent, "AuthorizedKeysFile", "administrators_authorized_keys", false, false);
 
             if (hasIdentity) {
                 var authorizedKeysContent = getAuthorizedKeysContent(sc);
@@ -85,41 +87,65 @@ public class IdentityApplyDialog {
             }
         }
 
-        private static String getAuthorizedKeysContent(ShellControl sc) throws Exception {
+        private FilePath getSystemConfigPath(ShellControl sc) throws Exception {
+            if (sc.getOsType() == OsType.WINDOWS) {
+                var base = sc.view().getEnvironmentVariableOrThrow("programdata");
+                return FilePath.of(base).join("ssh", "sshd_config");
+            }
+
+            return FilePath.of("/etc/ssh/sshd_config");
+        }
+
+        private FilePath getAuthorizedKeysFile(ShellControl sc) throws Exception {
             var v = sc.view();
             var authorizedKeysFile = v.userHome().join(".ssh", "authorized_keys");
+            return authorizedKeysFile;
+        }
+
+        private String getAuthorizedKeysContent(ShellControl sc) throws Exception {
+            var v = sc.view();
             var authorizedKeysContent = v.fileExists(authorizedKeysFile) ? v.readTextFile(authorizedKeysFile) : "";
             return authorizedKeysContent;
         }
 
-        private static String getSshdConfigContent(ShellControl sc) throws Exception {
+        private String getSshdConfigContent(ShellControl sc) throws Exception {
             var v = sc.view();
-            var configFile = getSystemConfigPath(sc);
             var configContent = v.fileExists(configFile) ? v.readTextFile(configFile) : "";
             return configContent;
         }
 
-        private static boolean isSet(String config, String name, String value, boolean notFoundDef, boolean notSpecifiedDef) {
+        private boolean isSet(String config, String name, String value, boolean notFoundDef, boolean notSpecifiedDef) {
             var found = config.lines().filter(s -> {
                 return !s.strip().startsWith("#");
             }).filter(s -> {
                 return s.toLowerCase().contains(name.toLowerCase());
-            }).findFirst();
+            }).toList();
             if (found.isEmpty()) {
                 return notFoundDef;
             }
 
-            var mapped = found.map(s -> s.toLowerCase().contains(value.toLowerCase()));
-            return mapped.orElse(notSpecifiedDef);
+            for (String line : found) {
+                var matches = line.toLowerCase().contains(value.toLowerCase());
+                if (matches) {
+                    return true;
+                }
+            }
+
+            return notSpecifiedDef;
         }
     }
 
-    private static void addPublicKey(ShellControl sc, String publicKey) throws Exception {
+    private static void addPublicKey(SystemState systemState, ShellControl sc, String publicKey) throws Exception {
         var v = sc.view();
-        var authorizedKeysFile = v.userHome().join(".ssh", "authorized_keys");
+        var authorizedKeysFile = systemState.getAuthorizedKeysFile();
         v.mkdir(authorizedKeysFile.getParent());
-        var authorizedKeysContent = v.fileExists(authorizedKeysFile) ?
-                v.readTextFile(authorizedKeysFile).strip() + "\n" + publicKey + "\n" : publicKey + "\n";
+        String authorizedKeysContent;
+        if (v.fileExists(authorizedKeysFile)) {
+            var text = v.readTextFile(authorizedKeysFile).strip();
+            authorizedKeysContent = text.isBlank() ? publicKey + "\n" : text + "\n" + publicKey + "\n";
+        } else {
+            authorizedKeysContent = publicKey + "\n";
+        }
         v.writeTextFile(authorizedKeysFile, authorizedKeysContent);
         if (sc.getOsType() != OsType.WINDOWS) {
             sc.command(CommandBuilder.of().add("chmod", "600").addFile(authorizedKeysFile)).execute();
@@ -164,7 +190,7 @@ public class IdentityApplyDialog {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(busy, () -> {
                     var sc = system.getValue().getStore().getOrStartSession();
-                    var file = sc.view().userHome().join(".ssh", "authorized_keys");
+                    var file = systemState.get().getAuthorizedKeysFile();
                     var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(system.getValue(), null, m -> file.getParent(), null, false);
                     var found = model.findFile(file);
                     if (found.isEmpty()) {
@@ -180,21 +206,21 @@ public class IdentityApplyDialog {
                     }
                 });
             });
-        });
+        }).padding(new Insets(4, 8, 4, 8));
 
         var addButton = new ButtonComp(AppI18n.observable("identityApplyAuthorizedHostButton"),
                 () -> {
                     ThreadHelper.runFailableAsync(() -> {
                         BooleanScope.executeExclusive(busy, () -> {
                             var sc = system.getValue().getStore().getOrStartSession();
-                            addPublicKey(sc, identity.getSshIdentity().getPublicKey());
+                            addPublicKey(systemState.get(), sc, identity.getSshIdentity().getPublicKey());
                             systemState.setValue(SystemState.of(sc, identity));
                         });
                     });
-                }).padding(new Insets(3, 7, 3, 7));
+                }).padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
-                .addTitle("authorized_hosts")
+                .addTitle(new ReadOnlyStringWrapper("authorized_hosts"))
                 .nameAndDescription("identityApplyAuthorizedHost")
                 .addComp(success())
                 .hide(showAddAuthorizedHost)
@@ -208,6 +234,9 @@ public class IdentityApplyDialog {
     }
 
     private static Comp<?> createConfigOptions(Property<DataStoreEntryRef<ShellStore>> system, Property<SystemState> systemState, IdentityStore identity, BooleanProperty busy) {
+        var showAdminWarning = BindingsHelper.mapBoolean(systemState, s -> {
+            return s != null && identity.getSshIdentity() != null && identity.getSshIdentity().providesKey() && s.isMightRequireAdministratorAuthorizedKeys();
+        });
         var showPasswordEnabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
             return s != null && (identity.getPassword() == null || !identity.getPassword().expectsQuery()) && s.isPasswordAuthEnabled() && s.isPasswordAuthInMethods();
         });
@@ -215,17 +244,21 @@ public class IdentityApplyDialog {
             return s != null && identity.getPassword() != null && identity.getPassword().expectsQuery() && (!s.isPasswordAuthEnabled() || !s.isPasswordAuthInMethods());
         });
         var showKeyEnabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && !(identity.getSshIdentity() instanceof NoIdentityStrategy) && !s.keyAuthEnabled;
+            return s != null && (identity.getSshIdentity() == null || !identity.getSshIdentity().providesKey()) && s.keyAuthEnabled;
         });
-        var showRootWarning = BindingsHelper.mapBoolean(systemState, s -> {
+        var showKeyDisabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
+            return s != null && identity.getSshIdentity() != null && identity.getSshIdentity().providesKey() && !s.keyAuthEnabled;
+        });
+        var showRootDisabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
             return s != null && identity.getUsername().getFixedUsername().map(u -> u.equals("root")).orElse(false) && !s.rootLoginEnabled;
         });
-        var showConfigSection = showKeyEnabledWarning.or(showRootWarning).or(showPasswordEnabledWarning).or(showPasswordDisabledWarning);
+        var showConfigSection = showKeyEnabledWarning.or(showRootDisabledWarning).or(showPasswordEnabledWarning)
+                .or(showPasswordDisabledWarning).or(showKeyDisabledWarning).or(showAdminWarning);
 
         var editButton = new ButtonComp(AppI18n.observable("identityApplyEditConfigButton"), () -> {
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(busy, () -> {
-                    var file = getSystemConfigPath(system.getValue().getStore().getOrStartSession());
+                    var file = systemState.getValue().getConfigFile();
                     var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(system.getValue(), null, m -> file.getParent(), null, false);
                     var found = model.findFile(file);
                     if (found.isEmpty()) {
@@ -234,19 +267,29 @@ public class IdentityApplyDialog {
                     BrowserFileOpener.openInTextEditor(model, found.get());
                 });
             });
-        });
+        }).padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
-                .addTitle("sshd_config")
+                .addTitle(new ReadOnlyStringWrapper("sshd_config"))
                 .nameAndDescription("identityApplyConfigPasswordEnabled")
                 .addComp(warning())
                 .hide(showPasswordEnabledWarning.not())
                 .nameAndDescription("identityApplyConfigPasswordDisabled")
                 .addComp(warning())
                 .hide(showPasswordDisabledWarning.not())
-                .nameAndDescription("identityApplyRootWarning")
-                .addComp(Comp.empty())
-                .hide(showRootWarning.not())
+                .nameAndDescription("identityApplyConfigKeyEnabled")
+                .addComp(warning())
+                .hide(showKeyEnabledWarning.not())
+                .nameAndDescription("identityApplyConfigKeyDisabled")
+                .addComp(warning())
+                .hide(showKeyDisabledWarning.not())
+                .nameAndDescription("identityApplyConfigRootDisabledWarning")
+                .addComp(fail(null))
+                .hide(showRootDisabledWarning.not())
+                .nameAndDescription("identityApplyConfigAdminWarning")
+                .documentationLink("https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement#administrative-user")
+                .addComp(warning())
+                .hide(showAdminWarning.not())
                 .nameAndDescription("identityApplyEditConfig")
                 .addComp(editButton).buildComp()
                 .hide(showConfigSection.not());
@@ -259,6 +302,7 @@ public class IdentityApplyDialog {
         var systemState = new SimpleObjectProperty<SystemState>();
         system.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
+                systemState.setValue(null);
                 return;
             }
 
@@ -270,7 +314,17 @@ public class IdentityApplyDialog {
             });
         });
 
-        var systemChoice = new StoreChoiceComp<>(null, system, ShellStore.class, null, StoreViewState.get().getAllConnectionsCategory());
+        var systemChoice = new StoreChoiceComp<>(null, system, ShellStore.class, null, StoreViewState.get().getAllConnectionsCategory()) {
+
+            @Override
+            protected String toName(DataStoreEntry entry) {
+                if (entry == null) {
+                    return null;
+                }
+
+                return DataStorage.get().getStoreEntryDisplayName(entry) + " -> " + IdentitySummary.createSummary(identity);
+            }
+        };
         var systemChoiceBusy = new LoadingOverlayComp(systemChoice, busy, false);
 
         var options = new OptionsBuilder()

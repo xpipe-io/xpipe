@@ -33,4 +33,9 @@ public class NoIdentityStrategy implements SshIdentityStrategy {
     public String getPublicKey() {
         return null;
     }
+
+    @Override
+    public boolean providesKey() {
+        return false;
+    }
 }

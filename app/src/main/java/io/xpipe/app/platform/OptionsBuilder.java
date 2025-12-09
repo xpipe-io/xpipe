@@ -148,7 +148,7 @@ public class OptionsBuilder {
             return;
         }
 
-        var entry = new OptionsComp.Entry(null, description, documentationLink, name, comp);
+        var entry = new OptionsComp.Entry(description, documentationLink, name, comp);
         description = null;
         documentationLink = null;
         name = null;
@@ -205,7 +205,14 @@ public class OptionsBuilder {
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
-                titleKey, null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+                null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder addTitle(ObservableValue<String> title) {
+        finishCurrent();
+        entries.add(new OptionsComp.Entry(
+                null, null, null, new LabelComp(title).styleClass("title-header")));
         return this;
     }
 

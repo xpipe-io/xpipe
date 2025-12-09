@@ -19,6 +19,7 @@ public class ShellView {
     protected String user;
     protected FilePath userHome;
     protected Boolean root;
+    protected Boolean administrator;
     protected PasswdFile passwdFile;
     protected GroupFile groupFile;
     protected final Map<String, Boolean> installedApplications = new HashMap<>();
@@ -236,5 +237,29 @@ public class ShellView {
                 shellControl.command(shellControl.getShellDialect().getSetEnvironmentVariableCommand(name, value));
         command.sensitive();
         command.execute();
+    }
+
+    public synchronized boolean isAdministrator() throws Exception {
+        if (shellControl.getOsType() != OsType.WINDOWS) {
+            return false;
+        }
+
+        if (administrator != null) {
+            return administrator;
+        }
+
+        if (shellControl.getShellDialect() == ShellDialects.CMD) {
+            administrator = shellControl.command("net.exe session 1>NUL 2>NUL").executeAndCheck();
+        } else if (ShellDialects.isPowershell(shellControl)) {
+            administrator = shellControl.command(String.format(
+                    "$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());"
+                            + "try {if (-not $($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {$host.ui"
+                            + ".WriteErrorLine(\"%s\"); throw \"error\"}} catch {}",
+                    "Not Administrator")).executeAndCheck();
+        } else {
+            administrator = false;
+        }
+
+        return administrator;
     }
 }

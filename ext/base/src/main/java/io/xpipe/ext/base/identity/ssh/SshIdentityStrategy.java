@@ -85,6 +85,10 @@ public interface SshIdentityStrategy {
         }
     }
 
+    default boolean providesKey() {
+        return true;
+    }
+
     default void checkComplete() throws ValidationException {}
 
     void prepareParent(ShellControl parent) throws Exception;
