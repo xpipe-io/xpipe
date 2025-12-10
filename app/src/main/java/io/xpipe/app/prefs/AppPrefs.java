@@ -783,14 +783,7 @@ public final class AppPrefs {
                 continue;
             }
 
-            var def = value.getProperty().getValue();
-            var r = loadValue(vaultStorageHandler, value);
-
-            // This can be used to facilitate backwards compatibility
-            var isDefault = Objects.equals(r, def);
-            if (isDefault) {
-                loadValue(globalStorageHandler, value);
-            }
+            loadValue(vaultStorageHandler, value);
         }
 
         if (OsType.ofLocal() != OsType.WINDOWS) {
@@ -813,12 +806,11 @@ public final class AppPrefs {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
+    private <T> void loadValue(AppPrefsStorageHandler handler, Mapping value) {
         T def = (T) value.getProperty().getValue();
         Property<T> property = (Property<T>) value.getProperty();
         var val = handler.loadObject(value.getKey(), value.getValueType(), def, value.isLog());
         property.setValue(val);
-        return val;
     }
 
     public synchronized void save() {
