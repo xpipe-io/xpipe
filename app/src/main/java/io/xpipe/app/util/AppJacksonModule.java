@@ -127,7 +127,7 @@ public class AppJacksonModule extends SimpleModule {
 
             if (tree.has("associationKey")) {
                 var parsed = JacksonMapper.getDefault().treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
-                return KeePassXcPasswordManager.builder().associationKeys(List.of(parsed)).build();
+                return KeePassXcPasswordManager.builder().associationKeys(parsed != null ? List.of(parsed) : List.of()).build();
             } else {
                 var javaType =
                         JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, KeePassXcAssociationKey.class);
