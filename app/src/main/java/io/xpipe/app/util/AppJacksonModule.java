@@ -1,9 +1,17 @@
 package io.xpipe.app.util;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
+import com.fasterxml.jackson.databind.type.ArrayType;
+import com.fasterxml.jackson.databind.type.CollectionLikeType;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.pwman.KeePassXcAssociationKey;
+import io.xpipe.app.pwman.KeePassXcMigrationDeserializer;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.EncryptedValue;
@@ -35,6 +43,8 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -81,8 +91,25 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(ExternalVncClient.getClasses());
         context.registerSubtypes(ExternalRdpClient.getClasses());
 
-        context.addSerializers(_serializers);
-        context.addDeserializers(_deserializers);
+        setDeserializerModifier(new BeanDeserializerModifier() {
+
+            private final JavaType keePassType =
+                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(ArrayList.class, KeePassXcAssociationKey.class);
+
+            @Override
+            public JsonDeserializer<?> modifyCollectionDeserializer(
+                    DeserializationConfig config, CollectionType type, BeanDescription beanDesc,
+                    JsonDeserializer<?> deserializer
+            ) {
+                if (beanDesc.getType().equals(keePassType)) {
+                    return new KeePassXcMigrationDeserializer(deserializer);
+                }
+
+                return deserializer;
+            }
+        });
+
+        super.setupModule(context);
     }
 
     public static class OsTypeSerializer extends JsonSerializer<OsType> {
