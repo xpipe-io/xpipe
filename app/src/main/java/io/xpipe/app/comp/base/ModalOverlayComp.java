@@ -30,6 +30,7 @@ import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
+import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -171,8 +172,10 @@ public class ModalOverlayComp extends SimpleComp {
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
         Region r = newValue.getContent().createRegion();
+        var validatorPane = new GraphicDecorationStackPane();
+        validatorPane.getChildren().add(r);
 
-        var content = new VBox(r);
+        var content = new VBox(validatorPane);
         content.getStyleClass().add("content");
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {

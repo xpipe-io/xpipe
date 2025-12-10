@@ -53,6 +53,26 @@ public class IdentityChoiceBuilder {
         return i.build();
     }
 
+    public static OptionsBuilder keyAuthChoice(Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config) {
+        return OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(identity)
+                .customConfiguration(config)
+                .available(SshIdentityStrategy.getSubclasses())
+                .transformer(entryComboBox -> {
+                    var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
+                        ProcessControlProvider.get().showSshKeygenDialog(null, identity);
+                    });
+                    button.tooltipKey("generateKey");
+                    var comboComp = Comp.of(() -> entryComboBox);
+                    var hbox = new InputGroupComp(List.of(comboComp, button));
+                    hbox.setMainReference(comboComp);
+                    return hbox.createRegion();
+                })
+                .build()
+                .build();
+    }
+
     public OptionsBuilder build() {
         var existing = identity.getValue();
         var user = new SimpleStringProperty(
@@ -100,24 +120,7 @@ public class IdentityChoiceBuilder {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
                     .documentationLink(DocumentationLink.SSH_KEYS)
-                    .sub(
-                            OptionsChoiceBuilder.builder()
-                                    .allowNull(false)
-                                    .property(identityStrategy)
-                                    .customConfiguration(sshIdentityChoiceConfig)
-                                    .available(SshIdentityStrategy.getSubclasses())
-                                    .transformer(entryComboBox -> {
-                                        var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
-                                            ProcessControlProvider.get().showSshKeygenDialog(null, identityStrategy);
-                                        });
-                                        var comboComp = Comp.of(() -> entryComboBox);
-                                        var hbox = new InputGroupComp(List.of(comboComp, button));
-                                        hbox.setMainReference(comboComp);
-                                        return hbox.createRegion();
-                                    })
-                                    .build()
-                                    .build(),
-                            identityStrategy)
+                    .sub(keyAuthChoice(identityStrategy, sshIdentityChoiceConfig), identityStrategy)
                     .nonNullIf(inPlaceSelected)
                     .disable(refSelected)
                     .hide(refSelected);

@@ -1,9 +1,11 @@
 package io.xpipe.ext.base.identity.ssh;
 
+import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
@@ -19,6 +21,7 @@ import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.*;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -56,7 +59,9 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .build()
                 .build();
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get().setPromptText("ssh-... ABCDEF....");
+            struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
+                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
+            }, AppI18n.activeLanguage()));
             struc.get().setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
@@ -64,7 +69,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             if (generated != null) {
                 publicKey.set(generated);
             }
-        }).tooltipKey("generatePublicKey").disable(key.isNull().or(publicKey.isNotNull()));
+        }).tooltipKey("generatePublicKey").disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
             ClipboardHelper.copyText(publicKey.get());
         })
@@ -83,19 +88,21 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                                             """
                                                       -----BEGIN ... PRIVATE KEY-----
 
-                                                      -----END ... PRIVATE KEY-----
+
+                                                      -----END   ... PRIVATE KEY-----
                                                       """);
+                            struc.getTextArea().setPrefRowCount(4);
                         }),
                         key)
+                .nonNull()
+                .name("keyPassword")
+                .description("sshConfigHost.identityPassphraseDescription")
+                .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
                 .addComp(
                         publicKeyBox,
                         publicKey)
-                .name("keyPassword")
-                .description("sshConfigHost.identityPassphraseDescription")
-                .sub(passwordChoice, keyPasswordProperty)
-                .nonNull()
                 .bind(
                         () -> {
                             return new InPlaceKeyStrategy(

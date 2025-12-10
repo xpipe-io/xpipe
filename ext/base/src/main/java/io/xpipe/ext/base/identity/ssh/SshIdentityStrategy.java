@@ -39,8 +39,8 @@ public interface SshIdentityStrategy {
     static List<Class<?>> getSubclasses() {
         var l = new ArrayList<Class<?>>();
         l.add(NoIdentityStrategy.class);
-        l.add(KeyFileStrategy.class);
         l.add(InPlaceKeyStrategy.class);
+        l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);

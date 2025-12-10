@@ -5,6 +5,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
@@ -27,11 +28,10 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
-        var cmdProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
-        var content = new TextFieldComp(cmdProperty);
-        return new OptionsBuilder()
-                .addComp(content, cmdProperty)
+        var options = new OptionsBuilder();
+        var cmdProperty = options.map(p, SecretCustomCommandStrategy::getCommand);
+        return options
+                .addComp(new TextFieldComp(cmdProperty), cmdProperty)
                 .nonNull()
                 .bind(
                         () -> {

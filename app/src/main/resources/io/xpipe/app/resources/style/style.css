@@ -210,3 +210,7 @@
 .root .label.danger .ikonli-font-icon.graphic {
     -fx-icon-color: -color-danger-fg;
 }
+
+.monospace {
+    -fx-font-family: Monospace;
+}
