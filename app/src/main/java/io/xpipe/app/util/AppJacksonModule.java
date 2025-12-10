@@ -1,17 +1,11 @@
 package io.xpipe.app.util;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
-import com.fasterxml.jackson.databind.type.ArrayType;
-import com.fasterxml.jackson.databind.type.CollectionLikeType;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import io.xpipe.app.browser.file.BrowserHistorySavedState;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.KeePassXcAssociationKey;
-import io.xpipe.app.pwman.KeePassXcMigrationDeserializer;
+import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.EncryptedValue;
@@ -43,7 +37,6 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -81,6 +74,9 @@ public class AppJacksonModule extends SimpleModule {
         addSerializer(HostAddress.class, new HostAddressSerializer());
         addDeserializer(HostAddress.class, new HostAddressDeserializer());
 
+        addSerializer(KeePassXcPasswordManager.class, new KeePassXcPasswordManagerSerializer());
+        addDeserializer(KeePassXcPasswordManager.class, new KeePassXcPasswordManagerDeserializer());
+
         for (ShellDialect t : ShellDialects.ALL) {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
@@ -91,25 +87,54 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(ExternalVncClient.getClasses());
         context.registerSubtypes(ExternalRdpClient.getClasses());
 
-        setDeserializerModifier(new BeanDeserializerModifier() {
-
-            private final JavaType keePassType =
-                    JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(ArrayList.class, KeePassXcAssociationKey.class);
-
-            @Override
-            public JsonDeserializer<?> modifyCollectionDeserializer(
-                    DeserializationConfig config, CollectionType type, BeanDescription beanDesc,
-                    JsonDeserializer<?> deserializer
-            ) {
-                if (beanDesc.getType().equals(keePassType)) {
-                    return new KeePassXcMigrationDeserializer(deserializer);
-                }
-
-                return deserializer;
-            }
-        });
-
         super.setupModule(context);
+    }
+
+    public static class KeePassXcPasswordManagerSerializer extends JsonSerializer<KeePassXcPasswordManager> {
+
+        @Override
+        public void serialize(KeePassXcPasswordManager value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+            if (value == null) {
+                jgen.writeNull();
+                return;
+            }
+
+            var tree = JacksonMapper.getDefault().valueToTree(value.getAssociationKeys());
+            var object = JsonNodeFactory.instance.objectNode();
+            object.put("type", "keePassXc");
+            object.set("associationKeys", tree);
+            jgen.writeTree(object);
+        }
+
+        @Override
+        public void serializeWithType(
+                KeePassXcPasswordManager value, JsonGenerator gen, SerializerProvider serializers,
+                TypeSerializer typeSer
+        ) throws IOException {
+            serialize(value, gen, serializers);
+        }
+    }
+
+    public static class KeePassXcPasswordManagerDeserializer extends JsonDeserializer<KeePassXcPasswordManager> {
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public KeePassXcPasswordManager deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            JsonNode tree = JacksonMapper.getDefault().readTree(p);
+            if (tree == null || !tree.isObject()) {
+                return null;
+            }
+
+            if (tree.has("associationKey")) {
+                var parsed = JacksonMapper.getDefault().treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
+                return KeePassXcPasswordManager.builder().associationKeys(List.of(parsed)).build();
+            } else {
+                var javaType =
+                        JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, KeePassXcAssociationKey.class);
+                var parsed = (List<KeePassXcAssociationKey>) JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
+                return KeePassXcPasswordManager.builder().associationKeys(parsed).build();
+            }
+        }
     }
 
     public static class OsTypeSerializer extends JsonSerializer<OsType> {

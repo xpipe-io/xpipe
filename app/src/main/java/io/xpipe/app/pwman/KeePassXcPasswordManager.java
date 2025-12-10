@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 @Getter
 @Builder(toBuilder = true)
 @ToString
-@Jacksonized
 @JsonTypeName("keePassXc")
 public class KeePassXcPasswordManager implements PasswordManager {
 
