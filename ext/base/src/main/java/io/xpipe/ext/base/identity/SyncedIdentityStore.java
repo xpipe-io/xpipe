@@ -4,6 +4,7 @@ import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
+import io.xpipe.app.storage.DataStoreScope;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 
@@ -27,6 +28,7 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     // per user stores are additionally encrypted on the entry level
     EncryptedValue.VaultKey<SecretRetrievalStrategy> password;
     EncryptedValue.VaultKey<SshIdentityStrategy> sshIdentity;
+    DataStoreScope scope;
     boolean perUser;
 
     public UsernameStrategy.Fixed getUsername() {
