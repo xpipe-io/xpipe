@@ -70,6 +70,7 @@ public enum DocumentationLink {
     TUNNELS_DYNAMIC("guide/ssh-tunnels#dynamic-tunnels"),
     HYPERV("guide/hyperv"),
     SSH_MACS("troubleshoot/ssh#no-matching-mac-found"),
+    SSH_FEATURE_NOT_SUPPORTED("troubleshoot/ssh#requested-feature-not-supported"),
     SSH_JUMP_SERVERS("guide/ssh#gateways-and-jump-servers"),
     SSH_CUSTOM("guide/ssh-config#custom-ssh-connections"),
     SSH_CUSTOM_ORDER("guide/ssh-config#jump-hosts"),

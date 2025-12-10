@@ -4,6 +4,7 @@ import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -27,6 +28,7 @@ import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
 import lombok.Data;
 
 import java.util.List;
@@ -220,7 +222,6 @@ public class IdentityApplyDialog {
                 }).padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
-                .addTitle(new ReadOnlyStringWrapper("authorized_hosts"))
                 .nameAndDescription("identityApplyAuthorizedHost")
                 .addComp(success())
                 .hide(showAddAuthorizedHost)
@@ -270,7 +271,6 @@ public class IdentityApplyDialog {
         }).padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
-                .addTitle(new ReadOnlyStringWrapper("sshd_config"))
                 .nameAndDescription("identityApplyConfigPasswordEnabled")
                 .addComp(warning())
                 .hide(showPasswordEnabledWarning.not())
@@ -296,20 +296,26 @@ public class IdentityApplyDialog {
         return options;
     }
 
-    public static void show(IdentityStore identity) {
+    public static void show(DataStoreEntryRef<IdentityStore> identity) {
         var busy = new SimpleBooleanProperty();
         var system = new SimpleObjectProperty<DataStoreEntryRef<ShellStore>>();
         var systemState = new SimpleObjectProperty<SystemState>();
+        var showSetIdentityButton = new SimpleBooleanProperty();
+        var showIdentityAlreadySet = new SimpleBooleanProperty();
         system.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 systemState.setValue(null);
+                showSetIdentityButton.set(false);
+                showIdentityAlreadySet.set(false);
                 return;
             }
 
             ThreadHelper.runFailableAsync(() -> {
                 BooleanScope.executeExclusive(busy, () -> {
                     var sc = newValue.getStore().getOrStartSession();
-                    systemState.setValue(SystemState.of(sc, identity));
+                    systemState.setValue(SystemState.of(sc, identity.getStore()));
+                    showSetIdentityButton.set(newValue.getStore() instanceof IdentitySwitchStore iss && !iss.getIdentity().unwrap().equals(identity.getStore()));
+                    showIdentityAlreadySet.set(newValue.getStore() instanceof IdentitySwitchStore iss && iss.getIdentity().unwrap().equals(identity.getStore()));
                 });
             });
         });
@@ -322,22 +328,36 @@ public class IdentityApplyDialog {
                     return null;
                 }
 
-                return DataStorage.get().getStoreEntryDisplayName(entry) + " -> " + IdentitySummary.createSummary(identity);
+                return DataStorage.get().getStoreEntryDisplayName(entry) + " -> " + IdentitySummary.createSummary(identity.getStore());
             }
         };
         var systemChoiceBusy = new LoadingOverlayComp(systemChoice, busy, false);
 
+        var applyButton = new ButtonComp(AppI18n.observable("identityApplySetStoreIdentityButton"),
+                () -> {
+                    DataStorage.get().updateEntryStore(system.get().get(),
+                            ((IdentitySwitchStore) system.get().getStore()).withIdentity(new IdentityValue.Ref(identity)));
+                    showSetIdentityButton.set(false);
+                    showIdentityAlreadySet.set(true);
+                });
+        applyButton.padding(new Insets(4, 8, 4, 8));
+
         var options = new OptionsBuilder()
                 .nameAndDescription("identityApplyTargetHost")
                 .addComp(systemChoiceBusy, system)
-                .addComp(createAuthorizedKeysOptions(system, systemState, identity, busy))
-                .addComp(createConfigOptions(system, systemState, identity, busy));
+                .addComp(createAuthorizedKeysOptions(system, systemState, identity.getStore(), busy))
+                .addComp(createConfigOptions(system, systemState, identity.getStore(), busy))
+                .nameAndDescription("identityApplySetStoreIdentity")
+                .addComp(success())
+                .hide(showIdentityAlreadySet.not())
+                .nameAndDescription("identityApplySetStoreIdentity")
+                .addComp(fail(applyButton))
+                .hide(showSetIdentityButton.not());
 
         var modal = ModalOverlay.of("identityApplyTitle", options.buildComp().prefWidth(600).prefHeight(500));
+        modal.persist();
         modal.addButton(ModalButton.cancel());
-        modal.addButton(ModalButton.ok(() -> {
-
-        }).augment(button -> {
+        modal.addButton(ModalButton.ok().augment(button -> {
             button.disableProperty().bind(PlatformThread.sync(busy));
         }));
         modal.show();

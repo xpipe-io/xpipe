@@ -415,6 +415,8 @@ public abstract class DataStorage {
         }
         entry.setStoreInternal(store, false);
         entry.initializeEntry();
+
+        saveAsync();
     }
 
     public void updateCategory(DataStoreCategory category, DataStoreCategory newCategory) {

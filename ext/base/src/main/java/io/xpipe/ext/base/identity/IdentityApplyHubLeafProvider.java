@@ -77,7 +77,7 @@ public class IdentityApplyHubLeafProvider implements HubLeafProvider<IdentitySto
                 return;
             }
 
-            IdentityApplyDialog.show(ref.getStore());
+            IdentityApplyDialog.show(ref);
         }
     }
 }
