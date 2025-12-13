@@ -307,8 +307,6 @@ public class StandardStorage extends DataStorage {
 
         initVaultKey();
 
-        AppMainWindow.loadingText("unlockingVault");
-
         try {
             dataStorageUserHandler.init();
         } catch (IOException e) {
@@ -317,6 +315,11 @@ public class StandardStorage extends DataStorage {
                     .build()
                     .handle();
         }
+
+        if (dataStorageUserHandler.getUserCount() > 0) {
+            AppMainWindow.loadingText("unlockingVault");
+        }
+
         dataStorageUserHandler.login();
 
         reloadContent();

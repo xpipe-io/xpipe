@@ -72,10 +72,6 @@ public class VaultCategory extends AppPrefsCategory {
         var authChoice = ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), true);
         authChoice.apply(struc -> struc.get().setOpacity(1.0));
         authChoice.maxWidth(600);
-        authChoice.disable(Bindings.createBooleanBinding(() -> {
-            return uh.getUserCount() > 0 && prefs.vaultAuthentication.get() == VaultAuthentication.USER ||
-                    (prefs.groupSecretStrategy.get() != null && prefs.vaultAuthentication.get() == VaultAuthentication.GROUP);
-        }, prefs.vaultAuthentication, prefs.groupSecretStrategy));
 
         builder.addTitle("vault")
                 .sub(new OptionsBuilder()
@@ -97,9 +93,10 @@ public class VaultCategory extends AppPrefsCategory {
                         .addComp(uh.createOverview().maxWidth(getCompWidth()))
                         .pref(prefs.groupSecretStrategy)
                         .addComp(OptionsChoiceBuilder.builder().property(prefs.groupSecretStrategy)
-                                .allowNull(false).available(DataStorageGroupStrategy.getClasses())
+                                .allowNull(true).available(DataStorageGroupStrategy.getClasses())
                                 .build().build().buildComp().maxWidth(getCompWidth()),
                                 prefs.groupSecretStrategy)
+                        .nonNull()
                         .hide(prefs.vaultAuthentication.isNotEqualTo(VaultAuthentication.GROUP))
                         .nameAndDescription("syncVault")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()

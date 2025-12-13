@@ -146,6 +146,13 @@ public class AppMainWindow {
         });
     }
 
+    public static synchronized void resetContent() {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            loadingText.setValue(AppI18n.get("savingChanges"));
+            loadedContent.setValue(null);
+        });
+    }
+
     public static AppMainWindow get() {
         return INSTANCE;
     }

@@ -2,22 +2,20 @@ package io.xpipe.app.storage;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.comp.base.SecretFieldComp;
-import io.xpipe.app.comp.base.TextAreaComp;
-import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CountDown;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.secret.*;
+import io.xpipe.app.secret.SecretPasswordManagerStrategy;
+import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.Validators;
-import io.xpipe.core.FilePath;
-import io.xpipe.core.InPlaceSecretValue;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -25,16 +23,13 @@ import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
@@ -42,6 +37,7 @@ public interface DataStorageGroupStrategy {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
+        l.add(PasswordManager.class);
         l.add(File.class);
         l.add(Command.class);
         l.add(HttpRequest.class);
@@ -50,7 +46,76 @@ public interface DataStorageGroupStrategy {
 
     default void checkComplete() throws ValidationException {}
 
-    byte[] queryEncryptionSecret() throws Exception;
+    String queryEncryptionSecret() throws Exception;
+
+    @JsonTypeName("passwordManager")
+    @Builder
+    @Jacksonized
+    @Value
+    public class PasswordManager implements DataStorageGroupStrategy {
+
+        @SuppressWarnings("unused")
+        public static String getOptionsNameKey() {
+            return "passwordManager";
+        }
+
+        @SuppressWarnings("unused")
+        public static OptionsBuilder createOptions(Property<PasswordManager> p) {
+            var key = new SimpleStringProperty(p.getValue().getKey());
+
+            var prefs = AppPrefs.get();
+            var content = new HorizontalComp(List.of(
+                    new TextFieldComp(key)
+                            .apply(struc -> struc.get()
+                                    .promptTextProperty()
+                                    .bind(Bindings.createStringBinding(
+                                            () -> {
+                                                return prefs.passwordManager()
+                                                        .getValue()
+                                                        != null
+                                                        ? prefs.passwordManager()
+                                                        .getValue()
+                                                        .getKeyPlaceholder()
+                                                        : "?";
+                                            },
+                                            prefs.passwordManager())))
+                            .hgrow(),
+                    new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+                        AppPrefs.get().selectCategory("passwordManager");
+                        App.getApp().getStage().requestFocus();
+                    })
+                            .grow(false, true)))
+                    .apply(struc -> struc.get().setSpacing(10))
+                    .apply(struc -> struc.get().focusedProperty().addListener((c, o, n) -> {
+                        if (n) {
+                            struc.get().getChildren().getFirst().requestFocus();
+                        }
+                    }));
+
+            return new OptionsBuilder()
+                    .nameAndDescription("passwordManagerKey")
+                    .addString(key)
+                    .nonNull()
+                    .bind(
+                            () -> {
+                                return PasswordManager.builder().key(key.get()).build();
+                            },
+                            p);
+        }
+
+        String key;
+
+        @Override
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(key);
+        }
+
+        @Override
+        public String queryEncryptionSecret() throws Exception {
+            var r = SecretPasswordManagerStrategy.builder().key(key).build().query().query("Group secret");
+            return r.getState() == SecretQueryState.NORMAL ? r.getSecret().getSecretValue() : null;
+        }
+    }
 
     @JsonTypeName("file")
     @Builder
@@ -87,14 +152,14 @@ public interface DataStorageGroupStrategy {
         }
 
         @Override
-        public byte[] queryEncryptionSecret() throws Exception {
+        public String queryEncryptionSecret() throws Exception {
             var abs = file.toLocalAbsoluteFilePath().asLocalPath();
             if (!Files.exists(abs)) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + file + " does not exist"));
             }
 
-            var read = Files.readAllBytes(abs);
-            if (read.length == 0) {
+            var read = Files.readString(abs);
+            if (read.length() == 0) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + file + " is empty"));
             }
 
@@ -137,12 +202,12 @@ public interface DataStorageGroupStrategy {
         }
 
         @Override
-        public byte[] queryEncryptionSecret() throws Exception {
+        public String queryEncryptionSecret() throws Exception {
             try (var sc = ProcessControlProvider.get().createLocalProcessControl(true)) {
                 try (var cc = sc.command(command).start()) {
                     cc.killOnTimeout(CountDown.of().start(30_000));
-                    var out = cc.readRawBytesOrThrow();
-                    if (out.length == 0) {
+                    var out = cc.readStdoutOrThrow();
+                    if (out.length() == 0) {
                         throw ErrorEventFactory.expected(new IllegalArgumentException("Command did not return any output"));
                     }
                     return out;
@@ -185,18 +250,18 @@ public interface DataStorageGroupStrategy {
         }
 
         @Override
-        public byte[] queryEncryptionSecret() throws Exception {
+        public String queryEncryptionSecret() throws Exception {
             var uri = URI.create(getUri());
             var request = java.net.http.HttpRequest.newBuilder()
                     .uri(uri)
                     .POST(java.net.http.HttpRequest.BodyPublishers.noBody())
                     .build();
-            var result = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofByteArray());
+            var result = HttpHelper.client().send(request, HttpResponse.BodyHandlers.ofString());
             if (result.statusCode() >= 400) {
-                throw ErrorEventFactory.expected(new IOException(new String(result.body(), StandardCharsets.UTF_8)));
+                throw ErrorEventFactory.expected(new IOException(result.body()));
             }
             var body = result.body();
-            if (body.length == 0) {
+            if (body.length() == 0) {
                 throw ErrorEventFactory.expected(new IllegalArgumentException("Http response body is empty"));
             }
             return body;
