@@ -15,6 +15,7 @@ import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageGroupStrategy;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
@@ -41,6 +42,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
+import org.w3c.dom.UserDataHandler;
 
 import java.nio.file.Files;
 import java.util.*;
@@ -66,6 +68,10 @@ public final class AppPrefs {
                 DataStorage.get().forceRewrite();
             }
         });
+    }
+
+    public static void initStorage() {
+        INSTANCE.vaultAuthentication.set(DataStorageUserHandler.getInstance().getVaultAuthenticationType());
     }
 
     public static void reset() {
@@ -270,11 +276,14 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
+    final ObjectProperty<VaultAuthentication> vaultAuthentication = new GlobalObjectProperty<>();
+
     final ObjectProperty<DataStorageGroupStrategy> groupSecretStrategy = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(new DataStorageGroupStrategy.None()))
             .key("groupSecretStrategy")
             .valueClass(DataStorageGroupStrategy.class)
             .requiresRestart(true)
+            .vaultSpecific(true)
             .licenseFeatureId("team")
             .build());
     final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
@@ -422,6 +431,10 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public ObservableValue<VaultAuthentication> vaultAuthentication() {
+        return vaultAuthentication;
+    }
 
     public ObservableValue<DataStorageGroupStrategy> groupSecretStrategy() {
         return groupSecretStrategy;
@@ -721,7 +734,10 @@ public final class AppPrefs {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             writable.setValue(newValue);
         });
-        save();
+
+        if (mapping.stream().anyMatch(m -> m.property == prop)) {
+            save();
+        }
     }
 
     private void fixLocalValues() {

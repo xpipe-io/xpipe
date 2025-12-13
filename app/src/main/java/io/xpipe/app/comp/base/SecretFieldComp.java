@@ -94,16 +94,16 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 }
 
                 field.setText(n != null ? n.getSecretValue() : null);
-            });
 
-            var capslock = Platform.isKeyLocked(KeyCode.CAPS);
-            if (!capslock.orElse(false)) {
-                capsPopover.hide();
-                return;
-            }
-            if (!capsPopover.isShowing()) {
-                capsPopover.show(field);
-            }
+                var capslock = Platform.isKeyLocked(KeyCode.CAPS);
+                if (!capslock.orElse(false)) {
+                    capsPopover.hide();
+                    return;
+                }
+                if (!capsPopover.isShowing()) {
+                    capsPopover.show(field);
+                }
+            });
         });
         HBox.setHgrow(field, Priority.ALWAYS);
 

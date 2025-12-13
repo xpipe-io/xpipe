@@ -28,7 +28,6 @@ public class SyncedIdentityStore extends IdentityStore implements UserScopeStore
     // per user stores are additionally encrypted on the entry level
     EncryptedValue.VaultKey<SecretRetrievalStrategy> password;
     EncryptedValue.VaultKey<SshIdentityStrategy> sshIdentity;
-    DataStoreScope scope;
     boolean perUser;
 
     public UsernameStrategy.Fixed getUsername() {

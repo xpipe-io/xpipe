@@ -48,6 +48,10 @@ public interface DataStorageGroupStrategy {
         return l;
     }
 
+    default boolean requiresUnlock() {
+        return true;
+    }
+
     default void checkComplete() throws ValidationException {}
 
     byte[] queryEncryptionSecret() throws Exception;
@@ -55,6 +59,11 @@ public interface DataStorageGroupStrategy {
     @JsonTypeName("none")
     @Value
     public class None implements DataStorageGroupStrategy {
+
+        @Override
+        public boolean requiresUnlock() {
+            return false;
+        }
 
         @Override
         public byte[] queryEncryptionSecret() throws Exception {

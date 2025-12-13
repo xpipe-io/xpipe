@@ -3,13 +3,13 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.MarkdownHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.OsType;
 
@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
 public class MarkdownComp extends Comp<CompStructure<StackPane>> {
 
     private static Boolean WEB_VIEW_SUPPORTED;
-    private static Path TEMP;
+    private static Path DIR;
     private final ObservableValue<String> markdown;
     private final UnaryOperator<String> htmlTransformation;
     private final boolean bodyPadding;
@@ -53,8 +53,8 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     }
 
     private Path getHtmlFile(String markdown) {
-        if (TEMP == null) {
-            TEMP = ShellTemp.getLocalTempDataDirectory("webview");
+        if (DIR == null) {
+            DIR = AppCache.getBasePath().resolve("md");
         }
 
         if (markdown == null) {
@@ -68,7 +68,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         } else {
             hash = markdown.hashCode();
         }
-        var file = TEMP.resolve("md-" + hash + ".html");
+        var file = DIR.resolve("md-" + hash + ".html");
         if (Files.exists(file)) {
             return file;
         }
@@ -94,7 +94,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine()
                 .setUserDataDirectory(
-                        AppProperties.get().getDataDir().resolve("webview").toFile());
+                        AppCache.getBasePath().resolve("webview").toFile());
         var theme = AppPrefs.get() != null
                         && AppPrefs.get().theme().getValue() != null
                         && AppPrefs.get().theme().getValue().isDark()
