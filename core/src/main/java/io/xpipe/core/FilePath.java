@@ -74,7 +74,7 @@ public final class FilePath {
             }
         }
 
-        throw new IllegalArgumentException("Unable to determine root of " + value);
+        return FilePath.of("/");
     }
 
     public Path toLocalPath() {
