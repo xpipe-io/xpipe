@@ -27,7 +27,11 @@ public class JarMenuProvider extends MultiExecuteMenuProvider
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return super.isApplicable(model, entries) && FileTypeMenuProvider.super.isApplicable(model, entries);
+        if (!BrowserApplicationPathMenuProvider.super.isApplicable(model, entries)) {
+            return false;
+        }
+
+        return FileTypeMenuProvider.super.isApplicable(model, entries);
     }
 
     @Override

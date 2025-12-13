@@ -49,7 +49,7 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (model.getFileSystem().getShell().isEmpty()) {
+        if (!BrowserApplicationPathMenuProvider.super.isApplicable(model, entries) || !BrowserMenuLeafProvider.super.isApplicable(model, entries)) {
             return false;
         }
 

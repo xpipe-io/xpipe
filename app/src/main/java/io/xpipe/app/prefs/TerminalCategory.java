@@ -215,7 +215,6 @@ public class TerminalCategory extends AppPrefsCategory {
         var proxyChoice = new DelayedInitComp(
                 Comp.of(() -> {
                     var comp = new StoreChoiceComp<>(
-                            StoreChoiceComp.Mode.PROXY,
                             null,
                             ref,
                             ShellStore.class,

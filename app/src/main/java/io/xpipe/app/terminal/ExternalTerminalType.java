@@ -519,13 +519,13 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             TERMIUS,
             WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(
-            WarpTerminalType.MACOS,
             ITERM2,
             KittyTerminalType.KITTY_MACOS,
             TabbyTerminalType.TABBY_MAC_OS,
             AlacrittyTerminalType.ALACRITTY_MAC_OS,
             WezTerminalType.WEZTERM_MAC_OS,
             GhosttyTerminalType.GHOSTTY_MACOS,
+            WarpTerminalType.MACOS,
             MACOS_TERMINAL,
             TERMIUS,
             WaveTerminalType.WAVE_MAC_OS);

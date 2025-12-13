@@ -20,10 +20,6 @@ public class DesktopHelper {
             return;
         }
 
-        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            return;
-        }
-
         URI parsed;
         try {
             parsed = URI.create(uri);
@@ -31,6 +27,13 @@ public class DesktopHelper {
             ErrorEventFactory.fromThrowable("Invalid URI: " + uri, e.getCause() != null ? e.getCause() : e)
                     .handle();
             return;
+        }
+
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            if (OsType.ofLocal() == OsType.LINUX) {
+                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+                return;
+            }
         }
 
         // This can be a blocking operation
@@ -55,6 +58,13 @@ public class DesktopHelper {
     public static void browseFile(Path file) {
         if (file == null || !Files.exists(file)) {
             return;
+        }
+
+        if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            if (OsType.ofLocal() == OsType.LINUX) {
+                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
+                return;
+            }
         }
 
         // This can be a blocking operation
@@ -88,11 +98,7 @@ public class DesktopHelper {
             // Windows does not support Action.BROWSE_FILE_DIR
             if (OsType.ofLocal() == OsType.WINDOWS) {
                 // Explorer does not support single quotes, so use normal quotes
-                if (Files.isDirectory(file)) {
-                    LocalExec.readStdoutIfPossible("explorer", "\"" + file + "\"");
-                } else {
-                    LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
-                }
+                LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
                 return;
             }
 

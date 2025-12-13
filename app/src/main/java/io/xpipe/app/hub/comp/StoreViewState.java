@@ -12,7 +12,6 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 
-import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -246,7 +245,21 @@ public class StoreViewState {
                         .anyMatch(wrapper -> wrapper.matchesFilter(newValue)))
                 .toList();
         if (matchingCats.size() == 1) {
-            activeCategory.setValue(matchingCats.getFirst());
+            var onlyMatch = matchingCats.getFirst();
+            selectCategoryIntoViewIfNeeded(onlyMatch);
+        }
+    }
+
+    public void selectCategoryIntoViewIfNeeded(StoreCategoryWrapper category) {
+        StoreCategoryWrapper matchingParent = category;
+        while ((matchingParent = matchingParent.getParent()) != null) {
+            if (matchingParent.equals(activeCategory.getValue())) {
+                break;
+            }
+        }
+
+        if (matchingParent == null) {
+            activeCategory.setValue(category);
         }
     }
 

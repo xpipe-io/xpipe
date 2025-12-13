@@ -11,6 +11,18 @@ public interface SelfReferentialStore extends DataStore {
 
     Map<DataStore, DataStoreEntry> FALLBACK = new HashMap<>();
 
+    default boolean hasSelfEntry() {
+        if (DataStorage.get() == null) {
+            return false;
+        }
+
+        return DataStorage.get()
+                .getStoreEntryIfPresent(this, true)
+                .or(() -> {
+                    return DataStorage.get().getStoreEntryInProgressIfPresent(this);
+                }).isPresent();
+    }
+
     default DataStoreEntry getSelfEntry() {
         if (DataStorage.get() == null) {
             return DataStoreEntry.createTempWrapper(this);

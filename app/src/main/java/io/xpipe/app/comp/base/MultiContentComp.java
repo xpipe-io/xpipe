@@ -17,10 +17,12 @@ import java.util.Map;
 
 public class MultiContentComp extends SimpleComp {
 
+    private final boolean requestFocus;
     private final boolean log;
     private final Map<Comp<?>, ObservableValue<Boolean>> content;
 
-    public MultiContentComp(Map<Comp<?>, ObservableValue<Boolean>> content, boolean log) {
+    public MultiContentComp(boolean requestFocus, Map<Comp<?>, ObservableValue<Boolean>> content, boolean log) {
+        this.requestFocus = requestFocus;
         this.log = log;
         this.content = FXCollections.observableMap(content);
     }
@@ -62,7 +64,7 @@ public class MultiContentComp extends SimpleComp {
                 PlatformThread.runLaterIfNeeded(() -> {
                     r.setManaged(val);
                     r.setVisible(val);
-                    if (val) {
+                    if (requestFocus && val) {
                         Platform.runLater(() -> {
                             r.requestFocus();
                         });

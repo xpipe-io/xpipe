@@ -88,27 +88,30 @@ public class StoreCategoryConfigComp extends SimpleComp {
             });
         });
 
-        var options = new OptionsBuilder()
-                .nameAndDescription("categorySync")
+        var options = new OptionsBuilder();
+
+        var specialCategorySync = !wrapper.getCategory().canShare();
+        var syncDisable = !DataStorage.get().supportsSync()
+                || ((sync.getValue() == null || !sync.getValue())
+                && !wrapper.getCategory().canShare());
+        var syncHide = !DataStorage.get().supportsSync();
+        options.name(specialCategorySync ? AppI18n.observable("categorySyncSpecial", wrapper.getName().getValue()) : AppI18n.observable("categorySync"))
+                .description("categorySyncDescription")
                 .addYesNoToggle(sync)
-                .hide(!DataStorage.get().supportsSync()
-                        || ((sync.getValue() == null || !sync.getValue())
-                                && !wrapper.getCategory().canShare()))
+                .disable(syncDisable)
+                .hide(syncHide)
                 .nameAndDescription("categoryDontAllowScripts")
                 .addYesNoToggle(scripts)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryConfirmAllModifications")
                 .addYesNoToggle(confirm)
+                .hide(!connectionsCategory)
                 .nameAndDescription("categoryFreeze")
                 .addYesNoToggle(freeze)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
-                        StoreChoiceComp.other(
-                                ref,
-                                DataStore.class,
-                                s -> true,
-                                StoreViewState.get().getAllIdentitiesCategory()),
+                        new StoreChoiceComp<>(null, ref, DataStore.class, null, StoreViewState.get().getAllIdentitiesCategory()),
                         ref)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryColor")
@@ -123,9 +126,8 @@ public class StoreCategoryConfigComp extends SimpleComp {
                                     freeze.get(),
                                     ref.get() != null ? ref.get().get().getUuid() : null);
                         },
-                        config)
-                .buildComp();
-        var r = options.createRegion();
+                        config);
+        var r = options.build();
         var sp = new ScrollPane(r);
         sp.setFitToWidth(true);
         sp.prefHeightProperty().bind(r.heightProperty());

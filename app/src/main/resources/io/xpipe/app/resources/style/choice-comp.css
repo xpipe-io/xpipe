@@ -6,11 +6,11 @@
     -fx-background-color: -color-accent-fg;
 }
 
-.identity-select-comp .clear-button:hover .ikonli-font-icon {
+.clear-button:hover .ikonli-font-icon {
     -fx-icon-color: -color-accent-fg;
 }
 
-.identity-select-comp .clear-button {
+.clear-button {
     -fx-background-color: transparent;
 }
 

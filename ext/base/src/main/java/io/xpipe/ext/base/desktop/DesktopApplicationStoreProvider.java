@@ -72,7 +72,6 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
                 .nameAndDescription("desktopBase")
                 .addComp(
                         new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.HOST,
                                 entry,
                                 host,
                                 DesktopBaseStore.class,

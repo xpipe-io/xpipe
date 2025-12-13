@@ -351,6 +351,7 @@ public class StandardStorage extends DataStorage {
             // If another save operation is in progress, we have to wait on dispose
             // Otherwise the application may quit and kill the daemon thread that is performing the other save operation
             if (dispose && !busyIo.tryLock(1, TimeUnit.MINUTES)) {
+                disposed = true;
                 return;
             }
         } catch (InterruptedException e) {

@@ -83,7 +83,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         modal.addButton(new ModalButton("select", () -> model.finishChooser(), true, true));
         modal.show();
         ThreadHelper.runAsync(() -> {
-            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), null);
+            model.openFileSystemAsync(store.get(), null, (sc) -> initialPath.get(), model.getBusy());
         });
     }
 
@@ -167,6 +167,7 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                 });
+        splitPane.disable(model.getBusy());
         return splitPane.prefHeight(2000).createRegion();
     }
 }
