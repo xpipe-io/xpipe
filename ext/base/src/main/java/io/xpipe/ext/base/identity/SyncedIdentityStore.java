@@ -4,7 +4,6 @@ import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.app.storage.DataStoreScope;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 

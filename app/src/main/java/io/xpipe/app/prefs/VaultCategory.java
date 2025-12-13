@@ -69,7 +69,7 @@ public class VaultCategory extends AppPrefsCategory {
                         ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ? "Legacy" : "Personal")
                         : "Team";
 
-        var authChoice = ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), false);
+        var authChoice = ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), true);
         authChoice.apply(struc -> struc.get().setOpacity(1.0));
         authChoice.maxWidth(600);
         authChoice.disable(Bindings.createBooleanBinding(() -> {
@@ -84,6 +84,8 @@ public class VaultCategory extends AppPrefsCategory {
                         .documentationLink(DocumentationLink.TEAM_VAULTS)
                         .addComp(Comp.empty())
                         .licenseRequirement("team")
+                        .nameAndDescription("vaultAuthentication")
+                        .addComp(authChoice, prefs.vaultAuthentication)
                         .nameAndDescription(Bindings.createStringBinding(() -> {
                             var empty = uh.getUserCount() == 0;
                             if (prefs.vaultAuthentication.get() == VaultAuthentication.GROUP) {

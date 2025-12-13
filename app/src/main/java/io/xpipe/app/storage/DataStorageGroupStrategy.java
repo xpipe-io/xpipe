@@ -112,6 +112,10 @@ public interface DataStorageGroupStrategy {
             }
 
             var read = Files.readAllBytes(abs);
+            if (read.length == 0) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + file + " is empty"));
+            }
+
             return read;
         }
     }
@@ -155,6 +159,9 @@ public interface DataStorageGroupStrategy {
                 try (var cc = sc.command(command).start()) {
                     cc.killOnTimeout(CountDown.of().start(30_000));
                     var out = cc.readRawBytesOrThrow();
+                    if (out.length == 0) {
+                        throw ErrorEventFactory.expected(new IllegalArgumentException("Command did not return any output"));
+                    }
                     return out;
                 }
             }
@@ -204,7 +211,11 @@ public interface DataStorageGroupStrategy {
             if (result.statusCode() >= 400) {
                 throw ErrorEventFactory.expected(new IOException(new String(result.body(), StandardCharsets.UTF_8)));
             }
-            return result.body();
+            var body = result.body();
+            if (body.length == 0) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Http response body is empty"));
+            }
+            return body;
         }
     }
 }

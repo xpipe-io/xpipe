@@ -63,6 +63,7 @@ public final class AppPrefs {
 
     public static void initSynced() throws Exception {
         INSTANCE.loadSharedRemote();
+        INSTANCE.fixSyncedValues();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
                 DataStorage.get().forceRewrite();
@@ -777,6 +778,17 @@ public final class AppPrefs {
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
+    }
+
+    private void fixSyncedValues() {
+        if (groupSecretStrategy.getValue() != null) {
+            try {
+                groupSecretStrategy.get().checkComplete();
+            } catch (Exception e) {
+                groupSecretStrategy.setValue(null);
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+            }
+        }
     }
 
     public void initDefaultValues() {

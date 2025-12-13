@@ -8,6 +8,7 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
+import io.xpipe.app.prefs.VaultAuthentication;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
@@ -87,6 +88,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .build()
                 .build();
 
+        var handler = DataStorageUserHandler.getInstance();
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
@@ -112,11 +114,11 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                     return !wrong;
                 }))
                 .nameAndDescription(
-                        DataStorageUserHandler.getInstance().getActiveUser() != null
-                                ? "identityPerUser"
+                        handler.getActiveUser() != null
+                                ? (handler.getVaultAuthenticationType() == VaultAuthentication.GROUP ? "identityPerGroup" : "identityPerUser")
                                 : "identityPerUserDisabled")
                 .addToggle(perUser)
-                .disable(DataStorageUserHandler.getInstance().getActiveUser() == null)
+                .disable(handler.getActiveUser() == null)
                 .bind(
                         () -> {
                             return SyncedIdentityStore.builder()
