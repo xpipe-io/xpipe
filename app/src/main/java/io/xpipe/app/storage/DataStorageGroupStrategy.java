@@ -24,6 +24,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,38 +42,19 @@ public interface DataStorageGroupStrategy {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
-        l.add(None.class);
         l.add(File.class);
         l.add(Command.class);
         l.add(HttpRequest.class);
         return l;
     }
 
-    default boolean requiresUnlock() {
-        return true;
-    }
-
     default void checkComplete() throws ValidationException {}
 
     byte[] queryEncryptionSecret() throws Exception;
 
-    @JsonTypeName("none")
-    @Value
-    public class None implements DataStorageGroupStrategy {
-
-        @Override
-        public boolean requiresUnlock() {
-            return false;
-        }
-
-        @Override
-        public byte[] queryEncryptionSecret() throws Exception {
-            throw  new UnsupportedOperationException();
-        }
-    }
-
     @JsonTypeName("file")
     @Builder
+    @Jacksonized
     @Value
     public class File implements DataStorageGroupStrategy {
 
@@ -122,6 +104,7 @@ public interface DataStorageGroupStrategy {
 
     @JsonTypeName("command")
     @Builder
+    @Jacksonized
     @Value
     public class Command implements DataStorageGroupStrategy {
 
@@ -171,6 +154,7 @@ public interface DataStorageGroupStrategy {
 
     @JsonTypeName("httpRequest")
     @Builder
+    @Jacksonized
     @Value
     public class HttpRequest implements DataStorageGroupStrategy {
 

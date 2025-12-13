@@ -100,7 +100,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             });
 
             var loadingTextCounter = new SimpleIntegerProperty();
-            GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
+            GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
                 if (loaded.getValue() != null) {
                     return true;
                 }

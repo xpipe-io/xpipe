@@ -280,7 +280,7 @@ public final class AppPrefs {
     final ObjectProperty<VaultAuthentication> vaultAuthentication = new GlobalObjectProperty<>();
 
     final ObjectProperty<DataStorageGroupStrategy> groupSecretStrategy = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>(new DataStorageGroupStrategy.None()))
+            .property(new GlobalObjectProperty<>())
             .key("groupSecretStrategy")
             .valueClass(DataStorageGroupStrategy.class)
             .requiresRestart(true)

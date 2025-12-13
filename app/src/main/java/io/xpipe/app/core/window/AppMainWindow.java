@@ -129,7 +129,7 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "?");
     }
 
     public static synchronized void initContent() {

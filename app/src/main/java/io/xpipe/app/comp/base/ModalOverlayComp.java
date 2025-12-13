@@ -211,12 +211,10 @@ public class ModalOverlayComp extends SimpleComp {
                             max.set(d);
                         }
                     });
-                }
-                node.minWidthProperty().bind(max);
-                buttonBar.getChildren().add(node);
-                if (o instanceof ModalButton) {
+                    node.minWidthProperty().bind(max);
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
+                buttonBar.getChildren().add(node);
             }
             content.getChildren().add(buttonBar);
             AppFontSizes.apply(buttonBar, sizes -> {

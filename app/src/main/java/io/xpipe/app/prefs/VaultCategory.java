@@ -74,7 +74,7 @@ public class VaultCategory extends AppPrefsCategory {
         authChoice.maxWidth(600);
         authChoice.disable(Bindings.createBooleanBinding(() -> {
             return uh.getUserCount() > 0 && prefs.vaultAuthentication.get() == VaultAuthentication.USER ||
-                    prefs.groupSecretStrategy.get().requiresUnlock() && prefs.vaultAuthentication.get() == VaultAuthentication.GROUP;
+                    (prefs.groupSecretStrategy.get() != null && prefs.vaultAuthentication.get() == VaultAuthentication.GROUP);
         }, prefs.vaultAuthentication, prefs.groupSecretStrategy));
 
         builder.addTitle("vault")
