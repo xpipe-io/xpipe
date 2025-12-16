@@ -326,6 +326,12 @@ public class OptionsBuilder {
         return this;
     }
 
+    public OptionsBuilder name(ObservableValue<String> name) {
+        finishCurrent();
+        this.name = name;
+        return this;
+    }
+
     public OptionsBuilder description(String descriptionKey) {
         finishCurrent();
         description = AppI18n.observable(descriptionKey);
