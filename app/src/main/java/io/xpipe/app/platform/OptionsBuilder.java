@@ -12,6 +12,8 @@ import io.xpipe.core.InPlaceSecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
@@ -369,6 +371,16 @@ public class OptionsBuilder {
 
     public OptionsBuilder addProperty(Property<?> prop) {
         props.add(prop);
+        return this;
+    }
+
+    public <T> OptionsBuilder addProperty(ObservableList<T> prop) {
+        // For updating the options builder binding on list change, it doesn't support observable lists
+        var listHashProp = new SimpleIntegerProperty(0);
+        prop.addListener((ListChangeListener<T>) c -> {
+            listHashProp.set(c.getList().hashCode());
+        });
+        addProperty(listHashProp);
         return this;
     }
 

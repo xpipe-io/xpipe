@@ -44,9 +44,6 @@ public class KeePassXcProxyClient {
     private TweetNaClHelper.KeyPair keyPair;
     private byte[] serverPublicKey;
 
-    @Getter
-    private KeePassXcAssociationKey associationKey;
-
     public KeePassXcProxyClient(Path proxyExecutable) {
         this.proxyExecutable = proxyExecutable;
     }
@@ -65,10 +62,6 @@ public class KeePassXcProxyClient {
             return matcher.group(1);
         }
         return null;
-    }
-
-    public void useExistingAssociationKey(KeePassXcAssociationKey key) {
-        this.associationKey = key;
     }
 
     /**
@@ -173,7 +166,7 @@ public class KeePassXcProxyClient {
      *
      * @throws IOException If there's an error communicating with KeePassXC
      */
-    public void testAssociation() throws IOException {
+    public void testAssociation(KeePassXcAssociationKey associationKey) throws IOException {
         if (associationKey == null) {
             // We need to do an association first
             throw ErrorEventFactory.expected(
@@ -236,7 +229,7 @@ public class KeePassXcProxyClient {
      * @return The response JSON, or null if failed
      * @throws IOException If there's an error communicating with KeePassXC
      */
-    public String getLoginsMessage(String url) throws IOException {
+    private String getLoginsMessage(List<KeePassXcAssociationKey> associationKeys, String url) throws IOException {
         // Generate a nonce
         String nonce = TweetNaClHelper.encodeBase64(TweetNaClHelper.randomBytes(TweetNaClHelper.NONCE_SIZE));
 
@@ -246,11 +239,14 @@ public class KeePassXcProxyClient {
         messageData.put("url", url);
 
         // Add the keys
-        Map<String, Object> keyData = new HashMap<>();
-        keyData.put("id", associationKey.getId());
-        keyData.put("key", associationKey.getKey().getSecretValue());
-
-        messageData.put("keys", new Map[] {keyData});
+        var keyArray = new Object[associationKeys.size()];
+        for (int i = 0; i < associationKeys.size(); i++) {
+            Map<String, Object> keyData = new HashMap<>();
+            keyData.put("id", associationKeys.get(i).getId());
+            keyData.put("key", associationKeys.get(i).getKey().getSecretValue());
+            keyArray[i] = keyData;
+        }
+        messageData.put("keys", keyArray);
 
         // Encrypt the message
         String encryptedMessage = encrypt(messageData, nonce);
@@ -282,7 +278,8 @@ public class KeePassXcProxyClient {
         throw new IllegalStateException("Login query failed for an unknown reason");
     }
 
-    public PasswordManager.CredentialResult getCredentials(String message) throws IOException {
+    public PasswordManager.CredentialResult getCredentials(List<KeePassXcAssociationKey> associationKeys, String key) throws IOException {
+        var message = getLoginsMessage(associationKeys, key);
         var tree = JacksonMapper.getDefault().readTree(message);
         var count = tree.required("count").asInt();
         if (count == 0) {
@@ -449,7 +446,7 @@ public class KeePassXcProxyClient {
      *
      * @throws IOException If there's an error communicating with KeePassXC
      */
-    public void associate() throws IOException {
+    public KeePassXcAssociationKey associate() throws IOException {
         // Generate a key pair for identification
         TweetNaClHelper.KeyPair idKeyPair = TweetNaClHelper.generateKeyPair();
 
@@ -495,10 +492,7 @@ public class KeePassXcProxyClient {
             if (success && parsedResponse.containsKey("id") && parsedResponse.containsKey("hash")) {
                 String id = (String) parsedResponse.get("id");
                 var key = InPlaceSecretValue.of(TweetNaClHelper.encodeBase64(idKeyPair.getPublicKey()));
-
-                associationKey = new KeePassXcAssociationKey(id, key);
-
-                return;
+                return new KeePassXcAssociationKey(id, key);
             }
         }
 
