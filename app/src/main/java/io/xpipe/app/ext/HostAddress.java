@@ -15,6 +15,14 @@ public class HostAddress {
     private final List<String> available;
 
     private HostAddress(String value, List<String> available) {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("Host address cannot be null or empty");
+        }
+
+        if (available.stream().anyMatch(s -> s == null || s.isEmpty())) {
+            throw new IllegalArgumentException("Host address cannot be null or empty");
+        }
+
         this.value = value;
         this.available = available;
     }

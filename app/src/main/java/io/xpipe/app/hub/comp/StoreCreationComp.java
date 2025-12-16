@@ -2,12 +2,15 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
 
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -63,11 +66,23 @@ public class StoreCreationComp extends ModalOverlayContentComp {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
 
+        var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
+                activeDialog.set(d);
                 if (d == null) {
                     return;
+                }
+
+                if (d.getOnFinish() != null) {
+                    model.getFinished().addListener((observable, oldValue, newValue) -> {
+                        if (newValue && d.equals(activeDialog.get())) {
+                            ThreadHelper.runAsync(() -> {
+                                d.getOnFinish().run();
+                            });
+                        }
+                    });
                 }
 
                 var propOptions = createStoreProperties();

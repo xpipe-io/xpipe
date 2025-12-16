@@ -449,7 +449,7 @@ public class AppJacksonModule extends SimpleModule {
         public HostAddress deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             var tree = (JsonNode) p.getCodec().readTree(p);
             if (tree.isTextual()) {
-                return HostAddress.of(tree.textValue());
+                return !tree.textValue().isBlank() ? HostAddress.of(tree.textValue()) : null;
             } else {
                 var value = tree.get("value");
                 var available = tree.get("available");

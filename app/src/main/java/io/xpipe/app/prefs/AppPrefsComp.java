@@ -96,8 +96,7 @@ public class AppPrefsComp extends SimpleComp {
         HBox.setMargin(sidebar, new Insets(4));
         split.setFillHeight(true);
         split.getStyleClass().add("prefs");
-        var stack = new StackPane(split);
-        return stack;
+        return split;
     }
 
     private double computeCategoryOffset(VBox box, ScrollPane scrollPane, AppPrefsCategory val) {

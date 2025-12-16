@@ -21,5 +21,7 @@ public enum DataStoreUsageCategory {
     IDENTITY,
     @SuppressWarnings("unused")
     @JsonProperty("macro")
-    MACRO
+    MACRO,
+    @JsonProperty("fileSystem")
+    FILE_SYSTEM
 }

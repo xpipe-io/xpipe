@@ -36,6 +36,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     boolean supportsChgrp();
 
+    boolean supportsTerminalOpen();
+
     boolean supportsTerminalWorkingDirectory();
 
     Optional<ShellControl> getRawShellControl();

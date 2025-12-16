@@ -111,7 +111,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                     ClipboardHelper.copyPassword(value.getValue());
                 })
                 .grow(false, true)
-                .tooltipKey("copyPassword");
+                .tooltipKey("copy");
 
         var list = new ArrayList<Comp<?>>();
         var fieldComp = Comp.of(() -> field);

@@ -3,6 +3,7 @@ package io.xpipe.app.platform;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.storage.DataStoreCategoryConfig;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -32,12 +33,19 @@ public class OptionsChoiceBuilder {
     private final Object customConfiguration;
 
     @SneakyThrows
-    private static String createIdForClass(Class<?> c) {
-        var custom = Arrays.stream(c.getDeclaredMethods())
-                .filter(m -> m.getName().equals("getOptionsNameKey"))
+    private String createIdForClass(Class<?> c) {
+        var customPlain = Arrays.stream(c.getDeclaredMethods())
+                .filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 0)
                 .findFirst();
-        if (custom.isPresent()) {
-            return (String) custom.get().invoke(null);
+        if (customPlain.isPresent()) {
+            return (String) customPlain.get().invoke(null);
+        }
+
+        if (customConfiguration != null) {
+            var customConfig = Arrays.stream(c.getDeclaredMethods()).filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 1).findFirst();
+            if (customConfig.isPresent()) {
+                return (String) customConfig.get().invoke(null, customConfiguration);
+            }
         }
 
         var a = c.getAnnotation(JsonTypeName.class);

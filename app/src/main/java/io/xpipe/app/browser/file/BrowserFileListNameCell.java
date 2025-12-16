@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
+import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.platform.InputHelper;
@@ -228,10 +229,11 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                                         .getPath()
                         : getTableRow().getItem().getFileName();
                 var fileName = normalName;
-                var hidden = getTableRow().getItem().getRawFileEntry().getInfo().explicitlyHidden()
-                        || fileName.startsWith(".");
+                var info = getTableRow().getItem().getRawFileEntry().getInfo();
+                var hidden = (info != null && info.explicitlyHidden()) || fileName.startsWith(".");
                 getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), hidden);
                 text.set(fileName);
+
                 // Visibility seems to be bugged, so use opacity
                 setOpacity(1.0);
             }

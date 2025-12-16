@@ -28,6 +28,14 @@ public final class CustomServiceStore extends AbstractServiceStore implements Ab
     private final Boolean tunnelToLocalhost;
 
     @Override
+    public void checkComplete() throws Throwable {
+        super.checkComplete();
+        if (gateway != null) {
+            gateway.checkComplete();
+        }
+    }
+
+    @Override
     public boolean canConvertToAbstractHost() {
         return host == null;
     }

@@ -38,7 +38,7 @@ public class OpenTerminalInDirectoryMenuProvider implements BrowserMenuLeafProvi
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        return entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
+        return model.getFileSystem().supportsTerminalOpen() && entries.stream().allMatch(entry -> entry.getRawFileEntry().getKind() == FileKind.DIRECTORY);
     }
 
     public String getId() {

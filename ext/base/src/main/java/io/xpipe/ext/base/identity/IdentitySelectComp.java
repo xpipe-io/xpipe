@@ -122,6 +122,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
     private void showIdentityCreation(IdentityStore store) {
         StoreCreationDialog.showCreation(
+                null,
                 store,
                 DataStoreCreationCategory.IDENTITY,
                 dataStoreEntry -> {

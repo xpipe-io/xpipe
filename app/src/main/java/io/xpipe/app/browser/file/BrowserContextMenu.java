@@ -43,20 +43,12 @@ public final class BrowserContextMenu extends ContextMenu {
             selected.add(source);
         }
 
-        if (model.isClosed()) {
-            return;
-        }
-
         for (var cat : BrowserMenuCategory.values()) {
             var all = ActionProvider.ALL.stream()
                     .map(actionProvider -> actionProvider instanceof BrowserMenuItemProvider ba ? ba : null)
                     .filter(browserActionProvider -> browserActionProvider != null)
                     .filter(browserAction -> browserAction.getCategory() == cat)
                     .filter(browserAction -> {
-                        if (model.isClosed()) {
-                            return false;
-                        }
-
                         var used = browserAction.resolveFilesIfNeeded(selected);
                         if (!browserAction.isApplicable(model, used)) {
                             return false;
@@ -78,10 +70,6 @@ public final class BrowserContextMenu extends ContextMenu {
             }
 
             for (var a : all) {
-                if (model.isClosed()) {
-                    return;
-                }
-
                 var used = a.resolveFilesIfNeeded(selected);
                 var item = a.toMenuItem(model, used);
                 if (item != null) {

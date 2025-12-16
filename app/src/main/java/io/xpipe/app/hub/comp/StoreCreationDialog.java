@@ -74,6 +74,7 @@ public class StoreCreationDialog {
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
         showCreation(
+                null,
                 selected != null ? selected.defaultStore(DataStorage.get().getSelectedCategory()) : null,
                 category,
                 dataStoreEntry -> {},
@@ -81,6 +82,7 @@ public class StoreCreationDialog {
     }
 
     public static void showCreation(
+            String name,
             DataStore base,
             DataStoreCreationCategory category,
             Consumer<DataStoreEntry> listener,
@@ -112,7 +114,7 @@ public class StoreCreationDialog {
             }
         };
         show(
-                null,
+                name,
                 prov,
                 base,
                 dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))

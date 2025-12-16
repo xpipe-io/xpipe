@@ -72,6 +72,10 @@ public class StoreCreationMenu {
                 .add(categoryMenu(
                         "addTunnel", "mdi2v-vector-polyline-plus", DataStoreCreationCategory.TUNNEL, "sshLocalTunnel"));
 
+        menu.getItems()
+                .add(categoryMenu(
+                        "addFileSystem", "mdi2f-folder-plus-outline", DataStoreCreationCategory.FILE_SYSTEM, "genericS3Bucket"));
+
         menu.getItems().add(new SeparatorMenuItem());
 
         menu.getItems()

@@ -312,12 +312,12 @@ public abstract class DataStorage {
                 return false;
             }
 
-            if (c.getStore() instanceof LocalStore && entry.getProvider().isShareableFromLocalMachine()) {
+            if (c.getStore() instanceof LocalStore && entry.getProvider().isSyncableFromLocalMachine()) {
                 return true;
             }
 
             try {
-                if (!c.getProvider().isShareable(c)) {
+                if (!c.getProvider().isSyncable(c)) {
                     return false;
                 }
             } catch (Exception e) {
@@ -717,6 +717,7 @@ public abstract class DataStorage {
         });
 
         if (toRemove.isEmpty() && toAdd.isEmpty() && toUpdate.isEmpty()) {
+            oldChildren.forEach(oe -> oe.getProvider().onParentRefresh(oe));
             return false;
         }
 

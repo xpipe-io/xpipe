@@ -14,10 +14,6 @@ import java.io.InputStream;
 public interface BrowserFileInput {
 
     static BrowserFileInput openFileInput(BrowserFileSystemTabModel model, FileEntry file) throws Exception {
-        if (model.isClosed()) {
-            return BrowserFileInput.none();
-        }
-
         var defOutput = createFileInputImpl(model, file, false);
         if (model.getFileSystem().getShell().isEmpty()) {
             return defOutput;

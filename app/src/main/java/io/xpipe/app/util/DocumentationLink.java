@@ -40,6 +40,7 @@ public enum DocumentationLink {
     KVM_VNC("guide/kvm#vnc-access"),
     HCLOUD("guide/hcloud"),
     VMWARE("guide/vmware"),
+    AWS("guide/aws"),
     VNC("guide/vnc"),
     ABSTRACT_HOSTS("guide/abstract-hosts"),
     REAL_VNC("guide/vnc#realvnc-server"),

@@ -362,6 +362,44 @@ public class BrowserFileTransferOperation {
         }
     }
 
+    private boolean transferInline(
+            FilePath sourceFile,
+            FileSystem sourceFs,
+            FilePath targetFile,
+            FileSystem targetFs) throws Exception {
+        var wasRun = new AtomicBoolean(false);
+        var active = new AtomicBoolean(true);
+        var ex = new AtomicReference<Exception>();
+        ThreadHelper.runAsync(() -> {
+            try {
+                if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile) || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
+                    wasRun.set(true);
+                }
+                active.set(false);
+            } catch (Exception e) {
+                wasRun.set(true);
+                active.set(false);
+                ex.set(e);
+            }
+        });
+
+        while (active.get()) {
+            if (cancelled()) {
+                sourceFs.kill();
+                targetFs.kill();
+                break;
+            }
+
+            ThreadHelper.sleep(10);
+        }
+
+        if (ex.get() != null) {
+            throw ex.get();
+        }
+
+        return wasRun.get();
+    }
+
     private void transfer(
             FilePath sourceFile,
             FileSystem sourceFs,
@@ -374,14 +412,16 @@ public class BrowserFileTransferOperation {
             return;
         }
 
+        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), 0, 0));
+
         var fileSize = sourceFs.getFileSize(sourceFile);
 
-        // TODO: this is not ready yet
-//        updateProgress(new BrowserTransferProgress(sourceFile.getFileName(), 0, 0));
-//        if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile) || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
-//            updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), fileSize));
-//            return;
-//        }
+        if (transferInline(sourceFile, sourceFs, targetFile, targetFs) || cancelled()) {
+            if (!cancelled()) {
+                updateProgress(BrowserTransferProgress.finished(sourceFile.getFileName(), fileSize));
+            }
+            return;
+        }
 
         InputStream inputStream = null;
         OutputStream outputStream = null;

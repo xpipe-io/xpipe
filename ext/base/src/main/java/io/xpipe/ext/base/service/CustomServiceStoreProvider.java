@@ -70,7 +70,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         var tunnelToLocalhost = new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
         var hideTunnelToLocalhost = Bindings.createBooleanBinding(() -> {
             return comboHost.get() == null || gateway.get() != null ||
-                    (comboHost.get().getRef().getStore() instanceof HostAddressGatewayStore g && g.getGateway() != null && !(g.getGateway().getStore() instanceof LocalStore));
+                    (comboHost.get().getRef().getStore() instanceof HostAddressGatewayStore g && g.getTunnelGateway() != null && !(g.getTunnelGateway().getStore() instanceof LocalStore));
         }, comboHost, gateway);
         var hideLocalPort = Bindings.createBooleanBinding(() -> {
             return comboHost.get() == null || !tunnelToLocalhost.get();

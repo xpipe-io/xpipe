@@ -42,7 +42,7 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
         var tunnelToLocalhost = new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
         var hideTunnelToLocalhost = Bindings.createBooleanBinding(() -> {
             return host.get() == null || (host.get().getStore() instanceof HostAddressGatewayStore g &&
-                    g.getGateway() != null && !(g.getGateway().getStore() instanceof LocalStore));
+                    g.getTunnelGateway() != null && !(g.getTunnelGateway().getStore() instanceof LocalStore));
         }, host);
         var hideLocalPort = Bindings.createBooleanBinding(() -> {
             return host.get() == null || !tunnelToLocalhost.get();

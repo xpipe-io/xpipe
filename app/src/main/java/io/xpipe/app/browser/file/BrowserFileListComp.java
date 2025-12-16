@@ -396,11 +396,6 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            // Prevent post close events
-            if (fileList.getFileSystemModel().isClosed()) {
-                return;
-            }
-
             // Don't apply actions while renaming
             if (fileList.getEditing().getValue() != null) {
                 return;

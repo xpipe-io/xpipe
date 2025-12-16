@@ -91,10 +91,6 @@ public class BrowserFileSystemSavedState {
                         public void run() {
                             // Synchronize with platform thread
                             Platform.runLater(() -> {
-                                if (model.isClosed()) {
-                                    return;
-                                }
-
                                 if (Objects.equals(lastDirectory, dir)) {
                                     updateRecent(dir);
                                     save();

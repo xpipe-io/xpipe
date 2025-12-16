@@ -114,7 +114,6 @@ public final class BrowserFileListModel {
         if (old == null
                 || newName == null
                 || fileSystemModel == null
-                || fileSystemModel.isClosed()
                 || fileSystemModel.getCurrentPath().get() == null) {
             return old;
         }

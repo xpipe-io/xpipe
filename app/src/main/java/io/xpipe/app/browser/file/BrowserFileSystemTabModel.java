@@ -159,7 +159,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
-            var fs = fileSystemFactory.apply(getEntry().asNeeded());
+            var fs = new WrapperFileSystem(fileSystemFactory.apply(getEntry().asNeeded()));
             Platform.runLater(() -> {
                 getFileSystemNameSuffix().set(fs.getSuffix());
             });
@@ -511,7 +511,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         .operation(op)
                         .target(this.entry.asNeeded())
                         .build();
-                if (action.executeSync()) {
+                // Might have been killed
+                if (action.executeSync() && fileSystem != null && fileSystem.isRunning()) {
                     refreshSync();
                 }
             });
@@ -551,10 +552,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 refreshSync();
             });
         });
-    }
-
-    public boolean isClosed() {
-        return false;
     }
 
     public void initWithGivenDirectory(FilePath dir) {

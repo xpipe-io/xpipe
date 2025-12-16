@@ -19,18 +19,26 @@ public class WrapperFileSystem implements FileSystem {
     private final FileSystem fs;
     private final Supplier<Boolean> runningCheck;
 
-    public WrapperFileSystem(FileSystem fs, Supplier<Boolean> runningCheck) {
+    public WrapperFileSystem(FileSystem fs) {
         this.fs = fs;
-        this.runningCheck = runningCheck;
+        this.runningCheck = () -> fs.isRunning();
     }
 
     @Override
     public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception {
+        if (!runningCheck.get()) {
+            return false;
+        }
+
         return fs.writeInstantIfPossible(sourceFs, sourceFile, targetFile);
     }
 
     @Override
     public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception {
+        if (!runningCheck.get()) {
+            return false;
+        }
+
         return fs.readInstantIfPossible(sourceFile, targetFs, targetFile);
     }
 
@@ -77,6 +85,11 @@ public class WrapperFileSystem implements FileSystem {
     @Override
     public boolean supportsChgrp() {
         return fs.supportsChgrp();
+    }
+
+    @Override
+    public boolean supportsTerminalOpen() {
+        return fs.supportsTerminalOpen();
     }
 
     @Override
@@ -176,8 +189,13 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public FileSystem createTransferOptimizedFileSystem() {
-        return this;
+    public FileSystem createTransferOptimizedFileSystem() throws Exception {
+        var optimized = fs.createTransferOptimizedFileSystem();
+        if (optimized == fs) {
+            return this;
+        }
+
+        return new WrapperFileSystem(optimized);
     }
 
     @Override
@@ -336,6 +354,10 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listCommonDirectories() throws Exception {
+        if (!runningCheck.get()) {
+            return List.of();
+        }
+
         return fs.listCommonDirectories();
     }
 

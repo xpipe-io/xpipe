@@ -21,10 +21,6 @@ public interface BrowserFileOutput {
 
     static BrowserFileOutput openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
             throws Exception {
-        if (model.isClosed()) {
-            return BrowserFileOutput.none();
-        }
-
         if (totalBytes == 0) {
             var existingSize = model.getFileSystem().getFileSize(file.getPath());
             if (existingSize != 0) {

@@ -89,6 +89,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean supportsTerminalOpen() {
+        return true;
+    }
+
+    @Override
     public boolean supportsTerminalWorkingDirectory() {
         return true;
     }

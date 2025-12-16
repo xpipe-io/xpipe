@@ -134,7 +134,7 @@ public class BrowserTransferModel {
         }
 
         var itemModel = item.getOpenFileSystemModel();
-        if (itemModel == null || itemModel.isClosed()) {
+        if (itemModel == null) {
             return;
         }
 
