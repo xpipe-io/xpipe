@@ -1,8 +1,16 @@
 package io.xpipe.ext.base.identity.ssh;
 
+import atlantafx.base.theme.Styles;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
@@ -13,6 +21,7 @@ import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.*;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,6 +31,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -36,10 +46,11 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<InPlaceKeyStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var key = new SimpleStringProperty(
-                p.getValue().getKey() != null ? p.getValue().getKey().getSecretValue() : null);
-        var keyPasswordProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
+        var options = new OptionsBuilder();
+
+        var key = options.map(p, InPlaceKeyStrategy::getKey, SecretValue::getSecretValue);
+        var publicKey = options.map(p, InPlaceKeyStrategy::getPublicKey);
+        var keyPasswordProperty = options.map(p, InPlaceKeyStrategy::getPassword);
 
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
@@ -49,8 +60,28 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .available(SecretRetrievalStrategy.getSubclasses())
                 .build()
                 .build();
+        var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
+            struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
+                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
+            }, AppI18n.activeLanguage()));
+            struc.get().setEditable(false);
+        });
+        var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
+            var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
+            if (generated != null) {
+                publicKey.set(generated);
+            }
+        }).tooltipKey("generatePublicKey").disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+        var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
+            ClipboardHelper.copyText(publicKey.get());
+        })
+                .disable(publicKey.isNull())
+                .tooltipKey("copyPublicKey");
 
-        return new OptionsBuilder()
+        var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
+        publicKeyBox.setMainReference(publicKeyField);
+
+        return options
                 .nameAndDescription("inPlaceKeyText")
                 .addComp(
                         new TextAreaComp(key).apply(struc -> {
@@ -59,8 +90,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                                             """
                                                       -----BEGIN ... PRIVATE KEY-----
 
-                                                      -----END ... PRIVATE KEY-----
+
+                                                      -----END   ... PRIVATE KEY-----
                                                       """);
+                            struc.getTextArea().setPrefRowCount(4);
                         }),
                         key)
                 .nonNull()
@@ -68,16 +101,22 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .description("sshConfigHost.identityPassphraseDescription")
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
+                .nameAndDescription("inPlacePublicKey")
+                .addComp(
+                        publicKeyBox,
+                        publicKey)
                 .bind(
                         () -> {
                             return new InPlaceKeyStrategy(
-                                    key.get() != null ? InPlaceSecretValue.of(key.get()) : null,
-                                    keyPasswordProperty.get());
+                                    key.getValue() != null ? InPlaceSecretValue.of(key.getValue()) : null,
+                                    publicKey.get(),
+                                    keyPasswordProperty.getValue());
                         },
                         p);
     }
 
     SecretValue key;
+    String publicKey;
     SecretRetrievalStrategy password;
 
     public void checkComplete() throws ValidationException {

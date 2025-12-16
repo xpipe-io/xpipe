@@ -28,11 +28,9 @@ public class SecretInPlaceStrategy implements SecretRetrievalStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<SecretInPlaceStrategy> p, SecretStrategyChoiceConfig config) {
+        var options = new OptionsBuilder();
         var original = p.getValue() != null ? p.getValue().getValue() : null;
-        var secretProperty = new SimpleObjectProperty<>(
-                p.getValue() != null && p.getValue().getValue() != null
-                        ? p.getValue().getValue()
-                        : null);
+        var secretProperty = options.map(p, SecretInPlaceStrategy::getValue);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
                 .nonNull()

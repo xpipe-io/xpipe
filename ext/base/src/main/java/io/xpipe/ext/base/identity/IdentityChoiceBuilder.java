@@ -1,5 +1,13 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.ChoicePaneComp;
+import io.xpipe.app.comp.base.IconButtonComp;
+import io.xpipe.app.comp.base.InputGroupComp;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.secret.EncryptedValue;
@@ -11,9 +19,13 @@ import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.*;
 
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+
+import java.util.List;
 
 @Value
 @Builder
@@ -39,6 +51,26 @@ public class IdentityChoiceBuilder {
         var i = new IdentityChoiceBuilder(
                 identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
+    }
+
+    public static OptionsBuilder keyAuthChoice(Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config) {
+        return OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .property(identity)
+                .customConfiguration(config)
+                .available(SshIdentityStrategy.getSubclasses())
+                .transformer(entryComboBox -> {
+                    var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
+                        ProcessControlProvider.get().showSshKeygenDialog(null, identity);
+                    });
+                    button.tooltipKey("generateKey");
+                    var comboComp = Comp.of(() -> entryComboBox);
+                    var hbox = new InputGroupComp(List.of(comboComp, button));
+                    hbox.setMainReference(comboComp);
+                    return hbox.createRegion();
+                })
+                .build()
+                .build();
     }
 
     public OptionsBuilder build() {
@@ -88,15 +120,7 @@ public class IdentityChoiceBuilder {
             options.name("keyAuthentication")
                     .description("keyAuthenticationDescription")
                     .documentationLink(DocumentationLink.SSH_KEYS)
-                    .sub(
-                            OptionsChoiceBuilder.builder()
-                                    .allowNull(false)
-                                    .property(identityStrategy)
-                                    .customConfiguration(sshIdentityChoiceConfig)
-                                    .available(SshIdentityStrategy.getSubclasses())
-                                    .build()
-                                    .build(),
-                            identityStrategy)
+                    .sub(keyAuthChoice(identityStrategy, sshIdentityChoiceConfig), identityStrategy)
                     .nonNullIf(inPlaceSelected)
                     .disable(refSelected)
                     .hide(refSelected);

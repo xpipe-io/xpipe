@@ -96,15 +96,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .documentationLink(DocumentationLink.SSH_KEYS)
-                .sub(
-                        OptionsChoiceBuilder.builder()
-                                .allowNull(false)
-                                .property(identity)
-                                .customConfiguration(sshIdentityChoiceConfig)
-                                .available(SshIdentityStrategy.getSubclasses())
-                                .build()
-                                .build(),
-                        identity)
+                .sub(IdentityChoiceBuilder.keyAuthChoice(identity, sshIdentityChoiceConfig), identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof KeyFileStrategy f
                             && f.getFile() != null

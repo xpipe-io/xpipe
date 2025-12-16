@@ -33,9 +33,9 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecretPasswordManagerStrategy> p, SecretStrategyChoiceConfig config) {
+        var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
-        var keyProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
+        var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
         var content = new HorizontalComp(List.of(
                         new TextFieldComp(keyProperty)
                                 .apply(struc -> struc.get()
@@ -63,7 +63,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
                         struc.get().getChildren().getFirst().requestFocus();
                     }
                 }));
-        return new OptionsBuilder()
+        return options
                 .nameAndDescription("passwordManagerKey")
                 .addComp(content, keyProperty)
                 .nonNull()

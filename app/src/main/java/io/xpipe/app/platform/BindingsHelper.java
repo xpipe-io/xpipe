@@ -2,7 +2,10 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -39,9 +42,18 @@ public class BindingsHelper {
         }
     }
 
-    public static <T, U> ObservableValue<U> map(
+    public static <T, U> ObjectBinding<U> map(
             ObservableValue<T> observableValue, Function<? super T, ? extends U> mapper) {
         return Bindings.createObjectBinding(
+                () -> {
+                    return mapper.apply(observableValue.getValue());
+                },
+                observableValue);
+    }
+
+    public static <T> BooleanBinding mapBoolean(
+            ObservableValue<T> observableValue, Function<? super T, Boolean> mapper) {
+        return Bindings.createBooleanBinding(
                 () -> {
                     return mapper.apply(observableValue.getValue());
                 },

@@ -232,7 +232,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
     }
 
     public record Entry(
-            String key,
             ObservableValue<String> description,
             String documentationLink,
             ObservableValue<String> name,

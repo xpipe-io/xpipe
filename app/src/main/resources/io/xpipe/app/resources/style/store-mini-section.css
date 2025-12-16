@@ -3,6 +3,10 @@
     -fx-background-color: transparent;
 }
 
+.store-section-mini-comp .item:disabled {
+    -fx-opacity: 1.0;
+}
+
 .store-section-mini-comp .item {
     -fx-padding: 0.25em 0.4em 0.25em 0.4em;
     -fx-border-color: transparent;

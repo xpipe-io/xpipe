@@ -51,7 +51,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 "noCompatibleConnection");
     }
 
-    private String toName(DataStoreEntry entry) {
+    protected String toName(DataStoreEntry entry) {
         if (entry == null) {
             return null;
         }

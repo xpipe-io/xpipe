@@ -1,10 +1,13 @@
 package io.xpipe.ext.base.identity.ssh;
 
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
-import io.xpipe.app.comp.base.ContextualFileReferenceSync;
+import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
@@ -13,11 +16,15 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
+import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,7 +34,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Value
@@ -62,6 +72,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         });
         var keyPasswordProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
+        var publicKey = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPublicKey() : null);
 
         var sync = ContextualFileReferenceSync.of(
                 DataStorage.get().getDataDir().resolve("keys"),
@@ -76,6 +87,45 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .available(SecretRetrievalStrategy.getSubclasses())
                 .build()
                 .build();
+
+        var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
+            struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
+                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
+            }, AppI18n.activeLanguage()));
+            struc.get().setEditable(false);
+        });
+        var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
+            ThreadHelper.runFailableAsync(() -> {
+                Path path = keyPath.get().asLocalPath();
+                if (!Files.exists(path)) {
+                    return;
+                }
+
+                var pubKeyPath = Path.of(path + ".pub");
+                if (Files.exists(pubKeyPath)) {
+                    var contents = Files.readString(pubKeyPath).strip();
+                    Platform.runLater(() -> {
+                        publicKey.set(contents);
+                    });
+                }
+
+                var contents = Files.readAllBytes(path);
+                var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(contents), keyPasswordProperty.get());
+                if (generated != null) {
+                    Platform.runLater(() -> {
+                        publicKey.set(generated);
+                    });
+                }
+            });
+        }).tooltipKey("generatePublicKey").disable(keyPath.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+        var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
+            ClipboardHelper.copyText(publicKey.get());
+        })
+                .disable(publicKey.isNull())
+                .tooltipKey("copyPublicKey");
+
+        var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
+        publicKeyBox.setMainReference(publicKeyField);
 
         return new OptionsBuilder()
                 .name("location")
@@ -94,16 +144,21 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("sshConfigHost.identityPassphraseDescription")
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
+                .nameAndDescription("inPlacePublicKey")
+                .addComp(
+                        publicKeyBox,
+                        publicKey)
                 .bind(
                         () -> {
                             return new KeyFileStrategy(
-                                    ContextualFileReference.of(keyPath.get()), keyPasswordProperty.get());
+                                    ContextualFileReference.of(keyPath.get()), keyPasswordProperty.get(), publicKey.get());
                         },
                         p);
     }
 
     ContextualFileReference file;
     SecretRetrievalStrategy password;
+    String publicKey;
 
     public void checkComplete() throws ValidationException {
         Validators.nonNull(file);

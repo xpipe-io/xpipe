@@ -39,8 +39,8 @@ public interface SshIdentityStrategy {
     static List<Class<?>> getSubclasses() {
         var l = new ArrayList<Class<?>>();
         l.add(NoIdentityStrategy.class);
-        l.add(KeyFileStrategy.class);
         l.add(InPlaceKeyStrategy.class);
+        l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);
@@ -85,6 +85,10 @@ public interface SshIdentityStrategy {
         }
     }
 
+    default boolean providesKey() {
+        return true;
+    }
+
     default void checkComplete() throws ValidationException {}
 
     void prepareParent(ShellControl parent) throws Exception;
@@ -96,4 +100,6 @@ public interface SshIdentityStrategy {
     default SecretRetrievalStrategy getAskpassStrategy() {
         return new SecretNoneStrategy();
     }
+
+    String getPublicKey();
 }

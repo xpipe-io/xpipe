@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
@@ -30,6 +31,36 @@ import java.util.function.Supplier;
 
 public class OptionsBuilder {
 
+    public <V, T> ObjectProperty<T> map(Property<V> prop, Function<V, T> function) {
+        var mapped = new SimpleObjectProperty<T>();
+        prop.subscribe(v -> {
+            if (mappingUpdate.get()) {
+                return;
+            }
+
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(function.apply(v));
+            }
+        });
+        return mapped;
+    }
+
+    public <V, T, R> ObjectProperty<R> map(Property<V> prop, Function<V, T> function, Function<T, R> subFunction) {
+        var mapped = new SimpleObjectProperty<R>();
+        prop.subscribe(v -> {
+            if (mappingUpdate.get()) {
+                return;
+            }
+
+            T t = function.apply(v);
+            R r = t != null ? subFunction.apply(t) : null;
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(r);
+            }
+        });
+        return mapped;
+    }
+
     private final Validator ownValidator;
     private final List<Validator> allValidators = new ArrayList<>();
     private final List<Check> allChecks = new ArrayList<>();
@@ -43,6 +74,8 @@ public class OptionsBuilder {
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
+
+    private BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 
     public OptionsBuilder disableFirstIncompleteFocus() {
         focusFirstIncomplete = false;
@@ -86,6 +119,9 @@ public class OptionsBuilder {
                 validatorList.get(list.indexOf(newValue)).validate();
             }
         });
+        selectedIndex.addListener((observable, oldValue, newValue) -> {
+            selected.setValue(list.get(newValue.intValue()));
+        });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {
             pane.setTransformer(transformer);
@@ -114,7 +150,7 @@ public class OptionsBuilder {
             return;
         }
 
-        var entry = new OptionsComp.Entry(null, description, documentationLink, name, comp);
+        var entry = new OptionsComp.Entry(description, documentationLink, name, comp);
         description = null;
         documentationLink = null;
         name = null;
@@ -171,7 +207,14 @@ public class OptionsBuilder {
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
-                titleKey, null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+                null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder addTitle(ObservableValue<String> title) {
+        finishCurrent();
+        entries.add(new OptionsComp.Entry(
+                null, null, null, new LabelComp(title).styleClass("title-header")));
         return this;
     }
 
@@ -395,6 +438,10 @@ public class OptionsBuilder {
     public final <T, V extends T> OptionsBuilder bind(Supplier<V> creator, Property<T>... toSet) {
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 for (Property<T> p : toSet) {
                     p.setValue(creator.get());
                 }
@@ -412,12 +459,20 @@ public class OptionsBuilder {
         var listener = new ChangeListener<V>() {
             @Override
             public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 toSet.setValue(newValue);
             }
         };
         current.get().addListener(listener);
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 current.get().removeListener(listener);
                 current.set(creator.get());
                 toSet.setValue(current.get().getValue());
