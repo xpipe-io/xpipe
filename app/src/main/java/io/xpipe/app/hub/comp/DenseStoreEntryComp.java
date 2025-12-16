@@ -69,6 +69,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var grid = new GridPane();
         grid.setHgap(8);
 
+        var tags = createTags().createRegion();
         var index = createOrderIndex().createRegion();
         var name = createName().createRegion();
         name.maxWidthProperty()
@@ -111,7 +112,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().addAll(nameCC);
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, index, userIcon, pinIcon, notes);
+        var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);
@@ -119,7 +120,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
                 nameBox.getChildren().add(1, active);
             }
         });
-        nameBox.setSpacing(6);
+        nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.addRow(0, nameBox);
 

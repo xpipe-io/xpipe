@@ -152,6 +152,14 @@ public class StoreViewState {
         return INSTANCE;
     }
 
+    public List<String> getAllAvailableTags() {
+        var l = new LinkedHashSet<String>();
+        for (StoreEntryWrapper storeEntryWrapper : getAllEntries().getList()) {
+            l.addAll(storeEntryWrapper.getTags());
+        }
+        return l.stream().sorted().toList();
+    }
+
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
         return Bindings.size(allEntries
                 .filtered(

@@ -42,6 +42,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
                 .createStructure()
                 .get();
+        button.setOpacity(0.85);
         button.prefWidthProperty().bind(button.heightProperty());
 
         var prop = new SimpleStringProperty(n.getValue().getCurrent());
