@@ -41,9 +41,14 @@ public interface IdentityValue {
     }
 
     static IdentityValue ofBreakout(DataStoreEntry e) {
-        var cat = DataStorage.get().getStoreCategory(e);
+        var s = DataStorage.get();
+        if (s == null) {
+            return null;
+        }
+
+        var cat = s.getStoreCategory(e);
         var uuid = cat.getConfig().getDefaultIdentityStore();
-        var found = DataStorage.get().getStoreEntryIfPresent(uuid);
+        var found = s.getStoreEntryIfPresent(uuid);
         if (found.isEmpty() || !(found.get().getStore() instanceof IdentityStore)) {
             return null;
         }
