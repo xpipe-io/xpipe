@@ -164,6 +164,10 @@ public class OptionsBuilder {
         return name(key).description(key + "Description");
     }
 
+    public OptionsBuilder nameAndDescription(ObservableValue<String> key) {
+        return name(AppI18n.observable(key)).description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
+    }
+
     public OptionsBuilder subAdvanced(OptionsBuilder builder) {
         name("advanced");
         subExpandable("showAdvancedOptions", builder);
@@ -374,6 +378,7 @@ public class OptionsBuilder {
     public OptionsBuilder name(ObservableValue<String> name) {
         finishCurrent();
         this.name = name;
+        lastNameReference = name;
         return this;
     }
 

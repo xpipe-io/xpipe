@@ -14,6 +14,8 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageGroupStrategy;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
@@ -40,6 +42,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
+import org.w3c.dom.UserDataHandler;
 
 import java.nio.file.Files;
 import java.util.*;
@@ -60,11 +63,16 @@ public final class AppPrefs {
 
     public static void initSynced() throws Exception {
         INSTANCE.loadSharedRemote();
+        INSTANCE.fixSyncedValues();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
                 DataStorage.get().forceRewrite();
             }
         });
+    }
+
+    public static void initStorage() {
+        INSTANCE.vaultAuthentication.set(DataStorageUserHandler.getInstance().getVaultAuthenticationType());
     }
 
     public static void reset() {
@@ -269,6 +277,16 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
+    final ObjectProperty<VaultAuthentication> vaultAuthentication = new GlobalObjectProperty<>();
+
+    final ObjectProperty<DataStorageGroupStrategy> groupSecretStrategy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("groupSecretStrategy")
+            .valueClass(DataStorageGroupStrategy.class)
+            .requiresRestart(true)
+            .vaultSpecific(true)
+            .licenseFeatureId("team")
+            .build());
     final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
             .key("startupBehaviour")
@@ -414,6 +432,14 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public ObservableValue<VaultAuthentication> vaultAuthentication() {
+        return vaultAuthentication;
+    }
+
+    public ObservableValue<DataStorageGroupStrategy> groupSecretStrategy() {
+        return groupSecretStrategy;
+    }
 
     public ObservableStringValue notesTemplate() {
         return notesTemplate;
@@ -709,7 +735,10 @@ public final class AppPrefs {
         PlatformThread.runLaterIfNeededBlocking(() -> {
             writable.setValue(newValue);
         });
-        save();
+
+        if (mapping.stream().anyMatch(m -> m.property == prop)) {
+            save();
+        }
     }
 
     private void fixLocalValues() {
@@ -749,6 +778,17 @@ public final class AppPrefs {
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
+    }
+
+    private void fixSyncedValues() {
+        if (groupSecretStrategy.getValue() != null) {
+            try {
+                groupSecretStrategy.get().checkComplete();
+            } catch (Exception e) {
+                groupSecretStrategy.setValue(null);
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+            }
+        }
     }
 
     public void initDefaultValues() {

@@ -2,6 +2,7 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.prefs.VaultAuthentication;
 
 import java.io.IOException;
 import javax.crypto.SecretKey;
@@ -25,4 +26,6 @@ public interface DataStorageUserHandler {
     Comp<?> createOverview();
 
     String getActiveUser();
+
+    VaultAuthentication getVaultAuthenticationType();
 }

@@ -9,16 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = SecretNoneStrategy.class),
-    @JsonSubTypes.Type(value = SecretInPlaceStrategy.class),
-    @JsonSubTypes.Type(value = SecretPromptStrategy.class),
-    @JsonSubTypes.Type(value = SecretCustomCommandStrategy.class),
-    @JsonSubTypes.Type(value = SecretPasswordManagerStrategy.class)
-})
 public interface SecretRetrievalStrategy {
 
-    static List<Class<?>> getSubclasses() {
+    static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(SecretNoneStrategy.class);
         l.add(SecretInPlaceStrategy.class);

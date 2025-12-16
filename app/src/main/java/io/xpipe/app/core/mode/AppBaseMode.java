@@ -123,6 +123,7 @@ public class AppBaseMode extends AppOperationMode {
                     syncPrefsLoaded.countDown();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
+                    AppPrefs.initStorage();
                     storageLoaded.countDown();
                     AppMcpServer.init();
                     StoreViewState.init();

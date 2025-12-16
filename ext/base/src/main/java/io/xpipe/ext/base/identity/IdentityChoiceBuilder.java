@@ -96,7 +96,7 @@ public class IdentityChoiceBuilder {
                 .property(pass)
                 .customConfiguration(
                         SecretStrategyChoiceConfig.builder().allowNone(true).build())
-                .available(SecretRetrievalStrategy.getSubclasses())
+                .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
 

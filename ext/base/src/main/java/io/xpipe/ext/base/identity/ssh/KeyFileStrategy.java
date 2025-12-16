@@ -84,7 +84,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .property(keyPasswordProperty)
                 .customConfiguration(
                         SecretStrategyChoiceConfig.builder().allowNone(true).build())
-                .available(SecretRetrievalStrategy.getSubclasses())
+                .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
 

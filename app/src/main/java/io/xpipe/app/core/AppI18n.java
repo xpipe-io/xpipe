@@ -52,6 +52,10 @@ public class AppI18n {
         return INSTANCE.observableImpl(s, vars);
     }
 
+    public static ObservableValue<String> observable(ObservableValue<String> s, Object... vars) {
+        return BindingsHelper.flatMap(s, v -> INSTANCE.observableImpl(v, vars));
+    }
+
     public static String get(String s, Object... vars) {
         return INSTANCE.getLocalised(s, vars);
     }

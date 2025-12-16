@@ -8,10 +8,7 @@ import io.xpipe.app.pwman.KeePassXcAssociationKey;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
-import io.xpipe.app.secret.EncryptedValue;
-import io.xpipe.app.secret.EncryptionToken;
-import io.xpipe.app.secret.PasswordLockSecretValue;
-import io.xpipe.app.secret.VaultKeySecretValue;
+import io.xpipe.app.secret.*;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
@@ -86,6 +83,8 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(TerminalPrompt.getClasses());
         context.registerSubtypes(ExternalVncClient.getClasses());
         context.registerSubtypes(ExternalRdpClient.getClasses());
+        context.registerSubtypes(SecretRetrievalStrategy.getClasses());
+        context.registerSubtypes(DataStorageGroupStrategy.getClasses());
 
         super.setupModule(context);
     }

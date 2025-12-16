@@ -100,7 +100,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             });
 
             var loadingTextCounter = new SimpleIntegerProperty();
-            GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
+            GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
                 if (loaded.getValue() != null) {
                     return true;
                 }
@@ -146,6 +146,16 @@ public class AppMainWindowContentComp extends SimpleComp {
                     PlatformThread.runNestedLoopIteration();
                     struc.show();
                     TrackEvent.info("Window content node shown");
+                } else if (!pane.getChildren().contains(vbox)) {
+                    loadingTextCounter.set(3);
+                    TrackEvent.info("Window content node removed");
+                    PlatformThread.runNestedLoopIteration();
+                    pane.getChildren().clear();
+                    pane.getStyleClass().add("background");
+                    pane.getChildren().add(vbox);
+                    sidebarPresent.set(false);
+                    loadingAnimation.start();
+                    PlatformThread.runNestedLoopIteration();
                 }
             });
 

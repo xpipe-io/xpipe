@@ -129,7 +129,7 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "?");
     }
 
     public static synchronized void initContent() {
@@ -143,6 +143,13 @@ public class AppMainWindow {
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).term().handle();
             }
+        });
+    }
+
+    public static synchronized void resetContent() {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            loadingText.setValue(AppI18n.get("savingChanges"));
+            loadedContent.setValue(null);
         });
     }
 
