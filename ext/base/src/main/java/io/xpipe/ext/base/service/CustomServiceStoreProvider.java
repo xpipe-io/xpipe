@@ -82,7 +82,7 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                         : hostStore instanceof NetworkTunnelStore t ? t.getTunnelHostName() : "?",
                 entry,
                 comboHost,
-                NetworkTunnelStore.class,
+                DataStore.class,
                 n -> n.getStore() instanceof AbstractHostStore
                         || (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
                 StoreViewState.get().getAllConnectionsCategory());
