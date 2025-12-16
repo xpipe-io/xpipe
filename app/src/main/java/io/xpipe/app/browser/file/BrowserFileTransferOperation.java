@@ -161,6 +161,12 @@ public class BrowserFileTransferOperation {
 
         reinitFileSystemsIfNeeded();
 
+        if (target.getKind() != FileKind.DIRECTORY) {
+            throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
+        }
+
+        BrowserFileSystemHelper.validateDirectoryPath(target.getFileSystem(), target.getPath(), true);
+
         cancelled.set(false);
 
         var same = files.getFirst().getFileSystem().equals(target.getFileSystem());
@@ -244,12 +250,6 @@ public class BrowserFileTransferOperation {
     }
 
     private void handleSingleAcrossFileSystems(FileEntry source) throws Exception {
-        if (target.getKind() != FileKind.DIRECTORY) {
-            throw new IllegalStateException("Target " + target.getPath() + " is not a directory");
-        }
-
-        BrowserFileSystemHelper.validateDirectoryPath(target.getFileSystem(), target.getPath(), true);
-
         var flatFiles = new LinkedHashMap<FileEntry, FilePath>();
 
         // Prevent dropping directory into itself
@@ -263,11 +263,14 @@ public class BrowserFileTransferOperation {
             // Source might have been deleted meanwhile
             var exists = source.getFileSystem().directoryExists(source.getPath());
             if (!exists) {
+                progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
                 return;
             }
 
             var directoryName = source.getPath().getFileName();
-            flatFiles.put(source, FilePath.of(directoryName));
+            if (!source.getPath().isRoot()) {
+                flatFiles.put(source, FilePath.of(directoryName));
+            }
 
             var baseRelative = source.getPath().getParent().toDirectory();
             var list = new ArrayList<FileEntry>();
@@ -288,16 +291,21 @@ public class BrowserFileTransferOperation {
                 list.add(fileEntry);
                 return true;
             });
-        } else {
+        } else if (source.getKind() == FileKind.FILE) {
             // Source might have been deleted meanwhile
             var exists = source.getFileSystem().fileExists(source.getPath());
             if (!exists) {
+                progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
                 return;
             }
 
             flatFiles.put(source, FilePath.of(source.getPath().getFileName()));
             // If we don't have a size, it doesn't matter that much as the total size is only for display
             totalSize.addAndGet(source.getFileSizeLong().orElse(0));
+        } else {
+            // Unsupported type, e.g. a socket
+            progress.accept(BrowserTransferProgress.finished(source.getName(), 0));
+            return;
         }
 
         var originalSourceFs = flatFiles.keySet().iterator().next().getFileSystem();

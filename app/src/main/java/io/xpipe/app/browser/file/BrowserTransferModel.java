@@ -106,13 +106,14 @@ public class BrowserTransferModel {
     public void drop(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         synchronized (items) {
             entries.forEach(entry -> {
-                var name = entry.getFileName();
+                var resolved = entry.getRawFileEntry().resolved();
+                var name = resolved.getName();
                 if (items.stream().anyMatch(item -> item.getName().equals(name))) {
                     return;
                 }
 
                 var fixedFile = OsFileSystem.ofLocal()
-                        .makeFileSystemCompatible(entry.getRawFileEntry().getPath());
+                        .makeFileSystemCompatible(resolved.getPath());
                 Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);
@@ -145,7 +146,7 @@ public class BrowserTransferModel {
             transferring.setValue(true);
             var op = new BrowserFileTransferOperation(
                     BrowserLocalFileSystem.getLocalFileEntry(TEMP),
-                    List.of(item.getBrowserEntry().getRawFileEntry()),
+                    List.of(item.getBrowserEntry().getRawFileEntry().resolved()),
                     BrowserFileTransferMode.COPY,
                     false,
                     progress -> {
@@ -192,6 +193,7 @@ public class BrowserTransferModel {
         var files = toMove.stream().map(item -> item.getLocalFile()).toList();
         var downloads = getDownloadsTargetDirectory();
         Files.createDirectories(downloads);
+        Path firstToOpen = null;
         for (Path file : files) {
             if (!Files.exists(file)) {
                 continue;
@@ -207,10 +209,13 @@ public class BrowserTransferModel {
             } else {
                 Files.move(file, target, StandardCopyOption.REPLACE_EXISTING);
             }
+
+            if (firstToOpen == null) {
+                firstToOpen = target;
+            }
         }
-        if (open) {
-            DesktopHelper.browseFileInDirectory(
-                    downloads.resolve(files.getFirst().getFileName()));
+        if (open && firstToOpen != null) {
+            DesktopHelper.browseFileInDirectory(firstToOpen);
         }
     }
 

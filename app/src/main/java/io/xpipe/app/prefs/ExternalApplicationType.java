@@ -126,6 +126,24 @@ public interface ExternalApplicationType extends PrefsValue {
         String getFlatpakId() throws Exception;
 
         @Override
+        default boolean isAvailable() {
+            try (ShellControl pc = LocalShell.getShell().start()) {
+                if (getFlatpakId() != null) {
+                    var app = FlatpakCache.getApp(getFlatpakId());
+                    if (app.isPresent()) {
+                        return true;
+                    }
+                }
+                
+                String name = getExecutable();
+                return pc.view().findProgram(name).isPresent();
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).omit().handle();
+                return false;
+            }
+        }
+
+        @Override
         default void launch(CommandBuilder args) throws Exception {
             if (getFlatpakId() == null
                     || LocalShell.getShell().view().findProgram(getExecutable()).isPresent()) {
