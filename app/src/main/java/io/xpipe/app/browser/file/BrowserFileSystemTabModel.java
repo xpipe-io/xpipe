@@ -30,6 +30,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.control.SelectionMode;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -68,10 +69,9 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
             DataStoreEntryRef<? extends FileSystemStore> entry,
-            SelectionMode selectionMode,
             FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory) {
         super(model, entry);
-        this.fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileList = new BrowserFileListModel(this);
         this.fileSystemFactory = fileSystemFactory;
     }
 
@@ -606,26 +606,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         var f = history.forth(i);
         if (f != null) {
             cdSync(f.toString());
-        }
-    }
-
-    @Getter
-    @SuppressWarnings("unused")
-    public enum SelectionMode {
-        SINGLE_FILE(false, true, false),
-        MULTIPLE_FILE(true, true, false),
-        SINGLE_DIRECTORY(false, false, true),
-        MULTIPLE_DIRECTORY(true, false, true),
-        ALL(true, true, true);
-
-        private final boolean multiple;
-        private final boolean acceptsFiles;
-        private final boolean acceptsDirectories;
-
-        SelectionMode(boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
-            this.multiple = multiple;
-            this.acceptsFiles = acceptsFiles;
-            this.acceptsDirectories = acceptsDirectories;
         }
     }
 }

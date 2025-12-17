@@ -65,7 +65,6 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
             var tab = new BrowserFileSystemTabModel(
                     DEFAULT,
                     DataStorage.get().local().ref(),
-                    BrowserFileSystemTabModel.SelectionMode.ALL,
                     ref -> ref.getStore().createFileSystem());
             try {
                 DEFAULT.openSync(tab, null);
@@ -233,7 +232,6 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
                 model = new BrowserFileSystemTabModel(
                         this,
                         store,
-                        BrowserFileSystemTabModel.SelectionMode.ALL,
                         customFileSystemFactory != null
                                 ? customFileSystemFactory
                                 : ref -> ref.getStore().createFileSystem());

@@ -336,11 +336,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
-        if (!fileList.getSelectionMode().isMultiple()) {
-            table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        } else {
-            table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        }
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         var updateFromModel = new BooleanScope(new SimpleBooleanProperty());

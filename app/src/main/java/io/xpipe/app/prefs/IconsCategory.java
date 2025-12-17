@@ -148,7 +148,8 @@ public class IconsCategory extends AppPrefsCategory {
                                             dir,
                                             null,
                                             List.of(),
-                                            en -> en.equals(DataStorage.get().local()))
+                                            en -> en.equals(DataStorage.get().local()),
+                                    true)
                                     .prefWidth(350));
                     modal.withDefaultButtons(() -> {
                         if (dir.get() == null) {

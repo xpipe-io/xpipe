@@ -135,7 +135,7 @@ public interface DataStorageGroupStrategy {
                     .nameAndDescription("fileSecretChoice")
                     .addComp(new ContextualFileReferenceChoiceComp(
                             new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
-                            file, null, List.of(), e -> e.equals(DataStorage.get().local())), file)
+                            file, null, List.of(), e -> e.equals(DataStorage.get().local()), false), file)
                     .nonNull()
                     .bind(
                             () -> {

@@ -27,14 +27,14 @@ import java.util.function.Consumer;
 @Getter
 public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<BrowserFileSystemTabModel> {
 
-    private final BrowserFileSystemTabModel.SelectionMode selectionMode;
     private final ObservableList<BrowserEntry> fileSelection = FXCollections.observableArrayList();
+    private final boolean directory;
 
     @Setter
     private Consumer<List<FileReference>> onFinish;
 
-    public BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode selectionMode) {
-        this.selectionMode = selectionMode;
+    public BrowserFileChooserSessionModel(boolean directory) {
+        this.directory = directory;
         selectedEntry.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 fileSelection.clear();
@@ -96,7 +96,6 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                 model = new BrowserFileSystemTabModel(
                         this,
                         store,
-                        selectionMode,
                         customFileSystemFactory != null
                                 ? customFileSystemFactory
                                 : ref -> ref.getStore().createFileSystem());

@@ -4,7 +4,6 @@ import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabComp;
-import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -50,13 +49,14 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         this.filter = filter;
     }
 
-    public static void openSingleFile(
+    public static void open(
             Supplier<DataStoreEntryRef<? extends FileSystemStore>> store,
             Supplier<FilePath> initialPath,
             Consumer<FileReference> file,
             boolean save,
+            boolean directory,
             Predicate<DataStoreEntry> filter) {
-        var model = new BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode.SINGLE_FILE);
+        var model = new BrowserFileChooserSessionModel(directory);
         model.setOnFinish(fileStores -> {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
         });

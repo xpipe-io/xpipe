@@ -137,7 +137,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),
-                                e -> e.equals(DataStorage.get().local())),
+                                e -> e.equals(DataStorage.get().local()),
+                                false),
                         keyPath)
                 .nonNull()
                 .name("keyPassword")

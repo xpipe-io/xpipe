@@ -24,8 +24,6 @@ public final class BrowserFileListModel {
     static final Comparator<BrowserEntry> FILE_TYPE_COMPARATOR =
             Comparator.comparing(path -> path.getRawFileEntry().resolved().getKind() != FileKind.DIRECTORY);
 
-    private final BrowserFileSystemTabModel.SelectionMode selectionMode;
-
     private final BrowserFileSystemTabModel fileSystemModel;
     private final Property<Comparator<BrowserEntry>> comparatorProperty =
             new SimpleObjectProperty<>(FILE_TYPE_COMPARATOR);
@@ -37,9 +35,7 @@ public final class BrowserFileListModel {
     private final Property<Boolean> draggedOverEmpty = new SimpleBooleanProperty();
     private final Property<BrowserEntry> editing = new SimpleObjectProperty<>();
 
-    public BrowserFileListModel(
-            BrowserFileSystemTabModel.SelectionMode selectionMode, BrowserFileSystemTabModel fileSystemModel) {
-        this.selectionMode = selectionMode;
+    public BrowserFileListModel(BrowserFileSystemTabModel fileSystemModel) {
         this.fileSystemModel = fileSystemModel;
 
         fileSystemModel.getFilter().addListener((observable, oldValue, newValue) -> {

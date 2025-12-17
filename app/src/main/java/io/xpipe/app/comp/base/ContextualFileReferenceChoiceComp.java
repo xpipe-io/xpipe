@@ -46,6 +46,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private final ContextualFileReferenceSync sync;
     private final List<PreviousFileReference> previousFileReferences;
     private final Predicate<DataStoreEntry> filter;
+    private final boolean directory;
 
     @Setter
     private ObservableValue<FilePath> prompt;
@@ -55,10 +56,12 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences,
-            Predicate<DataStoreEntry> filter) {
+            Predicate<DataStoreEntry> filter, boolean directory
+    ) {
         this.sync = sync;
         this.previousFileReferences = previousFileReferences;
         this.filter = filter;
+        this.directory = directory;
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
@@ -74,7 +77,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
                     var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
-                    BrowserFileChooserSessionComp.openSingleFile(
+                    BrowserFileChooserSessionComp.open(
                             () -> replacement,
                             () -> filePath.getValue() != null
                                     ? filePath.getValue().getParent()
@@ -86,6 +89,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                                 }
                             },
                             false,
+                            directory,
                             filter);
                 })
                 .styleClass(sync != null ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
