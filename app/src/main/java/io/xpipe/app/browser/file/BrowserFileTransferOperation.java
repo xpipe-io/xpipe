@@ -273,7 +273,6 @@ public class BrowserFileTransferOperation {
             }
 
             var baseRelative = source.getPath().getParent().toDirectory();
-            var list = new ArrayList<FileEntry>();
             source.getFileSystem().traverseFilesRecursively(source.getFileSystem(), source.getPath(), fileEntry -> {
                 if (cancelled()) {
                     progress.accept(BrowserTransferProgress.finished(source.getName() + " ...", totalSize.get()));
@@ -288,7 +287,6 @@ public class BrowserFileTransferOperation {
                     totalSize.addAndGet(fileEntry.getFileSizeLong().orElse(0));
                     progress.accept(new BrowserTransferProgress(source.getName() + " ...", 0, totalSize.get()));
                 }
-                list.add(fileEntry);
                 return true;
             });
         } else if (source.getKind() == FileKind.FILE) {
