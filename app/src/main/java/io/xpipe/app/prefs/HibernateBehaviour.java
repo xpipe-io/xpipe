@@ -14,25 +14,23 @@ import lombok.Getter;
 public enum HibernateBehaviour implements PrefsChoiceValue {
     LOCK_VAULT("lockVault") {
         @Override
-        public void runOnWake() {}
+        public void runOnWake() {
+            AppRestart.restart();
+        }
 
         @Override
         public void runOnSleep() {
+            AppOperationMode.switchToAsync(AppOperationMode.BACKGROUND);
+        }
+
+        @Override
+        public boolean isSelectable() {
             var handler = DataStorageUserHandler.getInstance();
-            if (handler != null && handler.getActiveUser() != null) {
-                ThreadHelper.runAsync(() -> {
-                    AppOperationMode.close();
-                });
-            }
+            return handler != null && handler.getActiveUser() != null;
         }
     },
 
     RESTART("restart") {
-        @Override
-        public ObservableValue<String> toTranslatedString() {
-            return super.toTranslatedString();
-        }
-
         @Override
         public void runOnWake() {
             AppRestart.restart();

@@ -20,7 +20,6 @@ import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -107,7 +106,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         }
     }
 
-    private static synchronized KeePassXcProxyClient getOrCreate() throws Exception {
+    private synchronized KeePassXcProxyClient getOrCreateClient() throws Exception {
         if (client == null) {
             var found = findKeePassProxy();
             if (found.isEmpty()) {
@@ -228,8 +227,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
         try {
             var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
             var fixedKey = hasScheme ? key : "https://" + key;
-            var client = getOrCreate();
-            var credentials = client.getCredentials(associationKeys, fixedKey);
+            var isPrefs = this == AppPrefs.get().passwordManager().getValue();
+            var client = getOrCreateClient();
+            // The prefs value might be updated during the client creation
+            var effectiveKeys = isPrefs ? ((KeePassXcPasswordManager) AppPrefs.get().passwordManager().getValue()).getAssociationKeys() : associationKeys;
+            var credentials = client.getCredentials(effectiveKeys, fixedKey);
             return credentials;
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
