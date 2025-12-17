@@ -64,7 +64,7 @@ public class SystemIconSourceData {
                 }
             }
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).expected().handle();
         }
     }
 }
