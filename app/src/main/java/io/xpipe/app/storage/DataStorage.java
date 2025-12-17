@@ -91,7 +91,10 @@ public abstract class DataStorage {
         }
 
         INSTANCE.dispose();
-        INSTANCE = null;
+
+        // We want to keep the storage for all dependent instances
+        // that might still refer to it after the reset
+        // INSTANCE = null;
     }
 
     public static DataStorage get() {
