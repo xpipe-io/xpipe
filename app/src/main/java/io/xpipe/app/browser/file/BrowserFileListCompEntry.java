@@ -218,8 +218,8 @@ public class BrowserFileListCompEntry {
                     })
                     .filter(path -> path != null)
                     .toList();
-            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                    ? item.getRawFileEntry()
+            var target = item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY
+                    ? item.getRawFileEntry().resolved()
                     : model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel().dropLocalFilesIntoAsync(target, list);
             event.setDropCompleted(true);
@@ -234,14 +234,14 @@ public class BrowserFileListCompEntry {
             }
 
             var files = db.getEntries();
-            var target = item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY
-                    ? item.getRawFileEntry()
+            var target = item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY
+                    ? item.getRawFileEntry().resolved()
                     : model.getFileSystemModel().getCurrentDirectory();
             model.getFileSystemModel()
                     .dropFilesIntoAsync(
                             target,
                             files.stream()
-                                    .map(browserEntry -> browserEntry.getRawFileEntry())
+                                    .map(browserEntry -> browserEntry.getRawFileEntry().resolved())
                                     .toList(),
                             db.getMode());
             event.setDropCompleted(true);
@@ -250,7 +250,7 @@ public class BrowserFileListCompEntry {
     }
 
     public void onDragExited(DragEvent event) {
-        if (item != null && item.getRawFileEntry().getKind() == FileKind.DIRECTORY) {
+        if (item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY) {
             model.getDraggedOverDirectory().setValue(null);
         } else {
             model.getDraggedOverEmpty().setValue(false);
