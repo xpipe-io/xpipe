@@ -54,6 +54,9 @@ public interface SystemIconSource {
         @Override
         public void checkComplete() throws ValidationException {
             Validators.nonNull(path);
+            if (path.getParent() == null) {
+                throw new ValidationException("Directory is a root");
+            }
             Validators.notEmpty(id);
         }
 
@@ -72,7 +75,8 @@ public interface SystemIconSource {
 
         @Override
         public String getDisplayName() {
-            return path.getFileName().toString();
+            var name = path.getFileName();
+            return name != null ? name.toString() : path.toString();
         }
 
         @Override
