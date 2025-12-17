@@ -13,6 +13,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
@@ -124,6 +125,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
 
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
             selected.setValue(null);
+            Platform.runLater(() -> {
+                pane.requestFocus();
+            });
         });
         clearButton.styleClass(Styles.FLAT);
         clearButton.hide(selected.isNull().or(pane.disabledProperty()));
