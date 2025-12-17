@@ -65,18 +65,19 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var pane = configuration.single();
             // Tabby has a very weird handling of output, even detaching with start does not prevent it from printing
-            if (configuration.getScriptDialect() == ShellDialects.CMD) {
+            if (pane.getScriptDialect() == ShellDialects.CMD) {
                 // It also freezes with any other input than .bat files, why?
                 launch(CommandBuilder.of()
                         .add("run")
-                        .addFile(configuration.getScriptFile())
+                        .addFile(pane.getScriptFile())
                         .discardAllOutput());
             } else {
                 // This is probably not going to work as it does not launch a bat file
                 launch(CommandBuilder.of()
                         .add("run")
-                        .add(sc -> configuration
+                        .add(sc -> pane
                                 .getDialectLaunchCommand()
                                 .buildFull(sc)
                                 .replaceFirst("\\.exe", ""))
@@ -137,7 +138,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                             .add("open", "-a")
                             .addQuoted("Tabby.app")
                             .add("-n", "--args", "run")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.single().getScriptFile()));
         }
 
         @Override

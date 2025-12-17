@@ -129,7 +129,7 @@ open module io.xpipe.app {
             RefreshHubLeafProvider,
             SetupToolActionProvider,
             XPipeUrlProvider,
-            OpenHubMenuLeafProvider,
+            OpenHubMenuLeafProvider, OpenSplitHubBatchProvider,
             EditHubLeafProvider,
             CloneHubLeafProvider,
             DownloadMenuProvider,

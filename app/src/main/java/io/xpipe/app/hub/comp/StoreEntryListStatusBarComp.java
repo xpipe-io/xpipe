@@ -13,6 +13,7 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -134,6 +135,11 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
             runActions(s);
         });
+
+        button.disable(Bindings.createBooleanBinding(() -> {
+            return childrenRefs.getList().stream().anyMatch(ref -> !s.isActive(ref));
+        }, childrenRefs.getList()));
+
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {

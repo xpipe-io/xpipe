@@ -32,7 +32,7 @@ public class ITerm2TerminalType implements ExternalApplicationType.MacApplicatio
                 .executeSimpleCommand(CommandBuilder.of()
                         .add("open", "-a")
                         .addQuoted("iTerm.app")
-                        .addFile(configuration.getScriptFile()));
+                        .addFile(configuration.single().getScriptFile()));
     }
 
     @Override

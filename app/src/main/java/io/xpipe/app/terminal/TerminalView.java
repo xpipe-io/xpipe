@@ -10,10 +10,7 @@ import io.xpipe.core.OsType;
 import lombok.Getter;
 import lombok.Value;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class TerminalView {
@@ -22,6 +19,11 @@ public class TerminalView {
     private final List<ShellSession> sessions = new ArrayList<>();
     private final List<TerminalSession> terminalInstances = new ArrayList<>();
     private final List<Listener> listeners = new ArrayList<>();
+    private final Map<UUID, UUID> substitutions = new HashMap<>();
+
+    public void addSubstitution(UUID request, UUID target) {
+        substitutions.put(request, target);
+    }
 
     public static void focus(TerminalSession term) {
         var control = term.controllable();
@@ -72,6 +74,24 @@ public class TerminalView {
     }
 
     public synchronized void open(UUID request, long pid) {
+        var substitution = substitutions.get(request);
+        if (substitution != null) {
+            var substitutedSession = sessions.stream().filter(shellSession -> {
+                return shellSession.getRequest().equals(substitution);
+            }).findFirst();
+            if (substitutedSession.isEmpty()) {
+                return;
+            }
+
+            TrackEvent.withTrace("Substituted shell session opened")
+                    .tag("request", request.toString())
+                    .handle();
+            var session = new ShellSession(request, substitutedSession.get().getShell(), substitutedSession.get().getTerminal());
+            sessions.add(session);
+            forListeners(listener -> listener.onSessionOpened(session));
+            return;
+        }
+
         var processHandle = ProcessHandle.of(pid);
         if (processHandle.isEmpty() || !processHandle.get().isAlive()) {
             return;

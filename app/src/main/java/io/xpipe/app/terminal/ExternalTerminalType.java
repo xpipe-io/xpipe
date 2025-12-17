@@ -98,7 +98,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--command")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType LXTERMINAL = new SimplePathType("app.lxterminal", "lxterminal", true) {
@@ -128,7 +128,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-t")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType FOOT = new FootTerminalType();
@@ -159,7 +159,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of()
                     .addIf(configuration.isPreferTabs(), "--new-tab")
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType TILIX = new SimplePathType("app.tilix", "tilix", true) {
@@ -189,7 +189,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-t")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType TERMINATOR = new SimplePathType("app.terminator", "terminator", true) {
@@ -217,7 +217,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
             return CommandBuilder.of()
                     .add("-e")
-                    .addFile(configuration.getScriptFile())
+                    .addFile(configuration.single().getScriptFile())
                     .add("-T")
                     .addQuoted(configuration.getColoredTitle())
                     .addIf(configuration.isPreferTabs(), "--new-tab");
@@ -252,7 +252,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .addQuoted(configuration.getColoredTitle())
                     .add("-2")
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType GUAKE = new SimplePathType("app.guake", "guake", true) {
@@ -289,7 +289,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-r")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType TILDA = new SimplePathType("app.tilda", "tilda", true) {
@@ -315,7 +315,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-c").addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-c").addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType COSMIC_TERM = new SimplePathType("app.cosmicTerm", "cosmic-term", true) {
@@ -341,7 +341,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {
@@ -371,7 +371,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
@@ -406,7 +406,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
                     .add("-title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType DEEPIN_TERMINAL = new SimplePathType("app.deepinTerminal", "deepin-terminal", true) {
@@ -438,7 +438,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-C").addFile(configuration.getScriptFile());
+            return CommandBuilder.of().add("-C").addFile(configuration.single().getScriptFile());
         }
     };
     ExternalTerminalType Q_TERMINAL = new SimplePathType("app.qTerminal", "qterminal", true) {
@@ -470,7 +470,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-e").add(configuration.getDialectLaunchCommand());
+            return CommandBuilder.of().add("-e").add(configuration.single().getDialectLaunchCommand());
         }
     };
     ExternalTerminalType MACOS_TERMINAL = new MacOsTerminalType();
@@ -620,6 +620,10 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
     default String getWebsite() {
         return null;
+    }
+
+    default boolean supportsSplitView() {
+        return false;
     }
 
     boolean isRecommended();

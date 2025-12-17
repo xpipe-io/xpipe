@@ -1,9 +1,12 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellControl;
 
 public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTerminalType {
 
@@ -35,18 +38,24 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            var b = CommandBuilder.of();
-
-            //            if (configuration.getColor() != null) {
-            //                b.add("-o")
-            //                        .addQuoted("colors.primary.background='%s'"
-            //                                .formatted(configuration.getColor().toHexString()));
-            //            }
-
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
-            b.add("-t").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.getDialectLaunchCommand());
-            launch(b);
+            var spaces = configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
+            var scriptFile = spaces
+                    ? configuration.single().getScriptFile().getFileName()
+                    : configuration.single().getScriptFile().toString();
+            var scriptOpenCommand = configuration.single().getScriptDialect().getOpenScriptCommand(scriptFile);
+            var b = CommandBuilder.of().add("alacritty").add("-t")
+                    .addQuoted(configuration.getCleanTitle()).add("-e").add(scriptOpenCommand);
+
+            try (ShellControl sc = LocalShell.getShell()) {
+                CommandSupport.isInPathOrThrow(sc, "alacritty");
+                var command = sc.command(b);
+                if (spaces) {
+                        command.withWorkingDirectory(configuration.single().getScriptFile().getParent());
+                }
+                command.execute();
+            }
         }
 
         @Override
@@ -56,7 +65,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
 
         @Override
         public boolean detach() {
-            return true;
+            return false;
         }
 
         @Override
@@ -88,7 +97,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                     .add("-t")
                     .addQuoted(configuration.getCleanTitle())
                     .add("-e")
-                    .addFile(configuration.getScriptFile());
+                    .addFile(configuration.single().getScriptFile());
             launch(b);
         }
     }
@@ -119,7 +128,7 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
                             .add("-n", "--args", "-t")
                             .addQuoted(configuration.getCleanTitle())
                             .add("-e")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.single().getScriptFile()));
         }
 
         @Override

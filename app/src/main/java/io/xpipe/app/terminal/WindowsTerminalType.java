@@ -5,8 +5,11 @@ import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.JacksonMapper;
 
@@ -27,6 +30,18 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
 
     AtomicInteger windowCounter = new AtomicInteger(10);
 
+    private static String getFixedTitle(String s) {
+        // A weird behavior in Windows Terminal causes the trailing
+        // backslash of a filepath to escape the closing quote in the title argument
+        // So just remove that slash
+        var fixedName = FilePath.of(s)
+                .removeTrailingSlash()
+                .toString();
+        // To fix https://github.com/microsoft/terminal/issues/13264
+        fixedName = fixedName.replaceAll(";", "_");
+        return fixedName;
+    }
+
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
         var cmd = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "-w", "1", "nt")
@@ -36,26 +51,43 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             cmd.add("--tabColor").addQuoted(configuration.getColor().toHexString());
         }
 
-        // A weird behavior in Windows Terminal causes the trailing
-        // backslash of a filepath to escape the closing quote in the title argument
-        // So just remove that slash
-        var fixedName = FilePath.of(configuration.getColoredTitle())
-                .removeTrailingSlash()
-                .toString();
-        // To fix https://github.com/microsoft/terminal/issues/13264
-        fixedName = fixedName.replaceAll(";", "_");
+        // We assume that all scripts are located in the same dir
+        var spaces = configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
+        var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
+        for (int i = 0; i < configuration.getPanes().size(); i++) {
+            splitIterator.next();
 
-        cmd.add("--title").addQuoted(fixedName);
-        cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
+            var pane = configuration.getPanes().get(i);
+            var scriptFile = spaces
+                    ? pane.getScriptFile().getFileName()
+                    : pane.getScriptFile().toString();
+            var scriptOpenCommand = pane.getScriptDialect().getOpenScriptCommand(scriptFile);
+            if (i > 0) {
+                cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
+                cmd.add("sp");
+                // The names are not intuitive
+                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL, "--horizontal");
+                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL, "--vertical");
+            }
+            cmd.add("--title").addQuoted(getFixedTitle(configuration.getColoredTitle()));
+            cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");
+            cmd.add(scriptOpenCommand);
 
-        var spaces = configuration.getScriptFile().toString().contains(" ");
-        cmd.add(configuration
-                .getScriptDialect()
-                .getOpenScriptCommand(
-                        spaces
-                                ? configuration.getScriptFile().getFileName()
-                                : configuration.getScriptFile().toString()));
+            var targetPaneIndex = splitIterator.getTargetPaneIndex();
+            cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
+            cmd.add("mf", targetPaneIndex == 0 ? "first" : "previousInOrder");
+            if (targetPaneIndex > 0) {
+                cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
+                cmd.add("mf");
+                cmd.add("previousInOrder");
+            }
+        }
         return cmd;
+    }
+
+    @Override
+    default boolean supportsSplitView() {
+        return true;
     }
 
     default void checkProfile() throws IOException {
@@ -137,12 +169,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             try (var sc = LocalShell.getShell().start()) {
                 var inPath = sc.view().findProgram("wt");
                 var exec = inPath.orElse(FilePath.of(getPath()));
-                var spaces = configuration.getScriptFile().toString().contains(" ");
+                var firstScriptFile = configuration.getPanes().getFirst().getScriptFile();
+                var spaces = firstScriptFile.toString().contains(" ");
 
                 if (spaces) {
                     var wd = sc.view().pwd();
                     sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .withWorkingDirectory(firstScriptFile.getParent())
                             .execute();
                     sc.view().cd(wd);
                 } else {
@@ -193,12 +226,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             checkProfile();
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
-                var spaces = configuration.getScriptFile().toString().contains(" ");
+                var firstScriptFile = configuration.getPanes().getFirst().getScriptFile();
+                var spaces = firstScriptFile.toString().contains(" ");
 
                 if (spaces) {
                     var wd = sc.view().pwd();
                     sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .withWorkingDirectory(firstScriptFile.getParent())
                             .execute();
                     sc.view().cd(wd);
                 } else {
@@ -250,12 +284,13 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
             checkProfile();
             try (var sc = LocalShell.getShell().start()) {
                 var exec = getPath();
-                var spaces = configuration.getScriptFile().toString().contains(" ");
+                var firstScriptFile = configuration.getPanes().getFirst().getScriptFile();
+                var spaces = firstScriptFile.toString().contains(" ");
 
                 if (spaces) {
                     var wd = sc.view().pwd();
                     sc.command(CommandBuilder.of().addFile(exec).add(toCommand(configuration)))
-                            .withWorkingDirectory(configuration.getScriptFile().getParent())
+                            .withWorkingDirectory(firstScriptFile.getParent())
                             .execute();
                     sc.view().cd(wd);
                 } else {

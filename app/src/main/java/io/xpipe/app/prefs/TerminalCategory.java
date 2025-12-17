@@ -32,6 +32,7 @@ import javafx.scene.layout.Region;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class TerminalCategory extends AppPrefsCategory {
@@ -171,6 +172,7 @@ public class TerminalCategory extends AppPrefsCategory {
                                     == TerminalOpenFormat.NEW_WINDOW_OR_TABBED;
                 },
                 prefs.terminalType());
+        var splitViewSupported = Bindings.isNotNull(TerminalSplitStrategy.getEffectiveSplitStrategyObservable());
 
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
@@ -181,6 +183,17 @@ public class TerminalCategory extends AppPrefsCategory {
                 // .sub(terminalInitScript())
                 .sub(
                         new OptionsBuilder()
+                                .name("terminalSplitStrategy")
+                                .description(Bindings.createStringBinding(() -> {
+                                    return AppI18n.get(splitViewSupported.get() ? "terminalSplitStrategyDescription" : "terminalSplitStrategyDisabledDescription");
+                                }, splitViewSupported, AppI18n.activeLanguage()))
+                                .documentationLink(DocumentationLink.TERMINAL_SPLIT)
+                                .addComp(ChoiceComp.ofTranslatable(
+                                        prefs.terminalSplitStrategy,
+                                        Arrays.asList(TerminalSplitStrategy.values()),
+                                        false).maxWidth(getCompWidth()), prefs.terminalSplitStrategy
+                                )
+                                .disable(splitViewSupported.not())
                                 .pref(prefs.terminalAlwaysPauseOnExit)
                                 .addToggle(prefs.terminalAlwaysPauseOnExit)
                                 .pref(prefs.clearTerminalOnInit)
@@ -226,6 +239,7 @@ public class TerminalCategory extends AppPrefsCategory {
         proxyChoice.maxWidth(getCompWidth());
         return new OptionsBuilder()
                 .nameAndDescription("terminalEnvironment")
+                .documentationLink(DocumentationLink.TERMINAL_ENVIRONMENT)
                 .addComp(proxyChoice, ref)
                 .hide(OsType.ofLocal() != OsType.WINDOWS);
     }
