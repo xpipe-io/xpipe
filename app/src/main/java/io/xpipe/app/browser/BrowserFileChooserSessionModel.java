@@ -2,6 +2,7 @@ package io.xpipe.app.browser;
 
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileSystem;
 import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -49,11 +50,18 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
     }
 
     public void finishChooser() {
-        var chosen = new ArrayList<>(fileSelection);
+        var chosen = new ArrayList<>(fileSelection.stream().map(be -> be.getRawFileEntry().getPath()).toList());
 
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
+                if (chosen.isEmpty() && directory) {
+                    var current = open.getCurrentDirectory();
+                    if (current != null) {
+                        chosen.add(current.getPath());
+                    }
+                }
+
                 ThreadHelper.runAsync(() -> {
                     open.close();
                 });
@@ -63,7 +71,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         var stores = chosen.stream()
                 .map(entry -> new FileReference(
                         selectedEntry.getValue().getEntry(),
-                        entry.getRawFileEntry().getPath()))
+                        entry))
                 .toList();
         onFinish.accept(stores);
     }
