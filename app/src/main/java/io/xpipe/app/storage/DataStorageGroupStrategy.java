@@ -2,6 +2,8 @@ package io.xpipe.app.storage;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -20,6 +22,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.TextField;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -64,37 +67,20 @@ public interface DataStorageGroupStrategy {
             var key = new SimpleStringProperty(p.getValue().getKey());
 
             var prefs = AppPrefs.get();
-            var content = new HorizontalComp(List.of(
-                    new TextFieldComp(key)
-                            .apply(struc -> struc.get()
-                                    .promptTextProperty()
-                                    .bind(Bindings.createStringBinding(
-                                            () -> {
-                                                return prefs.passwordManager()
-                                                        .getValue()
-                                                        != null
-                                                        ? prefs.passwordManager()
-                                                        .getValue()
-                                                        .getKeyPlaceholder()
-                                                        : "?";
-                                            },
-                                            prefs.passwordManager())))
-                            .hgrow(),
-                    new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-                        AppPrefs.get().selectCategory("passwordManager");
-                        App.getApp().getStage().requestFocus();
-                    })
-                            .grow(false, true)))
-                    .apply(struc -> struc.get().setSpacing(10))
-                    .apply(struc -> struc.get().focusedProperty().addListener((c, o, n) -> {
-                        if (n) {
-                            struc.get().getChildren().getFirst().requestFocus();
-                        }
-                    }));
+            var field = new TextFieldComp(key).apply(
+                    struc -> struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
+                        return prefs.passwordManager().getValue() != null ? prefs.passwordManager().getValue().getKeyPlaceholder() : "?";
+                    }, prefs.passwordManager())));
+            var button = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+                AppPrefs.get().selectCategory("passwordManager");
+                App.getApp().getStage().requestFocus();
+            });
+            var content = new InputGroupComp(List.of(field, button));
+            content.setMainReference(field);
 
             return new OptionsBuilder()
                     .nameAndDescription("passwordManagerKey")
-                    .addString(key)
+                    .addComp(content, key)
                     .nonNull()
                     .bind(
                             () -> {
