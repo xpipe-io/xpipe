@@ -2,7 +2,6 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;

@@ -75,7 +75,7 @@ public class OptionsBuilder {
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
 
-    private BooleanProperty mappingUpdate = new SimpleBooleanProperty();
+    private final BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 
     public OptionsBuilder disableFirstIncompleteFocus() {
         focusFirstIncomplete = false;

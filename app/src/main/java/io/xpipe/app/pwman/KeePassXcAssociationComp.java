@@ -3,7 +3,6 @@ package io.xpipe.app.pwman;
 import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.IconButtonComp;
-import io.xpipe.app.platform.OptionsBuilder;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;

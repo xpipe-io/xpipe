@@ -1,9 +1,7 @@
 package io.xpipe.app.hub.action.impl;
 
-import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
@@ -16,8 +14,6 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-
-import java.util.List;
 
 public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 

@@ -1,8 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.core.XPipeDaemonMode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

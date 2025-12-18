@@ -1,10 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ChoicePaneComp;
-import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.platform.LabelGraphic;
@@ -19,8 +16,6 @@ import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.*;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.HBox;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

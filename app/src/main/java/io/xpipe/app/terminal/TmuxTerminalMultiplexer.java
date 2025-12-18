@@ -4,7 +4,6 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.process.TerminalInitScriptConfig;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

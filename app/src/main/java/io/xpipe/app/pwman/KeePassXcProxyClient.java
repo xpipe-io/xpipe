@@ -9,7 +9,6 @@ import io.xpipe.core.JacksonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import lombok.Getter;
 import lombok.SneakyThrows;
 
 import java.io.IOException;

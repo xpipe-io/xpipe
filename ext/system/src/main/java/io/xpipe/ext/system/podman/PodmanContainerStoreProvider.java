@@ -16,7 +16,6 @@ import io.xpipe.ext.base.store.ShellStoreProvider;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;

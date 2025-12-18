@@ -5,8 +5,6 @@ import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
-import io.xpipe.app.secret.SecretNoneStrategy;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;

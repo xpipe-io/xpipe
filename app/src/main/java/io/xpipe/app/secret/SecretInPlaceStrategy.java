@@ -7,7 +7,6 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;

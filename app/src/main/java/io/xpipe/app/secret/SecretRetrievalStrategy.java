@@ -2,7 +2,6 @@ package io.xpipe.app.secret;
 
 import io.xpipe.app.ext.ValidationException;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;

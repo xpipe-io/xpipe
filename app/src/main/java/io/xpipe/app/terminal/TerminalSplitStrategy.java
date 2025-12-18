@@ -4,10 +4,7 @@ import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableObjectValue;
-import javafx.beans.value.ObservableValue;
 import lombok.Getter;
-
-import java.util.Optional;
 
 @Getter
 public enum TerminalSplitStrategy implements PrefsChoiceValue {

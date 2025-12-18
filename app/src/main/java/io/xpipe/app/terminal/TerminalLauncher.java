@@ -327,7 +327,7 @@ public class TerminalLauncher {
         return Optional.ofNullable(launchConfiguration.withPanes(panes));
     }
 
-    public static String getTerminalRegisterCommand(UUID request, ShellDialect dialect) throws Exception {
+    public static String getTerminalRegisterCommand(UUID request, ShellDialect dialect) {
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
         var registerLine = CommandBuilder.of()
                 .addFile(exec)

@@ -1,6 +1,5 @@
 package io.xpipe.app.rdp;
 
-import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;

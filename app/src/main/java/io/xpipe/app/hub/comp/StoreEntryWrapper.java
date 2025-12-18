@@ -13,7 +13,6 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.HubMenuItemProvider;
 import io.xpipe.app.hub.action.impl.EditHubLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;

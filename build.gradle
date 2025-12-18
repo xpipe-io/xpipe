@@ -293,7 +293,7 @@ project.ext {
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
 
     def injected = project.objects.newInstance(InjectedExecOps)
-    execOps = injected.execOps;
+    execOps = injected.execOps
 }
 
 group = groupName

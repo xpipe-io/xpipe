@@ -39,7 +39,7 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
     }
 
     @Override
-    public void executeImpl() throws Exception {
+    public void executeImpl() {
         for (AbstractAction action : actions) {
             if (!action.executeSyncImpl(true)) {
                 break;

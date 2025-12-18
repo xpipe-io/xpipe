@@ -8,7 +8,6 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
@@ -21,9 +20,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.Separator;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -31,7 +27,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import atlantafx.base.theme.Styles;
-import javafx.util.Subscription;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;

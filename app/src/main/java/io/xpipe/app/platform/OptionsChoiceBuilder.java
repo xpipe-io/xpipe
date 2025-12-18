@@ -3,7 +3,6 @@ package io.xpipe.app.platform;
 import io.xpipe.app.comp.base.ChoicePaneComp;
 import io.xpipe.app.core.AppI18n;
 
-import io.xpipe.app.storage.DataStoreCategoryConfig;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleIntegerProperty;

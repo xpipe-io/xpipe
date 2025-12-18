@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.ext.FileInfo;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.platform.InputHelper;

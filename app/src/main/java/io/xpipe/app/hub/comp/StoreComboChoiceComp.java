@@ -2,7 +2,6 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -13,7 +12,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.layout.Region;
 

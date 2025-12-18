@@ -7,7 +7,6 @@ import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.property.BooleanProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

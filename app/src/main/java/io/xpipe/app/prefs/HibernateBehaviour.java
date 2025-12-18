@@ -4,9 +4,6 @@ import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.storage.DataStorageUserHandler;
-import io.xpipe.app.util.ThreadHelper;
-
-import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;
 

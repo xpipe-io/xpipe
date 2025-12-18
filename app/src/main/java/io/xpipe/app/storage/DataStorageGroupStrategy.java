@@ -2,8 +2,6 @@ package io.xpipe.app.storage;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -22,7 +20,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.TextField;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -97,7 +94,7 @@ public interface DataStorageGroupStrategy {
         }
 
         @Override
-        public String queryEncryptionSecret() throws Exception {
+        public String queryEncryptionSecret() {
             var r = SecretPasswordManagerStrategy.builder().key(key).build().query().query("Group secret");
             return r.getState() == SecretQueryState.NORMAL ? r.getSecret().getSecretValue() : null;
         }

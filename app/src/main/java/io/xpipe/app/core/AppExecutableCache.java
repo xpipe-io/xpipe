@@ -2,18 +2,14 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.util.GithubReleaseDownloader;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.FailableConsumer;
-import io.xpipe.core.FailableSupplier;
 import io.xpipe.core.OsType;
 
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.function.Supplier;
 
 public class AppExecutableCache {
 

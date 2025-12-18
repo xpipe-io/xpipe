@@ -55,11 +55,6 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
     class Windows implements WarpTerminalType {
 
         @Override
-        public int getProcessHierarchyOffset() {
-            return 0;
-        }
-
-        @Override
         public boolean isAvailable() {
             return WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp");
         }
