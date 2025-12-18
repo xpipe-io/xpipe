@@ -23,7 +23,7 @@ public class SecretInPlaceStrategy implements SecretRetrievalStrategy {
 
     @SuppressWarnings("unused")
     public static String getOptionsNameKey(SecretStrategyChoiceConfig config) {
-        return config.getPasswordKey() != null ? config.getPasswordKey() : "password";
+        return config != null && config.getPasswordKey() != null ? config.getPasswordKey() : "password";
     }
 
     @SuppressWarnings("unused")

@@ -56,7 +56,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .allowNull(false)
                 .property(keyPasswordProperty)
                 .customConfiguration(
-                        SecretStrategyChoiceConfig.builder().allowNone(true).build())
+                        SecretStrategyChoiceConfig.builder().allowNone(true).passwordKey("passphrase").build())
                 .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
