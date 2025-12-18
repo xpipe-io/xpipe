@@ -314,11 +314,11 @@ public class CommandBuilder {
         String evaluate(ShellControl sc) throws Exception;
     }
 
-    static class Fixed implements Element {
+    public static class Fixed implements Element {
 
         private final String string;
 
-        Fixed(String string) {
+        public Fixed(String string) {
             this.string = string;
         }
 
