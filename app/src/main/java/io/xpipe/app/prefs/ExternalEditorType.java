@@ -87,7 +87,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-
     WindowsType ANTIGRAVITY_WINDOWS = new WindowsType() {
 
         @Override
@@ -121,7 +120,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .filter(path -> Files.exists(path));
         }
     };
-
 
     WindowsType CURSOR_WINDOWS = new WindowsType() {
 
@@ -521,7 +519,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType VSCODE_MACOS =
             new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium", "https://vscodium.com/");
-    ExternalEditorType ANTIGRAVITY_MACOS = new MacOsEditor("app.antigravity", "Antigravity", "https://antigravity.google/");
+    ExternalEditorType ANTIGRAVITY_MACOS =
+            new MacOsEditor("app.antigravity", "Antigravity", "https://antigravity.google/");
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor", "https://cursor.com/");
     ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void", "https://voideditor.com/");
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf", "https://windsurf.com/editor");

@@ -7,8 +7,8 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
-
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;

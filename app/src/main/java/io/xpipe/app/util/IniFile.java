@@ -17,7 +17,7 @@ public class IniFile {
     private static final Pattern SECTION_FORMAT = Pattern.compile("\\s*\\[([^]]*)\\]\\s*");
     private static final Pattern VALUE_FORMAT = Pattern.compile("\\s*([^=]*)=(.*)");
 
-     Map<String, Map<String, String>> entries;
+    Map<String, Map<String, String>> entries;
 
     public static IniFile load(Path path) throws IOException {
         Map<String, Map<String, String>> entries = new HashMap<>();

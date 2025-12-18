@@ -10,8 +10,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.ext.base.host.AbstractHostStore;
-
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -67,14 +67,24 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
         var remotePort = new SimpleObjectProperty<>(st.getRemotePort());
         var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
-        var tunnelToLocalhost = new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
-        var hideTunnelToLocalhost = Bindings.createBooleanBinding(() -> {
-            return comboHost.get() == null || gateway.get() != null ||
-                    (comboHost.get().getRef().getStore() instanceof HostAddressGatewayStore g && g.getTunnelGateway() != null && !(g.getTunnelGateway().getStore() instanceof LocalStore));
-        }, comboHost, gateway);
-        var hideLocalPort = Bindings.createBooleanBinding(() -> {
-            return comboHost.get() == null || !tunnelToLocalhost.get();
-        }, hideTunnelToLocalhost, tunnelToLocalhost);
+        var tunnelToLocalhost =
+                new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
+        var hideTunnelToLocalhost = Bindings.createBooleanBinding(
+                () -> {
+                    return comboHost.get() == null
+                            || gateway.get() != null
+                            || (comboHost.get().getRef().getStore() instanceof HostAddressGatewayStore g
+                                    && g.getTunnelGateway() != null
+                                    && !(g.getTunnelGateway().getStore() instanceof LocalStore));
+                },
+                comboHost,
+                gateway);
+        var hideLocalPort = Bindings.createBooleanBinding(
+                () -> {
+                    return comboHost.get() == null || !tunnelToLocalhost.get();
+                },
+                hideTunnelToLocalhost,
+                tunnelToLocalhost);
 
         var hostChoice = new StoreComboChoiceComp<>(
                 hostStore -> hostStore instanceof AbstractHostStore a

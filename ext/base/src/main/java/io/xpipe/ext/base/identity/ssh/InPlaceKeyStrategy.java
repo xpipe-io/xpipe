@@ -52,34 +52,42 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(keyPasswordProperty)
-                .customConfiguration(
-                        SecretStrategyChoiceConfig.builder().allowNone(true).passwordKey("passphrase").build())
+                .customConfiguration(SecretStrategyChoiceConfig.builder()
+                        .allowNone(true)
+                        .passwordKey("passphrase")
+                        .build())
                 .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
-                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
-            }, AppI18n.activeLanguage()));
+            struc.get()
+                    .promptTextProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
+                            },
+                            AppI18n.activeLanguage()));
             struc.get().setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
-            var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
-            if (generated != null) {
-                publicKey.set(generated);
-            }
-        }).tooltipKey("generatePublicKey").disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+                    var generated = ProcessControlProvider.get()
+                            .generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
+                    if (generated != null) {
+                        publicKey.set(generated);
+                    }
+                })
+                .tooltipKey("generatePublicKey")
+                .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            ClipboardHelper.copyText(publicKey.get());
-        })
+                    ClipboardHelper.copyText(publicKey.get());
+                })
                 .disable(publicKey.isNull())
                 .tooltipKey("copyPublicKey");
 
         var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);
 
-        return options
-                .nameAndDescription("inPlaceKeyText")
+        return options.nameAndDescription("inPlaceKeyText")
                 .addComp(
                         new TextAreaComp(key).apply(struc -> {
                             struc.getTextArea()
@@ -99,9 +107,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
-                .addComp(
-                        publicKeyBox,
-                        publicKey)
+                .addComp(publicKeyBox, publicKey)
                 .bind(
                         () -> {
                             return new InPlaceKeyStrategy(
@@ -139,7 +145,8 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         }
         // Make sure that the line endings are in LF
         // to support older SSH clients that break with CRLF
-        var bytes = (key.getSecretValue().lines().collect(Collectors.joining("\n")) + "\n").getBytes(StandardCharsets.UTF_8);
+        var bytes = (key.getSecretValue().lines().collect(Collectors.joining("\n")) + "\n")
+                .getBytes(StandardCharsets.UTF_8);
         parent.view().writeRawFile(file, bytes);
         if (parent.getOsType() != OsType.WINDOWS) {
             parent.command(CommandBuilder.of().add("chmod", "400").addFile(file))

@@ -55,10 +55,8 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
                 .add("-EncodedCommand")
                 .add(sc -> {
                     var base64 = Base64.getEncoder()
-                            .encodeToString(pane
-                                    .getDialectLaunchCommand()
-                                    .buildBase(sc)
-                                    .getBytes(StandardCharsets.UTF_16LE));
+                            .encodeToString(
+                                    pane.getDialectLaunchCommand().buildBase(sc).getBytes(StandardCharsets.UTF_16LE));
                     return "\"" + base64 + "\"";
                 });
     }

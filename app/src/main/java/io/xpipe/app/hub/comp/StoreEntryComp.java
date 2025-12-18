@@ -237,11 +237,15 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected Comp<?> createTags() {
-        var tagsProp = Bindings.createStringBinding(() -> {
-            return getWrapper().getTags().stream().map(s -> {
-                return "[" + s + "]";
-            }).collect(Collectors.joining(" "));
-        }, getWrapper().getTags());
+        var tagsProp = Bindings.createStringBinding(
+                () -> {
+                    return getWrapper().getTags().stream()
+                            .map(s -> {
+                                return "[" + s + "]";
+                            })
+                            .collect(Collectors.joining(" "));
+                },
+                getWrapper().getTags());
         var tagsLabel = new LabelComp(tagsProp);
         tagsLabel.apply(struc -> struc.get().setOpacity(0.85));
         return tagsLabel;
@@ -533,7 +537,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         tags.getItems().add(new SeparatorMenuItem());
                     }
 
-                    var index = ContextMenuHelper.item(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
+                    var index =
+                            ContextMenuHelper.item(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
                     index.setOnAction(event -> {
                         var tagName = new SimpleStringProperty();
                         var modal = ModalOverlay.of(
@@ -555,7 +560,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     items.add(tags);
                 }
 
-                    {
+                {
                     var order = new Menu(AppI18n.get("order"), new FontIcon("mdi2f-format-list-bulleted"));
 
                     var index = new MenuItem(AppI18n.get("index"), new FontIcon("mdi2o-order-numeric-ascending"));

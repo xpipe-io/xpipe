@@ -65,8 +65,7 @@ public class ProcessOutputException extends Exception {
                     case CommandControl.START_FAILED_EXIT_CODE ->
                         start + "did not start up properly and had to be killed";
                     case CommandControl.EXIT_TIMEOUT_EXIT_CODE -> "Wait for exit of " + center + "timed out";
-                    case CommandControl.UNASSIGNED_EXIT_CODE ->
-                        start + "exited but failed to provide an exit code.";
+                    case CommandControl.UNASSIGNED_EXIT_CODE -> start + "exited but failed to provide an exit code.";
                     case CommandControl.INTERNAL_ERROR_EXIT_CODE -> start + "execution failed";
                     case CommandControl.ELEVATION_FAILED_EXIT_CODE -> start + "elevation failed";
                     default -> start + "failed with exit code " + exitCode;

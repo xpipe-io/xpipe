@@ -78,9 +78,10 @@ public class IncusContainerStoreProvider implements ShellStoreProvider {
         var q = new OptionsBuilder()
                 .name("host")
                 .description("lxdHostDescription")
-                .addComp(
-                        new StoreChoiceComp<>(entry,
-                        new ReadOnlyObjectWrapper<>(st.getInstall().getStore().getHost()), ShellStore.class,
+                .addComp(new StoreChoiceComp<>(
+                        entry,
+                        new ReadOnlyObjectWrapper<>(st.getInstall().getStore().getHost()),
+                        ShellStore.class,
                         null,
                         StoreViewState.get().getAllConnectionsCategory()))
                 .disable()

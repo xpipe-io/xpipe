@@ -27,8 +27,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-
 import javafx.collections.ObservableList;
+
 import lombok.Getter;
 
 import java.time.Duration;
@@ -409,7 +409,7 @@ public class StoreEntryWrapper {
     public void toggleTag(String tag) {
         if (tags.contains(tag)) {
             entry.removeTag(tag);
-        }  else {
+        } else {
             entry.addTag(tag);
         }
     }

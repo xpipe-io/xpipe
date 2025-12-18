@@ -78,9 +78,11 @@ public class LxdContainerStoreProvider implements ShellStoreProvider {
         var q = new OptionsBuilder()
                 .name("host")
                 .description("lxdHostDescription")
-                .addComp(
-                        new StoreChoiceComp<>(entry,
-                        new ReadOnlyObjectWrapper<>(st.getCmd().getStore().getHost()), ShellStore.class, null,
+                .addComp(new StoreChoiceComp<>(
+                        entry,
+                        new ReadOnlyObjectWrapper<>(st.getCmd().getStore().getHost()),
+                        ShellStore.class,
+                        null,
                         StoreViewState.get().getAllConnectionsCategory()))
                 .disable()
                 .name("container")

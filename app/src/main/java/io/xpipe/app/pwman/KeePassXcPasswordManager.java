@@ -14,9 +14,9 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.collections.FXCollections;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -43,10 +43,15 @@ public class KeePassXcPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
         p.subscribe(keePassXcManager -> {
-            DerivedObservableList.wrap(prop, true).setContent(keePassXcManager != null && keePassXcManager.getAssociationKeys() != null ? keePassXcManager.getAssociationKeys() : List.of());
+            DerivedObservableList.wrap(prop, true)
+                    .setContent(
+                            keePassXcManager != null && keePassXcManager.getAssociationKeys() != null
+                                    ? keePassXcManager.getAssociationKeys()
+                                    : List.of());
         });
 
-        var associationsListComp = new ListBoxViewComp<>(prop, prop, k -> new KeePassXcAssociationComp(k, () -> prop.remove(k)), false);
+        var associationsListComp =
+                new ListBoxViewComp<>(prop, prop, k -> new KeePassXcAssociationComp(k, () -> prop.remove(k)), false);
 
         return new OptionsBuilder()
                 .nameAndDescription("keePassXcNotAssociated")
@@ -72,7 +77,6 @@ public class KeePassXcPasswordManager implements PasswordManager {
                     });
                 }))
                 .hide(Bindings.isEmpty(prop))
-
                 .addProperty(prop)
                 .bind(
                         () -> {
@@ -141,7 +145,8 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 // Only one association needs to work
                 if (!valid) {
                     ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(first)
-                            .description("KeePassXC association for " + available.getFirst().getKey() + " failed")
+                            .description("KeePassXC association for "
+                                    + available.getFirst().getKey() + " failed")
                             .expected());
                     throw first;
                 }
@@ -230,7 +235,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
             var isPrefs = this == AppPrefs.get().passwordManager().getValue();
             var client = getOrCreateClient();
             // The prefs value might be updated during the client creation
-            var effectiveKeys = isPrefs ? ((KeePassXcPasswordManager) AppPrefs.get().passwordManager().getValue()).getAssociationKeys() : associationKeys;
+            var effectiveKeys = isPrefs
+                    ? ((KeePassXcPasswordManager)
+                                    AppPrefs.get().passwordManager().getValue())
+                            .getAssociationKeys()
+                    : associationKeys;
             var credentials = client.getCredentials(effectiveKeys, fixedKey);
             return credentials;
         } catch (Exception e) {

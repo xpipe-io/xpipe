@@ -93,9 +93,13 @@ public class StoreCategoryConfigComp extends SimpleComp {
         var specialCategorySync = !wrapper.getCategory().canShare();
         var syncDisable = !DataStorage.get().supportsSync()
                 || ((sync.getValue() == null || !sync.getValue())
-                && !wrapper.getCategory().canShare());
+                        && !wrapper.getCategory().canShare());
         var syncHide = !DataStorage.get().supportsSync();
-        options.name(specialCategorySync ? AppI18n.observable("categorySyncSpecial", wrapper.getName().getValue()) : AppI18n.observable("categorySync"))
+        options.name(
+                        specialCategorySync
+                                ? AppI18n.observable(
+                                        "categorySyncSpecial", wrapper.getName().getValue())
+                                : AppI18n.observable("categorySync"))
                 .description("categorySyncDescription")
                 .addYesNoToggle(sync)
                 .disable(syncDisable)
@@ -111,7 +115,12 @@ public class StoreCategoryConfigComp extends SimpleComp {
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryDefaultIdentity")
                 .addComp(
-                        new StoreChoiceComp<>(null, ref, DataStore.class, null, StoreViewState.get().getAllIdentitiesCategory()),
+                        new StoreChoiceComp<>(
+                                null,
+                                ref,
+                                DataStore.class,
+                                null,
+                                StoreViewState.get().getAllIdentitiesCategory()),
                         ref)
                 .hide(!connectionsCategory)
                 .nameAndDescription("categoryColor")

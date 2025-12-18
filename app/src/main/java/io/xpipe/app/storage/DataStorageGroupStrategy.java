@@ -1,7 +1,5 @@
 package io.xpipe.app.storage;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -15,11 +13,15 @@ import io.xpipe.app.secret.SecretPasswordManagerStrategy;
 import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.Validators;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -64,10 +66,15 @@ public interface DataStorageGroupStrategy {
             var key = new SimpleStringProperty(p.getValue().getKey());
 
             var prefs = AppPrefs.get();
-            var field = new TextFieldComp(key).apply(
-                    struc -> struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
-                        return prefs.passwordManager().getValue() != null ? prefs.passwordManager().getValue().getKeyPlaceholder() : "?";
-                    }, prefs.passwordManager())));
+            var field = new TextFieldComp(key).apply(struc -> struc.get()
+                    .promptTextProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return prefs.passwordManager().getValue() != null
+                                        ? prefs.passwordManager().getValue().getKeyPlaceholder()
+                                        : "?";
+                            },
+                            prefs.passwordManager())));
             var button = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                 AppPrefs.get().selectCategory("passwordManager");
                 App.getApp().getStage().requestFocus();
@@ -95,7 +102,11 @@ public interface DataStorageGroupStrategy {
 
         @Override
         public String queryEncryptionSecret() {
-            var r = SecretPasswordManagerStrategy.builder().key(key).build().query().query("Group secret");
+            var r = SecretPasswordManagerStrategy.builder()
+                    .key(key)
+                    .build()
+                    .query()
+                    .query("Group secret");
             return r.getState() == SecretQueryState.NORMAL ? r.getSecret().getSecretValue() : null;
         }
     }
@@ -113,16 +124,26 @@ public interface DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static OptionsBuilder createOptions(Property<File> p) {
-            var file = new SimpleObjectProperty<>(p.getValue().getFile() != null ? p.getValue().getFile().toLocalAbsoluteFilePath() : null);
+            var file = new SimpleObjectProperty<>(
+                    p.getValue().getFile() != null ? p.getValue().getFile().toLocalAbsoluteFilePath() : null);
             return new OptionsBuilder()
                     .nameAndDescription("fileSecretChoice")
-                    .addComp(new ContextualFileReferenceChoiceComp(
-                            new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
-                            file, null, List.of(), e -> e.equals(DataStorage.get().local()), false), file)
+                    .addComp(
+                            new ContextualFileReferenceChoiceComp(
+                                    new ReadOnlyObjectWrapper<>(
+                                            DataStorage.get().local().ref()),
+                                    file,
+                                    null,
+                                    List.of(),
+                                    e -> e.equals(DataStorage.get().local()),
+                                    false),
+                            file)
                     .nonNull()
                     .bind(
                             () -> {
-                                return File.builder().file(ContextualFileReference.of(file.get())).build();
+                                return File.builder()
+                                        .file(ContextualFileReference.of(file.get()))
+                                        .build();
                             },
                             p);
         }
@@ -138,7 +159,8 @@ public interface DataStorageGroupStrategy {
         public String queryEncryptionSecret() throws Exception {
             var abs = file.toLocalAbsoluteFilePath().asLocalPath();
             if (!Files.exists(abs)) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + file + " does not exist"));
+                throw ErrorEventFactory.expected(
+                        new IllegalArgumentException("Group key file " + file + " does not exist"));
             }
 
             var read = Files.readString(abs);
@@ -163,16 +185,19 @@ public interface DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static OptionsBuilder createOptions(Property<Command> p) {
-            var command = new SimpleStringProperty(p.getValue().getCommand() != null ?
-                    p.getValue().getCommand().getValue() : null);
+            var command = new SimpleStringProperty(
+                    p.getValue().getCommand() != null
+                            ? p.getValue().getCommand().getValue()
+                            : null);
             return new OptionsBuilder()
                     .nameAndDescription("commandSecretField")
                     .addComp(new TextAreaComp(command), command)
                     .nonNull()
                     .bind(
                             () -> {
-                                return Command.builder().command(command.get() != null ? new ShellScript(
-                                        command.get()) : null).build();
+                                return Command.builder()
+                                        .command(command.get() != null ? new ShellScript(command.get()) : null)
+                                        .build();
                             },
                             p);
         }
@@ -191,14 +216,14 @@ public interface DataStorageGroupStrategy {
                     cc.killOnTimeout(CountDown.of().start(30_000));
                     var out = cc.readStdoutOrThrow();
                     if (out.length() == 0) {
-                        throw ErrorEventFactory.expected(new IllegalArgumentException("Command did not return any output"));
+                        throw ErrorEventFactory.expected(
+                                new IllegalArgumentException("Command did not return any output"));
                     }
                     return out;
                 }
             }
         }
     }
-
 
     @JsonTypeName("httpRequest")
     @Builder

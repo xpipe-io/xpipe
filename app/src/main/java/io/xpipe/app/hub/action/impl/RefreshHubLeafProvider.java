@@ -7,6 +7,7 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
+
 import javafx.beans.value.ObservableValue;
 
 public class RefreshHubLeafProvider implements HubLeafProvider<ShellStore> {

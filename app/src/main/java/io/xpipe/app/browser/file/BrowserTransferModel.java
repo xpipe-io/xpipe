@@ -112,8 +112,7 @@ public class BrowserTransferModel {
                     return;
                 }
 
-                var fixedFile = OsFileSystem.ofLocal()
-                        .makeFileSystemCompatible(resolved.getPath());
+                var fixedFile = OsFileSystem.ofLocal().makeFileSystemCompatible(resolved.getPath());
                 Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);

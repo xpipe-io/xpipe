@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.hub.comp.DataStoreCategoryChoiceComp;
 import io.xpipe.app.hub.comp.StoreCategoryWrapper;
 import io.xpipe.app.hub.comp.StoreViewState;
-
 import io.xpipe.app.util.ObservableSubscriber;
+
 import javafx.beans.property.Property;
 import javafx.scene.layout.Region;
 

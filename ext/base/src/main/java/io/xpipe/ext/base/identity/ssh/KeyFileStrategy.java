@@ -72,7 +72,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         });
         var keyPasswordProperty =
                 new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPassword() : null);
-        var publicKey = new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var publicKey =
+                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getPublicKey() : null);
 
         var sync = ContextualFileReferenceSync.of(
                 DataStorage.get().getDataDir().resolve("keys"),
@@ -82,45 +83,54 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         var passwordChoice = OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(keyPasswordProperty)
-                .customConfiguration(
-                        SecretStrategyChoiceConfig.builder().allowNone(true).passwordKey("passphrase").build())
+                .customConfiguration(SecretStrategyChoiceConfig.builder()
+                        .allowNone(true)
+                        .passwordKey("passphrase")
+                        .build())
                 .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
 
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
-                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
-            }, AppI18n.activeLanguage()));
+            struc.get()
+                    .promptTextProperty()
+                    .bind(Bindings.createStringBinding(
+                            () -> {
+                                return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
+                            },
+                            AppI18n.activeLanguage()));
             struc.get().setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                Path path = keyPath.get().asLocalPath();
-                if (!Files.exists(path)) {
-                    return;
-                }
+                    ThreadHelper.runFailableAsync(() -> {
+                        Path path = keyPath.get().asLocalPath();
+                        if (!Files.exists(path)) {
+                            return;
+                        }
 
-                var pubKeyPath = Path.of(path + ".pub");
-                if (Files.exists(pubKeyPath)) {
-                    var contents = Files.readString(pubKeyPath).strip();
-                    Platform.runLater(() -> {
-                        publicKey.set(contents);
-                    });
-                }
+                        var pubKeyPath = Path.of(path + ".pub");
+                        if (Files.exists(pubKeyPath)) {
+                            var contents = Files.readString(pubKeyPath).strip();
+                            Platform.runLater(() -> {
+                                publicKey.set(contents);
+                            });
+                        }
 
-                var contents = Files.readAllBytes(path);
-                var generated = ProcessControlProvider.get().generatePublicSshKey(InPlaceSecretValue.of(contents), keyPasswordProperty.get());
-                if (generated != null) {
-                    Platform.runLater(() -> {
-                        publicKey.set(generated);
+                        var contents = Files.readAllBytes(path);
+                        var generated = ProcessControlProvider.get()
+                                .generatePublicSshKey(InPlaceSecretValue.of(contents), keyPasswordProperty.get());
+                        if (generated != null) {
+                            Platform.runLater(() -> {
+                                publicKey.set(generated);
+                            });
+                        }
                     });
-                }
-            });
-        }).tooltipKey("generatePublicKey").disable(keyPath.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
+                })
+                .tooltipKey("generatePublicKey")
+                .disable(keyPath.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
-            ClipboardHelper.copyText(publicKey.get());
-        })
+                    ClipboardHelper.copyText(publicKey.get());
+                })
                 .disable(publicKey.isNull())
                 .tooltipKey("copyPublicKey");
 
@@ -146,13 +156,13 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
-                .addComp(
-                        publicKeyBox,
-                        publicKey)
+                .addComp(publicKeyBox, publicKey)
                 .bind(
                         () -> {
                             return new KeyFileStrategy(
-                                    ContextualFileReference.of(keyPath.get()), keyPasswordProperty.get(), publicKey.get());
+                                    ContextualFileReference.of(keyPath.get()),
+                                    keyPasswordProperty.get(),
+                                    publicKey.get());
                         },
                         p);
     }

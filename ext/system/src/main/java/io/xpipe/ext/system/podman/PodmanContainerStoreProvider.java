@@ -61,10 +61,11 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return new OptionsBuilder()
                 .name("host")
                 .description("podmanHostDescription")
-                .addComp(
-                        new StoreChoiceComp<>(entry,
+                .addComp(new StoreChoiceComp<>(
+                        entry,
                         new ReadOnlyObjectWrapper<>(
-                                st.getCmd() != null ? st.getCmd().getStore().getHost() : null), ShellStore.class,
+                                st.getCmd() != null ? st.getCmd().getStore().getHost() : null),
+                        ShellStore.class,
                         null,
                         StoreViewState.get().getAllConnectionsCategory()))
                 .disable()

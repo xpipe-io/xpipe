@@ -42,11 +42,15 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
         try (var sc = LocalShell.getShell().start()) {
             for (int i = 0; i < configuration.getPanes().size(); i++) {
                 var payload = JsonNodeFactory.instance.objectNode();
-                var args = configuration.getPanes().get(i).getDialectLaunchCommand().buildBaseParts(sc);
+                var args = configuration
+                        .getPanes()
+                        .get(i)
+                        .getDialectLaunchCommand()
+                        .buildBaseParts(sc);
                 var argsArray = payload.putArray("args");
                 args.forEach(argsArray::add);
                 payload.put("tab_title", configuration.getColoredTitle());
-                
+
                 var type = i == 0 ? (preferTab ? "tab" : "os-window") : "window";
                 payload.put("type", type);
 
@@ -58,9 +62,9 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                 var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
                 sc.command(CommandBuilder.of()
-                        .add("printf", echoString, "|")
-                        .add(socketWrite)
-                        .addFile(getSocket()))
+                                .add("printf", echoString, "|")
+                                .add(socketWrite)
+                                .addFile(getSocket()))
                         .execute();
 
                 if (i == 0) {
@@ -71,11 +75,12 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
     }
 
     private static void setLayout(CommandBuilder socketWrite) throws Exception {
-        var layout = switch (AppPrefs.get().terminalSplitStrategy().getValue()) {
-            case HORIZONTAL -> "horizontal";
-            case VERTICAL -> "vertical";
-            case BALANCED -> "grid";
-        };
+        var layout =
+                switch (AppPrefs.get().terminalSplitStrategy().getValue()) {
+                    case HORIZONTAL -> "horizontal";
+                    case VERTICAL -> "vertical";
+                    case BALANCED -> "grid";
+                };
 
         try (var sc = LocalShell.getShell().start()) {
             var payload = JsonNodeFactory.instance.objectNode();
@@ -113,9 +118,9 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
             var echoString = "'\\eP@kitty-cmd" + jsonString + "\\e\\\\'";
 
             sc.command(CommandBuilder.of()
-                    .add("printf", echoString, "|")
-                    .add(socketWrite)
-                    .addFile(getSocket()))
+                            .add("printf", echoString, "|")
+                            .add(socketWrite)
+                            .addFile(getSocket()))
                     .execute();
         }
     }

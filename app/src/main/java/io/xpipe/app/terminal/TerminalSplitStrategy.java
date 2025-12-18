@@ -2,8 +2,10 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.prefs.AppPrefs;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableObjectValue;
+
 import lombok.Getter;
 
 @Getter
@@ -54,24 +56,28 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
             return splitStrategy;
         }
 
-        splitStrategy = Bindings.createObjectBinding(() -> {
-            var prefsValue = AppPrefs.get().terminalSplitStrategy().getValue();
-            if (prefsValue == null) {
-                return null;
-            }
+        splitStrategy = Bindings.createObjectBinding(
+                () -> {
+                    var prefsValue = AppPrefs.get().terminalSplitStrategy().getValue();
+                    if (prefsValue == null) {
+                        return null;
+                    }
 
-            var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
-            if (multiplexer != null && multiplexer.supportsSplitView()) {
-                return prefsValue;
-            }
+                    var multiplexer = AppPrefs.get().terminalMultiplexer().getValue();
+                    if (multiplexer != null && multiplexer.supportsSplitView()) {
+                        return prefsValue;
+                    }
 
-            var term = AppPrefs.get().terminalType().getValue();
-            if (term == null || !term.supportsSplitView()) {
-                return null;
-            }
+                    var term = AppPrefs.get().terminalType().getValue();
+                    if (term == null || !term.supportsSplitView()) {
+                        return null;
+                    }
 
-            return prefsValue;
-        }, AppPrefs.get().terminalSplitStrategy(), AppPrefs.get().terminalMultiplexer(), AppPrefs.get().terminalType());
+                    return prefsValue;
+                },
+                AppPrefs.get().terminalSplitStrategy(),
+                AppPrefs.get().terminalMultiplexer(),
+                AppPrefs.get().terminalType());
         return splitStrategy;
     }
 
@@ -88,7 +94,7 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
         VERTICAL;
     }
 
-    public static abstract class SplitIterator {
+    public abstract static class SplitIterator {
 
         public void next() {}
 
@@ -97,7 +103,7 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
         public abstract int getTargetPaneIndex();
     }
 
-    public static abstract class OrderedSplitIterator extends SplitIterator {
+    public abstract static class OrderedSplitIterator extends SplitIterator {
 
         private int index;
         protected int level;

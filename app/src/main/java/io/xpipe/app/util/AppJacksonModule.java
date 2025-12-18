@@ -92,7 +92,8 @@ public class AppJacksonModule extends SimpleModule {
     public static class KeePassXcPasswordManagerSerializer extends JsonSerializer<KeePassXcPasswordManager> {
 
         @Override
-        public void serialize(KeePassXcPasswordManager value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+        public void serialize(KeePassXcPasswordManager value, JsonGenerator jgen, SerializerProvider provider)
+                throws IOException {
             if (value == null) {
                 jgen.writeNull();
                 return;
@@ -107,9 +108,11 @@ public class AppJacksonModule extends SimpleModule {
 
         @Override
         public void serializeWithType(
-                KeePassXcPasswordManager value, JsonGenerator gen, SerializerProvider serializers,
-                TypeSerializer typeSer
-        ) throws IOException {
+                KeePassXcPasswordManager value,
+                JsonGenerator gen,
+                SerializerProvider serializers,
+                TypeSerializer typeSer)
+                throws IOException {
             serialize(value, gen, serializers);
         }
     }
@@ -125,13 +128,20 @@ public class AppJacksonModule extends SimpleModule {
             }
 
             if (tree.has("associationKey")) {
-                var parsed = JacksonMapper.getDefault().treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
-                return KeePassXcPasswordManager.builder().associationKeys(parsed != null ? List.of(parsed) : List.of()).build();
+                var parsed = JacksonMapper.getDefault()
+                        .treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
+                return KeePassXcPasswordManager.builder()
+                        .associationKeys(parsed != null ? List.of(parsed) : List.of())
+                        .build();
             } else {
-                var javaType =
-                        JacksonMapper.getDefault().getTypeFactory().constructCollectionLikeType(List.class, KeePassXcAssociationKey.class);
-                var parsed = (List<KeePassXcAssociationKey>) JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
-                return KeePassXcPasswordManager.builder().associationKeys(parsed).build();
+                var javaType = JacksonMapper.getDefault()
+                        .getTypeFactory()
+                        .constructCollectionLikeType(List.class, KeePassXcAssociationKey.class);
+                var parsed = (List<KeePassXcAssociationKey>)
+                        JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
+                return KeePassXcPasswordManager.builder()
+                        .associationKeys(parsed)
+                        .build();
             }
         }
     }

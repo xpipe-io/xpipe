@@ -40,7 +40,9 @@ public class OptionsChoiceBuilder {
             return (String) customPlain.get().invoke(null);
         }
 
-        var customConfig = Arrays.stream(c.getDeclaredMethods()).filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 1).findFirst();
+        var customConfig = Arrays.stream(c.getDeclaredMethods())
+                .filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 1)
+                .findFirst();
         if (customConfig.isPresent()) {
             return (String) customConfig.get().invoke(null, customConfiguration);
         }

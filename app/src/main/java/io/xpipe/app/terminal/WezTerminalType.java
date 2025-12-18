@@ -82,12 +82,14 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
 
         try (var stream = Files.list(dir)) {
             var files = stream.sorted(Comparator.<Path, Instant>comparing(path -> {
-                try {
-                    return Files.getLastModifiedTime(path).toInstant();
-                } catch (IOException e) {
-                    return Instant.MIN;
-                }
-            }).reversed()).toList();
+                                try {
+                                    return Files.getLastModifiedTime(path).toInstant();
+                                } catch (IOException e) {
+                                    return Instant.MIN;
+                                }
+                            })
+                            .reversed())
+                    .toList();
             for (Path file : files) {
                 if (file.getFileName().toString().contains("gui-sock")) {
                     try (SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX)) {
@@ -96,10 +98,12 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                 return Optional.of(file);
                             }
                         }
-                    } catch (IOException ignored) {}
+                    } catch (IOException ignored) {
+                    }
                 }
             }
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
 
         return Optional.empty();
     }
@@ -112,15 +116,20 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         // Always start a new window for split panes as we can't find the pane index to start with
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1) {
             var command = CommandBuilder.of()
-                    .add(base).add("start", "--always-new-process").add(configuration.getPanes().getFirst().getDialectLaunchCommand());
+                    .add(base)
+                    .add("start", "--always-new-process")
+                    .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             ExternalApplicationHelper.startAsync(command);
         } else {
             var command = CommandBuilder.of()
-                    .add(base).add("cli", "spawn")
+                    .add(base)
+                    .add("cli", "spawn")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             command.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
-            LocalShell.getShell().command(command)
-                    .withWorkingDirectory(FilePath.of(getSocketDir())).execute();
+            LocalShell.getShell()
+                    .command(command)
+                    .withWorkingDirectory(FilePath.of(getSocketDir()))
+                    .execute();
         }
 
         if (configuration.getPanes().size() > 1) {
@@ -136,12 +145,20 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                         .command(CommandBuilder.of()
                                 .add(base)
                                 .add("cli", "split-pane")
-                                .addIf(directionIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL, "--horizontal")
-                                .addIf(directionIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL, "--bottom")
+                                .addIf(
+                                        directionIterator.getSplitDirection()
+                                                == TerminalSplitStrategy.SplitDirection.HORIZONTAL,
+                                        "--horizontal")
+                                .addIf(
+                                        directionIterator.getSplitDirection()
+                                                == TerminalSplitStrategy.SplitDirection.VERTICAL,
+                                        "--bottom")
                                 .add("--pane-id", "" + directionIterator.getTargetPaneIndex())
                                 .add("--percent", "50")
                                 .add(configuration.getPanes().get(i).getDialectLaunchCommand())
-                                .fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString()))
+                                .fixedEnvironment(
+                                        "WEZTERM_UNIX_SOCKET",
+                                        activeSocket.get().toString()))
                         .withWorkingDirectory(FilePath.of(getSocketDir()))
                         .execute();
                 directionIterator.next();
@@ -279,11 +296,13 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         @Override
         public CommandBuilder getWeztermCommandBase() throws Exception {
             try (var sc = LocalShell.getShell()) {
-                var pathOut = sc.command(
-                        String.format("mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
-                                getApplicationName())).readStdoutOrThrow();
+                var pathOut = sc.command(String.format(
+                                "mdfind -name '%s' -onlyin /Applications -onlyin ~/Applications -onlyin /System/Applications 2>/dev/null",
+                                getApplicationName()))
+                        .readStdoutOrThrow();
                 var path = Path.of(pathOut);
-                return CommandBuilder.of().addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm"));
+                return CommandBuilder.of()
+                        .addFile(path.resolve("Contents").resolve("MacOS").resolve("wezterm"));
             }
         }
 

@@ -37,9 +37,11 @@ public class ServiceProtocolTypeHelper {
         var path = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPath() : null);
         return new OptionsBuilder()
                 .nameAndDescription("servicePath")
-                .addComp(new TextFieldComp(path).apply(struc -> {
-                    struc.get().setPromptText("/sub/path");
-                }), path)
+                .addComp(
+                        new TextFieldComp(path).apply(struc -> {
+                            struc.get().setPromptText("/sub/path");
+                        }),
+                        path)
                 .bind(
                         () -> {
                             return new ServiceProtocolType.Http(path.get());
@@ -51,9 +53,11 @@ public class ServiceProtocolTypeHelper {
         var path = new SimpleStringProperty(p.getValue() != null ? p.getValue().getPath() : null);
         return new OptionsBuilder()
                 .nameAndDescription("servicePath")
-                .addComp(new TextFieldComp(path).apply(struc -> {
-                    struc.get().setPromptText("/sub/path");
-                }), path)
+                .addComp(
+                        new TextFieldComp(path).apply(struc -> {
+                            struc.get().setPromptText("/sub/path");
+                        }),
+                        path)
                 .bind(
                         () -> {
                             return new ServiceProtocolType.Https(path.get());

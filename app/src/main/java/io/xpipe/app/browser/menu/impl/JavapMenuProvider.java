@@ -33,7 +33,8 @@ public class JavapMenuProvider
 
     @Override
     public boolean isApplicable(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-        if (!BrowserApplicationPathMenuProvider.super.isApplicable(model, entries) || !BrowserMenuLeafProvider.super.isApplicable(model, entries)) {
+        if (!BrowserApplicationPathMenuProvider.super.isApplicable(model, entries)
+                || !BrowserMenuLeafProvider.super.isApplicable(model, entries)) {
             return false;
         }
 

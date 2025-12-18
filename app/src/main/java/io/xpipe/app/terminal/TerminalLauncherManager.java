@@ -37,7 +37,11 @@ public class TerminalLauncherManager {
     }
 
     public static CountDownLatch submitAsync(
-            UUID request, ProcessControl processControl, TerminalInitScriptConfig config, FilePath directory, CountDownLatch latch) {
+            UUID request,
+            ProcessControl processControl,
+            TerminalInitScriptConfig config,
+            FilePath directory,
+            CountDownLatch latch) {
         synchronized (entries) {
             var req = entries.get(request);
             if (req == null) {

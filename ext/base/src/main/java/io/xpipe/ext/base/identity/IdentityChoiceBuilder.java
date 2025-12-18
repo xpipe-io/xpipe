@@ -48,7 +48,8 @@ public class IdentityChoiceBuilder {
         return i.build();
     }
 
-    public static OptionsBuilder keyAuthChoice(Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config) {
+    public static OptionsBuilder keyAuthChoice(
+            Property<SshIdentityStrategy> identity, SshIdentityStrategyChoiceConfig config) {
         return OptionsChoiceBuilder.builder()
                 .allowNull(false)
                 .property(identity)

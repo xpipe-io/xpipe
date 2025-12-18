@@ -77,10 +77,7 @@ public interface TabbyTerminalType extends ExternalTerminalType, TrackableTermin
                 // This is probably not going to work as it does not launch a bat file
                 launch(CommandBuilder.of()
                         .add("run")
-                        .add(sc -> pane
-                                .getDialectLaunchCommand()
-                                .buildFull(sc)
-                                .replaceFirst("\\.exe", ""))
+                        .add(sc -> pane.getDialectLaunchCommand().buildFull(sc).replaceFirst("\\.exe", ""))
                         .discardAllOutput());
             }
         }

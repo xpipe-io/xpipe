@@ -268,11 +268,13 @@ public class ShellView {
         if (shellControl.getShellDialect() == ShellDialects.CMD) {
             administrator = shellControl.command("net.exe session 1>NUL 2>NUL").executeAndCheck();
         } else if (ShellDialects.isPowershell(shellControl)) {
-            administrator = shellControl.command(String.format(
-                    "$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());"
-                            + "try {if (-not $($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {$host.ui"
-                            + ".WriteErrorLine(\"%s\"); throw \"error\"}} catch {}",
-                    "Not Administrator")).executeAndCheck();
+            administrator = shellControl
+                    .command(String.format(
+                            "$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent());"
+                                    + "try {if (-not $($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {$host.ui"
+                                    + ".WriteErrorLine(\"%s\"); throw \"error\"}} catch {}",
+                            "Not Administrator"))
+                    .executeAndCheck();
         } else {
             administrator = false;
         }

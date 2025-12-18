@@ -12,7 +12,9 @@ import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -71,7 +73,9 @@ public class IdentityApplyHubLeafProvider implements HubLeafProvider<IdentitySto
 
         @Override
         public void executeImpl() {
-            if (ref.getStore().getSshIdentity() != null && !(ref.getStore().getSshIdentity() instanceof NoIdentityStrategy) && ref.getStore().getSshIdentity().getPublicKey() == null) {
+            if (ref.getStore().getSshIdentity() != null
+                    && !(ref.getStore().getSshIdentity() instanceof NoIdentityStrategy)
+                    && ref.getStore().getSshIdentity().getPublicKey() == null) {
                 AppDialog.confirm("identityApplyMissingPublicKey");
                 StoreCreationDialog.showEdit(ref.get());
                 return;

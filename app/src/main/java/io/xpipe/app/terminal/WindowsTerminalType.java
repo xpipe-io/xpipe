@@ -33,9 +33,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         // A weird behavior in Windows Terminal causes the trailing
         // backslash of a filepath to escape the closing quote in the title argument
         // So just remove that slash
-        var fixedName = FilePath.of(s)
-                .removeTrailingSlash()
-                .toString();
+        var fixedName = FilePath.of(s).removeTrailingSlash().toString();
         // To fix https://github.com/microsoft/terminal/issues/13264
         fixedName = fixedName.replaceAll(";", "_");
         return fixedName;
@@ -51,7 +49,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         }
 
         // We assume that all scripts are located in the same dir
-        var spaces = configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
+        var spaces =
+                configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
         var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
         for (int i = 0; i < configuration.getPanes().size(); i++) {
             splitIterator.next();
@@ -65,8 +64,12 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
                 cmd.add(sc -> ShellDialects.isPowershell(sc) ? "`;" : ";");
                 cmd.add("sp");
                 // The names are not intuitive
-                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL, "--horizontal");
-                cmd.addIf(splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL, "--vertical");
+                cmd.addIf(
+                        splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.VERTICAL,
+                        "--horizontal");
+                cmd.addIf(
+                        splitIterator.getSplitDirection() == TerminalSplitStrategy.SplitDirection.HORIZONTAL,
+                        "--vertical");
             }
             cmd.add("--title").addQuoted(getFixedTitle(configuration.getColoredTitle()));
             cmd.add("--profile").addQuoted("{021eff0f-b38a-45f9-895d-41467e9d510f}");

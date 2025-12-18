@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
 import io.xpipe.app.comp.Comp;
@@ -23,15 +22,17 @@ import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Insets;
+
+import atlantafx.base.theme.Styles;
 import lombok.Data;
 
 import java.util.List;
 
 public class IdentityApplyDialog {
-
 
     @Data
     private static class SystemState {
@@ -54,24 +55,26 @@ public class IdentityApplyDialog {
         FilePath authorizedKeysFile;
 
         private void init(ShellControl sc, IdentityStore identity) throws Exception {
-            var hasPassword = identity.getPassword() != null && identity.getPassword().expectsQuery();
-            var hasIdentity = identity.getSshIdentity() != null && identity.getSshIdentity().getPublicKey() != null;
+            var hasPassword =
+                    identity.getPassword() != null && identity.getPassword().expectsQuery();
+            var hasIdentity = identity.getSshIdentity() != null
+                    && identity.getSshIdentity().getPublicKey() != null;
 
             configFile = getSystemConfigPath(sc);
             authorizedKeysFile = getAuthorizedKeysFile(sc);
 
             var configContent = getSshdConfigContent(sc);
-            keyAuthEnabled = isSet(configContent, "PubkeyAuthentication", "yes", true,false);
+            keyAuthEnabled = isSet(configContent, "PubkeyAuthentication", "yes", true, false);
             passwordAuthEnabled = isSet(configContent, "PasswordAuthentication", "yes", true, false);
-            rootLoginEnabled = isSet(configContent, "PermitRootLogin", "yes", !hasPassword, false) ||
-                    (!hasPassword &&
-                            !isSet(configContent, "PermitRootLogin", "forced-commands-only", true, false) &&
-                            isSet(configContent, "PermitRootLogin", "prohibit-password", true, true));
+            rootLoginEnabled = isSet(configContent, "PermitRootLogin", "yes", !hasPassword, false)
+                    || (!hasPassword
+                            && !isSet(configContent, "PermitRootLogin", "forced-commands-only", true, false)
+                            && isSet(configContent, "PermitRootLogin", "prohibit-password", true, true));
             keyAuthInMethods = isSet(configContent, "AuthenticationMethods", "publickey", true, false);
             passwordAuthInMethods = isSet(configContent, "AuthenticationMethods", "password", true, false);
-            mightRequireAdministratorAuthorizedKeys = sc.getOsType() == OsType.WINDOWS &&
-                    isSet(configContent, "Match", "Group administrators", false, false) &&
-                    isSet(configContent, "AuthorizedKeysFile", "administrators_authorized_keys", false, false);
+            mightRequireAdministratorAuthorizedKeys = sc.getOsType() == OsType.WINDOWS
+                    && isSet(configContent, "Match", "Group administrators", false, false)
+                    && isSet(configContent, "AuthorizedKeysFile", "administrators_authorized_keys", false, false);
 
             if (hasIdentity) {
                 var authorizedKeysContent = getAuthorizedKeysContent(sc);
@@ -114,11 +117,14 @@ public class IdentityApplyDialog {
         }
 
         private boolean isSet(String config, String name, String value, boolean notFoundDef, boolean notSpecifiedDef) {
-            var found = config.lines().filter(s -> {
-                return !s.strip().startsWith("#");
-            }).filter(s -> {
-                return s.toLowerCase().contains(name.toLowerCase());
-            }).toList();
+            var found = config.lines()
+                    .filter(s -> {
+                        return !s.strip().startsWith("#");
+                    })
+                    .filter(s -> {
+                        return s.toLowerCase().contains(name.toLowerCase());
+                    })
+                    .toList();
             if (found.isEmpty()) {
                 return notFoundDef;
             }
@@ -147,27 +153,33 @@ public class IdentityApplyDialog {
         }
         v.writeTextFile(authorizedKeysFile, authorizedKeysContent);
         if (sc.getOsType() != OsType.WINDOWS) {
-            sc.command(CommandBuilder.of().add("chmod", "600").addFile(authorizedKeysFile)).execute();
+            sc.command(CommandBuilder.of().add("chmod", "600").addFile(authorizedKeysFile))
+                    .execute();
         }
     }
 
     private static Comp<?> success() {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-checkbox-marked-outline");
-        return new LabelComp(AppI18n.observable("valid"), new ReadOnlyObjectWrapper<>(graphic)).styleClass(Styles.SUCCESS).apply(struc -> {
-            AppFontSizes.lg(struc.get());
-        });
+        return new LabelComp(AppI18n.observable("valid"), new ReadOnlyObjectWrapper<>(graphic))
+                .styleClass(Styles.SUCCESS)
+                .apply(struc -> {
+                    AppFontSizes.lg(struc.get());
+                });
     }
 
     private static Comp<?> warning() {
         var graphic = new LabelGraphic.IconGraphic("mdi2a-alert-box-outline");
-        return new LabelComp(AppI18n.observable("warning"), new ReadOnlyObjectWrapper<>(graphic)).styleClass(Styles.WARNING).apply(struc -> {
-            AppFontSizes.lg(struc.get());
-        });
+        return new LabelComp(AppI18n.observable("warning"), new ReadOnlyObjectWrapper<>(graphic))
+                .styleClass(Styles.WARNING)
+                .apply(struc -> {
+                    AppFontSizes.lg(struc.get());
+                });
     }
 
     private static Comp<?> fail(Comp<?> fixComp) {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-close-box-outline");
-        var label = new LabelComp(AppI18n.observable("notValid"), new ReadOnlyObjectWrapper<>(graphic)).styleClass(Styles.DANGER);
+        var label = new LabelComp(AppI18n.observable("notValid"), new ReadOnlyObjectWrapper<>(graphic))
+                .styleClass(Styles.DANGER);
         label.apply(struc -> {
             AppFontSizes.lg(struc.get());
         });
@@ -180,43 +192,55 @@ public class IdentityApplyDialog {
         }
     }
 
-    private static Comp<?> createAuthorizedKeysOptions(Property<DataStoreEntryRef<ShellStore>> system, ObjectProperty<SystemState> systemState, IdentityStore identity, BooleanProperty busy) {
+    private static Comp<?> createAuthorizedKeysOptions(
+            Property<DataStoreEntryRef<ShellStore>> system,
+            ObjectProperty<SystemState> systemState,
+            IdentityStore identity,
+            BooleanProperty busy) {
         var showAddAuthorizedHost = BindingsHelper.mapBoolean(systemState, s -> {
             return s != null && !s.isInAuthorizedKeys();
         });
 
         var editButton = new ButtonComp(AppI18n.observable("identityApplyEditAuthorizedKeysButton"), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                BooleanScope.executeExclusive(busy, () -> {
-                    var sc = system.getValue().getStore().getOrStartSession();
-                    var file = systemState.get().getAuthorizedKeysFile();
-                    var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(system.getValue(), null, m -> file.getParent(), null, false);
-                    var found = model.findFile(file);
-                    if (found.isEmpty()) {
-                        model.getFileSystem().touch(file);
-                        if (sc.getOsType() != OsType.WINDOWS) {
-                            sc.command(CommandBuilder.of().add("chmod", "600").addFile(file)).execute();
-                        }
-                        model.refreshSync();
-                        found = model.findFile(file);
-                    }
-                    if (found.isPresent()) {
-                        BrowserFileOpener.openInTextEditor(model, found.get());
-                    }
-                });
-            });
-        }).padding(new Insets(4, 8, 4, 8));
-
-        var addButton = new ButtonComp(AppI18n.observable("identityApplyAuthorizedHostButton"),
-                () -> {
                     ThreadHelper.runFailableAsync(() -> {
                         BooleanScope.executeExclusive(busy, () -> {
                             var sc = system.getValue().getStore().getOrStartSession();
-                            addPublicKey(systemState.get(), sc, identity.getSshIdentity().getPublicKey());
+                            var file = systemState.get().getAuthorizedKeysFile();
+                            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                                    system.getValue(), null, m -> file.getParent(), null, false);
+                            var found = model.findFile(file);
+                            if (found.isEmpty()) {
+                                model.getFileSystem().touch(file);
+                                if (sc.getOsType() != OsType.WINDOWS) {
+                                    sc.command(CommandBuilder.of()
+                                                    .add("chmod", "600")
+                                                    .addFile(file))
+                                            .execute();
+                                }
+                                model.refreshSync();
+                                found = model.findFile(file);
+                            }
+                            if (found.isPresent()) {
+                                BrowserFileOpener.openInTextEditor(model, found.get());
+                            }
+                        });
+                    });
+                })
+                .padding(new Insets(4, 8, 4, 8));
+
+        var addButton = new ButtonComp(AppI18n.observable("identityApplyAuthorizedHostButton"), () -> {
+                    ThreadHelper.runFailableAsync(() -> {
+                        BooleanScope.executeExclusive(busy, () -> {
+                            var sc = system.getValue().getStore().getOrStartSession();
+                            addPublicKey(
+                                    systemState.get(),
+                                    sc,
+                                    identity.getSshIdentity().getPublicKey());
                             systemState.setValue(SystemState.of(sc, identity));
                         });
                     });
-                }).padding(new Insets(4, 8, 4, 8));
+                })
+                .padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
                 .nameAndDescription("identityApplyAuthorizedHost")
@@ -231,41 +255,72 @@ public class IdentityApplyDialog {
         return options.buildComp().hide(Bindings.isNull(systemState));
     }
 
-    private static Comp<?> createConfigOptions(Property<DataStoreEntryRef<ShellStore>> system, Property<SystemState> systemState, IdentityStore identity, BooleanProperty busy) {
+    private static Comp<?> createConfigOptions(
+            Property<DataStoreEntryRef<ShellStore>> system,
+            Property<SystemState> systemState,
+            IdentityStore identity,
+            BooleanProperty busy) {
         var showAdminWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && identity.getSshIdentity() != null && identity.getSshIdentity().providesKey() && s.isMightRequireAdministratorAuthorizedKeys();
+            return s != null
+                    && identity.getSshIdentity() != null
+                    && identity.getSshIdentity().providesKey()
+                    && s.isMightRequireAdministratorAuthorizedKeys();
         });
         var showPasswordEnabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && (identity.getPassword() == null || !identity.getPassword().expectsQuery()) && s.isPasswordAuthEnabled() && s.isPasswordAuthInMethods();
+            return s != null
+                    && (identity.getPassword() == null
+                            || !identity.getPassword().expectsQuery())
+                    && s.isPasswordAuthEnabled()
+                    && s.isPasswordAuthInMethods();
         });
         var showPasswordDisabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && identity.getPassword() != null && identity.getPassword().expectsQuery() && (!s.isPasswordAuthEnabled() || !s.isPasswordAuthInMethods());
+            return s != null
+                    && identity.getPassword() != null
+                    && identity.getPassword().expectsQuery()
+                    && (!s.isPasswordAuthEnabled() || !s.isPasswordAuthInMethods());
         });
         var showKeyEnabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && (identity.getSshIdentity() == null || !identity.getSshIdentity().providesKey()) && s.keyAuthEnabled;
+            return s != null
+                    && (identity.getSshIdentity() == null
+                            || !identity.getSshIdentity().providesKey())
+                    && s.keyAuthEnabled;
         });
         var showKeyDisabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && identity.getSshIdentity() != null && identity.getSshIdentity().providesKey() && !s.keyAuthEnabled;
+            return s != null
+                    && identity.getSshIdentity() != null
+                    && identity.getSshIdentity().providesKey()
+                    && !s.keyAuthEnabled;
         });
         var showRootDisabledWarning = BindingsHelper.mapBoolean(systemState, s -> {
-            return s != null && identity.getUsername().getFixedUsername().map(u -> u.equals("root")).orElse(false) && !s.rootLoginEnabled;
+            return s != null
+                    && identity.getUsername()
+                            .getFixedUsername()
+                            .map(u -> u.equals("root"))
+                            .orElse(false)
+                    && !s.rootLoginEnabled;
         });
-        var showConfigSection = showKeyEnabledWarning.or(showRootDisabledWarning).or(showPasswordEnabledWarning)
-                .or(showPasswordDisabledWarning).or(showKeyDisabledWarning).or(showAdminWarning);
+        var showConfigSection = showKeyEnabledWarning
+                .or(showRootDisabledWarning)
+                .or(showPasswordEnabledWarning)
+                .or(showPasswordDisabledWarning)
+                .or(showKeyDisabledWarning)
+                .or(showAdminWarning);
 
         var editButton = new ButtonComp(AppI18n.observable("identityApplyEditConfigButton"), () -> {
-            ThreadHelper.runFailableAsync(() -> {
-                BooleanScope.executeExclusive(busy, () -> {
-                    var file = systemState.getValue().getConfigFile();
-                    var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(system.getValue(), null, m -> file.getParent(), null, false);
-                    var found = model.findFile(file);
-                    if (found.isEmpty()) {
-                        return;
-                    }
-                    BrowserFileOpener.openInTextEditor(model, found.get());
-                });
-            });
-        }).padding(new Insets(4, 8, 4, 8));
+                    ThreadHelper.runFailableAsync(() -> {
+                        BooleanScope.executeExclusive(busy, () -> {
+                            var file = systemState.getValue().getConfigFile();
+                            var model = BrowserFullSessionModel.DEFAULT.openFileSystemSync(
+                                    system.getValue(), null, m -> file.getParent(), null, false);
+                            var found = model.findFile(file);
+                            if (found.isEmpty()) {
+                                return;
+                            }
+                            BrowserFileOpener.openInTextEditor(model, found.get());
+                        });
+                    });
+                })
+                .padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
                 .nameAndDescription("identityApplyConfigPasswordEnabled")
@@ -284,11 +339,13 @@ public class IdentityApplyDialog {
                 .addComp(fail(null))
                 .hide(showRootDisabledWarning.not())
                 .nameAndDescription("identityApplyConfigAdminWarning")
-                .documentationLink("https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement#administrative-user")
+                .documentationLink(
+                        "https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement#administrative-user")
                 .addComp(warning())
                 .hide(showAdminWarning.not())
                 .nameAndDescription("identityApplyEditConfig")
-                .addComp(editButton).buildComp()
+                .addComp(editButton)
+                .buildComp()
                 .hide(showConfigSection.not());
         return options;
     }
@@ -311,32 +368,43 @@ public class IdentityApplyDialog {
                 BooleanScope.executeExclusive(busy, () -> {
                     var sc = newValue.getStore().getOrStartSession();
                     systemState.setValue(SystemState.of(sc, identity.getStore()));
-                    showSetIdentityButton.set(newValue.getStore() instanceof IdentitySwitchStore iss && !iss.getIdentity().unwrap().equals(identity.getStore()));
-                    showIdentityAlreadySet.set(newValue.getStore() instanceof IdentitySwitchStore iss && iss.getIdentity().unwrap().equals(identity.getStore()));
+                    showSetIdentityButton.set(newValue.getStore() instanceof IdentitySwitchStore iss
+                            && !iss.getIdentity().unwrap().equals(identity.getStore()));
+                    showIdentityAlreadySet.set(newValue.getStore() instanceof IdentitySwitchStore iss
+                            && iss.getIdentity().unwrap().equals(identity.getStore()));
                 });
             });
         });
 
-        var systemChoice = new StoreChoiceComp<>(null, system, ShellStore.class, null, StoreViewState.get().getAllConnectionsCategory()) {
+        var systemChoice =
+                new StoreChoiceComp<>(
+                        null,
+                        system,
+                        ShellStore.class,
+                        null,
+                        StoreViewState.get().getAllConnectionsCategory()) {
 
-            @Override
-            protected String toName(DataStoreEntry entry) {
-                if (entry == null) {
-                    return null;
-                }
+                    @Override
+                    protected String toName(DataStoreEntry entry) {
+                        if (entry == null) {
+                            return null;
+                        }
 
-                return DataStorage.get().getStoreEntryDisplayName(entry) + " -> " + IdentitySummary.createSummary(identity.getStore());
-            }
-        };
+                        return DataStorage.get().getStoreEntryDisplayName(entry) + " -> "
+                                + IdentitySummary.createSummary(identity.getStore());
+                    }
+                };
         var systemChoiceBusy = new LoadingOverlayComp(systemChoice, busy, false);
 
-        var applyButton = new ButtonComp(AppI18n.observable("identityApplySetStoreIdentityButton"),
-                () -> {
-                    DataStorage.get().updateEntryStore(system.get().get(),
-                            ((IdentitySwitchStore) system.get().getStore()).withIdentity(new IdentityValue.Ref(identity)));
-                    showSetIdentityButton.set(false);
-                    showIdentityAlreadySet.set(true);
-                });
+        var applyButton = new ButtonComp(AppI18n.observable("identityApplySetStoreIdentityButton"), () -> {
+            DataStorage.get()
+                    .updateEntryStore(
+                            system.get().get(),
+                            ((IdentitySwitchStore) system.get().getStore())
+                                    .withIdentity(new IdentityValue.Ref(identity)));
+            showSetIdentityButton.set(false);
+            showIdentityAlreadySet.set(true);
+        });
         applyButton.padding(new Insets(4, 8, 4, 8));
 
         var options = new OptionsBuilder()
@@ -351,7 +419,8 @@ public class IdentityApplyDialog {
                 .addComp(fail(applyButton))
                 .hide(showSetIdentityButton.not());
 
-        var modal = ModalOverlay.of("identityApplyTitle", options.buildComp().prefWidth(600).prefHeight(500));
+        var modal = ModalOverlay.of(
+                "identityApplyTitle", options.buildComp().prefWidth(600).prefHeight(500));
         modal.persist();
         modal.addButton(ModalButton.cancel());
         modal.addButton(ModalButton.ok().augment(button -> {

@@ -170,7 +170,9 @@ public final class FilePath {
     }
 
     public boolean startsWith(FilePath start) {
-        return normalize().toString().startsWith(start.normalize().removeTrailingSlash().toString());
+        return normalize()
+                .toString()
+                .startsWith(start.normalize().removeTrailingSlash().toString());
     }
 
     public FilePath relativize(FilePath base) {

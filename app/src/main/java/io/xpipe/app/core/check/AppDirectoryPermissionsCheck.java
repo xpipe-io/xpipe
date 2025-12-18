@@ -22,7 +22,8 @@ public class AppDirectoryPermissionsCheck {
             Files.delete(testDirectory);
 
             // For cloud providers like OneDrive, we need another check to guarantee that all files are synced
-            // The file operation might fail if the directory is designated to sync but the actual file is not downloaded yet
+            // The file operation might fail if the directory is designated to sync but the actual file is not
+            // downloaded yet
             var testFile = dataDirectory.resolve("sync_file");
             if (!Files.exists(testFile)) {
                 Files.createFile(testFile);

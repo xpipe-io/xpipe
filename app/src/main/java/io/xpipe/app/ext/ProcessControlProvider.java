@@ -11,6 +11,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.vnc.VncBaseStore;
 import io.xpipe.core.SecretValue;
+
 import javafx.beans.property.Property;
 
 import java.util.List;

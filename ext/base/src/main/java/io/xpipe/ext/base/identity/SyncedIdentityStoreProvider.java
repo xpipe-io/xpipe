@@ -106,7 +106,9 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 }))
                 .nameAndDescription(
                         handler.getActiveUser() != null
-                                ? (handler.getVaultAuthenticationType() == VaultAuthentication.GROUP ? "identityPerGroup" : "identityPerUser")
+                                ? (handler.getVaultAuthenticationType() == VaultAuthentication.GROUP
+                                        ? "identityPerGroup"
+                                        : "identityPerUser")
                                 : "identityPerUserDisabled")
                 .addToggle(perUser)
                 .disable(handler.getActiveUser() == null)

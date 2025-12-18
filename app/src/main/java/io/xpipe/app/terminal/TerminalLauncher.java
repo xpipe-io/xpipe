@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.core.FailableFunction;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import lombok.Value;
 
 import java.io.IOException;
@@ -120,11 +121,7 @@ public class TerminalLauncher {
         ProcessControl processControl;
     }
 
-    public static void open(
-            List<Config> configs,
-            boolean preferTabs,
-            ExternalTerminalType type)
-            throws Exception {
+    public static void open(List<Config> configs, boolean preferTabs, ExternalTerminalType type) throws Exception {
 
         var latch = new CountDownLatch(configs.size());
         var paneList = new ArrayList<TerminalPaneConfiguration>();
@@ -132,25 +129,37 @@ public class TerminalLauncher {
             var entry = config.getEntry();
             var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
             var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
-            var cleanTitle = (config.getTitle() != null ? config.getTitle() : entry != null ? entry.getName() : "Unknown");
+            var cleanTitle =
+                    (config.getTitle() != null ? config.getTitle() : entry != null ? entry.getName() : "Unknown");
             var adjustedTitle = prefix + cleanTitle;
 
-            var log = config.isEnableLogging() && AppPrefs.get().enableTerminalLogging().get();
-            var terminalConfig = new TerminalInitScriptConfig(adjustedTitle,
-                    !log && type.shouldClear() && AppPrefs.get().clearTerminalOnInit().get() && !AppPrefs.get().developerPrintInitFiles().get(),
-                    config.getProcessControl() instanceof ShellControl ? type.additionalInitCommands() : TerminalInitFunction.none());
-            var alwaysPromptRestart = config.isAlwaysKeepOpen() || AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
-            TerminalLauncherManager.submitAsync(config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
-            var effectivePreferTabs = preferTabs && AppPrefs.get().preferTerminalTabs().get();
+            var log = config.isEnableLogging()
+                    && AppPrefs.get().enableTerminalLogging().get();
+            var terminalConfig = new TerminalInitScriptConfig(
+                    adjustedTitle,
+                    !log
+                            && type.shouldClear()
+                            && AppPrefs.get().clearTerminalOnInit().get()
+                            && !AppPrefs.get().developerPrintInitFiles().get(),
+                    config.getProcessControl() instanceof ShellControl
+                            ? type.additionalInitCommands()
+                            : TerminalInitFunction.none());
+            var alwaysPromptRestart = config.isAlwaysKeepOpen()
+                    || AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
+            TerminalLauncherManager.submitAsync(
+                    config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
+            var effectivePreferTabs =
+                    preferTabs && AppPrefs.get().preferTerminalTabs().get();
 
             var paneIndex = configs.indexOf(config);
-            var paneConfig = TerminalPaneConfiguration.create(config.getRequest(),
-                    entry, config.getTitle(), paneIndex, effectivePreferTabs,
-                    alwaysPromptRestart);
+            var paneConfig = TerminalPaneConfiguration.create(
+                    config.getRequest(), entry, config.getTitle(), paneIndex, effectivePreferTabs, alwaysPromptRestart);
             paneList.add(paneConfig);
         }
 
-        var title = configs.size() == 1 ? configs.getFirst().getTitle() : AppNames.ofCurrent().getName() + " (" + configs.size() + " tabs)";
+        var title = configs.size() == 1
+                ? configs.getFirst().getTitle()
+                : AppNames.ofCurrent().getName() + " (" + configs.size() + " tabs)";
         var entry = configs.size() == 1 ? configs.getFirst().getEntry() : null;
         var color = entry != null ? DataStorage.get().getEffectiveColor(entry) : null;
         var prefix = entry != null && color != null && type.useColoredTitle() ? color.getEmoji() + " " : "";
@@ -181,7 +190,8 @@ public class TerminalLauncher {
                 var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig, launchRequest);
                 if (multiplexerConfig.isPresent()) {
                     // Use first tab to track when multiplexer has started up
-                    TerminalMultiplexerManager.registerMultiplexerLaunch(paneList.getFirst().getRequest());
+                    TerminalMultiplexerManager.registerMultiplexerLaunch(
+                            paneList.getFirst().getRequest());
                     launch(type, multiplexerConfig.get(), latch);
                     return;
                 }
@@ -243,8 +253,7 @@ public class TerminalLauncher {
     }
 
     private static Optional<TerminalLaunchConfiguration> launchMultiplexerTabInNewTerminal(
-            TerminalLaunchConfiguration launchConfiguration, UUID launchRequest)
-            throws Exception {
+            TerminalLaunchConfiguration launchConfiguration, UUID launchRequest) throws Exception {
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
         if (multiplexer.isEmpty()) {
             return Optional.empty();
@@ -273,14 +282,16 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
-            var fullLocalCommand = getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + proxyLaunchCommand;
-            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, fullLocalCommand, LocalShell.getDialect());
+            var fullLocalCommand =
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + proxyLaunchCommand;
+            var pane = new TerminalPaneConfiguration(
+                    multiplexerLaunchRequest,
+                    AppNames.ofCurrent().getName(),
+                    0,
+                    fullLocalCommand,
+                    LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null,
-                    AppNames.ofCurrent().getName(),
-                    AppNames.ofCurrent().getName(),
-                    false,
-                    List.of(pane)));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
         } else {
             var multiplexerCommand = multiplexer
                     .get()
@@ -291,14 +302,16 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(multiplexerCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
-            var fullLocalCommand = getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
-            var pane = new TerminalPaneConfiguration(multiplexerLaunchRequest, AppNames.ofCurrent().getName(), 0, fullLocalCommand, LocalShell.getDialect());
+            var fullLocalCommand =
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
+            var pane = new TerminalPaneConfiguration(
+                    multiplexerLaunchRequest,
+                    AppNames.ofCurrent().getName(),
+                    0,
+                    fullLocalCommand,
+                    LocalShell.getDialect());
             return Optional.of(new TerminalLaunchConfiguration(
-                    null,
-                    AppNames.ofCurrent().getName(),
-                    AppNames.ofCurrent().getName(),
-                    false,
-                    List.of(pane)));
+                    null, AppNames.ofCurrent().getName(), AppNames.ofCurrent().getName(), false, List.of(pane)));
         }
     }
 
@@ -318,7 +331,8 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(openCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
-            var fullLocalCommand = getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
+            var fullLocalCommand =
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
             // Restart for the next time
             proxyControl.get().start();
             panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));
@@ -340,5 +354,4 @@ public class TerminalLauncher {
         var lines = ShellScript.lines((powershell ? "& " + registerLine : registerLine), printBell ? bellLine : null);
         return lines.toString();
     }
-
 }

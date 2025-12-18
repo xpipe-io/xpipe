@@ -359,17 +359,15 @@ public class BrowserFileTransferOperation {
         }
     }
 
-    private boolean transferInline(
-            FilePath sourceFile,
-            FileSystem sourceFs,
-            FilePath targetFile,
-            FileSystem targetFs) throws Exception {
+    private boolean transferInline(FilePath sourceFile, FileSystem sourceFs, FilePath targetFile, FileSystem targetFs)
+            throws Exception {
         var wasRun = new AtomicBoolean(false);
         var active = new AtomicBoolean(true);
         var ex = new AtomicReference<Exception>();
         ThreadHelper.runAsync(() -> {
             try {
-                if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile) || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
+                if (targetFs.writeInstantIfPossible(sourceFs, sourceFile, targetFile)
+                        || sourceFs.readInstantIfPossible(sourceFile, targetFs, targetFile)) {
                     wasRun.set(true);
                 }
                 active.set(false);

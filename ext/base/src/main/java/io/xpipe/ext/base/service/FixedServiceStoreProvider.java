@@ -9,8 +9,8 @@ import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -39,18 +39,31 @@ public class FixedServiceStoreProvider extends AbstractServiceStoreProvider {
         var host = new ReadOnlyObjectWrapper<>(st.getHost());
         var localPort = new SimpleObjectProperty<>(st.getLocalPort());
         var serviceProtocolType = new SimpleObjectProperty<>(st.getServiceProtocolType());
-        var tunnelToLocalhost = new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
-        var hideTunnelToLocalhost = Bindings.createBooleanBinding(() -> {
-            return host.get() == null || (host.get().getStore() instanceof HostAddressGatewayStore g &&
-                    g.getTunnelGateway() != null && !(g.getTunnelGateway().getStore() instanceof LocalStore));
-        }, host);
-        var hideLocalPort = Bindings.createBooleanBinding(() -> {
-            return host.get() == null || !tunnelToLocalhost.get();
-        }, hideTunnelToLocalhost, tunnelToLocalhost);
+        var tunnelToLocalhost =
+                new SimpleBooleanProperty(st.getTunnelToLocalhost() != null ? st.getTunnelToLocalhost() : true);
+        var hideTunnelToLocalhost = Bindings.createBooleanBinding(
+                () -> {
+                    return host.get() == null
+                            || (host.get().getStore() instanceof HostAddressGatewayStore g
+                                    && g.getTunnelGateway() != null
+                                    && !(g.getTunnelGateway().getStore() instanceof LocalStore));
+                },
+                host);
+        var hideLocalPort = Bindings.createBooleanBinding(
+                () -> {
+                    return host.get() == null || !tunnelToLocalhost.get();
+                },
+                hideTunnelToLocalhost,
+                tunnelToLocalhost);
 
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")
-                .addComp(new StoreChoiceComp<>(entry, host, NetworkTunnelStore.class, n -> n.getStore().isLocallyTunnelable(),
+                .addComp(
+                        new StoreChoiceComp<>(
+                                entry,
+                                host,
+                                NetworkTunnelStore.class,
+                                n -> n.getStore().isLocallyTunnelable(),
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()

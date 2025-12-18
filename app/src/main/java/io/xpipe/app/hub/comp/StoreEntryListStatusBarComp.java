@@ -135,9 +135,11 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
             runActions(s);
         });
 
-        button.disable(Bindings.createBooleanBinding(() -> {
-            return childrenRefs.getList().stream().anyMatch(ref -> !s.isActive(ref));
-        }, childrenRefs.getList()));
+        button.disable(Bindings.createBooleanBinding(
+                () -> {
+                    return childrenRefs.getList().stream().anyMatch(ref -> !s.isActive(ref));
+                },
+                childrenRefs.getList()));
 
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(

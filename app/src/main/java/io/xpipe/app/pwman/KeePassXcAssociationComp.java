@@ -1,20 +1,23 @@
 package io.xpipe.app.pwman;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.IconButtonComp;
+
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
+import atlantafx.base.theme.Styles;
+
 public class KeePassXcAssociationComp extends SimpleComp {
 
     private final KeePassXcAssociationKey associationKey;
     private final Runnable onRemove;
 
-    public KeePassXcAssociationComp(KeePassXcAssociationKey associationKey, Runnable onRemove) {this.associationKey = associationKey;
+    public KeePassXcAssociationComp(KeePassXcAssociationKey associationKey, Runnable onRemove) {
+        this.associationKey = associationKey;
         this.onRemove = onRemove;
     }
 

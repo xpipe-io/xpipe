@@ -76,9 +76,11 @@ public class TerminalView {
     public synchronized void open(UUID request, long pid) {
         var substitution = substitutions.get(request);
         if (substitution != null) {
-            var substitutedSession = sessions.stream().filter(shellSession -> {
-                return shellSession.getRequest().equals(substitution);
-            }).findFirst();
+            var substitutedSession = sessions.stream()
+                    .filter(shellSession -> {
+                        return shellSession.getRequest().equals(substitution);
+                    })
+                    .findFirst();
             if (substitutedSession.isEmpty()) {
                 return;
             }
@@ -86,7 +88,10 @@ public class TerminalView {
             TrackEvent.withTrace("Substituted shell session opened")
                     .tag("request", request.toString())
                     .handle();
-            var session = new ShellSession(request, substitutedSession.get().getShell(), substitutedSession.get().getTerminal());
+            var session = new ShellSession(
+                    request,
+                    substitutedSession.get().getShell(),
+                    substitutedSession.get().getTerminal());
             sessions.add(session);
             forListeners(listener -> listener.onSessionOpened(session));
             return;

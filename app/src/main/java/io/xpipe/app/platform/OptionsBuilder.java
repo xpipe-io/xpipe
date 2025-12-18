@@ -165,7 +165,8 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder nameAndDescription(ObservableValue<String> key) {
-        return name(AppI18n.observable(key)).description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
+        return name(AppI18n.observable(key))
+                .description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
     }
 
     public OptionsBuilder subAdvanced(OptionsBuilder builder) {
@@ -217,8 +218,7 @@ public class OptionsBuilder {
 
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(
-                null, null, null, new LabelComp(title).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).styleClass("title-header")));
         return this;
     }
 

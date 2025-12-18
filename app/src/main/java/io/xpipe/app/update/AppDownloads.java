@@ -36,7 +36,9 @@ public class AppDownloads {
             }
 
             // Fix file name to not have dashes to not be included in temp dir clean
-            var downloadFile = AppSystemInfo.ofCurrent().getTemp().resolve(release.getFile().replaceAll("-", "_"));
+            var downloadFile = AppSystemInfo.ofCurrent()
+                    .getTemp()
+                    .resolve(release.getFile().replaceAll("-", "_"));
             Files.write(downloadFile, response.body());
             TrackEvent.withInfo("Downloaded asset")
                     .tag("version", version)

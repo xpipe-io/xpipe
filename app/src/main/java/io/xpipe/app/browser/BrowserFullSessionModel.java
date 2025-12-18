@@ -63,9 +63,8 @@ public class BrowserFullSessionModel extends BrowserAbstractSessionModel<Browser
         DEFAULT.openSync(new BrowserHistoryTabModel(DEFAULT), null);
         if (AppPrefs.get().pinLocalMachineOnStartup().get()) {
             var tab = new BrowserFileSystemTabModel(
-                    DEFAULT,
-                    DataStorage.get().local().ref(),
-                    ref -> ref.getStore().createFileSystem());
+                    DEFAULT, DataStorage.get().local().ref(), ref -> ref.getStore()
+                            .createFileSystem());
             try {
                 DEFAULT.openSync(tab, null);
                 DEFAULT.pinTab(tab);

@@ -49,7 +49,8 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
     }
 
     public void finishChooser() {
-        var chosen = new ArrayList<>(fileSelection.stream().map(be -> be.getRawFileEntry().getPath()).toList());
+        var chosen = new ArrayList<>(
+                fileSelection.stream().map(be -> be.getRawFileEntry().getPath()).toList());
 
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
@@ -68,9 +69,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         }
 
         var stores = chosen.stream()
-                .map(entry -> new FileReference(
-                        selectedEntry.getValue().getEntry(),
-                        entry))
+                .map(entry -> new FileReference(selectedEntry.getValue().getEntry(), entry))
                 .toList();
         onFinish.accept(stores);
     }

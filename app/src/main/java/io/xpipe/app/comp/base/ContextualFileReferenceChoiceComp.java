@@ -56,8 +56,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences,
-            Predicate<DataStoreEntry> filter, boolean directory
-    ) {
+            Predicate<DataStoreEntry> filter,
+            boolean directory) {
         this.sync = sync;
         this.previousFileReferences = previousFileReferences;
         this.filter = filter;

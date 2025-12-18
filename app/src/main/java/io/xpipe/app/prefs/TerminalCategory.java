@@ -184,15 +184,23 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(
                         new OptionsBuilder()
                                 .name("terminalSplitStrategy")
-                                .description(Bindings.createStringBinding(() -> {
-                                    return AppI18n.get(splitViewSupported.get() ? "terminalSplitStrategyDescription" : "terminalSplitStrategyDisabledDescription");
-                                }, splitViewSupported, AppI18n.activeLanguage()))
+                                .description(Bindings.createStringBinding(
+                                        () -> {
+                                            return AppI18n.get(
+                                                    splitViewSupported.get()
+                                                            ? "terminalSplitStrategyDescription"
+                                                            : "terminalSplitStrategyDisabledDescription");
+                                        },
+                                        splitViewSupported,
+                                        AppI18n.activeLanguage()))
                                 .documentationLink(DocumentationLink.TERMINAL_SPLIT)
-                                .addComp(ChoiceComp.ofTranslatable(
-                                        prefs.terminalSplitStrategy,
-                                        Arrays.asList(TerminalSplitStrategy.values()),
-                                        false).maxWidth(getCompWidth()), prefs.terminalSplitStrategy
-                                )
+                                .addComp(
+                                        ChoiceComp.ofTranslatable(
+                                                        prefs.terminalSplitStrategy,
+                                                        Arrays.asList(TerminalSplitStrategy.values()),
+                                                        false)
+                                                .maxWidth(getCompWidth()),
+                                        prefs.terminalSplitStrategy)
                                 .disable(splitViewSupported.not())
                                 .pref(prefs.terminalAlwaysPauseOnExit)
                                 .addToggle(prefs.terminalAlwaysPauseOnExit)

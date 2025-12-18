@@ -28,8 +28,7 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
         var options = new OptionsBuilder();
         var cmdProperty = options.map(p, SecretCustomCommandStrategy::getCommand);
-        return options
-                .addComp(new TextFieldComp(cmdProperty), cmdProperty)
+        return options.addComp(new TextFieldComp(cmdProperty), cmdProperty)
                 .nonNull()
                 .bind(
                         () -> {

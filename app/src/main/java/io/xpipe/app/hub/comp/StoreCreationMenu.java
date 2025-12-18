@@ -74,7 +74,10 @@ public class StoreCreationMenu {
 
         menu.getItems()
                 .add(categoryMenu(
-                        "addFileSystem", "mdi2f-folder-plus-outline", DataStoreCreationCategory.FILE_SYSTEM, "genericS3Bucket"));
+                        "addFileSystem",
+                        "mdi2f-folder-plus-outline",
+                        DataStoreCreationCategory.FILE_SYSTEM,
+                        "genericS3Bucket"));
 
         menu.getItems().add(new SeparatorMenuItem());
 

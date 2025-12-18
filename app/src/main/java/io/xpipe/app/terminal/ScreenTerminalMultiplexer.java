@@ -33,13 +33,13 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
+    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config)
+            throws Exception {
         var l = new ArrayList<String>();
-        var firstCommand = getCommand(control, config.single().getDialectLaunchCommand().buildFull(control));
-        l.addAll(List.of(
-                "screen -S xpipe -X screen -t \"" + escape(config.getCleanTitle(), true) + "\" "
-                        + escape(firstCommand, false)
-        ));
+        var firstCommand =
+                getCommand(control, config.single().getDialectLaunchCommand().buildFull(control));
+        l.addAll(List.of("screen -S xpipe -X screen -t \"" + escape(config.getCleanTitle(), true) + "\" "
+                + escape(firstCommand, false)));
         return ShellScript.lines(l);
     }
 
@@ -48,11 +48,10 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
         var list = new ArrayList<String>();
         list.add("for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done");
 
-        var firstCommand = getCommand(control, config.single().getDialectLaunchCommand().buildFull(control));
+        var firstCommand =
+                getCommand(control, config.single().getDialectLaunchCommand().buildFull(control));
         list.addAll(List.of(
-                "screen -S xpipe -t \"" + escape(config.getCleanTitle(), true) + "\" "
-                        + escape(firstCommand, false)
-        ));
+                "screen -S xpipe -t \"" + escape(config.getCleanTitle(), true) + "\" " + escape(firstCommand, false)));
         return ShellScript.lines(list);
     }
 

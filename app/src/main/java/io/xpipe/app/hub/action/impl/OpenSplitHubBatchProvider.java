@@ -12,7 +12,9 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -73,7 +75,8 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
                 ProcessControlProvider.get().withDefaultScripts(control);
 
                 var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
-                var config = new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
+                var config =
+                        new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
                 panes.add(config);
             }
             TerminalLauncher.open(panes, true, type);

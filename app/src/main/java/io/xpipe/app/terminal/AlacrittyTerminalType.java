@@ -39,19 +39,29 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
-            var spaces = configuration.getPanes().getFirst().getScriptFile().toString().contains(" ");
+            var spaces = configuration
+                    .getPanes()
+                    .getFirst()
+                    .getScriptFile()
+                    .toString()
+                    .contains(" ");
             var scriptFile = spaces
                     ? configuration.single().getScriptFile().getFileName()
                     : configuration.single().getScriptFile().toString();
             var scriptOpenCommand = configuration.single().getScriptDialect().getOpenScriptCommand(scriptFile);
-            var b = CommandBuilder.of().add("alacritty").add("-t")
-                    .addQuoted(configuration.getCleanTitle()).add("-e").add(scriptOpenCommand);
+            var b = CommandBuilder.of()
+                    .add("alacritty")
+                    .add("-t")
+                    .addQuoted(configuration.getCleanTitle())
+                    .add("-e")
+                    .add(scriptOpenCommand);
 
             try (ShellControl sc = LocalShell.getShell()) {
                 CommandSupport.isInPathOrThrow(sc, "alacritty");
                 var command = sc.command(b);
                 if (spaces) {
-                        command.withWorkingDirectory(configuration.single().getScriptFile().getParent());
+                    command.withWorkingDirectory(
+                            configuration.single().getScriptFile().getParent());
                 }
                 command.execute();
             }

@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Popover;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppI18n;
@@ -20,6 +19,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import atlantafx.base.controls.Popover;
 import atlantafx.base.layout.InputGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -100,7 +100,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                     capsPopover.hide();
                     return;
                 }
-            if (!capsPopover.isShowing() && field.getScene() != null) {
+                if (!capsPopover.isShowing() && field.getScene() != null) {
                     capsPopover.show(field);
                 }
             });

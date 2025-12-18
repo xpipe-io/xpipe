@@ -8,8 +8,8 @@ import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;

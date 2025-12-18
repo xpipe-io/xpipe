@@ -35,7 +35,9 @@ public class StoreEntryListOverviewComp extends SimpleComp {
 
     private final ObservableSubscriber filterTrigger;
 
-    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {this.filterTrigger = filterTrigger;}
+    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {
+        this.filterTrigger = filterTrigger;
+    }
 
     private Region createGroupListHeader() {
         var label = new Label();

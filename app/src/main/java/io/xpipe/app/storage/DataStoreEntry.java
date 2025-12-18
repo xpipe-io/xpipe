@@ -109,8 +109,8 @@ public class DataStoreEntry extends StorageElement {
             boolean freeze,
             boolean pinToTop,
             int orderIndex,
-            UUID breakOutCategory, List<String> tags
-    ) {
+            UUID breakOutCategory,
+            List<String> tags) {
         super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
         this.color = color;
         this.categoryUuid = categoryUuid;

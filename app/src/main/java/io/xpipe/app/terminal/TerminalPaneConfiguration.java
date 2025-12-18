@@ -11,6 +11,7 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.LicenseRequiredException;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
+
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,6 +38,7 @@ public class TerminalPaneConfiguration {
     int paneIndex;
     String scriptContent;
     ShellDialect scriptDialect;
+
     @NonFinal
     FilePath scriptFile = null;
 
@@ -44,7 +46,8 @@ public class TerminalPaneConfiguration {
         var logDir = AppProperties.get().getDataDir().resolve("sessions");
         Files.createDirectories(logDir);
         var suffix = index > 0 ? "-" + (index + 1) : "";
-        var name = DataStorage.get().getStoreEntryDisplayName(entry) + "_" + DATE_FORMATTER.format(Instant.now()) + suffix + ".log";
+        var name = DataStorage.get().getStoreEntryDisplayName(entry) + "_" + DATE_FORMATTER.format(Instant.now())
+                + suffix + ".log";
         var logName = OsFileSystem.ofLocal()
                 .makeFileSystemCompatible(FilePath.of(name))
                 .toString()
@@ -92,13 +95,13 @@ public class TerminalPaneConfiguration {
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
-                            .formatted(TerminalLauncher.getTerminalRegisterCommand(request, ShellDialects.POWERSHELL), logFile.getFileName(), logFile, launcherScript, logFile.getFileName());
-            var config = new TerminalPaneConfiguration(
-                    request,
-                    title,
-                    paneIndex,
-                    content,
-                    ShellDialects.POWERSHELL);
+                            .formatted(
+                                    TerminalLauncher.getTerminalRegisterCommand(request, ShellDialects.POWERSHELL),
+                                    logFile.getFileName(),
+                                    logFile,
+                                    launcherScript,
+                                    logFile.getFileName());
+            var config = new TerminalPaneConfiguration(request, title, paneIndex, content, ShellDialects.POWERSHELL);
             return config;
         } else {
             var found = sc.view().findProgram("script").isPresent();

@@ -93,8 +93,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
         wv.setContextMenuEnabled(false);
         wv.setPageFill(Color.TRANSPARENT);
         wv.getEngine()
-                .setUserDataDirectory(
-                        AppCache.getBasePath().resolve("webview").toFile());
+                .setUserDataDirectory(AppCache.getBasePath().resolve("webview").toFile());
         var theme = AppPrefs.get() != null
                         && AppPrefs.get().theme().getValue() != null
                         && AppPrefs.get().theme().getValue().isDark()

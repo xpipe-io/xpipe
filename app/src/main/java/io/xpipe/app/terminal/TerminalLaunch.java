@@ -63,11 +63,15 @@ public class TerminalLaunch {
             return;
         }
 
-        var pane = new TerminalLauncher.Config(entry, getFullTitle(), directory, request != null ? request : UUID.randomUUID(), logIfEnabled, alwaysKeepOpen, command);
-        TerminalLauncher.open(
-                List.of(pane),
-                preferTabs,
-                type);
+        var pane = new TerminalLauncher.Config(
+                entry,
+                getFullTitle(),
+                directory,
+                request != null ? request : UUID.randomUUID(),
+                logIfEnabled,
+                alwaysKeepOpen,
+                command);
+        TerminalLauncher.open(List.of(pane), preferTabs, type);
     }
 
     public static class TerminalLaunchBuilder {

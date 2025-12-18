@@ -42,7 +42,7 @@ public class FileBrowserCategory extends AppPrefsCategory {
                                                 null,
                                                 List.of(),
                                                 e -> e.equals(DataStorage.get().local()),
-                                        true)
+                                                true)
                                         .maxWidth(getCompWidth()),
                                 prefs.downloadsDirectory)
                         .pref(prefs.pinLocalMachineOnStartup)

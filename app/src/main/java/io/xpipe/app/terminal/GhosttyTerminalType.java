@@ -34,7 +34,8 @@ public interface GhosttyTerminalType extends ExternalTerminalType, TrackableTerm
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
-            var builder = CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
+            var builder =
+                    CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
             launch(builder);
         }
 

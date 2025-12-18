@@ -77,10 +77,8 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
             try (var sc = LocalShell.getShell().start()) {
                 var command = pane.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
                         + "\n"
-                        + pane
-                                .getScriptDialect()
-                                .runScriptCommand(
-                                        sc, pane.getScriptFile().toString());
+                        + pane.getScriptDialect()
+                                .runScriptCommand(sc, pane.getScriptFile().toString());
 
                 // Move to subdir as Warp tries to index the parent dir, which would be temp in this case
                 var scriptFile = ScriptHelper.createExecScript(pane.getScriptDialect(), sc, command);

@@ -153,10 +153,11 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                     }
                 });
             });
-            InputHelper.onKeyCombination(s, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
-                filterTrigger.trigger();
-                keyEvent.consume();
-            });
+            InputHelper.onKeyCombination(
+                    s, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                        filterTrigger.trigger();
+                        keyEvent.consume();
+                    });
             return s;
         });
 

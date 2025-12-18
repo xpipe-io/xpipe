@@ -35,18 +35,22 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
         var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
         var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
-        var field = new TextFieldComp(keyProperty).apply(
-                struc -> struc.get().promptTextProperty().bind(Bindings.createStringBinding(() -> {
-                    return prefs.passwordManager().getValue() != null ? prefs.passwordManager().getValue().getKeyPlaceholder() : "?";
-                }, prefs.passwordManager())));
+        var field = new TextFieldComp(keyProperty).apply(struc -> struc.get()
+                .promptTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return prefs.passwordManager().getValue() != null
+                                    ? prefs.passwordManager().getValue().getKeyPlaceholder()
+                                    : "?";
+                        },
+                        prefs.passwordManager())));
         var button = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
             AppPrefs.get().selectCategory("passwordManager");
             App.getApp().getStage().requestFocus();
         });
         var content = new InputGroupComp(List.of(field, button));
         content.setMainReference(field);
-        return options
-                .nameAndDescription("passwordManagerKey")
+        return options.nameAndDescription("passwordManagerKey")
                 .addComp(content, keyProperty)
                 .nonNull()
                 .bind(

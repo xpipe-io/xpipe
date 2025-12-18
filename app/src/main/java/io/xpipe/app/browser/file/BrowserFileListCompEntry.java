@@ -241,7 +241,8 @@ public class BrowserFileListCompEntry {
                     .dropFilesIntoAsync(
                             target,
                             files.stream()
-                                    .map(browserEntry -> browserEntry.getRawFileEntry().resolved())
+                                    .map(browserEntry ->
+                                            browserEntry.getRawFileEntry().resolved())
                                     .toList(),
                             db.getMode());
             event.setDropCompleted(true);

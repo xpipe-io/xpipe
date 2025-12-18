@@ -67,7 +67,8 @@ public class VaultCategory extends AppPrefsCategory {
                         ? (uh.getActiveUser() != null && uh.getActiveUser().equals("legacy") ? "Legacy" : "Personal")
                         : "Team";
 
-        var authChoice = ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), true);
+        var authChoice =
+                ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), true);
         authChoice.apply(struc -> struc.get().setOpacity(1.0));
         authChoice.maxWidth(600);
 
@@ -80,19 +81,27 @@ public class VaultCategory extends AppPrefsCategory {
                         .licenseRequirement("team")
                         .nameAndDescription("vaultAuthentication")
                         .addComp(authChoice, prefs.vaultAuthentication)
-                        .nameAndDescription(Bindings.createStringBinding(() -> {
-                            var empty = uh.getUserCount() == 0;
-                            if (prefs.vaultAuthentication.get() == VaultAuthentication.GROUP) {
-                                return empty ? "groupManagementEmpty" : "groupManagement";
-                            }
+                        .nameAndDescription(Bindings.createStringBinding(
+                                () -> {
+                                    var empty = uh.getUserCount() == 0;
+                                    if (prefs.vaultAuthentication.get() == VaultAuthentication.GROUP) {
+                                        return empty ? "groupManagementEmpty" : "groupManagement";
+                                    }
 
-                            return empty ? "userManagementEmpty" : "userManagement";
-                        }, prefs.vaultAuthentication))
+                                    return empty ? "userManagementEmpty" : "userManagement";
+                                },
+                                prefs.vaultAuthentication))
                         .addComp(uh.createOverview().maxWidth(getCompWidth()))
                         .pref(prefs.groupSecretStrategy)
-                        .addComp(OptionsChoiceBuilder.builder().property(prefs.groupSecretStrategy)
-                                .allowNull(true).available(DataStorageGroupStrategy.getClasses())
-                                .build().build().buildComp().maxWidth(getCompWidth()),
+                        .addComp(
+                                OptionsChoiceBuilder.builder()
+                                        .property(prefs.groupSecretStrategy)
+                                        .allowNull(true)
+                                        .available(DataStorageGroupStrategy.getClasses())
+                                        .build()
+                                        .build()
+                                        .buildComp()
+                                        .maxWidth(getCompWidth()),
                                 prefs.groupSecretStrategy)
                         .nonNull()
                         .hide(prefs.vaultAuthentication.isNotEqualTo(VaultAuthentication.GROUP))
@@ -105,8 +114,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .addComp(Comp.empty())
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
-                        .hide(uh.getUserCount() > 1)
-                );
+                        .hide(uh.getUserCount() > 1));
         builder.sub(new OptionsBuilder().pref(prefs.encryptAllVaultData).addToggle(encryptVault));
         return builder.buildComp();
     }

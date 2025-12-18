@@ -277,7 +277,8 @@ public class KeePassXcProxyClient {
         throw new IllegalStateException("Login query failed for an unknown reason");
     }
 
-    public PasswordManager.CredentialResult getCredentials(List<KeePassXcAssociationKey> associationKeys, String key) throws IOException {
+    public PasswordManager.CredentialResult getCredentials(List<KeePassXcAssociationKey> associationKeys, String key)
+            throws IOException {
         var message = getLoginsMessage(associationKeys, key);
         var tree = JacksonMapper.getDefault().readTree(message);
         var count = tree.required("count").asInt();
