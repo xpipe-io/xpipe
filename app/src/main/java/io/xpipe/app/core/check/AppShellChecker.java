@@ -19,12 +19,10 @@ public abstract class AppShellChecker {
                 .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
         if (isDefaultShell && fallBackInstantly()) {
             toggleFallback();
-            isDefaultShell = false;
         }
 
         var originalErr = selfTestErrorCheck();
         if (originalErr.isPresent()
-                && isDefaultShell
                 && (shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue())) {
             var msg = formatMessage(originalErr.get().getMessage());
             ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
@@ -88,7 +86,7 @@ public abstract class AppShellChecker {
             var scriptFile = ScriptHelper.createExecScript(sc, scriptContent);
             var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString()))
                     .readStdoutOrThrow();
-            if (!out.equals("test")) {
+            if (!out.equals("testa")) {
                 return Optional.of(new FailureResult(
                         "Expected output \"test\", got output \"" + out + "\" when running test script", false, true));
             }
