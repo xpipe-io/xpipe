@@ -344,20 +344,38 @@ public class AppMainWindow {
                 stage.setHeight(state.windowHeight);
             }
             TrackEvent.debug("Window loaded saved bounds");
-        } else if (!AppProperties.get().isShowcase()) {
-            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
-                stage.setWidth(1000);
-                stage.setHeight(600);
-            } else {
-                stage.setWidth(1280);
-                stage.setHeight(780);
-            }
         } else {
+            setDefaultSize();
+        }
+    }
+
+    private void setDefaultSize() {
+        if (AppProperties.get().isShowcase()) {
             stage.setX(312);
             stage.setY(149);
             stage.setWidth(1296);
             stage.setHeight(759);
+            return;
         }
+
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            stage.setWidth(1000);
+            stage.setHeight(600);
+        }
+
+        var screens = Screen.getScreens();
+        if (screens.size() > 1) {
+            stage.setWidth(1280);
+            stage.setHeight(780);
+            return;
+        }
+
+        var screen = screens.getFirst();
+        var w = Math.min(stage.getWidth(), screen.getBounds().getWidth() - 10);
+        var h = Math.min(stage.getHeight(), screen.getBounds().getHeight() - 10);
+        stage.setWidth(w);
+        stage.setHeight(h);
+
     }
 
     private void saveState() {
