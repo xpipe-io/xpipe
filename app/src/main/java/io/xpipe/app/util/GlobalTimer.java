@@ -46,6 +46,10 @@ public class GlobalTimer {
     }
 
     private static void schedule(TimerTask task, long delay) {
+        if (TIMER == null) {
+            return;
+        }
+
         try {
             TIMER.schedule(
                     new TimerTask() {

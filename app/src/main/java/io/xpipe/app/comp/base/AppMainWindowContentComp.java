@@ -109,7 +109,11 @@ public class AppMainWindowContentComp extends SimpleComp {
             });
             var loadingTextAnimated = Bindings.createStringBinding(
                     () -> {
-                        return AppMainWindow.getLoadingText().getValue() + " " + (".".repeat(loadingTextCounter.get()))
+                        var base = AppMainWindow.getLoadingText().getValue();
+                        if (base == null) {
+                            return null;
+                        }
+                        return base + " " + (".".repeat(loadingTextCounter.get()))
                                 + (" ".repeat(3 - loadingTextCounter.get()));
                     },
                     AppMainWindow.getLoadingText(),
