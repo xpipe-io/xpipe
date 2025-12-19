@@ -3,10 +3,7 @@ package io.xpipe.app.core.check;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ProcessOutputException;
-import io.xpipe.app.process.ScriptHelper;
-import io.xpipe.app.process.ShellSpawnException;
+import io.xpipe.app.process.*;
 import io.xpipe.app.util.DocumentationLink;
 
 import lombok.Value;
@@ -25,31 +22,32 @@ public abstract class AppShellChecker {
             isDefaultShell = false;
         }
 
-        var err = selfTestErrorCheck();
-        if (err.isPresent()
+        var originalErr = selfTestErrorCheck();
+        if (originalErr.isPresent()
                 && isDefaultShell
-                && (shouldAttemptFallbackForProcessStartFail() || !err.get().isProcessSpawnIssue())) {
-            var msg = formatMessage(err.get().getMessage());
+                && (shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue())) {
+            var msg = formatMessage(originalErr.get().getMessage());
             ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
                     .documentationLink(DocumentationLink.LOCAL_SHELL_WARNING)
                     .expected()
                     .handle();
             toggleFallback();
-            var fallbackErr = selfTestErrorCheck();
-            if (fallbackErr.isPresent()) {
-                // Toggle back if both shells have issues
-                toggleFallback();
-            }
-            err = fallbackErr;
         }
 
-        if (err.isPresent()) {
-            var msg = formatMessage(err.get().getMessage());
-            var event = ErrorEventFactory.fromThrowable(new IllegalStateException(msg));
-            if (!err.get().isCanContinue()) {
-                event.term();
+        if (originalErr.isPresent()) {
+            var fallbackErr = selfTestErrorCheck();
+            if (fallbackErr.isPresent()) {
+                var msg = formatMessage(fallbackErr.get().getMessage());
+                var event = ErrorEventFactory.fromThrowable(new IllegalStateException(msg));
+                // Only make it terminal if both shells can't continue
+                if (originalErr.get().isCanContinue()) {
+                    // Toggle back if both shells have issues
+                    toggleFallback();
+                } else if (!fallbackErr.get().isCanContinue()) {
+                    event.term();
+                }
+                event.handle();
             }
-            event.handle();
         }
     }
 
