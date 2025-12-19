@@ -86,7 +86,7 @@ public abstract class AppShellChecker {
             var scriptFile = ScriptHelper.createExecScript(sc, scriptContent);
             var out = sc.command(sc.getShellDialect().runScriptCommand(sc, scriptFile.toString()))
                     .readStdoutOrThrow();
-            if (!out.equals("testa")) {
+            if (!out.equals("test")) {
                 return Optional.of(new FailureResult(
                         "Expected output \"test\", got output \"" + out + "\" when running test script", false, true));
             }
