@@ -1,13 +1,17 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.ThreadHelper;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,17 +72,18 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var firstCommand = firstConfig.getDialectLaunchCommand().buildFull(control);
         l.addAll(List.of(
                 "zellij delete-session -f xpipe > /dev/null 2>&1",
-                "zellij attach --create-background xpipe",
-                "sleep 0.5",
-                "zellij -s xpipe run -i -c --name \""
-                        + escape(config.getPanes().getFirst().getTitle(), false, true)
-                        + "\" -- " + escape(" " + firstCommand, false, false),
-                "sleep 0.5",
-                "zellij attach xpipe"));
+                "zellij attach --create xpipe"));
 
         var asyncLines = new ArrayList<String>();
-        asyncLines.add("sleep 0.5");
-        asyncLines.add("zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\"");
+       asyncLines.addAll(List.of(
+               "sleep 0.5",
+                "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
+                "zellij -s xpipe action write 10",
+                "zellij -s xpipe action clear",
+               "zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action go-to-previous-tab",
+                "zellij -s xpipe action close-tab"));
 
         if (config.getPanes().size() > 1) {
             var split = AppPrefs.get().terminalSplitStrategy().getValue();
@@ -102,11 +107,11 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             @Override
             @SneakyThrows
             public void onSessionOpened(TerminalView.ShellSession session) {
-                if (session.getRequest().equals(config.getPanes().getFirst().getRequest())) {
-                    TerminalView.get().removeListener(this);
+                TerminalView.get().removeListener(this);
+                ThreadHelper.runFailableAsync(() -> {
                     var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
                     sc.command(String.join("\n", asyncLines)).executeAndCheck();
-                }
+                });
             }
         };
         TerminalView.get().addListener(listener);
