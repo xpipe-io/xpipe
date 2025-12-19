@@ -60,7 +60,7 @@ public class ErrorEventFactory {
             b = ErrorEvent.builder().throwable(t);
         }
 
-        if (t instanceof SSLHandshakeException) {
+        if (t instanceof SSLHandshakeException || (t.getClass().getName().equals("sun.security.provider.certpath.SunCertPathBuilderException"))) {
             if (b.getLink() == null) {
                 b.documentationLink(DocumentationLink.TLS_DECRYPTION);
             }
