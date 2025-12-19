@@ -81,7 +81,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action clear",
-               "zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\"",
+               "sleep 0.5",
                 "zellij -s xpipe action go-to-previous-tab",
                 "zellij -s xpipe action close-tab"));
 

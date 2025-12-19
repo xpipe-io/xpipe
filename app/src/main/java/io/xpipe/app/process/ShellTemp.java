@@ -1,5 +1,7 @@
 package io.xpipe.app.process;
 
+import io.xpipe.app.core.AppInstallation;
+import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -16,7 +18,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 public class ShellTemp {
 
     public static Path getLocalTempDataDirectory(String sub) {
-        var temp = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe");
+        var temp = AppSystemInfo.ofCurrent().getTemp().resolve(AppNames.ofCurrent().getKebapName());
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.ofLocal() == OsType.LINUX) {
@@ -27,8 +29,8 @@ public class ShellTemp {
                 ErrorEventFactory.fromThrowable(e).omit().expected().handle();
             }
 
-            var user = System.getenv("USER");
-            temp = temp.resolve(user != null ? user : "user");
+            var user = AppSystemInfo.ofCurrent().getUser();
+            temp = temp.resolve(user);
         }
 
         return sub != null ? temp.resolve(sub) : temp;
@@ -40,7 +42,7 @@ public class ShellTemp {
         // Even on macOS as root it is technically unique as only root will use /tmp
         if (proc.getOsType() != OsType.WINDOWS && proc.getOsType() != OsType.MACOS) {
             var temp = proc.getSystemTemporaryDirectory();
-            base = temp.join("xpipe");
+            base = temp.join(AppNames.ofCurrent().getKebapName());
             proc.view().mkdir(base);
             // We have to make sure that also other users can create files here
             // This command should work in all shells
@@ -50,7 +52,7 @@ public class ShellTemp {
             base = base.join(user);
         } else {
             var temp = proc.getSystemTemporaryDirectory();
-            base = temp.join("xpipe");
+            base = temp.join(AppNames.ofCurrent().getKebapName());
         }
         return sub != null ? base.join(sub) : base;
     }
