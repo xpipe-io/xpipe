@@ -10,10 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ShellView {
 
@@ -62,19 +59,8 @@ public class ShellView {
         return groupFile;
     }
 
-    public FilePath writeRawFileDeterministic(FilePath base, byte[] data) throws Exception {
-        var hash = Math.abs(Arrays.hashCode(data));
-        var ext = base.getExtension();
-        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + (ext.isPresent() ? "." + ext.get() : ""));
-        if (fileExists(target)) {
-            return target;
-        }
-        writeRawFile(target, data);
-        return target;
-    }
-
     public FilePath writeTextFileDeterministic(FilePath base, String text) throws Exception {
-        var hash = Math.abs(text.hashCode());
+        var hash = Math.abs(Objects.hash(text, user()));
         var ext = base.getExtension();
         var target = FilePath.of(base.getBaseName().toString() + "-" + hash + (ext.isPresent() ? "." + ext.get() : ""));
         if (fileExists(target)) {

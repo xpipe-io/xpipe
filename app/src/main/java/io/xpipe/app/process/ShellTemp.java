@@ -20,16 +20,15 @@ public class ShellTemp {
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.ofLocal() == OsType.LINUX) {
-            var user = System.getenv("USER");
-            temp = temp.resolve(user != null ? user : "user");
-
             try {
-                FileUtils.forceMkdir(temp.toFile());
                 // We did not set this in earlier versions. If we are running as a different user, it might fail
                 Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().expected().handle();
             }
+
+            var user = System.getenv("USER");
+            temp = temp.resolve(user != null ? user : "user");
         }
 
         return sub != null ? temp.resolve(sub) : temp;

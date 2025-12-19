@@ -32,6 +32,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Value
@@ -174,7 +175,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     }
 
     private FilePath getTargetFilePath() {
-        var temp = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-" + Math.abs(hashCode()) + ".key");
+        var temp = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-" + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
         return FilePath.of(temp);
     }
 }

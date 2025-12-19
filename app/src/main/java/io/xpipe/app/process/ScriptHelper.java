@@ -8,12 +8,13 @@ import io.xpipe.core.SecretValue;
 import lombok.SneakyThrows;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class ScriptHelper {
 
-    public static int getScriptHash(String content) {
-        return Math.abs(content.hashCode());
+    public static int getScriptHash(ShellControl sc, String content) throws Exception {
+        return Math.abs(Objects.hash(content, sc.view().user()));
     }
 
     @SneakyThrows
@@ -31,7 +32,7 @@ public class ScriptHelper {
     @SneakyThrows
     public static FilePath createExecScript(ShellDialect type, ShellControl processControl, String content) {
         content = type.prepareScriptContent(processControl, content);
-        var fileName = "xpipe-" + getScriptHash(content);
+        var fileName = "xpipe-" + getScriptHash(processControl, content);
         var temp = processControl.getSystemTemporaryDirectory();
         var file = temp.join(fileName + "." + type.getScriptFileEnding());
         return createExecScriptRaw(processControl, file, content);

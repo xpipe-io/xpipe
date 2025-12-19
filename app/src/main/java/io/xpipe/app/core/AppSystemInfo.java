@@ -69,6 +69,8 @@ public abstract class AppSystemInfo {
 
     public abstract Path getTemp();
 
+    public abstract String getUser();
+
     public static final class Windows extends AppSystemInfo {
 
         private Path userHome;
@@ -112,6 +114,18 @@ public abstract class AppSystemInfo {
             } catch (Exception ignored) {
             }
             return (temp = dir);
+        }
+
+        @Override
+        public String getUser() {
+            var username = System.getenv("USERNAME");
+            if (username == null) {
+                username = System.getProperty("user.name");
+            }
+            if (username == null) {
+                username = "User";
+            }
+            return username;
         }
 
         public Path getProgramFiles() {
@@ -263,6 +277,15 @@ public abstract class AppSystemInfo {
         }
 
         @Override
+        public String getUser() {
+            var username = System.getProperty("user.name");
+            if (username == null) {
+                username = "user";
+            }
+            return username;
+        }
+
+        @Override
         public Path getUserHome() {
             return Path.of(System.getProperty("user.home"));
         }
@@ -312,6 +335,15 @@ public abstract class AppSystemInfo {
     }
 
     public static class MacOs extends AppSystemInfo {
+
+        @Override
+        public String getUser() {
+            var username = System.getProperty("user.name");
+            if (username == null) {
+                username = "user";
+            }
+            return username;
+        }
 
         @Override
         public Path getUserHome() {
