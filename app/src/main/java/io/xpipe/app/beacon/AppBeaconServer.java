@@ -124,6 +124,7 @@ public class AppBeaconServer {
         // Create temp dir and permissions for Linux
         ShellTemp.getLocalTempDataDirectory(null);
         var file = BeaconConfig.getLocalBeaconAuthFile();
+        Files.createDirectories(file.getParent());
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.ofLocal() != OsType.WINDOWS) {
