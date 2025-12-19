@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TextFieldComp;
@@ -37,9 +38,8 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
     public Structure createBase() {
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createStructure().get();
-        var button = new ButtonComp(null, null)
-                .descriptor(d -> d.nameKey("search").shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)))
-                .createStructure().get();
+        var button = new Button();
+        CompDescriptor.builder().nameKey("search").shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)).build().apply(button);
         button.minWidthProperty().bind(button.heightProperty());
         InputHelper.onExactKeyCode(text, KeyCode.ESCAPE, true, keyEvent -> {
             if (!expanded.get()) {

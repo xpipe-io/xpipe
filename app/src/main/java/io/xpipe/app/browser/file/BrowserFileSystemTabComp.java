@@ -58,9 +58,9 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     private Region createContent() {
         var root = new VBox();
         root.setMinWidth(190);
-        var overview = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-monitor"), () -> {
-            model.cdAsync((FilePath) null);
-        }).descriptor(d -> d.nameKey("overview").shortcut(new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))).createStructure().get();
+        var overview = new Button(null, new FontIcon("mdi2m-monitor"));
+        overview.setOnAction(e -> model.cdAsync((FilePath) null));
+        CompDescriptor.builder().nameKey("overview").shortcut(new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)).build().apply(overview);
         overview.disableProperty().bind(model.getInOverview());
         InputHelper.onKeyCombination(
                 root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {

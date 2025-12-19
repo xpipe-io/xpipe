@@ -6,6 +6,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.hub.action.StoreAction;
@@ -66,13 +67,21 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
 
     default Button toButton(Region root, BrowserFileSystemTabModel model, List<BrowserEntry> selected) {
         var name = getName(model, selected);
-        var b = new ButtonComp(getName(model, selected), getIcon(), () -> {
+        var b = new Button();
+        b.setOnAction(event -> {
             try {
                 execute(model, selected);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }).descriptor(d -> d.name(name).shortcut(getShortcut())).createStructure().get();
+            event.consume();
+        });
+        CompDescriptor.builder().name(name).shortcut(getShortcut()).build().apply(b);
+        var graphic = getIcon();
+        if (graphic != null) {
+            b.setGraphic(graphic.createGraphicNode());
+        }
+        b.setMnemonicParsing(false);
         root.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (getShortcut() != null && getShortcut().match(event)) {
                 b.fire();

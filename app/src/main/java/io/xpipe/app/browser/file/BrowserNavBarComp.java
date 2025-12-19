@@ -9,6 +9,8 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.comp.base.TooltipHelper;
+import io.xpipe.app.core.AppFont;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ContextMenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
@@ -65,12 +67,14 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 })).createRegion();
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
+        AppFontSizes.sm(homeButton);
 
         var historyButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2h-history"), null)
         .descriptor(d -> d.nameKey("history").shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)))
         .styleClass(Styles.RIGHT_PILL)
         .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
                 .createStructure().get();
+        AppFontSizes.sm(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 

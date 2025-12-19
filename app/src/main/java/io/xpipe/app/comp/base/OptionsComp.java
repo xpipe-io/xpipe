@@ -94,6 +94,12 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
                     var vbox = new VBox();
                     vbox.getChildren().add(name);
+                    vbox.spacingProperty()
+                            .bind(Bindings.createDoubleBinding(
+                                    () -> {
+                                        return name.isManaged() ? 2.0 : 0.0;
+                                    },
+                                    name.managedProperty()));
 
                     vbox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty());
                     vbox.setAccessibleRole(AccessibleRole.TEXT);
