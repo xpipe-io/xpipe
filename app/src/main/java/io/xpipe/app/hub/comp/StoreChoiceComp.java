@@ -128,6 +128,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 pane.requestFocus();
             });
         });
+        clearButton.descriptor(d -> d.nameKey("clear"));
         clearButton.styleClass(Styles.FLAT);
         clearButton.hide(selected.isNull().or(pane.disabledProperty()));
         clearButton.apply(struc -> {
