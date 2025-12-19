@@ -158,7 +158,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 addNamedIdentity();
             }
         });
-        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).tooltipKey("addReusableIdentity");
+        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).descriptor(d -> d.nameKey("addReusableIdentity"));
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(createComboBox());

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.Check;
 import io.xpipe.app.util.Hyperlinks;
@@ -11,11 +12,13 @@ import io.xpipe.app.util.Hyperlinks;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleRole;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -77,7 +80,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                                 name.managedProperty()));
                 name.visibleProperty().bind(compRegion.visibleProperty());
                 name.managedProperty().bind(compRegion.managedProperty());
-                line.getChildren().add(name);
                 VBox.setMargin(name, new Insets(0, 0, 0, 1));
 
                 if (entry.description() != null) {
@@ -90,20 +92,32 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                     description.visibleProperty().bind(compRegion.visibleProperty());
                     description.managedProperty().bind(compRegion.managedProperty());
 
+                    var vbox = new VBox();
+                    vbox.getChildren().add(name);
+
+                    vbox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty());
+                    vbox.setAccessibleRole(AccessibleRole.TEXT);
+                    var joined = Bindings.createStringBinding(() -> {
+                        return entry.name.getValue() + "\n\n" + entry.description().getValue();
+                    }, entry.name(), entry.description());
+                    vbox.accessibleTextProperty().bind(joined);
+
                     if (entry.documentationLink() != null) {
                         var link = new Button("... ?");
                         link.setMinWidth(Region.USE_PREF_SIZE);
                         link.getStyleClass().add(Styles.BUTTON_OUTLINED);
                         link.getStyleClass().add(Styles.ACCENT);
                         link.getStyleClass().add("long-description");
-                        link.setAccessibleText("Help");
+                        link.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+                            return AppI18n.get("helpButton", entry.name().getValue());
+                        }, AppI18n.activeLanguage(), entry.name()));
                         AppFontSizes.xl(link);
                         link.setOnAction(e -> {
                             Hyperlinks.open(entry.documentationLink());
                             e.consume();
                         });
 
-                        var tt = TooltipHelper.create(new SimpleStringProperty(entry.documentationLink()), null);
+                        var tt = TooltipHelper.create(new SimpleStringProperty(entry.documentationLink()));
                         tt.setShowDelay(Duration.millis(1));
                         Tooltip.install(link, tt);
 
@@ -112,21 +126,23 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         descriptionBox.setSpacing(5);
                         HBox.setHgrow(descriptionBox, Priority.ALWAYS);
                         descriptionBox.setAlignment(Pos.TOP_LEFT);
-                        line.getChildren().add(descriptionBox);
+                        vbox.getChildren().add(descriptionBox);
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
                         descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
                         descriptionBox.managedProperty().bind(compRegion.managedProperty());
+
+
                     } else {
-                        line.getChildren().add(description);
-                        line.getChildren().add(new Spacer(2, Orientation.VERTICAL));
+                        vbox.getChildren().add(description);
+                        vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
                         VBox.setMargin(description, new Insets(0, 0, 0, 1));
                     }
+
+                    line.getChildren().add(vbox);
+                } else {
+                    line.getChildren().add(name);
                 }
 
-                compRegion.accessibleTextProperty().bind(name.textProperty());
-                if (entry.description() != null) {
-                    compRegion.accessibleHelpProperty().bind(entry.description());
-                }
                 line.getChildren().add(compRegion);
                 compRegion.getStyleClass().add("options-content");
 
@@ -150,7 +166,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 line.getChildren().add(name);
 
                 if (compRegion != null) {
-                    compRegion.accessibleTextProperty().bind(name.textProperty());
                     line.getChildren().add(compRegion);
                     HBox.setHgrow(compRegion, Priority.ALWAYS);
                 }

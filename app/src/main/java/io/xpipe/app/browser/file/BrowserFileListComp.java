@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -144,7 +145,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
-        table.setAccessibleText("Directory contents");
+        CompDescriptor.builder().nameKey("directoryContents").build().apply(table);
 
         var placeholder = new Label();
         var placeholderText = Bindings.createStringBinding(

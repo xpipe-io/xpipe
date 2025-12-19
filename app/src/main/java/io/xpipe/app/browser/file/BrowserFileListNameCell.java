@@ -95,7 +95,6 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             return notDir || isParentLink;
                         },
                         itemProperty()))
-                .focusTraversable(false)
                 .createRegion();
         return quickAccess;
     }

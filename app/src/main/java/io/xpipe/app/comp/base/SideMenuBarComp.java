@@ -16,6 +16,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -58,8 +59,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
                 value.setValue(e);
             });
-            b.tooltip(e.name());
-            b.accessibleText(e.name());
+            b.descriptor(d -> d.name(e.name()));
 
             var stack = createStyle(e, b);
             var shortcut = e.combination();
@@ -71,7 +71,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
-            b.tooltipKey("updateAvailableTooltip").accessibleTextKey("updateAvailableTooltip");
+            b.descriptor(d -> d.nameKey("updateAvailableTooltip"));
             var stack = createStyle(null, b);
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
@@ -87,8 +87,7 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
         if (!AppProperties.get().isStaging()) {
             var b = new IconButtonComp("mdoal-insights", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
-            b.tooltipKey("ptbAvailableTooltip");
-            b.accessibleTextKey("ptbAvailableTooltip");
+            b.descriptor(d -> d.nameKey("ptbAvailableTooltip"));
             var stack = createStyle(null, b);
             stack.hide(AppLayoutModel.get().getPtbAvailable().not());
             vbox.getChildren().add(stack.createRegion());
@@ -109,11 +108,8 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 for (int i = l.size() - 1; i >= 0; i--) {
                     var item = l.get(i);
                     var b = new IconButtonComp(item.getIcon(), null);
+                    b.descriptor(d -> d.name(item.getName()));
                     b.apply(struc -> {
-                        var tt = TooltipHelper.create(item.getName(), null);
-                        tt.setShowDelay(Duration.millis(50));
-                        Tooltip.install(struc.get(), tt);
-
                         struc.get().setOnAction(e -> {
                             struc.get().setDisable(true);
                             ThreadHelper.runAsync(() -> {
@@ -128,7 +124,6 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             e.consume();
                         });
                     });
-                    b.accessibleText(item.getName());
                     var stack = createStyle(null, b);
                     queueButtons.getChildren().add(stack.createRegion());
                 }

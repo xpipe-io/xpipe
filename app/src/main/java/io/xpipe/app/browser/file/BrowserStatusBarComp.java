@@ -71,7 +71,7 @@ public class BrowserStatusBarComp extends SimpleComp {
                 model.killTransfer();
             });
         });
-        button.accessibleText("Kill").tooltipKey("killTransfer");
+        button.descriptor(d -> d.nameKey("killTransfer"));
         var cancel = PlatformThread.sync(model.getTransferCancelled());
         var hide = Bindings.createBooleanBinding(
                 () -> {

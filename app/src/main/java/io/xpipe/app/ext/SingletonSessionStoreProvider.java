@@ -84,8 +84,6 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
                 },
                 sec.getWrapper().getCache(),
                 enabled));
-
-        t.tooltipKey("enabled");
         return t;
     }
 

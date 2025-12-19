@@ -33,7 +33,7 @@ public class StoreActiveComp extends SimpleComp {
         pane.setAlignment(Pos.CENTER);
         pane.visibleProperty().bind(wrapper.getSessionActive());
         pane.getStyleClass().add("store-active-comp");
-        Tooltip.install(pane, TooltipHelper.create(AppI18n.observable("sessionActive"), null));
+        Tooltip.install(pane, TooltipHelper.create(AppI18n.observable("sessionActive")));
         return pane;
     }
 }

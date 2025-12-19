@@ -3,6 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -10,6 +11,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
@@ -56,14 +58,10 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     private Region createContent() {
         var root = new VBox();
         root.setMinWidth(190);
-        var overview = new Button(null, new FontIcon("mdi2m-monitor"));
-        overview.setOnAction(e -> model.cdAsync((FilePath) null));
-        Tooltip.install(
-                overview,
-                TooltipHelper.create(
-                        AppI18n.observable("overview"), new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN)));
+        var overview = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-monitor"), () -> {
+            model.cdAsync((FilePath) null);
+        }).descriptor(d -> d.nameKey("overview").shortcut(new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))).createStructure().get();
         overview.disableProperty().bind(model.getInOverview());
-        overview.setAccessibleText("System overview");
         InputHelper.onKeyCombination(
                 root, new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN), true, keyEvent -> {
                     overview.fire();
@@ -84,7 +82,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                         () -> new BrowserContextMenu(model, null, false))
                 .augment(new SimpleCompStructure<>(menuButton));
         menuButton.disableProperty().bind(model.getInOverview());
-        menuButton.setAccessibleText("Directory options");
+        CompDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);
 
         var smallWidth = Bindings.createBooleanBinding(
                 () -> {
@@ -126,6 +124,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
             var pinButton = new Button();
+            CompDescriptor.builder().nameKey("pinTab").build().apply(pinButton);
             pinButton
                     .graphicProperty()
                     .bind(PlatformThread.sync(Bindings.createObjectBinding(

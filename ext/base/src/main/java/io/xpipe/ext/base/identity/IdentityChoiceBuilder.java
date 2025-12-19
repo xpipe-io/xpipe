@@ -59,7 +59,7 @@ public class IdentityChoiceBuilder {
                     var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
                         ProcessControlProvider.get().showSshKeygenDialog(null, identity);
                     });
-                    button.tooltipKey("generateKey");
+                    button.descriptor(d -> d.nameKey("generateKey"));
                     var comboComp = Comp.of(() -> entryComboBox);
                     var hbox = new InputGroupComp(List.of(comboComp, button));
                     hbox.setMainReference(comboComp);

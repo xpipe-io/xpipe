@@ -56,7 +56,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             adding.set(false);
         });
         addButton.styleClass(Styles.CENTER_PILL).grow(false, true);
-        addButton.tooltipKey("addAnotherHostName");
+        addButton.descriptor(d -> d.nameKey("addAnotherHostName"));
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(combo);

@@ -92,7 +92,7 @@ public class StoreCategoryComp extends SimpleComp {
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")
-                .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
+                .descriptor(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)));
 
         var hover = new SimpleBooleanProperty();
         var statusIcon = Bindings.createObjectBinding(
@@ -148,11 +148,10 @@ public class StoreCategoryComp extends SimpleComp {
 
         var categoryButton = new ButtonComp(
                         null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
-                .focusTraversable()
+                .descriptor(d -> d.name(prop).shortcut(new KeyCodeCombination(KeyCode.SPACE)))
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
                 .apply(struc -> focus.bind(struc.get().focusedProperty()))
-                .accessibleText(prop)
                 .grow(true, false);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,

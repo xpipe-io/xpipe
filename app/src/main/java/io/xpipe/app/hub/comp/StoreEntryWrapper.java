@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.*;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.FixedHierarchyStore;
@@ -66,6 +67,7 @@ public class StoreEntryWrapper {
     private final BooleanProperty perUser = new SimpleBooleanProperty();
     private final ObservableValue<String> shownName;
     private final ObservableValue<String> shownSummary;
+    private final ObservableValue<String> shownDescription;
     private final Property<String> shownInformation;
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
@@ -98,6 +100,21 @@ public class StoreEntryWrapper {
                 },
                 AppPrefs.get().censorMode(),
                 summary);
+        this.shownDescription = Bindings.createStringBinding(
+                                () -> {
+                                    var summaryValue = shownSummary.getValue();
+                                    if (summaryValue != null) {
+                                        return summaryValue;
+                                    } else {
+                                        var provider = getEntry().getProvider();
+                                        if (provider != null) {
+                                            return AppI18n.get(provider.getId() + ".displayName");
+                                        } else {
+                                            return null;
+                                        }
+                                    }
+                                },
+                                shownSummary);
         this.shownInformation = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
 

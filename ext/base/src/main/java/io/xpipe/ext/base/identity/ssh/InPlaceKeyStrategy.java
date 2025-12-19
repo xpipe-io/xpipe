@@ -77,13 +77,13 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         publicKey.set(generated);
                     }
                 })
-                .tooltipKey("generatePublicKey")
+                .descriptor(d -> d.nameKey("generatePublicKey"))
                 .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyText(publicKey.get());
                 })
                 .disable(publicKey.isNull())
-                .tooltipKey("copyPublicKey");
+                .descriptor(d -> d.nameKey("copyPublicKey"));
 
         var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);

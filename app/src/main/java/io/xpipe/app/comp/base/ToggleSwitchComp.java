@@ -60,6 +60,14 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             });
             s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
+
+        s.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE || keyEvent.getCode() == KeyCode.ENTER) {
+                s.setSelected(!s.isSelected());
+                keyEvent.consume();
+            }
+        });
+
         return new SimpleCompStructure<>(s);
     }
 }

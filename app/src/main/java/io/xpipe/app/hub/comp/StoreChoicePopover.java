@@ -146,7 +146,7 @@ public class StoreChoicePopover<T extends DataStore> {
                         StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
-                    .accessibleTextKey("addConnection")
+                    .descriptor(d -> d.nameKey("addConnection"))
                     .padding(new Insets(-5))
                     .styleClass(Styles.RIGHT_PILL);
 

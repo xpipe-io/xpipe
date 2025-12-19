@@ -63,7 +63,7 @@ public class StoreEntryListComp extends SimpleComp {
         content.styleClass("store-list-comp");
         content.vgrow();
 
-        var statusBar = new StoreEntryListStatusBarComp();
+        var statusBar = new StoreEntryListBatchBarComp();
         statusBar.apply(struc -> {
             VBox.setMargin(struc.get(), new Insets(3, 6, 4, 2));
         });

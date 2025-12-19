@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -65,6 +66,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         },
                         selected),
                 () -> {});
+        button.descriptor(d -> d.name(Bindings.createStringBinding(() -> {
+            return selected.getValue() != null ? toName(selected.getValue().get()) : AppI18n.get("selectConnection");
+        }, selected, AppI18n.activeLanguage())));
         button.apply(struc -> {
                     struc.get().setMaxWidth(20000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
@@ -97,7 +101,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 })
                 .styleClass("choice-comp");
 
-        var r = button.accessibleText("Select connection").createRegion();
+        var r = button.createRegion();
 
         var dropdownIcon = new FontIcon("mdal-keyboard_arrow_down");
         dropdownIcon.setDisable(true);

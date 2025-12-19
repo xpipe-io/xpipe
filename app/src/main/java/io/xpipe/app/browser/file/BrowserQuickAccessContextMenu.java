@@ -43,7 +43,6 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         this.base = base;
         this.model = model;
 
-        AppFontSizes.lg(getStyleableNode());
         addEventFilter(Menu.ON_SHOWING, e -> {
             Node content = getSkin().getNode();
             if (content instanceof Region r) {

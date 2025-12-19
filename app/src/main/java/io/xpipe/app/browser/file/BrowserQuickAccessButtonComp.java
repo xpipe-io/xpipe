@@ -22,6 +22,7 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     protected Region createSimple() {
         var cm = new BrowserQuickAccessContextMenu(base, model);
         var button = new IconButtonComp("mdi2c-chevron-double-right");
+        button.descriptor(d -> d.nameKey("quickAccess"));
         button.apply(struc -> {
             struc.get().setOnAction(event -> {
                 if (!cm.isShowing()) {

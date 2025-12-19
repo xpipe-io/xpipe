@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -57,6 +58,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     @Override
     public Structure createBase() {
         var bt = new Button();
+        CompDescriptor.builder().name(name).description(description).build().apply(bt);
         bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
             if (action != null) {

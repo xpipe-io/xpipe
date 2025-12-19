@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
@@ -139,6 +140,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
         });
+        b.descriptor(d -> d.nameKey("batchMode"));
         b.styleClass("batch-mode-button");
         b.apply(struc -> {
             batchMode.subscribe(a -> {
@@ -182,8 +184,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        button.accessibleTextKey("sortIndexed");
-        button.tooltipKey("sortIndexed");
+        button.descriptor(d -> d.nameKey("sortIndexed"));
         return button;
     }
 
@@ -223,8 +224,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        alphabetical.accessibleTextKey("sortAlphabetical");
-        alphabetical.tooltipKey("sortAlphabetical");
+        alphabetical.descriptor(d -> d.nameKey("sortAlphabetical"));
         return alphabetical;
     }
 
@@ -263,8 +263,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        date.accessibleTextKey("sortLastUsed");
-        date.tooltipKey("sortLastUsed");
+        date.descriptor(d -> d.nameKey("sortLastUsed"));
         return date;
     }
 

@@ -56,7 +56,6 @@ public class StoreToggleComp extends SimpleComp {
         var t = new StoreToggleComp(nameKey, g, section, value, v -> {
             setter.accept(section.getWrapper().getEntry().getStore().asNeeded(), v);
         });
-        t.tooltipKey("enabled");
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });
@@ -87,7 +86,7 @@ public class StoreToggleComp extends SimpleComp {
                         StoreViewState.get().triggerStoreListVisibilityUpdate();
                     });
                 });
-        t.tooltipKey("showNonRunningChildren");
+        t.descriptor(d -> d.nameKey("showNonRunningChildren"));
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });
@@ -111,6 +110,7 @@ public class StoreToggleComp extends SimpleComp {
         var t = new ToggleSwitchComp(value, AppI18n.observable(nameKey), graphic)
                 .visible(visible)
                 .disable(disable);
+        t.descriptor(d -> d.nameKey("toggleEnabled"));
         value.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runAsync(() -> {
                 onChange.accept(newValue);

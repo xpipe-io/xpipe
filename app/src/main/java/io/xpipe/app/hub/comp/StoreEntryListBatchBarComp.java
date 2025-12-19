@@ -27,7 +27,7 @@ import atlantafx.base.theme.Styles;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoreEntryListStatusBarComp extends SimpleComp {
+public class StoreEntryListBatchBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
@@ -52,6 +52,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
         });
+        close.descriptor(d -> d.nameKey("close"));
         close.apply(struc -> {
             struc.get().getStyleClass().remove(Styles.FLAT);
             struc.get().minWidthProperty().bind(struc.get().heightProperty());

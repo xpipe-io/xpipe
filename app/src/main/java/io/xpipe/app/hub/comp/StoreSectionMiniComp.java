@@ -58,7 +58,6 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
             augment.accept(section, root);
 
             var expandButton = createExpandButton(() -> expanded.set(!expanded.get()), 20, expanded);
-            expandButton.focusTraversable();
 
             var quickAccessButton = createQuickAccessButton(20, action);
 

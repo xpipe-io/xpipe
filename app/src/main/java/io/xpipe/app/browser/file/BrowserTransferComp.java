@@ -89,7 +89,7 @@ public class BrowserTransferComp extends SimpleComp {
                     });
                 })
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
-                .tooltipKey("clearTransferDescription");
+                .descriptor(d -> d.nameKey("clearTransferDescription"));
 
         var downloadButton = new IconButtonComp("mdi2f-folder-move-outline", null)
                 .apply(struc -> {
@@ -110,7 +110,7 @@ public class BrowserTransferComp extends SimpleComp {
                     });
                 })
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
-                .tooltipKey("downloadStageDescription");
+                .descriptor(d -> d.nameKey("downloadStageDescription"));
 
         var bottom = new HorizontalComp(
                 List.of(Comp.hspacer(), dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));

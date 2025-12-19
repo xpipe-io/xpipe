@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
@@ -135,7 +136,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(getWrapper().getShownName());
+        CompDescriptor.builder().name(getWrapper().getShownName()).description(getWrapper().getShownDescription()).build().apply(button);
         button.setOnAction(event -> {
             if (getWrapper().getRenaming().get()) {
                 return;
@@ -267,7 +268,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Comp<?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.styleClass("user-icon");
-        button.tooltipKey("personalConnection");
+        button.descriptor(d -> d.nameKey("personalConnection"));
         button.apply(struc -> {
             AppFontSizes.base(struc.get());
             struc.get().setDisable(true);
@@ -281,7 +282,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     protected Comp<?> createPinIcon() {
         var button = new IconButtonComp("mdi2p-pin-outline");
         button.disable(new SimpleBooleanProperty(true));
-        button.tooltipKey("pinned");
+        button.descriptor(d -> d.nameKey("pinned"));
         button.apply(struc -> {
             AppFontSizes.xs(struc.get());
             struc.get().setOpacity(1.0);
@@ -382,20 +383,18 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return cm;
                     }));
         }
-        button.accessibleText(p.getName(getWrapper().getEntry().ref()).getValue());
-        button.tooltip(p.getName(getWrapper().getEntry().ref()));
+        button.descriptor(d -> d.name(p.getName(getWrapper().getEntry().ref())));
         return button;
     }
 
     protected Comp<?> createSettingsButton(Region name) {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.styleClass("settings");
-        settingsButton.accessibleText("More");
+        settingsButton.descriptor(d -> d.nameKey("more"));
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY,
                 null,
                 () -> StoreEntryComp.this.createContextMenu(name)));
-        settingsButton.tooltipKey("more");
         return settingsButton;
     }
 

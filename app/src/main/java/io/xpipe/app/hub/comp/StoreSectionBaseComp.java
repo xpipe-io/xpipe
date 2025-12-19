@@ -139,11 +139,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         expandButton
                 .minWidth(width)
                 .prefWidth(width)
-                .accessibleText(Bindings.createStringBinding(
-                        () -> {
-                            return "Expand " + section.getWrapper().getName().getValue();
-                        },
-                        section.getWrapper().getName()))
+                .descriptor(d -> d.nameKey("expand"))
                 .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
                 .styleClass("expand-button")
                 .maxHeight(100);
@@ -161,11 +157,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
                 .minWidth(width)
                 .prefWidth(width)
                 .maxHeight(100)
-                .accessibleText(Bindings.createStringBinding(
-                        () -> {
-                            return "Access " + section.getWrapper().getName().getValue();
-                        },
-                        section.getWrapper().getName()))
+                .descriptor(d -> d.nameKey("quickAccess"))
                 .disable(quickAccessDisabled);
         return quickAccessButton;
     }

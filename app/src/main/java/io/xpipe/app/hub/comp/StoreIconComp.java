@@ -29,7 +29,7 @@ public class StoreIconComp extends SimpleComp {
         if (wrapper.getValidity().getValue().isUsable()) {
             Tooltip.install(
                     storeIcon,
-                    TooltipHelper.create(wrapper.getEntry().getProvider().displayName(), null));
+                    TooltipHelper.create(wrapper.getEntry().getProvider().displayName()));
         }
 
         var background = new Region();

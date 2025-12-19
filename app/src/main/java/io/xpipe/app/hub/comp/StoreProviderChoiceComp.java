@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -72,7 +73,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
         cb.setValue(provider.getValue());
         provider.bind(cb.valueProperty());
         cb.getStyleClass().add("choice-comp");
-        cb.setAccessibleText("Choose connection type");
+        CompDescriptor.builder().nameKey("chooseConnectionType").build().apply(cb);
         cb.setOnKeyPressed(event -> {
             if (!event.getCode().equals(KeyCode.ENTER)) {
                 return;
