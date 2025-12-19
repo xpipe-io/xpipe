@@ -371,8 +371,8 @@ public class AppMainWindow {
         }
 
         var screen = screens.getFirst();
-        var w = Math.min(stage.getWidth(), screen.getBounds().getWidth() - 10);
-        var h = Math.min(stage.getHeight(), screen.getBounds().getHeight() - 10);
+        var w = Math.min(1280, screen.getBounds().getWidth() - 10);
+        var h = Math.min(780, screen.getBounds().getHeight() - 10);
         stage.setWidth(w);
         stage.setHeight(h);
 
