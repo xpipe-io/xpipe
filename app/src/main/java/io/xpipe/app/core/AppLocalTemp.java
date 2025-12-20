@@ -33,6 +33,12 @@ public class AppLocalTemp {
             } catch (Exception e) {
                 ErrorEventFactory.fromThrowable(e).omit().expected().handle();
             }
+        } else {
+            try {
+                Files.createDirectories(temp);
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+            }
         }
 
         return temp;
