@@ -17,25 +17,6 @@ import java.nio.file.attribute.PosixFilePermissions;
 
 public class ShellTemp {
 
-    public static Path getLocalTempDataDirectory(String sub) {
-        var temp = AppSystemInfo.ofCurrent().getTemp().resolve(AppNames.ofCurrent().getKebapName());
-        // On Windows and macOS, we already have user specific temp directories
-        // Even on macOS as root we will have a unique directory (in contrast to shell controls)
-        if (OsType.ofLocal() == OsType.LINUX) {
-            try {
-                // We did not set this in earlier versions. If we are running as a different user, it might fail
-                Files.setPosixFilePermissions(temp, PosixFilePermissions.fromString("rwxrwxrwx"));
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
-            }
-
-            var user = AppSystemInfo.ofCurrent().getUser();
-            temp = temp.resolve(user);
-        }
-
-        return sub != null ? temp.resolve(sub) : temp;
-    }
-
     public static FilePath createUserSpecificTempDataDirectory(ShellControl proc, String sub) throws Exception {
         FilePath base;
         // On Windows and macOS, we already have user specific temp directories
@@ -50,6 +31,10 @@ public class ShellTemp {
                     .executeAndCheck();
             var user = proc.view().user();
             base = base.join(user);
+            // We have to make sure that also other users can create files here
+            // This command should work in all shells
+            proc.command("chmod 700 " + proc.getShellDialect().fileArgument(base))
+                    .executeAndCheck();
         } else {
             var temp = proc.getSystemTemporaryDirectory();
             base = temp.join(AppNames.ofCurrent().getKebapName());

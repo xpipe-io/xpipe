@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
 import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.OsFileSystem;
@@ -27,7 +28,7 @@ import java.util.function.Consumer;
 
 public class FileBridge {
 
-    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("bridge");
+    private static final Path TEMP = AppLocalTemp.getLocalTempDataDirectory("bridge");
     private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new HashSet<>();
 

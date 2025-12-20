@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
@@ -49,7 +50,7 @@ public class MobaXTermTerminalType implements ExternalApplicationType.WindowsTyp
                 .add("" + b.getPort());
         // Don't use local shell to build as it uses cygwin
         var rawCommand = command.buildSimple();
-        var script = ShellTemp.getLocalTempDataDirectory("mobaxpipe.sh");
+        var script = AppLocalTemp.getLocalTempDataDirectory().resolve("mobaxpipe.sh");
         Files.writeString(Path.of(script.toString()), "#!/usr/bin/env bash\n" + rawCommand);
         var fixedFile = script.toString().replaceAll("\\\\", "/").replaceAll("\\s", "\\$0");
         launch(CommandBuilder.of().add("-newtab").add(fixedFile));

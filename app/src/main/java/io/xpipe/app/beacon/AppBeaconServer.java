@@ -1,6 +1,7 @@
 package io.xpipe.app.beacon;
 
 import io.xpipe.app.beacon.mcp.AppMcpServer;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.ShellTemp;
@@ -122,9 +123,8 @@ public class AppBeaconServer {
 
     private void initAuthSecret() throws IOException {
         var file = BeaconConfig.getLocalBeaconAuthFile();
-        Files.createDirectories(file.getParent());
-        // Set temp dir permissions for Linux
-        ShellTemp.getLocalTempDataDirectory(null);
+        // Create and set temp dir permissions for Linux
+        AppLocalTemp.getLocalTempDataDirectory();
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.ofLocal() != OsType.WINDOWS) {

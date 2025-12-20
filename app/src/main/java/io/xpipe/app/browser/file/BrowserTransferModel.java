@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -36,7 +37,7 @@ import java.util.Optional;
 @Value
 public class BrowserTransferModel {
 
-    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("download");
+    private static final Path TEMP = AppLocalTemp.getLocalTempDataDirectory("download");
 
     BrowserFullSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();

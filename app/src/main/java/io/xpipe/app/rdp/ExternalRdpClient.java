@@ -1,5 +1,6 @@
 package io.xpipe.app.rdp;
 
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.ext.PrefsValue;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
@@ -89,7 +90,7 @@ public interface ExternalRdpClient extends PrefsValue {
 
     default Path writeRdpConfigFile(String title, RdpConfig input) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
-        var file = ShellTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
+        var file = AppLocalTemp.getLocalTempDataDirectory("rdp").resolve(name + ".rdp");
         var string = input.toString() + "\n";
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
