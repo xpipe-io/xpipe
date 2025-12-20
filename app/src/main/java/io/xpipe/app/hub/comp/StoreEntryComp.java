@@ -136,7 +136,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        CompDescriptor.builder().name(getWrapper().getShownName()).description(getWrapper().getShownDescription()).build().apply(button);
+        CompDescriptor.builder().name(getWrapper().getShownName()).description(getWrapper().getShownDescription()).showTooltips(false).build().apply(button);
         button.setOnAction(event -> {
             if (getWrapper().getRenaming().get()) {
                 return;

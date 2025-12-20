@@ -21,6 +21,8 @@ public class CompDescriptor {
     ObservableValue<String> description;
     KeyCombination shortcut;
     FocusTraversal focusTraversal;
+    @Builder.Default
+    boolean showTooltips = true;
 
     public static enum FocusTraversal {
 
@@ -28,7 +30,7 @@ public class CompDescriptor {
         ENABLED_FOR_ACCESSIBILITY,
         ENABLED;
     }
-    
+
     public void apply(Region r) {
         var accessibleText = getName() != null ? Bindings.createStringBinding(() -> {
             var s = getName().getValue() + "\n\n";
@@ -38,25 +40,29 @@ public class CompDescriptor {
             return s;
         }, AppI18n.activeLanguage(), getName()) : null;
 
-        var tooltipText = Bindings.createStringBinding(() -> {
-            var s = "";
-            if (getName() != null) {
-                s += getName().getValue() + "\n\n";
-            }
-            if (getDescription() != null) {
-                var desc = getDescription().getValue();
-                if (desc != null) {
-                    s += desc + "\n\n";
-                }
-            }
-            if (getShortcut() != null) {
-                s += AppI18n.get("shortcut") + ": " + getShortcut().getDisplayText();
-            }
-            return s.strip();
-        }, AppI18n.activeLanguage(), getName() != null ? getName() : new ReadOnlyObjectWrapper<>(), getDescription() != null ? getDescription() : new ReadOnlyObjectWrapper<>());
+        if (showTooltips) {
+            var tooltipText = Bindings.createStringBinding(() -> {
+                        var s = "";
+                        if (getName() != null) {
+                            s += getName().getValue() + "\n\n";
+                        }
+                        if (getDescription() != null) {
+                            var desc = getDescription().getValue();
+                            if (desc != null) {
+                                s += desc + "\n\n";
+                            }
+                        }
+                        if (getShortcut() != null) {
+                            s += AppI18n.get("shortcut") + ": " + getShortcut().getDisplayText();
+                        }
+                        return s.strip();
+                    }, AppI18n.activeLanguage(), getName() != null ? getName() : new ReadOnlyObjectWrapper<>(),
+                    getDescription() != null ? getDescription() : new ReadOnlyObjectWrapper<>());
 
-        var tt = TooltipHelper.create(tooltipText);
-        Tooltip.install(r, tt);
+            var tt = TooltipHelper.create(tooltipText);
+            Tooltip.install(r, tt);
+        }
+
         if (accessibleText != null) {
             r.accessibleTextProperty().bind(getName());
         }

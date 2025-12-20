@@ -121,10 +121,10 @@ public class AppBeaconServer {
     }
 
     private void initAuthSecret() throws IOException {
-        // Create temp dir and permissions for Linux
-        ShellTemp.getLocalTempDataDirectory(null);
         var file = BeaconConfig.getLocalBeaconAuthFile();
         Files.createDirectories(file.getParent());
+        // Set temp dir permissions for Linux
+        ShellTemp.getLocalTempDataDirectory(null);
         var id = UUID.randomUUID().toString();
         Files.writeString(file, id);
         if (OsType.ofLocal() != OsType.WINDOWS) {

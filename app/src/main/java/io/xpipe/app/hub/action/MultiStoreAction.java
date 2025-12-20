@@ -35,11 +35,10 @@ public abstract class MultiStoreAction<T extends DataStore> extends Serializable
     }
 
     @Override
-    protected boolean beforeExecute() {
+    protected void beforeExecute() {
         for (DataStoreEntryRef<T> ref : refs) {
             ref.get().incrementBusyCounter();
         }
-        return true;
     }
 
     @Override

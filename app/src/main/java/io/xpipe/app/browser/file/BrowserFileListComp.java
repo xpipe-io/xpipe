@@ -145,7 +145,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
-        CompDescriptor.builder().nameKey("directoryContents").build().apply(table);
+        CompDescriptor.builder().nameKey("directoryContents").showTooltips(false).build().apply(table);
 
         var placeholder = new Label();
         var placeholderText = Bindings.createStringBinding(
