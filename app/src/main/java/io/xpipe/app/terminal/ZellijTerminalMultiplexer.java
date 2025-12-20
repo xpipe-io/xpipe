@@ -70,9 +70,11 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstConfig = config.getPanes().getFirst();
         var firstCommand = firstConfig.getDialectLaunchCommand().buildFull(control);
-        l.addAll(List.of(
-                "zellij delete-session -f xpipe > /dev/null 2>&1",
-                "zellij attach --create xpipe"));
+        l.addAll(List.of("zellij attach xpipe"));
+
+        var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
+        sc.command("zellij delete-session -f xpipe > /dev/null 2>&1").executeAndCheck();
+        sc.command("zellij attach --create-background xpipe").executeAndCheck();
 
         var asyncLines = new ArrayList<String>();
        asyncLines.addAll(List.of(
@@ -81,7 +83,9 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action clear",
-                "zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\""));
+                "zellij -s xpipe action rename-tab \"" + escape(config.getColoredTitle(), false, true) + "\"",
+                "zellij -s xpipe action go-to-previous-tab",
+                "zellij -s xpipe action close-tab"));
 
         if (config.getPanes().size() > 1) {
             var split = AppPrefs.get().terminalSplitStrategy().getValue();
