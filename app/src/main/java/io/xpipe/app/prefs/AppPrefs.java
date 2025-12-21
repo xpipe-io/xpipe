@@ -135,6 +135,12 @@ public final class AppPrefs {
             .key("performanceMode")
             .valueClass(Boolean.class)
             .build());
+    public final BooleanProperty limitedTouchscreenMode = map(Mapping.builder()
+            .property(new GlobalBooleanProperty())
+            .key("limitedTouchscreenMode")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .build());
     public final ObjectProperty<AppTheme.Theme> theme = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("theme")
@@ -403,7 +409,7 @@ public final class AppPrefs {
     @Getter
     private final List<AppPrefsCategory> categories = List.of(
             new AboutCategory(),
-            new AppearanceCategory(),
+            new PersonalizationCategory(),
             new VaultCategory(),
             new SyncCategory(),
             new PasswordManagerCategory(),
@@ -416,6 +422,7 @@ public final class AppPrefs {
             new ConnectionHubCategory(),
             new FileBrowserCategory(),
             new IconsCategory(),
+            new DisplayCategory(),
             new SystemCategory(),
             new ApiCategory(),
             new McpCategory(),
@@ -593,6 +600,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue performanceMode() {
         return performanceMode;
+    }
+
+    public ObservableBooleanValue limitedTouchscreenMode() {
+        return limitedTouchscreenMode;
     }
 
     public ObservableValue<Boolean> useSystemFont() {

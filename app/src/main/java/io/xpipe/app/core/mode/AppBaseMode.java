@@ -178,7 +178,6 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
-        AppGnomeScaleDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;

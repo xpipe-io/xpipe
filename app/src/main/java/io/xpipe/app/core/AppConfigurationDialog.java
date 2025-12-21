@@ -5,7 +5,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.prefs.AppearanceCategory;
+import io.xpipe.app.prefs.PersonalizationCategory;
 import io.xpipe.app.prefs.EditorCategory;
 import io.xpipe.app.prefs.TerminalCategory;
 import io.xpipe.app.util.DocumentationLink;
@@ -20,8 +20,8 @@ public class AppConfigurationDialog {
         }
 
         var options = new OptionsBuilder()
-                .sub(AppearanceCategory.languageChoice())
-                .sub(AppearanceCategory.themeChoice())
+                .sub(PersonalizationCategory.languageChoice())
+                .sub(PersonalizationCategory.themeChoice())
                 .sub(TerminalCategory.terminalChoice(false))
                 .sub(EditorCategory.editorChoice())
                 .buildComp();
