@@ -10,6 +10,7 @@ import io.xpipe.app.comp.base.MarkdownEditorComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 
 import javafx.application.Platform;
@@ -124,6 +125,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         }.createRegion();
 
         var popover = new Popover(dialog);
+        popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         popover.getScene().setFill(Color.TRANSPARENT);
         popover.setCloseButtonEnabled(true);
         popover.setHeaderAlwaysVisible(true);
