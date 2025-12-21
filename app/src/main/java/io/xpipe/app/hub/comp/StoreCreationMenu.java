@@ -4,6 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
@@ -127,31 +128,30 @@ public class StoreCreationMenu {
             return menu;
         }
 
-        menu.setOnAction(event -> {
-            if (event.getTarget() != menu) {
-                return;
-            }
-
-            Platform.runLater(() -> {
-                if (defaultProvider != null) {
-                    providers.stream()
-                            .filter(dataStoreProvider ->
-                                    dataStoreProvider.getId().equals(defaultProvider))
-                            .findFirst()
-                            .ifPresent(dataStoreProvider -> {
-                                var index = providers.indexOf(dataStoreProvider);
-                                menu.getItems().get(index).fire();
-                            });
+        if (AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL) {
+            menu.setOnAction(event -> {
+                if (event.getTarget() != menu) {
                     return;
                 }
 
-                var onlyItem = menu.getItems().getFirst();
-                onlyItem.fire();
-            });
+                Platform.runLater(() -> {
+                    if (defaultProvider != null) {
+                        providers.stream().filter(dataStoreProvider -> dataStoreProvider.getId().equals(defaultProvider)).findFirst().ifPresent(
+                                dataStoreProvider -> {
+                                    var index = providers.indexOf(dataStoreProvider);
+                                    menu.getItems().get(index).fire();
+                                });
+                        return;
+                    }
 
-            // Fix weird JavaFX NPE
-            menu.getParentPopup().hide();
-        });
+                    var onlyItem = menu.getItems().getFirst();
+                    onlyItem.fire();
+                });
+
+                // Fix weird JavaFX NPE
+                menu.getParentPopup().hide();
+            });
+        }
 
         int lastOrder = providers.getFirst().getOrderPriority();
         for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {
