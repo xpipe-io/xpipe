@@ -38,7 +38,6 @@ public class MenuHelper {
         field.setAccessible(true);
         var popup = (PopupControl) field.get(skin);
         popup.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
-        popup.setConsumeAutoHidingEvents(true);
         return mb;
     }
 

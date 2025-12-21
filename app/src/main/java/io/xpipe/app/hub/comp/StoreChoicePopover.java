@@ -9,6 +9,7 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -210,6 +211,7 @@ public class StoreChoicePopover<T extends DataStore> {
             popover.setHeaderAlwaysVisible(true);
             popover.setDetachable(true);
             popover.setTitle(AppI18n.get(titleKey));
+            popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
             AppFontSizes.xs(popover.getContentNode());
 
             // Hide on connection creation dialog
