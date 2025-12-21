@@ -12,6 +12,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
@@ -75,7 +76,8 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         var terminalBtn =
                 BrowserMenuProviders.byId("openInTerminal", model, List.of()).toButton(new Region(), model, List.of());
 
-        var menuButton = new MenuButton(null, new FontIcon("mdral-folder_open"));
+        var menuButton = MenuHelper.createMenuButton();
+        menuButton.setGraphic(new FontIcon("mdral-folder_open"));
         new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY,
                         null,

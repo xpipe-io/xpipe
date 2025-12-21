@@ -10,6 +10,7 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
 
@@ -120,7 +121,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Region createAddButton() {
-        var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
+        var menu = MenuHelper.createMenuButton();
+        menu.setGraphic(new FontIcon("mdi2p-plus-thick"));
         menu.setOnShowing(event -> {
             menu.getItems().clear();
             StoreCreationMenu.addButtons(menu, true);

@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.ShellControl;
@@ -41,7 +42,7 @@ public class PasswordManagerCommand implements PasswordManager {
                 property.getValue() != null ? property.getValue().getScript() : null);
 
         var templates = Comp.of(() -> {
-            var cb = new MenuButton();
+            var cb = MenuHelper.createMenuButton();
             AppFontSizes.base(cb);
             cb.textProperty().bind(BindingsHelper.flatMap(template, t -> {
                 return t != null ? AppI18n.observable(t.getId()) : AppI18n.observable("chooseTemplate");

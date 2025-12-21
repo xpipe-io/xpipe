@@ -10,6 +10,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.control.skin.ComboBoxPopupControl;
+import javafx.scene.control.skin.MenuButtonSkin;
+import javafx.scene.control.skin.MenuButtonSkinBase;
 import javafx.scene.layout.Region;
 import lombok.SneakyThrows;
 
@@ -24,6 +26,18 @@ public class MenuHelper {
         var popup = (PopupControl) m.invoke(skin);
         popup.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
         return skin;
+    }
+
+    @SneakyThrows
+    public static MenuButton createMenuButton() {
+        var mb = new MenuButton();
+        var skin = new MenuButtonSkin(mb);
+        mb.setSkin(skin);
+        var field = MenuButtonSkinBase.class.getDeclaredField("popup");
+        field.setAccessible(true);
+        var popup = (PopupControl) field.get(skin);
+        popup.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        return mb;
     }
 
     @SneakyThrows

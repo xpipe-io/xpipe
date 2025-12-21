@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -140,7 +141,8 @@ public class StoreChoicePopover<T extends DataStore> {
                     new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
 
             var addButton = Comp.of(() -> {
-                        MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
+                        var m = MenuHelper.createMenuButton();
+                        m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
                         m.setMinHeight(0);
                         StoreCreationMenu.addButtons(m, false);
