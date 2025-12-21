@@ -123,6 +123,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         content.hgrow();
         content.styleClass("children-content");
         content.hide(hide);
+        content.apply(struc -> struc.get().setFocusTraversable(false));
         return content;
     }
 

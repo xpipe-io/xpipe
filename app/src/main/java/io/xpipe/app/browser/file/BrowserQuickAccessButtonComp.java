@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.platform.InputHelper;
@@ -22,7 +23,7 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     protected Region createSimple() {
         var cm = new BrowserQuickAccessContextMenu(base, model);
         var button = new IconButtonComp("mdi2c-chevron-double-right");
-        button.descriptor(d -> d.nameKey("quickAccess"));
+        button.descriptor(d -> d.nameKey("quickAccess").focusTraversal(CompDescriptor.FocusTraversal.DISABLED));
         button.apply(struc -> {
             struc.get().setOnAction(event -> {
                 if (!cm.isShowing()) {

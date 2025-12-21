@@ -19,6 +19,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.AccessibleRole;
+import javafx.scene.Node;
+import javafx.scene.TraversalDirection;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -30,6 +32,7 @@ import atlantafx.base.theme.Styles;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Getter
@@ -49,6 +52,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
+
+        var nameMap = new HashMap<Node, Node>();
 
         Region firstComp = null;
         for (var entry : getEntries()) {
@@ -136,8 +141,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         VBox.setMargin(descriptionBox, new Insets(0, 0, 0, 1));
                         descriptionBox.visibleProperty().bind(compRegion.visibleProperty());
                         descriptionBox.managedProperty().bind(compRegion.managedProperty());
-
-
                     } else {
                         vbox.getChildren().add(description);
                         vbox.getChildren().add(new Spacer(2, Orientation.VERTICAL));
@@ -145,8 +148,10 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                     }
 
                     line.getChildren().add(vbox);
+                    nameMap.put(compRegion, vbox);
                 } else {
                     line.getChildren().add(name);
+                    nameMap.put(compRegion, name);
                 }
 
                 line.getChildren().add(compRegion);
@@ -164,12 +169,16 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 name.prefHeightProperty().bind(line.heightProperty());
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
+                name.focusTraversableProperty().bind(Platform.accessibilityActiveProperty());
+                name.setAccessibleRole(AccessibleRole.TEXT);
+                name.accessibleTextProperty().bind(entry.name());
                 if (compRegion != null) {
                     name.visibleProperty().bind(compRegion.visibleProperty());
                     name.managedProperty().bind(compRegion.managedProperty());
                 }
                 nameRegions.add(name);
                 line.getChildren().add(name);
+                nameMap.put(compRegion, name);
 
                 if (compRegion != null) {
                     line.getChildren().add(compRegion);
@@ -236,15 +245,30 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
             var failed = checks.stream()
                     .filter(check -> check.getValidationResult().getMessages().size() > 0)
                     .findFirst();
+
+            Node target = null;
             if (failed.isPresent()) {
                 var targets = failed.get().getTargets();
                 if (targets.size() > 0) {
-                    var r = targets.getFirst();
-                    r.requestFocus();
+                    target = targets.getFirst();
                 }
             } else {
                 if (finalFirstComp != null) {
-                    finalFirstComp.requestFocus();
+                    target = finalFirstComp;
+                }
+            }
+
+            if (target != null) {
+                var a18y = Platform.accessibilityActiveProperty().get();
+                if (a18y) {
+                    if (nameMap.containsKey(target)) {
+                        nameMap.get(target).requestFocus();
+                    } else {
+                        target.requestFocus();
+                        target.requestFocusTraversal(TraversalDirection.UP);
+                    }
+                } else {
+                    target.requestFocus();
                 }
             }
         });
