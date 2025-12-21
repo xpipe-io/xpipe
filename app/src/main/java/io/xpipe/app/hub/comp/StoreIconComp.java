@@ -56,6 +56,7 @@ public class StoreIconComp extends SimpleComp {
                         stack.hoverProperty()));
 
         stack.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            System.out.println(event);
             if (event.getButton() == MouseButton.PRIMARY) {
                 if (wrapper.getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
                     return;
