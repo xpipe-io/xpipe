@@ -35,6 +35,7 @@ public class PasteMenuProvider implements BrowserMenuLeafProvider {
         }
 
         var isDuplication = files.size() == 1
+                && model.getFileSystem().equals(files.getFirst().getRawFileEntry().getFileSystem())
                 && target.getPath()
                         .equals(files.getFirst().getRawFileEntry().getPath().getParent());
         if (isDuplication) {
