@@ -135,7 +135,7 @@ public final class AppPrefs {
             .key("performanceMode")
             .valueClass(Boolean.class)
             .build());
-    public final BooleanProperty limitedTouchscreenMode = map(Mapping.builder()
+    final BooleanProperty limitedTouchscreenMode = map(Mapping.builder()
             .property(new GlobalBooleanProperty())
             .key("limitedTouchscreenMode")
             .valueClass(Boolean.class)
@@ -752,6 +752,13 @@ public final class AppPrefs {
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
         var writable = (Property<T>) prop;
+
+        // Prior to GUI init, we can set whatever we like
+        if (AppLayoutModel.get() == null) {
+            writable.setValue(newValue);
+            return;
+        }
+
         PlatformThread.runLaterIfNeededBlocking(() -> {
             writable.setValue(newValue);
         });

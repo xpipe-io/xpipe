@@ -3,6 +3,7 @@ package io.xpipe.app.platform;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import javafx.application.Platform;
 import javafx.geometry.Side;
@@ -24,7 +25,7 @@ public class MenuHelper {
         var m = ComboBoxPopupControl.class.getDeclaredMethod("getPopup");
         m.setAccessible(true);
         var popup = (PopupControl) m.invoke(skin);
-        popup.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        popup.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         return skin;
     }
 
@@ -36,7 +37,7 @@ public class MenuHelper {
         var field = MenuButtonSkinBase.class.getDeclaredField("popup");
         field.setAccessible(true);
         var popup = (PopupControl) field.get(skin);
-        popup.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        popup.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         return mb;
     }
 
@@ -51,7 +52,7 @@ public class MenuHelper {
 
     public static ContextMenu createContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        contextMenu.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         InputHelper.onLeft(contextMenu, false, e -> {
             contextMenu.hide();
             e.consume();

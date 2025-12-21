@@ -4,6 +4,7 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ScanDialog;
 
@@ -128,7 +129,7 @@ public class StoreCreationMenu {
             return menu;
         }
 
-        if (AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL) {
+        if (!AppPrefs.get().limitedTouchscreenMode().get()) {
             menu.setOnAction(event -> {
                 if (event.getTarget() != menu) {
                     return;

@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
@@ -67,7 +68,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                 w.getName().getValue(),
                 PrettyImageHelper.ofFixedSizeSquare(graphic, 16).createRegion());
         m.getItems().setAll(items);
-        if (AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL) {
+        if (!AppPrefs.get().limitedTouchscreenMode().get()) {
             m.setOnAction(event -> {
                 if (event.getTarget() == m) {
                     if (m.getItems().isEmpty()) {

@@ -7,6 +7,7 @@ import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.BooleanAnimationTimer;
 import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
@@ -62,7 +63,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             hide();
             e.consume();
         });
-        setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         getStyleClass().add("condensed");
     }
 

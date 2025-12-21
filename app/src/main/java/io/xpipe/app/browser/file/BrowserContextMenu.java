@@ -6,6 +6,7 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.InputHelper;
 
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.update.AppDistributionType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SeparatorMenuItem;
@@ -30,7 +31,7 @@ public final class BrowserContextMenu extends ContextMenu {
     private void createMenu() {
         AppFontSizes.lg(getStyleableNode());
 
-        setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
 
         InputHelper.onLeft(this, false, e -> {
             hide();
