@@ -5,6 +5,7 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.base.*;
 
+import io.xpipe.app.platform.MenuHelper;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -131,6 +132,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
         });
         combo.apply(struc -> {
             var skin = new ComboBoxListViewSkin<>(struc.get());
+            MenuHelper.fixComboBoxSkin(skin);
             struc.get().setSkin(skin);
             skin.setHideOnClick(false);
 

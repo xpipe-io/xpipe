@@ -141,6 +141,7 @@ def getJvmArgs() {
             "--add-exports", "jdk.zipfs/jdk.nio.zipfs=io.xpipe.modulefs",
             "--add-opens", "javafx.graphics/com.sun.glass.ui=$appPackage",
             "--add-opens", "javafx.graphics/javafx.stage=$appPackage",
+            "--add-opens", "javafx.controls/javafx.scene.control.skin=$appPackage",
             "--add-opens", "javafx.graphics/com.sun.javafx.tk=$appPackage",
             "--add-opens", "javafx.graphics/com.sun.javafx.tk.quantum=$appPackage"
     ]

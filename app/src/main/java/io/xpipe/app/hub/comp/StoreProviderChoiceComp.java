@@ -8,6 +8,8 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.platform.JfxHelper;
 
+import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.process.ShellDialect;
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -60,7 +62,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
                 }
             }
         };
-        var cb = new ComboBox<DataStoreProvider>();
+        var cb = MenuHelper.<DataStoreProvider>createComboBox();
         cb.setCellFactory(param -> {
             return cellFactory.get();
         });

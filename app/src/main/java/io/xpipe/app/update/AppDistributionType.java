@@ -56,7 +56,7 @@ public enum AppDistributionType implements Translatable {
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater()),
     SCOOP("scoop", false, () -> new PortableUpdater(true)),
-    ;
+    ANDROID_LINUX_TERMINAL("androidLinuxTerminal", false, () -> new PortableUpdater(true));
 
     private static AppDistributionType type;
 
@@ -152,6 +152,13 @@ public enum AppDistributionType implements Translatable {
                 return PORTABLE;
             }
         } else {
+            if (OsType.ofLocal() == OsType.LINUX) {
+                var uname = LocalExec.readStdoutIfPossible("uname", "-a");
+                if (uname.isPresent() && uname.get().contains("android") && uname.get().contains("aarch64")) {
+                    return ANDROID_LINUX_TERMINAL;
+                }
+            }
+
             var file = base.resolve("installation");
             if (!Files.exists(file)) {
                 if (OsType.ofLocal() == OsType.LINUX && Files.exists(base.resolve("aur"))) {

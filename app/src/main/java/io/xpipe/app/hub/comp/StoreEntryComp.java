@@ -353,7 +353,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (branch != null) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = ContextMenuHelper.create();
+                        var cm = MenuHelper.createContextMenu();
                         var children =
                                 branch.getChildren(getWrapper().getEntry().ref());
                         var cats = Arrays.stream(StoreActionCategory.values())
@@ -416,7 +416,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected ContextMenu createContextMenu(Region name) {
-        var contextMenu = ContextMenuHelper.create();
+        var contextMenu = MenuHelper.createContextMenu();
         handleContextMenuCount(contextMenu);
 
         var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
@@ -537,7 +537,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                     }
 
                     var index =
-                            ContextMenuHelper.item(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
+                            MenuHelper.createMenuItem(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
                     index.setOnAction(event -> {
                         var tagName = new SimpleStringProperty();
                         var modal = ModalOverlay.of(

@@ -4,6 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.Translatable;
 
@@ -12,6 +13,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.util.StringConverter;
 
 import lombok.AccessLevel;
@@ -45,7 +47,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
     @Override
     public CompStructure<ComboBox<T>> createBase() {
-        var cb = new ComboBox<T>();
+        var cb = MenuHelper.<T>createComboBox();
         cb.setConverter(new StringConverter<>() {
             @Override
             public String toString(T object) {

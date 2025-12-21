@@ -3,6 +3,7 @@ package io.xpipe.app.hub.comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -119,6 +120,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
             }
         };
         combo.setSkin(skin);
+        MenuHelper.fixComboBoxSkin(skin);
         combo.setMaxWidth(20000);
         combo.setEditable(true);
 

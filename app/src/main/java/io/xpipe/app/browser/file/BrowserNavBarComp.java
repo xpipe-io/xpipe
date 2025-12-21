@@ -3,16 +3,12 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.TooltipHelper;
-import io.xpipe.app.core.AppFont;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
@@ -34,7 +30,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 import atlantafx.base.theme.Styles;
-import org.kordamp.ikonli.javafx.FontIcon;
 
 public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
 
@@ -194,7 +189,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
     }
 
     private ContextMenu createContextMenu() {
-        var cm = ContextMenuHelper.create();
+        var cm = MenuHelper.createContextMenu();
 
         var f = model.getHistory().getForwardHistory(8).stream().toList();
         for (int i = f.size() - 1; i >= 0; i--) {

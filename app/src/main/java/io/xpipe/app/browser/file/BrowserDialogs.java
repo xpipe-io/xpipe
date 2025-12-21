@@ -13,7 +13,7 @@ public class BrowserDialogs {
     public static FileConflictChoice showFileConflictDialog(FilePath file, boolean multiple) {
         var choice = new SimpleObjectProperty<FileConflictChoice>();
         var key = multiple ? "fileConflictAlertContentMultiple" : "fileConflictAlertContent";
-        var w = multiple ? 1050 : 400;
+        var w = multiple ? 900 : 400;
         var modal = ModalOverlay.of(
                 "fileConflictAlertTitle",
                 AppDialog.dialogText(AppI18n.observable(key, file)).prefWidth(w));

@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptedValue;
@@ -324,6 +325,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     popover.hide();
                 }
             };
+            MenuHelper.fixComboBoxSkin(skin);
             struc.get().setSkin(skin);
         });
 

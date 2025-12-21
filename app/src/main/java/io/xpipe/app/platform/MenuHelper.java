@@ -3,19 +3,41 @@ package io.xpipe.app.platform;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.update.AppDistributionType;
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.control.skin.ComboBoxPopupControl;
 import javafx.scene.layout.Region;
+import lombok.SneakyThrows;
 
-public class ContextMenuHelper {
+import java.util.function.Function;
 
-    public static ContextMenu create() {
+public class MenuHelper {
+
+    @SneakyThrows
+    public static <T> ComboBoxListViewSkin<T> fixComboBoxSkin(ComboBoxListViewSkin<T> skin) {
+        var m = ComboBoxPopupControl.class.getDeclaredMethod("getPopup");
+        m.setAccessible(true);
+        var popup = (PopupControl) m.invoke(skin);
+        popup.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
+        return skin;
+    }
+
+    @SneakyThrows
+    public static <T> ComboBox<T> createComboBox() {
+        var cb = new ComboBox<T>();
+        var skin = new ComboBoxListViewSkin<>(cb);
+        fixComboBoxSkin(skin);
+        cb.setSkin(skin);
+        return cb;
+    }
+
+    public static ContextMenu createContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
-        contextMenu.setAutoHide(true);
+        contextMenu.setAutoHide(AppDistributionType.get() != AppDistributionType.ANDROID_LINUX_TERMINAL);
         InputHelper.onLeft(contextMenu, false, e -> {
             contextMenu.hide();
             e.consume();
@@ -41,14 +63,14 @@ public class ContextMenuHelper {
         return contextMenu;
     }
 
-    public static MenuItem item(LabelGraphic graphic, String nameKey) {
+    public static MenuItem createMenuItem(LabelGraphic graphic, String nameKey) {
         var i = new MenuItem();
         i.textProperty().bind(AppI18n.observable(nameKey));
         i.setGraphic(graphic.createGraphicNode());
         return i;
     }
 
-    public static void toggleShow(ContextMenu contextMenu, Node ref, Side side) {
+    public static void toggleMenuShow(ContextMenu contextMenu, Node ref, Side side) {
         if (!contextMenu.isShowing()) {
             // Prevent NPE in show()
             if (contextMenu.getScene() == null || ref == null || ref.getScene() == null) {

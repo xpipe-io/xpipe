@@ -1,14 +1,13 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -199,7 +198,7 @@ public class StoreCategoryComp extends SimpleComp {
     }
 
     private ContextMenu createContextMenu(Region text) {
-        var contextMenu = ContextMenuHelper.create();
+        var contextMenu = MenuHelper.createContextMenu();
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

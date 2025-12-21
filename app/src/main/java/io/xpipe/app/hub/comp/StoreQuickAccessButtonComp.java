@@ -4,7 +4,7 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 
 import javafx.geometry.Side;
@@ -32,7 +32,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
             return null;
         }
 
-        var cm = ContextMenuHelper.create();
+        var cm = MenuHelper.createContextMenu();
         cm.getStyleClass().add("condensed");
         Menu menu = (Menu) recurse(cm, section);
         cm.getItems().addAll(menu.getItems());
@@ -94,7 +94,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                     return;
                 }
 
-                ContextMenuHelper.toggleShow(menu.get(), struc.get(), Side.RIGHT);
+                MenuHelper.toggleMenuShow(menu.get(), struc.get(), Side.RIGHT);
                 event.consume();
             });
         });

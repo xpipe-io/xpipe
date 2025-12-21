@@ -8,7 +8,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -145,7 +145,7 @@ public class StoreEntryListBatchBarComp extends SimpleComp {
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = ContextMenuHelper.create();
+                        var cm = MenuHelper.createContextMenu();
                         s.getChildren(childrenRefs.getList()).forEach(childProvider -> {
                             var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider);
                             cm.getItems().add(menu);

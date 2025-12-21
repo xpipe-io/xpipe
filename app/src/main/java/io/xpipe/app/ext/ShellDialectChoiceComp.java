@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 
@@ -76,7 +77,7 @@ public class ShellDialectChoiceComp extends SimpleComp {
                                         .createRegion());
             }
         };
-        var cb = new ComboBox<ShellDialect>();
+        var cb = MenuHelper.<ShellDialect>createComboBox();
         cb.setCellFactory(param -> supplier.get());
         cb.setButtonCell(supplier.get());
         cb.setValue(selected.getValue());

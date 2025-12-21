@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -32,14 +33,13 @@ public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
 
     @Override
     public CompStructure<ComboBox<String>> createBase() {
-        var text = new ComboBox<String>();
+        var text = MenuHelper.<String>createComboBox();
         text.setEditable(true);
         text.setValue(value.getValue() != null ? value.getValue().toString() : null);
         text.setItems(FXCollections.observableList(
                 predefined.stream().map(integer -> "" + integer).toList()));
         text.setMaxWidth(20000);
         text.getStyleClass().add("int-combo-field-comp");
-        text.setSkin(new ComboBoxListViewSkin<>(text));
         text.setVisibleRowCount(Math.min(10, predefined.size()));
 
         value.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> {
