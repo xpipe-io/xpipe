@@ -181,6 +181,11 @@ def getJvmArgs() {
         jvmRunArgs += ["-Dapple.awt.application.appearance=system"]
     }
 
+    // Use new metal pipeline on macOS
+    if (os.isMacOsX()) {
+        jvmRunArgs += ["-Dprism.order=mtl,es2,sw"]
+    }
+
     if (os.isLinux()) {
         jvmRunArgs.addAll("--add-opens", "java.desktop/sun.awt.X11=" + packageName(null))
     }
@@ -289,7 +294,7 @@ project.ext {
     }
 
     // JavaFX config
-    devJavafxVersion = '26-ea+3'
+    devJavafxVersion = '26-ea+19'
     platformName = getPlatformName()
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
