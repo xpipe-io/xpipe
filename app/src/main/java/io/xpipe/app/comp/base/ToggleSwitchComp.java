@@ -3,9 +3,11 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
@@ -34,6 +36,13 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
                 event.consume();
             }
         });
+        s.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+            if (name.getValue() != null) {
+                return name.getValue();
+            }
+
+            return AppI18n.get("toggleButton");
+        }, name, AppI18n.activeLanguage()));
         s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue() != null ? selected.getValue() : false);
