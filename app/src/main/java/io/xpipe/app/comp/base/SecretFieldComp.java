@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -61,7 +62,15 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
     @Override
     public Structure createBase() {
-        var field = new PasswordField();
+        var field = new PasswordField() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
+                switch (attribute) {
+                    case TEXT: return getAccessibleText();
+                    default: return super.queryAccessibleAttribute(attribute, parameters);
+                }
+            }
+        };
         field.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.BACK_SPACE) {
                 var sel = field.getSelection();
