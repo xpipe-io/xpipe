@@ -38,7 +38,7 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             }
         });
         s.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-            if (name.getValue() != null) {
+            if (name != null && name.getValue() != null) {
                 return name.getValue();
             }
 
