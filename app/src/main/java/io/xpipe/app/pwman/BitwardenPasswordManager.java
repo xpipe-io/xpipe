@@ -22,6 +22,7 @@ import java.nio.file.StandardCopyOption;
 public class BitwardenPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
+    private static boolean copied;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -58,14 +59,17 @@ public class BitwardenPasswordManager implements PasswordManager {
             return null;
         }
 
-        // Copy existing file if possible to retain configuration
-        var cacheDataFile = AppCache.getBasePath().resolve("data.json");
-        var def = getDefaultConfigPath();
-        if (Files.exists(def)) {
-            try {
-                Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                ErrorEventFactory.fromThrowable(e).handle();
+        // Copy existing file if possible to retain configuration. Only once per session
+        if (!copied) {
+            var cacheDataFile = AppCache.getBasePath().resolve("data.json");
+            var def = getDefaultConfigPath();
+            if (Files.exists(def)) {
+                try {
+                    Files.copy(def, cacheDataFile, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+                copied = true;
             }
         }
 
