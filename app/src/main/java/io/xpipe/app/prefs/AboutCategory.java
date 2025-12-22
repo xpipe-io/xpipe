@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppNames;
@@ -62,15 +63,18 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(title, null)
                 .addComp(Comp.vspacer(10))
                 .name("build")
-                .addComp(new LabelComp(AppProperties.get().getBuild()), null)
+                .addComp(new LabelComp(AppProperties.get().getBuild())
+                        .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)), null)
                 .name("distribution")
-                .addComp(new LabelComp(AppDistributionType.get().toTranslatedString()))
+                .addComp(new LabelComp(AppDistributionType.get().toTranslatedString())
+                        .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)))
                 .name("virtualMachine")
                 .addComp(
                         new LabelComp(System.getProperty("java.vm.vendor") + " "
                                 + System.getProperty("java.vm.name")
                                 + " "
-                                + System.getProperty("java.vm.version")),
+                                + System.getProperty("java.vm.version"))
+                                .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");

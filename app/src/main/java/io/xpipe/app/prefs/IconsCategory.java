@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
@@ -212,6 +213,7 @@ public class IconsCategory extends AppPrefsCategory {
         var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
         var enabled = Comp.of(() -> {
             var cb = new CheckBox();
+            CompDescriptor.builder().nameKey("enabled").build().apply(cb);
             cb.setSelected(!disabled.contains(source.getId()));
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 var set = new LinkedHashSet<>(

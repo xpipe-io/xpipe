@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -75,6 +76,7 @@ public class ModalOverlayComp extends SimpleComp {
             if (newValue == null) {
                 overlayContent.setValue(null);
                 bgRegion.setDisable(false);
+                bgRegion.requestFocus();
             }
 
             if (newValue != null) {
@@ -86,6 +88,7 @@ public class ModalOverlayComp extends SimpleComp {
             if (!newValue) {
                 overlayContent.setValue(null);
                 bgRegion.setDisable(false);
+                bgRegion.requestFocus();
             }
         });
 
@@ -120,7 +123,7 @@ public class ModalOverlayComp extends SimpleComp {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && modal.isDisplay()) {
                     if (newValue == null) {
-                        modal.hide(false);
+                        modal.hide(true);
                     }
                 }
 
@@ -237,6 +240,7 @@ public class ModalOverlayComp extends SimpleComp {
                 setRightAnchor(closeButton, 19d);
             }
         };
+        modalBox.setClearOnClose(true);
         if (newValue.getHideAction() != null) {
             modalBox.setOnMinimize(event -> {
                 newValue.getHideAction().run();

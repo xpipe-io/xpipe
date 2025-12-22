@@ -53,7 +53,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
     }
 
     private Region createLayout() {
-        var layout = new BorderPane();
+        var layout = new VBox();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(model.getFilter(), model.getProvider());
         providerChoice.grow(true, false);
@@ -89,6 +89,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
+                valSp.setFocusTraversable(false);
 
                 var full = new OptionsBuilder();
 
@@ -101,11 +102,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(d.getOptions());
                 full.sub(propOptions);
 
+                var comp = full.buildComp();
                 var region =
-                        full.buildComp().styleClass("store-creator-options").createRegion();
+                        comp.styleClass("store-creator-options").createRegion();
                 valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);
+                sp.setFocusTraversable(false);
                 sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
@@ -121,7 +124,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
 
-                layout.setCenter(vbox);
+                layout.getChildren().add(vbox);
 
                 model.getValidator().setValue(full.buildEffectiveValidator());
 
@@ -129,13 +132,15 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                     region.requestFocus();
                 });
             } else {
-                layout.setCenter(null);
+                if (layout.getChildren().size() > 1) {
+                    layout.getChildren().remove(1);
+                }
                 model.getValidator().setValue(new SimpleValidator());
             }
         });
 
         if (showProviders) {
-            layout.setTop(providerChoice.createRegion());
+            layout.getChildren().addFirst(providerChoice.createRegion());
         }
         return layout;
     }

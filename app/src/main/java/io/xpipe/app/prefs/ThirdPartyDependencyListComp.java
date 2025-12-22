@@ -1,11 +1,13 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.Hyperlinks;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -15,6 +17,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
 
     private TitledPane createPane(ThirdPartyDependency t) {
         var tp = new TitledPane();
+        CompDescriptor.builder().name(new ReadOnlyStringWrapper(t.name())).build().apply(tp);
         tp.setExpanded(false);
         var link = new Hyperlink(t.name() + " @ " + t.version());
         link.setOnAction(e -> {

@@ -106,7 +106,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                                     },
                                     name.managedProperty()));
 
-                    vbox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty());
+                    vbox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
                     vbox.setAccessibleRole(AccessibleRole.TEXT);
                     var joined = Bindings.createStringBinding(() -> {
                         return entry.name.getValue() + "\n\n" + entry.description().getValue();
@@ -169,7 +169,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 name.prefHeightProperty().bind(line.heightProperty());
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
-                name.focusTraversableProperty().bind(Platform.accessibilityActiveProperty());
+                name.focusTraversableProperty().bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
                 name.setAccessibleRole(AccessibleRole.TEXT);
                 name.accessibleTextProperty().bind(entry.name());
                 if (compRegion != null) {
