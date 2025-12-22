@@ -9,6 +9,7 @@ import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -42,7 +43,7 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             }
 
             return AppI18n.get("toggleButton");
-        }, name, AppI18n.activeLanguage()));
+        }, name != null ? name : new ReadOnlyObjectWrapper<>(), AppI18n.activeLanguage()));
         s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue() != null ? selected.getValue() : false);
