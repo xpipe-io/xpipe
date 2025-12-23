@@ -3,6 +3,7 @@ package io.xpipe.ext.base.identity;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -14,8 +15,10 @@ import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 
+import javafx.beans.value.ObservableValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -32,19 +35,36 @@ public class IdentityChoiceBuilder {
     boolean requireUserInput;
     boolean requirePassword;
     boolean keyInput;
+    boolean requireKeyInput;
     boolean allowAgentForward;
     String userChoiceTranslationKey;
-    String passwordChoiceTranslationKey;
+    ObservableValue<String> passwordChoiceTranslationKey;
+
+    public IdentityChoiceBuilder(
+            ObjectProperty<IdentityValue> identity, boolean allowCustomUserInput, boolean requireUserInput, boolean requirePassword, boolean keyInput,
+            boolean requireKeyInput,
+            boolean allowAgentForward, String userChoiceTranslationKey, String passwordChoiceTranslationKey
+    ) {
+        this.identity = identity;
+        this.allowCustomUserInput = allowCustomUserInput;
+        this.requireUserInput = requireUserInput;
+        this.requirePassword = requirePassword;
+        this.keyInput = keyInput;
+        this.requireKeyInput = requireKeyInput;
+        this.allowAgentForward = allowAgentForward;
+        this.userChoiceTranslationKey = userChoiceTranslationKey;
+        this.passwordChoiceTranslationKey = new ReadOnlyStringWrapper(passwordChoiceTranslationKey);
+    }
 
     public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
         var i = new IdentityChoiceBuilder(
-                identity, true, requireUser, true, true, true, "identityChoice", "passwordAuthentication");
+                identity, true, requireUser, true, true, true, true, "identityChoice", "passwordAuthentication");
         return i.build();
     }
 
     public static OptionsBuilder container(ObjectProperty<IdentityValue> identity) {
         var i = new IdentityChoiceBuilder(
-                identity, true, false, false, false, false, "customUsername", "customUsernamePassword");
+                identity, true, false, false, false, false, false, "customUsername", "customUsernamePassword");
         return i.build();
     }
 
@@ -100,7 +120,12 @@ public class IdentityChoiceBuilder {
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
-                .nameAndDescription(passwordChoiceTranslationKey)
+                .name(Bindings.createStringBinding(() -> {
+                    return AppI18n.get(passwordChoiceTranslationKey.getValue());
+                }, passwordChoiceTranslationKey, AppI18n.activeLanguage()))
+                .description(Bindings.createStringBinding(() -> {
+                    return AppI18n.get(passwordChoiceTranslationKey.getValue() + "Description");
+                }, passwordChoiceTranslationKey, AppI18n.activeLanguage()))
                 .sub(passwordChoice, pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .hide(refSelected)
@@ -117,8 +142,7 @@ public class IdentityChoiceBuilder {
                     .description("keyAuthenticationDescription")
                     .documentationLink(DocumentationLink.SSH_KEYS)
                     .sub(keyAuthChoice(identityStrategy, sshIdentityChoiceConfig), identityStrategy)
-                    .nonNullIf(inPlaceSelected)
-                    .disable(refSelected)
+                    .nonNullIf(inPlaceSelected.and(new ReadOnlyBooleanWrapper(requireKeyInput)))
                     .hide(refSelected);
         }
         options.bind(
