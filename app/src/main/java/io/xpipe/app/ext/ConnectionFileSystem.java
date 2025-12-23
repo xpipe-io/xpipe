@@ -106,6 +106,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public ShellControl getTerminalShellControl() {
+        return shellControl;
+    }
+
+    @Override
     public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
         shellControl
                 .command(CommandBuilder.of()

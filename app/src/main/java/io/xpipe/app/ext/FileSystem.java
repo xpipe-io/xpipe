@@ -42,6 +42,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     Optional<ShellControl> getRawShellControl();
 
+    ShellControl getTerminalShellControl();
+
     void chmod(FilePath path, String mode, boolean recursive) throws Exception;
 
     void chown(FilePath path, String uid, boolean recursive) throws Exception;

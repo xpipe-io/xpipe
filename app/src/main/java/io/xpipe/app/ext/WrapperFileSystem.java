@@ -105,6 +105,11 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public ShellControl getTerminalShellControl() {
+        return fs.getTerminalShellControl();
+    }
+
+    @Override
     public void chmod(FilePath path, String mode, boolean recursive) throws Exception {
         if (!runningCheck.get()) {
             return;
