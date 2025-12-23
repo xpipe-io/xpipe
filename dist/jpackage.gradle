@@ -142,4 +142,4 @@ if (os.isMacOsX()) {
     jpackageImage.dependsOn(prepareMacOSResources)
 }
 
-jpackage.finalizedBy(copyBundledExtensions)
+tasks.jpackage.finalizedBy(copyBundledExtensions)
