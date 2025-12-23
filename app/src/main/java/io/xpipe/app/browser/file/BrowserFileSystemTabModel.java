@@ -62,7 +62,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
     private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
     private final StringProperty fileSystemNameSuffix = new SimpleStringProperty();
-    private FileSystem fileSystem;
+    private WrapperFileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
 
     public BrowserFileSystemTabModel(

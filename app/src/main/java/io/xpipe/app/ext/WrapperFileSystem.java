@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FilePath;
 
 import lombok.Getter;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-@Getter
 public class WrapperFileSystem implements FileSystem {
 
     private final FileSystem fs;
@@ -22,6 +22,14 @@ public class WrapperFileSystem implements FileSystem {
     public WrapperFileSystem(FileSystem fs) {
         this.fs = fs;
         this.runningCheck = () -> fs.isRunning();
+    }
+
+    public void withFileSystem(FailableConsumer<FileSystem, Exception> consumer) throws Exception {
+        if (!runningCheck.get()) {
+            return;
+        }
+
+        consumer.accept(fs);
     }
 
     @Override

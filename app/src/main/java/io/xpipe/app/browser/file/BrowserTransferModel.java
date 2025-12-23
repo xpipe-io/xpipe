@@ -10,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -142,7 +143,7 @@ public class BrowserTransferModel {
             return;
         }
 
-        try {
+        try (var ignored = new BooleanScope(itemModel.getBusy()).exclusive().start()) {
             transferring.setValue(true);
             var op = new BrowserFileTransferOperation(
                     BrowserLocalFileSystem.getLocalFileEntry(TEMP),
