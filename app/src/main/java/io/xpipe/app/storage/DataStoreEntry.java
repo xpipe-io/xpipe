@@ -756,21 +756,6 @@ public class DataStoreEntry extends StorageElement {
         }
     }
 
-    public void initializeEntry() {
-        if (store instanceof ExpandedLifecycleStore lifecycleStore) {
-            try {
-                incrementBusyCounter();
-                notifyUpdate(false, false);
-                lifecycleStore.initializeStore();
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).handle();
-            } finally {
-                decrementBusyCounter();
-                notifyUpdate(false, false);
-            }
-        }
-    }
-
     public void finalizeEntry() {
         if (store instanceof ExpandedLifecycleStore lifecycleStore) {
             try {

@@ -353,7 +353,7 @@ public abstract class DataStorage {
         var newParent = DataStorage.get().getDefaultDisplayParent(newEntry);
         var sameParent = Objects.equals(oldParent, newParent);
 
-        entry.finalizeEntry();
+        finalizeWithChildren(entry);
 
         var children = getDeepStoreChildren(entry);
         if (!sameParent) {
@@ -380,7 +380,6 @@ public abstract class DataStorage {
             }
         }
         entry.applyChanges(newEntry);
-        entry.initializeEntry();
 
         if (!sameParent) {
             if (oldParent.isPresent()) {
@@ -405,19 +404,27 @@ public abstract class DataStorage {
         saveAsync();
     }
 
+    private void finalizeWithChildren(DataStoreEntry entry) {
+        var c = getDeepStoreChildren(entry);
+        var l = new ArrayList<>(c);
+        l.addFirst(entry);
+        for (int i = l.size() - 1; i >= 0; i--) {
+            l.get(i).finalizeEntry();
+        }
+    }
+
     public void updateEntryStore(DataStoreEntry entry, DataStore store) {
         if (entry.getStore() == store) {
             return;
         }
 
-        entry.finalizeEntry();
+        finalizeWithChildren(entry);
         if (entry.getStore() != null && store != null && !entry.getStore().equals(store)) {
             synchronized (storeMoveCache) {
                 storeMoveCache.put(entry.getStore(), store);
             }
         }
         entry.setStoreInternal(store, false);
-        entry.initializeEntry();
 
         saveAsync();
     }
@@ -893,7 +900,6 @@ public abstract class DataStorage {
         saveAsync();
 
         this.listeners.forEach(l -> l.onStoreAdd(e));
-        e.initializeEntry();
         e.refreshStore();
         return e;
     }
@@ -937,9 +943,6 @@ public abstract class DataStorage {
             e.refreshStore();
         }
         this.listeners.forEach(l -> l.onStoreAdd(toAdd.toArray(DataStoreEntry[]::new)));
-        for (DataStoreEntry e : toAdd) {
-            e.initializeEntry();
-        }
         saveAsync();
     }
 
@@ -962,17 +965,17 @@ public abstract class DataStorage {
         return e;
     }
 
-    public void deleteStoreEntry(@NonNull DataStoreEntry store) {
-        store.finalizeEntry();
-        this.storeEntries.remove(store);
+    public void deleteStoreEntry(@NonNull DataStoreEntry entry) {
+        finalizeWithChildren(entry);
+        this.storeEntries.remove(entry);
         synchronized (identityStoreEntryMapCache) {
-            identityStoreEntryMapCache.remove(store.getStore());
+            identityStoreEntryMapCache.remove(entry.getStore());
         }
         synchronized (storeEntryMapCache) {
-            storeEntryMapCache.remove(store.getStore());
+            storeEntryMapCache.remove(entry.getStore());
         }
-        getDefaultDisplayParent(store).ifPresent(p -> p.setChildrenCache(null));
-        this.listeners.forEach(l -> l.onStoreRemove(store));
+        getDefaultDisplayParent(entry).ifPresent(p -> p.setChildrenCache(null));
+        this.listeners.forEach(l -> l.onStoreRemove(entry));
         refreshEntries();
         saveAsync();
     }
@@ -1163,8 +1166,8 @@ public abstract class DataStorage {
         }
     }
 
-    public Set<DataStoreEntry> getDeepStoreChildren(DataStoreEntry entry) {
-        var set = new HashSet<DataStoreEntry>();
+    public SequencedSet<DataStoreEntry> getDeepStoreChildren(DataStoreEntry entry) {
+        var set = new LinkedHashSet<DataStoreEntry>();
         getDeepStoreChildren(entry, set);
         return set;
     }
