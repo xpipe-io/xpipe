@@ -60,7 +60,7 @@ public class AppInstaller {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
                 var logFile =
-                        FilePath.of(logsDir, "installer_" + file.getFileName().toString() + ".log");
+                        FilePath.of(logsDir, "installer.log");
                 var systemWide = isSystemWide();
                 var cmdScript = LocalShell.getDialect() == ShellDialects.CMD && !systemWide;
                 var command = cmdScript

@@ -65,7 +65,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);
             } else {
-                nameBox.getChildren().add(1, active);
+                nameBox.getChildren().add(3, active);
             }
         });
 

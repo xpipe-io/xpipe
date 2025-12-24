@@ -66,6 +66,12 @@ public class StoreCreationComp extends ModalOverlayContentComp {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
 
+        if (showProviders) {
+            layout.getChildren().addFirst(providerChoice.createRegion());
+        }
+        layout.getChildren().add(new Region());
+
+
         var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
@@ -124,24 +130,16 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
 
-                layout.getChildren().add(vbox);
+                layout.getChildren().set(showProviders ? 1 : 0, vbox);
 
                 model.getValidator().setValue(full.buildEffectiveValidator());
 
                 Platform.runLater(() -> {
                     region.requestFocus();
                 });
-            } else {
-                if (layout.getChildren().size() > 1) {
-                    layout.getChildren().remove(1);
-                }
-                model.getValidator().setValue(new SimpleValidator());
             }
         });
 
-        if (showProviders) {
-            layout.getChildren().addFirst(providerChoice.createRegion());
-        }
         return layout;
     }
 
