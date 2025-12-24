@@ -71,7 +71,7 @@ public class GlobalTimer {
 
     public static void scheduleUntil(Duration interval, boolean runInstantly, Supplier<Boolean> s) {
         var task = createDelayedTask(interval, s);
-        schedule(task, runInstantly ? interval.toMillis() : 0);
+        schedule(task, runInstantly ? 0 : interval.toMillis());
     }
 
     public static void delay(Runnable r, Duration delay) {

@@ -75,15 +75,15 @@ public interface CommandControl extends ProcessControl {
     default void killOnTimeout(CountDown countDown) {
         GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
             if (!isRunning(true)) {
-                return false;
+                return true;
             }
 
             if (!countDown.countDown()) {
                 kill();
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         });
     }
 
