@@ -168,7 +168,11 @@ public class BrowserTransferModel {
                     .target(DataStorage.get().local().ref())
                     .download(true)
                     .build();
-            action.executeSync();
+            if (!action.executeSync()) {
+                synchronized (items) {
+                    items.remove(item);
+                }
+            }
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
             synchronized (items) {
