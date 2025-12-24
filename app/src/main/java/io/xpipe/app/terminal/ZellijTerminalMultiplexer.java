@@ -40,7 +40,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             throws Exception {
         var l = new ArrayList<String>();
         var firstCommand =
-                config.getPanes().getFirst().getDialectLaunchCommand().buildFull(control);
+                config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
         l.addAll(List.of(
                 "zellij attach --create-background xpipe",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
@@ -50,7 +50,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
 
         var split = AppPrefs.get().terminalSplitStrategy().getValue();
         for (int i = 1; i < config.getPanes().size(); i++) {
-            var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildFull(control);
+            var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
             var direction = split == TerminalSplitStrategy.HORIZONTAL
                     ? "--direction right "
                     : split == TerminalSplitStrategy.VERTICAL ? "--direction down " : "";
@@ -69,7 +69,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
         var l = new ArrayList<String>();
         var firstConfig = config.getPanes().getFirst();
-        var firstCommand = firstConfig.getDialectLaunchCommand().buildFull(control);
+        var firstCommand = firstConfig.getDialectLaunchCommand().buildSimple();
         l.addAll(List.of("zellij attach xpipe"));
 
         var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
@@ -91,7 +91,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
             var split = AppPrefs.get().terminalSplitStrategy().getValue();
             for (int i = 1; i < config.getPanes().size(); i++) {
                 var iCommand =
-                        config.getPanes().get(i).getDialectLaunchCommand().buildFull(control);
+                        config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
                 var direction = split == TerminalSplitStrategy.HORIZONTAL
                         ? "--direction right "
                         : split == TerminalSplitStrategy.VERTICAL ? "--direction down " : "";
