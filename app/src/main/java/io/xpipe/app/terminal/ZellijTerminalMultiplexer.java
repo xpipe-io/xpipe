@@ -48,18 +48,23 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action write 10",
                 "zellij -s xpipe action clear"));
 
-        var split = AppPrefs.get().terminalSplitStrategy().getValue();
-        for (int i = 1; i < config.getPanes().size(); i++) {
-            var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-            var direction = split == TerminalSplitStrategy.HORIZONTAL
-                    ? "--direction right "
-                    : split == TerminalSplitStrategy.VERTICAL ? "--direction down " : "";
-            l.addAll(List.of(
-                    "zellij -s xpipe action new-pane " + direction + "--name \""
-                            + escape(config.getPanes().get(i).getTitle(), false, true) + "\"",
-                    "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
-                    "zellij -s xpipe action write 10",
-                    "zellij -s xpipe action clear"));
+        if (config.getPanes().size() > 1) {
+            var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
+            splitIterator.next();
+
+            for (int i = 1; i < config.getPanes().size(); i++) {
+                var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
+                var direction = splitIterator.getSplitDirection();
+                var directionString = direction == TerminalSplitStrategy.SplitDirection.HORIZONTAL ? "--direction right" : "--direction down";
+                l.addAll(List.of("zellij -s xpipe action new-pane " +
+                                directionString +
+                                " --name \"" +
+                                escape(config.getPanes().get(i).getTitle(), false, true) +
+                                "\"", "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
+                        "zellij -s xpipe action write 10", "zellij -s xpipe action clear",
+                        "zellij -s xpipe action focus-next-pane"));
+                splitIterator.next();
+            }
         }
 
         return ShellScript.lines(l);
@@ -88,20 +93,22 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action close-tab"));
 
         if (config.getPanes().size() > 1) {
-            var split = AppPrefs.get().terminalSplitStrategy().getValue();
+            var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
+            splitIterator.next();
             for (int i = 1; i < config.getPanes().size(); i++) {
-                var iCommand =
-                        config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
-                var direction = split == TerminalSplitStrategy.HORIZONTAL
-                        ? "--direction right "
-                        : split == TerminalSplitStrategy.VERTICAL ? "--direction down " : "";
+                var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
+                var direction = splitIterator.getSplitDirection();
+                var directionString = direction == TerminalSplitStrategy.SplitDirection.HORIZONTAL
+                        ? "--direction right"
+                        : "--direction down";
                 asyncLines.addAll(List.of(
-                        "sleep 0.5",
-                        "zellij -s xpipe action new-pane " + direction + "--name \""
+                        "zellij -s xpipe action new-pane " + directionString + " --name \""
                                 + escape(config.getPanes().get(i).getTitle(), false, true) + "\"",
                         "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
                         "zellij -s xpipe action write 10",
-                        "zellij -s xpipe action clear"));
+                        "zellij -s xpipe action clear",
+                        "zellij -s xpipe action focus-next-pane"));
+                splitIterator.next();
             }
         }
 
