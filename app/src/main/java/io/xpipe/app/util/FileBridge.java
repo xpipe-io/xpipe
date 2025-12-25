@@ -95,6 +95,13 @@ public class FileBridge {
         }
 
         try {
+            // Guard against fragmented write operations
+            // It's not perfect but should wait long enough for any multipart write to finish after waiting
+            if (Files.size(changed) == 0) {
+                event("File " + TEMP.relativize(e.file) + " is empty and probably still writing ...");
+                ThreadHelper.sleep(1000);
+            }
+
             event("Registering modification for file " + TEMP.relativize(e.file));
             event("Last modification for file: " + e.lastModified.toString() + " vs current one: "
                     + e.getLastModified());

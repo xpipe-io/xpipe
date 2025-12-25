@@ -29,6 +29,8 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -211,9 +213,9 @@ public interface DataStorageGroupStrategy {
 
         @Override
         public String queryEncryptionSecret() throws Exception {
-            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true)) {
+            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 try (var cc = sc.command(command).start()) {
-                    cc.killOnTimeout(CountDown.of().start(30_000));
+                    cc.killOnTimeout(CountDown.of().start(10_000));
                     var out = cc.readStdoutOrThrow();
                     if (out.length() == 0) {
                         throw ErrorEventFactory.expected(

@@ -4,7 +4,7 @@
 }
 
 .store-section-mini-comp .item:disabled {
-    -fx-opacity: 1.0;
+    -fx-opacity: 0.8;
 }
 
 .store-section-mini-comp .item {

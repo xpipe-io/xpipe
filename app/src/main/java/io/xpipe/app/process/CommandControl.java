@@ -79,7 +79,7 @@ public interface CommandControl extends ProcessControl {
             }
 
             if (!countDown.countDown()) {
-                kill();
+                killExternal();
                 return true;
             }
 
