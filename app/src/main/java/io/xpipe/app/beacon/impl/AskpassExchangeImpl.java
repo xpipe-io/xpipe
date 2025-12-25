@@ -52,7 +52,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
 
         if (msg.getRequest() == null) {
             var r = AskpassAlert.queryRaw(prompt, null, true);
-            return Response.builder().value(r.getSecret()).build();
+            return Response.builder().value(r.getState() == SecretQueryState.NORMAL ? r.getSecret() : InPlaceSecretValue.of("")).build();
         }
 
         var found = msg.getSecretId() != null
