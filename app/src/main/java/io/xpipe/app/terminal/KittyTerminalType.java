@@ -67,7 +67,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                                 .addFile(getSocket()))
                         .execute();
 
-                if (i == 0) {
+                if (configuration.getPanes().size() > 0 && i == 0) {
                     setLayout(socketWrite);
                 }
             }
