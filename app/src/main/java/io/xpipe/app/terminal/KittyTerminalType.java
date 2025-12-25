@@ -67,7 +67,7 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                                 .addFile(getSocket()))
                         .execute();
 
-                if (configuration.getPanes().size() > 0 && i == 0) {
+                if (i == 0) {
                     setLayout(socketWrite);
                 }
             }
@@ -196,7 +196,9 @@ public interface KittyTerminalType extends ExternalTerminalType, TrackableTermin
                                         "allow_remote_control=socket-only",
                                         "--listen-on",
                                         "unix:" + getSocket(),
-                                        "--detach"))
+                                        "--detach",
+                                        "--start-as",
+                                        "minimized"))
                         .execute();
 
                 for (int i = 0; i < 50; i++) {

@@ -3,6 +3,7 @@ package io.xpipe.app.ext;
 import io.xpipe.app.storage.DataStateHandler;
 
 import lombok.SneakyThrows;
+import lombok.val;
 
 import java.util.Arrays;
 
@@ -19,11 +20,15 @@ public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
     }
 
     default T getState() {
-        return DataStateHandler.get().getState(this, this::createDefaultState);
+        synchronized (this) {
+            return DataStateHandler.get().getState(this, this::createDefaultState);
+        }
     }
 
     default void setState(T val) {
-        DataStateHandler.get().setState(this, val);
+        synchronized (this) {
+            DataStateHandler.get().setState(this, val);
+        }
     }
 
     @SneakyThrows
