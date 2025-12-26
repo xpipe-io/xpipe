@@ -357,10 +357,11 @@ public class IdentityApplyDialog {
         var showSetIdentityButton = new SimpleBooleanProperty();
         var showIdentityAlreadySet = new SimpleBooleanProperty();
         system.addListener((observable, oldValue, newValue) -> {
+            systemState.setValue(null);
+            showSetIdentityButton.set(false);
+            showIdentityAlreadySet.set(false);
+
             if (newValue == null) {
-                systemState.setValue(null);
-                showSetIdentityButton.set(false);
-                showIdentityAlreadySet.set(false);
                 return;
             }
 

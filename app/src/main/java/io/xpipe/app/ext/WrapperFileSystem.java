@@ -24,6 +24,10 @@ public class WrapperFileSystem implements FileSystem {
         this.runningCheck = () -> fs.isRunning();
     }
 
+    public FileSystem getWrappedFileSystem() {
+        return fs;
+    }
+
     public void withFileSystem(FailableConsumer<FileSystem, Exception> consumer) throws Exception {
         if (!runningCheck.get()) {
             return;
