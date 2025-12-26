@@ -669,8 +669,16 @@ public class DataStoreEntry extends StorageElement {
     }
 
     public void reassignStoreNode() {
-        this.storeNode = DataStorageNode.ofNewStore(store);
-        dirty = true;
+        if (!storeNode.hasAccess()) {
+            return;
+        }
+
+        DataStorageNode newNode = DataStorageNode.ofNewStore(store);
+        var changed = !Objects.equals(this.storeNode.getContentNode(), newNode.getContentNode());
+        if (changed) {
+            this.storeNode = newNode;
+            dirty = true;
+        }
     }
 
     public void validate() {

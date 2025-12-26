@@ -11,6 +11,7 @@ import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
@@ -151,9 +152,13 @@ public class IdentityChoiceBuilder {
                         return IdentityValue.Ref.builder().ref(ref.get()).build();
                     } else {
                         var u = user.get();
-                        var p = EncryptedValue.CurrentKey.of(pass.get());
-                        EncryptedValue<SshIdentityStrategy> i =
-                                keyInput ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : null;
+                        // In case of team vaults, identities shouldn't really be specified inline anyway
+                        // If they are, we use the vault key to make it accessible for all users
+                        var useUserKey = DataStorageUserHandler.getInstance().getUserCount() <= 1;
+                        var p = useUserKey ? EncryptedValue.CurrentKey.of(pass.get()) : EncryptedValue.VaultKey.of(pass.get());
+                        EncryptedValue<SshIdentityStrategy> i = keyInput ?
+                                (useUserKey ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : EncryptedValue.VaultKey.of(identityStrategy.get())) :
+                                null;
                         if (u == null && p == null && i == null) {
                             return null;
                         } else {

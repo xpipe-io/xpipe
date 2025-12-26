@@ -162,12 +162,12 @@ public interface DataStorageGroupStrategy {
             var abs = file.toLocalAbsoluteFilePath().asLocalPath();
             if (!Files.exists(abs)) {
                 throw ErrorEventFactory.expected(
-                        new IllegalArgumentException("Group key file " + file + " does not exist"));
+                        new IllegalArgumentException("Group key file " + abs + " does not exist"));
             }
 
             var read = Files.readString(abs);
             if (read.length() == 0) {
-                throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + file + " is empty"));
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Group key file " + abs + " is empty"));
             }
 
             return read;
@@ -187,18 +187,15 @@ public interface DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static OptionsBuilder createOptions(Property<Command> p) {
-            var command = new SimpleStringProperty(
-                    p.getValue().getCommand() != null
-                            ? p.getValue().getCommand().getValue()
-                            : null);
+            var command = new SimpleObjectProperty<>(p.getValue().getCommand());
             return new OptionsBuilder()
                     .nameAndDescription("commandSecretField")
-                    .addComp(new TextAreaComp(command), command)
+                    .addComp(IntegratedTextAreaComp.script(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), command), command)
                     .nonNull()
                     .bind(
                             () -> {
                                 return Command.builder()
-                                        .command(command.get() != null ? new ShellScript(command.get()) : null)
+                                        .command(command.get())
                                         .build();
                             },
                             p);
@@ -214,7 +211,7 @@ public interface DataStorageGroupStrategy {
         @Override
         public String queryEncryptionSecret() throws Exception {
             try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
-                try (var cc = sc.command(command).start()) {
+                try (var cc = sc.command(command).sensitive().start()) {
                     cc.killOnTimeout(CountDown.of().start(10_000));
                     var out = cc.readStdoutOrThrow();
                     if (out.length() == 0) {

@@ -63,7 +63,6 @@ public final class AppPrefs {
 
     public static void initSynced() throws Exception {
         INSTANCE.loadSharedRemote();
-        INSTANCE.fixSyncedValues();
         INSTANCE.encryptAllVaultData.addListener((observableValue, aBoolean, t1) -> {
             if (DataStorage.get() != null) {
                 DataStorage.get().forceRewrite();
@@ -290,14 +289,6 @@ public final class AppPrefs {
             .build());
     final ObjectProperty<VaultAuthentication> vaultAuthentication = new GlobalObjectProperty<>();
 
-    final ObjectProperty<DataStorageGroupStrategy> groupSecretStrategy = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>())
-            .key("groupSecretStrategy")
-            .valueClass(DataStorageGroupStrategy.class)
-            .requiresRestart(true)
-            .vaultSpecific(true)
-            .licenseFeatureId("team")
-            .build());
     final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
             .key("startupBehaviour")
@@ -451,10 +442,6 @@ public final class AppPrefs {
 
     public ObservableValue<TerminalSplitStrategy> terminalSplitStrategy() {
         return terminalSplitStrategy;
-    }
-
-    public ObservableValue<DataStorageGroupStrategy> groupSecretStrategy() {
-        return groupSecretStrategy;
     }
 
     public ObservableStringValue notesTemplate() {
@@ -805,17 +792,6 @@ public final class AppPrefs {
         }
 
         PrefsProvider.getAll().forEach(prov -> prov.fixLocalValues());
-    }
-
-    private void fixSyncedValues() {
-        if (groupSecretStrategy.getValue() != null) {
-            try {
-                groupSecretStrategy.get().checkComplete();
-            } catch (Exception e) {
-                groupSecretStrategy.setValue(null);
-                ErrorEventFactory.fromThrowable(e).omit().expected().handle();
-            }
-        }
     }
 
     public void initDefaultValues() {

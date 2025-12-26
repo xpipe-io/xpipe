@@ -9,8 +9,6 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.OptionsChoiceBuilder;
-import io.xpipe.app.storage.DataStorageGroupStrategy;
 import io.xpipe.app.storage.DataStorageSyncHandler;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.util.DocumentationLink;
@@ -20,6 +18,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 
+import javafx.beans.property.SimpleObjectProperty;
 import lombok.SneakyThrows;
 
 import java.util.Arrays;
@@ -72,6 +71,11 @@ public class VaultCategory extends AppPrefsCategory {
         authChoice.apply(struc -> struc.get().setOpacity(1.0));
         authChoice.maxWidth(600);
 
+        var groupStrategy = new SimpleObjectProperty<>(uh.getActiveUser() != null ? uh.getGroupStrategy(uh.getActiveUser()) : null);
+        groupStrategy.addListener((obs, ov, nv) -> {
+            uh.setCurrentGroupStrategy(nv);
+        });
+
         builder.addTitle("vault")
                 .sub(new OptionsBuilder()
                         .name("vaultTypeName" + vaultTypeKey)
@@ -92,18 +96,7 @@ public class VaultCategory extends AppPrefsCategory {
                                 },
                                 prefs.vaultAuthentication))
                         .addComp(uh.createOverview().maxWidth(getCompWidth()))
-                        .pref(prefs.groupSecretStrategy)
-                        .addComp(
-                                OptionsChoiceBuilder.builder()
-                                        .property(prefs.groupSecretStrategy)
-                                        .allowNull(true)
-                                        .available(DataStorageGroupStrategy.getClasses())
-                                        .build()
-                                        .build()
-                                        .buildComp()
-                                        .maxWidth(getCompWidth()),
-                                prefs.groupSecretStrategy)
-                        .nonNull()
+                        .sub(uh.createGroupStrategyOptions(groupStrategy))
                         .hide(prefs.vaultAuthentication.isNotEqualTo(VaultAuthentication.GROUP))
                         .nameAndDescription("syncVault")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()

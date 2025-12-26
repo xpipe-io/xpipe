@@ -95,6 +95,7 @@ public enum DocumentationLink {
     TERMINAL_SPLIT("guide/terminals#split-views"),
     TERMINAL_ENVIRONMENT("guide/terminals#windows-environments"),
     TEAM_VAULTS("guide/sync#team-vaults"),
+    GROUP_VAULTS("guide/sync#team-vaults"),
     SSH_TROUBLESHOOT("troubleshoot/ssh"),
     NO_EXEC("troubleshoot/noexec"),
     LOCAL_SHELL_ERROR("troubleshoot/local-shell"),

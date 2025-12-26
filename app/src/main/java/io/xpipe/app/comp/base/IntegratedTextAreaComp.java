@@ -81,6 +81,7 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                                 }))
                 .styleClass("edit-button")
                 .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
+                .descriptor(d -> d.nameKey("edit"))
                 .createRegion();
     }
 

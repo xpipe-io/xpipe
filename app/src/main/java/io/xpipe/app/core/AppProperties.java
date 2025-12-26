@@ -52,6 +52,7 @@ public class AppProperties {
     boolean logToFile;
     boolean logPlatformDebug;
     String logLevel;
+    String loginTarget;
 
     public AppProperties(String[] args) {
         var appDir = Path.of(System.getProperty("user.dir")).resolve("app");
@@ -151,6 +152,8 @@ public class AppProperties {
         logLevel = Optional.ofNullable(System.getProperty(AppNames.propertyName("logLevel")))
                 .filter(s -> AppLogs.LOG_LEVELS.contains(s))
                 .orElse("info");
+        loginTarget = Optional.ofNullable(System.getProperty(AppNames.propertyName("login")))
+                .orElse(null);
 
         // We require the user dir from here
         AppDirectoryPermissionsCheck.checkDirectory(dataDir);

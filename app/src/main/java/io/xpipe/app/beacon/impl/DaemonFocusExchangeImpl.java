@@ -10,6 +10,10 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
 
     @Override
     public Object handle(HttpExchange exchange, Request msg) throws Throwable {
+        if (AppOperationMode.isInStartup()) {
+            return Response.builder().build();
+        }
+
         if (AppOperationMode.GUI.isSupported()) {
             AppOperationMode.switchToSyncOrThrow(AppOperationMode.GUI);
         }
@@ -23,6 +27,11 @@ public class DaemonFocusExchangeImpl extends DaemonFocusExchange {
 
     @Override
     public boolean requiresEnabledApi() {
+        return false;
+    }
+
+    @Override
+    public boolean requiresCompletedStartup() {
         return false;
     }
 }

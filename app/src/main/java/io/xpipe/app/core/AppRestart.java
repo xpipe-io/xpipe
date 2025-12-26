@@ -7,6 +7,7 @@ import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppRestart {
@@ -66,20 +67,24 @@ public class AppRestart {
         }
     }
 
-    public static String getBackgroundRestartCommand(ShellDialect dialect) {
+    public static String getBackgroundRestartCommand(String user, ShellDialect dialect) {
         var dataDir = AppProperties.get().getDataDir();
+        var l = new ArrayList<String>();
+        l.addAll(List.of("-Dio.xpipe.app.mode=gui",
+                "-Dio.xpipe.app.acceptEula=true",
+                "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
+                "-Dio.xpipe.app.restarted=true"));
+        if (user != null) {
+            l.add("-Dio.xpipe.app.login=\"" + user + "\"");
+        }
         var exec = createBackgroundLaunchCommand(
-                List.of(
-                        "-Dio.xpipe.app.mode=gui",
-                        "-Dio.xpipe.app.acceptEula=true",
-                        "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
-                        "-Dio.xpipe.app.restarted=true"),
+                l,
                 dialect);
         return exec;
     }
 
     public static String getBackgroundRestartCommand() {
-        return getBackgroundRestartCommand(LocalShell.getDialect());
+        return getBackgroundRestartCommand(null, LocalShell.getDialect());
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {

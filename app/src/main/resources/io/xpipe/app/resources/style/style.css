@@ -55,6 +55,18 @@
     -fx-padding: 0.05em;
 }
 
+.icon-button-comp {
+    -fx-padding: 0.05em;
+}
+
+.root:light .icon-button-comp:hover .ikonli-font-icon {
+    -fx-icon-color: -color-fg-muted;
+}
+
+.root:dark .icon-button-comp:hover .ikonli-font-icon {
+    -fx-opacity: 0.85;
+}
+
 .root:key-navigation .icon-button-comp:focused {
     -fx-background-color: -color-accent-muted;
 }
