@@ -46,15 +46,14 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                                     PseudoClass.getPseudoClass("selected"),
                                                     appPrefsCategory.equals(val));
                                 });
-                            })
-                            .grow(true, false);
+                            }).maxWidth(2000);
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 
         var restartButton = new ButtonComp(AppI18n.observable("restartApp"), new FontIcon("mdi2r-restart"), () -> {
             AppRestart.restart();
         });
-        restartButton.grow(true, false);
+        restartButton.maxWidth(2000);
         restartButton.visible(AppPrefs.get().getRequiresRestart());
         restartButton.padding(new Insets(6, 10, 6, 6));
         buttons.add(Comp.vspacer());

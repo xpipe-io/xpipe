@@ -77,7 +77,7 @@ public class IconsCategory extends AppPrefsCategory {
             e.consume();
         });
         refreshButton.disable(PlatformThread.sync(busy.or(Bindings.isEmpty(sources))));
-        refreshButton.grow(true, false);
+        refreshButton.maxWidth(2000);
 
         var addGitButton =
                 new TileButtonComp("addGitIconSource", "addGitIconSourceDescription", "mdi2a-access-point-plus", e -> {
@@ -136,7 +136,7 @@ public class IconsCategory extends AppPrefsCategory {
                     modal.show();
                     e.consume();
                 });
-        addGitButton.grow(true, false);
+        addGitButton.maxWidth(2000);
 
         var addDirectoryButton = new TileButtonComp(
                 "addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
@@ -181,7 +181,7 @@ public class IconsCategory extends AppPrefsCategory {
                     modal.show();
                     e.consume();
                 });
-        addDirectoryButton.grow(true, false);
+        addDirectoryButton.maxWidth(2000);
 
         var vbox = new VerticalComp(List.of(
                 Comp.vspacer(10),
@@ -253,7 +253,7 @@ public class IconsCategory extends AppPrefsCategory {
                 });
         tile.setRight(buttons);
         tile.setIconSize(1.0);
-        tile.grow(true, false);
+        tile.maxWidth(2000);
         return tile;
     }
 }

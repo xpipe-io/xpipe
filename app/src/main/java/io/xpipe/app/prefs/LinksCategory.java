@@ -18,37 +18,32 @@ public class LinksCategory extends AppPrefsCategory {
                         new TileButtonComp("discord", "discordDescription", "bi-discord", e -> {
                                     Hyperlinks.open(Hyperlinks.DISCORD);
                                     e.consume();
-                                })
-                                .grow(true, false),
+                                }).maxWidth(2000),
                         null)
                 .addComp(
                         new TileButtonComp("reddit", "redditDescription", "mdi2r-reddit", e -> {
                                     Hyperlinks.open(Hyperlinks.REDDIT);
                                     e.consume();
-                                })
-                                .grow(true, false),
+                                }).maxWidth(2000),
                         null)
                 .addComp(
                         new TileButtonComp(
                                         "documentation", "documentationDescription", "mdi2b-book-open-variant", e -> {
                                             Hyperlinks.open(DocumentationLink.getRoot());
                                             e.consume();
-                                        })
-                                .grow(true, false),
+                                        }).maxWidth(2000),
                         null)
                 .addComp(
                         new TileButtonComp("tryPtb", "tryPtbDescription", "mdoal-insights", e -> {
                                     Hyperlinks.open(Hyperlinks.GITHUB_PTB);
                                     e.consume();
-                                })
-                                .grow(true, false),
+                                }).maxWidth(2000),
                         null)
                 .addComp(
                         new TileButtonComp("privacy", "privacyDescription", "mdomz-privacy_tip", e -> {
                                     DocumentationLink.PRIVACY.open();
                                     e.consume();
-                                })
-                                .grow(true, false),
+                                }).maxWidth(2000),
                         null)
                 .addComp(
                         new TileButtonComp("thirdParty", "thirdPartyDescription", "mdi2o-open-source-initiative", e -> {
@@ -57,14 +52,12 @@ public class LinksCategory extends AppPrefsCategory {
                                             .styleClass("open-source-notices");
                                     var modal = ModalOverlay.of("openSourceNotices", comp);
                                     modal.show();
-                                })
-                                .grow(true, false))
+                                }).maxWidth(2000))
                 .addComp(
                         new TileButtonComp("eula", "eulaDescription", "mdi2c-card-text-outline", e -> {
                                     DocumentationLink.EULA.open();
                                     e.consume();
-                                })
-                                .grow(true, false),
+                                }).maxWidth(2000),
                         null)
                 .addComp(Comp.vspacer(40))
                 .buildComp();
