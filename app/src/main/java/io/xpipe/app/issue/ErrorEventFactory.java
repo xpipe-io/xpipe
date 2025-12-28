@@ -5,6 +5,7 @@ import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.OsType;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Locale;
@@ -60,7 +61,7 @@ public class ErrorEventFactory {
             b = ErrorEvent.builder().throwable(t);
         }
 
-        if (t instanceof SSLHandshakeException) {
+        if (t instanceof SSLHandshakeException || (t.getClass().getName().equals("sun.security.provider.certpath.SunCertPathBuilderException"))) {
             if (b.getLink() == null) {
                 b.documentationLink(DocumentationLink.TLS_DECRYPTION);
             }
@@ -79,6 +80,10 @@ public class ErrorEventFactory {
                 && AppOperationMode.isInShutdown()
                 && t instanceof IllegalStateException ise
                 && "Parent stream is closed".equals(ise.getMessage())) {
+            b.expected();
+        }
+
+        if (t instanceof AccessDeniedException) {
             b.expected();
         }
 

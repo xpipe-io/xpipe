@@ -11,7 +11,6 @@ import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.Property;
@@ -51,7 +50,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .property(pass)
                 .customConfiguration(
                         SecretStrategyChoiceConfig.builder().allowNone(true).build())
-                .available(SecretRetrievalStrategy.getSubclasses())
+                .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
 
@@ -64,15 +63,7 @@ public class LocalIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .documentationLink(DocumentationLink.SSH_KEYS)
-                .sub(
-                        OptionsChoiceBuilder.builder()
-                                .allowNull(false)
-                                .property(identity)
-                                .customConfiguration(sshIdentityChoiceConfig)
-                                .available(SshIdentityStrategy.getSubclasses())
-                                .build()
-                                .build(),
-                        identity)
+                .sub(IdentityChoiceBuilder.keyAuthChoice(identity, sshIdentityChoiceConfig), identity)
                 .bind(
                         () -> {
                             return LocalIdentityStore.builder()

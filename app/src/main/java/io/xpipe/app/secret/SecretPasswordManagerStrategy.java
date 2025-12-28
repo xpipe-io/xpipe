@@ -1,7 +1,7 @@
 package io.xpipe.app.secret;
 
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.ext.ValidationException;
@@ -12,7 +12,6 @@ import io.xpipe.app.util.Validators;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -33,38 +32,25 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecretPasswordManagerStrategy> p, SecretStrategyChoiceConfig config) {
+        var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
-        var keyProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getKey() : null);
-        var content = new HorizontalComp(List.of(
-                        new TextFieldComp(keyProperty)
-                                .apply(struc -> struc.get()
-                                        .promptTextProperty()
-                                        .bind(Bindings.createStringBinding(
-                                                () -> {
-                                                    return prefs.passwordManager()
-                                                                            .getValue()
-                                                                    != null
-                                                            ? prefs.passwordManager()
-                                                                    .getValue()
-                                                                    .getKeyPlaceholder()
-                                                            : "?";
-                                                },
-                                                prefs.passwordManager())))
-                                .hgrow(),
-                        new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
-                                    AppPrefs.get().selectCategory("passwordManager");
-                                    App.getApp().getStage().requestFocus();
-                                })
-                                .grow(false, true)))
-                .apply(struc -> struc.get().setSpacing(10))
-                .apply(struc -> struc.get().focusedProperty().addListener((c, o, n) -> {
-                    if (n) {
-                        struc.get().getChildren().getFirst().requestFocus();
-                    }
-                }));
-        return new OptionsBuilder()
-                .nameAndDescription("passwordManagerKey")
+        var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
+        var field = new TextFieldComp(keyProperty).apply(struc -> struc.get()
+                .promptTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            return prefs.passwordManager().getValue() != null
+                                    ? prefs.passwordManager().getValue().getKeyPlaceholder()
+                                    : "?";
+                        },
+                        prefs.passwordManager())));
+        var button = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+            AppPrefs.get().selectCategory("passwordManager");
+            App.getApp().getStage().requestFocus();
+        });
+        var content = new InputGroupComp(List.of(field, button));
+        content.setMainReference(field);
+        return options.nameAndDescription("passwordManagerKey")
                 .addComp(content, keyProperty)
                 .nonNull()
                 .bind(

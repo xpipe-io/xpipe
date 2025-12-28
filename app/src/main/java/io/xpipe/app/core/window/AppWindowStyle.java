@@ -2,6 +2,7 @@ package io.xpipe.app.core.window;
 
 import io.xpipe.app.core.*;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
@@ -34,25 +35,39 @@ public class AppWindowStyle {
     }
 
     public static void addNavigationPseudoClasses(Scene scene) {
-        Consumer<Boolean> onInput = kb -> {
-            var r = scene.getRoot();
-            if (r != null) {
-                // This property is broken on some systems
-                var acc = Platform.isAccessibilityActive();
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
-                r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
+        var keyInput = new SimpleBooleanProperty();
+        var changed = new SimpleBooleanProperty();
+        keyInput.addListener((observable, oldValue, newValue) -> {
+            changed.set(true);
+        });
+
+        GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
+            if (changed.get()) {
+                Platform.runLater(() -> {
+                    var r = scene.getRoot();
+                    var kb = keyInput.get();
+                    if (r != null) {
+                        // This property is broken on some systems
+                        var acc = Platform.isAccessibilityActive();
+                        r.pseudoClassStateChanged(PseudoClass.getPseudoClass("key-navigation"), kb);
+                        r.pseudoClassStateChanged(PseudoClass.getPseudoClass("normal-navigation"), !kb);
+                        r.pseudoClassStateChanged(PseudoClass.getPseudoClass("accessibility-navigation"), acc);
+                    }
+                    changed.set(false);
+                });
             }
-        };
+
+            return false;
+        });
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             var c = event.getCode();
             var list = List.of(KeyCode.SPACE, KeyCode.ENTER, KeyCode.SHIFT, KeyCode.TAB);
-            onInput.accept(list.stream().anyMatch(keyCode -> keyCode == c)
+            keyInput.set(list.stream().anyMatch(keyCode -> keyCode == c)
                     || event.getCode().isNavigationKey());
         });
         scene.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            onInput.accept(false);
+            keyInput.set(false);
         });
     }
 

@@ -62,16 +62,15 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     private final Property<Duration> progressRemaining = new SimpleObjectProperty<>();
     private final FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory;
     private final StringProperty fileSystemNameSuffix = new SimpleStringProperty();
-    private FileSystem fileSystem;
+    private WrapperFileSystem fileSystem;
     private BrowserFileSystemSavedState savedState;
 
     public BrowserFileSystemTabModel(
             BrowserAbstractSessionModel<?> model,
             DataStoreEntryRef<? extends FileSystemStore> entry,
-            SelectionMode selectionMode,
             FailableFunction<DataStoreEntryRef<FileSystemStore>, FileSystem, Exception> fileSystemFactory) {
         super(model, entry);
-        this.fileList = new BrowserFileListModel(selectionMode, this);
+        this.fileList = new BrowserFileListModel(this);
         this.fileSystemFactory = fileSystemFactory;
     }
 
@@ -159,7 +158,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     @Override
     public void init() throws Exception {
         BooleanScope.executeExclusive(busy, () -> {
-            var fs = fileSystemFactory.apply(getEntry().asNeeded());
+            var fs = new WrapperFileSystem(fileSystemFactory.apply(getEntry().asNeeded()));
             Platform.runLater(() -> {
                 getFileSystemNameSuffix().set(fs.getSuffix());
             });
@@ -511,7 +510,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                         .operation(op)
                         .target(this.entry.asNeeded())
                         .build();
-                if (action.executeSync()) {
+                // Might have been killed
+                if (action.executeSync() && fileSystem != null && fileSystem.isRunning()) {
                     refreshSync();
                 }
             });
@@ -551,10 +551,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                 refreshSync();
             });
         });
-    }
-
-    public boolean isClosed() {
-        return false;
     }
 
     public void initWithGivenDirectory(FilePath dir) {
@@ -609,26 +605,6 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         var f = history.forth(i);
         if (f != null) {
             cdSync(f.toString());
-        }
-    }
-
-    @Getter
-    @SuppressWarnings("unused")
-    public enum SelectionMode {
-        SINGLE_FILE(false, true, false),
-        MULTIPLE_FILE(true, true, false),
-        SINGLE_DIRECTORY(false, false, true),
-        MULTIPLE_DIRECTORY(true, false, true),
-        ALL(true, true, true);
-
-        private final boolean multiple;
-        private final boolean acceptsFiles;
-        private final boolean acceptsDirectories;
-
-        SelectionMode(boolean multiple, boolean acceptsFiles, boolean acceptsDirectories) {
-            this.multiple = multiple;
-            this.acceptsFiles = acceptsFiles;
-            this.acceptsDirectories = acceptsDirectories;
         }
     }
 }

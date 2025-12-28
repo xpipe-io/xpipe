@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,20 +20,22 @@ public class AppResources {
 
     public static final String MAIN_MODULE = AppNames.packageName();
 
-    private static final Map<String, ModuleFileSystem> fileSystems = new ConcurrentHashMap<>();
+    private static final Map<String, ModuleFileSystem> fileSystems = new HashMap<>();
 
     public static void reset() {
-        fileSystems.forEach((s, moduleFileSystem) -> {
-            try {
-                moduleFileSystem.close();
-            } catch (IOException ex) {
-                // Usually when updating, an exit signal is sent to this application.
-                // However, it takes a while to shut down but the installer is deleting files meanwhile.
-                // It can happen that the jar does not exist anymore
-                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
-            }
-        });
-        fileSystems.clear();
+        synchronized (fileSystems) {
+            fileSystems.forEach((s, moduleFileSystem) -> {
+                try {
+                    moduleFileSystem.close();
+                } catch (IOException ex) {
+                    // Usually when updating, an exit signal is sent to this application.
+                    // However, it takes a while to shut down but the installer is deleting files meanwhile.
+                    // It can happen that the jar does not exist anymore
+                    ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
+                }
+            });
+            fileSystems.clear();
+        }
     }
 
     private static ModuleFileSystem openFileSystemIfNeeded(String module) throws IOException {
@@ -40,30 +43,31 @@ public class AppResources {
                 ? AppExtensionManager.getInstance().getExtendedLayer()
                 : null;
 
-        // Only cache file systems with extended layer
-        if (layer != null && fileSystems.containsKey(module)) {
-            var v = fileSystems.get(module);
-            if (v == null) {
-                throw new IOException("Unable to load module file system " + module);
+        synchronized (fileSystems) {
+            // Only cache file systems with extended layer
+            if (layer != null && fileSystems.containsKey(module)) {
+                var v = fileSystems.get(module);
+                if (v == null) {
+                    throw new IOException("Unable to load module file system " + module);
+                }
+
+                return v;
             }
 
-            return v;
-        }
-
-        if (layer == null) {
-            layer = ModuleLayer.boot();
-        }
-
-        try {
-            var fs = (ModuleFileSystem)
-                    FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
-            if (AppExtensionManager.getInstance() != null) {
-                fileSystems.put(module, fs);
+            if (layer == null) {
+                layer = ModuleLayer.boot();
             }
-            return fs;
-        } catch (Throwable ex) {
-            fileSystems.put(module, null);
-            throw ex;
+
+            try {
+                var fs = (ModuleFileSystem) FileSystems.newFileSystem(URI.create("module:/" + module), Map.of("layer", layer));
+                if (AppExtensionManager.getInstance() != null) {
+                    fileSystems.put(module, fs);
+                }
+                return fs;
+            } catch (Throwable ex) {
+                fileSystems.put(module, null);
+                throw ex;
+            }
         }
     }
 

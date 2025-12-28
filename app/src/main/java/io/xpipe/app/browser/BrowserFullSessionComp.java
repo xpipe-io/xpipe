@@ -110,10 +110,11 @@ public class BrowserFullSessionComp extends SimpleComp {
             });
         });
         splitPane.apply(struc -> {
-            InputHelper.onKeyCombination(struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
-                filterTrigger.trigger();
-                keyEvent.consume();
-            });
+            InputHelper.onKeyCombination(
+                    struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                        filterTrigger.trigger();
+                        keyEvent.consume();
+                    });
         });
         splitPane.styleClass("browser");
         var r = splitPane.createRegion();

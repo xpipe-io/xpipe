@@ -42,11 +42,12 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
     }
 
     protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-        if (configuration.getScriptDialect() == ShellDialects.POWERSHELL) {
+        var pane = configuration.single();
+        if (pane.getScriptDialect() == ShellDialects.POWERSHELL) {
             return CommandBuilder.of()
                     .add("-ExecutionPolicy", "Bypass")
                     .add("-File")
-                    .addQuoted(configuration.getScriptFile().toString());
+                    .addQuoted(pane.getScriptFile().toString());
         }
 
         return CommandBuilder.of()
@@ -54,10 +55,8 @@ public class PowerShellTerminalType implements ExternalApplicationType.PathAppli
                 .add("-EncodedCommand")
                 .add(sc -> {
                     var base64 = Base64.getEncoder()
-                            .encodeToString(configuration
-                                    .getDialectLaunchCommand()
-                                    .buildBase(sc)
-                                    .getBytes(StandardCharsets.UTF_16LE));
+                            .encodeToString(
+                                    pane.getDialectLaunchCommand().buildBase(sc).getBytes(StandardCharsets.UTF_16LE));
                     return "\"" + base64 + "\"";
                 });
     }

@@ -51,7 +51,8 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                                 file,
                                 null,
                                 List.of(),
-                                e -> e.equals(DataStorage.get().local())),
+                                e -> e.equals(DataStorage.get().local()),
+                                false),
                         file)
                 .nonNull()
                 .bind(
@@ -93,5 +94,10 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                 new KeyValue("PKCS11Provider", "\"" + file.toString() + "\""),
                 new KeyValue("IdentityFile", "none"),
                 new KeyValue("IdentityAgent", "none"));
+    }
+
+    @Override
+    public String getPublicKey() {
+        return null;
     }
 }

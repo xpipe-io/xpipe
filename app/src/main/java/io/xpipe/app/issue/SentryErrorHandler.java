@@ -19,6 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URISyntaxException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
@@ -89,6 +90,12 @@ public class SentryErrorHandler implements ErrorHandler {
 
             if (copy instanceof InvalidPathException) {
                 var inputField = InvalidPathException.class.getDeclaredField("input");
+                inputField.setAccessible(true);
+                inputField.set(copy, "");
+            }
+
+            if (copy instanceof URISyntaxException) {
+                var inputField = URISyntaxException.class.getDeclaredField("input");
                 inputField.setAccessible(true);
                 inputField.set(copy, "");
             }

@@ -29,7 +29,7 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
     private List<BrowserEntry> entries;
 
     @Override
-    protected boolean beforeExecute() throws Exception {
+    protected void beforeExecute() throws Exception {
         AppLayoutModel.get().selectBrowser();
 
         if (model == null) {
@@ -60,8 +60,6 @@ public abstract class BrowserAction extends StoreAction<FileSystemStore> {
 
         // Restart in case we exited
         model.getFileSystem().reinitIfNeeded();
-
-        return true;
     }
 
     @Override

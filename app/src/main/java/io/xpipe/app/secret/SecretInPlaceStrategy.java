@@ -7,7 +7,6 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -22,17 +21,15 @@ import java.util.Arrays;
 public class SecretInPlaceStrategy implements SecretRetrievalStrategy {
 
     @SuppressWarnings("unused")
-    public static String getOptionsNameKey() {
-        return "password";
+    public static String getOptionsNameKey(SecretStrategyChoiceConfig config) {
+        return config != null && config.getPasswordKey() != null ? config.getPasswordKey() : "password";
     }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<SecretInPlaceStrategy> p, SecretStrategyChoiceConfig config) {
+        var options = new OptionsBuilder();
         var original = p.getValue() != null ? p.getValue().getValue() : null;
-        var secretProperty = new SimpleObjectProperty<>(
-                p.getValue() != null && p.getValue().getValue() != null
-                        ? p.getValue().getValue()
-                        : null);
+        var secretProperty = options.map(p, SecretInPlaceStrategy::getValue);
         return new OptionsBuilder()
                 .addComp(new SecretFieldComp(secretProperty, true), secretProperty)
                 .nonNull()

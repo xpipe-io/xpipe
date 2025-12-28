@@ -9,6 +9,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreCreationCategory;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptedValue;
@@ -122,6 +123,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
 
     private void showIdentityCreation(IdentityStore store) {
         StoreCreationDialog.showCreation(
+                null,
                 store,
                 DataStoreCreationCategory.IDENTITY,
                 dataStoreEntry -> {
@@ -157,7 +159,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 addNamedIdentity();
             }
         });
-        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).tooltipKey("addReusableIdentity");
+        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).descriptor(d -> d.nameKey("addReusableIdentity"));
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(createComboBox());
@@ -302,7 +304,16 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     StoreViewState.get().getAllIdentitiesCategory(),
                     "selectIdentity",
                     "noCompatibleIdentity");
-            ((Region) popover.getPopover().getContentNode()).setMaxHeight(350);
+
+            popover.withPopover(po -> {
+                ((Region) po.getContentNode()).setMaxHeight(350);
+                po.showingProperty().addListener((o, oldValue, newValue) -> {
+                    if (!newValue) {
+                        struc.get().hide();
+                    }
+                });
+            });
+
             var skin = new ComboBoxListViewSkin<>(struc.get()) {
                 @Override
                 public void show() {
@@ -314,11 +325,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     popover.hide();
                 }
             };
-            popover.getPopover().showingProperty().addListener((o, oldValue, newValue) -> {
-                if (!newValue) {
-                    struc.get().hide();
-                }
-            });
+            MenuHelper.fixComboBoxSkin(skin);
             struc.get().setSkin(skin);
         });
 

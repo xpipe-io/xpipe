@@ -2,10 +2,9 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.core.OsType;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 

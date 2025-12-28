@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.InPlaceSecretValue;
@@ -12,6 +13,8 @@ import io.xpipe.core.InPlaceSecretValue;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
@@ -28,6 +31,36 @@ import java.util.function.Supplier;
 
 public class OptionsBuilder {
 
+    public <V, T> ObjectProperty<T> map(Property<V> prop, Function<V, T> function) {
+        var mapped = new SimpleObjectProperty<T>();
+        prop.subscribe(v -> {
+            if (mappingUpdate.get()) {
+                return;
+            }
+
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(function.apply(v));
+            }
+        });
+        return mapped;
+    }
+
+    public <V, T, R> ObjectProperty<R> map(Property<V> prop, Function<V, T> function, Function<T, R> subFunction) {
+        var mapped = new SimpleObjectProperty<R>();
+        prop.subscribe(v -> {
+            if (mappingUpdate.get()) {
+                return;
+            }
+
+            T t = function.apply(v);
+            R r = t != null ? subFunction.apply(t) : null;
+            try (var ignored = new BooleanScope(mappingUpdate).start()) {
+                mapped.setValue(r);
+            }
+        });
+        return mapped;
+    }
+
     private final Validator ownValidator;
     private final List<Validator> allValidators = new ArrayList<>();
     private final List<Check> allChecks = new ArrayList<>();
@@ -41,6 +74,8 @@ public class OptionsBuilder {
     private Comp<?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
+
+    private final BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 
     public OptionsBuilder disableFirstIncompleteFocus() {
         focusFirstIncomplete = false;
@@ -84,6 +119,9 @@ public class OptionsBuilder {
                 validatorList.get(list.indexOf(newValue)).validate();
             }
         });
+        selectedIndex.addListener((observable, oldValue, newValue) -> {
+            selected.setValue(list.get(newValue.intValue()));
+        });
         var pane = new ChoicePaneComp(list, selected);
         if (transformer != null) {
             pane.setTransformer(transformer);
@@ -112,7 +150,7 @@ public class OptionsBuilder {
             return;
         }
 
-        var entry = new OptionsComp.Entry(null, description, documentationLink, name, comp);
+        var entry = new OptionsComp.Entry(description, documentationLink, name, comp);
         description = null;
         documentationLink = null;
         name = null;
@@ -124,6 +162,11 @@ public class OptionsBuilder {
 
     public OptionsBuilder nameAndDescription(String key) {
         return name(key).description(key + "Description");
+    }
+
+    public OptionsBuilder nameAndDescription(ObservableValue<String> key) {
+        return name(AppI18n.observable(key))
+                .description(AppI18n.observable(BindingsHelper.map(key, k -> k + "Description")));
     }
 
     public OptionsBuilder subAdvanced(OptionsBuilder builder) {
@@ -169,7 +212,13 @@ public class OptionsBuilder {
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
-                titleKey, null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+                null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+        return this;
+    }
+
+    public OptionsBuilder addTitle(ObservableValue<String> title) {
+        finishCurrent();
+        entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).styleClass("title-header")));
         return this;
     }
 
@@ -329,6 +378,7 @@ public class OptionsBuilder {
     public OptionsBuilder name(ObservableValue<String> name) {
         finishCurrent();
         this.name = name;
+        lastNameReference = name;
         return this;
     }
 
@@ -372,6 +422,16 @@ public class OptionsBuilder {
         return this;
     }
 
+    public <T> OptionsBuilder addProperty(ObservableList<T> prop) {
+        // For updating the options builder binding on list change, it doesn't support observable lists
+        var listHashProp = new SimpleIntegerProperty(0);
+        prop.addListener((ListChangeListener<T>) c -> {
+            listHashProp.set(c.getList().hashCode());
+        });
+        addProperty(listHashProp);
+        return this;
+    }
+
     public OptionsBuilder addSecret(Property<InPlaceSecretValue> prop, boolean copy) {
         var comp = new SecretFieldComp(prop, copy);
         pushComp(comp);
@@ -383,6 +443,10 @@ public class OptionsBuilder {
     public final <T, V extends T> OptionsBuilder bind(Supplier<V> creator, Property<T>... toSet) {
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 for (Property<T> p : toSet) {
                     p.setValue(creator.get());
                 }
@@ -400,12 +464,20 @@ public class OptionsBuilder {
         var listener = new ChangeListener<V>() {
             @Override
             public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 toSet.setValue(newValue);
             }
         };
         current.get().addListener(listener);
         props.forEach(prop -> {
             prop.addListener((c, o, n) -> {
+                if (mappingUpdate.get()) {
+                    return;
+                }
+
                 current.get().removeListener(listener);
                 current.set(creator.get());
                 toSet.setValue(current.get().getValue());

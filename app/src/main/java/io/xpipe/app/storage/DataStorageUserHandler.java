@@ -2,6 +2,10 @@ package io.xpipe.app.storage;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.VaultAuthentication;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 
 import java.io.IOException;
 import javax.crypto.SecretKey;
@@ -24,5 +28,13 @@ public interface DataStorageUserHandler {
 
     Comp<?> createOverview();
 
+    OptionsBuilder createGroupStrategyOptions(ObjectProperty<DataStorageGroupStrategy> groupStrategy);
+
     String getActiveUser();
+
+    VaultAuthentication getVaultAuthenticationType();
+
+    public DataStorageGroupStrategy getGroupStrategy(String user);
+
+    void setCurrentGroupStrategy(DataStorageGroupStrategy groupStrategy);
 }

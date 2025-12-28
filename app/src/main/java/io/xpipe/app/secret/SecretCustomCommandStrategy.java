@@ -9,7 +9,6 @@ import io.xpipe.app.util.Validators;
 import io.xpipe.core.InPlaceSecretValue;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
@@ -27,11 +26,9 @@ public class SecretCustomCommandStrategy implements SecretRetrievalStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<SecretCustomCommandStrategy> p, SecretStrategyChoiceConfig config) {
-        var cmdProperty =
-                new SimpleObjectProperty<>(p.getValue() != null ? p.getValue().getCommand() : null);
-        var content = new TextFieldComp(cmdProperty);
-        return new OptionsBuilder()
-                .addComp(content, cmdProperty)
+        var options = new OptionsBuilder();
+        var cmdProperty = options.map(p, SecretCustomCommandStrategy::getCommand);
+        return options.addComp(new TextFieldComp(cmdProperty), cmdProperty)
                 .nonNull()
                 .bind(
                         () -> {

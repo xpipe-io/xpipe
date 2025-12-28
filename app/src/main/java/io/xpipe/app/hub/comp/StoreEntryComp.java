@@ -2,6 +2,7 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
@@ -19,12 +20,10 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -137,7 +136,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        button.accessibleTextProperty().bind(getWrapper().getShownName());
+        CompDescriptor.builder().name(getWrapper().getShownName()).description(getWrapper().getShownDescription()).showTooltips(false).build().apply(button);
         button.setOnAction(event -> {
             if (getWrapper().getRenaming().get()) {
                 return;
@@ -238,6 +237,21 @@ public abstract class StoreEntryComp extends SimpleComp {
         return name;
     }
 
+    protected Comp<?> createTags() {
+        var tagsProp = Bindings.createStringBinding(
+                () -> {
+                    return getWrapper().getTags().stream()
+                            .map(s -> {
+                                return "[" + s + "]";
+                            })
+                            .collect(Collectors.joining(" "));
+                },
+                getWrapper().getTags());
+        var tagsLabel = new LabelComp(tagsProp);
+        tagsLabel.apply(struc -> struc.get().setOpacity(0.85));
+        return tagsLabel;
+    }
+
     protected Comp<?> createOrderIndex() {
         var prop = new SimpleStringProperty();
         getWrapper().getOrderIndex().subscribe(number -> {
@@ -247,31 +261,34 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
         var comp = new LabelComp(prop);
         comp.styleClass("orderIndex");
+        comp.apply(struc -> struc.get().setOpacity(0.85));
         return comp;
     }
 
     protected Comp<?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.styleClass("user-icon");
-        button.tooltipKey("personalConnection");
+        button.descriptor(d -> d.nameKey("personalConnection"));
         button.apply(struc -> {
             AppFontSizes.base(struc.get());
             struc.get().setDisable(true);
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
+        button.apply(struc -> struc.get().setOpacity(0.85));
         return button;
     }
 
     protected Comp<?> createPinIcon() {
         var button = new IconButtonComp("mdi2p-pin-outline");
         button.disable(new SimpleBooleanProperty(true));
-        button.tooltipKey("pinned");
+        button.descriptor(d -> d.nameKey("pinned"));
         button.apply(struc -> {
             AppFontSizes.xs(struc.get());
             struc.get().setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPinToTop()));
+        button.apply(struc -> struc.get().setOpacity(0.85));
         return button;
     }
 
@@ -336,7 +353,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         if (branch != null) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = ContextMenuHelper.create();
+                        var cm = MenuHelper.createContextMenu();
                         var children =
                                 branch.getChildren(getWrapper().getEntry().ref());
                         var cats = Arrays.stream(StoreActionCategory.values())
@@ -366,20 +383,18 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return cm;
                     }));
         }
-        button.accessibleText(p.getName(getWrapper().getEntry().ref()).getValue());
-        button.tooltip(p.getName(getWrapper().getEntry().ref()));
+        button.descriptor(d -> d.name(p.getName(getWrapper().getEntry().ref())));
         return button;
     }
 
     protected Comp<?> createSettingsButton(Region name) {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.styleClass("settings");
-        settingsButton.accessibleText("More");
+        settingsButton.descriptor(d -> d.nameKey("more"));
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY,
                 null,
                 () -> StoreEntryComp.this.createContextMenu(name)));
-        settingsButton.tooltipKey("more");
         return settingsButton;
     }
 
@@ -401,7 +416,7 @@ public abstract class StoreEntryComp extends SimpleComp {
     }
 
     protected ContextMenu createContextMenu(Region name) {
-        var contextMenu = ContextMenuHelper.create();
+        var contextMenu = MenuHelper.createContextMenu();
         handleContextMenuCount(contextMenu);
 
         var cats = Arrays.stream(StoreActionCategory.values()).collect(Collectors.toCollection(ArrayList::new));
@@ -499,6 +514,49 @@ public abstract class StoreEntryComp extends SimpleComp {
                         color.getItems().add(m);
                     });
                     items.add(color);
+                }
+
+                {
+                    var tags = new Menu(AppI18n.get("tags"), new FontIcon("mdi2t-tag-text-outline"));
+
+                    var allTags = StoreViewState.get().getAllAvailableTags();
+                    for (String tag : allTags) {
+                        var tagItem = new MenuItem(tag);
+                        if (getWrapper().getTags().contains(tag)) {
+                            tagItem.setGraphic(new FontIcon("mdi2c-check"));
+                        }
+                        tagItem.addEventFilter(ActionEvent.ACTION, event -> {
+                            getWrapper().toggleTag(tag);
+                            event.consume();
+                        });
+                        tags.getItems().add(tagItem);
+                    }
+
+                    if (allTags.size() > 0) {
+                        tags.getItems().add(new SeparatorMenuItem());
+                    }
+
+                    var index =
+                            MenuHelper.createMenuItem(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
+                    index.setOnAction(event -> {
+                        var tagName = new SimpleStringProperty();
+                        var modal = ModalOverlay.of(
+                                "addNewTag",
+                                Comp.of(() -> {
+                                            var creationName = new TextField();
+                                            creationName.textProperty().bindBidirectional(tagName);
+                                            return creationName;
+                                        })
+                                        .prefWidth(350));
+                        modal.withDefaultButtons(() -> {
+                            getWrapper().getEntry().addTag(tagName.getValue());
+                        });
+                        modal.show();
+                        event.consume();
+                    });
+                    tags.getItems().add(index);
+
+                    items.add(tags);
                 }
 
                 {

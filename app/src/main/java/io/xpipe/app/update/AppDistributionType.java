@@ -55,8 +55,7 @@ public enum AppDistributionType implements Translatable {
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
     CHOCO("choco", true, () -> new ChocoUpdater()),
     WINGET("winget", true, () -> new WingetUpdater()),
-    SCOOP("scoop", false, () -> new PortableUpdater(true)),
-    ;
+    SCOOP("scoop", false, () -> new PortableUpdater(true));
 
     private static AppDistributionType type;
 

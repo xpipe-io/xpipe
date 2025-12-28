@@ -14,6 +14,7 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -100,7 +101,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     actionEvent.consume();
                 })
                 .grow(true, false)
-                .accessibleTextKey("restoreAllSessions");
+                .descriptor(d -> d.nameKey("restoreAllSessions"));
 
         var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.hseparator(), tile));
         layout.styleClass("welcome");
@@ -153,7 +154,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     });
                 })
                 .minWidth(300)
-                .accessibleText(DataStorage.get().getStoreEntryDisplayName(entry.get()))
+                .descriptor(d -> d.name(new ReadOnlyStringWrapper(DataStorage.get().getStoreEntryDisplayName(entry.get()))))
                 .disable(disable)
                 .styleClass("entry-button")
                 .styleClass(Styles.LEFT_PILL)
@@ -174,7 +175,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                         model.restoreStateAsync(e, disable);
                     });
                 })
-                .accessibleText(e.getPath().toString())
+                .descriptor(d -> d.name(new ReadOnlyStringWrapper(e.getPath().toString())))
                 .disable(disable)
                 .styleClass("directory-button")
                 .apply(struc -> struc.get().setMaxWidth(20000))

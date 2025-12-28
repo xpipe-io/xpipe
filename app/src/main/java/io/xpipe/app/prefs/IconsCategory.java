@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
@@ -76,7 +77,7 @@ public class IconsCategory extends AppPrefsCategory {
             e.consume();
         });
         refreshButton.disable(PlatformThread.sync(busy.or(Bindings.isEmpty(sources))));
-        refreshButton.grow(true, false);
+        refreshButton.maxWidth(2000);
 
         var addGitButton =
                 new TileButtonComp("addGitIconSource", "addGitIconSourceDescription", "mdi2a-access-point-plus", e -> {
@@ -135,7 +136,7 @@ public class IconsCategory extends AppPrefsCategory {
                     modal.show();
                     e.consume();
                 });
-        addGitButton.grow(true, false);
+        addGitButton.maxWidth(2000);
 
         var addDirectoryButton = new TileButtonComp(
                 "addDirectoryIconSource", "addDirectoryIconSourceDescription", "mdi2f-folder-plus", e -> {
@@ -148,7 +149,8 @@ public class IconsCategory extends AppPrefsCategory {
                                             dir,
                                             null,
                                             List.of(),
-                                            en -> en.equals(DataStorage.get().local()))
+                                            en -> en.equals(DataStorage.get().local()),
+                                            true)
                                     .prefWidth(350));
                     modal.withDefaultButtons(() -> {
                         if (dir.get() == null) {
@@ -179,7 +181,7 @@ public class IconsCategory extends AppPrefsCategory {
                     modal.show();
                     e.consume();
                 });
-        addDirectoryButton.grow(true, false);
+        addDirectoryButton.maxWidth(2000);
 
         var vbox = new VerticalComp(List.of(
                 Comp.vspacer(10),
@@ -211,6 +213,7 @@ public class IconsCategory extends AppPrefsCategory {
         var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
         var enabled = Comp.of(() -> {
             var cb = new CheckBox();
+            CompDescriptor.builder().nameKey("enabled").build().apply(cb);
             cb.setSelected(!disabled.contains(source.getId()));
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 var set = new LinkedHashSet<>(
@@ -250,7 +253,7 @@ public class IconsCategory extends AppPrefsCategory {
                 });
         tile.setRight(buttons);
         tile.setIconSize(1.0);
-        tile.grow(true, false);
+        tile.maxWidth(2000);
         return tile;
     }
 }

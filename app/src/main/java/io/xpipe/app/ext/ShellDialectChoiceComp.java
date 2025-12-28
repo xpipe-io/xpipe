@@ -3,12 +3,14 @@ package io.xpipe.app.ext;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Region;
 
@@ -98,6 +100,9 @@ public class ShellDialectChoiceComp extends SimpleComp {
         cb.setVisibleRowCount(available.size() + 1);
         cb.getStyleClass().add("choice-comp");
         cb.setMaxWidth(20000);
+        var skin = new ComboBoxListViewSkin<>(cb);
+        cb.setSkin(skin);
+        MenuHelper.fixComboBoxSkin(skin);
         return cb;
     }
 }

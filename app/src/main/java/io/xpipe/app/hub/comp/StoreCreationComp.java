@@ -2,12 +2,15 @@ package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -50,7 +53,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
     }
 
     private Region createLayout() {
-        var layout = new BorderPane();
+        var layout = new VBox();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(model.getFilter(), model.getProvider());
         providerChoice.grow(true, false);
@@ -63,17 +66,36 @@ public class StoreCreationComp extends ModalOverlayContentComp {
             providerChoice.apply(struc -> struc.get().setDisable(true));
         }
 
+        if (showProviders) {
+            layout.getChildren().addFirst(providerChoice.createRegion());
+        }
+        layout.getChildren().add(new Region());
+
+
+        var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
                 var d = n.guiDialog(model.getExistingEntry(), model.getStore());
+                activeDialog.set(d);
                 if (d == null) {
                     return;
+                }
+
+                if (d.getOnFinish() != null) {
+                    model.getFinished().addListener((observable, oldValue, newValue) -> {
+                        if (newValue && d.equals(activeDialog.get())) {
+                            ThreadHelper.runAsync(() -> {
+                                d.getOnFinish().run();
+                            });
+                        }
+                    });
                 }
 
                 var propOptions = createStoreProperties();
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
+                valSp.setFocusTraversable(false);
 
                 var full = new OptionsBuilder();
 
@@ -86,11 +108,13 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(d.getOptions());
                 full.sub(propOptions);
 
+                var comp = full.buildComp();
                 var region =
-                        full.buildComp().styleClass("store-creator-options").createRegion();
+                        comp.styleClass("store-creator-options").createRegion();
                 valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);
+                sp.setFocusTraversable(false);
                 sp.setSkin(new ScrollPaneSkin(sp));
                 sp.setFitToWidth(true);
                 var vbar = (ScrollBar) sp.lookup(".scroll-bar:vertical");
@@ -106,22 +130,16 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 var vbox = new VBox(topSep, sp, bottomSep);
                 VBox.setVgrow(sp, Priority.ALWAYS);
 
-                layout.setCenter(vbox);
+                layout.getChildren().set(showProviders ? 1 : 0, vbox);
 
                 model.getValidator().setValue(full.buildEffectiveValidator());
 
                 Platform.runLater(() -> {
                     region.requestFocus();
                 });
-            } else {
-                layout.setCenter(null);
-                model.getValidator().setValue(new SimpleValidator());
             }
         });
 
-        if (showProviders) {
-            layout.setTop(providerChoice.createRegion());
-        }
         return layout;
     }
 

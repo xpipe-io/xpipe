@@ -31,7 +31,7 @@ public class AbstractHostStore implements DataStore, HostAddressStore, HostAddre
     }
 
     @Override
-    public DataStoreEntryRef<NetworkTunnelStore> getGateway() {
+    public DataStoreEntryRef<NetworkTunnelStore> getTunnelGateway() {
         return gateway;
     }
 }

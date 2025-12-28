@@ -41,7 +41,7 @@ public class KonsoleTerminalType implements ExternalTerminalType, ExternalApplic
         var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--new-tab")
                 .add("-e")
-                .addFile(configuration.getScriptFile());
+                .addFile(configuration.single().getScriptFile());
         launch(toExecute);
     }
 

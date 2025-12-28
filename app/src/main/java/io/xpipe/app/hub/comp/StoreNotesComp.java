@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
@@ -9,6 +10,7 @@ import io.xpipe.app.comp.base.MarkdownEditorComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 
 import javafx.application.Platform;
@@ -36,12 +38,12 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         var n = wrapper.getNotes();
         var button = new IconButtonComp("mdi2n-note-text-outline")
                 .apply(struc -> AppFontSizes.xs(struc.get()))
-                .focusTraversableForAccessibility()
-                .tooltipKey("notes")
+                .descriptor(d -> d.nameKey("notes").focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
                 .styleClass("notes-button")
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
                 .createStructure()
                 .get();
+        button.setOpacity(0.85);
         button.prefWidthProperty().bind(button.heightProperty());
 
         var prop = new SimpleStringProperty(n.getValue().getCurrent());
@@ -123,6 +125,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         }.createRegion();
 
         var popover = new Popover(dialog);
+        popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
         popover.getScene().setFill(Color.TRANSPARENT);
         popover.setCloseButtonEnabled(true);
         popover.setHeaderAlwaysVisible(true);

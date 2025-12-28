@@ -27,14 +27,14 @@ import java.util.function.Consumer;
 @Getter
 public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<BrowserFileSystemTabModel> {
 
-    private final BrowserFileSystemTabModel.SelectionMode selectionMode;
     private final ObservableList<BrowserEntry> fileSelection = FXCollections.observableArrayList();
+    private final boolean directory;
 
     @Setter
     private Consumer<List<FileReference>> onFinish;
 
-    public BrowserFileChooserSessionModel(BrowserFileSystemTabModel.SelectionMode selectionMode) {
-        this.selectionMode = selectionMode;
+    public BrowserFileChooserSessionModel(boolean directory) {
+        this.directory = directory;
         selectedEntry.addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 fileSelection.clear();
@@ -49,11 +49,19 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
     }
 
     public void finishChooser() {
-        var chosen = new ArrayList<>(fileSelection);
+        var chosen = new ArrayList<>(
+                fileSelection.stream().map(be -> be.getRawFileEntry().getPath()).toList());
 
         synchronized (BrowserFileChooserSessionModel.this) {
             var open = selectedEntry.getValue();
             if (open != null) {
+                if (chosen.isEmpty() && directory) {
+                    var current = open.getCurrentDirectory();
+                    if (current != null) {
+                        chosen.add(current.getPath());
+                    }
+                }
+
                 ThreadHelper.runAsync(() -> {
                     open.close();
                 });
@@ -61,9 +69,7 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
         }
 
         var stores = chosen.stream()
-                .map(entry -> new FileReference(
-                        selectedEntry.getValue().getEntry(),
-                        entry.getRawFileEntry().getPath()))
+                .map(entry -> new FileReference(selectedEntry.getValue().getEntry(), entry))
                 .toList();
         onFinish.accept(stores);
     }
@@ -96,7 +102,6 @@ public class BrowserFileChooserSessionModel extends BrowserAbstractSessionModel<
                 model = new BrowserFileSystemTabModel(
                         this,
                         store,
-                        selectionMode,
                         customFileSystemFactory != null
                                 ? customFileSystemFactory
                                 : ref -> ref.getStore().createFileSystem());

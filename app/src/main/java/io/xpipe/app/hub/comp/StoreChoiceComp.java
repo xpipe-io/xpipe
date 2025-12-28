@@ -6,20 +6,19 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
+import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -28,23 +27,17 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
 
-    private final Mode mode;
-    private final Property<DataStoreEntryRef<T>> selected;
+    private final ObjectProperty<DataStoreEntryRef<T>> selected;
 
     private final StoreChoicePopover<T> popover;
 
     public StoreChoiceComp(
-            Mode mode,
             DataStoreEntry self,
-            Property<DataStoreEntryRef<T>> selected,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper initialCategory) {
-
-        this.mode = mode;
-
         this.selected = selected;
-
         this.popover = new StoreChoicePopover<>(
                 self,
                 selected,
@@ -55,29 +48,12 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 "noCompatibleConnection");
     }
 
-    public static <T extends DataStore> StoreChoiceComp<T> other(
-            Property<DataStoreEntryRef<T>> selected,
-            Class<?> clazz,
-            Predicate<DataStoreEntryRef<T>> filter,
-            StoreCategoryWrapper initialCategory) {
-        return new StoreChoiceComp<>(Mode.OTHER, null, selected, clazz, filter, initialCategory);
-    }
-
-    public static StoreChoiceComp<ShellStore> host(
-            Property<DataStoreEntryRef<ShellStore>> selected, StoreCategoryWrapper initialCategory) {
-        return new StoreChoiceComp<>(Mode.HOST, null, selected, ShellStore.class, null, initialCategory);
-    }
-
-    private String toName(DataStoreEntry entry) {
+    protected String toName(DataStoreEntry entry) {
         if (entry == null) {
             return null;
         }
 
-        if (mode == Mode.PROXY && entry.getStore() instanceof LocalStore) {
-            return AppI18n.get("none");
-        }
-
-        return entry.getName();
+        return DataStorage.get().getStoreEntryDisplayName(entry);
     }
 
     @Override
@@ -90,6 +66,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         },
                         selected),
                 () -> {});
+        button.descriptor(d -> d.name(Bindings.createStringBinding(() -> {
+            return selected.getValue() != null ? toName(selected.getValue().get()) : AppI18n.get("selectConnection");
+        }, selected, AppI18n.activeLanguage())));
         button.apply(struc -> {
                     struc.get().setMaxWidth(20000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);
@@ -116,37 +95,52 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                             return;
                         }
 
-                        selected.setValue(
-                                mode == Mode.PROXY ? DataStorage.get().local().ref() : null);
+                        selected.setValue(null);
                         event.consume();
                     });
                 })
                 .styleClass("choice-comp");
 
-        var r = button.grow(true, false).accessibleText("Select connection").createRegion();
-        var icon = new FontIcon("mdal-keyboard_arrow_down");
-        icon.setDisable(true);
-        icon.setPickOnBounds(false);
-        icon.visibleProperty().bind(r.disabledProperty().not());
-        AppFontSizes.xl(icon);
-        var pane = new StackPane(r, icon);
+        var r = button.createRegion();
+
+        var dropdownIcon = new FontIcon("mdal-keyboard_arrow_down");
+        dropdownIcon.setDisable(true);
+        dropdownIcon.setPickOnBounds(false);
+        dropdownIcon.visibleProperty().bind(r.disabledProperty().not());
+        AppFontSizes.xl(dropdownIcon);
+
+        var pane = new AnchorPane(r, dropdownIcon);
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 r.requestFocus();
             }
         });
-        StackPane.setMargin(icon, new Insets(10));
+        AnchorPane.setTopAnchor(dropdownIcon, 11.0);
+        AnchorPane.setRightAnchor(dropdownIcon, 7.0);
+        AnchorPane.setRightAnchor(r, 0.0);
+        AnchorPane.setLeftAnchor(r, 0.0);
         pane.setPickOnBounds(false);
-        StackPane.setAlignment(icon, Pos.CENTER_RIGHT);
         pane.setMaxWidth(20000);
-        r.prefWidthProperty().bind(pane.widthProperty());
-        r.maxWidthProperty().bind(pane.widthProperty());
-        return pane;
-    }
 
-    public enum Mode {
-        HOST,
-        OTHER,
-        PROXY
+        var clearButton = new IconButtonComp("mdi2c-close", () -> {
+            selected.setValue(null);
+            Platform.runLater(() -> {
+                pane.requestFocus();
+            });
+        });
+        clearButton.descriptor(d -> d.nameKey("clear"));
+        clearButton.styleClass(Styles.FLAT);
+        clearButton.hide(selected.isNull().or(pane.disabledProperty()));
+        clearButton.apply(struc -> {
+            struc.get().setOpacity(0.7);
+            struc.get().getStyleClass().add("clear-button");
+            AppFontSizes.xs(struc.get());
+            AnchorPane.setRightAnchor(struc.get(), 30.0);
+            AnchorPane.setTopAnchor(struc.get(), 3.0);
+            AnchorPane.setBottomAnchor(struc.get(), 3.0);
+        });
+        pane.getChildren().add(clearButton.createRegion());
+
+        return pane;
     }
 }

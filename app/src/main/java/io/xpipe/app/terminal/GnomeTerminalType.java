@@ -39,7 +39,7 @@ public class GnomeTerminalType implements ExternalApplicationType.PathApplicatio
                     .add(getExecutable(), "-v", "--title")
                     .addQuoted(configuration.getColoredTitle())
                     .add("--")
-                    .addFile(configuration.getScriptFile())
+                    .addFile(configuration.single().getScriptFile())
                     // In order to fix this bug which also affects us:
                     // https://askubuntu.com/questions/1148475/launching-gnome-terminal-from-vscode
                     .environment("GNOME_TERMINAL_SCREEN", sc -> "");

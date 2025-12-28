@@ -6,9 +6,9 @@ import io.xpipe.app.comp.base.DelayedInitComp;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
-
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.util.ObservableSubscriber;
+
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -42,10 +42,11 @@ public class StoreLayoutComp extends SimpleComp {
                 });
         comp.styleClass("store-layout");
         comp.apply(struc -> {
-            InputHelper.onKeyCombination(struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
-                filterTrigger.trigger();
-                keyEvent.consume();
-            });
+            InputHelper.onKeyCombination(
+                    struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                        filterTrigger.trigger();
+                        keyEvent.consume();
+                    });
         });
         return comp.createRegion();
     }

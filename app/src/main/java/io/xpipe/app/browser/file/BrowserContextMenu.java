@@ -6,6 +6,8 @@ import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.platform.InputHelper;
 
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.update.AppDistributionType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.input.KeyEvent;
@@ -29,6 +31,8 @@ public final class BrowserContextMenu extends ContextMenu {
     private void createMenu() {
         AppFontSizes.lg(getStyleableNode());
 
+        setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
+
         InputHelper.onLeft(this, false, e -> {
             hide();
             e.consume();
@@ -43,20 +47,12 @@ public final class BrowserContextMenu extends ContextMenu {
             selected.add(source);
         }
 
-        if (model.isClosed()) {
-            return;
-        }
-
         for (var cat : BrowserMenuCategory.values()) {
             var all = ActionProvider.ALL.stream()
                     .map(actionProvider -> actionProvider instanceof BrowserMenuItemProvider ba ? ba : null)
                     .filter(browserActionProvider -> browserActionProvider != null)
                     .filter(browserAction -> browserAction.getCategory() == cat)
                     .filter(browserAction -> {
-                        if (model.isClosed()) {
-                            return false;
-                        }
-
                         var used = browserAction.resolveFilesIfNeeded(selected);
                         if (!browserAction.isApplicable(model, used)) {
                             return false;
@@ -78,10 +74,6 @@ public final class BrowserContextMenu extends ContextMenu {
             }
 
             for (var a : all) {
-                if (model.isClosed()) {
-                    return;
-                }
-
                 var used = a.resolveFilesIfNeeded(selected);
                 var item = a.toMenuItem(model, used);
                 if (item != null) {

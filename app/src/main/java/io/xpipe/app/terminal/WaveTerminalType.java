@@ -67,7 +67,7 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
             sc.command(CommandBuilder.of()
                             .addFile("wsh")
                             .add("run", "--forceexit", "--delay", "0", "--")
-                            .add(configuration.getDialectLaunchCommand()))
+                            .add(configuration.single().getDialectLaunchCommand()))
                     .execute();
         }
     }

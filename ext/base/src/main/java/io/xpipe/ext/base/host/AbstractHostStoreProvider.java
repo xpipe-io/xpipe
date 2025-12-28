@@ -73,7 +73,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
         AbstractHostStore st = store.getValue().asNeeded();
 
         var host = new SimpleObjectProperty<>(st.getHost());
-        var gateway = new SimpleObjectProperty<>(st.getGateway());
+        var gateway = new SimpleObjectProperty<>(st.getTunnelGateway());
 
         return new OptionsBuilder()
                 .nameAndDescription("abstractHostAddress")
@@ -82,11 +82,10 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
                 .nameAndDescription("abstractHostGateway")
                 .addComp(
                         new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.PROXY,
                                 entry,
                                 gateway,
                                 NetworkTunnelStore.class,
-                                ref -> true,
+                                null,
                                 StoreViewState.get().getAllConnectionsCategory()),
                         gateway)
                 .bind(

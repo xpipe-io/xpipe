@@ -16,13 +16,13 @@ It currently supports:
 
 - [SSH](https://docs.xpipe.io/guide/ssh) connections, config files, and tunnels
 - [Docker](https://docs.xpipe.io/guide/docker), [Podman](https://docs.xpipe.io/guide/podman), [LXD](https://docs.xpipe.io/guide/lxc), and [incus](https://docs.xpipe.io/guide/lxc) containers
-- [Proxmox PVE](https://docs.xpipe.io/guide/proxmox) virtual machines and containers
-- [Hyper-V](https://docs.xpipe.io/guide/hyperv), [KVM](https://docs.xpipe.io/guide/kvm), [VMware Player/Workstation/Fusion](https://docs.xpipe.io/guide/vmware) virtual machines
-- [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
+- [Proxmox PVE](https://docs.xpipe.io/guide/proxmox), [Hyper-V](https://docs.xpipe.io/guide/hyperv), [KVM](https://docs.xpipe.io/guide/kvm), [VMware Player/Workstation/Fusion](https://docs.xpipe.io/guide/vmware) virtual machines
 - [Tailscale](https://docs.xpipe.io/guide/tailscale), [Netbird](https://docs.xpipe.io/guide/netbird), and [Teleport](https://docs.xpipe.io/guide/teleport) connections
+- [AWS](https://docs.xpipe.io/guide/aws) and [Hetzner Cloud](https://docs.xpipe.io/guide/hcloud) servers
 - Windows Subsystem for Linux, Cygwin, and MSYS2 environments
 - [Powershell Remote Sessions](https://docs.xpipe.io/guide/pssession)
 - [RDP](https://docs.xpipe.io/guide/rdp) and [VNC](https://docs.xpipe.io/guide/vnc) connections
+- [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
 
 ## Connection hub
 
@@ -142,18 +142,15 @@ The following rpm installers are available:
 - [Linux .rpm Installer (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-x86_64.rpm)
 - [Linux .rpm Installer (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-installer-linux-arm64.rpm)
 
-The same applies here, you should use a package manager that supports resolving and installing required dependencies if needed.
-
 ### Arch
 
 There is an official [AUR package](https://aur.archlinux.org/packages/xpipe) available that you can either install manually or via an AUR helper such as with `yay -S xpipe`.
 
 ### NixOS
 
-There's an official [xpipe nixpkg](https://search.nixos.org/packages?channel=unstable&show=xpipe&from=0&size=50&sort=relevance&type=packages&query=xpipe) available that you can install with `nix-env -iA nixos.xpipe`. This one is however not always up to date.
+There's an official [xpipe nixpkg](https://search.nixos.org/packages?channel=unstable&show=xpipe&from=0&size=50&sort=relevance&type=packages&query=xpipe) available that you can install with `nix-env -iA nixos.xpipe` on x86_64 Linux systems. This package is however usually not up to date.
 
-There is also a custom repository that contains the latest up-to-date releases: https://github.com/xpipe-io/nixpkg.
-You can install XPipe by following the instructions in the linked repository.
+There is also a custom repository that contains the latest up-to-date release flakes for Linux and macOS systems: https://github.com/xpipe-io/nixpkg.
 
 ### Portable
 
@@ -167,14 +164,11 @@ Alternatively, there are also AppImages available:
 - [Linux .AppImage Portable (x86-64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-x86_64.AppImage)
 - [Linux .AppImage Portable (ARM 64)](https://github.com/xpipe-io/xpipe/releases/latest/download/xpipe-portable-linux-arm64.AppImage)
 
-Note that the portable version assumes that you have some basic packages for graphical systems already installed
-as it is not a perfect standalone version. It should however run on most systems.
-
 ## Docker container
 
 XPipe is a desktop application first and foremost. It requires a full desktop environment to function with various installed applications such as terminals, editors, shells, CLI tools, and more. So there is no true web-based interface for XPipe.
 
-Since it might make sense however to access your XPipe environment from the web, there is also a so-called webtop docker container image for XPipe. [XPipe Webtop](https://github.com/xpipe-io/xpipe-webtop) is a web-based desktop environment that can be run in a container and accessed from a browser via KasmVNC. The desktop environment comes with XPipe and various terminals and editors preinstalled and configured. 
+Since it might make sense however to access your XPipe environment from the web, there is also a so-called webtop docker container image for XPipe. [XPipe Webtop](https://github.com/xpipe-io/xpipe-webtop) is a web-based desktop environment that can be run in a container and accessed from a browser via KasmVNC. The desktop environment comes with XPipe and various terminals and editors preinstalled and configured. This image is also available for Kasm Workspaces in the [XPipe Kasm Registry](https://github.com/xpipe-io/kasm-registry).
 
 # Further information
 

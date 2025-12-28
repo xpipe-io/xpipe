@@ -9,13 +9,12 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.ColorHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.animation.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -100,7 +99,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             });
 
             var loadingTextCounter = new SimpleIntegerProperty();
-            GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
+            GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
                 if (loaded.getValue() != null) {
                     return true;
                 }
@@ -108,11 +107,17 @@ public class AppMainWindowContentComp extends SimpleComp {
                 loadingTextCounter.set((loadingTextCounter.get() + 1) % 4);
                 return false;
             });
-            var loadingTextAnimated = Bindings.createStringBinding(() -> {
-                return AppMainWindow.getLoadingText().getValue() + " " +
-                        (".".repeat(loadingTextCounter.get() + 1)) +
-                        (" ".repeat(3 - loadingTextCounter.get()));
-            }, AppMainWindow.getLoadingText(), loadingTextCounter);
+            var loadingTextAnimated = Bindings.createStringBinding(
+                    () -> {
+                        var base = AppMainWindow.getLoadingText().getValue();
+                        if (base == null) {
+                            return null;
+                        }
+                        return base + " " + (".".repeat(loadingTextCounter.get()))
+                                + (" ".repeat(3 - loadingTextCounter.get()));
+                    },
+                    AppMainWindow.getLoadingText(),
+                    loadingTextCounter);
             var text = new LabelComp(loadingTextAnimated);
             text.styleClass("loading-text");
             text.apply(struc -> {
@@ -146,6 +151,16 @@ public class AppMainWindowContentComp extends SimpleComp {
                     PlatformThread.runNestedLoopIteration();
                     struc.show();
                     TrackEvent.info("Window content node shown");
+                } else if (!pane.getChildren().contains(vbox)) {
+                    loadingTextCounter.set(3);
+                    TrackEvent.info("Window content node removed");
+                    PlatformThread.runNestedLoopIteration();
+                    pane.getChildren().clear();
+                    pane.getStyleClass().add("background");
+                    pane.getChildren().add(vbox);
+                    sidebarPresent.set(false);
+                    loadingAnimation.start();
+                    PlatformThread.runNestedLoopIteration();
                 }
             });
 

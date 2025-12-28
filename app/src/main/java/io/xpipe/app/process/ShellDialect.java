@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 public interface ShellDialect {
 
+    String setEnvironmentVariableFromScriptCommand(String name, FilePath script);
+
     default boolean isMarkerDialect() {
         return false;
     }

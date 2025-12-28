@@ -123,6 +123,7 @@ public class AppBaseMode extends AppOperationMode {
                     syncPrefsLoaded.countDown();
                     AppMainWindow.loadingText("loadingConnections");
                     DataStorage.init();
+                    AppPrefs.initStorage();
                     storageLoaded.countDown();
                     AppMcpServer.init();
                     StoreViewState.init();
@@ -177,7 +178,6 @@ public class AppBaseMode extends AppOperationMode {
         StartOnInitStore.init();
 
         AppConfigurationDialog.showIfNeeded();
-        AppGnomeScaleDialog.showIfNeeded();
 
         TrackEvent.info("Finished base components initialization");
         initialized = true;

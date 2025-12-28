@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
@@ -65,7 +66,7 @@ public class RemminaHelper {
         var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
-        var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
+        var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
         var string =
                 """
                      [remmina]
@@ -101,7 +102,7 @@ public class RemminaHelper {
 
     public static Path writeRemminaVncConfigFile(VncLaunchConfig configuration, String password) throws Exception {
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
-        var file = ShellTemp.getLocalTempDataDirectory(null).resolve("xpipe-" + name + ".remmina");
+        var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
 
         var w = Math.round(AppMainWindow.get().getStage().getWidth());
         // Remmina's height calculation does not take the titlebar into account

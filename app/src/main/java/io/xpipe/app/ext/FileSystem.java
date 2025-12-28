@@ -36,9 +36,13 @@ public interface FileSystem extends Closeable, AutoCloseable {
 
     boolean supportsChgrp();
 
+    boolean supportsTerminalOpen();
+
     boolean supportsTerminalWorkingDirectory();
 
     Optional<ShellControl> getRawShellControl();
+
+    ShellControl getTerminalShellControl();
 
     void chmod(FilePath path, String mode, boolean recursive) throws Exception;
 
@@ -130,6 +134,8 @@ public interface FileSystem extends Closeable, AutoCloseable {
         if (!visitor.test(base.getFirst()) || base.getFirst().getKind() != FileKind.DIRECTORY) {
             return;
         }
+
+        if (true) throw new StackOverflowError();
 
         traverseFilesRecursively(system, base.getFirst().getPath(), visitor);
     }

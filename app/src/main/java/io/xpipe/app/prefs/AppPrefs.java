@@ -14,9 +14,12 @@ import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStorageGroupStrategy;
+import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
 import io.xpipe.app.terminal.TerminalPrompt;
+import io.xpipe.app.terminal.TerminalSplitStrategy;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
@@ -65,6 +68,10 @@ public final class AppPrefs {
                 DataStorage.get().forceRewrite();
             }
         });
+    }
+
+    public static void initStorage() {
+        INSTANCE.vaultAuthentication.set(DataStorageUserHandler.getInstance().getVaultAuthenticationType());
     }
 
     public static void reset() {
@@ -126,6 +133,12 @@ public final class AppPrefs {
             .property(new GlobalBooleanProperty())
             .key("performanceMode")
             .valueClass(Boolean.class)
+            .build());
+    final BooleanProperty limitedTouchscreenMode = map(Mapping.builder()
+            .property(new GlobalBooleanProperty())
+            .key("limitedTouchscreenMode")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
             .build());
     public final ObjectProperty<AppTheme.Theme> theme = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
@@ -262,6 +275,11 @@ public final class AppPrefs {
             .key("terminalAlwaysPauseOnExit")
             .valueClass(Boolean.class)
             .build());
+    final Property<TerminalSplitStrategy> terminalSplitStrategy = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(TerminalSplitStrategy.BALANCED))
+            .key("terminalSplitStrategy")
+            .valueClass(TerminalSplitStrategy.class)
+            .build());
     final Property<TerminalPrompt> terminalPrompt = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(null))
             .key("terminalPrompt")
@@ -269,6 +287,8 @@ public final class AppPrefs {
             .log(false)
             .documentationLink(DocumentationLink.TERMINAL_PROMPT)
             .build());
+    final ObjectProperty<VaultAuthentication> vaultAuthentication = new GlobalObjectProperty<>();
+
     final ObjectProperty<StartupBehaviour> startupBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(StartupBehaviour.GUI))
             .key("startupBehaviour")
@@ -380,7 +400,7 @@ public final class AppPrefs {
     @Getter
     private final List<AppPrefsCategory> categories = List.of(
             new AboutCategory(),
-            new AppearanceCategory(),
+            new PersonalizationCategory(),
             new VaultCategory(),
             new SyncCategory(),
             new PasswordManagerCategory(),
@@ -393,6 +413,7 @@ public final class AppPrefs {
             new ConnectionHubCategory(),
             new FileBrowserCategory(),
             new IconsCategory(),
+            new DisplayCategory(),
             new SystemCategory(),
             new ApiCategory(),
             new McpCategory(),
@@ -414,6 +435,14 @@ public final class AppPrefs {
     private AppPrefsStorageHandler vaultStorageHandler;
 
     private AppPrefs() {}
+
+    public ObservableValue<VaultAuthentication> vaultAuthentication() {
+        return vaultAuthentication;
+    }
+
+    public ObservableValue<TerminalSplitStrategy> terminalSplitStrategy() {
+        return terminalSplitStrategy;
+    }
 
     public ObservableStringValue notesTemplate() {
         return notesTemplate;
@@ -558,6 +587,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue performanceMode() {
         return performanceMode;
+    }
+
+    public ObservableBooleanValue limitedTouchscreenMode() {
+        return limitedTouchscreenMode;
     }
 
     public ObservableValue<Boolean> useSystemFont() {
@@ -706,10 +739,20 @@ public final class AppPrefs {
 
     public <T> void setFromExternal(ObservableValue<T> prop, T newValue) {
         var writable = (Property<T>) prop;
+
+        // Prior to GUI init, we can set whatever we like
+        if (AppLayoutModel.get() == null) {
+            writable.setValue(newValue);
+            return;
+        }
+
         PlatformThread.runLaterIfNeededBlocking(() -> {
             writable.setValue(newValue);
         });
-        save();
+
+        if (mapping.stream().anyMatch(m -> m.property == prop)) {
+            save();
+        }
     }
 
     private void fixLocalValues() {
@@ -783,14 +826,7 @@ public final class AppPrefs {
                 continue;
             }
 
-            var def = value.getProperty().getValue();
-            var r = loadValue(vaultStorageHandler, value);
-
-            // This can be used to facilitate backwards compatibility
-            var isDefault = Objects.equals(r, def);
-            if (isDefault) {
-                loadValue(globalStorageHandler, value);
-            }
+            loadValue(vaultStorageHandler, value);
         }
 
         if (OsType.ofLocal() != OsType.WINDOWS) {
@@ -813,12 +849,11 @@ public final class AppPrefs {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T loadValue(AppPrefsStorageHandler handler, Mapping value) {
+    private <T> void loadValue(AppPrefsStorageHandler handler, Mapping value) {
         T def = (T) value.getProperty().getValue();
         Property<T> property = (Property<T>) value.getProperty();
         var val = handler.loadObject(value.getKey(), value.getValueType(), def, value.isLog());
         property.setValue(val);
-        return val;
     }
 
     public synchronized void save() {

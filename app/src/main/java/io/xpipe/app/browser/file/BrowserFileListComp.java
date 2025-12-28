@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -144,7 +145,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
-        table.setAccessibleText("Directory contents");
+        CompDescriptor.builder().nameKey("directoryContents").showTooltips(false).build().apply(table);
 
         var placeholder = new Label();
         var placeholderText = Bindings.createStringBinding(
@@ -336,11 +337,7 @@ public final class BrowserFileListComp extends SimpleComp {
     }
 
     private void prepareTableSelectionModel(TableView<BrowserEntry> table) {
-        if (!fileList.getSelectionMode().isMultiple()) {
-            table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        } else {
-            table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        }
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.getSelectionModel().setCellSelectionEnabled(false);
 
         var updateFromModel = new BooleanScope(new SimpleBooleanProperty());
@@ -396,11 +393,6 @@ public final class BrowserFileListComp extends SimpleComp {
 
     private void prepareTableShortcuts(TableView<BrowserEntry> table) {
         table.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            // Prevent post close events
-            if (fileList.getFileSystemModel().isClosed()) {
-                return;
-            }
-
             // Don't apply actions while renaming
             if (fileList.getEditing().getValue() != null) {
                 return;

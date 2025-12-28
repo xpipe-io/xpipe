@@ -133,9 +133,7 @@ public abstract class AbstractAction {
         TrackEvent.withTrace("Starting action execution").tags(toDisplayMap()).handle();
 
         try {
-            if (!beforeExecute()) {
-                return false;
-            }
+            beforeExecute();
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
             return false;
@@ -182,9 +180,7 @@ public abstract class AbstractAction {
 
     public abstract void executeImpl() throws Exception;
 
-    protected boolean beforeExecute() throws Exception {
-        return true;
-    }
+    protected void beforeExecute() throws Exception {}
 
     public boolean isMutation() {
         return false;

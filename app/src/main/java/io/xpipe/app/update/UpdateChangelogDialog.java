@@ -5,11 +5,16 @@ import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppLogs;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorAction;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.core.OsType;
+
+import java.nio.file.Files;
 
 public class UpdateChangelogDialog {
 
@@ -18,13 +23,18 @@ public class UpdateChangelogDialog {
     public static void showIfNeeded() {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
-            ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
-                    .documentationLink(DocumentationLink.UPDATE_FAIL)
-                    .customAction(ErrorAction.translated("updateFailAction", () -> {
-                        Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
-                        return true;
-                    }))
-                    .handle();
+            ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail")).documentationLink(
+                    DocumentationLink.UPDATE_FAIL).customAction(ErrorAction.translated("updateFailAction", () -> {
+                Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                return true;
+            }));
+            if (OsType.ofLocal() == OsType.WINDOWS) {
+                var installerLog = AppLogs.get().getSessionLogsDirectory().getParent().resolve("installer.log");
+                if (Files.exists(installerLog)) {
+                    eventBuilder.attachment(installerLog);
+                }
+            }
+            eventBuilder.handle();
             return;
         }
 

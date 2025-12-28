@@ -75,7 +75,6 @@ public class ActionConfigComp extends SimpleComp {
         });
 
         var choice = new StoreChoiceComp<>(
-                StoreChoiceComp.Mode.OTHER,
                 null,
                 singleProp,
                 DataStore.class,

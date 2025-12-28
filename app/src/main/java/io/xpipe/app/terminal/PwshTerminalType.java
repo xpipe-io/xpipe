@@ -41,7 +41,7 @@ public class PwshTerminalType implements ExternalApplicationType.PathApplication
                 .add(sc -> {
                     // Fix for https://github.com/PowerShell/PowerShell/issues/18530#issuecomment-1325691850
                     var c = "$env:PSModulePath=\"\";"
-                            + configuration.getDialectLaunchCommand().buildBase(sc);
+                            + configuration.single().getDialectLaunchCommand().buildBase(sc);
                     var base64 = Base64.getEncoder().encodeToString(c.getBytes(StandardCharsets.UTF_16LE));
                     return "\"" + base64 + "\"";
                 });

@@ -36,7 +36,8 @@ public class SshCategory extends AppPrefsCategory {
                     prefs.sshAgentSocket,
                     null,
                     List.of(),
-                    e -> e.equals(DataStorage.get().local()));
+                    e -> e.equals(DataStorage.get().local()),
+                    false);
             choice.setPrompt(prefs.defaultSshAgentSocket);
             choice.maxWidth(600);
             options.sub(

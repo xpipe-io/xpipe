@@ -8,6 +8,7 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
+import io.xpipe.app.prefs.VaultAuthentication;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
@@ -16,7 +17,6 @@ import io.xpipe.app.storage.*;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.KeyFileStrategy;
 import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.property.*;
@@ -83,10 +83,11 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .property(pass)
                 .customConfiguration(
                         SecretStrategyChoiceConfig.builder().allowNone(true).build())
-                .available(SecretRetrievalStrategy.getSubclasses())
+                .available(SecretRetrievalStrategy.getClasses())
                 .build()
                 .build();
 
+        var handler = DataStorageUserHandler.getInstance();
         return new OptionsBuilder()
                 .nameAndDescription("username")
                 .addString(user)
@@ -96,15 +97,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                 .name("keyAuthentication")
                 .description("keyAuthenticationDescription")
                 .documentationLink(DocumentationLink.SSH_KEYS)
-                .sub(
-                        OptionsChoiceBuilder.builder()
-                                .allowNull(false)
-                                .property(identity)
-                                .customConfiguration(sshIdentityChoiceConfig)
-                                .available(SshIdentityStrategy.getSubclasses())
-                                .build()
-                                .build(),
-                        identity)
+                .sub(IdentityChoiceBuilder.keyAuthChoice(identity, sshIdentityChoiceConfig), identity)
                 .check(val -> Validator.create(val, AppI18n.observable("keyNotSynced"), identity, i -> {
                     var wrong = i instanceof KeyFileStrategy f
                             && f.getFile() != null
@@ -112,11 +105,13 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
                     return !wrong;
                 }))
                 .nameAndDescription(
-                        DataStorageUserHandler.getInstance().getActiveUser() != null
-                                ? "identityPerUser"
+                        handler.getActiveUser() != null
+                                ? (handler.getVaultAuthenticationType() == VaultAuthentication.GROUP
+                                        ? "identityPerGroup"
+                                        : "identityPerUser")
                                 : "identityPerUserDisabled")
                 .addToggle(perUser)
-                .disable(DataStorageUserHandler.getInstance().getActiveUser() == null)
+                .disable(handler.getActiveUser() == null)
                 .bind(
                         () -> {
                             return SyncedIdentityStore.builder()

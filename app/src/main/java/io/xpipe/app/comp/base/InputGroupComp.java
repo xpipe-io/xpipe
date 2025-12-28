@@ -5,6 +5,8 @@ import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 
 import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
@@ -35,6 +37,7 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
         if (mainReference != null && entries.contains(mainReference)) {
             var refIndex = entries.indexOf(mainReference);
             var ref = b.getChildren().get(refIndex);
+            HBox.setHgrow(ref, Priority.ALWAYS);
             if (ref instanceof Region refR) {
                 for (int i = 0; i < entries.size(); i++) {
                     if (i == refIndex) {

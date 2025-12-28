@@ -35,6 +35,7 @@ open module io.xpipe.ext.base {
     requires javafx.base;
 
     provides ActionProvider with
+            IdentityApplyHubLeafProvider,
             AbstractHostCreationActionProvider,
             HostAddressSwitchBranchProvider,
             LocalIdentityConvertHubLeafProvider,

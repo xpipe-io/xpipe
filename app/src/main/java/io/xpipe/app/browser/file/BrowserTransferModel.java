@@ -2,6 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -9,6 +10,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellTemp;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -36,7 +38,7 @@ import java.util.Optional;
 @Value
 public class BrowserTransferModel {
 
-    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("download");
+    private static final Path TEMP = AppLocalTemp.getLocalTempDataDirectory("download");
 
     BrowserFullSessionModel browserSessionModel;
     ObservableList<Item> items = FXCollections.observableArrayList();
@@ -112,8 +114,7 @@ public class BrowserTransferModel {
                     return;
                 }
 
-                var fixedFile = OsFileSystem.ofLocal()
-                        .makeFileSystemCompatible(resolved.getPath());
+                var fixedFile = OsFileSystem.ofLocal().makeFileSystemCompatible(resolved.getPath());
                 Path file = TEMP.resolve(fixedFile.getFileName());
                 var item = new Item(model, name, entry, file);
                 items.add(item);
@@ -134,7 +135,7 @@ public class BrowserTransferModel {
         }
 
         var itemModel = item.getOpenFileSystemModel();
-        if (itemModel == null || itemModel.isClosed()) {
+        if (itemModel == null) {
             return;
         }
 
@@ -142,7 +143,7 @@ public class BrowserTransferModel {
             return;
         }
 
-        try {
+        try (var ignored = new BooleanScope(itemModel.getBusy()).exclusive().start()) {
             transferring.setValue(true);
             var op = new BrowserFileTransferOperation(
                     BrowserLocalFileSystem.getLocalFileEntry(TEMP),
@@ -167,7 +168,11 @@ public class BrowserTransferModel {
                     .target(DataStorage.get().local().ref())
                     .download(true)
                     .build();
-            action.executeSync();
+            if (!action.executeSync()) {
+                synchronized (items) {
+                    items.remove(item);
+                }
+            }
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).handle();
             synchronized (items) {

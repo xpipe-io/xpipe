@@ -63,7 +63,9 @@ public class TerminalLaunchRequest {
     }
 
     public void setupRequestAsync() {
-        latch = new CountDownLatch(1);
+        if (latch == null || latch.getCount() == 0) {
+            latch = new CountDownLatch(1);
+        }
         ThreadHelper.runAsync(() -> {
             setupRequest();
             latch.countDown();

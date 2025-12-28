@@ -8,7 +8,7 @@ import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.App;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
@@ -295,10 +295,10 @@ public class BrowserSessionTabsComp extends SimpleComp {
     }
 
     private ContextMenu createContextMenu(TabPane tabs, Tab tab, BrowserSessionTab tabModel) {
-        var cm = ContextMenuHelper.create();
+        var cm = MenuHelper.createContextMenu();
 
         if (tabModel.isCloseable()) {
-            var unpin = ContextMenuHelper.item(LabelGraphic.none(), "unpinTab");
+            var unpin = MenuHelper.createMenuItem(LabelGraphic.none(), "unpinTab");
             unpin.visibleProperty()
                     .bind(PlatformThread.sync(Bindings.createBooleanBinding(
                             () -> {
@@ -312,7 +312,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
             cm.getItems().add(unpin);
 
-            var pin = ContextMenuHelper.item(LabelGraphic.none(), "pinTab");
+            var pin = MenuHelper.createMenuItem(LabelGraphic.none(), "pinTab");
             pin.visibleProperty()
                     .bind(PlatformThread.sync(Bindings.createBooleanBinding(
                             () -> {
@@ -326,7 +326,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             cm.getItems().add(pin);
         }
 
-        var select = ContextMenuHelper.item(LabelGraphic.none(), "selectTab");
+        var select = MenuHelper.createMenuItem(LabelGraphic.none(), "selectTab");
         select.acceleratorProperty()
                 .bind(Bindings.createObjectBinding(
                         () -> {
@@ -347,7 +347,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
         cm.getItems().add(new SeparatorMenuItem());
 
-        var close = ContextMenuHelper.item(LabelGraphic.none(), "closeTab");
+        var close = MenuHelper.createMenuItem(LabelGraphic.none(), "closeTab");
         close.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));
         close.setOnAction(event -> {
             if (tab.isClosable()) {
@@ -357,7 +357,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(close);
 
-        var closeOthers = ContextMenuHelper.item(LabelGraphic.none(), "closeOtherTabs");
+        var closeOthers = MenuHelper.createMenuItem(LabelGraphic.none(), "closeOtherTabs");
         closeOthers.setOnAction(event -> {
             tabs.getTabs()
                     .removeAll(tabs.getTabs().stream()
@@ -367,7 +367,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeOthers);
 
-        var closeLeft = ContextMenuHelper.item(LabelGraphic.none(), "closeLeftTabs");
+        var closeLeft = MenuHelper.createMenuItem(LabelGraphic.none(), "closeLeftTabs");
         closeLeft.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
@@ -378,7 +378,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeLeft);
 
-        var closeRight = ContextMenuHelper.item(LabelGraphic.none(), "closeRightTabs");
+        var closeRight = MenuHelper.createMenuItem(LabelGraphic.none(), "closeRightTabs");
         closeRight.setOnAction(event -> {
             var index = tabs.getTabs().indexOf(tab);
             tabs.getTabs()
@@ -389,7 +389,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
         });
         cm.getItems().add(closeRight);
 
-        var closeAll = ContextMenuHelper.item(LabelGraphic.none(), "closeAllTabs");
+        var closeAll = MenuHelper.createMenuItem(LabelGraphic.none(), "closeAllTabs");
         closeAll.setAccelerator(
                 new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN, KeyCombination.SHIFT_DOWN));
         closeAll.setOnAction(event -> {

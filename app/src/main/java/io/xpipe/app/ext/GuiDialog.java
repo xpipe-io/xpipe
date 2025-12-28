@@ -10,4 +10,10 @@ import lombok.Value;
 public class GuiDialog {
 
     OptionsBuilder options;
+    Runnable onFinish;
+
+    public GuiDialog(OptionsBuilder options) {
+        this.options = options;
+        this.onFinish = null;
+    }
 }

@@ -46,9 +46,13 @@ public class AskpassExchangeImpl extends AskpassExchange {
             return Response.builder().value(InPlaceSecretValue.of("")).build();
         }
 
+        var prompt = msg.getPrompt();
+        // sudo-rs uses a different prefix which we don't really need
+        prompt = prompt.replace("[sudo: authenticate]", "[sudo]");
+
         if (msg.getRequest() == null) {
-            var r = AskpassAlert.queryRaw(msg.getPrompt(), null, true);
-            return Response.builder().value(r.getSecret()).build();
+            var r = AskpassAlert.queryRaw(prompt, null, true);
+            return Response.builder().value(r.getState() == SecretQueryState.NORMAL ? r.getSecret() : InPlaceSecretValue.of("")).build();
         }
 
         var found = msg.getSecretId() != null
@@ -59,7 +63,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
         }
 
         var p = found.get();
-        var secret = p.process(msg.getPrompt());
+        var secret = p.process(prompt);
         if (p.getState() != SecretQueryState.NORMAL) {
             var ex = new BeaconClientException(SecretQueryState.toErrorMessage(p.getState()));
             ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(ex).ignore());

@@ -17,6 +17,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -30,6 +31,7 @@ import atlantafx.base.controls.ModalPane;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
+import net.synedra.validatorfx.GraphicDecorationStackPane;
 
 public class ModalOverlayComp extends SimpleComp {
 
@@ -74,6 +76,7 @@ public class ModalOverlayComp extends SimpleComp {
             if (newValue == null) {
                 overlayContent.setValue(null);
                 bgRegion.setDisable(false);
+                bgRegion.requestFocus();
             }
 
             if (newValue != null) {
@@ -85,6 +88,7 @@ public class ModalOverlayComp extends SimpleComp {
             if (!newValue) {
                 overlayContent.setValue(null);
                 bgRegion.setDisable(false);
+                bgRegion.requestFocus();
             }
         });
 
@@ -119,7 +123,7 @@ public class ModalOverlayComp extends SimpleComp {
             PlatformThread.runLaterIfNeeded(() -> {
                 if (oldValue != null && modal.isDisplay()) {
                     if (newValue == null) {
-                        modal.hide(false);
+                        modal.hide(true);
                     }
                 }
 
@@ -171,8 +175,10 @@ public class ModalOverlayComp extends SimpleComp {
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
         Region r = newValue.getContent().createRegion();
+        var validatorPane = new GraphicDecorationStackPane();
+        validatorPane.getChildren().add(r);
 
-        var content = new VBox(r);
+        var content = new VBox(validatorPane);
         content.getStyleClass().add("content");
         content.focusedProperty().addListener((o, old, n) -> {
             if (n) {
@@ -211,12 +217,10 @@ public class ModalOverlayComp extends SimpleComp {
                             max.set(d);
                         }
                     });
-                }
-                node.minWidthProperty().bind(max);
-                buttonBar.getChildren().add(node);
-                if (o instanceof ModalButton) {
+                    node.minWidthProperty().bind(max);
                     node.prefHeightProperty().bind(buttonBar.heightProperty());
                 }
+                buttonBar.getChildren().add(node);
             }
             content.getChildren().add(buttonBar);
             AppFontSizes.apply(buttonBar, sizes -> {
@@ -236,6 +240,7 @@ public class ModalOverlayComp extends SimpleComp {
                 setRightAnchor(closeButton, 19d);
             }
         };
+        modalBox.setClearOnClose(true);
         if (newValue.getHideAction() != null) {
             modalBox.setOnMinimize(event -> {
                 newValue.getHideAction().run();

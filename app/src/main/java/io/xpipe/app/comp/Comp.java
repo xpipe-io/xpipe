@@ -8,6 +8,7 @@ import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -24,6 +25,7 @@ import atlantafx.base.controls.Spacer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class Comp<S extends CompStructure<?>> {
@@ -128,18 +130,6 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
     }
 
-    public Comp<S> focusTraversable() {
-        return apply(struc -> struc.get().setFocusTraversable(true));
-    }
-
-    public Comp<S> focusTraversable(boolean b) {
-        return apply(struc -> struc.get().setFocusTraversable(b));
-    }
-
-    public Comp<S> focusTraversableForAccessibility() {
-        return apply(struc -> struc.get().focusTraversableProperty().bind(Platform.accessibilityActiveProperty()));
-    }
-
     public Comp<S> visible(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc.get();
@@ -188,18 +178,6 @@ public abstract class Comp<S extends CompStructure<?>> {
 
     public Comp<S> styleClass(String styleClass) {
         return apply(struc -> struc.get().getStyleClass().add(styleClass));
-    }
-
-    public Comp<S> accessibleText(ObservableValue<String> text) {
-        return apply(struc -> struc.get().accessibleTextProperty().bind(text));
-    }
-
-    public Comp<S> accessibleText(String text) {
-        return apply(struc -> struc.get().setAccessibleText(text));
-    }
-
-    public Comp<S> accessibleTextKey(String key) {
-        return apply(struc -> struc.get().accessibleTextProperty().bind(AppI18n.observable(key)));
     }
 
     public Comp<S> grow(boolean width, boolean height) {
@@ -262,25 +240,15 @@ public abstract class Comp<S extends CompStructure<?>> {
         }
     }
 
-    public Comp<S> tooltip(ObservableValue<String> text) {
-        return apply(struc -> {
-            var tt = TooltipHelper.create(text, null);
-            Tooltip.install(struc.get(), tt);
-        });
+    public Comp<S> descriptor(Consumer<CompDescriptor.CompDescriptorBuilder> c) {
+        var desc = CompDescriptor.builder();
+        c.accept(desc);
+        return descriptor(desc.build());
     }
 
-    public Comp<S> tooltipKey(String key) {
-        return apply(struc -> {
-            var tt = TooltipHelper.create(AppI18n.observable(key), null);
-            Tooltip.install(struc.get(), tt);
-        });
-    }
-
-    public Comp<S> tooltipKey(String key, KeyCombination shortcut) {
-        return apply(struc -> {
-            var tt = TooltipHelper.create(AppI18n.observable(key), shortcut);
-            Tooltip.install(struc.get(), tt);
-        });
+    public Comp<S> descriptor(CompDescriptor d) {
+        apply(struc -> d.apply(struc.get()));
+        return this;
     }
 
     public Region createRegion() {

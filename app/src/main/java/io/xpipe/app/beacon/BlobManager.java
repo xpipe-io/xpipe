@@ -1,5 +1,6 @@
 package io.xpipe.app.beacon;
 
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.ShellTemp;
 import io.xpipe.beacon.BeaconClientException;
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BlobManager {
 
-    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("blob");
+    private static final Path TEMP = AppLocalTemp.getLocalTempDataDirectory("blob");
     private static BlobManager INSTANCE;
     private final Map<UUID, byte[]> memoryBlobs = new ConcurrentHashMap<>();
     private final Map<UUID, Path> fileBlobs = new ConcurrentHashMap<>();

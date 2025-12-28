@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.Popover;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.core.AppI18n;
@@ -12,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
+import javafx.scene.AccessibleAttribute;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import atlantafx.base.controls.Popover;
 import atlantafx.base.layout.InputGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,7 +62,15 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
     @Override
     public Structure createBase() {
-        var field = new PasswordField();
+        var field = new PasswordField() {
+            @Override
+            public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
+                switch (attribute) {
+                    case TEXT: return getAccessibleText();
+                    default: return super.queryAccessibleAttribute(attribute, parameters);
+                }
+            }
+        };
         field.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
             if (e.isControlDown() && e.getCode() == KeyCode.BACK_SPACE) {
                 var sel = field.getSelection();
@@ -94,16 +103,16 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                 }
 
                 field.setText(n != null ? n.getSecretValue() : null);
-            });
 
-            var capslock = Platform.isKeyLocked(KeyCode.CAPS);
-            if (!capslock.orElse(false)) {
-                capsPopover.hide();
-                return;
-            }
-            if (!capsPopover.isShowing() && field.getScene() != null) {
-                capsPopover.show(field);
-            }
+                var capslock = Platform.isKeyLocked(KeyCode.CAPS);
+                if (!capslock.orElse(false)) {
+                    capsPopover.hide();
+                    return;
+                }
+                if (!capsPopover.isShowing() && field.getScene() != null) {
+                    capsPopover.show(field);
+                }
+            });
         });
         HBox.setHgrow(field, Priority.ALWAYS);
 
@@ -111,7 +120,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
                     ClipboardHelper.copyPassword(value.getValue());
                 })
                 .grow(false, true)
-                .tooltipKey("copyPassword");
+                .descriptor(d -> d.nameKey("copy"));
 
         var list = new ArrayList<Comp<?>>();
         var fieldComp = Comp.of(() -> field);

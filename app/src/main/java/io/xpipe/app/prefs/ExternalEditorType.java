@@ -87,7 +87,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-
     WindowsType ANTIGRAVITY_WINDOWS = new WindowsType() {
 
         @Override
@@ -121,7 +120,6 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .filter(path -> Files.exists(path));
         }
     };
-
 
     WindowsType CURSOR_WINDOWS = new WindowsType() {
 
@@ -436,7 +434,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                 public void launch(Path file) throws Exception {
                     var exec = CommandSupport.isInLocalPath(getExecutable())
                             ? CommandBuilder.of().addFile(getExecutable())
-                            : FlatpakCache.runCommand(getFlatpakId());
+                            : FlatpakCache.getRunCommand(getFlatpakId());
 
                     if (FlatpakCache.getApp(getFlatpakId()).isEmpty()) {
                         CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
@@ -514,6 +512,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
+    LinuxPathType WESTON_EDITOR = new LinuxPathType("app.westonEditor", "weston-editor", "https://wayland.pages.freedesktop.org/weston/");
     ExternalEditorType TEXT_EDIT =
             new MacOsEditor("app.textEdit", "TextEdit", "https://support.apple.com/en-gb/guide/textedit/welcome/mac");
     ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit", "https://www.barebones.com/products/bbedit/");
@@ -521,7 +520,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType VSCODE_MACOS =
             new MacOsEditor("app.vscode", "Visual Studio Code", "https://code.visualstudio.com/");
     ExternalEditorType VSCODIUM_MACOS = new MacOsEditor("app.vscodium", "VSCodium", "https://vscodium.com/");
-    ExternalEditorType ANTIGRAVITY_MACOS = new MacOsEditor("app.antigravity", "Antigravity", "https://antigravity.google/");
+    ExternalEditorType ANTIGRAVITY_MACOS =
+            new MacOsEditor("app.antigravity", "Antigravity", "https://antigravity.google/");
     ExternalEditorType CURSOR_MACOS = new MacOsEditor("app.cursor", "Cursor", "https://cursor.com/");
     ExternalEditorType VOID_MACOS = new MacOsEditor("app.void", "Void", "https://voideditor.com/");
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf", "https://windsurf.com/editor");
@@ -607,6 +607,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             LEAFPAD,
             MOUSEPAD,
             GNOME,
+            ExternalEditorType.WESTON_EDITOR,
             ExternalEditorType.CURSOR_LINUX);
     List<ExternalEditorType> MACOS_EDITORS = List.of(
             VOID_MACOS,
@@ -807,7 +808,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     CommandSupport.isInPathOrThrow(LocalShell.getShell(), getExecutable());
                 }
 
-                var builder = FlatpakCache.runCommand(getFlatpakId()).addFile(file.toString());
+                var builder = FlatpakCache.getRunCommand(getFlatpakId()).addFile(file.toString());
                 ExternalApplicationHelper.startAsync(builder);
             }
         }

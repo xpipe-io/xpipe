@@ -1,5 +1,6 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellTemp;
@@ -17,7 +18,7 @@ import java.util.function.Predicate;
 public class GithubReleaseDownloader {
 
     public static Path getDownloadTempFile(String repository, String id, Predicate<String> filter) throws Exception {
-        var tempDir = ShellTemp.getLocalTempDataDirectory("github");
+        var tempDir = AppLocalTemp.getLocalTempDataDirectory("github");
         var temp = tempDir.resolve(id);
         if (Files.exists(temp)) {
             return temp;

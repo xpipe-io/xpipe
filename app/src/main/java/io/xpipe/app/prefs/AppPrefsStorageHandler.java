@@ -109,8 +109,7 @@ public class AppPrefsStorageHandler {
         }
 
         if (tree.isNull()) {
-            // TODO: Does that break something? Legacy compatibility-wise?
-            // return null;
+            return null;
         }
 
         if (PrefsChoiceValue.class.isAssignableFrom(type.getRawClass())) {

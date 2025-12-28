@@ -1,5 +1,6 @@
 package io.xpipe.beacon;
 
+import io.xpipe.core.OsType;
 import lombok.experimental.UtilityClass;
 
 import java.nio.file.Path;
@@ -55,6 +56,12 @@ public class BeaconConfig {
         var staging = Optional.ofNullable(System.getProperty("io.xpipe.app.staging"))
                 .map(Boolean::parseBoolean)
                 .orElse(false);
-        return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe_ptb_auth" : "xpipe_auth");
+        if (OsType.ofLocal() == OsType.LINUX) {
+            return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe-ptb" : "xpipe",
+                    System.getProperty("user.name"), "beacon-auth");
+        } else {
+            return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe-ptb" : "xpipe",
+                    "beacon-auth");
+        }
     }
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.VerticalComp;
@@ -56,16 +57,18 @@ public class StoreSectionComp extends StoreSectionBaseComp {
             });
         });
         quickAccessButton.vgrow();
-        quickAccessButton.focusTraversableForAccessibility();
-        quickAccessButton.tooltipKey("accessSubConnections", new KeyCodeCombination(KeyCode.RIGHT));
+        quickAccessButton.descriptor(d -> d.nameKey("quickAccess")
+                .focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
+                .shortcut(new KeyCodeCombination(KeyCode.RIGHT)));
 
         var expandButton = createExpandButton(
                 () -> section.getWrapper().toggleExpanded(),
                 30,
                 section.getWrapper().getExpanded());
         expandButton.vgrow();
-        expandButton.focusTraversableForAccessibility();
-        expandButton.tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
+        expandButton.descriptor(d -> d.nameKey("expand")
+                .focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
+                .shortcut(new KeyCodeCombination(KeyCode.SPACE)));
         var buttonList = new ArrayList<Comp<?>>();
         if (entryButton.isFullSize()) {
             buttonList.add(quickAccessButton);

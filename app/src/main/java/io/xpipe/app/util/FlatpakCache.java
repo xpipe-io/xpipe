@@ -44,7 +44,7 @@ public class FlatpakCache {
         return Optional.ofNullable(app);
     }
 
-    public static CommandBuilder runCommand(String id) {
+    public static CommandBuilder getRunCommand(String id) {
         return CommandBuilder.of()
                 .add("flatpak", "run")
                 .add("--filesystem=" + AppSystemInfo.ofLinux().getTemp())

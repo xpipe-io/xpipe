@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FilePath;
 
 import lombok.Getter;
@@ -13,24 +14,45 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-@Getter
 public class WrapperFileSystem implements FileSystem {
 
     private final FileSystem fs;
     private final Supplier<Boolean> runningCheck;
 
-    public WrapperFileSystem(FileSystem fs, Supplier<Boolean> runningCheck) {
+    public WrapperFileSystem(FileSystem fs) {
         this.fs = fs;
-        this.runningCheck = runningCheck;
+        this.runningCheck = () -> fs.isRunning();
+    }
+
+    public FileSystem getWrappedFileSystem() {
+        return fs;
+    }
+
+    public void withFileSystem(FailableConsumer<FileSystem, Exception> consumer) throws Exception {
+        if (!runningCheck.get()) {
+            return;
+        }
+
+        consumer.accept(fs);
     }
 
     @Override
-    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception {
+    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile)
+            throws Exception {
+        if (!runningCheck.get()) {
+            return false;
+        }
+
         return fs.writeInstantIfPossible(sourceFs, sourceFile, targetFile);
     }
 
     @Override
-    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception {
+    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile)
+            throws Exception {
+        if (!runningCheck.get()) {
+            return false;
+        }
+
         return fs.readInstantIfPossible(sourceFile, targetFs, targetFile);
     }
 
@@ -80,6 +102,11 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean supportsTerminalOpen() {
+        return fs.supportsTerminalOpen();
+    }
+
+    @Override
     public boolean supportsTerminalWorkingDirectory() {
         return fs.supportsTerminalWorkingDirectory();
     }
@@ -87,6 +114,11 @@ public class WrapperFileSystem implements FileSystem {
     @Override
     public Optional<ShellControl> getRawShellControl() {
         return fs.getRawShellControl();
+    }
+
+    @Override
+    public ShellControl getTerminalShellControl() {
+        return fs.getTerminalShellControl();
     }
 
     @Override
@@ -176,8 +208,13 @@ public class WrapperFileSystem implements FileSystem {
     }
 
     @Override
-    public FileSystem createTransferOptimizedFileSystem() {
-        return this;
+    public FileSystem createTransferOptimizedFileSystem() throws Exception {
+        var optimized = fs.createTransferOptimizedFileSystem();
+        if (optimized == fs) {
+            return this;
+        }
+
+        return new WrapperFileSystem(optimized);
     }
 
     @Override
@@ -336,6 +373,10 @@ public class WrapperFileSystem implements FileSystem {
 
     @Override
     public List<FilePath> listCommonDirectories() throws Exception {
+        if (!runningCheck.get()) {
+            return List.of();
+        }
+
         return fs.listCommonDirectories();
     }
 

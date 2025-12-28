@@ -32,6 +32,7 @@
 				<string>xpipe</string>
 				<string>ssh</string>
 				<string>sftp</string>
+				<string>s3</string>
 			</array>
 		</dict>
 	</array>

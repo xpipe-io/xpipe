@@ -8,6 +8,8 @@ import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -31,6 +33,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
@@ -43,7 +46,12 @@ public class StoreChoicePopover<T extends DataStore> {
     private final StoreCategoryWrapper initialCategory;
     private final String titleKey;
     private final String noMatchKey;
+    private Consumer<Popover> consumer;
     private Popover popover;
+
+    public void withPopover(Consumer<Popover> consumer) {
+        this.consumer = consumer;
+    }
 
     public void show(Node node) {
         var p = getPopover();
@@ -60,7 +68,7 @@ public class StoreChoicePopover<T extends DataStore> {
         }
     }
 
-    public Popover getPopover() {
+    private Popover getPopover() {
         // Rebuild popover if we have a non-null condition to allow for the content to be updated in case the condition
         // changed
         if (popover == null || applicableCheck != null) {
@@ -134,13 +142,14 @@ public class StoreChoicePopover<T extends DataStore> {
                     new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
 
             var addButton = Comp.of(() -> {
-                        MenuButton m = new MenuButton(null, new FontIcon("mdi2p-plus-box-outline"));
+                        var m = MenuHelper.createMenuButton();
+                        m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
                         m.setMinHeight(0);
                         StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
-                    .accessibleTextKey("addConnection")
+                    .descriptor(d -> d.nameKey("addConnection"))
                     .padding(new Insets(-5))
                     .styleClass(Styles.RIGHT_PILL);
 
@@ -202,12 +211,17 @@ public class StoreChoicePopover<T extends DataStore> {
             popover.setHeaderAlwaysVisible(true);
             popover.setDetachable(true);
             popover.setTitle(AppI18n.get(titleKey));
+            popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
             AppFontSizes.xs(popover.getContentNode());
 
             // Hide on connection creation dialog
             AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
                 popover.hide();
             });
+
+            if (consumer != null) {
+                consumer.accept(popover);
+            }
         }
 
         return popover;

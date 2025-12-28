@@ -47,6 +47,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
     @Override
     public CompStructure<Button> createBase() {
         var button = new Button(null);
+        button.setMnemonicParsing(false);
         if (name != null) {
             name.subscribe(t -> {
                 PlatformThread.runLaterIfNeeded(() -> button.setText(t));

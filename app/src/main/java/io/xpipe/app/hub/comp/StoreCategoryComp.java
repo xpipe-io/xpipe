@@ -7,7 +7,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -83,7 +83,6 @@ public class StoreCategoryComp extends SimpleComp {
                 })
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
-                    struc.get().setFocusTraversable(false);
                     if (OsType.ofLocal() == OsType.WINDOWS) {
                         HBox.setMargin(struc.get(), new Insets(0, 0, 2.3, 0));
                     } else if (OsType.ofLocal() == OsType.MACOS) {
@@ -92,12 +91,13 @@ public class StoreCategoryComp extends SimpleComp {
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
                 .styleClass("expand-button")
-                .tooltipKey("expand", new KeyCodeCombination(KeyCode.SPACE));
+                .descriptor(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)));
 
+        var focus = new SimpleBooleanProperty();
         var hover = new SimpleBooleanProperty();
         var statusIcon = Bindings.createObjectBinding(
                 () -> {
-                    if (hover.get()) {
+                    if (hover.get() || focus.get()) {
                         return new LabelGraphic.IconGraphic("mdomz-settings");
                     }
 
@@ -109,14 +109,13 @@ public class StoreCategoryComp extends SimpleComp {
                     return new LabelGraphic.IconGraphic(category.getSync().getValue() ? "mdi2g-git" : "mdi2c-cancel");
                 },
                 category.getSync(),
-                hover);
+                hover,
+                focus);
         var statusButton = new IconButtonComp(statusIcon)
                 .apply(struc -> AppFontSizes.xs(struc.get()))
                 .apply(struc -> {
                     struc.get().setAlignment(Pos.CENTER);
                     struc.get().setPadding(new Insets(0, 0, 0, 0));
-                    struc.get().setFocusTraversable(false);
-                    hover.bind(struc.get().hoverProperty());
                 })
                 .apply(new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
@@ -124,6 +123,7 @@ public class StoreCategoryComp extends SimpleComp {
                             showing.bind(cm.showingProperty());
                             return cm;
                         }))
+                .descriptor(d -> d.nameKey("configuration"))
                 .styleClass("status-button");
 
         var count = new CountComp(
@@ -134,8 +134,7 @@ public class StoreCategoryComp extends SimpleComp {
         count.minWidth(Region.USE_PREF_SIZE);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
-                .or(showing);
-        var focus = new SimpleBooleanProperty();
+                .or(showing).or(focus);
         var h = new HorizontalComp(List.of(
                 expandButton,
                 Comp.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
@@ -148,11 +147,10 @@ public class StoreCategoryComp extends SimpleComp {
 
         var categoryButton = new ButtonComp(
                         null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
-                .focusTraversable()
+                .descriptor(d -> d.name(prop).shortcut(new KeyCodeCombination(KeyCode.SPACE)))
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
-                .apply(struc -> focus.bind(struc.get().focusedProperty()))
-                .accessibleText(prop)
+                .apply(struc -> focus.bind(struc.get().focusWithinProperty()))
                 .grow(true, false);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
@@ -200,7 +198,7 @@ public class StoreCategoryComp extends SimpleComp {
     }
 
     private ContextMenu createContextMenu(Region text) {
-        var contextMenu = ContextMenuHelper.create();
+        var contextMenu = MenuHelper.createContextMenu();
 
         if (AppPrefs.get().enableHttpApi().get()) {
             var copyId = new MenuItem(AppI18n.get("copyId"), new FontIcon("mdi2c-content-copy"));

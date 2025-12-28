@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
@@ -8,8 +9,8 @@ import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
-import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
 
@@ -21,9 +22,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.Separator;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -31,7 +29,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import atlantafx.base.theme.Styles;
-import javafx.util.Subscription;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
@@ -40,7 +37,9 @@ public class StoreEntryListOverviewComp extends SimpleComp {
 
     private final ObservableSubscriber filterTrigger;
 
-    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {this.filterTrigger = filterTrigger;}
+    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {
+        this.filterTrigger = filterTrigger;
+    }
 
     private Region createGroupListHeader() {
         var label = new Label();
@@ -122,7 +121,8 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Region createAddButton() {
-        var menu = new MenuButton(null, new FontIcon("mdi2p-plus-thick"));
+        var menu = MenuHelper.createMenuButton();
+        menu.setGraphic(new FontIcon("mdi2p-plus-thick"));
         menu.setOnShowing(event -> {
             menu.getItems().clear();
             StoreCreationMenu.addButtons(menu, true);
@@ -142,6 +142,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
         });
+        b.descriptor(d -> d.nameKey("batchMode"));
         b.styleClass("batch-mode-button");
         b.apply(struc -> {
             batchMode.subscribe(a -> {
@@ -185,8 +186,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        button.accessibleTextKey("sortIndexed");
-        button.tooltipKey("sortIndexed");
+        button.descriptor(d -> d.nameKey("sortIndexed"));
         return button;
     }
 
@@ -226,8 +226,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        alphabetical.accessibleTextKey("sortAlphabetical");
-        alphabetical.tooltipKey("sortAlphabetical");
+        alphabetical.descriptor(d -> d.nameKey("sortAlphabetical"));
         return alphabetical;
     }
 
@@ -266,8 +265,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        date.accessibleTextKey("sortLastUsed");
-        date.tooltipKey("sortLastUsed");
+        date.descriptor(d -> d.nameKey("sortLastUsed"));
         return date;
     }
 

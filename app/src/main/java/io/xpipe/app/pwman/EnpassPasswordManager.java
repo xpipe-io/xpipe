@@ -60,7 +60,8 @@ public class EnpassPasswordManager implements PasswordManager {
                 prop,
                 null,
                 List.of(),
-                e -> e.equals(DataStorage.get().local()));
+                e -> e.equals(DataStorage.get().local()),
+                true);
         comp.apply(struc -> {
             var text = (TextField) struc.get().getChildren().getFirst();
             text.requestFocus();

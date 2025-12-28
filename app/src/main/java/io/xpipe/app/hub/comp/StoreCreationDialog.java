@@ -63,7 +63,8 @@ public class StoreCreationDialog {
                         .getStoreCategoryIfPresent(e.getCategoryUuid())
                         .orElseThrow();
                 PlatformThread.runLaterIfNeeded(() -> {
-                    StoreViewState.get().selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(cat));
+                    StoreViewState.get()
+                            .selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(cat));
                 });
 
                 c.accept(e);
@@ -74,6 +75,7 @@ public class StoreCreationDialog {
 
     public static void showCreation(DataStoreProvider selected, DataStoreCreationCategory category) {
         showCreation(
+                null,
                 selected != null ? selected.defaultStore(DataStorage.get().getSelectedCategory()) : null,
                 category,
                 dataStoreEntry -> {},
@@ -81,6 +83,7 @@ public class StoreCreationDialog {
     }
 
     public static void showCreation(
+            String name,
             DataStore base,
             DataStoreCreationCategory category,
             Consumer<DataStoreEntry> listener,
@@ -104,7 +107,9 @@ public class StoreCreationDialog {
                             .getStoreCategoryIfPresent(e.getCategoryUuid())
                             .orElseThrow();
                     PlatformThread.runLaterIfNeeded(() -> {
-                        StoreViewState.get().selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(cat));
+                        StoreViewState.get()
+                                .selectCategoryIntoViewIfNeeded(
+                                        StoreViewState.get().getCategoryWrapper(cat));
                     });
                 }
             } catch (Exception ex) {
@@ -112,7 +117,7 @@ public class StoreCreationDialog {
             }
         };
         show(
-                null,
+                name,
                 prov,
                 base,
                 dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))

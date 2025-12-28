@@ -30,6 +30,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     protected Region createContent() {
         var name = createName().createRegion();
+        var tags = createTags().createRegion();
         var index = createOrderIndex().createRegion();
         var notes = new StoreNotesComp(getWrapper()).createRegion();
         var userIcon = createUserIcon().createRegion();
@@ -55,8 +56,8 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
         var active = new StoreActiveComp(getWrapper()).createRegion();
-        var nameBox = new HBox(name, index, userIcon, pinIcon, notes);
-        nameBox.setSpacing(6);
+        var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
+        nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
         grid.add(nameBox, 2, 0);
         GridPane.setVgrow(nameBox, Priority.ALWAYS);
@@ -64,7 +65,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
             if (!aBoolean) {
                 nameBox.getChildren().remove(active);
             } else {
-                nameBox.getChildren().add(1, active);
+                nameBox.getChildren().add(3, active);
             }
         });
 
@@ -109,22 +110,7 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
     private Label createSummary() {
         var summary = new Label();
-        summary.textProperty()
-                .bind(Bindings.createStringBinding(
-                        () -> {
-                            var summaryValue = getWrapper().getShownSummary().getValue();
-                            if (summaryValue != null) {
-                                return summaryValue;
-                            } else {
-                                var provider = getWrapper().getEntry().getProvider();
-                                if (provider != null) {
-                                    return AppI18n.get(provider.getId() + ".displayName");
-                                } else {
-                                    return null;
-                                }
-                            }
-                        },
-                        getWrapper().getShownSummary()));
+        summary.textProperty().bind(getWrapper().getShownDescription());
         summary.getStyleClass().add("summary");
         AppFontSizes.xs(summary);
         return summary;

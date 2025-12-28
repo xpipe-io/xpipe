@@ -45,7 +45,11 @@ public interface TerminalPrompt {
                 checkCanInstall(sc);
                 install(sc);
             } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).omit().description("Prompt installation for " + getId() + " failed on remote system").expected().handle();
+                ErrorEventFactory.fromThrowable(e)
+                        .omit()
+                        .description("Prompt installation for " + getId() + " failed on remote system")
+                        .expected()
+                        .handle();
                 return false;
             }
             return true;

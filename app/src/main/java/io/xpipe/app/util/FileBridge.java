@@ -4,6 +4,7 @@ import io.xpipe.app.browser.action.impl.ApplyFileEditActionProvider;
 import io.xpipe.app.browser.file.BrowserFileInput;
 import io.xpipe.app.browser.file.BrowserFileOutput;
 import io.xpipe.app.core.AppFileWatcher;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.process.OsFileSystem;
@@ -27,7 +28,7 @@ import java.util.function.Consumer;
 
 public class FileBridge {
 
-    private static final Path TEMP = ShellTemp.getLocalTempDataDirectory("bridge");
+    private static final Path TEMP = AppLocalTemp.getLocalTempDataDirectory("bridge");
     private static FileBridge INSTANCE;
     private final Set<Entry> openEntries = new HashSet<>();
 
@@ -94,6 +95,13 @@ public class FileBridge {
         }
 
         try {
+            // Guard against fragmented write operations
+            // It's not perfect but should wait long enough for any multipart write to finish after waiting
+            if (Files.size(changed) == 0) {
+                event("File " + TEMP.relativize(e.file) + " is empty and probably still writing ...");
+                ThreadHelper.sleep(1000);
+            }
+
             event("Registering modification for file " + TEMP.relativize(e.file));
             event("Last modification for file: " + e.lastModified.toString() + " vs current one: "
                     + e.getLastModified());

@@ -5,5 +5,5 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 
 public interface HostAddressGatewayStore extends HostAddressStore {
 
-    DataStoreEntryRef<NetworkTunnelStore> getGateway();
+    DataStoreEntryRef<NetworkTunnelStore> getTunnelGateway();
 }

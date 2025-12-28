@@ -24,6 +24,8 @@ public abstract class AbstractServiceStore
     private final Integer localPort;
     private final ServiceProtocolType serviceProtocolType;
 
+    public abstract boolean shouldTunnel();
+
     public abstract String getAddress();
 
     public abstract DataStoreEntryRef<NetworkTunnelStore> getGateway();
@@ -91,7 +93,7 @@ public abstract class AbstractServiceStore
 
         if (getHost().getStore() instanceof HostAddressGatewayStore g
                 && !(getHost().getStore() instanceof NetworkTunnelStore)) {
-            var gw = g.getGateway();
+            var gw = g.getTunnelGateway();
             return gw != null && gw.getStore().requiresTunnel();
         }
 
@@ -105,9 +107,9 @@ public abstract class AbstractServiceStore
                 return false;
             }
 
-            return nts.requiresTunnel();
+            return shouldTunnel() && nts.requiresTunnel();
         } else {
-            return t.requiresTunnel();
+            return shouldTunnel() && t.requiresTunnel();
         }
     }
 
@@ -122,9 +124,9 @@ public abstract class AbstractServiceStore
         if (getHost() != null) {
             if (!(getHost().getStore() instanceof NetworkTunnelStore)
                     && getHost().getStore() instanceof HostAddressGatewayStore g) {
-                if (g.getGateway() == null
-                        || !g.getGateway().getStore().requiresTunnel()
-                        || !g.getGateway().getStore().isLocallyTunnelable()) {
+                if (g.getTunnelGateway() == null
+                        || !g.getTunnelGateway().getStore().requiresTunnel()
+                        || !g.getTunnelGateway().getStore().isLocallyTunnelable()) {
                     return null;
                 }
             } else if (getHost().getStore() instanceof NetworkTunnelStore t) {
@@ -133,6 +135,10 @@ public abstract class AbstractServiceStore
                     if (!(parent.getStore() instanceof NetworkTunnelStore)) {
                         return null;
                     }
+                }
+
+                if (!shouldTunnel()) {
+                    return null;
                 }
             } else {
                 return null;
@@ -170,7 +176,7 @@ public abstract class AbstractServiceStore
         }
 
         var g = (HostAddressGatewayStore) getHost().getStore();
-        return g.getGateway()
+        return g.getTunnelGateway()
                 .getStore()
                 .createTunnelSession(l, remotePort, g.getHostAddress().get());
     }

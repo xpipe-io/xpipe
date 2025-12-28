@@ -62,7 +62,7 @@ public class PasswordManagerTestComp extends SimpleComp {
         var button = new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
                     testPasswordManager(value.get(), testPasswordManagerResult);
                 })
-                .tooltip(AppI18n.observable("test"))
+                .descriptor(d -> d.nameKey("test"))
                 .styleClass(Styles.RIGHT_PILL);
 
         var testInput = new HorizontalComp(List.of(field, button));

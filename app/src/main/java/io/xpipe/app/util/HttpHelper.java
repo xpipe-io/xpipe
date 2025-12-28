@@ -16,6 +16,7 @@ public class HttpHelper {
     @SneakyThrows
     public static HttpClient client() {
         var builder = HttpClient.newBuilder();
+        builder.version(HttpClient.Version.HTTP_1_1);
         builder.followRedirects(HttpClient.Redirect.NORMAL);
         if (AppPrefs.get() != null && AppPrefs.get().disableApiAuthentication().get()) {
             var sslContext = SSLContext.getInstance("TLS");

@@ -18,7 +18,9 @@ import javax.crypto.SecretKey;
 public class EncryptionToken {
 
     private static EncryptionToken vaultToken;
+    private static EncryptionToken groupToken;
     private static EncryptionToken userToken;
+
     private final String token;
 
     @JsonIgnore

@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.ext.FileKind;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
@@ -95,7 +95,6 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             return notDir || isParentLink;
                         },
                         itemProperty()))
-                .focusTraversable(false)
                 .createRegion();
         return quickAccess;
     }
@@ -133,7 +132,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
             if (selected.size() > 0 && selected.getLast() == getTableRow().getItem()) {
                 var cm = new BrowserContextMenu(
                         fileList.getFileSystemModel(), getTableRow().getItem(), false);
-                ContextMenuHelper.toggleShow(cm, this, Side.RIGHT);
+                MenuHelper.toggleMenuShow(cm, this, Side.RIGHT);
                 event.consume();
             }
         });
@@ -228,10 +227,11 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                                         .getPath()
                         : getTableRow().getItem().getFileName();
                 var fileName = normalName;
-                var hidden = getTableRow().getItem().getRawFileEntry().getInfo().explicitlyHidden()
-                        || fileName.startsWith(".");
+                var info = getTableRow().getItem().getRawFileEntry().getInfo();
+                var hidden = (info != null && info.explicitlyHidden()) || fileName.startsWith(".");
                 getTableRow().pseudoClassStateChanged(PseudoClass.getPseudoClass("hidden"), hidden);
                 text.set(fileName);
+
                 // Visibility seems to be bugged, so use opacity
                 setOpacity(1.0);
             }

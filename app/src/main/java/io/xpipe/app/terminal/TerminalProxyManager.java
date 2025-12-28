@@ -17,6 +17,12 @@ public class TerminalProxyManager {
 
     private static ActiveSession activeSession;
 
+    public static void registerSessionLaunch(UUID launchRequestUuid, TerminalLaunchConfiguration configuration) {
+        for (TerminalPaneConfiguration pane : configuration.getPanes()) {
+            TerminalView.get().addSubstitution(pane.getRequest(), launchRequestUuid);
+        }
+    }
+
     public static boolean canUseAsProxy(DataStoreEntryRef<ShellStore> ref) {
         if (!ref.get().getValidity().isUsable()) {
             return false;

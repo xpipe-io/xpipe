@@ -158,11 +158,11 @@ public interface DataStoreProvider {
 
     default void reset() {}
 
-    default boolean isShareableFromLocalMachine() {
+    default boolean isSyncableFromLocalMachine() {
         return false;
     }
 
-    default boolean isShareable(DataStoreEntry entry) {
+    default boolean isSyncable(DataStoreEntry entry) {
         return true;
     }
 

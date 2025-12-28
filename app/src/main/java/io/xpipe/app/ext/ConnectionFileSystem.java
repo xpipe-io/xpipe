@@ -34,12 +34,14 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
-    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile) throws Exception {
+    public boolean writeInstantIfPossible(FileSystem sourceFs, FilePath sourceFile, FilePath targetFile)
+            throws Exception {
         return false;
     }
 
     @Override
-    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile) throws Exception {
+    public boolean readInstantIfPossible(FilePath sourceFile, FileSystem targetFs, FilePath targetFile)
+            throws Exception {
         return false;
     }
 
@@ -89,6 +91,11 @@ public class ConnectionFileSystem implements FileSystem {
     }
 
     @Override
+    public boolean supportsTerminalOpen() {
+        return true;
+    }
+
+    @Override
     public boolean supportsTerminalWorkingDirectory() {
         return true;
     }
@@ -96,6 +103,11 @@ public class ConnectionFileSystem implements FileSystem {
     @Override
     public Optional<ShellControl> getRawShellControl() {
         return Optional.of(shellControl);
+    }
+
+    @Override
+    public ShellControl getTerminalShellControl() {
+        return shellControl;
     }
 
     @Override

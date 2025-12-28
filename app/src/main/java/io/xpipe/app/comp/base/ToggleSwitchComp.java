@@ -3,10 +3,13 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.geometry.Pos;
@@ -34,6 +37,13 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
                 event.consume();
             }
         });
+        s.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
+            if (name != null && name.getValue() != null) {
+                return name.getValue();
+            }
+
+            return AppI18n.get("toggleButton");
+        }, name != null ? name : new ReadOnlyObjectWrapper<>(), AppI18n.activeLanguage()));
         s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue() != null ? selected.getValue() : false);
@@ -60,6 +70,14 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             });
             s.pseudoClassStateChanged(PseudoClass.getPseudoClass("has-graphic"), true);
         }
+
+        s.setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.SPACE || keyEvent.getCode() == KeyCode.ENTER) {
+                s.setSelected(!s.isSelected());
+                keyEvent.consume();
+            }
+        });
+
         return new SimpleCompStructure<>(s);
     }
 }

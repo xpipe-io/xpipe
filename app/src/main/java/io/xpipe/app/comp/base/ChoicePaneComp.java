@@ -3,6 +3,7 @@ package io.xpipe.app.comp.base;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -35,7 +36,8 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
     @Override
     public CompStructure<VBox> createBase() {
         var list = FXCollections.observableArrayList(entries);
-        var cb = new ComboBox<>(list);
+        var cb = MenuHelper.<Entry>createComboBox();
+        cb.setItems(list);
         cb.setOnKeyPressed(event -> {
             if (!cb.isShowing() && event.getCode().equals(KeyCode.ENTER)) {
                 cb.show();

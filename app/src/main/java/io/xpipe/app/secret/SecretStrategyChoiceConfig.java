@@ -8,4 +8,5 @@ import lombok.Value;
 public class SecretStrategyChoiceConfig {
 
     boolean allowNone;
+    String passwordKey;
 }

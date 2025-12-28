@@ -55,11 +55,6 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
     class Windows implements WarpTerminalType {
 
         @Override
-        public int getProcessHierarchyOffset() {
-            return 0;
-        }
-
-        @Override
         public boolean isAvailable() {
             return WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Classes\\warp");
         }
@@ -78,16 +73,15 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var pane = configuration.single();
             try (var sc = LocalShell.getShell().start()) {
-                var command = configuration.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
+                var command = pane.getScriptDialect().getSetEnvironmentVariableCommand("PSModulePath", "")
                         + "\n"
-                        + configuration
-                                .getScriptDialect()
-                                .runScriptCommand(
-                                        sc, configuration.getScriptFile().toString());
+                        + pane.getScriptDialect()
+                                .runScriptCommand(sc, pane.getScriptFile().toString());
 
                 // Move to subdir as Warp tries to index the parent dir, which would be temp in this case
-                var scriptFile = ScriptHelper.createExecScript(configuration.getScriptDialect(), sc, command);
+                var scriptFile = ScriptHelper.createExecScript(pane.getScriptDialect(), sc, command);
                 var movedScriptFile =
                         AppSystemInfo.ofCurrent().getTemp().resolve("warp").resolve(scriptFile.getFileName());
                 Files.createDirectories(movedScriptFile.getParent());
@@ -129,10 +123,11 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
         @Override
         public void launch(TerminalLaunchConfiguration configuration) {
+            var pane = configuration.single();
             if (!configuration.isPreferTabs()) {
-                DesktopHelper.openUrl("warp://action/new_window?path=" + configuration.getScriptFile());
+                DesktopHelper.openUrl("warp://action/new_window?path=" + pane.getScriptFile());
             } else {
-                DesktopHelper.openUrl("warp://action/new_tab?path=" + configuration.getScriptFile());
+                DesktopHelper.openUrl("warp://action/new_tab?path=" + pane.getScriptFile());
             }
         }
     }
@@ -155,7 +150,7 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
                     .executeSimpleCommand(CommandBuilder.of()
                             .add("open", "-a")
                             .addQuoted("Warp.app")
-                            .addFile(configuration.getScriptFile()));
+                            .addFile(configuration.single().getScriptFile()));
         }
 
         @Override

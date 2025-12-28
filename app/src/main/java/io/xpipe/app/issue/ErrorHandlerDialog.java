@@ -46,7 +46,7 @@ public class ErrorHandlerDialog {
                         "stackTrace",
                         () -> {
                             var detailsModal = ModalOverlay.of("errorDetails", Comp.of(() -> {
-                                var content = createStrackTraceContent(event);
+                                var content = createStackTraceContent(event);
                                 content.setPrefWidth(650);
                                 content.setPrefHeight(750);
                                 return content;
@@ -86,7 +86,7 @@ public class ErrorHandlerDialog {
         }
     }
 
-    private static Region createStrackTraceContent(ErrorEvent event) {
+    private static Region createStackTraceContent(ErrorEvent event) {
         if (event.getThrowable() != null) {
             String stackTrace = Deobfuscator.deobfuscateToString(event.getThrowable());
             if (event.getThrowable() instanceof ProcessOutputException pex) {

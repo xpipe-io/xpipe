@@ -11,20 +11,9 @@ import javafx.stage.Window;
 
 public class TooltipHelper {
 
-    public static Tooltip create(ObservableValue<String> text, KeyCombination shortcut) {
+    public static Tooltip create(ObservableValue<String> text) {
         var tt = new FixedTooltip();
-        if (shortcut != null) {
-            var s = AppI18n.observable("shortcut");
-            var binding = Bindings.createStringBinding(
-                    () -> {
-                        return text.getValue() + "\n\n" + s.getValue() + ": " + shortcut.getDisplayText();
-                    },
-                    text,
-                    s);
-            tt.textProperty().bind(binding);
-        } else {
-            tt.textProperty().bind(text);
-        }
+        tt.textProperty().bind(text);
         AppFontSizes.base(tt.getStyleableNode());
         tt.setWrapText(true);
         tt.setMaxWidth(400);

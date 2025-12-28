@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.SimpleCompStructure;
 import io.xpipe.app.core.AppI18n;
@@ -55,7 +56,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
                                     : fi;
                         },
                         filter.focusedProperty()));
-        filter.setAccessibleText("Filter");
+        CompDescriptor.builder().nameKey("search").build().apply(filter);
 
         filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {

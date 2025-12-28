@@ -26,7 +26,7 @@ public interface SingletonSessionStore<T extends Session>
         setCache("sessionRunning", running);
     }
 
-    T newSession() throws Exception;
+    T newSession();
 
     Class<?> getSessionClass();
 

@@ -32,7 +32,7 @@ public class PtyxisTerminalType implements ExternalApplicationType.LinuxApplicat
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .addIf(!configuration.isPreferTabs(), "--new-window")
                 .add("--")
-                .add(configuration.getDialectLaunchCommand());
+                .add(configuration.single().getDialectLaunchCommand());
         launch(toExecute);
     }
 

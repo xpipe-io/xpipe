@@ -1,6 +1,7 @@
 package io.xpipe.app.platform;
 
 import io.xpipe.app.core.*;
+import io.xpipe.app.core.check.AppAndroidLinuxTerminalCheck;
 import io.xpipe.app.core.check.AppGpuCheck;
 import io.xpipe.app.core.window.AppModifiedStage;
 import io.xpipe.app.issue.TrackEvent;
@@ -82,6 +83,7 @@ public class PlatformInit {
             TrackEvent.info("Platform init started");
             AppModifiedStage.init();
             PlatformState.initPlatformOrThrow();
+            AppAndroidLinuxTerminalCheck.check();
             AppGpuCheck.check();
             AppFont.init();
             PlatformThread.runLaterIfNeededBlocking(() -> {

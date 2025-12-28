@@ -27,18 +27,24 @@ public class OptionsChoiceBuilder {
 
     private final Property<?> property;
     private final List<Class<?>> available;
-    private final List<Class<?>> selectable;
     private final Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer;
     private final boolean allowNull;
     private final Object customConfiguration;
 
     @SneakyThrows
-    private static String createIdForClass(Class<?> c) {
-        var custom = Arrays.stream(c.getDeclaredMethods())
-                .filter(m -> m.getName().equals("getOptionsNameKey"))
+    private String createIdForClass(Class<?> c) {
+        var customPlain = Arrays.stream(c.getDeclaredMethods())
+                .filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 0)
                 .findFirst();
-        if (custom.isPresent()) {
-            return (String) custom.get().invoke(null);
+        if (customPlain.isPresent()) {
+            return (String) customPlain.get().invoke(null);
+        }
+
+        var customConfig = Arrays.stream(c.getDeclaredMethods())
+                .filter(m -> m.getName().equals("getOptionsNameKey") && m.getParameters().length == 1)
+                .findFirst();
+        if (customConfig.isPresent()) {
+            return (String) customConfig.get().invoke(null, customConfiguration);
         }
 
         var a = c.getAnnotation(JsonTypeName.class);
@@ -138,6 +144,7 @@ public class OptionsChoiceBuilder {
                 var c = sub.get(i);
                 if (c.isAssignableFrom(newValue.getClass())) {
                     properties.get(i + (allowNull ? 1 : 0)).setValue(newValue);
+                    selected.setValue(i + (allowNull ? 1 : 0));
                 }
             }
         });
@@ -157,7 +164,7 @@ public class OptionsChoiceBuilder {
             }
         }
 
-        return new OptionsBuilder()
+        var options = new OptionsBuilder()
                 .choice(selected, map, transformer)
                 .bindChoice(
                         () -> {
@@ -169,5 +176,6 @@ public class OptionsChoiceBuilder {
                             return (Property<? extends T>) prop;
                         },
                         s);
+        return options;
     }
 }

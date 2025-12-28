@@ -1,5 +1,6 @@
 package io.xpipe.app.process;
 
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.FilePath;
 
 import java.io.InputStream;
@@ -70,6 +71,21 @@ public interface CommandControl extends ProcessControl {
     String readStdoutOrThrow() throws Exception;
 
     Optional<String> readStdoutIfPossible() throws Exception;
+
+    default void killOnTimeout(CountDown countDown) {
+        GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
+            if (!isRunning(true)) {
+                return true;
+            }
+
+            if (!countDown.countDown()) {
+                killExternal();
+                return true;
+            }
+
+            return false;
+        });
+    }
 
     default boolean discardAndCheckExit() throws ProcessOutputException {
         try {

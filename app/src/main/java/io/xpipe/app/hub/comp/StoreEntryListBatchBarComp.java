@@ -8,7 +8,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
-import io.xpipe.app.platform.ContextMenuHelper;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -27,7 +27,7 @@ import atlantafx.base.theme.Styles;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoreEntryListStatusBarComp extends SimpleComp {
+public class StoreEntryListBatchBarComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
@@ -52,6 +52,7 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
         });
+        close.descriptor(d -> d.nameKey("close"));
         close.apply(struc -> {
             struc.get().getStyleClass().remove(Styles.FLAT);
             struc.get().minWidthProperty().bind(struc.get().heightProperty());
@@ -134,10 +135,17 @@ public class StoreEntryListStatusBarComp extends SimpleComp {
 
             runActions(s);
         });
+
+        button.disable(Bindings.createBooleanBinding(
+                () -> {
+                    return childrenRefs.getList().stream().anyMatch(ref -> !s.isActive(ref));
+                },
+                childrenRefs.getList()));
+
         if (batchActions.size() > 0) {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
-                        var cm = ContextMenuHelper.create();
+                        var cm = MenuHelper.createContextMenu();
                         s.getChildren(childrenRefs.getList()).forEach(childProvider -> {
                             var menu = buildMenuItemForAction(childrenRefs.getList(), childProvider);
                             cm.getItems().add(menu);

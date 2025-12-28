@@ -168,7 +168,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .documentationLink(DocumentationLink.SCRIPTING_GROUPS)
                 .addComp(
                         new StoreChoiceComp<>(
-                                StoreChoiceComp.Mode.OTHER,
                                 null,
                                 group,
                                 ScriptGroupStore.class,

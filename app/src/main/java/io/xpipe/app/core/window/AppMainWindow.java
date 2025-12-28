@@ -129,7 +129,7 @@ public class AppMainWindow {
     }
 
     public static void loadingText(String key) {
-        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "...");
+        loadingText.setValue(key != null && AppI18n.get() != null ? AppI18n.get(key) : "?");
     }
 
     public static synchronized void initContent() {
@@ -143,6 +143,13 @@ public class AppMainWindow {
             } catch (Throwable t) {
                 ErrorEventFactory.fromThrowable(t).term().handle();
             }
+        });
+    }
+
+    public static synchronized void resetContent() {
+        PlatformThread.runLaterIfNeededBlocking(() -> {
+            loadingText.setValue(AppI18n.get("savingChanges"));
+            loadedContent.setValue(null);
         });
     }
 
@@ -337,20 +344,38 @@ public class AppMainWindow {
                 stage.setHeight(state.windowHeight);
             }
             TrackEvent.debug("Window loaded saved bounds");
-        } else if (!AppProperties.get().isShowcase()) {
-            if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
-                stage.setWidth(1000);
-                stage.setHeight(600);
-            } else {
-                stage.setWidth(1280);
-                stage.setHeight(780);
-            }
         } else {
+            setDefaultSize();
+        }
+    }
+
+    private void setDefaultSize() {
+        if (AppProperties.get().isShowcase()) {
             stage.setX(312);
             stage.setY(149);
             stage.setWidth(1296);
             stage.setHeight(759);
+            return;
         }
+
+        if (AppDistributionType.get() == AppDistributionType.WEBTOP) {
+            stage.setWidth(1000);
+            stage.setHeight(600);
+        }
+
+        var screens = Screen.getScreens();
+        if (screens.size() > 1) {
+            stage.setWidth(1280);
+            stage.setHeight(780);
+            return;
+        }
+
+        var screen = screens.getFirst();
+        var w = Math.min(1280, screen.getBounds().getWidth() - 10);
+        var h = Math.min(780, screen.getBounds().getHeight() - 10);
+        stage.setWidth(w);
+        stage.setHeight(h);
+
     }
 
     private void saveState() {

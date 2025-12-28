@@ -30,7 +30,7 @@ public class GnomeConsoleType implements ExternalApplicationType.PathApplication
         var toExecute = CommandBuilder.of()
                 .addIf(configuration.isPreferTabs(), "--tab")
                 .add("--")
-                .add(configuration.getDialectLaunchCommand());
+                .add(configuration.single().getDialectLaunchCommand());
         launch(toExecute);
     }
 
