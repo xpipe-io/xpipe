@@ -3,7 +3,6 @@ package io.xpipe.app.ext;
 import io.xpipe.app.storage.DataStateHandler;
 
 import lombok.SneakyThrows;
-import lombok.val;
 
 import java.util.Arrays;
 

@@ -25,7 +25,7 @@ public interface TerminalMultiplexer {
 
     void checkSupported(ShellControl sc) throws Exception;
 
-    ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception;
+    ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config);
 
     ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception;
 }

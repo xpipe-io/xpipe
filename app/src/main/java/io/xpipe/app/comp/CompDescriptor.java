@@ -26,10 +26,10 @@ public class CompDescriptor {
     @Builder.Default
     boolean showTooltips = true;
 
-    public static enum FocusTraversal {
+    public enum FocusTraversal {
         DISABLED,
         ENABLED_FOR_ACCESSIBILITY,
-        ENABLED;
+        ENABLED
     }
 
     public void apply(Region r) {

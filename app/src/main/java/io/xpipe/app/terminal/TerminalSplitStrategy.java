@@ -89,9 +89,9 @@ public enum TerminalSplitStrategy implements PrefsChoiceValue {
 
     public abstract SplitIterator iterator();
 
-    public static enum SplitDirection {
+    public enum SplitDirection {
         HORIZONTAL,
-        VERTICAL;
+        VERTICAL
     }
 
     public abstract static class SplitIterator {

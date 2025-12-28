@@ -29,7 +29,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public interface DataStorageGroupStrategy {
     @Builder
     @Jacksonized
     @Value
-    public class PasswordManager implements DataStorageGroupStrategy {
+    class PasswordManager implements DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -116,7 +115,7 @@ public interface DataStorageGroupStrategy {
     @Builder
     @Jacksonized
     @Value
-    public class File implements DataStorageGroupStrategy {
+    class File implements DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -177,7 +176,7 @@ public interface DataStorageGroupStrategy {
     @Builder
     @Jacksonized
     @Value
-    public class Command implements DataStorageGroupStrategy {
+    class Command implements DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -231,7 +230,7 @@ public interface DataStorageGroupStrategy {
     @Builder
     @Jacksonized
     @Value
-    public class HttpRequest implements DataStorageGroupStrategy {
+    class HttpRequest implements DataStorageGroupStrategy {
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {

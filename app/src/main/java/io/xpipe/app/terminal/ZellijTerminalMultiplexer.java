@@ -33,8 +33,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config)
-            throws Exception {
+    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) {
         var l = new ArrayList<String>();
         var firstCommand =
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();

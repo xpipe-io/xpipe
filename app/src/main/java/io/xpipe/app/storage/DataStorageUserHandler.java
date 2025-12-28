@@ -34,7 +34,7 @@ public interface DataStorageUserHandler {
 
     VaultAuthentication getVaultAuthenticationType();
 
-    public DataStorageGroupStrategy getGroupStrategy(String user);
+    DataStorageGroupStrategy getGroupStrategy(String user);
 
     void setCurrentGroupStrategy(DataStorageGroupStrategy groupStrategy);
 }

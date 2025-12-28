@@ -33,8 +33,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config)
-            throws Exception {
+    public ShellScript launchForExistingSession(ShellControl control, TerminalLaunchConfiguration config) {
         var l = new ArrayList<String>();
         var firstCommand =
                 getCommand(control, config.single().getDialectLaunchCommand().buildSimple());
@@ -44,7 +43,7 @@ public class ScreenTerminalMultiplexer implements TerminalMultiplexer {
     }
 
     @Override
-    public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) throws Exception {
+    public ShellScript launchNewSession(ShellControl control, TerminalLaunchConfiguration config) {
         var list = new ArrayList<String>();
         list.add("for scr in $(screen -ls | grep xpipe | awk '{print $1}'); do screen -S $scr -X quit; done");
 
