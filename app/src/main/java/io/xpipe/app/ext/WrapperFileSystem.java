@@ -4,8 +4,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FailableConsumer;
 import io.xpipe.core.FilePath;
 
-import lombok.Getter;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

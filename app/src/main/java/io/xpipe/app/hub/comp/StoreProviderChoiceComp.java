@@ -8,9 +8,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
 import io.xpipe.app.platform.JfxHelper;
-
 import io.xpipe.app.platform.MenuHelper;
-import io.xpipe.app.process.ShellDialect;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
@@ -77,9 +76,18 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
         cb.setValue(provider.getValue());
         provider.bind(cb.valueProperty());
         cb.getStyleClass().add("choice-comp");
-        CompDescriptor.builder().nameKey("chooseConnectionType").description(Bindings.createStringBinding(() -> {
-            return provider.getValue() != null ? provider.getValue().displayName().getValue() : null;
-        }, provider, AppI18n.activeLanguage())).build().apply(cb);
+        CompDescriptor.builder()
+                .nameKey("chooseConnectionType")
+                .description(Bindings.createStringBinding(
+                        () -> {
+                            return provider.getValue() != null
+                                    ? provider.getValue().displayName().getValue()
+                                    : null;
+                        },
+                        provider,
+                        AppI18n.activeLanguage()))
+                .build()
+                .apply(cb);
         cb.setOnKeyPressed(event -> {
             if (!event.getCode().equals(KeyCode.ENTER)) {
                 return;

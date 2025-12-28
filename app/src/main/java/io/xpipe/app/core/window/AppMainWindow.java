@@ -375,7 +375,6 @@ public class AppMainWindow {
         var h = Math.min(780, screen.getBounds().getHeight() - 10);
         stage.setWidth(w);
         stage.setHeight(h);
-
     }
 
     private void saveState() {

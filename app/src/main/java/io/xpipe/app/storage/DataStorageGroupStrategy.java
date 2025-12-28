@@ -29,7 +29,6 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -190,13 +189,16 @@ public interface DataStorageGroupStrategy {
             var command = new SimpleObjectProperty<>(p.getValue().getCommand());
             return new OptionsBuilder()
                     .nameAndDescription("commandSecretField")
-                    .addComp(IntegratedTextAreaComp.script(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), command), command)
+                    .addComp(
+                            IntegratedTextAreaComp.script(
+                                    new ReadOnlyObjectWrapper<>(
+                                            DataStorage.get().local().ref()),
+                                    command),
+                            command)
                     .nonNull()
                     .bind(
                             () -> {
-                                return Command.builder()
-                                        .command(command.get())
-                                        .build();
+                                return Command.builder().command(command.get()).build();
                             },
                             p);
         }
@@ -210,7 +212,8 @@ public interface DataStorageGroupStrategy {
 
         @Override
         public String queryEncryptionSecret() throws Exception {
-            try (var sc = ProcessControlProvider.get().createLocalProcessControl(true).start()) {
+            try (var sc =
+                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
                 try (var cc = sc.command(command).sensitive().start()) {
                     cc.killOnTimeout(CountDown.of().start(10_000));
                     var out = cc.readStdoutOrThrow();

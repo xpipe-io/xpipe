@@ -7,14 +7,11 @@ import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 

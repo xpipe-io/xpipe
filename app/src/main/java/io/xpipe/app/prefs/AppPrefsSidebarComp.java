@@ -46,7 +46,8 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                                     PseudoClass.getPseudoClass("selected"),
                                                     appPrefsCategory.equals(val));
                                 });
-                            }).maxWidth(2000);
+                            })
+                            .maxWidth(2000);
                 })
                 .collect(Collectors.toCollection(ArrayList::new));
 

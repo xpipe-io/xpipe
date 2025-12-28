@@ -1,30 +1,16 @@
 package io.xpipe.app.prefs;
 
-import atlantafx.base.controls.ProgressSliderSkin;
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ChoiceComp;
-import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IntFieldComp;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppTheme;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.core.OsType;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.geometry.Pos;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.Slider;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Supplier;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.Slider;
+
+import atlantafx.base.controls.ProgressSliderSkin;
+import atlantafx.base.theme.Styles;
 
 public class DisplayCategory extends AppPrefsCategory {
 

@@ -18,8 +18,8 @@ import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-
 import javafx.beans.value.ObservableValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -42,10 +42,15 @@ public class IdentityChoiceBuilder {
     ObservableValue<String> passwordChoiceTranslationKey;
 
     public IdentityChoiceBuilder(
-            ObjectProperty<IdentityValue> identity, boolean allowCustomUserInput, boolean requireUserInput, boolean requirePassword, boolean keyInput,
+            ObjectProperty<IdentityValue> identity,
+            boolean allowCustomUserInput,
+            boolean requireUserInput,
+            boolean requirePassword,
+            boolean keyInput,
             boolean requireKeyInput,
-            boolean allowAgentForward, String userChoiceTranslationKey, String passwordChoiceTranslationKey
-    ) {
+            boolean allowAgentForward,
+            String userChoiceTranslationKey,
+            String passwordChoiceTranslationKey) {
         this.identity = identity;
         this.allowCustomUserInput = allowCustomUserInput;
         this.requireUserInput = requireUserInput;
@@ -121,12 +126,18 @@ public class IdentityChoiceBuilder {
                 .nameAndDescription(userChoiceTranslationKey)
                 .addComp(new IdentitySelectComp(ref, user, pass, identityStrategy, allowCustomUserInput), user)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requireUserInput)))
-                .name(Bindings.createStringBinding(() -> {
-                    return AppI18n.get(passwordChoiceTranslationKey.getValue());
-                }, passwordChoiceTranslationKey, AppI18n.activeLanguage()))
-                .description(Bindings.createStringBinding(() -> {
-                    return AppI18n.get(passwordChoiceTranslationKey.getValue() + "Description");
-                }, passwordChoiceTranslationKey, AppI18n.activeLanguage()))
+                .name(Bindings.createStringBinding(
+                        () -> {
+                            return AppI18n.get(passwordChoiceTranslationKey.getValue());
+                        },
+                        passwordChoiceTranslationKey,
+                        AppI18n.activeLanguage()))
+                .description(Bindings.createStringBinding(
+                        () -> {
+                            return AppI18n.get(passwordChoiceTranslationKey.getValue() + "Description");
+                        },
+                        passwordChoiceTranslationKey,
+                        AppI18n.activeLanguage()))
                 .sub(passwordChoice, pass)
                 .nonNullIf(inPlaceSelected.and(new SimpleBooleanProperty(requirePassword)))
                 .hide(refSelected)
@@ -155,10 +166,14 @@ public class IdentityChoiceBuilder {
                         // In case of team vaults, identities shouldn't really be specified inline anyway
                         // If they are, we use the vault key to make it accessible for all users
                         var useUserKey = DataStorageUserHandler.getInstance().getUserCount() <= 1;
-                        var p = useUserKey ? EncryptedValue.CurrentKey.of(pass.get()) : EncryptedValue.VaultKey.of(pass.get());
-                        EncryptedValue<SshIdentityStrategy> i = keyInput ?
-                                (useUserKey ? EncryptedValue.CurrentKey.of(identityStrategy.get()) : EncryptedValue.VaultKey.of(identityStrategy.get())) :
-                                null;
+                        var p = useUserKey
+                                ? EncryptedValue.CurrentKey.of(pass.get())
+                                : EncryptedValue.VaultKey.of(pass.get());
+                        EncryptedValue<SshIdentityStrategy> i = keyInput
+                                ? (useUserKey
+                                        ? EncryptedValue.CurrentKey.of(identityStrategy.get())
+                                        : EncryptedValue.VaultKey.of(identityStrategy.get()))
+                                : null;
                         if (u == null && p == null && i == null) {
                             return null;
                         } else {

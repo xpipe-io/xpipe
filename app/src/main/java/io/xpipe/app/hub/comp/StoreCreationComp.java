@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.ThreadHelper;
@@ -15,7 +14,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -71,7 +69,6 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         }
         layout.getChildren().add(new Region());
 
-
         var activeDialog = new SimpleObjectProperty<GuiDialog>();
         model.getProvider().subscribe(n -> {
             if (n != null) {
@@ -109,8 +106,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(propOptions);
 
                 var comp = full.buildComp();
-                var region =
-                        comp.styleClass("store-creator-options").createRegion();
+                var region = comp.styleClass("store-creator-options").createRegion();
                 valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);

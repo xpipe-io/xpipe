@@ -38,7 +38,8 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         var n = wrapper.getNotes();
         var button = new IconButtonComp("mdi2n-note-text-outline")
                 .apply(struc -> AppFontSizes.xs(struc.get()))
-                .descriptor(d -> d.nameKey("notes").focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
+                .descriptor(
+                        d -> d.nameKey("notes").focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
                 .styleClass("notes-button")
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
                 .createStructure()

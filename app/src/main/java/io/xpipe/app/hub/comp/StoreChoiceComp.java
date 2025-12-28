@@ -66,9 +66,14 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         },
                         selected),
                 () -> {});
-        button.descriptor(d -> d.name(Bindings.createStringBinding(() -> {
-            return selected.getValue() != null ? toName(selected.getValue().get()) : AppI18n.get("selectConnection");
-        }, selected, AppI18n.activeLanguage())));
+        button.descriptor(d -> d.name(Bindings.createStringBinding(
+                () -> {
+                    return selected.getValue() != null
+                            ? toName(selected.getValue().get())
+                            : AppI18n.get("selectConnection");
+                },
+                selected,
+                AppI18n.activeLanguage())));
         button.apply(struc -> {
                     struc.get().setMaxWidth(20000);
                     struc.get().setAlignment(Pos.CENTER_LEFT);

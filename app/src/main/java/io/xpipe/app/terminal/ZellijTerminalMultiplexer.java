@@ -1,17 +1,14 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.*;
+import io.xpipe.app.util.ThreadHelper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import io.xpipe.app.util.GlobalTimer;
-import io.xpipe.app.util.ThreadHelper;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.extern.jackson.Jacksonized;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,19 +46,25 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action clear"));
 
         if (config.getPanes().size() > 1) {
-            var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
+            var splitIterator =
+                    AppPrefs.get().terminalSplitStrategy().getValue().iterator();
             splitIterator.next();
 
             for (int i = 1; i < config.getPanes().size(); i++) {
-                var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
+                var iCommand =
+                        config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
                 var direction = splitIterator.getSplitDirection();
-                var directionString = direction == TerminalSplitStrategy.SplitDirection.HORIZONTAL ? "--direction right" : "--direction down";
-                l.addAll(List.of("zellij -s xpipe action new-pane " +
-                                directionString +
-                                " --name \"" +
-                                escape(config.getPanes().get(i).getTitle(), false, true) +
-                                "\"", "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
-                        "zellij -s xpipe action write 10", "zellij -s xpipe action clear",
+                var directionString = direction == TerminalSplitStrategy.SplitDirection.HORIZONTAL
+                        ? "--direction right"
+                        : "--direction down";
+                l.addAll(List.of(
+                        "zellij -s xpipe action new-pane " + directionString
+                                + " --name \""
+                                + escape(config.getPanes().get(i).getTitle(), false, true)
+                                + "\"",
+                        "zellij -s xpipe action write-chars -- " + escape(" " + iCommand, true, true) + "\\;exit",
+                        "zellij -s xpipe action write 10",
+                        "zellij -s xpipe action clear",
                         "zellij -s xpipe action focus-next-pane"));
                 splitIterator.next();
             }
@@ -82,8 +85,8 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         sc.command("zellij attach --create-background xpipe").executeAndCheck();
 
         var asyncLines = new ArrayList<String>();
-       asyncLines.addAll(List.of(
-               "sleep 0.5",
+        asyncLines.addAll(List.of(
+                "sleep 0.5",
                 "zellij -s xpipe action new-tab --name \"" + escape(config.getColoredTitle(), false, true) + "\"",
                 "zellij -s xpipe action write-chars -- " + escape(" " + firstCommand, true, true) + "\\;exit",
                 "zellij -s xpipe action write 10",
@@ -93,10 +96,12 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 "zellij -s xpipe action close-tab"));
 
         if (config.getPanes().size() > 1) {
-            var splitIterator = AppPrefs.get().terminalSplitStrategy().getValue().iterator();
+            var splitIterator =
+                    AppPrefs.get().terminalSplitStrategy().getValue().iterator();
             splitIterator.next();
             for (int i = 1; i < config.getPanes().size(); i++) {
-                var iCommand = config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
+                var iCommand =
+                        config.getPanes().get(i).getDialectLaunchCommand().buildSimple();
                 var direction = splitIterator.getSplitDirection();
                 var directionString = direction == TerminalSplitStrategy.SplitDirection.HORIZONTAL
                         ? "--direction right"

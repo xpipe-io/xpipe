@@ -8,8 +8,8 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchHubProvider;
-import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.DerivedObservableList;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import javafx.beans.binding.Bindings;

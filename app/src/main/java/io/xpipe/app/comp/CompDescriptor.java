@@ -2,14 +2,15 @@ package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -21,27 +22,34 @@ public class CompDescriptor {
     ObservableValue<String> description;
     KeyCombination shortcut;
     FocusTraversal focusTraversal;
+
     @Builder.Default
     boolean showTooltips = true;
 
     public static enum FocusTraversal {
-
         DISABLED,
         ENABLED_FOR_ACCESSIBILITY,
         ENABLED;
     }
 
     public void apply(Region r) {
-        var accessibleText = getName() != null ? Bindings.createStringBinding(() -> {
-            var s = getName().getValue() + "\n\n";
-            if (getShortcut() != null) {
-                s += AppI18n.get("shortcut") + ": " + getShortcut().getDisplayText();
-            }
-            return s;
-        }, AppI18n.activeLanguage(), getName()) : null;
+        var accessibleText = getName() != null
+                ? Bindings.createStringBinding(
+                        () -> {
+                            var s = getName().getValue() + "\n\n";
+                            if (getShortcut() != null) {
+                                s += AppI18n.get("shortcut") + ": "
+                                        + getShortcut().getDisplayText();
+                            }
+                            return s;
+                        },
+                        AppI18n.activeLanguage(),
+                        getName())
+                : null;
 
         if (showTooltips) {
-            var tooltipText = Bindings.createStringBinding(() -> {
+            var tooltipText = Bindings.createStringBinding(
+                    () -> {
                         var s = "";
                         if (getName() != null) {
                             s += getName().getValue() + "\n\n";
@@ -56,7 +64,9 @@ public class CompDescriptor {
                             s += AppI18n.get("shortcut") + ": " + getShortcut().getDisplayText();
                         }
                         return s.strip();
-                    }, AppI18n.activeLanguage(), getName() != null ? getName() : new ReadOnlyObjectWrapper<>(),
+                    },
+                    AppI18n.activeLanguage(),
+                    getName() != null ? getName() : new ReadOnlyObjectWrapper<>(),
                     getDescription() != null ? getDescription() : new ReadOnlyObjectWrapper<>());
 
             var tt = TooltipHelper.create(tooltipText);

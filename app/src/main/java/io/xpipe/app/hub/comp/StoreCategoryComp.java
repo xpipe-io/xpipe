@@ -7,8 +7,8 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
-import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
@@ -134,7 +134,8 @@ public class StoreCategoryComp extends SimpleComp {
         count.minWidth(Region.USE_PREF_SIZE);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
-                .or(showing).or(focus);
+                .or(showing)
+                .or(focus);
         var h = new HorizontalComp(List.of(
                 expandButton,
                 Comp.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),

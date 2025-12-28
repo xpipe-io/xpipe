@@ -136,7 +136,12 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(5000);
         button.setFocusTraversable(true);
-        CompDescriptor.builder().name(getWrapper().getShownName()).description(getWrapper().getShownDescription()).showTooltips(false).build().apply(button);
+        CompDescriptor.builder()
+                .name(getWrapper().getShownName())
+                .description(getWrapper().getShownDescription())
+                .showTooltips(false)
+                .build()
+                .apply(button);
         button.setOnAction(event -> {
             if (getWrapper().getRenaming().get()) {
                 return;
@@ -536,8 +541,8 @@ public abstract class StoreEntryComp extends SimpleComp {
                         tags.getItems().add(new SeparatorMenuItem());
                     }
 
-                    var index =
-                            MenuHelper.createMenuItem(new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
+                    var index = MenuHelper.createMenuItem(
+                            new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
                     index.setOnAction(event -> {
                         var tagName = new SimpleStringProperty();
                         var modal = ModalOverlay.of(

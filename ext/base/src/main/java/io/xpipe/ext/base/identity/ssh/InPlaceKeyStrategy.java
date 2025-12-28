@@ -175,7 +175,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
     }
 
     private FilePath getTargetFilePath() {
-        var temp = AppSystemInfo.ofCurrent().getTemp().resolve("xpipe-" + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
+        var temp = AppSystemInfo.ofCurrent()
+                .getTemp()
+                .resolve("xpipe-"
+                        + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
         return FilePath.of(temp);
     }
 }

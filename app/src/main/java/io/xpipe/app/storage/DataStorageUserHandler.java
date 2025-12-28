@@ -4,8 +4,8 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.VaultAuthentication;
+
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
 
 import java.io.IOException;
 import javax.crypto.SecretKey;

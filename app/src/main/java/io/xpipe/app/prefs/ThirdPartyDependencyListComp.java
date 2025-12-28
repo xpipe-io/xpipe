@@ -17,7 +17,10 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
 
     private TitledPane createPane(ThirdPartyDependency t) {
         var tp = new TitledPane();
-        CompDescriptor.builder().name(new ReadOnlyStringWrapper(t.name())).build().apply(tp);
+        CompDescriptor.builder()
+                .name(new ReadOnlyStringWrapper(t.name()))
+                .build()
+                .apply(tp);
         tp.setExpanded(false);
         var link = new Hyperlink(t.name() + " @ " + t.version());
         link.setOnAction(e -> {

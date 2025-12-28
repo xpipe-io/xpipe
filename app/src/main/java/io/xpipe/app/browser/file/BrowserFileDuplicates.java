@@ -33,6 +33,7 @@ public class BrowserFileDuplicates {
         }
 
         var ext = target.getExtension();
-        return FilePath.of(target.removeTrailingSlash().getBaseName() + "_" + 1 + (ext.isPresent() ? "." + ext.get() : ""));
+        return FilePath.of(
+                target.removeTrailingSlash().getBaseName() + "_" + 1 + (ext.isPresent() ? "." + ext.get() : ""));
     }
 }

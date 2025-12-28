@@ -17,8 +17,8 @@ import io.xpipe.app.util.LicenseProvider;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
-
 import javafx.beans.property.SimpleObjectProperty;
+
 import lombok.SneakyThrows;
 
 import java.util.Arrays;
@@ -71,7 +71,8 @@ public class VaultCategory extends AppPrefsCategory {
         authChoice.apply(struc -> struc.get().setOpacity(1.0));
         authChoice.maxWidth(600);
 
-        var groupStrategy = new SimpleObjectProperty<>(uh.getActiveUser() != null ? uh.getGroupStrategy(uh.getActiveUser()) : null);
+        var groupStrategy =
+                new SimpleObjectProperty<>(uh.getActiveUser() != null ? uh.getGroupStrategy(uh.getActiveUser()) : null);
         groupStrategy.addListener((obs, ov, nv) -> {
             uh.setCurrentGroupStrategy(nv);
         });

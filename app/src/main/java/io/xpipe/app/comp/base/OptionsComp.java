@@ -12,7 +12,6 @@ import io.xpipe.app.util.Hyperlinks;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -106,11 +105,16 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                                     },
                                     name.managedProperty()));
 
-                    vbox.focusTraversableProperty().bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
+                    vbox.focusTraversableProperty()
+                            .bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
                     vbox.setAccessibleRole(AccessibleRole.TEXT);
-                    var joined = Bindings.createStringBinding(() -> {
-                        return entry.name.getValue() + "\n\n" + entry.description().getValue();
-                    }, entry.name(), entry.description());
+                    var joined = Bindings.createStringBinding(
+                            () -> {
+                                return entry.name.getValue() + "\n\n"
+                                        + entry.description().getValue();
+                            },
+                            entry.name(),
+                            entry.description());
                     vbox.accessibleTextProperty().bind(joined);
 
                     if (entry.documentationLink() != null) {
@@ -119,9 +123,14 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         link.getStyleClass().add(Styles.BUTTON_OUTLINED);
                         link.getStyleClass().add(Styles.ACCENT);
                         link.getStyleClass().add("long-description");
-                        link.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-                            return AppI18n.get("helpButton", entry.name().getValue());
-                        }, AppI18n.activeLanguage(), entry.name()));
+                        link.accessibleTextProperty()
+                                .bind(Bindings.createStringBinding(
+                                        () -> {
+                                            return AppI18n.get(
+                                                    "helpButton", entry.name().getValue());
+                                        },
+                                        AppI18n.activeLanguage(),
+                                        entry.name()));
                         AppFontSizes.xl(link);
                         link.setOnAction(e -> {
                             Hyperlinks.open(entry.documentationLink());
@@ -169,7 +178,8 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                 name.prefHeightProperty().bind(line.heightProperty());
                 name.setMinWidth(Region.USE_PREF_SIZE);
                 name.setAlignment(Pos.CENTER_LEFT);
-                name.focusTraversableProperty().bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
+                name.focusTraversableProperty()
+                        .bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
                 name.setAccessibleRole(AccessibleRole.TEXT);
                 name.accessibleTextProperty().bind(entry.name());
                 if (compRegion != null) {

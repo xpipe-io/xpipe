@@ -18,7 +18,6 @@ import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;

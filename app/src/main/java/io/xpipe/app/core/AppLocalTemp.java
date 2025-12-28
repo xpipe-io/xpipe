@@ -11,7 +11,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 public class AppLocalTemp {
 
     public static Path getLocalTempDataDirectory() {
-        var temp = AppSystemInfo.ofCurrent().getTemp().resolve(AppNames.ofCurrent().getKebapName());
+        var temp =
+                AppSystemInfo.ofCurrent().getTemp().resolve(AppNames.ofCurrent().getKebapName());
         // On Windows and macOS, we already have user specific temp directories
         // Even on macOS as root we will have a unique directory (in contrast to shell controls)
         if (OsType.ofLocal() == OsType.LINUX) {

@@ -1,19 +1,12 @@
 package io.xpipe.app.process;
 
-import io.xpipe.app.core.AppInstallation;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermissions;
 
 public class ShellTemp {
 

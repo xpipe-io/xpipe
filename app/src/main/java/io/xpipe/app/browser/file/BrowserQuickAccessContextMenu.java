@@ -3,21 +3,17 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.platform.BooleanAnimationTimer;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -82,7 +78,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         showingProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 AppDialog.getModalOverlays().addListener(modalListener);
-            }  else {
+            } else {
                 AppDialog.getModalOverlays().removeListener(modalListener);
             }
         });

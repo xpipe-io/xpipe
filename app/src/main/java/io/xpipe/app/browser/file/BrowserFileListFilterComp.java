@@ -3,10 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.comp.base.TooltipHelper;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -15,7 +12,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -39,7 +35,11 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
         var expanded = new SimpleBooleanProperty();
         var text = new TextFieldComp(filterString, false).createStructure().get();
         var button = new Button();
-        CompDescriptor.builder().nameKey("search").shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN)).build().apply(button);
+        CompDescriptor.builder()
+                .nameKey("search")
+                .shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN))
+                .build()
+                .apply(button);
         button.minWidthProperty().bind(button.heightProperty());
         InputHelper.onExactKeyCode(text, KeyCode.ESCAPE, true, keyEvent -> {
             if (!expanded.get()) {

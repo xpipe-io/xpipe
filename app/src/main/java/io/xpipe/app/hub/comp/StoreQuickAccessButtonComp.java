@@ -4,11 +4,10 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
-
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.AppDistributionType;
+
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;

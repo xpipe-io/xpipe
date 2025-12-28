@@ -37,13 +37,17 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
                 event.consume();
             }
         });
-        s.accessibleTextProperty().bind(Bindings.createStringBinding(() -> {
-            if (name != null && name.getValue() != null) {
-                return name.getValue();
-            }
+        s.accessibleTextProperty()
+                .bind(Bindings.createStringBinding(
+                        () -> {
+                            if (name != null && name.getValue() != null) {
+                                return name.getValue();
+                            }
 
-            return AppI18n.get("toggleButton");
-        }, name != null ? name : new ReadOnlyObjectWrapper<>(), AppI18n.activeLanguage()));
+                            return AppI18n.get("toggleButton");
+                        },
+                        name != null ? name : new ReadOnlyObjectWrapper<>(),
+                        AppI18n.activeLanguage()));
         s.setAlignment(Pos.CENTER);
         s.getStyleClass().add("toggle-switch-comp");
         s.setSelected(selected.getValue() != null ? selected.getValue() : false);

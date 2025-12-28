@@ -66,8 +66,10 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
             @Override
             public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
                 switch (attribute) {
-                    case TEXT: return getAccessibleText();
-                    default: return super.queryAccessibleAttribute(attribute, parameters);
+                    case TEXT:
+                        return getAccessibleText();
+                    default:
+                        return super.queryAccessibleAttribute(attribute, parameters);
                 }
             }
         };

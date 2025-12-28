@@ -2,9 +2,8 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.AppDistributionType;
+
 import javafx.application.Platform;
 import javafx.geometry.Side;
 import javafx.scene.Node;
@@ -14,9 +13,8 @@ import javafx.scene.control.skin.ComboBoxPopupControl;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.MenuButtonSkinBase;
 import javafx.scene.layout.Region;
-import lombok.SneakyThrows;
 
-import java.util.function.Function;
+import lombok.SneakyThrows;
 
 public class MenuHelper {
 

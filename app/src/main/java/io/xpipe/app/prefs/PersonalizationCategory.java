@@ -97,10 +97,7 @@ public class PersonalizationCategory extends AppPrefsCategory {
     protected Comp<?> create() {
         return new OptionsBuilder()
                 .addTitle("personalization")
-                .sub(new OptionsBuilder()
-                        .sub(languageChoice())
-                        .sub(themeChoice())
-                )
+                .sub(new OptionsBuilder().sub(languageChoice()).sub(themeChoice()))
                 .buildComp();
     }
 }

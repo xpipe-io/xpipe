@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
@@ -20,7 +19,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;

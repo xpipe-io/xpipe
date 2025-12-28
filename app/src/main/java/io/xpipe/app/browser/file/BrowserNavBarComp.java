@@ -8,8 +8,8 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
@@ -59,16 +59,20 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 .descriptor(d -> d.nameKey("directoryOptions"))
                 .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
                     return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
-                })).createRegion();
+                }))
+                .createRegion();
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
         AppFontSizes.sm(homeButton);
 
         var historyButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2h-history"), null)
-        .descriptor(d -> d.nameKey("history").shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)))
-        .styleClass(Styles.RIGHT_PILL)
-        .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
-                .createStructure().get();
+                .descriptor(
+                        d -> d.nameKey("history").shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)))
+                .styleClass(Styles.RIGHT_PILL)
+                .apply(new ContextMenuAugment<>(
+                        event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
+                .createStructure()
+                .get();
         AppFontSizes.xs(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
@@ -156,35 +160,34 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 new TextFieldComp(path, true).styleClass(Styles.CENTER_PILL).styleClass("path-text");
         pathBar.descriptor(d -> d.nameKey("currentPath"));
         pathBar.apply(struc -> {
-                    struc.get().focusedProperty().subscribe(val -> {
-                        struc.get()
-                                .pseudoClassStateChanged(
-                                        INVISIBLE,
-                                        !val && !model.getInOverview().get());
+            struc.get().focusedProperty().subscribe(val -> {
+                struc.get()
+                        .pseudoClassStateChanged(
+                                INVISIBLE, !val && !model.getInOverview().get());
 
-                        if (val) {
-                            Platform.runLater(() -> {
-                                struc.get().end();
-                            });
-                        }
+                if (val) {
+                    Platform.runLater(() -> {
+                        struc.get().end();
                     });
+                }
+            });
 
-                    struc.get().addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
-                        if (ke.getCode().equals(KeyCode.ENTER)) {
-                            ke.consume();
-                        }
-                    });
+            struc.get().addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    ke.consume();
+                }
+            });
 
-                    model.getInOverview().subscribe(val -> {
-                        // Pseudo classes do not apply if set instantly before shown
-                        // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
-                        Platform.runLater(() -> {
-                            struc.get()
-                                    .pseudoClassStateChanged(
-                                            INVISIBLE, !val && !struc.get().isFocused());
-                        });
-                    });
+            model.getInOverview().subscribe(val -> {
+                // Pseudo classes do not apply if set instantly before shown
+                // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
+                Platform.runLater(() -> {
+                    struc.get()
+                            .pseudoClassStateChanged(
+                                    INVISIBLE, !val && !struc.get().isFocused());
                 });
+            });
+        });
         return pathBar;
     }
 

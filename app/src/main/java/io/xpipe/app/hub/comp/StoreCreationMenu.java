@@ -4,8 +4,6 @@ import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
-import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.ScanDialog;
 
 import javafx.application.Platform;
@@ -136,8 +134,11 @@ public class StoreCreationMenu {
 
             Platform.runLater(() -> {
                 if (defaultProvider != null) {
-                    providers.stream().filter(dataStoreProvider -> dataStoreProvider.getId().equals(defaultProvider)).findFirst().ifPresent(
-                            dataStoreProvider -> {
+                    providers.stream()
+                            .filter(dataStoreProvider ->
+                                    dataStoreProvider.getId().equals(defaultProvider))
+                            .findFirst()
+                            .ifPresent(dataStoreProvider -> {
                                 var index = providers.indexOf(dataStoreProvider);
                                 menu.getItems().get(index).fire();
                             });

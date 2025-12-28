@@ -63,18 +63,22 @@ public class AboutCategory extends AppPrefsCategory {
                 .addComp(title, null)
                 .addComp(Comp.vspacer(10))
                 .name("build")
-                .addComp(new LabelComp(AppProperties.get().getBuild())
-                        .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)), null)
+                .addComp(
+                        new LabelComp(AppProperties.get().getBuild())
+                                .descriptor(
+                                        d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                        null)
                 .name("distribution")
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString())
                         .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)))
                 .name("virtualMachine")
                 .addComp(
                         new LabelComp(System.getProperty("java.vm.vendor") + " "
-                                + System.getProperty("java.vm.name")
-                                + " "
-                                + System.getProperty("java.vm.version"))
-                                .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                        + System.getProperty("java.vm.name")
+                                        + " "
+                                        + System.getProperty("java.vm.version"))
+                                .descriptor(
+                                        d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .buildComp();
         return section.styleClass("properties-comp");

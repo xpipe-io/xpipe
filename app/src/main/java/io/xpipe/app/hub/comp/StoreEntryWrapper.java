@@ -101,20 +101,20 @@ public class StoreEntryWrapper {
                 AppPrefs.get().censorMode(),
                 summary);
         this.shownDescription = Bindings.createStringBinding(
-                                () -> {
-                                    var summaryValue = shownSummary.getValue();
-                                    if (summaryValue != null) {
-                                        return summaryValue;
-                                    } else {
-                                        var provider = getEntry().getProvider();
-                                        if (provider != null) {
-                                            return AppI18n.get(provider.getId() + ".displayName");
-                                        } else {
-                                            return null;
-                                        }
-                                    }
-                                },
-                                shownSummary);
+                () -> {
+                    var summaryValue = shownSummary.getValue();
+                    if (summaryValue != null) {
+                        return summaryValue;
+                    } else {
+                        var provider = getEntry().getProvider();
+                        if (provider != null) {
+                            return AppI18n.get(provider.getId() + ".displayName");
+                        } else {
+                            return null;
+                        }
+                    }
+                },
+                shownSummary);
         this.shownInformation = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
 

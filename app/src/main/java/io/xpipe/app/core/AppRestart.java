@@ -70,16 +70,15 @@ public class AppRestart {
     public static String getBackgroundRestartCommand(String user, ShellDialect dialect) {
         var dataDir = AppProperties.get().getDataDir();
         var l = new ArrayList<String>();
-        l.addAll(List.of("-Dio.xpipe.app.mode=gui",
+        l.addAll(List.of(
+                "-Dio.xpipe.app.mode=gui",
                 "-Dio.xpipe.app.acceptEula=true",
                 "-Dio.xpipe.app.dataDir=\"" + dataDir + "\"",
                 "-Dio.xpipe.app.restarted=true"));
         if (user != null) {
             l.add("-Dio.xpipe.app.login=\"" + user + "\"");
         }
-        var exec = createBackgroundLaunchCommand(
-                l,
-                dialect);
+        var exec = createBackgroundLaunchCommand(l, dialect);
         return exec;
     }
 

@@ -23,7 +23,8 @@ public abstract class AppShellChecker {
 
         var originalErr = selfTestErrorCheck();
         if (originalErr.isPresent()
-                && (shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue())) {
+                && (shouldAttemptFallbackForProcessStartFail()
+                        || !originalErr.get().isProcessSpawnIssue())) {
             var msg = formatMessage(originalErr.get().getMessage());
             ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
                     .documentationLink(DocumentationLink.LOCAL_SHELL_WARNING)

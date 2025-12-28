@@ -154,7 +154,8 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     });
                 })
                 .minWidth(300)
-                .descriptor(d -> d.name(new ReadOnlyStringWrapper(DataStorage.get().getStoreEntryDisplayName(entry.get()))))
+                .descriptor(
+                        d -> d.name(new ReadOnlyStringWrapper(DataStorage.get().getStoreEntryDisplayName(entry.get()))))
                 .disable(disable)
                 .styleClass("entry-button")
                 .styleClass(Styles.LEFT_PILL)

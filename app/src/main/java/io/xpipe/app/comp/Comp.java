@@ -1,21 +1,16 @@
 package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.augment.Augment;
-import io.xpipe.app.comp.base.TooltipHelper;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Tooltip;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;

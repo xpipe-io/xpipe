@@ -23,13 +23,15 @@ public class UpdateChangelogDialog {
     public static void showIfNeeded() {
         var update = AppDistributionType.get().getUpdateHandler().getPerformedUpdate();
         if (update != null && !AppDistributionType.get().getUpdateHandler().isUpdateSucceeded()) {
-            ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail")).documentationLink(
-                    DocumentationLink.UPDATE_FAIL).customAction(ErrorAction.translated("updateFailAction", () -> {
-                Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
-                return true;
-            }));
+            ErrorEvent.ErrorEventBuilder eventBuilder = ErrorEventFactory.fromMessage(AppI18n.get("updateFail"))
+                    .documentationLink(DocumentationLink.UPDATE_FAIL)
+                    .customAction(ErrorAction.translated("updateFailAction", () -> {
+                        Hyperlinks.open(Hyperlinks.GITHUB_LATEST);
+                        return true;
+                    }));
             if (OsType.ofLocal() == OsType.WINDOWS) {
-                var installerLog = AppLogs.get().getSessionLogsDirectory().getParent().resolve("installer.log");
+                var installerLog =
+                        AppLogs.get().getSessionLogsDirectory().getParent().resolve("installer.log");
                 if (Files.exists(installerLog)) {
                     eventBuilder.attachment(installerLog);
                 }

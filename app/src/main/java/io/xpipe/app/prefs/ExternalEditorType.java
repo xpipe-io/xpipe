@@ -512,7 +512,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
-    LinuxPathType WESTON_EDITOR = new LinuxPathType("app.westonEditor", "weston-editor", "https://wayland.pages.freedesktop.org/weston/");
+    LinuxPathType WESTON_EDITOR =
+            new LinuxPathType("app.westonEditor", "weston-editor", "https://wayland.pages.freedesktop.org/weston/");
     ExternalEditorType TEXT_EDIT =
             new MacOsEditor("app.textEdit", "TextEdit", "https://support.apple.com/en-gb/guide/textedit/welcome/mac");
     ExternalEditorType BBEDIT = new MacOsEditor("app.bbedit", "BBEdit", "https://www.barebones.com/products/bbedit/");

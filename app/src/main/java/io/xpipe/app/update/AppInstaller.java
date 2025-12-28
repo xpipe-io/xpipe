@@ -59,8 +59,7 @@ public class AppInstaller {
             public void installLocal(Path file) {
                 var logsDir =
                         AppLogs.get().getSessionLogsDirectory().getParent().toString();
-                var logFile =
-                        FilePath.of(logsDir, "installer.log");
+                var logFile = FilePath.of(logsDir, "installer.log");
                 var systemWide = isSystemWide();
                 var cmdScript = LocalShell.getDialect() == ShellDialects.CMD && !systemWide;
                 var command = cmdScript

@@ -13,7 +13,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.util.StringConverter;
 
 import lombok.AccessLevel;

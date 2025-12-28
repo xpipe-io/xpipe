@@ -2,7 +2,6 @@ package io.xpipe.app.beacon;
 
 import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.ShellTemp;
 import io.xpipe.beacon.BeaconClientException;
 
 import org.apache.commons.io.FileUtils;
