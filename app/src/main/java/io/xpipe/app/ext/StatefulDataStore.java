@@ -20,15 +20,11 @@ public interface StatefulDataStore<T extends DataStoreState> extends DataStore {
     }
 
     default T getState() {
-        synchronized (this) {
-            return DataStateHandler.get().getState(this, this::createDefaultState);
-        }
+        return DataStateHandler.get().getState(this, this::createDefaultState);
     }
 
     default void setState(T val) {
-        synchronized (this) {
-            DataStateHandler.get().setState(this, val);
-        }
+        DataStateHandler.get().setState(this, val);
     }
 
     @SneakyThrows

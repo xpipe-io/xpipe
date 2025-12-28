@@ -96,7 +96,7 @@ public class VaultCategory extends AppPrefsCategory {
                                 },
                                 prefs.vaultAuthentication))
                         .addComp(uh.createOverview().maxWidth(getCompWidth()))
-                        .sub(uh.createGroupStrategyOptions(groupStrategy))
+                        .addComp(uh.createGroupStrategyOptions(groupStrategy).buildComp(), groupStrategy)
                         .hide(prefs.vaultAuthentication.isNotEqualTo(VaultAuthentication.GROUP))
                         .nameAndDescription("syncVault")
                         .addComp(new ButtonComp(AppI18n.observable("enableGitSync"), () -> AppPrefs.get()

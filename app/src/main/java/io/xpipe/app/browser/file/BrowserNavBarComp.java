@@ -69,7 +69,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         .styleClass(Styles.RIGHT_PILL)
         .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
                 .createStructure().get();
-        AppFontSizes.sm(historyButton);
+        AppFontSizes.xs(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 
