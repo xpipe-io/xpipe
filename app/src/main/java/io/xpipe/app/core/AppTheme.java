@@ -260,7 +260,14 @@ public class AppTheme {
             var stage = window.getStage();
             var scene = stage.getScene();
             Pane root = (Pane) scene.getRoot();
-            Image snapshot = scene.snapshot(null);
+            Image snapshot = null;
+            try {
+                scene.snapshot(null);
+            } catch (Exception ex) {
+                // This can fail if there is no window / screen I guess?
+                ErrorEventFactory.fromThrowable(ex).expected().omit().handle();
+                return;
+            }
             ImageView imageView = new ImageView(snapshot);
             root.getChildren().add(imageView);
             newTheme.apply();
