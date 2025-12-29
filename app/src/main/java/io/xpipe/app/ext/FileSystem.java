@@ -135,8 +135,6 @@ public interface FileSystem extends Closeable, AutoCloseable {
             return;
         }
 
-        if (true) throw new StackOverflowError();
-
         traverseFilesRecursively(system, base.getFirst().getPath(), visitor);
     }
 
