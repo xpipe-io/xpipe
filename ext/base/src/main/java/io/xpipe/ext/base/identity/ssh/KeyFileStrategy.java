@@ -16,6 +16,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.ContextualFileReference;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -156,6 +157,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
+                .documentationLink(DocumentationLink.SSH_PUBLIC_KEY)
                 .addComp(publicKeyBox, publicKey)
                 .bind(
                         () -> {

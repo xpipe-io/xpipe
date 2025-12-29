@@ -19,6 +19,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -410,6 +411,7 @@ public class IdentityApplyDialog {
 
         var options = new OptionsBuilder()
                 .nameAndDescription("identityApplyTargetHost")
+                .documentationLink(DocumentationLink.IDENTITY_APPLY)
                 .addComp(systemChoiceBusy, system)
                 .addComp(createAuthorizedKeysOptions(system, systemState, identity.getStore(), busy))
                 .addComp(createConfigOptions(system, systemState, identity.getStore(), busy))

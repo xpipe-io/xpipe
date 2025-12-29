@@ -16,6 +16,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalFileTracker;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.*;
@@ -108,6 +109,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .sub(passwordChoice, keyPasswordProperty)
                 .nonNull()
                 .nameAndDescription("inPlacePublicKey")
+                .documentationLink(DocumentationLink.SSH_PUBLIC_KEY)
                 .addComp(publicKeyBox, publicKey)
                 .bind(
                         () -> {
