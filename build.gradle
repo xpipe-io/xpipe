@@ -135,6 +135,7 @@ def getJvmArgs() {
     def appPackage = packageName(null)
     jvmRunArgs += [
             "--add-opens", "java.base/java.lang=$appPackage",
+            "--add-opens", "java.base/java.net=$appPackage",
             "--add-opens", "net.synedra.validatorfx/net.synedra.validatorfx=$appPackage",
             "--add-opens", "java.base/java.nio.file=$appPackage",
             "--add-exports", "javafx.graphics/com.sun.javafx.tk=$appPackage",
