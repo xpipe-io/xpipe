@@ -14,7 +14,7 @@ public class DataStateHandler {
         return INSTANCE;
     }
 
-    public synchronized void setState(DataStore store, DataStoreState value) {
+    public void setState(DataStore store, DataStoreState value) {
         if (DataStorage.get() == null) {
             return;
         }
@@ -28,7 +28,7 @@ public class DataStateHandler {
         entry.get().setStorePersistentState(value);
     }
 
-    public synchronized <T extends DataStoreState> T getState(DataStore store, Supplier<T> def) {
+    public <T extends DataStoreState> T getState(DataStore store, Supplier<T> def) {
         if (DataStorage.get() == null) {
             return def.get();
         }
@@ -51,7 +51,7 @@ public class DataStateHandler {
         return r != null ? r : def.get();
     }
 
-    public synchronized void putCache(DataStore store, String key, Object value) {
+    public void putCache(DataStore store, String key, Object value) {
         if (DataStorage.get() == null) {
             return;
         }
@@ -65,7 +65,7 @@ public class DataStateHandler {
         entry.get().setStoreCache(key, value);
     }
 
-    public synchronized <T> T getCache(DataStore store, String key, Class<T> c, Supplier<T> def) {
+    public <T> T getCache(DataStore store, String key, Class<T> c, Supplier<T> def) {
         if (DataStorage.get() == null) {
             return def.get();
         }
@@ -84,7 +84,7 @@ public class DataStateHandler {
         return c.cast(r);
     }
 
-    public synchronized boolean canCacheToStorage(DataStore store) {
+    public boolean canCacheToStorage(DataStore store) {
         if (DataStorage.get() == null) {
             return false;
         }
