@@ -1,12 +1,14 @@
 package io.xpipe.ext.base.identity.ssh;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -63,6 +65,11 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
     }
 
     FilePath file;
+
+    @Override
+    public void checkComplete() throws ValidationException {
+        Validators.nonNull(file);
+    }
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
