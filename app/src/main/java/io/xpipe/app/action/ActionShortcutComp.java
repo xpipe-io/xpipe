@@ -66,10 +66,9 @@ public class ActionShortcutComp extends SimpleComp {
                 .grow(false, true)
                 .descriptor(d -> d.nameKey("copyUrl"));
         var field = new TextFieldComp(url);
-        field.grow(true, false);
         field.apply(struc -> struc.get().setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
-        group.setMainReference(copyButton);
+        group.setMainReference(field);
         group.hide(Bindings.isNull(url));
         return group;
     }
@@ -93,9 +92,8 @@ public class ActionShortcutComp extends SimpleComp {
                 .grow(false, true)
                 .descriptor(d -> d.nameKey("createShortcut"));
         var field = new TextFieldComp(name);
-        field.grow(true, false);
         var group = new InputGroupComp(List.of(field, copyButton));
-        group.setMainReference(copyButton);
+        group.setMainReference(field);
         group.hide(BindingsHelper.map(action, v -> !(v instanceof SerializableAction)));
         return group;
     }
@@ -114,10 +112,9 @@ public class ActionShortcutComp extends SimpleComp {
                 .grow(false, true)
                 .descriptor(d -> d.nameKey("copyBody"));
         var field = new TextFieldComp(prop, true);
-        field.grow(true, false);
         field.apply(struc -> struc.get().setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
-        group.setMainReference(copyButton);
+        group.setMainReference(field);
         group.hide(BindingsHelper.map(action, v -> !(v instanceof SerializableAction)));
         return group;
     }

@@ -152,7 +152,7 @@ public class StoreCategoryComp extends SimpleComp {
                 .styleClass("category-button")
                 .apply(struc -> hover.bind(struc.get().hoverProperty()))
                 .apply(struc -> focus.bind(struc.get().focusWithinProperty()))
-                .grow(true, false);
+                .maxWidth(2000);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                 keyEvent -> keyEvent.getCode() == KeyCode.SPACE,

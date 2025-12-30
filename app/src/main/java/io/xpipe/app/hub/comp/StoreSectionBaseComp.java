@@ -114,9 +114,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         var content = new ListBoxViewComp<>(
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
-                (StoreSection e) -> {
-                    return function.apply(e).grow(true, false);
-                },
+                function,
                 section.getWrapper() == null);
         content.setVisibilityControl(true);
         content.minHeight(0);

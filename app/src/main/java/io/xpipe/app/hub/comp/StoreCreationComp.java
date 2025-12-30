@@ -54,7 +54,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var layout = new VBox();
         layout.getStyleClass().add("store-creator");
         var providerChoice = new StoreProviderChoiceComp(model.getFilter(), model.getProvider());
-        providerChoice.grow(true, false);
+        providerChoice.maxWidth(2000);
         var provider = model.getProvider().getValue() != null
                 ? model.getProvider().getValue()
                 : providerChoice.getProviders().getFirst();

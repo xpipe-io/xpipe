@@ -43,7 +43,6 @@ public class BrowserTransferComp extends SimpleComp {
                 .apply(struc -> struc.get().setContentDisplay(ContentDisplay.TOP))
                 .visible(model.getEmpty());
         var backgroundStack = new StackComp(List.of(background))
-                .grow(true, true)
                 .styleClass("color-box")
                 .styleClass("gray")
                 .styleClass("download-background");

@@ -100,7 +100,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
                     model.restoreState(state);
                     actionEvent.consume();
                 })
-                .grow(true, false)
+                .maxWidth(2000)
                 .descriptor(d -> d.nameKey("restoreAllSessions"));
 
         var layout = new VerticalComp(List.of(vbox, Comp.vspacer(5), listBox, Comp.hseparator(), tile));
