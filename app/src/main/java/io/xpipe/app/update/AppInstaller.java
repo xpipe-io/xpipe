@@ -152,7 +152,7 @@ public class AppInstaller {
                                                             runinstaller() {
                                                                 echo "Installing downloaded .deb installer ..."
                                                                 echo "+ sudo apt install \\"%s\\""
-                                                                DEBIAN_FRONTEND=noninteractive sudo apt install --allow-downgrades -y "%s" || return 1
+                                                                DEBIAN_FRONTEND=noninteractive sudo apt install -y "%s" || return 1
                                                                 %s || return 1
                                                             }
 
