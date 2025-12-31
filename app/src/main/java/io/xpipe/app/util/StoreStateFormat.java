@@ -31,23 +31,6 @@ public class StoreStateFormat {
         this.states = states;
     }
 
-    public static ObservableValue<String> shellEnvironment(
-            StoreSection section, boolean includeOsName, LicensedFeature licensedFeature) {
-        return Bindings.createStringBinding(
-                () -> {
-                    var s = (ShellEnvironmentStoreState)
-                            section.getWrapper().getPersistentState().getValue();
-                    var def = Boolean.TRUE.equals(s.getSetDefault()) ? AppI18n.get("default") : null;
-                    var name = DataStoreFormatter.join(
-                            (includeOsName ? formattedOsName(s.getOsName()) : null), s.getShellName());
-                    return new StoreStateFormat(
-                                    licensedFeature != null ? List.of(licensedFeature) : List.of(), name, def)
-                            .format();
-                },
-                AppI18n.activeLanguage(),
-                section.getWrapper().getPersistentState());
-    }
-
     @SuppressWarnings("unchecked")
     public static <T extends SystemState> ObservableValue<String> shellStore(
             StoreSection section, Function<T, String[]> f, LicensedFeature licensedFeature) {
