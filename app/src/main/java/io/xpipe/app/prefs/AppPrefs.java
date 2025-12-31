@@ -337,8 +337,8 @@ public final class AppPrefs {
             .build());
     final BooleanProperty checkForSecurityUpdates =
             mapLocal(new GlobalBooleanProperty(true), "checkForSecurityUpdates", Boolean.class, false);
-    final BooleanProperty disableApiHttpsTlsCheck =
-            mapLocal(new GlobalBooleanProperty(false), "disableApiHttpsTlsCheck", Boolean.class, true);
+    final BooleanProperty disableHttpsTlsCheck =
+            mapLocal(new GlobalBooleanProperty(false), "disableHttpsTlsCheck", Boolean.class, true);
     final BooleanProperty condenseConnectionDisplay =
             mapLocal(new GlobalBooleanProperty(false), "condenseConnectionDisplay", Boolean.class, false);
     final BooleanProperty showChildCategoriesInParentCategory =
@@ -435,8 +435,8 @@ public final class AppPrefs {
 
     private AppPrefs() {}
 
-    public ObservableValue<Boolean> disableApiHttpsTlsCheck() {
-        return disableApiHttpsTlsCheck;
+    public ObservableValue<Boolean> disableHttpsTlsCheck() {
+        return disableHttpsTlsCheck;
     }
 
     public ObservableValue<VaultAuthentication> vaultAuthentication() {

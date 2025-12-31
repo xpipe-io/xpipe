@@ -158,7 +158,7 @@ public class PassboltPasswordManager implements PasswordManager {
                 return null;
             }
 
-            b.addIf(AppPrefs.get().disableApiHttpsTlsCheck().getValue(), "--tlsSkipVerify")
+            b.addIf(AppPrefs.get().disableHttpsTlsCheck().getValue(), "--tlsSkipVerify")
                     .add("--serverAddress")
                     .addLiteral(serverUrl)
                     .add("--userPassword")

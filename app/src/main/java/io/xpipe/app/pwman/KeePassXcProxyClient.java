@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.ThreadHelper;
@@ -16,10 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -287,8 +285,13 @@ public class KeePassXcProxyClient {
         }
 
         if (count > 1) {
+            var entries = tree.required("entries");
+            var names = new ArrayList<String>();
+            for (JsonNode entry : entries) {
+                names.add(entry.required("name").textValue());
+            }
             throw ErrorEventFactory.expected(
-                    new IllegalArgumentException("Password key is ambiguous and returned multiple results"));
+                    new IllegalArgumentException("Password key is ambiguous and returned multiple entries: " + String.join(", ", names)));
         }
 
         var object = (ObjectNode) tree.required("entries").get(0);
