@@ -1,12 +1,9 @@
 package io.xpipe.app.pwman;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -20,7 +17,11 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -53,7 +54,8 @@ public class PassboltPasswordManager implements PasswordManager {
         ContextualFileReferenceChoiceComp chooser = new ContextualFileReferenceChoiceComp(
                 new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                 privateKey,
-                null, List.of(),
+                null,
+                List.of(),
                 e -> e.equals(DataStorage.get().local()),
                 false);
         chooser.setPrompt(new ReadOnlyObjectWrapper<>(FilePath.of("passbolt_private.asc")));
@@ -78,7 +80,10 @@ public class PassboltPasswordManager implements PasswordManager {
                         () -> {
                             return PassboltPasswordManager.builder()
                                     .passphrase(passphrase.get())
-                                    .privateKey(privateKey.get() != null ? privateKey.get().asLocalPath() : null)
+                                    .privateKey(
+                                            privateKey.get() != null
+                                                    ? privateKey.get().asLocalPath()
+                                                    : null)
                                     .serverUrl(serverUrl.get())
                                     .build();
                         },
@@ -94,11 +99,14 @@ public class PassboltPasswordManager implements PasswordManager {
     }
 
     private Optional<String> parseConfig() throws IOException {
-        var dir = switch (OsType.ofLocal()) {
-            case OsType.Windows ignored -> AppSystemInfo.ofWindows().getRoamingAppData();
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".config");
-            case OsType.MacOs ignored -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support");
-        };
+        var dir =
+                switch (OsType.ofLocal()) {
+                    case OsType.Windows ignored -> AppSystemInfo.ofWindows().getRoamingAppData();
+                    case OsType.Linux ignored ->
+                        AppSystemInfo.ofLinux().getUserHome().resolve(".config");
+                    case OsType.MacOs ignored ->
+                        AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support");
+                };
         var path = dir.resolve("go-passbolt-cli", "go-passbolt-cli.toml");
         if (!Files.exists(path)) {
             return Optional.empty();
@@ -130,7 +138,8 @@ public class PassboltPasswordManager implements PasswordManager {
             try {
                 var config = parseConfig();
                 if (config.isPresent()) {
-                    mfaTotpInteractiveConfigured = config.get().contains("totptoken") && !config.get().contains("totptoken = ''");
+                    mfaTotpInteractiveConfigured =
+                            config.get().contains("totptoken") && !config.get().contains("totptoken = ''");
                     var cmd = getOrStartShell().command(CommandBuilder.of().add("passbolt", "verify"));
                     var r = cmd.executeAndCheck();
                     validConfig = r;
@@ -158,21 +167,15 @@ public class PassboltPasswordManager implements PasswordManager {
                     .addFile(privateKey);
         }
         b.add("--mfaMode", mfaTotpInteractiveConfigured ? "noninteractive-totp" : "none");
-        b.add("get", "resource")
-                .add("--id")
-                .addLiteral(key)
-                .add("--json");
+        b.add("get", "resource").add("--id").addLiteral(key).add("--json");
 
         try {
-            var cmd = getOrStartShell()
-                    .command(b)
-                    .sensitive();
+            var cmd = getOrStartShell().command(b).sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username").asText();
             var password = r.required("password").asText();
             return new CredentialResult(
-                    username.isEmpty() ? null : username,
-                    password.isEmpty() ? null : InPlaceSecretValue.of(password));
+                    username.isEmpty() ? null : username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;
