@@ -10,6 +10,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -120,7 +121,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 r.requestFocus();
             }
         });
-        AnchorPane.setTopAnchor(dropdownIcon, 11.0);
+        AnchorPane.setTopAnchor(dropdownIcon, OsType.ofLocal() == OsType.MACOS ? 8.5 : 11.0);
         AnchorPane.setRightAnchor(dropdownIcon, 7.0);
         AnchorPane.setRightAnchor(r, 0.0);
         AnchorPane.setLeftAnchor(r, 0.0);
