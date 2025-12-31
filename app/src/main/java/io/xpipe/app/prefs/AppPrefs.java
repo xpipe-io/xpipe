@@ -435,6 +435,10 @@ public final class AppPrefs {
 
     private AppPrefs() {}
 
+    public ObservableValue<Boolean> disableApiHttpsTlsCheck() {
+        return disableApiHttpsTlsCheck;
+    }
+
     public ObservableValue<VaultAuthentication> vaultAuthentication() {
         return vaultAuthentication;
     }
