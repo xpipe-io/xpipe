@@ -91,9 +91,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                             false,
                             directory,
                             filter);
-                })
-                .styleClass(sync != null ? Styles.CENTER_PILL : Styles.RIGHT_PILL)
-                .grow(false, true);
+                });
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!DataStorageSyncHandler.getInstance().supportsSync()) {
@@ -157,7 +155,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         });
         gitShareButton.styleClass("git-sync-file-button");
         gitShareButton.descriptor(d -> d.nameKey("gitShareFileTooltip"));
-        gitShareButton.styleClass(Styles.RIGHT_PILL).grow(false, true);
         gitShareButton.disable(Bindings.createBooleanBinding(
                 () -> {
                     return filePath.getValue() != null
@@ -171,7 +168,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         if (sync != null) {
             nodes.add(gitShareButton);
         }
-        var layout = new HorizontalComp(nodes).apply(struc -> struc.get().setFillHeight(true));
+        var layout = new InputGroupComp(nodes).setMainReference(path).apply(struc -> struc.get().setFillHeight(true));
 
         layout.apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -219,8 +216,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 },
                 filePath));
         combo.hgrow();
-        combo.styleClass(Styles.LEFT_PILL);
-        combo.grow(false, true);
         return combo;
     }
 
@@ -233,9 +228,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
             filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
         });
         var fileNameComp = new TextFieldComp(prop)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS))
-                .styleClass(Styles.LEFT_PILL)
-                .grow(false, true);
+                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
 
         if (prompt != null) {
             fileNameComp.apply(struc -> {

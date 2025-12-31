@@ -159,12 +159,12 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 addNamedIdentity();
             }
         });
-        addButton.styleClass(Styles.RIGHT_PILL).grow(false, true).descriptor(d -> d.nameKey("addReusableIdentity"));
+        addButton.descriptor(d -> d.nameKey("addReusableIdentity"));
 
         var nodes = new ArrayList<Comp<?>>();
         nodes.add(createComboBox());
         nodes.add(addButton);
-        var layout = new HorizontalComp(nodes).apply(struc -> struc.get().setFillHeight(true));
+        var layout = new InputGroupComp(nodes).setMainReference(0).apply(struc -> struc.get().setFillHeight(true));
 
         layout.apply(struc -> {
             struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
@@ -269,7 +269,6 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 });
         combo.apply(struc -> struc.get().setEditable(allowUserInput));
         combo.styleClass(Styles.LEFT_PILL);
-        combo.grow(false, true);
 
         combo.apply(struc -> {
             var binding = Bindings.createStringBinding(

@@ -53,8 +53,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("ssh");
                                 })
-                                .padding(new Insets(7))
-                                .grow(false, true)))
+                                .padding(new Insets(7))))
                 .spacing(9);
 
         return new OptionsBuilder()

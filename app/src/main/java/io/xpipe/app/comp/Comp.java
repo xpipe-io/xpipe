@@ -175,66 +175,6 @@ public abstract class Comp<S extends CompStructure<?>> {
         return apply(struc -> struc.get().getStyleClass().add(styleClass));
     }
 
-    public Comp<S> grow(boolean width, boolean height) {
-        return apply(struc -> {
-            struc.get().parentProperty().addListener((c, o, n) -> {
-                if (o instanceof Region) {
-                    if (width) {
-                        struc.get().prefWidthProperty().unbind();
-                    }
-                    if (height) {
-                        struc.get().prefHeightProperty().unbind();
-                    }
-                }
-
-                bindGrow(struc.get(), n, width, height);
-            });
-
-            bindGrow(struc.get(), struc.get().getParent(), width, height);
-        });
-    }
-
-    private void bindGrow(Region r, Node parent, boolean width, boolean height) {
-        if (!(parent instanceof Region p)) {
-            return;
-        }
-
-        if (width) {
-            r.prefWidthProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                var val = p.getWidth()
-                                        - p.getInsets().getLeft()
-                                        - p.getInsets().getRight();
-                                if (val <= 0) {
-                                    return Region.USE_COMPUTED_SIZE;
-                                }
-
-                                // Floor to prevent rounding issues which cause an infinite growing
-                                return Math.floor(val);
-                            },
-                            p.widthProperty(),
-                            p.insetsProperty()));
-        }
-        if (height) {
-            r.prefHeightProperty()
-                    .bind(Bindings.createDoubleBinding(
-                            () -> {
-                                var val = p.getHeight()
-                                        - p.getInsets().getTop()
-                                        - p.getInsets().getBottom();
-                                if (val <= 0) {
-                                    return Region.USE_COMPUTED_SIZE;
-                                }
-
-                                // Floor to prevent rounding issues which cause an infinite growing
-                                return Math.floor(val);
-                            },
-                            p.heightProperty(),
-                            p.insetsProperty()));
-        }
-    }
-
     public Comp<S> descriptor(Consumer<CompDescriptor.CompDescriptorBuilder> c) {
         var desc = CompDescriptor.builder();
         c.accept(desc);

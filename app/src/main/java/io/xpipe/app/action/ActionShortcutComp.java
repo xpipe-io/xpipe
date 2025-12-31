@@ -63,7 +63,6 @@ public class ActionShortcutComp extends SimpleComp {
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyUrl(url.getValue());
                 })
-                .grow(false, true)
                 .descriptor(d -> d.nameKey("copyUrl"));
         var field = new TextFieldComp(url);
         field.apply(struc -> struc.get().setEditable(false));
@@ -89,7 +88,6 @@ public class ActionShortcutComp extends SimpleComp {
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })
-                .grow(false, true)
                 .descriptor(d -> d.nameKey("createShortcut"));
         var field = new TextFieldComp(name);
         var group = new InputGroupComp(List.of(field, copyButton));
@@ -109,7 +107,6 @@ public class ActionShortcutComp extends SimpleComp {
                         ClipboardHelper.copyUrl(sa.toNode().toPrettyString());
                     }
                 })
-                .grow(false, true)
                 .descriptor(d -> d.nameKey("copyBody"));
         var field = new TextFieldComp(prop, true);
         field.apply(struc -> struc.get().setEditable(false));

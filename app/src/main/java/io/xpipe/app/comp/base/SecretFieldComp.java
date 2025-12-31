@@ -121,7 +121,6 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue());
                 })
-                .grow(false, true)
                 .descriptor(d -> d.nameKey("copy"));
 
         var list = new ArrayList<Comp<?>>();

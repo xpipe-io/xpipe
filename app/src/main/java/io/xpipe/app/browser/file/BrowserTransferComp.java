@@ -75,8 +75,7 @@ public class BrowserTransferComp extends SimpleComp {
                                 },
                                 sourceItem.get().getProgress());
                     }
-                })
-                .grow(false, true);
+                });
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
                 .apply(struc -> struc.get().setWrapText(true))

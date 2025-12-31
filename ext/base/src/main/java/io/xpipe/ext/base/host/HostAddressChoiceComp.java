@@ -56,7 +56,6 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             currentAddress.setValue(null);
             adding.set(false);
         });
-        addButton.styleClass(Styles.CENTER_PILL).grow(false, true);
         addButton.descriptor(d -> d.nameKey("addAnotherHostName"));
 
         var nodes = new ArrayList<Comp<?>>();
@@ -180,9 +179,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             });
         });
         combo.hgrow();
-        combo.styleClass(Styles.LEFT_PILL);
         combo.styleClass("host-address-choice-comp");
-        combo.grow(false, true);
         return combo;
     }
 }

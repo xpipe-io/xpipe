@@ -3,6 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.issue.TrackEvent;
@@ -57,15 +58,12 @@ public class DeveloperCategory extends AppPrefsCategory {
             });
         };
 
-        var runLocalCommand = new HorizontalComp(List.of(
+        var runLocalCommand = new InputGroupComp(List.of(
                         new TextFieldComp(localCommand)
                                 .apply(struc -> struc.get().setPromptText("Local command"))
-                                .styleClass(Styles.LEFT_PILL)
-                                .grow(false, true)
                                 .hgrow(),
-                        new ButtonComp(null, new FontIcon("mdi2p-play"), test)
-                                .styleClass(Styles.RIGHT_PILL)
-                                .grow(false, true)))
+                        new ButtonComp(null, new FontIcon("mdi2p-play"), test)))
+                .setMainReference(0)
                 .padding(new Insets(15, 0, 0, 0))
                 .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.get().setFillHeight(true))

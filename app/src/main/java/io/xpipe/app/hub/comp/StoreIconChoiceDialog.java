@@ -40,11 +40,10 @@ public class StoreIconChoiceDialog {
         var filterText = new SimpleStringProperty();
         var filter = new FilterComp(filterText).hgrow();
         filter.focusOnShow();
-        var github = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
+        var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();
                     AppPrefs.get().selectCategory("icons");
-                })
-                .grow(false, true);
+                });
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
                 new StoreIconChoiceComp(
@@ -63,7 +62,7 @@ public class StoreIconChoiceDialog {
                                     finish();
                                 })
                         .prefWidth(600));
-        modal.addButtonBarComp(github);
+        modal.addButtonBarComp(settings);
         modal.addButtonBarComp(filter);
         modal.addButton(new ModalButton(
                 "clear",

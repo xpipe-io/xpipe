@@ -18,11 +18,19 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
 
     private final List<Comp<?>> entries;
 
-    @Setter
     private Comp<?> mainReference;
 
     public InputGroupComp(List<Comp<?>> comps) {
         entries = List.copyOf(comps);
+    }
+
+    public InputGroupComp setMainReference(Comp<?> mainReference) {
+        this.mainReference = mainReference;
+        return this;
+    }
+
+    public InputGroupComp setMainReference(int index) {
+        return setMainReference(entries.get(index));
     }
 
     @Override
