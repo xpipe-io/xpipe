@@ -63,7 +63,7 @@ public class PassboltPasswordManager implements PasswordManager {
                 .addComp(
                         new TextFieldComp(serverUrl)
                                 .apply(struc -> {
-                                    struc.get().setPromptText("https://cloud.passbolt.com");
+                                    struc.get().setPromptText("https://cloud.passbolt.com/myorg");
                                 })
                                 .maxWidth(600),
                         serverUrl)
@@ -116,10 +116,6 @@ public class PassboltPasswordManager implements PasswordManager {
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
-        if (serverUrl == null || passphrase == null || privateKey == null) {
-            return null;
-        }
-
         try {
             CommandSupport.isInLocalPathOrThrow("Passbolt CLI", "passbolt");
         } catch (Exception e) {
@@ -149,6 +145,10 @@ public class PassboltPasswordManager implements PasswordManager {
 
         var b = CommandBuilder.of().add("passbolt");
         if (!validConfig) {
+            if (serverUrl == null || passphrase == null || privateKey == null) {
+                return null;
+            }
+
             b.addIf(AppPrefs.get().disableApiHttpsTlsCheck().getValue(), "--tlsSkipVerify")
                     .add("--serverAddress")
                     .addLiteral(serverUrl)
