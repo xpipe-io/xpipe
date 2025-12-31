@@ -73,6 +73,10 @@ public class PsonoPasswordManager implements PasswordManager {
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String key) {
+        if (serverUrl == null || apiKey == null || apiSecretKey == null) {
+            return null;
+        }
+
         try {
             CommandSupport.isInLocalPathOrThrow("Psono CLI", "psonoci");
         } catch (Exception e) {

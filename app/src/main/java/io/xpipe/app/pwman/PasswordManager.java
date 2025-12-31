@@ -24,6 +24,7 @@ public interface PasswordManager {
         }
         l.add(KeeperPasswordManager.class);
         l.add(PsonoPasswordManager.class);
+        l.add(PassboltPasswordManager.class);
         if (OsType.ofLocal() == OsType.WINDOWS) {
             l.add(WindowsCredentialManager.class);
         }
