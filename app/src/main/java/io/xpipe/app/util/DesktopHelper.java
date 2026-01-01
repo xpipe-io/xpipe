@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.ext.FileKind;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.FilePath;
@@ -31,7 +32,7 @@ public class DesktopHelper {
 
         if (!Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
             if (OsType.ofLocal() == OsType.LINUX) {
-                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+                LocalExec.executeAsync("xdg-open", parsed.toString());
                 return;
             }
         }
@@ -50,7 +51,7 @@ public class DesktopHelper {
             }
 
             if (OsType.ofLocal() == OsType.LINUX) {
-                LocalExec.readStdoutIfPossible("xdg-open", parsed.toString());
+                LocalExec.executeAsync("xdg-open", parsed.toString());
             }
         });
     }
@@ -83,7 +84,7 @@ public class DesktopHelper {
             }
 
             if (OsType.ofLocal() == OsType.LINUX) {
-                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
+                LocalExec.executeAsync("xdg-open", file.toString());
             }
         });
     }
@@ -174,10 +175,9 @@ public class DesktopHelper {
                     return;
                 }
 
-                sc.command(CommandBuilder.of()
-                                .add("xdg-open")
-                                .addFile(kind == FileKind.DIRECTORY ? path : path.getParent()))
-                        .execute();
+                var b = CommandBuilder.of().add("xdg-open").addFile(kind == FileKind.DIRECTORY ? path : path.getParent());
+                ExternalApplicationHelper.startAsync(b);
+                sc.command(b).execute();
             }
             case OsType.MacOs ignored -> {
                 sc.command(CommandBuilder.of()
