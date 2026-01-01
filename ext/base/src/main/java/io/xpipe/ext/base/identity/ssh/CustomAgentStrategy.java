@@ -97,7 +97,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
     @Override
     public void buildCommand(CommandBuilder builder) {
         builder.environment("SSH_AUTH_SOCK", sc -> {
-            if (sc.getOsType() == OsType.WINDOWS) {
+            if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
                 return null;
             }
 
@@ -113,8 +113,8 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions() {
-        var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
+    public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+        var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),

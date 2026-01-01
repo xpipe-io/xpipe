@@ -26,10 +26,9 @@ import java.util.List;
 @AllArgsConstructor
 public class YubikeyPivStrategy implements SshIdentityStrategy {
 
-    private String getFile() {
+    private String getFile(ShellControl sc) {
         var file =
-                switch (OsType.ofLocal()) {
-                    case OsType.Linux ignored -> "/usr/local/lib/libykcs11.so";
+                switch (sc.getOsType()) {
                     case OsType.MacOs ignored -> "/usr/local/lib/libykcs11.dylib";
                     case OsType.Windows ignored -> {
                         var x64 = "C:\\Program Files\\Yubico\\Yubico PIV Tool\\bin\\libykcs11.dll";
@@ -44,6 +43,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
 
                         yield x64;
                     }
+                    default -> "/usr/local/lib/libykcs11.so";
                 };
         return file;
     }
@@ -52,7 +52,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     public void prepareParent(ShellControl parent) throws Exception {
         parent.requireLicensedFeature(LicenseProvider.get().getFeature("pkcs11Identity"));
 
-        var file = getFile();
+        var file = getFile(parent);
         if (!parent.getShellDialect().createFileExistsCommand(parent, file).executeAndCheck()) {
             throw ErrorEventFactory.expected(new IOException("Yubikey PKCS11 library at " + file + " not found"));
         }
@@ -61,7 +61,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     @Override
     public void buildCommand(CommandBuilder builder) {
         builder.setup(sc -> {
-            var file = getFile();
+            var file = getFile(sc);
             var dir = FilePath.of(file).getParent();
             if (sc.getOsType() == OsType.WINDOWS) {
                 builder.addToPath(dir, true);
@@ -72,10 +72,10 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions() {
+    public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
                 new KeyValue("IdentitiesOnly", "no"),
-                new KeyValue("PKCS11Provider", "\"" + getFile() + "\""),
+                new KeyValue("PKCS11Provider", "\"" + getFile(sc) + "\""),
                 new KeyValue("IdentityFile", "none"),
                 new KeyValue("IdentityAgent", "none"));
     }

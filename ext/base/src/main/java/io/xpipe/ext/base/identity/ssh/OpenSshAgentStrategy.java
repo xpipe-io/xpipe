@@ -84,8 +84,8 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions() {
-        var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
+    public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+        var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),

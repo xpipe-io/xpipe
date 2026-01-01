@@ -11,6 +11,7 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
@@ -37,8 +38,6 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 @Value
@@ -104,20 +103,21 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        Path path = keyPath.get().asLocalPath();
-                        if (!Files.exists(path)) {
+                        var sc = config.getFileSystem() != null ? config.getFileSystem().getValue().getStore().getOrStartSession() : LocalShell.getShell();
+                        var path = keyPath.get();
+                        if (!sc.view().fileExists(path)) {
                             return;
                         }
 
-                        var pubKeyPath = Path.of(path + ".pub");
-                        if (Files.exists(pubKeyPath)) {
-                            var contents = Files.readString(pubKeyPath).strip();
+                        var pubKeyPath = FilePath.of(path + ".pub");
+                        if (sc.view().fileExists(pubKeyPath)) {
+                            var contents = sc.view().readTextFile(pubKeyPath).strip();
                             Platform.runLater(() -> {
                                 publicKey.set(contents);
                             });
                         }
 
-                        var contents = Files.readAllBytes(path);
+                        var contents = sc.view().readRawFile(path);
                         var generated = ProcessControlProvider.get()
                                 .generatePublicSshKey(InPlaceSecretValue.of(contents), keyPasswordProperty.get());
                         if (generated != null) {
@@ -143,12 +143,22 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()),
+                                config.getFileSystem() != null ? config.getFileSystem() : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),
-                                e -> e.equals(DataStorage.get().local()),
+                                e -> {
+                                    if (config.getFileSystem() == null) {
+                                        return e.equals(DataStorage.get().local());
+                                    }
+
+                                    var fs = config.getFileSystem().getValue();
+                                    if (fs == null) {
+                                        return e.equals(DataStorage.get().local());
+                                    } else {
+                                        return e.equals(fs.get());
+                                    }
+                                },
                                 false),
                         keyPath)
                 .nonNull()
@@ -232,11 +242,11 @@ public class KeyFileStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions() {
+    public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
                 new KeyValue("IdentitiesOnly", "yes"),
                 new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "\"" + resolveFilePath().toString() + "\""),
+                new KeyValue("IdentityFile", "\"" + resolveFilePath(sc).toString() + "\""),
                 new KeyValue("PKCS11Provider", "none"));
     }
 
@@ -245,8 +255,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         return password;
     }
 
-    private FilePath resolveFilePath() {
-        var s = file.toLocalAbsoluteFilePath();
+    private FilePath resolveFilePath(ShellControl sc) {
+        var s = file.toAbsoluteFilePath(sc);
         // The ~ is supported on all platforms, so manually replace it here for Windows
         if (s.startsWith("~")) {
             s = s.resolveTildeHome(FilePath.of(AppSystemInfo.ofCurrent().getUserHome()));
