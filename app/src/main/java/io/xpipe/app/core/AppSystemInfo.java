@@ -295,7 +295,26 @@ public abstract class AppSystemInfo {
 
         @Override
         public Path getUserHome() {
-            return Path.of(System.getProperty("user.home"));
+            var env = System.getenv("USER");
+            if (env != null) {
+                try {
+                    return Path.of(env);
+                } catch (InvalidPathException ignored) {}
+            }
+
+            // This can actually fail and return ?
+            // See https://stackoverflow.com/questions/70010648/system-getpropertyuser-name-returns
+            // The env variable is actually better
+            var dir = System.getProperty("user.home");
+            try {
+                Path.of(dir);
+            } catch (InvalidPathException ignored) {
+                dir = null;
+            }
+            if (dir == null || dir.equals("?")) {
+                dir = "/";
+            }
+            return Path.of(dir);
         }
 
         @Override
