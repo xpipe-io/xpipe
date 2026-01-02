@@ -29,8 +29,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
     }
 
     @Override
-    protected ObservableValue<Boolean> busy() {
-        return model.getBusy();
+    protected void onClose() {
+        model.getShowing().set(false);
     }
 
     private OptionsBuilder createStoreProperties() {

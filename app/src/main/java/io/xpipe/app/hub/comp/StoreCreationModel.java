@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
+import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
@@ -39,6 +40,7 @@ public class StoreCreationModel {
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     BooleanProperty finished = new SimpleBooleanProperty();
+    BooleanProperty showing = new SimpleBooleanProperty(true);
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty skippable = new SimpleBooleanProperty();
     BooleanProperty connectable = new SimpleBooleanProperty();
@@ -216,24 +218,24 @@ public class StoreCreationModel {
             return;
         }
 
-        if (entry.getValue() == null) {
+        var currentEntry = entry.getValue();
+        if (currentEntry == null) {
             return;
         }
 
         ThreadHelper.runAsync(() -> {
-            // Might have changed since last time
-            if (entry.getValue() == null) {
-                return;
-            }
-
             if (busy.get()) {
                 return;
             }
 
             try (var ignored = new BooleanScope(busy).exclusive().start()) {
-                DataStorage.get().addStoreEntryInProgress(entry.getValue());
+                DataStorage.get().addStoreEntryInProgress(currentEntry);
                 validate();
-                commit(true);
+
+                // The dialog might be closed
+                if (showing.get()) {
+                    commit(true);
+                }
             } catch (Throwable ex) {
                 if (ex instanceof ValidationException) {
                     ErrorEventFactory.expected(ex);
@@ -242,10 +244,14 @@ public class StoreCreationModel {
                     ErrorEventFactory.expected(ex);
                 }
 
-                ErrorEventFactory.fromThrowable(ex).handle();
+                var event = ErrorEventFactory.fromThrowable(ex);
+                if (!showing.get()) {
+                    event.omit();
+                }
+                event.handle();
             } finally {
                 if (DataStorage.get() != null) {
-                    DataStorage.get().removeStoreEntryInProgress(entry.getValue());
+                    DataStorage.get().removeStoreEntryInProgress(currentEntry);
                 }
             }
         });
