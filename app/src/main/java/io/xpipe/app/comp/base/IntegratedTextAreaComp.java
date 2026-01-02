@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -63,9 +64,6 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                                     : "sh";
                         },
                         host));
-        i.minHeight(60);
-        i.prefHeight(60);
-        i.maxHeight(60);
         return i;
     }
 
@@ -87,54 +85,34 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     @Override
     public Structure createBase() {
-        var fileDrop = new FileDropOverlayComp<>(
-                new Comp<TextAreaStructure>() {
-                    @Override
-                    public TextAreaStructure createBase() {
-                        var textArea = new TextAreaComp(value, lazy).createStructure();
-                        var copyButton = createOpenButton();
-                        var pane = new AnchorPane(copyButton);
-                        pane.setPickOnBounds(false);
-                        AnchorPane.setTopAnchor(copyButton, 10.0);
-                        AnchorPane.setRightAnchor(copyButton, 10.0);
-
-                        var c = new StackPane();
-                        c.getChildren().addAll(textArea.get(), pane);
-                        return new TextAreaStructure(c, textArea.getTextArea());
-                    }
-                },
-                paths -> {
-                    var first = paths.getFirst();
-                    if (Files.size(first) > 1_000_000) {
-                        return;
-                    }
-
-                    value.setValue(Files.readString(first));
-                });
-        var struc = fileDrop.createStructure();
-        return new Structure(struc.get(), struc.getCompStructure().getTextArea());
+        var textArea = new TextAreaComp(value, lazy);
+        textArea.apply(struc -> {
+            struc.getTextArea().prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> {
+                var val = value.getValue() != null ? value.getValue() : "";
+                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+                return Math.max(1, count);
+            }, value));
+        });
+        var textAreaStruc = textArea.createStructure();
+        var copyButton = createOpenButton();
+        var pane = new AnchorPane(textAreaStruc.get(), copyButton);
+        pane.setPickOnBounds(false);
+        AnchorPane.setTopAnchor(copyButton, 7.0);
+        AnchorPane.setRightAnchor(copyButton, 7.0);
+        AnchorPane.setLeftAnchor(textAreaStruc.get(), 0.0);
+        AnchorPane.setRightAnchor(textAreaStruc.get(), 0.0);
+        pane.maxHeightProperty().bind(textAreaStruc.get().heightProperty());
+        return new Structure(pane, textAreaStruc.getTextArea());
     }
 
     @Value
     @Builder
-    public static class TextAreaStructure implements CompStructure<StackPane> {
-        StackPane pane;
+    public static class Structure implements CompStructure<AnchorPane> {
+        AnchorPane pane;
         TextArea textArea;
 
         @Override
-        public StackPane get() {
-            return pane;
-        }
-    }
-
-    @Value
-    @Builder
-    public static class Structure implements CompStructure<StackPane> {
-        StackPane pane;
-        TextArea textArea;
-
-        @Override
-        public StackPane get() {
+        public AnchorPane get() {
             return pane;
         }
     }

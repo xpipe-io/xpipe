@@ -94,6 +94,17 @@ public class ShellView {
         cc.execute();
     }
 
+    public FilePath writeScriptFileDeterministic(FilePath base, String text) throws Exception {
+        var hash = Math.abs(Objects.hash(text, user()));
+        var ext = base.getExtension();
+        var target = FilePath.of(base.getBaseName().toString() + "-" + hash + (ext.isPresent() ? "." + ext.get() : ""));
+        if (fileExists(target)) {
+            return target;
+        }
+        writeScriptFile(target, text);
+        return target;
+    }
+
     public void writeStreamFile(FilePath path, InputStream inputStream, long size) throws Exception {
         try (var out = getDialect()
                 .createStreamFileWriteCommand(shellControl, path.toString(), size)

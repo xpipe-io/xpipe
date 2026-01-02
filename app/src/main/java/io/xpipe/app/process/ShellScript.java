@@ -11,6 +11,10 @@ public class ShellScript {
 
     String value;
 
+    public static ShellScript of(String s) {
+        return s != null ? new ShellScript(s) : null;
+    }
+
     public static ShellScript lines(String... lines) {
         return new ShellScript(Arrays.stream(lines).filter(s -> s != null).collect(Collectors.joining("\n")));
     }

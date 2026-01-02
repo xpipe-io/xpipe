@@ -76,7 +76,7 @@ public class ExternalApplicationHelper {
                 }
             }
 
-            var cmd = sc.getShellDialect().launchAsnyc(b);
+            var cmd = sc.getShellDialect().launchAsync(b);
             TrackEvent.withDebug("Executing local application")
                     .tag("command", b.buildFull(sc))
                     .tag("adjusted", cmd.buildFull(sc))

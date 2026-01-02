@@ -30,7 +30,7 @@ public class DesktopApplicationStore implements DataStore {
 
     public CommandBuilder getFullCommand() {
         var builder = CommandBuilder.of().addFile(path).add(arguments != null ? " " + arguments : "");
-        builder = desktop.getStore().getUsedDesktopDialect().launchAsnyc(builder);
+        builder = desktop.getStore().getUsedDesktopDialect().launchAsync(builder);
         return builder;
     }
 }

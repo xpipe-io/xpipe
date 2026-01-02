@@ -22,7 +22,7 @@ public interface ShellDialect {
 
     String unsetEnvironmentVariableCommand(String var);
 
-    CommandBuilder launchAsnyc(CommandBuilder cmd);
+    CommandBuilder launchAsync(CommandBuilder cmd);
 
     default String getLicenseFeatureId() {
         return null;
