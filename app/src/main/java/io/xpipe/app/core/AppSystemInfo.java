@@ -295,7 +295,7 @@ public abstract class AppSystemInfo {
 
         @Override
         public Path getUserHome() {
-            var env = System.getenv("USER");
+            var env = System.getenv("HOME");
             if (env != null) {
                 try {
                     return Path.of(env);
