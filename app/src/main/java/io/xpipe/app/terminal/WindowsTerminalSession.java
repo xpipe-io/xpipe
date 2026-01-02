@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Objects;
+
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 public final class WindowsTerminalSession extends ControllableTerminalSession {
@@ -16,6 +18,22 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     public WindowsTerminalSession(ProcessHandle terminal, NativeWinWindowControl control) {
         super(terminal);
         this.control = control;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof WindowsTerminalSession that)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        return Objects.equals(control.getWindowHandle(), that.control.getWindowHandle());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), control.getWindowHandle());
     }
 
     @Override

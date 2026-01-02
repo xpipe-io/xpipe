@@ -77,12 +77,12 @@ public class TerminalMultiplexerManager {
         var mult = getEffectiveMultiplexer();
 
         for (TerminalPaneConfiguration pane : configuration.getPanes()) {
-            TerminalView.get().addSubstitution(pane.getRequest(), launchRequestUuid);
             if (mult.isEmpty()) {
                 connectionHubRequests.put(pane.getRequest(), null);
                 return;
             }
 
+            TerminalView.get().addSubstitution(pane.getRequest(), launchRequestUuid);
             connectionHubRequests.put(pane.getRequest(), mult.orElse(null));
         }
     }

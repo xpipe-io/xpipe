@@ -1,5 +1,6 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.ext.ShellSession;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
@@ -133,7 +134,7 @@ public class TerminalView {
         sessions.add(session);
         forListeners(listener -> listener.onSessionOpened(session));
 
-        TrackEvent.withTrace("Terminal instance opened")
+        TrackEvent.withTrace("Shell session opened in terminal instance")
                 .tag("terminalPid", terminal.get().pid())
                 .handle();
     }
@@ -150,15 +151,12 @@ public class TerminalView {
             case OsType.Windows ignored -> {
                 var controls = NativeWinWindowControl.byPid(terminalProcess.pid());
                 if (controls.isEmpty()) {
-                    yield Optional.empty();
-                }
-
-                var existing = terminalInstances.stream()
-                        .map(terminalSession -> ((WindowsTerminalSession) terminalSession).getControl())
-                        .toList();
-                controls.removeAll(existing);
-                if (controls.isEmpty()) {
-                    yield Optional.empty();
+                    // Some terminals might delay the window show
+                    ThreadHelper.sleep(1000);
+                    controls = NativeWinWindowControl.byPid(terminalProcess.pid());
+                    if (controls.isEmpty()) {
+                        yield Optional.empty();
+                    }
                 }
 
                 yield Optional.of(new WindowsTerminalSession(terminalProcess, controls.getFirst()));
@@ -253,6 +251,19 @@ public class TerminalView {
 
         public Optional<ControllableTerminalSession> controllable() {
             return Optional.ofNullable(this instanceof ControllableTerminalSession c ? c : null);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof TerminalSession that)) {
+                return false;
+            }
+            return Objects.equals(terminalProcess.pid(), that.terminalProcess.pid());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(terminalProcess.pid());
         }
     }
 }

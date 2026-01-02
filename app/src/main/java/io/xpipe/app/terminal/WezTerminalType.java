@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -11,6 +12,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.FilePath;
+import lombok.SneakyThrows;
 
 import java.io.IOException;
 import java.net.StandardProtocolFamily;
@@ -219,6 +221,24 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         @Override
         public String getId() {
             return "app.wezterm";
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            // WezTerm does not focus the window
+            var listener = new TerminalView.Listener() {
+                @Override
+                @SneakyThrows
+                public void onSessionOpened(TerminalView.ShellSession session) {
+                    TerminalView.get().removeListener(this);
+                    var term = (WindowsTerminalSession) session.getTerminal();
+                    term.frontOfMainWindow();
+                    term.focus();
+                }
+            };
+            TerminalView.get().addListener(listener);
+
+            WezTerminalType.super.launch(configuration);
         }
     }
 

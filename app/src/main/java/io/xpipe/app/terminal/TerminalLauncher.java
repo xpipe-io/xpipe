@@ -122,7 +122,6 @@ public class TerminalLauncher {
     }
 
     public static void open(List<Config> configs, boolean preferTabs, ExternalTerminalType type) throws Exception {
-
         var latch = new CountDownLatch(configs.size());
         var paneList = new ArrayList<TerminalPaneConfiguration>();
         for (Config config : configs) {
