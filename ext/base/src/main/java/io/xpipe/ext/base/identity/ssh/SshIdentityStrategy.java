@@ -58,23 +58,22 @@ public interface SshIdentityStrategy {
         return l;
     }
 
-    static Optional<FilePath> getPublicKeyPath(String publicKey) {
+    static Optional<FilePath> getPublicKeyPath(ShellControl sc, String publicKey) throws Exception {
         if (publicKey == null || publicKey.isBlank()) {
             return Optional.empty();
         }
 
-        var isFile = OsFileSystem.ofLocal().isProbableFilePath(publicKey);
-        if (isFile && Files.exists(Paths.get(publicKey))) {
-            return Optional.ofNullable(FilePath.parse(publicKey));
+        var isFile = OsFileSystem.of(sc.getOsType()).isProbableFilePath(publicKey);
+        if (isFile && sc.view().fileExists(FilePath.of(publicKey))) {
+            return Optional.of(FilePath.of(publicKey));
         }
 
         try {
-            var base = LocalShell.getShell().getSystemTemporaryDirectory().join("key.pub");
-            var file = LocalShell.getShell().view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
+            var base = sc.getSystemTemporaryDirectory().join("key.pub");
+            var file = sc.view().writeTextFileDeterministic(base, publicKey.strip() + "\n");
 
-            if (OsType.ofLocal() != OsType.WINDOWS) {
-                LocalShell.getShell()
-                        .command(CommandBuilder.of().add("chmod", "400").addFile(file))
+            if (sc.getOsType() != OsType.WINDOWS) {
+                sc.command(CommandBuilder.of().add("chmod", "400").addFile(file))
                         .executeAndCheck();
             }
 
@@ -95,7 +94,7 @@ public interface SshIdentityStrategy {
 
     void buildCommand(CommandBuilder builder);
 
-    List<KeyValue> configOptions();
+    List<KeyValue> configOptions(ShellControl sc) throws Exception;
 
     default SecretRetrievalStrategy getAskpassStrategy() {
         return new SecretNoneStrategy();

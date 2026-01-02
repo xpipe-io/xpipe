@@ -136,7 +136,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             return;
         }
 
-        var file = getTargetFilePath();
+        var file = getTargetFilePath(parent);
         if (parent.view().fileExists(file)) {
             return;
         }
@@ -156,18 +156,20 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                     .execute();
         }
 
-        LocalFileTracker.deleteOnExit(file.asLocalPath());
+        if (parent.isLocal()) {
+            LocalFileTracker.deleteOnExit(file.asLocalPath());
+        }
     }
 
     @Override
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions() {
+    public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
                 new KeyValue("IdentitiesOnly", "yes"),
                 new KeyValue("IdentityAgent", "none"),
-                new KeyValue("IdentityFile", "\"" + getTargetFilePath() + "\""),
+                new KeyValue("IdentityFile", "\"" + getTargetFilePath(sc) + "\""),
                 new KeyValue("PKCS11Provider", "none"));
     }
 
@@ -176,11 +178,10 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         return password;
     }
 
-    private FilePath getTargetFilePath() {
-        var temp = AppSystemInfo.ofCurrent()
-                .getTemp()
-                .resolve("xpipe-"
+    private FilePath getTargetFilePath(ShellControl sc) {
+        var temp = sc.getSystemTemporaryDirectory()
+                .join("xpipe-"
                         + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
-        return FilePath.of(temp);
+        return temp;
     }
 }

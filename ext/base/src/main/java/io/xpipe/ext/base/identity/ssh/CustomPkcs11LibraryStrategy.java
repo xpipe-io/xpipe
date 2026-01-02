@@ -48,12 +48,22 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                 .nameAndDescription("pkcs11Library")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                new ReadOnlyObjectWrapper<>(
-                                        DataStorage.get().local().ref()),
+                                config.getFileSystem() != null ? config.getFileSystem() : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
                                 file,
                                 null,
                                 List.of(),
-                                e -> e.equals(DataStorage.get().local()),
+                                e -> {
+                                    if (config.getFileSystem() == null) {
+                                        return e.equals(DataStorage.get().local());
+                                    }
+
+                                    var fs = config.getFileSystem().getValue();
+                                    if (fs == null) {
+                                        return e.equals(DataStorage.get().local());
+                                    } else {
+                                        return e.equals(fs.get());
+                                    }
+                                },
                                 false),
                         file)
                 .nonNull()
@@ -95,7 +105,7 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions() {
+    public List<KeyValue> configOptions(ShellControl sc) {
         return List.of(
                 new KeyValue("IdentitiesOnly", "no"),
                 new KeyValue("PKCS11Provider", "\"" + file.toString() + "\""),

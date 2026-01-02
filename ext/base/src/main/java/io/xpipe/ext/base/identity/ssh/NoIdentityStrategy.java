@@ -20,7 +20,7 @@ public class NoIdentityStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {}
 
     @Override
-    public List<KeyValue> configOptions() {
+    public List<KeyValue> configOptions(ShellControl sc) {
         // Don't use any agent keys to prevent too many authentication failures
         return List.of(
                 new KeyValue("IdentitiesOnly", "yes"),

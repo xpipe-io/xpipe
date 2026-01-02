@@ -95,7 +95,7 @@ public class PageantStrategy implements SshIdentityStrategy {
     @Override
     public void buildCommand(CommandBuilder builder) {
         builder.environment("SSH_AUTH_SOCK", parent -> {
-            if (parent.getOsType() == OsType.WINDOWS) {
+            if (parent.isLocal() && parent.getOsType() == OsType.WINDOWS) {
                 return getPageantWindowsPipe();
             }
 
@@ -104,8 +104,8 @@ public class PageantStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public List<KeyValue> configOptions() {
-        var file = SshIdentityStrategy.getPublicKeyPath(publicKey);
+    public List<KeyValue> configOptions(ShellControl sc) throws Exception {
+        var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
         return List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),

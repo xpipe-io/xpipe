@@ -4,14 +4,18 @@ import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
 import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
@@ -40,6 +44,7 @@ public class IdentityChoiceBuilder {
     boolean allowAgentForward;
     String userChoiceTranslationKey;
     ObservableValue<String> passwordChoiceTranslationKey;
+    ObservableValue<DataStoreEntryRef<ShellStore>> fileSystem;
 
     public IdentityChoiceBuilder(
             ObjectProperty<IdentityValue> identity,
@@ -60,6 +65,7 @@ public class IdentityChoiceBuilder {
         this.allowAgentForward = allowAgentForward;
         this.userChoiceTranslationKey = userChoiceTranslationKey;
         this.passwordChoiceTranslationKey = new ReadOnlyStringWrapper(passwordChoiceTranslationKey);
+        this.fileSystem = new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref());
     }
 
     public static OptionsBuilder ssh(ObjectProperty<IdentityValue> identity, boolean requireUser) {
@@ -147,6 +153,7 @@ public class IdentityChoiceBuilder {
                 .allowAgentForward(allowAgentForward)
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> false)
+                .fileSystem(fileSystem)
                 .build();
 
         if (keyInput) {

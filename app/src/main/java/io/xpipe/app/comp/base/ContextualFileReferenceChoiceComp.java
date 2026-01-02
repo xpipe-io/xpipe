@@ -52,7 +52,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     private ObservableValue<FilePath> prompt;
 
     public <T extends FileSystemStore> ContextualFileReferenceChoiceComp(
-            Property<DataStoreEntryRef<T>> fileSystem,
+            ObservableValue<DataStoreEntryRef<T>> fileSystem,
             Property<FilePath> filePath,
             ContextualFileReferenceSync sync,
             List<PreviousFileReference> previousFileReferences,
@@ -65,9 +65,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         this.fileSystem = new SimpleObjectProperty<>();
         fileSystem.subscribe(val -> {
             this.fileSystem.setValue(val);
-        });
-        this.fileSystem.addListener((observable, oldValue, newValue) -> {
-            fileSystem.setValue(newValue != null ? newValue.asNeeded() : null);
         });
         this.filePath = filePath;
     }
@@ -85,7 +82,6 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                             fileStore -> {
                                 if (fileStore != null) {
                                     filePath.setValue(fileStore.getPath());
-                                    fileSystem.setValue(fileStore.getFileSystem());
                                 }
                             },
                             false,
