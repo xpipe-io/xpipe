@@ -278,8 +278,16 @@ public abstract class AppSystemInfo {
 
         @Override
         public String getUser() {
+            var env = System.getenv("USER");
+            if (env != null) {
+                return env;
+            }
+
+            // This can actually fail and return ?
+            // See https://stackoverflow.com/questions/70010648/system-getpropertyuser-name-returns
+            // The env variable is actually better
             var username = System.getProperty("user.name");
-            if (username == null) {
+            if (username == null || username.equals("?")) {
                 username = "user";
             }
             return username;

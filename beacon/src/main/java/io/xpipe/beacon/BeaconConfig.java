@@ -58,10 +58,11 @@ public class BeaconConfig {
                 .map(Boolean::parseBoolean)
                 .orElse(false);
         if (OsType.ofLocal() == OsType.LINUX) {
+            var name = System.getenv("USER") != null ? System.getenv("USER") : System.getProperty("user.name");
             return Path.of(
                     System.getProperty("java.io.tmpdir"),
                     staging ? "xpipe-ptb" : "xpipe",
-                    System.getProperty("user.name"),
+                    name,
                     "beacon-auth");
         } else {
             return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe-ptb" : "xpipe", "beacon-auth");
