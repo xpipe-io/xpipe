@@ -21,17 +21,6 @@ public interface BrowserFileOutput {
 
     static BrowserFileOutput openFileOutput(BrowserFileSystemTabModel model, FileEntry file, long totalBytes)
             throws Exception {
-        if (totalBytes == 0) {
-            var existingSize = model.getFileSystem().getFileSize(file.getPath());
-            if (existingSize != 0) {
-                var blank = AppDialog.confirm(
-                        "fileWriteBlankTitle", AppI18n.observable("fileWriteBlankContent", file.getPath()));
-                if (!blank) {
-                    return BrowserFileOutput.none();
-                }
-            }
-        }
-
         var defOutput = createFileOutputImpl(model, file, totalBytes, false);
         if (model.getFileSystem().getShell().isEmpty()) {
             return defOutput;
