@@ -88,8 +88,11 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
     }
 
     @Override
-    protected void onClose() {
-        model.closeFileSystem();
+    protected void setModalOverlay(ModalOverlay modalOverlay) {
+        super.setModalOverlay(modalOverlay);
+        if (modalOverlay == null) {
+            model.closeFileSystem();
+        }
     }
 
     @Override

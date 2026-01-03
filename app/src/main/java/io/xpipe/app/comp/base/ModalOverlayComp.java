@@ -128,9 +128,6 @@ public class ModalOverlayComp extends SimpleComp {
 
                 if (oldValue != null) {
                     if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
-                        mocc.onClose();
-                    }
-                    if (oldValue.getContent() instanceof ModalOverlayContentComp mocc) {
                         mocc.setModalOverlay(null);
                     }
                 }

@@ -85,7 +85,8 @@ public class PasswordManagerIdentityStore extends IdentityStore
     public UsernameStrategy getUsername() {
         return new UsernameStrategy.Dynamic(() -> {
             var r = retrieveCredentials();
-            return r.getUsername();
+            var effective = r != null && r.getUsername() != null ? r.getUsername() : "unknown";
+            return effective;
         });
     }
 
@@ -99,6 +100,10 @@ public class PasswordManagerIdentityStore extends IdentityStore
                     @Override
                     public SecretQueryResult query(String prompt) {
                         var r = retrieveCredentials();
+                        if (r == null || r.getPassword() == null) {
+                            return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
+                        }
+
                         return new SecretQueryResult(r.getPassword(), SecretQueryState.NORMAL);
                     }
 

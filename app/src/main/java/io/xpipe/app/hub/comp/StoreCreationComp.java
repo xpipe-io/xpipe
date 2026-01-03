@@ -29,8 +29,9 @@ public class StoreCreationComp extends ModalOverlayContentComp {
     }
 
     @Override
-    protected void onClose() {
-        model.getShowing().set(false);
+    protected void setModalOverlay(ModalOverlay modalOverlay) {
+        super.setModalOverlay(modalOverlay);
+        model.getShowing().set(modalOverlay != null);
     }
 
     private OptionsBuilder createStoreProperties() {

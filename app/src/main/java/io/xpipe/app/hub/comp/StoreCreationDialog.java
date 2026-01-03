@@ -224,7 +224,7 @@ public class StoreCreationDialog {
                 false,
                 true)).augment(button -> {
                     button.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-                        return model.getBusy().get() ? new LoadingIconComp(model.getBusy(), AppFontSizes::base).createRegion() : null;
+                        return model.getBusy().get() ? new LoadingIconComp(model.getBusy(), AppFontSizes::base).styleClass("store-creator-busy").createRegion() : null;
                     }, PlatformThread.sync(model.getBusy())));
                     button.textProperty().bind(Bindings.createStringBinding(() -> {
                         return !model.getBusy().get() ? AppI18n.get("finish") : null;

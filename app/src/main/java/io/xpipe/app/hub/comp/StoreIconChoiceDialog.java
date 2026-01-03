@@ -43,7 +43,7 @@ public class StoreIconChoiceDialog {
         var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();
                     AppPrefs.get().selectCategory("icons");
-                });
+                }).maxHeight(100);
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
                 new StoreIconChoiceComp(

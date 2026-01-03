@@ -40,7 +40,7 @@ public class StoreCreationModel {
     BooleanProperty busy = new SimpleBooleanProperty();
     Property<Validator> validator = new SimpleObjectProperty<>(new SimpleValidator());
     BooleanProperty finished = new SimpleBooleanProperty();
-    BooleanProperty showing = new SimpleBooleanProperty(true);
+    BooleanProperty showing = new SimpleBooleanProperty();
     ObservableValue<DataStoreEntry> entry;
     BooleanProperty skippable = new SimpleBooleanProperty();
     BooleanProperty connectable = new SimpleBooleanProperty();
@@ -232,8 +232,14 @@ public class StoreCreationModel {
                 DataStorage.get().addStoreEntryInProgress(currentEntry);
                 validate();
 
-                // The dialog might be closed
-                if (showing.get()) {
+                // If the validation happens while the dialog is minimized, remove queue entry
+                var queueEntry = StoreCreationQueueEntry.findExisting(existingEntry);
+                if (queueEntry.isPresent()) {
+                    queueEntry.get().hide();
+                }
+
+                // The dialog might be completely closed, then discard changes
+                if (showing.get() || queueEntry.isPresent()) {
                     commit(true);
                 }
             } catch (Throwable ex) {
@@ -245,7 +251,8 @@ public class StoreCreationModel {
                 }
 
                 var event = ErrorEventFactory.fromThrowable(ex);
-                if (!showing.get()) {
+                var queueEntry = StoreCreationQueueEntry.findExisting(existingEntry);
+                if (queueEntry.isEmpty() && !showing.get()) {
                     event.omit();
                 }
                 event.handle();

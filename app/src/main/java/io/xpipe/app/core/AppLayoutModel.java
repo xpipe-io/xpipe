@@ -198,5 +198,9 @@ public class AppLayoutModel {
                 }
             });
         }
+
+        public void hide() {
+            AppLayoutModel.get().getQueueEntries().remove(this);
+        }
     }
 }

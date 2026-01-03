@@ -116,6 +116,10 @@
     -fx-opacity: 0.9;
 }
 
+.root:light .store-creator-busy {
+    -fx-text-fill: -color-bg-default;
+}
+
 .store-creator > .choice-comp * {
     -fx-opacity: 1.0;
 }

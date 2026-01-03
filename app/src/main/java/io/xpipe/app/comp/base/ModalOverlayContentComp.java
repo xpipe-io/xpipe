@@ -11,11 +11,9 @@ public abstract class ModalOverlayContentComp extends SimpleComp {
 
     protected ModalOverlay modalOverlay;
 
-    void setModalOverlay(ModalOverlay modalOverlay) {
+    protected void setModalOverlay(ModalOverlay modalOverlay) {
         this.modalOverlay = modalOverlay;
     }
-
-    protected void onClose() {}
 
     protected ObservableValue<Boolean> busy() {
         return null;
