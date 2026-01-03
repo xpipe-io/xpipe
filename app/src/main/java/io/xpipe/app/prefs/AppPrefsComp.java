@@ -30,6 +30,8 @@ public class AppPrefsComp extends SimpleComp {
                 })
                 .toList();
         var box = new VerticalComp(list)
+                .minWidth(850)
+                .prefWidth(850)
                 .maxWidth(850)
                 .styleClass("prefs-box")
                 .createStructure()

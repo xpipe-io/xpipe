@@ -208,7 +208,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         }
 
         // Preload items at the edges by enlarging the height
-        var paneHeight = pane.getHeight() * 1.4;
+        var paneHeight = pane.getHeight() * 1.2;
         var scrollCenter = box.getBoundsInLocal().getHeight() * pane.getVvalue();
         var minBoundsHeight = scrollCenter - paneHeight;
         var maxBoundsHeight = scrollCenter + paneHeight;
@@ -216,25 +216,38 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
         var nodeMinHeight = node.getBoundsInParent().getMinY();
         var nodeMaxHeight = node.getBoundsInParent().getMaxY();
 
-        if (paneHeight == 0.0
-                || box.getHeight() == 0.0
-                || ((Region) node).getHeight() == 0.0
+        // There are some rounding errors when display scaling is enabled,
+        // so don't check for 0.0
+        if (paneHeight < 5.0
+                || box.getHeight() < 5.0
+                || ((Region) node).getHeight() < 5.0
                 || nodeMinHeight == nodeMaxHeight) {
             return false;
         }
 
         if (nodeMaxHeight < minBoundsHeight) {
-            return false;
+            // Use soft buffer zone to keep items visible a bit if moved out
+            // This prevents jittering when display scaling causes rounding errors around the edges
+            var useBufferZone = node.isVisible() && minBoundsHeight - nodeMaxHeight < 30.0;
+            if (!useBufferZone) {
+                return false;
+            }
         }
 
         if (nodeMinHeight > maxBoundsHeight) {
-            return false;
+            // Use soft buffer zone to keep items visible a bit if moved out
+            // This prevents jittering when display scaling causes rounding errors around the edges
+            var useBufferZone = node.isVisible() && nodeMinHeight - maxBoundsHeight < 30.0;
+            if (!useBufferZone) {
+                return false;
+            }
         }
 
         if (pane.getScene().getHeight() > 200) {
             var sceneNodeBounds = node.localToScene(node.getBoundsInLocal());
-            if (sceneNodeBounds.getMaxY() < 0
-                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight()) {
+            // Add some margin to preload
+            if (sceneNodeBounds.getMaxY() < -100
+                    || sceneNodeBounds.getMinY() > pane.getScene().getHeight() + 100) {
                 return false;
             }
         }
@@ -245,6 +258,10 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private void updateVisibilities(ScrollPane scroll, VBox vbox) {
         if (!Platform.isFxApplicationThread()) {
             throw new IllegalStateException("Not in FxApplication thread");
+        }
+
+        if (!scroll.isVisible() || !vbox.isVisible()) {
+            return;
         }
 
         if (!visibilityControl) {
