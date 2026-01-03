@@ -88,10 +88,11 @@ public class SystemIconManager {
         }
     }
 
-    private static synchronized int calculateSourceHash(Map<SystemIconSource, SystemIconSourceData> all) {
+    private static synchronized int calculateSourceHash() {
         var total = 0;
         var set = false;
-        for (var e : all.entrySet()) {
+        for (var e : LOADED.entrySet()) {
+            total += e.getKey().getPath().hashCode();
             for (SystemIconSourceFile icon : e.getValue().getIcons()) {
                 total += icon.getFile().toString().hashCode();
                 set = true;
@@ -109,10 +110,13 @@ public class SystemIconManager {
     public static void init() throws Exception {
         cacheSourceHash = SystemIconCache.getCacheSourceHash();
         reloadSources();
-        sourceHash = calculateSourceHash(LOADED);
+        sourceHash = calculateSourceHash();
         reloadImages();
         AppPrefs.get().preferMonochromeIcons().addListener((observableValue, o, n) -> {
-            sourceHash = calculateSourceHash(LOADED);
+            sourceHash = calculateSourceHash();
+        });
+        AppPrefs.get().getIconSources().addListener((observableValue, o, n) -> {
+            sourceHash = calculateSourceHash();
         });
     }
 
@@ -133,7 +137,7 @@ public class SystemIconManager {
                 }
             }
         }
-        sourceHash = calculateSourceHash(LOADED);
+        sourceHash = calculateSourceHash();
     }
 
     public static synchronized void reloadSources() throws Exception {
@@ -174,7 +178,7 @@ public class SystemIconManager {
             }
         }
         reloadSources();
-        sourceHash = calculateSourceHash(LOADED);
+        sourceHash = calculateSourceHash();
         SystemIconCache.rebuildCache(LOADED, sourceHash);
         cacheSourceHash = sourceHash;
         reloadImages();
@@ -183,7 +187,7 @@ public class SystemIconManager {
     public static synchronized void reloadSourceHashes() throws Exception {
         Files.createDirectories(DIRECTORY);
         reloadSources();
-        sourceHash = calculateSourceHash(LOADED);
+        sourceHash = calculateSourceHash();
     }
 
     public static Path getPoolPath() {
