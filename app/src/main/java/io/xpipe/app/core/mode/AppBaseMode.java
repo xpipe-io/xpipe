@@ -126,6 +126,7 @@ public class AppBaseMode extends AppOperationMode {
                     AppPrefs.initStorage();
                     storageLoaded.countDown();
                     AppMcpServer.init();
+                    iconsLoaded.await();
                     StoreViewState.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
