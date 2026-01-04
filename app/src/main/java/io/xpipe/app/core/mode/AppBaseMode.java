@@ -88,6 +88,7 @@ public class AppBaseMode extends AppOperationMode {
         }
 
         var imagesLoaded = new CountDownLatch(1);
+        var iconsInit = new CountDownLatch(1);
         var iconsLoaded = new CountDownLatch(1);
         var browserLoaded = new CountDownLatch(1);
         var shellLoaded = new CountDownLatch(1);
@@ -126,7 +127,7 @@ public class AppBaseMode extends AppOperationMode {
                     AppPrefs.initStorage();
                     storageLoaded.countDown();
                     AppMcpServer.init();
-                    iconsLoaded.await();
+                    iconsInit.await();
                     StoreViewState.init();
                     AppMainWindow.loadingText("loadingSettings");
                     TrackEvent.info("Connection storage initialization thread completed");
@@ -155,7 +156,9 @@ public class AppBaseMode extends AppOperationMode {
                     imagesLoaded.countDown();
                     SystemIconManager.init();
                     syncPrefsLoaded.await();
-                    SystemIconManager.initAdditional();
+                    var additional = SystemIconManager.initAdditional();
+                    iconsInit.countDown();
+                    SystemIconManager.loadAdditional(additional);
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
                 },

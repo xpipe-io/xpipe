@@ -120,7 +120,8 @@ public class SystemIconManager {
         });
     }
 
-    public static void initAdditional() {
+    public static List<SystemIconSource> initAdditional() {
+        var l = new ArrayList<SystemIconSource>();
         for (var source : getEffectiveSources()) {
             if (!LOADED.containsKey(source)) {
                 var data = SystemIconSourceData.of(source);
@@ -129,15 +130,21 @@ public class SystemIconManager {
                     var icon = new SystemIcon(source, systemIconSourceFile.getName());
                     ICONS.add(icon);
                 });
-
-                try {
-                    AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                }
+                l.add(source);
             }
         }
         sourceHash = calculateSourceHash();
+        return l;
+    }
+
+    public static void loadAdditional(List<SystemIconSource> additional) {
+        for (var source : additional) {
+            try {
+                AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
+            } catch (Exception e) {
+                ErrorEventFactory.fromThrowable(e).handle();
+            }
+        }
     }
 
     public static synchronized void reloadSources() throws Exception {
