@@ -153,23 +153,47 @@ public class AppBeaconServer {
         server = HttpServer.create(
                 new InetSocketAddress(Inet4Address.getByAddress(new byte[] {0x7f, 0x00, 0x00, 0x01}), port), 10);
         BeaconInterface.getAll().forEach(beaconInterface -> {
-            server.createContext(beaconInterface.getPath(), new BeaconRequestHandler<>(beaconInterface));
+            var handler = new BeaconRequestHandler<>(beaconInterface);
+            server.createContext(beaconInterface.getPath(), exchange -> {
+                if (!handleCorsHeaders(exchange)) {
+                    handler.handle(exchange);
+                }
+            });
         });
         server.setExecutor(executor);
 
         server.createContext("/", exchange -> {
-            handleCatchAll(exchange);
+            if (!handleCorsHeaders(exchange)) {
+                handleCatchAll(exchange);
+            }
         });
 
         server.createContext("/mcp", exchange -> {
-            var mcpServer = AppMcpServer.get();
-            if (mcpServer != null) {
-                mcpServer.createHttpHandler().handle(exchange);
+            if (!handleCorsHeaders(exchange)) {
+                var mcpServer = AppMcpServer.get();
+                if (mcpServer != null) {
+                    mcpServer.createHttpHandler().handle(exchange);
+                }
             }
         });
 
         server.start();
         running = true;
+    }
+
+    private boolean handleCorsHeaders(HttpExchange exchange) throws IOException {
+        exchange.getResponseHeaders().add("Origin", "http://localhost:" + AppBeaconServer.get().getPort());
+        exchange.getResponseHeaders().add("Vary", "Origin");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Credentials", "true");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "*");
+        exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "*");
+        if (exchange.getRequestMethod().equals("OPTIONS")) {
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, -1);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void handleCatchAll(HttpExchange exchange) throws IOException {

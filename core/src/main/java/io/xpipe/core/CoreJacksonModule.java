@@ -1,6 +1,7 @@
 package io.xpipe.core;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -112,6 +113,7 @@ public class CoreJacksonModule extends SimpleModule {
     }
 
     @JsonSerialize(as = Throwable.class)
+    @JsonPropertyOrder(alphabetic = true)
     public abstract static class ThrowableTypeMixIn {
 
         @SuppressWarnings("unused")

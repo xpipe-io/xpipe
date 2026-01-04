@@ -29,11 +29,8 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
                     .getNames();
             var cat = new StorePath(names.subList(1, names.size()));
             var cache = e.getStoreCache().entrySet().stream()
-                    .filter(stringObjectEntry -> {
-                        return stringObjectEntry.getValue() != null
-                                && (ClassUtils.isPrimitiveOrWrapper(
-                                                stringObjectEntry.getValue().getClass())
-                                        || stringObjectEntry.getValue() instanceof String);
+                    .filter(kv -> {
+                        return kv.getValue() != null && (ClassUtils.isPrimitiveOrWrapper(kv.getValue().getClass()) || kv.getValue() instanceof String);
                     })
                     .collect(Collectors.toMap(
                             stringObjectEntry -> stringObjectEntry.getKey(),

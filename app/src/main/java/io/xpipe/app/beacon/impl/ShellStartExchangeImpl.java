@@ -41,12 +41,13 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         if (existing.isEmpty()) {
             AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
         }
+        var ttyState = JacksonMapper.getDefault().valueToTree(control.getTtyState()).asText();
         return Response.builder()
                 .shellDialect(control.getShellDialect().getId())
                 .osType(control.getOsType())
                 .osName(control.getOsName())
                 .temp(control.getSystemTemporaryDirectory())
-                .ttyState(JacksonMapper.getDefault().writeValueAsString(control.getTtyState()))
+                .ttyState(ttyState)
                 .build();
     }
 }
