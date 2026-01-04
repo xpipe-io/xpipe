@@ -1,12 +1,10 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.ext.PrefsChoiceValue;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationType;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ShellDialects;
-import io.xpipe.app.process.TerminalInitFunction;
+import io.xpipe.app.process.*;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
 
@@ -344,37 +342,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
         }
     };
-    ExternalTerminalType UXTERM = new SimplePathType("app.uxterm", "uxterm", true) {
-        @Override
-        public TerminalOpenFormat getOpenFormat() {
-            return TerminalOpenFormat.NEW_WINDOW;
-        }
-
-        @Override
-        public String getWebsite() {
-            return "https://invisible-island.net/xterm/";
-        }
-
-        @Override
-        public boolean isRecommended() {
-            return false;
-        }
-
-        @Override
-        public boolean useColoredTitle() {
-            return true;
-        }
-
-        @Override
-        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of()
-                    .add("-title")
-                    .addQuoted(configuration.getColoredTitle())
-                    .add("-e")
-                    .addFile(configuration.single().getScriptFile());
-        }
-    };
-    ExternalTerminalType XTERM = new SimplePathType("app.xterm", "xterm", true) {
+    ExternalTerminalType XTERM = new MultiPathType("app.xterm",  true, List.of("uxterm", "xterm")) {
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.NEW_WINDOW;
@@ -509,7 +477,6 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             GUAKE,
             TILDA,
             COSMIC_TERM,
-            UXTERM,
             XTERM,
             DEEPIN_TERMINAL,
             FOOT,
@@ -669,6 +636,57 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             var args = toCommand(configuration);
             launch(args);
+        }
+
+        protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);
+    }
+
+    abstract class MultiPathType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
+
+        @Getter
+        private final String id;
+
+        @Getter
+        private final List<String> executables;
+
+        private final boolean async;
+
+        private String executable;
+
+        public MultiPathType(String id, boolean async, List<String> executables) {
+            this.id = id;
+            this.executables = executables;
+            this.async = async;
+        }
+
+        @Override
+        public boolean detach() {
+            return async;
+        }
+
+        @Override
+        public void launch(TerminalLaunchConfiguration configuration) throws Exception {
+            var args = toCommand(configuration);
+            launch(args);
+        }
+
+        @Override
+        public String getExecutable() {
+            if (executable != null) {
+                return executable;
+            }
+
+            for (String executable : executables) {
+                try (ShellControl pc = LocalShell.getShell()) {
+                    if (pc.view().findProgram(executable).isPresent()) {
+                        return (this.executable = executable);
+                    }
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).omit().handle();
+                }
+            }
+
+            return (executable = executables.getFirst());
         }
 
         protected abstract CommandBuilder toCommand(TerminalLaunchConfiguration configuration);
