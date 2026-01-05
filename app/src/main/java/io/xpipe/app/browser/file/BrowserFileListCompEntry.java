@@ -237,6 +237,10 @@ public class BrowserFileListCompEntry {
             var target = item != null && item.getRawFileEntry().resolved().getKind() == FileKind.DIRECTORY
                     ? item.getRawFileEntry().resolved()
                     : model.getFileSystemModel().getCurrentDirectory();
+            // We could already have changed the current dir
+            if (target == null) {
+                return;
+            }
             model.getFileSystemModel()
                     .dropFilesIntoAsync(
                             target,

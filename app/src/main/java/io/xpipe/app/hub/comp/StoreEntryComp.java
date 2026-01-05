@@ -134,7 +134,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setGraphic(r);
         button.getStyleClass().add("store-entry-comp");
         button.setPadding(Insets.EMPTY);
-        button.setMaxWidth(5000);
+        button.setMaxWidth(10000);
         button.setFocusTraversable(true);
         CompDescriptor.builder()
                 .name(getWrapper().getShownName())

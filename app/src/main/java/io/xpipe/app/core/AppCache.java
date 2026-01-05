@@ -36,7 +36,7 @@ public class AppCache {
         try {
             FileUtils.cleanDirectory(getBasePath().toFile());
         } catch (IOException e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).expected().handle();
         }
     }
 

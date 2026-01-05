@@ -45,7 +45,7 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
                 action.accept(section);
             });
             root.hgrow();
-            root.maxWidth(2000);
+            root.maxWidth(10000);
             root.styleClass("item");
             root.apply(struc -> {
                 struc.get().setAlignment(Pos.CENTER_LEFT);
