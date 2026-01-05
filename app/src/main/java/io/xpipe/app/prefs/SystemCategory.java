@@ -40,7 +40,7 @@ public class SystemCategory extends AppPrefsCategory {
                         .pref(prefs.hibernateBehaviour)
                         .addComp(ChoiceComp.ofTranslatable(
                                         prefs.hibernateBehaviour,
-                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class),
+                                        PrefsChoiceValue.getSupported(HibernateBehaviour.class).stream().filter(b -> b.isAvailable()).toList(),
                                         true)
                                 .maxWidth(getCompWidth()))
                         .pref(prefs.localShellDialect)

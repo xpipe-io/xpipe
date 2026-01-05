@@ -21,7 +21,7 @@ public enum HibernateBehaviour implements PrefsChoiceValue {
         }
 
         @Override
-        public boolean isSelectable() {
+        public boolean isAvailable() {
             var handler = DataStorageUserHandler.getInstance();
             return handler != null && handler.getActiveUser() != null;
         }
