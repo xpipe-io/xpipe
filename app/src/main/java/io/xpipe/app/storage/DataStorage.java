@@ -762,8 +762,11 @@ public abstract class DataStorage {
             }
 
             var s = pair.getKey().getStorePersistentState();
-            var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
-            pair.getKey().setStorePersistentState(mergedState);
+            // We might not be a stateful store
+            if (s != null) {
+                var mergedState = s.mergeCopy(pair.getValue().get().getStorePersistentState());
+                pair.getKey().setStorePersistentState(mergedState);
+            }
 
             if (pair.getKey().getOrderIndex() == 0 && pair.getValue().get().getOrderIndex() != 0) {
                 pair.getKey().setOrderIndex(pair.getValue().get().getOrderIndex());
