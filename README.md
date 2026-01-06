@@ -126,16 +126,21 @@ It currently supports:
 
 ![scripts](https://github.com/xpipe-io/.github/raw/main/img/scripts_shadow.png)
 
-## Sync via git ([Docs](https://docs.xpipe.io/guide/sync))
+## And much more
 
-- All data is stored exclusively on your local system in a cryptographically secure vault. You can also choose to increase security by using a custom master passphrase for further encryption
-- XPipe is able to retrieve secrets automatically from your password manager via it's command-line interface.
-- There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
-- Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
+- You can synchronize your vault across multiple systems and share it with other team members via your own self-hosted git repository ([Docs](https://docs.xpipe.io/guide/sync))
+- All data is stored exclusively on your systems in a cryptographically secure vault. You can also choose to increase security by using a custom master passphrase for further encryption ([Docs](https://docs.xpipe.io/reference/security))
+- XPipe is able to retrieve secrets automatically from your installed password manager and doesn't have store secrets itself ([Docs](https://docs.xpipe.io/guide/password-manager))
+- There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services ([Docs](https://docs.xpipe.io/guide/sync))
+- XPipe has an integrated MCP server that you can enable. This allows you to easily use all of XPipe's features from an AI agent ([Docs](https://docs.xpipe.io/guide/mcp))
+- Run coherent desktop applications remotely via the uniform desktop application system in XPipe for RDP, VNC, and X11 forwards ([Docs](https://docs.xpipe.io/guide/desktop-applications))
+- Securely tunnel and automatically open remote services with one click with the services integration ([Docs](https://docs.xpipe.io/guide/services))
 
 # Downloads
 
 Note that this is a desktop application that should be run on your local desktop workstation, not on any server or containers. It will be able to connect to your server infrastructure from there.
+
+For a full reference and instructions, see the [installation docs](https://docs.xpipe.io/guide/installation) and [managed installation docs](https://docs.xpipe.io/guide/managed-installation).
 
 ## Windows
 
