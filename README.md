@@ -22,6 +22,64 @@ It currently supports:
 - [Kubernetes](https://docs.xpipe.io/guide/kubernetes) clusters, pods, and containers
 - [Powershell Remote Sessions](https://docs.xpipe.io/guide/pssession)
 
+<div align="center">
+    <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/proxmox" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/proxmox.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/vmware" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/vmware.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/kvm" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/virsh.png" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/tailscale" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/tailscale.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/netbird" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/netbird.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/hcloud" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/hetzner.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/teleport" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/teleport.png" width=40 height=40 />
+    </a>
+</div>
+
 ## Connection hub ([Docs](https://docs.xpipe.io/guide/hub))
 
 - Easily establish and manage connections to remote systems from a central hub interface
@@ -72,65 +130,6 @@ It currently supports:
 - XPipe is able to retrieve secrets automatically from your password manager via it's command-line interface.
 - There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services.
 - Vault changes can be pushed and pulled from your own remote git repository by multiple team members across many systems
-
-## Integrations
-
-<div align="center">
-    <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
-    </a>
-    <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
-    </a>
-    <img width=10 />
-    <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
-    </a>
-</div>
 
 # Downloads
 
