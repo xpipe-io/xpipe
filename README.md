@@ -77,31 +77,58 @@ It currently supports:
 
 <div align="center">
     <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
     </a>
-    <img width=5 />
+    <img width=10 />
     <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
-        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=80 height=80 />
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
+    </a>
+    <a href="https://docs.xpipe.io/guide/ssh" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/ssh.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/docker" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/docker.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/docker#compose" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/compose.png" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/lxc" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/lxd.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/podman" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/podman.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/aws" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/aws.svg" width=40 height=40 />
+    </a>
+    <img width=10 />
+    <a href="https://docs.xpipe.io/guide/kubernetes" target="_blank" rel="noopener">
+        <img src="https://github.com/xpipe-io/.github/raw/main/icons/k8s.svg" width=40 height=40 />
     </a>
 </div>
 
