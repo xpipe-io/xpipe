@@ -95,7 +95,12 @@ public abstract class AppInstallation {
             // working directory
             var isImage = AppProperties.get().isImage();
             if (!isImage) {
-                return Path.of(System.getProperty("user.dir"));
+                var cd = Path.of(System.getProperty("user.dir"));
+                var valid = Files.exists(cd.resolve("app")) && Files.exists(cd.resolve("lang"));
+                if (!valid) {
+                    throw new IllegalArgumentException("Development build launched in wrong working directory, expected project root but got " + cd);
+                }
+                return cd;
             }
             return getInstallationBasePathForJavaExecutable(path);
         } else {

@@ -8,10 +8,10 @@ public class IdentitySummary {
     public static String createSummary(IdentityStore st) {
         var user = st.getUsername().hasUser()
                 ? st.getUsername().getFixedUsername().map(s -> "User " + s).orElse("User")
-                : "Anonymous User";
+                : "Anonymous user";
         var s = user
-                + (st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy ? "" : " + Password")
-                + (st.getSshIdentity() == null || st.getSshIdentity() instanceof NoIdentityStrategy ? "" : " + Key");
+                + (st.getPassword() == null || st.getPassword() instanceof SecretNoneStrategy ? "" : " + password")
+                + (st.getSshIdentity() == null || st.getSshIdentity() instanceof NoIdentityStrategy ? "" : " + key");
         return s;
     }
 }

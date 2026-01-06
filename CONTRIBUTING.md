@@ -15,17 +15,6 @@ There are no real formal contribution guidelines right now, they will maybe come
 
 ## Development Setup
 
-You need to have an up-to-date version of XPipe installed on your local system in order to properly
-run XPipe in a development environment.
-This is due to the fact that some components are only included in the release version and not in this repository.
-XPipe is able to automatically detect your local installation and fetch the required
-components from it when it is run in a development environment.
-
-Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
-You should therefore always check out the matching version tag for your local repository and local XPipe installation.
-You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
-So for example if you currently have XPipe `16.0` installed, you should run `git reset --hard 16.0` first to properly compile against it.
-
 You need to have JDK for Java 25 installed to compile the project.
 If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
@@ -34,10 +23,23 @@ curl -s "https://get.sdkman.io" | bash
 sdk install java 25-graalce
 sdk default java 25-graalce
 ```
-.
+
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=25).
 
 You can configure a few development options in the file `app/dev.properties` which will be automatically generated when gradle is first run.
+
+You need to have an up-to-date version of XPipe installed on your local system in order to properly
+run XPipe in a development environment.
+This is due to the fact that some components are only included in the release version and not in this repository.
+XPipe is able to automatically detect your local installation and fetch the required
+components from it when it is run in a development environment.
+
+To disable the local installation check, you can set the property `io.xpipe.app.locator.disableInstallationVersionCheck=false` in the file `app/dev.properties`. This allows it to start up even if there are version mismatches. Some things might not work as expected though. You can also use a local PTB installation instead of the stable release version by setting the property `io.xpipe.app.locator.usePtbInstallation=true` in the file `app/dev.properties`.
+
+Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
+You should therefore always check out the matching version tag for your local repository and local XPipe installation.
+You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
+So for example if you currently have XPipe `20.0` installed, you should run `git reset --hard 20.0` first to properly compile against it.
 
 ## Building and Running
 

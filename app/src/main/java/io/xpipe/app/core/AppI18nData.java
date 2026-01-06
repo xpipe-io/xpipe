@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.SupportedLocale;
@@ -34,6 +35,10 @@ public class AppI18nData {
         var translations = new HashMap<String, String>();
         {
             var basePath = AppInstallation.ofCurrent().getLangPath().resolve("strings");
+            if (!Files.exists(basePath)) {
+                throw ExtensionException.corrupt("Failed to locate translation data");
+            }
+
             AtomicInteger fileCounter = new AtomicInteger();
             AtomicInteger lineCounter = new AtomicInteger();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
@@ -69,6 +74,10 @@ public class AppI18nData {
         var markdownDocumentations = new HashMap<String, String>();
         {
             var basePath = AppInstallation.ofCurrent().getLangPath().resolve("texts");
+            if (!Files.exists(basePath)) {
+                throw ExtensionException.corrupt("Failed to locate translation data");
+            }
+
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

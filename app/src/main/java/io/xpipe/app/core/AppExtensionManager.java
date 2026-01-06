@@ -57,7 +57,7 @@ public class AppExtensionManager {
     }
 
     private static String getLocalInstallVersion(AppInstallation localInstallation) {
-        var exec = localInstallation.getDaemonExecutablePath();
+        var exec = localInstallation.getCliExecutablePath();
         var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
         return out.orElseThrow().strip();
     }

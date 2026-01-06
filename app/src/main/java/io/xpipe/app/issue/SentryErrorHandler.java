@@ -219,7 +219,6 @@ public class SentryErrorHandler implements ErrorHandler {
                 AppPrefs.get() != null
                         ? AppPrefs.get().checkForSecurityUpdates().getValue().toString()
                         : "unknown");
-        s.setTag("initError", String.valueOf(AppOperationMode.isInStartup()));
         s.setTag(
                 "developerMode",
                 AppPrefs.get() != null
