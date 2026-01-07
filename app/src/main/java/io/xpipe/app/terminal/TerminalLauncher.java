@@ -282,7 +282,7 @@ public class TerminalLauncher {
             // Restart for the next time
             proxyControl.get().start();
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + proxyLaunchCommand;
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + proxyLaunchCommand;
             var pane = new TerminalPaneConfiguration(
                     multiplexerLaunchRequest,
                     AppNames.ofCurrent().getName(),
@@ -302,7 +302,7 @@ public class TerminalLauncher {
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + launchCommand;
             var pane = new TerminalPaneConfiguration(
                     multiplexerLaunchRequest,
                     AppNames.ofCurrent().getName(),
@@ -331,7 +331,7 @@ public class TerminalLauncher {
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getDialect()) + "\n" + launchCommand;
+                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + launchCommand;
             // Restart for the next time
             proxyControl.get().start();
             panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));
@@ -340,13 +340,13 @@ public class TerminalLauncher {
         return Optional.ofNullable(launchConfiguration.withPanes(panes));
     }
 
-    public static String getTerminalRegisterCommand(UUID request, ShellDialect dialect) {
+    public static String getTerminalRegisterCommand(UUID request, ShellControl sc) throws Exception {
         var exec = AppInstallation.ofCurrent().getCliExecutablePath();
         var registerLine = CommandBuilder.of()
-                .addFile(exec)
+                .addFile(sc.getLocalSystemAccess().translateFromLocalSystemPath(FilePath.of(exec)))
                 .add("terminal-register", "--request", request.toString())
                 .buildSimple();
-        var powershell = ShellDialects.isPowershell(dialect);
+        var powershell = ShellDialects.isPowershell(sc);
         var bellLine = "printf \"\\a\"";
         var printBell = OsType.ofLocal() != OsType.WINDOWS
                 && AppPrefs.get().enableTerminalStartupBell().get();

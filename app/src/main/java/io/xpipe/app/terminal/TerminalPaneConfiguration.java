@@ -64,10 +64,10 @@ public class TerminalPaneConfiguration {
             boolean alwaysPromptRestart)
             throws Exception {
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
-            var d = LocalShell.getDialect();
-            var register = TerminalLauncher.getTerminalRegisterCommand(request, d);
-            var launcherScript = register + "\n" + d.terminalLauncherScript(request, title, alwaysPromptRestart);
-            var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, d);
+            var sc = LocalShell.getShell();
+            var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
+            var launcherScript = register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
+            var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
         }
 
@@ -96,7 +96,7 @@ public class TerminalPaneConfiguration {
                           echo 'Transcript stopped, output file is "sessions\\%s"'
                           """
                             .formatted(
-                                    TerminalLauncher.getTerminalRegisterCommand(request, ShellDialects.POWERSHELL),
+                                    TerminalLauncher.getTerminalRegisterCommand(request, LocalShell.getLocalPowershell().orElseThrow()),
                                     logFile.getFileName(),
                                     logFile,
                                     launcherScript,
@@ -141,7 +141,7 @@ public class TerminalPaneConfiguration {
                           cat "%s" | "%s" terminal-clean > "%s.txt"
                           """
                             .formatted(
-                                    TerminalLauncher.getTerminalRegisterCommand(request, sc.getShellDialect()),
+                                    TerminalLauncher.getTerminalRegisterCommand(request, sc),
                                     logFile.getFileName(),
                                     scriptCommand,
                                     logFile.getFileName(),
