@@ -269,8 +269,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 .nameAndDescription("terminalInitScript")
                 .addComp(
                         IntegratedTextAreaComp.script(ref, prefs.terminalInitScript)
-                                .maxWidth(getCompWidth())
-                                .minHeight(150),
+                                .maxWidth(getCompWidth()),
                         prefs.terminalInitScript);
     }
 
