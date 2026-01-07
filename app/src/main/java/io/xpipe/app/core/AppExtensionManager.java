@@ -59,7 +59,8 @@ public class AppExtensionManager {
     private static String getLocalInstallVersion(AppInstallation localInstallation) {
         var exec = localInstallation.getCliExecutablePath();
         var out = LocalExec.readStdoutIfPossible(exec.toString(), "version");
-        return out.orElseThrow().strip();
+        var s = out.orElseThrow().strip();
+        return !s.isEmpty() ? s : "?";
     }
 
     private void loadBaseExtension() {
@@ -86,20 +87,19 @@ public class AppExtensionManager {
                                 + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
             }
 
-            var iv = getLocalInstallVersion(localInstallation);
-            var installVersion = AppVersion.parse(iv)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
-            var sv = !AppProperties.get().isImage()
-                    ? Files.readString(Path.of("version")).strip()
-                    : AppProperties.get().getVersion();
-            var sourceVersion = AppVersion.parse(sv)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
-            if (AppProperties.get().isLocatorVersionCheck() && !installVersion.equals(sourceVersion)) {
-                throw new IllegalStateException("Incompatible development version. Source: " + sv
-                        + ", Installation: "
-                        + iv
-                        + "\n\nPlease try to check out the matching release version in the repository. See https://github"
-                        + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+            if (AppProperties.get().isLocatorVersionCheck()) {
+                var iv = getLocalInstallVersion(localInstallation);
+                var installVersion = AppVersion.parse(iv).orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
+                var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).strip() : AppProperties.get().getVersion();
+                var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+                if (!installVersion.equals(sourceVersion)) {
+                    throw new IllegalStateException("Incompatible development version. Source: " +
+                            sv +
+                            ", Installation: " +
+                            iv +
+                            "\n\nPlease try to check out the matching release version in the repository. See https://github" +
+                            ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                }
             }
 
             var extensions = localInstallation.getExtensionsPath();
