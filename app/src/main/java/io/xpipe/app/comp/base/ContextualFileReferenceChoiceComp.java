@@ -153,8 +153,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         gitShareButton.descriptor(d -> d.nameKey("gitShareFileTooltip"));
         gitShareButton.disable(Bindings.createBooleanBinding(
                 () -> {
-                    return filePath.getValue() != null
-                            && ContextualFileReference.of(filePath.getValue()).isInDataDirectory();
+                    return filePath.getValue() == null
+                            || ContextualFileReference.of(filePath.getValue()).isInDataDirectory();
                 },
                 filePath));
 
