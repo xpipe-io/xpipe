@@ -119,6 +119,10 @@ public class StoreCategoryWrapper {
             category.setName(n);
         });
 
+        expanded.addListener((c, o, n) -> {
+            category.setExpanded(n);
+        });
+
         category.addListener(() -> PlatformThread.runLaterIfNeeded(() -> {
             update();
         }));
