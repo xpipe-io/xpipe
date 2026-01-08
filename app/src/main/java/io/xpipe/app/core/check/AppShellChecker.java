@@ -22,6 +22,12 @@ public abstract class AppShellChecker {
         }
 
         var originalErr = selfTestErrorCheck();
+
+        // If we are already in fallback mode and can somehow continue, we should do so instantly
+        if (originalErr.isPresent() && originalErr.get().isCanContinue() && !isDefaultShell) {
+            return;
+        }
+
         if (originalErr.isPresent()
                 && (shouldAttemptFallbackForProcessStartFail()
                         || !originalErr.get().isProcessSpawnIssue())) {
@@ -37,12 +43,10 @@ public abstract class AppShellChecker {
             var fallbackErr = selfTestErrorCheck();
             if (fallbackErr.isPresent()) {
                 var msg = formatMessage(fallbackErr.get().getMessage());
-                var event = ErrorEventFactory.fromThrowable(new IllegalStateException(msg));
+                var event = ErrorEventFactory.fromThrowable(new IllegalStateException(msg))
+                        .documentationLink(DocumentationLink.LOCAL_SHELL_WARNING);
                 // Only make it terminal if both shells can't continue
-                if (originalErr.get().isCanContinue()) {
-                    // Toggle back if both shells have issues
-                    toggleFallback();
-                } else if (!fallbackErr.get().isCanContinue()) {
+                if (!fallbackErr.get().isCanContinue()) {
                     event.term();
                 }
                 event.handle();
