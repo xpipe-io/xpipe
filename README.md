@@ -82,7 +82,7 @@ It currently supports:
     </a>
 </div>
 
-## Connection hub ([Docs](https://docs.xpipe.io/guide/hub))
+## Connection hub
 
 - Easily establish and manage connections to remote systems from a central hub interface
 - Organize all your connections in hierarchical categories to maintain an overview over hundreds of connections.
