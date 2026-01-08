@@ -92,7 +92,7 @@ It currently supports:
 
 ![Connection hub](https://github.com/xpipe-io/.github/raw/main/img/hub_shadow.png)
 
-## File browser ([Docs](https://docs.xpipe.io/guide/file-browser))
+## File browser
 
 - Interact with the file system of any remote system using a workflow optimized for professionals
 - Utilize your entire arsenal of locally installed programs to open and edit remote files
@@ -104,7 +104,7 @@ It currently supports:
 
 ![Browser](https://github.com/xpipe-io/.github/raw/main/img/browser_shadow.png)
 
-## Terminal launcher ([Docs](https://docs.xpipe.io/guide/terminals))
+## Terminal launcher
 
 - Launches you into a shell session in your favourite terminal with one click. Automatically fills password prompts and more
 - Comes with support for all commonly used terminal emulators across all operating systems
@@ -116,7 +116,7 @@ It currently supports:
 
 ![Terminal](https://github.com/xpipe-io/.github/raw/main/img/terminal_shadow.png)
 
-## Versatile scripting system ([Docs](https://docs.xpipe.io/guide/scripting))
+## Versatile scripting system
 
 - Create reusable simple shell scripts, templates, and groups to run on connected remote systems
 - Automatically make your scripts available in the PATH on any remote system without any setup
@@ -128,13 +128,13 @@ It currently supports:
 
 ## And much more
 
-- You can synchronize your vault across multiple systems and share it with other team members via your own self-hosted git repository ([Docs](https://docs.xpipe.io/guide/sync))
-- All data is stored exclusively on your systems in a cryptographically secure vault. You can also choose to increase security by using a custom master passphrase for further encryption ([Docs](https://docs.xpipe.io/reference/security))
-- XPipe is able to retrieve secrets automatically from your installed password manager and doesn't have store secrets itself ([Docs](https://docs.xpipe.io/guide/password-manager))
-- There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services ([Docs](https://docs.xpipe.io/guide/sync))
-- XPipe has an integrated MCP server that you can enable. This allows you to easily use all of XPipe's features from an AI agent ([Docs](https://docs.xpipe.io/guide/mcp))
-- Run coherent desktop applications remotely via the uniform desktop application system in XPipe for RDP, VNC, and X11 forwards ([Docs](https://docs.xpipe.io/guide/desktop-applications))
-- Securely tunnel and automatically open remote services with one click with the services integration ([Docs](https://docs.xpipe.io/guide/services))
+- You can synchronize your vault across multiple systems and share it with other team members via your own self-hosted git repository
+- All data is stored exclusively on your systems in a cryptographically secure vault. You can also choose to increase security by using a custom master passphrase for further encryption
+- XPipe is able to retrieve secrets automatically from your installed password manager and doesn't have store secrets itself
+- There are no servers involved, all your information stays on your systems. The XPipe application does not send any personal or sensitive information to outside services
+- XPipe has an integrated MCP server that you can enable. This allows you to easily use all of XPipe's features from an AI agent
+- Run coherent desktop applications remotely via the uniform desktop application system in XPipe for RDP, VNC, and X11 forwards
+- Securely tunnel and automatically open remote services with one click with the services integration
 
 # Downloads
 
