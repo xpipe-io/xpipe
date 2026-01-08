@@ -1,6 +1,9 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppNames;
+import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.OsType;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -43,6 +46,11 @@ public class Deobfuscator {
     }
 
     private static boolean canDeobfuscate() {
+        // We probably can't run .bat scripts in this case
+        if (OsType.ofLocal() == OsType.WINDOWS && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+            return false;
+        }
+
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }
