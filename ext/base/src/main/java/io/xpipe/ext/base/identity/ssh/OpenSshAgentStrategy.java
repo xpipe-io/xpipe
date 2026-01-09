@@ -18,6 +18,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("sshAgent")
@@ -66,30 +67,37 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {
-        builder.environment("SSH_AUTH_SOCK", sc -> {
-            if (sc.getOsType() == OsType.WINDOWS) {
-                return null;
-            }
+    public void buildCommand(CommandBuilder builder) {}
 
-            if (AppPrefs.get() != null) {
-                var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-                if (socket != null) {
-                    return socket.resolveTildeHome(sc.view().userHome()).toString();
-                }
-            }
-
+    private String getIdentityAgent(ShellControl sc) throws Exception {
+        if (sc.getOsType() == OsType.WINDOWS) {
             return null;
-        });
+        }
+
+        if (AppPrefs.get() != null) {
+            var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+            if (socket != null) {
+                return socket.resolveTildeHome(sc.view().userHome()).toString();
+            }
+        }
+
+        return null;
     }
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
-        return List.of(
+        var l = new ArrayList<>(List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none"));
+                new KeyValue("PKCS11Provider", "none")));
+
+        var agent = getIdentityAgent(sc);
+        if (agent != null) {
+            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
+        }
+
+        return l;
     }
 }
