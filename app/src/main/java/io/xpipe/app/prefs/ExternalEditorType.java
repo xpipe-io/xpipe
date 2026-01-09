@@ -3,10 +3,7 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.process.ShellScript;
+import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.FlatpakCache;
 import io.xpipe.app.util.WindowsRegistry;
@@ -14,6 +11,8 @@ import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,206 +52,75 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType VSCODIUM_WINDOWS = new WindowsType() {
+    WindowsType VSCODIUM_WINDOWS = new VsCodeWindowsType("app.vscodium", "https://vscodium.com/", AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("VSCodium")
+                    .resolve("bin")
+                    .resolve("codium.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("VSCodium")
+                    .resolve("VSCodium.exe"));
 
-        @Override
-        public String getWebsite() {
-            return "https://vscodium.com/";
-        }
+    WindowsType ANTIGRAVITY_WINDOWS = new VsCodeWindowsType("app.antigravity", "https://antigravity.google/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Antigravity")
+            .resolve("bin")
+            .resolve("antigravity.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Antigravity")
+                    .resolve("Antigravity.exe"));
 
-        @Override
-        public String getId() {
-            return "app.vscodium";
-        }
+    WindowsType CURSOR_WINDOWS = new VsCodeWindowsType("app.cursor", "https://cursor.com/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("cursor")
+            .resolve("bin")
+            .resolve("cursor.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("cursor")
+                    .resolve("Cursor.exe"));
 
-        @Override
-        public boolean detach() {
-            return false;
-        }
+    WindowsType VOID_WINDOWS = new VsCodeWindowsType("app.void", "https://voideditor.com/", AppSystemInfo.ofWindows()
+            .getProgramFiles()
+            .resolve("Void")
+            .resolve("bin")
+            .resolve("void.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getProgramFiles()
+                    .resolve("Void")
+                    .resolve("Void.exe"));
 
-        @Override
-        public String getExecutable() {
-            return "codium.cmd";
-        }
+    WindowsType WINDSURF_WINDOWS = new VsCodeWindowsType("app.windsurf", "https://windsurf.com/editor", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Windsurf")
+            .resolve("bin")
+            .resolve("windsurf.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Windsurf")
+                    .resolve("Windsurf.exe"));
 
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("VSCodium")
-                            .resolve("bin")
-                            .resolve("codium.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType ANTIGRAVITY_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://antigravity.google/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.antigravity";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "antigravity.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Antigravity")
-                            .resolve("bin")
-                            .resolve("antigravity.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType CURSOR_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://cursor.com/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.cursor";
-        }
-
-        @Override
-        public boolean detach() {
-            return true;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "Cursor";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("cursor")
-                            .resolve("Cursor.exe"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType VOID_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://voideditor.com/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.void";
-        }
-
-        @Override
-        public boolean detach() {
-            return true;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "Void";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getProgramFiles()
-                            .resolve("Void")
-                            .resolve("Void.exe"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType WINDSURF_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://windsurf.com/editor";
-        }
-
-        @Override
-        public String getId() {
-            return "app.windsurf";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "windsurf.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Windsurf")
-                            .resolve("bin")
-                            .resolve("windsurf.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType KIRO_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://kiro.dev/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.kiro";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "kiro.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Kiro")
-                            .resolve("bin")
-                            .resolve("kiro.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
+    WindowsType KIRO_WINDOWS = new VsCodeWindowsType("app.kiro", "https://kiro.dev/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Kiro")
+            .resolve("bin")
+            .resolve("kiro.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Kiro")
+                    .resolve("Kiro.exe"));
 
     // Cli is broken, keep inactive
     @SuppressWarnings("unused")
@@ -289,107 +157,41 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType TRAE_WINDOWS = new WindowsType() {
+    WindowsType TRAE_WINDOWS = new VsCodeWindowsType("app.trae", "https://www.trae.ai/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Trae")
+            .resolve("bin")
+            .resolve("trae.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Trae")
+                    .resolve("Trae.exe"));
 
-        @Override
-        public String getWebsite() {
-            return "https://www.trae.ai/";
-        }
+    WindowsType VSCODE_WINDOWS = new VsCodeWindowsType("app.vscode", "https://code.visualstudio.com/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Microsoft VS Code")
+            .resolve("bin")
+            .resolve("code.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Microsoft VS Code")
+                    .resolve("Code.exe"));
 
-        @Override
-        public String getId() {
-            return "app.trae";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "trae.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Trae")
-                            .resolve("bin")
-                            .resolve("trae.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType VSCODE_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://code.visualstudio.com/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.vscode";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "code.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Microsoft VS Code")
-                            .resolve("bin")
-                            .resolve("code.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
-
-    WindowsType VSCODE_INSIDERS_WINDOWS = new WindowsType() {
-
-        @Override
-        public String getWebsite() {
-            return "https://code.visualstudio.com/insiders/";
-        }
-
-        @Override
-        public String getId() {
-            return "app.vscodeInsiders";
-        }
-
-        @Override
-        public boolean detach() {
-            return false;
-        }
-
-        @Override
-        public String getExecutable() {
-            return "code-insiders.cmd";
-        }
-
-        @Override
-        public Optional<Path> determineInstallation() {
-            return Optional.of(AppSystemInfo.ofWindows()
-                            .getLocalAppData()
-                            .resolve("Programs")
-                            .resolve("Microsoft VS Code Insiders")
-                            .resolve("bin")
-                            .resolve("code-insiders.cmd"))
-                    .filter(path -> Files.exists(path));
-        }
-    };
+    WindowsType VSCODE_INSIDERS_WINDOWS = new VsCodeWindowsType("app.vscodeInsiders", "https://code.visualstudio.com/insiders/", AppSystemInfo.ofWindows()
+            .getLocalAppData()
+            .resolve("Programs")
+            .resolve("Microsoft VS Code Insiders")
+            .resolve("bin")
+            .resolve("code-insiders.cmd"),
+            AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Microsoft VS Code Insiders")
+                    .resolve("Code - Insiders.exe"));
 
     ExternalEditorType NOTEPADPLUSPLUS = new WindowsType() {
 
@@ -682,12 +484,49 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         default void launch(Path file) throws Exception {
             var location = findExecutable();
-            var builder = CommandBuilder.of().addFile(location.toString()).addFile(file.toString());
+            // Use quotes for file in case editor does not like single quotes or other
+            var builder = CommandBuilder.of().addFile(location.toString()).addQuoted(file.toString());
             if (detach()) {
                 ExternalApplicationHelper.startAsync(builder);
             } else {
                 LocalShell.getShell().executeSimpleCommand(builder);
             }
+        }
+    }
+
+    @AllArgsConstructor
+    class VsCodeWindowsType implements WindowsType {
+
+        private final String id;
+        private final String link;
+        private final Path script;
+        private final Path exe;
+
+        @Override
+        public String getId() {
+            return id;
+        }
+
+        @Override
+        public boolean detach() {
+            // Launching the exe requires detach
+            return LocalShell.getDialect() != ShellDialects.CMD;
+        }
+
+        @Override
+        public String getExecutable() {
+            // Use .cmd script in cmd
+            return LocalShell.getDialect() == ShellDialects.CMD ? script.getFileName().toString() : exe.getFileName().toString();
+        }
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            return Optional.of(LocalShell.getDialect() != ShellDialects.CMD ? exe : script).filter(Files::exists);
+        }
+
+        @Override
+        public String getWebsite() {
+            return link;
         }
     }
 
