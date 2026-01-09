@@ -487,6 +487,7 @@ public class DataStoreEntry extends StorageElement {
         this.orderIndex = orderIndex;
         if (changed) {
             notifyUpdate(false, false);
+            dirty = true;
         }
     }
 
