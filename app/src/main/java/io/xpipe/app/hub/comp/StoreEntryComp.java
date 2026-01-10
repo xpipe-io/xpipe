@@ -622,6 +622,16 @@ public abstract class StoreEntryComp extends SimpleComp {
 
                     order.getItems().add(new SeparatorMenuItem());
 
+                    var clear =
+                            new MenuItem(AppI18n.get("clearIndex"), new FontIcon("mdi2o-order-bool-ascending-variant"));
+                    clear.setOnAction(event -> {
+                        getWrapper().orderWithIndex(0);
+                        event.consume();
+                    });
+                    if (getWrapper().getOrderIndex().get() != 0) {
+                        order.getItems().add(clear);
+                    }
+
                     items.add(order);
                 }
 
