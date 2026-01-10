@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @JsonTypeName("mstsc")
 @Value
@@ -59,7 +60,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     public void launch(RdpLaunchConfig configuration) throws Exception {
         var adaptedRdpConfig = getAdaptedConfig(configuration);
 
-        prepareLocalhostRegistryCache(configuration);
+        var setCache = prepareLocalhostRegistryCache(configuration);
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
         LocalShell.getShell()
@@ -69,16 +70,11 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
             FileUtils.deleteQuietly(file.toFile());
         }, Duration.ofSeconds(1));
 
-        var localhost = configuration.getConfig().get("full address").orElseThrow().getValue().startsWith("localhost");
-        if (localhost) {
-            var counter = ++launchCounter;
-            GlobalTimer.delay(() -> {
-                if (counter != launchCounter) {
-                    return;
-                }
-
+        if (!setCache) {
+            var localhost = configuration.getConfig().get("full address").orElseThrow().getValue().startsWith("localhost");
+            if (localhost) {
                 saveLocalhostRegistryCache(configuration.getStoreId());
-            }, Duration.ofSeconds(15));
+            }
         }
     }
 
@@ -110,20 +106,29 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     private void saveLocalhostRegistryCache(UUID entry) {
-        var ex = WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
-        if (!ex) {
-            return;
-        }
+        var counter = ++launchCounter;
+        var attempts = new AtomicInteger();
+        GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
+            if (counter != launchCounter || attempts.getAndIncrement() > 15) {
+                return true;
+            }
 
-        var user = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
-                "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "UsernameHint").orElse(null);
-        var cert = WindowsRegistry.local().readBinaryValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
-                "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "CertHash").orElse(null);
-        if (user == null && cert == null) {
-            return;
-        }
+            var ex = WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
+            if (!ex) {
+                return false;
+            }
 
-        AppCache.update("rdp-" + entry, RegistryCache.builder().usernameHint(user).certHash(cert).build());
+            var user = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
+                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "UsernameHint").orElse(null);
+            var cert = WindowsRegistry.local().readBinaryValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
+                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "CertHash").orElse(null);
+            if (user == null && cert == null) {
+                return true;
+            }
+
+            AppCache.update("rdp-" + entry, RegistryCache.builder().usernameHint(user).certHash(cert).build());
+            return true;
+        });
     }
 
     private Optional<RegistryCache> getLocalhostRegistryCache(UUID entry) {
@@ -131,7 +136,7 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
         return Optional.ofNullable(found);
     }
 
-    private void prepareLocalhostRegistryCache(RdpLaunchConfig configuration) {
+    private boolean prepareLocalhostRegistryCache(RdpLaunchConfig configuration) {
         WindowsRegistry.local().deleteKey(WindowsRegistry.HKEY_CURRENT_USER,
                 "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
 
@@ -150,8 +155,12 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                     WindowsRegistry.local().setBinaryValue(WindowsRegistry.HKEY_CURRENT_USER,
                             "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "CertHash", cert);
                 }
+
+                return user != null || cert != null;
             }
         }
+
+        return false;
     }
 
     private String encrypt(SecretValue password) throws Exception {
