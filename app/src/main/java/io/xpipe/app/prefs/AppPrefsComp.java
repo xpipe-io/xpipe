@@ -29,8 +29,10 @@ public class AppPrefsComp extends SimpleComp {
                     .styleClass(appPrefsCategory.getId());
             return r;
         }, false);
-        boxComp.maxWidth(750)
-                .styleClass("prefs-box");
+        boxComp.apply(struc -> {
+            struc.get().getContent().getStyleClass().add("prefs-box");
+        });
+        boxComp.maxWidth(850);
         boxComp.setVisibilityControl(true);
         var box = boxComp.createRegion();
 
