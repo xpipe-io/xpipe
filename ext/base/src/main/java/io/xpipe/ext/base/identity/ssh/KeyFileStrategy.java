@@ -115,6 +115,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                             Platform.runLater(() -> {
                                 publicKey.set(contents);
                             });
+                            return;
                         }
 
                         var contents = sc.view().readRawFile(path);
