@@ -52,12 +52,21 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
         pane.setRight(sidebarR);
         model.getSelected().addListener((c, o, n) -> {
             if (o != null && o.equals(model.getEntries().get(2))) {
-                AppPrefs.get().save();
-                DataStorage.get().saveAsync();
+                var prefs = AppPrefs.get();
+                if (prefs != null) {
+                    prefs.save();
+                }
+                var storage = DataStorage.get();
+                if (storage != null) {
+                    storage.saveAsync();
+                }
             }
 
             if (o != null && o.equals(model.getEntries().get(0))) {
-                StoreViewState.get().triggerStoreListUpdate();
+                var svs = StoreViewState.get();
+                if (svs != null) {
+                    svs.triggerStoreListUpdate();
+                }
             }
         });
         pane.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
