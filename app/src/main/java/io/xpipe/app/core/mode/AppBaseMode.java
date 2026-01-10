@@ -98,8 +98,8 @@ public class AppBaseMode extends AppOperationMode {
         ThreadHelper.load(
                 true,
                 () -> {
-                    LocalShell.init();
                     AppShellCheck.check();
+                    LocalShell.init();
                     shellLoaded.countDown();
                     AppRosettaCheck.check();
                     AppWindowsArmCheck.check();
