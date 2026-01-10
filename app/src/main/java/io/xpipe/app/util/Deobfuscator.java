@@ -51,11 +51,6 @@ public class Deobfuscator {
             return false;
         }
 
-        // We probably can't run .bat scripts in this case
-        if (OsType.ofLocal() == OsType.WINDOWS && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
-            return false;
-        }
-
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }
@@ -63,6 +58,18 @@ public class Deobfuscator {
         var file = Path.of(System.getenv("XPIPE_MAPPING"));
         if (!Files.exists(file)) {
             return false;
+        }
+
+        // We probably can't run .bat scripts in this case
+        if (OsType.ofLocal() == OsType.WINDOWS && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
+            return false;
+        }
+
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var reg = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Policies\\Microsoft\\Windows\\System", "DisableCMD");
+            if (reg.isPresent() && reg.get().equals("1")) {
+                return false;
+            }
         }
 
         return true;
