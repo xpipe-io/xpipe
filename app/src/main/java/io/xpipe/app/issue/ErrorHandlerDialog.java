@@ -11,7 +11,6 @@ import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.util.Deobfuscator;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
@@ -58,16 +57,16 @@ public class ErrorHandlerDialog {
                         false));
             }
             if (event.isReportable()) {
-                var reported = new SimpleBooleanProperty();
                 errorModal.addButton(new ModalButton(
                         "report",
                         () -> {
                             if (UserReportComp.show(event)) {
-                                reported.set(true);
+                                comp.getTakenAction().setValue(ErrorAction.ignore());
+                                errorModal.close();
                             }
                         },
                         false,
-                        false)).augment(button -> button.disableProperty().bind(reported));
+                        false));
                 errorModal.addButtonBarComp(Comp.hspacer());
             }
             var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;

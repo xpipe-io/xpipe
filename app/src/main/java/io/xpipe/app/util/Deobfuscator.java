@@ -1,10 +1,6 @@
 package io.xpipe.app.util;
 
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.process.ShellDialect;
-import io.xpipe.app.process.ShellDialects;
 import io.xpipe.core.OsType;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -47,10 +43,6 @@ public class Deobfuscator {
     }
 
     private static boolean canDeobfuscate() {
-        if (AppProperties.get().isDevelopmentEnvironment()) {
-            return false;
-        }
-
         if (!System.getenv().containsKey("XPIPE_MAPPING")) {
             return false;
         }
@@ -58,18 +50,6 @@ public class Deobfuscator {
         var file = Path.of(System.getenv("XPIPE_MAPPING"));
         if (!Files.exists(file)) {
             return false;
-        }
-
-        // We probably can't run .bat scripts in this case
-        if (OsType.ofLocal() == OsType.WINDOWS && ProcessControlProvider.get().getEffectiveLocalDialect() != ShellDialects.CMD) {
-            return false;
-        }
-
-        if (OsType.ofLocal() == OsType.WINDOWS) {
-            var reg = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Policies\\Microsoft\\Windows\\System", "DisableCMD");
-            if (reg.isPresent() && reg.get().equals("1")) {
-                return false;
-            }
         }
 
         return true;

@@ -17,13 +17,12 @@ public class LocalShell {
         return local != null;
     }
 
-    public static synchronized ShellControl init() throws Exception {
+    public static synchronized void init() throws Exception {
         if (local == null) {
             local = ProcessControlProvider.get()
                     .createLocalProcessControl(false)
                     .start();
         }
-        return local;
     }
 
     public static synchronized void reset(boolean force) {

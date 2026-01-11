@@ -22,7 +22,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("pageant")
@@ -94,33 +93,26 @@ public class PageantStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
+    public void buildCommand(CommandBuilder builder) {
+        builder.environment("SSH_AUTH_SOCK", parent -> {
+            if (parent.isLocal() && parent.getOsType() == OsType.WINDOWS) {
+                return getPageantWindowsPipe();
+            }
 
-    private String getIdentityAgent(ShellControl sc) throws Exception {
-        if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
-            return getPageantWindowsPipe();
-        }
-
-        return null;
+            return null;
+        });
     }
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
-        var l = new ArrayList<>(List.of(
+        return List.of(
                 new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                new KeyValue("PKCS11Provider", "none")));
-
-        var agent = getIdentityAgent(sc);
-        if (agent != null) {
-            l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
-        }
-
-        return l;
+                new KeyValue("PKCS11Provider", "none"));
     }
-    
+
     private String getPageantWindowsPipe() {
         Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
         var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant*", p);

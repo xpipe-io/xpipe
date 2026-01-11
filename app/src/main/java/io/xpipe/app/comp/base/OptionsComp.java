@@ -51,20 +51,12 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
         pane.getStyleClass().add("options-comp");
 
         var nameRegions = new ArrayList<Region>();
+
         var nameMap = new HashMap<Node, Node>();
 
         Region firstComp = null;
         for (var entry : getEntries()) {
             Region compRegion = entry.comp() != null ? entry.comp().createRegion() : new Region();
-
-            if (compRegion.getStyleClass().contains("options-comp")) {
-                pane.visibleProperty().subscribe(v -> {
-                    compRegion.setVisible(v);
-                });
-                pane.managedProperty().subscribe(m -> {
-                    compRegion.setManaged(m);
-                });
-            }
 
             if (firstComp == null) {
                 compRegion.getStyleClass().add("first");
@@ -96,7 +88,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
                 if (entry.description() != null) {
                     var description = new Label();
-                    description.wrapTextProperty().bind(pane.visibleProperty());
+                    description.setWrapText(true);
                     description.getStyleClass().add("description");
                     description.textProperty().bind(entry.description());
                     description.setAlignment(Pos.CENTER_LEFT);
@@ -190,26 +182,34 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
                         .bind(Platform.accessibilityActiveProperty().and(compRegion.visibleProperty()));
                 name.setAccessibleRole(AccessibleRole.TEXT);
                 name.accessibleTextProperty().bind(entry.name());
+                if (compRegion != null) {
+                    name.visibleProperty().bind(compRegion.visibleProperty());
+                    name.managedProperty().bind(compRegion.managedProperty());
+                }
                 nameRegions.add(name);
-                name.visibleProperty().bind(compRegion.visibleProperty());
-                name.managedProperty().bind(compRegion.managedProperty());
                 line.getChildren().add(name);
                 nameMap.put(compRegion, name);
 
-                line.getChildren().add(compRegion);
-                HBox.setHgrow(compRegion, Priority.ALWAYS);
+                if (compRegion != null) {
+                    line.getChildren().add(compRegion);
+                    HBox.setHgrow(compRegion, Priority.ALWAYS);
+                }
 
                 pane.getChildren().add(line);
             } else {
-                pane.getChildren().add(compRegion);
+                if (compRegion != null) {
+                    pane.getChildren().add(compRegion);
+                }
             }
 
             var last = entry.equals(entries.getLast());
             if (!last) {
                 Spacer spacer = new Spacer(7, Orientation.VERTICAL);
                 pane.getChildren().add(spacer);
-                spacer.visibleProperty().bind(compRegion.visibleProperty());
-                spacer.managedProperty().bind(compRegion.managedProperty());
+                if (compRegion != null) {
+                    spacer.visibleProperty().bind(compRegion.visibleProperty());
+                    spacer.managedProperty().bind(compRegion.managedProperty());
+                }
             }
         }
 

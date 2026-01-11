@@ -2,13 +2,11 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -22,19 +20,22 @@ public class AppPrefsComp extends SimpleComp {
         var categories = AppPrefs.get().getCategories().stream()
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var boxComp = new ListBoxViewComp<>(FXCollections.observableArrayList(categories), FXCollections.observableArrayList(categories), appPrefsCategory -> {
-            var r = appPrefsCategory
-                    .create()
-                    .styleClass("prefs-container")
-                    .styleClass(appPrefsCategory.getId());
-            return r;
-        }, false);
-        boxComp.apply(struc -> {
-            struc.get().getContent().getStyleClass().add("prefs-box");
-        });
-        boxComp.maxWidth(850);
-        boxComp.setVisibilityControl(true);
-        var box = boxComp.createRegion();
+        var list = categories.stream()
+                .<Comp<?>>map(appPrefsCategory -> {
+                    var r = appPrefsCategory
+                            .create()
+                            .styleClass("prefs-container")
+                            .styleClass(appPrefsCategory.getId());
+                    return r;
+                })
+                .toList();
+        var box = new VerticalComp(list)
+                .minWidth(850)
+                .prefWidth(850)
+                .maxWidth(850)
+                .styleClass("prefs-box")
+                .createStructure()
+                .get();
 
         var pane = new GraphicDecorationStackPane();
         pane.getChildren().add(box);
@@ -100,7 +101,7 @@ public class AppPrefsComp extends SimpleComp {
         return split;
     }
 
-    private double computeCategoryOffset(Region box, ScrollPane scrollPane, AppPrefsCategory val) {
+    private double computeCategoryOffset(VBox box, ScrollPane scrollPane, AppPrefsCategory val) {
         var node = val != null ? box.lookup("." + val.getId()) : null;
         if (node != null && scrollPane.getHeight() > 0.0) {
             var s = Math.min(

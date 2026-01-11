@@ -16,7 +16,7 @@ There are no real formal contribution guidelines right now, they will maybe come
 ## Development Setup
 
 You need to have JDK for Java 25 installed to compile the project.
-If you are on Linux or macOS, you can easily accomplish that by using [SDKMAN](https://sdkman.io/) and running
+If you are on Linux or macOS, you can easily accomplish that by running
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
