@@ -66,8 +66,8 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
                         new StoreChoiceComp<>(
                                 entry,
                                 host,
-                                NetworkTunnelStore.class,
-                                n -> n.getStore().isLocallyTunnelable(),
+                                DataStore.class,
+                                null,
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()

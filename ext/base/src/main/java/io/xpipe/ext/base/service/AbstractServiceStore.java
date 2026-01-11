@@ -8,8 +8,10 @@ import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.app.util.Validators;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 
+import io.xpipe.ext.base.host.HostAddressStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -30,7 +32,7 @@ public abstract class AbstractServiceStore
 
     public abstract DataStoreEntryRef<NetworkTunnelStore> getGateway();
 
-    public abstract DataStoreEntryRef<?> getHost();
+    public abstract DataStoreEntryRef<HostAddressStore> getHost();
 
     public boolean licenseRequired() {
         return true;
@@ -62,7 +64,8 @@ public abstract class AbstractServiceStore
             }
 
             if (address == null && (getHost().getStore() instanceof NetworkTunnelStore t)) {
-                address = t.getTunnelHostName();
+                var h = t.getTunnelHostName();
+                address = !h.isEmpty() ? h.get() : null;
             }
 
             if (address == null) {
@@ -112,6 +115,7 @@ public abstract class AbstractServiceStore
     }
 
     @Override
+    @SneakyThrows
     public NetworkTunnelSession newSession() {
         if (getAddress() != null) {
             if (getGateway() == null || !getGateway().getStore().isLocallyTunnelable()) {
@@ -166,8 +170,9 @@ public abstract class AbstractServiceStore
         if (getHost().getStore() instanceof NetworkTunnelStore t) {
             var parent = t.getNetworkParent();
             if (!t.isLocallyTunnelable() && parent.getStore() instanceof NetworkTunnelStore nts) {
-                return nts.createTunnelSession(
-                        l, remotePort, t.getTunnelHostName() != null ? t.getTunnelHostName() : "localhost");
+                getHost().getStore().refreshHostAddressOrThrow();
+                var h = t.getTunnelHostName();
+                return nts.createTunnelSession(l, remotePort, !h.isEmpty() ? h.get() : "localhost");
             }
 
             return t.createTunnelSession(l, remotePort, "localhost");

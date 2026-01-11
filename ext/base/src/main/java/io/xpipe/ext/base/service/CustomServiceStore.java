@@ -7,6 +7,7 @@ import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.AbstractHostTransformStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.ext.base.host.HostAddressStore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -21,7 +22,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 public final class CustomServiceStore extends AbstractServiceStore implements AbstractHostTransformStore {
 
-    private final DataStoreEntryRef<DataStore> host;
+    private final DataStoreEntryRef<HostAddressStore> host;
     private final String address;
     private final DataStoreEntryRef<NetworkTunnelStore> gateway;
     private final Boolean tunnelToLocalhost;
