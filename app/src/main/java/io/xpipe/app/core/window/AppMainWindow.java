@@ -105,7 +105,6 @@ public class AppMainWindow {
         }
         AppWindowStyle.addIcons(stage);
         AppWindowStyle.addStylesheets(stage.getScene());
-        AppWindowStyle.addNavigationPseudoClasses(stage.getScene());
         AppWindowStyle.addClickShield(stage);
         AppWindowStyle.addMaximizedPseudoClass(stage);
         AppWindowStyle.addFontSize(stage);

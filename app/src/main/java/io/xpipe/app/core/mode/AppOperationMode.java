@@ -4,6 +4,8 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.window.AppSideWindow;
+import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;
@@ -176,6 +178,11 @@ public abstract class AppOperationMode {
             AppOpenArguments.init();
             ThreadHelper.runAsync(() -> {
                 DataStorage.get().generateCaches();
+            });
+            // Ugly solution to only start tracking kb input after we are finished starting up
+            // Otherwise, any typed vault password will always make think that kb input is active
+            Platform.runLater(() -> {
+                AppWindowStyle.addNavigationPseudoClasses(AppMainWindow.get().getStage().getScene());
             });
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
