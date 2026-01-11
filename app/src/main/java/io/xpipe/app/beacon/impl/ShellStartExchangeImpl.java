@@ -1,9 +1,9 @@
 package io.xpipe.app.beacon.impl;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.beacon.BeaconShellSession;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.beacon.BeaconClientException;
 import io.xpipe.beacon.api.ShellStartExchange;
 import io.xpipe.core.JacksonMapper;
@@ -19,28 +19,13 @@ public class ShellStartExchangeImpl extends ShellStartExchange {
         var e = DataStorage.get()
                 .getStoreEntryIfPresent(msg.getConnection())
                 .orElseThrow(() -> new BeaconClientException("Unknown connection"));
-        if (!(e.getStore() instanceof ShellStore s)) {
+        if (!(e.getStore() instanceof ShellStore)) {
             throw new BeaconClientException("Not a shell connection");
         }
 
-        var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
-                .filter(beaconShellSession -> beaconShellSession.getEntry().equals(e))
-                .findFirst();
-        var control = (existing.isPresent()
-                ? existing.get().getControl()
-                : s.standaloneControl().start());
-        control.setNonInteractive();
-        control.start();
-
-        var d = control.getShellDialect().getDumbMode();
-        if (!d.supportsAnyPossibleInteraction()) {
-            control.close();
-            d.throwIfUnsupported();
-        }
-
-        if (existing.isEmpty()) {
-            AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(e, control));
-        }
+        var shellSession =
+                AppBeaconServer.get().getCache().getOrStart(new DataStoreEntryRef<ShellStore>(e));
+        var control = shellSession.getControl();
         var ttyState = JacksonMapper.getDefault().valueToTree(control.getTtyState()).asText();
         return Response.builder()
                 .shellDialect(control.getShellDialect().getId())

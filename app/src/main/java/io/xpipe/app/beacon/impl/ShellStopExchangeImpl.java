@@ -13,7 +13,7 @@ public class ShellStopExchangeImpl extends ShellStopExchange {
     public Object handle(HttpExchange exchange, Request msg) {
         var e = AppBeaconServer.get().getCache().getShellSession(msg.getConnection());
         e.getControl().close();
-        AppBeaconServer.get().getCache().getShellSessions().remove(e);
+        AppBeaconServer.get().getCache().removeShellSession(msg.getConnection());
         return Response.builder().build();
     }
 }
