@@ -44,6 +44,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
     private final Property<ComboValue<T>> selected;
     private final Function<T, String> stringConverter;
     private final StoreChoicePopover<T> popover;
+    private final boolean requireComplete;
 
     public StoreComboChoiceComp(
             Function<T, String> stringConverter,
@@ -51,9 +52,11 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
             Property<ComboValue<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
+            StoreCategoryWrapper initialCategory,
+            boolean requireComplete) {
         this.stringConverter = stringConverter;
         this.selected = selected;
+        this.requireComplete = requireComplete;
 
         var popoverProp = new SimpleObjectProperty<>(
                 selected.getValue() != null ? selected.getValue().getRef() : null);
@@ -74,6 +77,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
                 storeClass,
                 applicableCheck,
                 initialCategory,
+                requireComplete,
                 "selectConnection",
                 "noCompatibleConnection");
 

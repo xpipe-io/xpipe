@@ -45,9 +45,7 @@ public abstract class AbstractServiceStore
     public void checkComplete() throws Throwable {
         Validators.nonNull(remotePort);
         Validators.nonNull(serviceProtocolType);
-        if (getHost() != null) {
-            getHost().checkComplete();
-        } else {
+        if (getHost() == null) {
             Validators.nonNull(getAddress());
         }
     }

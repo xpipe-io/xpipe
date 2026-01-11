@@ -301,6 +301,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     IdentityStore.class,
                     null,
                     StoreViewState.get().getAllIdentitiesCategory(),
+                    true,
                     "selectIdentity",
                     "noCompatibleIdentity");
 

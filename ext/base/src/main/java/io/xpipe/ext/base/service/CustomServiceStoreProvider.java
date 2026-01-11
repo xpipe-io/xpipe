@@ -93,15 +93,16 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 entry,
                 comboHost,
                 DataStore.class,
-                n -> n.getStore() instanceof AbstractHostStore
-                        || (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
-                StoreViewState.get().getAllConnectionsCategory());
+                n -> (n.getStore() instanceof AbstractHostStore a && a.isComplete()) || n.getStore() instanceof NetworkTunnelStore,
+                StoreViewState.get().getAllConnectionsCategory(),
+                false);
         var gatewayChoice = new StoreChoiceComp<>(
                 entry,
                 gateway,
                 NetworkTunnelStore.class,
                 ref -> !ref.get().equals(DataStorage.get().local()),
-                StoreViewState.get().getAllConnectionsCategory());
+                StoreViewState.get().getAllConnectionsCategory(),
+                true);
 
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")

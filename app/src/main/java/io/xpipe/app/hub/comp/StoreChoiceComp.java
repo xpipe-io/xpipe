@@ -37,7 +37,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
             ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
+            StoreCategoryWrapper initialCategory,
+            boolean requireComplete) {
         this.selected = selected;
         this.popover = new StoreChoicePopover<>(
                 self,
@@ -45,8 +46,19 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 storeClass,
                 applicableCheck,
                 initialCategory,
+                requireComplete,
                 "selectConnection",
                 "noCompatibleConnection");
+    }
+
+
+    public StoreChoiceComp(
+            DataStoreEntry self,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper initialCategory) {
+        this(self, selected, storeClass, applicableCheck, initialCategory, true);
     }
 
     protected String toName(DataStoreEntry entry) {
