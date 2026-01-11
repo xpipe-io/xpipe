@@ -49,7 +49,7 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
         return minimumDialect == null || minimumDialect.isCompatibleTo(dialect);
     }
 
-    private String assembleScript(ShellControl shellControl) {
+    private String assembleScript(ShellControl shellControl, boolean args) {
         if (isCompatible(shellControl)) {
             var shebang = getCommands().startsWith("#");
             // Fix new lines and shebang
@@ -60,18 +60,18 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
                             shellControl.getShellDialect().getNewLine().getNewLineString()));
             var targetType = shellControl.getOriginalShellDialect();
             var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
-            return targetType.sourceScriptCommand(shellControl, script.toString()) + " "
-                    + targetType.getCatchAllVariable();
+            return targetType.sourceScriptCommand(shellControl, script.toString()) + (args ? " "
+                    + targetType.getCatchAllVariable() : "");
         }
 
         return null;
     }
 
-    public String assembleScriptChain(ShellControl shellControl) {
+    public String assembleScriptChain(ShellControl shellControl, boolean args) {
         var nl = shellControl.getShellDialect().getNewLine().getNewLineString();
         var all = queryFlattenedScripts();
         var r = all.stream()
-                .map(ref -> ref.getStore().assembleScript(shellControl))
+                .map(ref -> ref.getStore().assembleScript(shellControl, args))
                 .filter(s -> s != null)
                 .toList();
         if (r.isEmpty()) {

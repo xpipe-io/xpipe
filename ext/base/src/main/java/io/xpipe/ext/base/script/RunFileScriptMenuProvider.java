@@ -139,7 +139,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
             @Override
             protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 var sc = model.getFileSystem().getShell().orElseThrow();
-                var content = ref.getStore().assembleScriptChain(sc);
+                var content = ref.getStore().assembleScriptChain(sc, true);
                 var script = ScriptHelper.createExecScript(sc, content);
                 var builder = CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, script.toString()));
                 for (BrowserEntry entry : entries) {

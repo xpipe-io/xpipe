@@ -25,7 +25,7 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
         @Override
         public void executeImpl() throws Exception {
             var sc = ref.getStore().getOrStartSession();
-            var script = scriptStore.getStore().assembleScriptChain(sc);
+            var script = scriptStore.getStore().assembleScriptChain(sc, false);
             TerminalLaunch.builder()
                     .entry(ref.get())
                     .title(scriptStore.get().getName())
