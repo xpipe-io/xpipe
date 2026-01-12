@@ -7,7 +7,7 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.FlatpakCache;
 
-public class YakuakeTerminalType implements ExternalApplicationType.LinuxApplication, TrackableTerminalType {
+public class YakuakeTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
     public TerminalOpenFormat getOpenFormat() {
@@ -26,7 +26,7 @@ public class YakuakeTerminalType implements ExternalApplicationType.LinuxApplica
 
     @Override
     public boolean useColoredTitle() {
-        return true;
+        return false;
     }
 
     @Override
@@ -53,16 +53,11 @@ public class YakuakeTerminalType implements ExternalApplicationType.LinuxApplica
 
     @Override
     public boolean detach() {
-        return true;
+        return false;
     }
 
     @Override
     public String getId() {
         return "app.yakuake";
-    }
-
-    @Override
-    public String getFlatpakId() throws Exception {
-        return null;
     }
 }
