@@ -67,6 +67,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
     ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
+    ExternalTerminalType YAKUAKE = new YakuakeTerminalType();
     ExternalTerminalType KONSOLE = new KonsoleTerminalType();
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
@@ -473,6 +474,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             KONSOLE,
             GNOME_TERMINAL,
             GhosttyTerminalType.GHOSTTY_LINUX,
+            YAKUAKE,
             TILIX,
             GUAKE,
             TILDA,
