@@ -21,7 +21,7 @@ public class YakuakeTerminalType implements ExternalApplicationType.LinuxApplica
 
     @Override
     public boolean isRecommended() {
-        return true;
+        return false;
     }
 
     @Override
@@ -36,13 +36,13 @@ public class YakuakeTerminalType implements ExternalApplicationType.LinuxApplica
         var toggle = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/window", "org.kde.yakuake.toggleWindowState");
         LocalShell.getShell().command(toggle).execute();
 
-        var newTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/session","org.kde.yakuake.addSession");
-        LocalShell.getShell().command(newTab).execute();
+        var newTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions","org.kde.yakuake.addSession");
+        var index = LocalShell.getShell().command(newTab).readStdoutOrThrow();
 
-        var renameTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/tabs", "setTabTitle").addLiteral(configuration.getColoredTitle());
+        var renameTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/tabs", "setTabTitle", index).addLiteral(configuration.getColoredTitle());
         LocalShell.getShell().command(renameTab).execute();
 
-        var run = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions", "runCommandInTerminal").addLiteral(configuration.getColoredTitle());
+        var run = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions", "runCommandInTerminal", index).addFile(configuration.single().getScriptFile());
         LocalShell.getShell().command(run).execute();
     }
 
