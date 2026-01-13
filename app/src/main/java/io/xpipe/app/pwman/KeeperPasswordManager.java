@@ -14,14 +14,11 @@ import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.ThreadHelper;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.JacksonMapper;
-import io.xpipe.core.OsType;
+import io.xpipe.core.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import io.xpipe.core.SecretValue;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -58,9 +55,7 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     private String getExecutable(ShellControl sc) {
-        return sc.getShellDialect() == ShellDialects.CMD
-                ? "@keeper"
-                : (OsType.ofLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper");
+        return OsType.ofLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper";
     }
 
     @SuppressWarnings("unused")
@@ -82,7 +77,7 @@ public class KeeperPasswordManager implements PasswordManager {
         key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
         try {
-            CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper");
+            CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper-commander");
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e)
                     .link("https://docs.keeper.io/en/keeperpam/commander-cli/commander-installation-setup")
@@ -92,8 +87,8 @@ public class KeeperPasswordManager implements PasswordManager {
 
         try {
             var sc = getOrStartShell();
-            var file = sc.view().userHome().join(".keeper", "config.json");
-            if (!sc.view().fileExists(file)) {
+            var config = sc.view().userHome().join(".keeper", "config.json");
+            if (!sc.view().fileExists(config)) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
                         getExecutable(sc) + " login");
@@ -122,6 +117,7 @@ public class KeeperPasswordManager implements PasswordManager {
                     .add("--format", "json", "--unmask")
                     .add("--password")
                     .addLiteral(r.getSecretValue());
+            FilePath file = null;
             CommandBuilder fullB;
             if (mfa != null && mfa) {
                 var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
@@ -134,22 +130,32 @@ public class KeeperPasswordManager implements PasswordManager {
                           1
                           %s
                           """.formatted(totp.getSecret().getSecretValue());
-                var escape = ShellDialects.isPowershell(sc) ? "`" : sc.getShellDialect() == ShellDialects.CMD ? "^" : "\\";
-                var shellInput = input.replace("\n", escape + "\n");
-                fullB = CommandBuilder.of().add("echo").addQuoted(shellInput).add("|").add(b);
+                file = sc.getSystemTemporaryDirectory().join("keeper.txt");
+                sc.view().writeTextFile(file, input);
+                fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
             } else {
                 fullB = b;
             }
 
             var queryCommand = sc.command(fullB);
             queryCommand.sensitive();
-            if (mfa == null || !mfa) {
-                queryCommand.killOnTimeout(CountDown.of().start(20_000));
-            }
-            var out = queryCommand.readStdoutOrThrow().replace("\r\n", "\n");
+            queryCommand.killOnTimeout(CountDown.of().start(15_000));
+
+            var result = queryCommand.readStdoutAndStderr();
+            var exitCode = queryCommand.getExitCode();
+
+            var out = result[0].replace("\r\n", "\n");
             var outStart = out.indexOf("\n{\n");
             var outPrefix = outStart == -1 ? out : out.substring(0, outStart + 1);
             var outSub = outStart == -1 ? out : out.substring(outStart + 1);
+            if (exitCode != 0) {
+                ErrorEventFactory.fromMessage(outPrefix).expected().handle();
+                return null;
+            }
+
+            if (file != null) {
+                sc.view().deleteFileIfPossible(file);
+            }
 
             JsonNode tree;
             try {
