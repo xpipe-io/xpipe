@@ -96,7 +96,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
                 if (entry.description() != null) {
                     var description = new Label();
-                    description.setWrapText(true);
+                    description.wrapTextProperty().bind(pane.visibleProperty());
                     description.getStyleClass().add("description");
                     description.textProperty().bind(entry.description());
                     description.setAlignment(Pos.CENTER_LEFT);
