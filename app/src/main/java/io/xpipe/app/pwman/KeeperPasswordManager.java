@@ -31,6 +31,7 @@ import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -41,6 +42,7 @@ import java.util.UUID;
 @Getter
 @Builder(toBuilder = true)
 @ToString
+@Jacksonized
 public class KeeperPasswordManager implements PasswordManager {
 
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
