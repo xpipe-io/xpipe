@@ -44,6 +44,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
+    private static boolean mfaSet;
     private final Boolean mfa;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -111,6 +112,11 @@ public class KeeperPasswordManager implements PasswordManager {
                 return null;
             }
 
+            if (r.getSecretValue().contains("\"")) {
+                SecretManager.clearAll(KEEPER_PASSWORD_ID);
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Keeper password contains double quote \" character, which is not supported by the Keeper Commander application"));
+            }
+
             var b = CommandBuilder.of()
                     .add(getExecutable(sc), "get")
                     .addLiteral(key)
@@ -119,7 +125,7 @@ public class KeeperPasswordManager implements PasswordManager {
                     .addLiteral(r.getSecretValue());
             FilePath file = null;
             CommandBuilder fullB;
-            if (mfa != null && mfa) {
+            if (!mfaSet && mfa != null && mfa) {
                 var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
                 if (totp.getState() != SecretQueryState.NORMAL) {
                     return null;
@@ -128,6 +134,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 var input = """
                           
                           1
+                          12_hours
                           %s
                           """.formatted(totp.getSecret().getSecretValue());
                 file = sc.getSystemTemporaryDirectory().join("keeper.txt");
@@ -149,7 +156,15 @@ public class KeeperPasswordManager implements PasswordManager {
             var outPrefix = outStart == -1 ? out : out.substring(0, outStart + 1);
             var outSub = outStart == -1 ? out : out.substring(outStart + 1);
             if (exitCode != 0) {
-                ErrorEventFactory.fromMessage(outPrefix).expected().handle();
+                var wrongPw = outPrefix.contains("Enter password for");
+                if (wrongPw) {
+                    SecretManager.clearAll(KEEPER_PASSWORD_ID);
+                    ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?").expected().handle();
+                    return null;
+                }
+
+                var message = !result[1].isEmpty() ? result[1] : outPrefix;
+                ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
 
@@ -186,6 +201,10 @@ public class KeeperPasswordManager implements PasswordManager {
                         password = v.get(0).asText();
                     }
                 }
+            }
+
+            if (mfa != null && mfa) {
+                mfaSet = true;
             }
 
             return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
