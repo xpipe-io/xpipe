@@ -13,6 +13,7 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
+import io.xpipe.app.spice.ExternalSpiceClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -242,6 +243,11 @@ public final class AppPrefs {
             .key("vncClient")
             .valueClass(ExternalVncClient.class)
             .documentationLink(DocumentationLink.VNC)
+            .build());
+    public final Property<ExternalSpiceClient> spiceClient = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("spiceClient")
+            .valueClass(ExternalSpiceClient.class)
             .build());
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
@@ -801,6 +807,7 @@ public final class AppPrefs {
         externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
+        spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }

@@ -24,7 +24,7 @@ public class RunBackgroundScriptActionProvider implements ActionProvider {
         @Override
         public void executeImpl() throws Exception {
             var sc = ref.getStore().getOrStartSession();
-            var script = scriptStore.getStore().assembleScriptChain(sc);
+            var script = scriptStore.getStore().assembleScriptChain(sc, false);
             if (script != null) {
                 sc.command(script).execute();
             }

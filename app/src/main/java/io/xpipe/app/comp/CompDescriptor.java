@@ -3,6 +3,7 @@ package io.xpipe.app.comp;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 
+import io.xpipe.app.platform.PlatformThread;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -69,15 +70,15 @@ public class CompDescriptor {
                     getName() != null ? getName() : new ReadOnlyObjectWrapper<>(),
                     getDescription() != null ? getDescription() : new ReadOnlyObjectWrapper<>());
 
-            var tt = TooltipHelper.create(tooltipText);
+            var tt = TooltipHelper.create(PlatformThread.sync(tooltipText));
             Tooltip.install(r, tt);
         }
 
         if (accessibleText != null) {
-            r.accessibleTextProperty().bind(getName());
+            r.accessibleTextProperty().bind(PlatformThread.sync(getName()));
         }
         if (getDescription() != null) {
-            r.accessibleHelpProperty().bind(getDescription());
+            r.accessibleHelpProperty().bind(PlatformThread.sync(getDescription()));
         }
         if (getFocusTraversal() != null) {
             switch (getFocusTraversal()) {

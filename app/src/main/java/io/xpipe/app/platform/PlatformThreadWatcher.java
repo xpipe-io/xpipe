@@ -8,6 +8,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Labeled;
 import javafx.stage.Window;
 
 import java.util.HashSet;
@@ -96,6 +97,11 @@ public class PlatformThreadWatcher {
                     c.opacityProperty().addListener(listener);
                     c.accessibleHelpProperty().addListener(listener);
                     c.accessibleTextProperty().addListener(listener);
+
+                    if (c instanceof Labeled l) {
+                        l.textProperty().addListener(listener);
+                        l.graphicProperty().addListener(listener);
+                    }
                 } else {
                     c.visibleProperty().removeListener(listener);
                     c.boundsInParentProperty().removeListener(listener);
@@ -103,6 +109,11 @@ public class PlatformThreadWatcher {
                     c.opacityProperty().removeListener(listener);
                     c.accessibleHelpProperty().removeListener(listener);
                     c.accessibleTextProperty().removeListener(listener);
+
+                    if (c instanceof Labeled l) {
+                        l.textProperty().removeListener(listener);
+                        l.graphicProperty().removeListener(listener);
+                    }
                 }
             });
         });

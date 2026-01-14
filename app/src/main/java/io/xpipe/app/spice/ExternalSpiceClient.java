@@ -1,0 +1,65 @@
+package io.xpipe.app.spice;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import io.xpipe.app.ext.PrefsValue;
+import io.xpipe.app.platform.ClipboardHelper;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.rdp.*;
+import io.xpipe.app.vnc.*;
+import io.xpipe.core.OsType;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+public interface ExternalSpiceClient extends PrefsValue {
+
+    static ExternalSpiceClient determineDefault(ExternalSpiceClient existing) {
+        // Verify that our selection is still valid
+        if (existing != null && existing.isAvailable()) {
+            return existing;
+        }
+
+        return switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> {
+                yield new VirtViewerSpiceClient.Linux();
+            }
+            case OsType.MacOs ignored -> {
+                yield new VirtViewerSpiceClient.MacOs();
+            }
+            case OsType.Windows ignored -> {
+                yield new VirtViewerSpiceClient.Windows();
+            }
+        };
+    }
+
+    static void launchClient(SpiceLaunchConfig configuration) throws Exception {
+        var client = AppPrefs.get().spiceClient.getValue();
+        if (client == null) {
+            return;
+        }
+
+        client.launch(configuration);
+    }
+
+    static List<Class<?>> getClasses() {
+        var l = new ArrayList<Class<?>>();
+        switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> {
+                l.add(VirtViewerSpiceClient.Linux.class);
+            }
+            case OsType.MacOs ignored -> {
+                l.add(VirtViewerSpiceClient.MacOs.class);
+            }
+            case OsType.Windows ignored -> {
+                l.add(VirtViewerSpiceClient.Windows.class);
+            }
+        }
+        l.add(CustomSpiceClient.class);
+        return l;
+    }
+
+    void launch(SpiceLaunchConfig configuration) throws Exception;
+
+    String getWebsite();
+}

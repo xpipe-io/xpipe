@@ -30,7 +30,7 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
             var map = new LinkedHashMap<String, CommandControl>();
             for (DataStoreEntryRef<ShellStore> ref : refs) {
                 var sc = ref.getStore().getOrStartSession();
-                var script = scriptStore.getStore().assembleScriptChain(sc);
+                var script = scriptStore.getStore().assembleScriptChain(sc, false);
                 var cmd = sc.command(script);
                 map.put(ref.get().getName(), cmd);
             }
