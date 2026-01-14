@@ -44,7 +44,6 @@ public class KeeperPasswordManager implements PasswordManager {
 
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
-    private static boolean mfaSet;
     private final Boolean mfa;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
@@ -125,7 +124,7 @@ public class KeeperPasswordManager implements PasswordManager {
                     .addLiteral(r.getSecretValue());
             FilePath file = null;
             CommandBuilder fullB;
-            if (!mfaSet && mfa != null && mfa) {
+            if (mfa != null && mfa) {
                 var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
                 if (totp.getState() != SecretQueryState.NORMAL) {
                     return null;
@@ -134,7 +133,6 @@ public class KeeperPasswordManager implements PasswordManager {
                 var input = """
                           
                           1
-                          12_hours
                           %s
                           """.formatted(totp.getSecret().getSecretValue());
                 file = sc.getSystemTemporaryDirectory().join("keeper.txt");
@@ -151,10 +149,40 @@ public class KeeperPasswordManager implements PasswordManager {
             var result = queryCommand.readStdoutAndStderr();
             var exitCode = queryCommand.getExitCode();
 
-            var out = result[0].replace("\r\n", "\n");
-            var outStart = out.indexOf("\n{\n");
-            var outPrefix = outStart == -1 ? out : out.substring(0, outStart + 1);
-            var outSub = outStart == -1 ? out : out.substring(outStart + 1);
+            if (file != null) {
+                sc.view().deleteFileIfPossible(file);
+            }
+
+            var out = result[0].replace("\r\n", "\n").replace("""
+                      Selection: Invalid entry, additional factors of authentication shown may be configured if not currently enabled.
+                      Selection:\s
+                      2FA Code Duration: Require Every Login.
+                      To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
+                      """, "")
+                    .replace("""
+                             This account requires 2FA Authentication
+                             
+                               1. TOTP (Google and Microsoft Authenticator) \s
+                               q. Quit login attempt and return to Commander prompt
+                             """, "")
+                    .replace("Selection:", "")
+                    .strip();
+            var err = result[1].replace("\r\n", "\n")
+                    .replace("""
+                             EOF when reading a line
+                             """, "")
+                    .strip();
+
+            var jsonStart = out.indexOf("{\n");
+            var jsonEnd = out.indexOf("\n}");
+            if (jsonEnd != -1) {
+                jsonEnd += 2;
+            }
+
+            var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart + 1);
+            var outJson = jsonStart <= 0 ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out) :
+                    (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
+
             if (exitCode != 0) {
                 var wrongPw = outPrefix.contains("Enter password for");
                 if (wrongPw) {
@@ -163,20 +191,17 @@ public class KeeperPasswordManager implements PasswordManager {
                     return null;
                 }
 
-                var message = !result[1].isEmpty() ? result[1] : outPrefix;
+                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
 
-            if (file != null) {
-                sc.view().deleteFileIfPossible(file);
-            }
-
             JsonNode tree;
             try {
-                tree = JacksonMapper.getDefault().readTree(outSub);
+                tree = JacksonMapper.getDefault().readTree(outJson);
             } catch (JsonProcessingException e) {
-                ErrorEventFactory.fromMessage(outPrefix).expected().handle();
+                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
+                ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
 
@@ -201,10 +226,6 @@ public class KeeperPasswordManager implements PasswordManager {
                         password = v.get(0).asText();
                     }
                 }
-            }
-
-            if (mfa != null && mfa) {
-                mfaSet = true;
             }
 
             return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
