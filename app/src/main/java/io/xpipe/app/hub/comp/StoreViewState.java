@@ -266,7 +266,9 @@ public class StoreViewState {
         }
 
         if (matchingParent == null) {
-            activeCategory.setValue(category);
+            PlatformThread.runLaterIfNeeded(() -> {
+                activeCategory.setValue(category);
+            });
         }
     }
 

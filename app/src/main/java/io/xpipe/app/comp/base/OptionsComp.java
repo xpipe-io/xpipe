@@ -57,15 +57,6 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
         for (var entry : getEntries()) {
             Region compRegion = entry.comp() != null ? entry.comp().createRegion() : new Region();
 
-            if (compRegion.getStyleClass().contains("options-comp")) {
-                pane.visibleProperty().subscribe(v -> {
-                    compRegion.setVisible(v);
-                });
-                pane.managedProperty().subscribe(m -> {
-                    compRegion.setManaged(m);
-                });
-            }
-
             if (firstComp == null) {
                 compRegion.getStyleClass().add("first");
                 firstComp = compRegion;

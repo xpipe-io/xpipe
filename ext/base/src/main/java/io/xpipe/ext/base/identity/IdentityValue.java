@@ -85,11 +85,13 @@ public interface IdentityValue {
         return of(s);
     }
 
-    void checkComplete() throws Throwable;
+    void checkComplete() throws ValidationException;
 
     IdentityStore unwrap();
 
     boolean isPerUser();
+
+    boolean isInPlace();
 
     default void checkCompleteUser() throws ValidationException {
         Validators.nonNull(unwrap().getUsername().hasUser() ? new Object() : null, "Identity username");
@@ -114,7 +116,7 @@ public interface IdentityValue {
         LocalIdentityStore identityStore;
 
         @Override
-        public void checkComplete() throws Throwable {
+        public void checkComplete() throws ValidationException {
             Validators.nonNull(identityStore);
         }
 
@@ -129,6 +131,11 @@ public interface IdentityValue {
         public boolean isPerUser() {
             return false;
         }
+
+        @Override
+        public boolean isInPlace() {
+            return true;
+        }
     }
 
     @JsonTypeName("ref")
@@ -140,7 +147,7 @@ public interface IdentityValue {
         DataStoreEntryRef<IdentityStore> ref;
 
         @Override
-        public void checkComplete() throws Throwable {
+        public void checkComplete() throws ValidationException {
             Validators.nonNull(ref);
             Validators.isType(ref, IdentityStore.class);
         }
@@ -155,6 +162,11 @@ public interface IdentityValue {
         @Override
         public boolean isPerUser() {
             return ref != null && ref.get().isPerUserStore();
+        }
+
+        @Override
+        public boolean isInPlace() {
+            return false;
         }
     }
 }

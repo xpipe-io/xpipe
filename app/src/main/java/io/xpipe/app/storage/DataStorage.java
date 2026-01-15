@@ -1,12 +1,7 @@
 package io.xpipe.app.storage;
 
 import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.ext.FixedChildStore;
-import io.xpipe.app.ext.FixedHierarchyStore;
-import io.xpipe.app.ext.GroupStore;
-import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.ext.NameableStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.secret.SecretManager;
@@ -959,9 +954,15 @@ public abstract class DataStorage {
             return f.get();
         }
 
+        var categoryId = related != null ? related.getCategoryUuid() : selectedCategory.getUuid();
+        var provider = DataStoreProviders.byStore(store);
+        if (provider != null) {
+            categoryId = provider.getTargetCategory(store, categoryId);
+        }
+
         var e = DataStoreEntry.createNew(
                 UUID.randomUUID(),
-                related != null ? related.getCategoryUuid() : selectedCategory.getUuid(),
+                categoryId,
                 name,
                 store);
         addStoreEntryIfNotPresent(e);

@@ -185,6 +185,10 @@ public class AppLayoutModel {
     @NonFinal
     public static class QueueEntry {
 
+        public static QueueEntry ofNotification(String key, String value) {
+            return new QueueEntry(AppI18n.observable(key), new LabelGraphic.IconGraphic(value), () -> {});
+        }
+
         ObservableValue<String> name;
         LabelGraphic icon;
         Runnable action;
