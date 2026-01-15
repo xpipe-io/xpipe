@@ -40,7 +40,7 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
 
         @Override
         public String getExecutable() {
-            return "virt-viewer.exe";
+            return "remote-viewer.exe";
         }
 
         @Override
@@ -52,7 +52,7 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
                     return Optional.empty();
                 }
 
-                return Optional.ofNullable(found.get().resolve("bin", "virt-viewer.exe"));
+                return Optional.ofNullable(found.get().resolve("bin", "remote-viewer.exe"));
             } catch (IOException e) {
                 ErrorEventFactory.fromThrowable(e).handle();
                 return Optional.empty();
