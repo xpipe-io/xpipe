@@ -179,7 +179,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 jsonEnd += 2;
             }
 
-            var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart + 1);
+            var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
             var outJson = jsonStart <= 0 ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out) :
                     (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
 
@@ -205,8 +205,10 @@ public class KeeperPasswordManager implements PasswordManager {
                 return null;
             }
 
-            var fields = tree.required("fields");
-            if (!fields.isArray()) {
+            var fields = tree.get("fields");
+            if (fields == null || !fields.isArray()) {
+                var message = !err.isEmpty() ? out + "\n" + err : out;
+                ErrorEventFactory.fromMessage(message).description("Received invalid response").expected().handle();
                 return null;
             }
 
