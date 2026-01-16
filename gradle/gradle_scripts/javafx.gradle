@@ -18,14 +18,18 @@ configurations {
     javafx
 }
 
-if (hasProperty("customJavaFxPath")) {
+if (hasProperty("customJavaFxLibsPath")) {
     repositories {
         flatDir {
-            dirs customJavaFxPath
+            dirs customJavaFxLibsPath
         }
     }
     dependencies {
-        javafx fileTree(dir: customJavaFxPath, include: '*.jar')
+        javafx files("$customJavaFxLibsPath/javafx.base.jar")
+        javafx files("$customJavaFxLibsPath/javafx.controls.jar")
+        javafx files("$customJavaFxLibsPath/javafx.graphics.jar")
+        javafx files("$customJavaFxLibsPath/javafx.media.jar")
+        javafx files("$customJavaFxLibsPath/javafx.web.jar")
     }
 } else if (!bundledJdkJavaFx) {
     // Always use maven version for development
