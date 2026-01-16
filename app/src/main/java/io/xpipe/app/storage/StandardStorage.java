@@ -7,6 +7,7 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
@@ -51,6 +52,10 @@ public class StandardStorage extends DataStorage {
     }
 
     private void startSyncWatcher() {
+        if (!AppPrefs.get().syncInstantly().get()) {
+            return;
+        }
+
         GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
             ThreadHelper.runAsync(() -> {
                 if (!busyIo.tryLock()) {
@@ -433,7 +438,7 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
         dataStorageUserHandler.save();
-        dataStorageSyncHandler.afterStorageSave();
+        dataStorageSyncHandler.afterStorageSave(dispose);
         if (dispose) {
             disposed = true;
         }

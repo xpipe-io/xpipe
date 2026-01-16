@@ -308,6 +308,12 @@ public final class AppPrefs {
             .requiresRestart(true)
             .documentationLink(DocumentationLink.SYNC)
             .build());
+    final BooleanProperty syncInstantly = map(Mapping.builder()
+            .property(new GlobalBooleanProperty(true))
+            .key("syncInstantly")
+            .valueClass(Boolean.class)
+            .requiresRestart(true)
+            .build());
     final ObjectProperty<CloseBehaviour> closeBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(CloseBehaviour.QUIT))
             .key("closeBehaviour")
@@ -497,6 +503,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue sshVerboseOutput() {
         return sshVerboseOutput;
+    }
+
+    public ObservableBooleanValue syncInstantly() {
+        return syncInstantly;
     }
 
     public ObservableBooleanValue censorMode() {
