@@ -206,10 +206,28 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var fields = tree.get("fields");
+            // There multiple schemas
             if (fields == null || !fields.isArray()) {
-                var message = !err.isEmpty() ? out + "\n" + err : out;
-                ErrorEventFactory.fromMessage(message).description("Received invalid response").expected().handle();
-                return null;
+                String login = null;
+                String password = null;
+
+                var l = tree.get("login");
+                if (l != null && l.isTextual()) {
+                    login = l.asText();
+                }
+
+                var p = tree.get("password");
+                if (p != null && p.isTextual()) {
+                    password = p.asText();
+                }
+
+                if (login == null && password == null) {
+                    var message = !err.isEmpty() ? out + "\n" + err : out;
+                    ErrorEventFactory.fromMessage(message).description("Received invalid response").expected().handle();
+                    return null;
+                }
+
+                return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
             }
 
             String login = null;
