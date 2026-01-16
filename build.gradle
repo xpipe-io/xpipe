@@ -300,7 +300,7 @@ project.ext {
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
     // Define a custom JavaFX SDK location
-    // customJavaFxLibsPath = file("C:\\Projects\\jfx\\build\\sdk/lib")
+    // customJavaFxLibsPath = file("C:\\Projects\\jfx\\build\\sdk\\lib")
     // customJavaFxJmodsPath = file("C:\\Projects\\jfx\\build\\jmods")
 
     // Other
