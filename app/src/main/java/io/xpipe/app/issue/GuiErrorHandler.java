@@ -42,6 +42,7 @@ public class GuiErrorHandler extends GuiErrorHandlerBase implements ErrorHandler
                                         }),
                                         () -> {
                                             handleGui(event);
+                                            return true;
                                         }),
                                 Duration.ofSeconds(10),
                                 true);

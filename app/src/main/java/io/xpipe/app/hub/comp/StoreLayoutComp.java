@@ -7,12 +7,16 @@ import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.InputHelper;
+import io.xpipe.app.terminal.TerminalDockBrowserComp;
+import io.xpipe.app.terminal.TerminalDockHubComp;
+import io.xpipe.app.terminal.TerminalDockManager;
 import io.xpipe.app.util.ObservableSubscriber;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 public class StoreLayoutComp extends SimpleComp {
 
@@ -40,7 +44,6 @@ public class StoreLayoutComp extends SimpleComp {
 
                     AppLayoutModel.get().getSavedState().setSidebarWidth(aDouble);
                 });
-        comp.styleClass("store-layout");
         comp.apply(struc -> {
             InputHelper.onKeyCombination(
                     struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
@@ -48,6 +51,11 @@ public class StoreLayoutComp extends SimpleComp {
                         keyEvent.consume();
                     });
         });
-        return comp.createRegion();
+
+        var model = TerminalDockManager.get();
+        var dock = new TerminalDockHubComp(model.getDockModel());
+        var stack = new StackPane(comp.createRegion(), dock.createRegion());
+        stack.getStyleClass().add("store-layout");
+        return stack;
     }
 }

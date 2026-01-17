@@ -31,7 +31,7 @@ public class ScanDialog {
         var comp = new ScanSingleDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
         var queueEntry = new AppLayoutModel.QueueEntry(
-                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> false);
         var button = new ModalButton(
                 "ok",
                 () -> {
@@ -52,7 +52,7 @@ public class ScanDialog {
         var comp = new ScanMultiDialogComp(entries, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
         var queueEntry = new AppLayoutModel.QueueEntry(
-                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> false);
         var button = new ModalButton(
                 "ok",
                 () -> {

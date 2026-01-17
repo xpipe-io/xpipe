@@ -48,7 +48,10 @@ public class StoreCreationQueueEntry extends AppLayoutModel.QueueEntry {
 
     public StoreCreationQueueEntry(
             ObservableValue<String> name, LabelGraphic icon, Runnable action, DataStoreEntry entry) {
-        super(name, icon, action);
+        super(name, icon, () -> {
+            action.run();
+            return true;
+        });
         this.entry = entry;
     }
 }

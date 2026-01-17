@@ -1,5 +1,7 @@
 package io.xpipe.app.platform;
 
+import com.sun.jna.platform.win32.*;
+import com.sun.jna.win32.W32APIOptions;
 import io.xpipe.app.util.Rect;
 
 import javafx.stage.Window;
@@ -8,9 +10,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.ptr.IntByReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -70,6 +69,14 @@ public class NativeWinWindowControl {
                 null);
         return refs;
     }
+
+    public void removeBorders() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+    }
+
+    public void removeShadow() {}
 
     public boolean isIconified() {
         return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;

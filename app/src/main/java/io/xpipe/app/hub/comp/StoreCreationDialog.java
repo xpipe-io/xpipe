@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.theme.Styles;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -140,7 +139,7 @@ public class StoreCreationDialog {
             DataStoreEntry existingEntry) {
         var ex = StoreCreationQueueEntry.findExisting(existingEntry);
         if (ex.isPresent()) {
-            ex.get().show();
+            ex.get().execute();
             return;
         }
 

@@ -92,6 +92,11 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         return true;
     }
 
+    @Override
+    default TerminalDockMode getDockMode() {
+        return TerminalDockMode.BORDERLESS;
+    }
+
     default void checkProfile() throws IOException {
         // Update old configs
         var before =

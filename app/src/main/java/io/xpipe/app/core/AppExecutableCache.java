@@ -31,6 +31,7 @@ public class AppExecutableCache {
         var queueEntry = new AppLayoutModel.QueueEntry(
                 AppI18n.observable("downloadInProgress", name), new LabelGraphic.IconGraphic("mdi2d-download"), () -> {
                     Hyperlinks.open(url);
+                    return true;
                 });
         AppLayoutModel.get().getQueueEntries().add(queueEntry);
 

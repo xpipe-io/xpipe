@@ -213,6 +213,10 @@ public class TerminalLauncher {
             return;
         }
 
+        for (TerminalPaneConfiguration pane : config.getPanes()) {
+            TerminalDockManager.get().openTerminal(pane.getRequest());
+        }
+
         try {
             type.launch(config);
             latch.await();

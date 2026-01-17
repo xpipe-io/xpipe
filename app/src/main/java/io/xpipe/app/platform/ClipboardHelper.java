@@ -19,7 +19,7 @@ public class ClipboardHelper {
     private static final AppLayoutModel.QueueEntry COPY_QUEUE_ENTRY = new AppLayoutModel.QueueEntry(
             AppI18n.observable("passwordCopied"),
             new LabelGraphic.IconGraphic("mdi2c-clipboard-check-outline"),
-            () -> {});
+            () -> true);
 
     private static void apply(Map<DataFormat, Object> map, boolean showNotification) {
         Clipboard clipboard = Clipboard.getSystemClipboard();

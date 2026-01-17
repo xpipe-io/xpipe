@@ -9,6 +9,11 @@ public class CmdTerminalType
         implements ExternalApplicationType.PathApplication, ExternalTerminalType, TrackableTerminalType {
 
     @Override
+    public TerminalDockMode getDockMode() {
+        return TerminalDockMode.WITH_BORDER;
+    }
+
+    @Override
     public TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW;
     }

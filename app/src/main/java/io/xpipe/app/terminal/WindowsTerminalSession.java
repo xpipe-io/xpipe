@@ -42,6 +42,16 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
+    public void removeBorders() {
+        control.removeBorders();
+    }
+
+    @Override
+    public void removeShadow() {
+        control.removeShadow();
+    }
+
+    @Override
     public void show() {
         this.control.show();
     }

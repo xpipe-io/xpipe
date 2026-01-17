@@ -173,6 +173,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     class Windows implements ExternalApplicationType.WindowsType, ExternalTerminalType, WezTerminalType {
 
         @Override
+        public TerminalDockMode getDockMode() {
+            return TerminalDockMode.BORDERLESS;
+        }
+
+        @Override
         public CommandBuilder getWeztermCommandBase() {
             return CommandBuilder.of().addFile(findExecutable());
         }

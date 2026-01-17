@@ -14,6 +14,10 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
         super(terminalProcess);
     }
 
+    public abstract void removeBorders();
+
+    public abstract void removeShadow();
+
     public abstract void show();
 
     public abstract void minimize();

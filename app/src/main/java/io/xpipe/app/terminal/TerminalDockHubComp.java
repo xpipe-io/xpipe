@@ -1,79 +1,37 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.base.LoadingIconComp;
-import io.xpipe.app.core.AppFontSizes;
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.prefs.AppPrefs;
-
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
-import javafx.css.PseudoClass;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
 
-import org.kordamp.ikonli.javafx.FontIcon;
-
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TerminalDockComp extends SimpleComp {
+public class TerminalDockHubComp extends SimpleComp {
 
-    private final TerminalDockModel model;
-    private final ObservableBooleanValue opened;
+    private final TerminalDockView model;
 
-    public TerminalDockComp(TerminalDockModel model, ObservableBooleanValue opened) {
+    public TerminalDockHubComp(TerminalDockView model) {
         this.model = model;
-        this.opened = opened;
     }
 
     @Override
     protected Region createSimple() {
-        var label = new Label();
-        AppFontSizes.xl(label);
-        var stack = new StackPane(label);
-        stack.setAlignment(Pos.CENTER);
-        stack.setCursor(Cursor.HAND);
+        var stack = new StackPane();
+        stack.setPickOnBounds(false);
         stack.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
             update(stack);
-        });
-        stack.setOnMouseClicked(event -> {
-            model.clickView();
-            event.consume();
         });
         stack.getStyleClass().add("terminal-dock-comp");
         stack.setMinWidth(100);
         stack.setMinHeight(100);
         setupListeners(stack);
-
-        opened.subscribe(v -> {
-            PlatformThread.runLaterIfNeeded(() -> {
-                label.textProperty().unbind();
-                if (v) {
-                    stack.pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), false);
-                    label.textProperty().bind(AppI18n.observable("clickToDock"));
-                    label.setGraphic(new FontIcon("mdi2d-dock-right"));
-                } else {
-                    stack.pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), true);
-                    label.textProperty().bind(AppI18n.observable("terminalStarting"));
-                    if (!AppPrefs.get().performanceMode().get()) {
-                        var l = new LoadingIconComp(new SimpleBooleanProperty(true), AppFontSizes::sm).createRegion();
-                        label.setGraphic(l);
-                    }
-                }
-            });
-        });
-
         return stack;
     }
 

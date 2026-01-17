@@ -28,6 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Getter
 public class AppLayoutModel {
@@ -186,19 +187,23 @@ public class AppLayoutModel {
     public static class QueueEntry {
 
         public static QueueEntry ofNotification(String key, String value) {
-            return new QueueEntry(AppI18n.observable(key), new LabelGraphic.IconGraphic(value), () -> {});
+            return new QueueEntry(AppI18n.observable(key), new LabelGraphic.IconGraphic(value), () -> true);
         }
 
         ObservableValue<String> name;
         LabelGraphic icon;
-        Runnable action;
+        Supplier<Boolean> action;
 
-        public void show() {
+        public void execute() {
             ThreadHelper.runAsync(() -> {
                 try {
-                    getAction().run();
-                } finally {
+                    var r = getAction().get();
+                    if (r) {
+                        AppLayoutModel.get().getQueueEntries().remove(this);
+                    }
+                } catch (Throwable t) {
                     AppLayoutModel.get().getQueueEntries().remove(this);
+                    throw t;
                 }
             });
         }

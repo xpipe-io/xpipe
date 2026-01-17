@@ -111,13 +111,20 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                             struc.get().setDisable(true);
                             ThreadHelper.runAsync(() -> {
                                 try {
-                                    item.getAction().run();
-                                } finally {
+                                    var r = item.getAction().get();
+                                    if (r) {
+                                        Platform.runLater(() -> {
+                                            queueEntries.remove(item);
+                                        });
+                                    }
+                                } catch (Throwable t) {
                                     Platform.runLater(() -> {
                                         queueEntries.remove(item);
                                     });
+                                    throw t;
                                 }
                             });
+                            struc.get().setDisable(false);
                             e.consume();
                         });
                     });

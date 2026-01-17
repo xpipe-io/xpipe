@@ -10,8 +10,8 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.terminal.TerminalDockComp;
-import io.xpipe.app.terminal.TerminalDockModel;
+import io.xpipe.app.terminal.TerminalDockBrowserComp;
+import io.xpipe.app.terminal.TerminalDockView;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.terminal.WindowsTerminalType;
 import io.xpipe.app.util.ThreadHelper;
@@ -32,7 +32,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     private final BrowserSessionTab origin;
     private final ObservableList<UUID> terminalRequests;
-    private final TerminalDockModel dockModel = new TerminalDockModel();
+    private final TerminalDockView dockModel = new TerminalDockView();
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;
@@ -48,7 +48,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     @Override
     public Comp<?> comp() {
-        return new TerminalDockComp(dockModel, opened);
+        return new TerminalDockBrowserComp(dockModel, opened);
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
 
                 var toTrack = tv.getLast();
-                dockModel.trackTerminal(toTrack);
+                dockModel.trackTerminal(toTrack, true);
             }
 
             @Override

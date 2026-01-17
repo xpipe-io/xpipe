@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TerminalDockModel {
+public class TerminalDockView {
 
     @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
@@ -16,13 +16,25 @@ public class TerminalDockModel {
     private Rect viewBounds;
     private boolean viewActive;
 
-    public synchronized void trackTerminal(ControllableTerminalSession terminal) {
+    public synchronized boolean isRunning() {
+        return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
+    }
+
+    public synchronized boolean isCustomBounds() {
+        return terminalInstances.stream().anyMatch(terminal -> terminal.isCustomBounds());
+    }
+
+    public synchronized boolean isMinimized() {
+        return terminalInstances.stream().noneMatch(terminal -> terminal.isActive());
+    }
+
+    public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
         terminalInstances.add(terminal);
         // The main window always loses focus when the terminal is opened,
         // so only put it in front
         // If we refocus the main window, it will get put always in front then
         terminal.frontOfMainWindow();
-        if (viewBounds != null) {
+        if (dock && viewBounds != null) {
             terminal.updatePosition(viewBounds);
         }
     }
@@ -160,7 +172,7 @@ public class TerminalDockModel {
         updatePositions();
     }
 
-    public void clickView() {
+    public void attach() {
         TrackEvent.withTrace("Terminal view clicked").handle();
 
         terminalInstances.forEach(terminalInstance -> {
