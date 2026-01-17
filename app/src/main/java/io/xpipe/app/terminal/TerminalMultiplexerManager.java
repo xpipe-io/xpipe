@@ -13,14 +13,28 @@ public class TerminalMultiplexerManager {
     private static final Map<UUID, TerminalMultiplexer> connectionHubRequests = new HashMap<>();
     private static UUID pendingMultiplexerLaunch;
     private static Instant lastCheck = Instant.now();
+    private static UUID runningMultiplexerContainer;
 
-    public static void registerMultiplexerLaunch(UUID uuid) {
+    public static void registerMultiplexerContainerLaunch(UUID uuid) {
         pendingMultiplexerLaunch = uuid;
         var listener = new TerminalView.Listener() {
             @Override
             public void onSessionOpened(TerminalView.ShellSession session) {
                 if (session.getRequest().equals(pendingMultiplexerLaunch)) {
                     pendingMultiplexerLaunch = null;
+                    runningMultiplexerContainer = uuid;
+                }
+            }
+
+            @Override
+            public void onSessionClosed(TerminalView.ShellSession session) {
+                // Technically, due to how multiplexers handle, this can only be 0 or 1
+                // as it only tracks the base shell session the multiplexer runs in
+                var left = TerminalView.get().getSessions().stream().filter(shellSession -> {
+                    return connectionHubRequests.containsKey(shellSession.getRequest()) && shellSession.getTerminal().isRunning();
+                }).count();
+                if (left == 0) {
+                    runningMultiplexerContainer = null;
                     TerminalView.get().removeListener(this);
                 }
             }
@@ -73,7 +87,7 @@ public class TerminalMultiplexerManager {
         lastCheck = Instant.now();
     }
 
-    public static void registerSessionLaunch(UUID launchRequestUuid, TerminalLaunchConfiguration configuration) {
+    public static void registerSessionLaunch(TerminalLaunchConfiguration configuration) {
         var mult = getEffectiveMultiplexer();
 
         for (TerminalPaneConfiguration pane : configuration.getPanes()) {
@@ -82,9 +96,12 @@ public class TerminalMultiplexerManager {
                 return;
             }
 
-            TerminalView.get().addSubstitution(pane.getRequest(), launchRequestUuid);
             connectionHubRequests.put(pane.getRequest(), mult.orElse(null));
         }
+    }
+
+    public static Optional<UUID> getActiveMultiplexerContainerRequest() {
+        return Optional.ofNullable(runningMultiplexerContainer);
     }
 
     public static Optional<TerminalView.TerminalSession> getActiveMultiplexerSession() {

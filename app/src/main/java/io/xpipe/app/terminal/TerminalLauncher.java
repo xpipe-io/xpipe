@@ -169,37 +169,30 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
-        // Used for multiplexers and proxies
-        var launchRequest = UUID.randomUUID();
-
         if (effectivePreferTabs) {
             synchronized (TerminalLauncher.class) {
                 // There will be timing issues when launching multiple tabs in a short time span
                 TerminalMultiplexerManager.synchronizeMultiplexerLaunchTiming();
 
-                // Let multiplexer know we launched something, even if there is no multiplexer
-                // This is to be prepared for settings changes later on where the multiplexer used is changed
-                TerminalMultiplexerManager.registerSessionLaunch(launchRequest, launchConfig);
+                // Track sessions that are used for the multiplexer
+                // Used to figure out when it dies
+                TerminalMultiplexerManager.registerSessionLaunch(launchConfig);
 
                 if (launchMultiplexerTabInExistingTerminal(launchConfig)) {
                     latch.await();
                     return;
                 }
 
-                var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig, launchRequest);
+                var multiplexerConfig = launchMultiplexerTabInNewTerminal(launchConfig);
                 if (multiplexerConfig.isPresent()) {
-                    // Use first tab to track when multiplexer has started up
-                    TerminalMultiplexerManager.registerMultiplexerLaunch(
-                            paneList.getFirst().getRequest());
                     launch(type, multiplexerConfig.get(), latch);
                     return;
                 }
             }
         }
 
-        var proxyConfig = launchProxy(launchConfig, launchRequest);
+        var proxyConfig = launchProxy(launchConfig);
         if (proxyConfig.isPresent()) {
-            TerminalProxyManager.registerSessionLaunch(launchRequest, launchConfig);
             launch(type, proxyConfig.get(), latch);
             return;
         }
@@ -246,17 +239,28 @@ public class TerminalLauncher {
             return false;
         }
 
-        var multiplexerCommand = multiplexer
+        // Map panes to original multiplexer request session
+        var mapped = TerminalMultiplexerManager.getActiveMultiplexerContainerRequest();
+        if (mapped.isPresent()) {
+            for (TerminalPaneConfiguration pane : launchConfiguration.getPanes()) {
+                TerminalView.get().addSubstitution(pane.getRequest(), mapped.get());
+            }
+        }
+
+        var multiplexerCommandString = multiplexer
                 .get()
                 .launchForExistingSession(control, launchConfiguration)
                 .toString();
-        control.command(multiplexerCommand).execute();
+        CommandControl multiplexerCommand = control.command(multiplexerCommandString);
+        // Multiplexer might freeze
+        multiplexerCommand.killOnTimeout(CountDown.of().start(10000));
+        multiplexerCommand.execute();
         TerminalView.focus(session.get());
         return true;
     }
 
     private static Optional<TerminalLaunchConfiguration> launchMultiplexerTabInNewTerminal(
-            TerminalLaunchConfiguration launchConfiguration, UUID launchRequest) throws Exception {
+            TerminalLaunchConfiguration launchConfiguration) throws Exception {
         var multiplexer = TerminalMultiplexerManager.getEffectiveMultiplexer();
         if (multiplexer.isEmpty()) {
             return Optional.empty();
@@ -265,11 +269,19 @@ public class TerminalLauncher {
         // Throw if not supported
         multiplexer.get().checkSupported(TerminalProxyManager.getProxy().orElse(LocalShell.getShell()));
 
-        if (TerminalMultiplexerManager.getActiveMultiplexerSession().isPresent()) {
+        if (TerminalMultiplexerManager.getActiveMultiplexerContainerRequest().isPresent()) {
             return Optional.empty();
         }
 
-        var multiplexerLaunchRequest = UUID.randomUUID();
+        var multiplexerContainerLaunchRequest = UUID.randomUUID();
+        // Map panes to original multiplexer request session
+        for (TerminalPaneConfiguration pane : launchConfiguration.getPanes()) {
+            TerminalView.get().addSubstitution(pane.getRequest(), multiplexerContainerLaunchRequest);
+        }
+        // Use initial shell session to track when multiplexer has started up
+        TerminalMultiplexerManager.registerMultiplexerContainerLaunch(multiplexerContainerLaunchRequest);
+
+        var multiplexerTabLaunchRequest = UUID.randomUUID();
 
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isPresent()) {
@@ -286,9 +298,9 @@ public class TerminalLauncher {
             // Restart for the next time
             proxyControl.get().start();
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + proxyLaunchCommand;
+                    getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell()) + "\n" + proxyLaunchCommand;
             var pane = new TerminalPaneConfiguration(
-                    multiplexerLaunchRequest,
+                    multiplexerTabLaunchRequest,
                     AppNames.ofCurrent().getName(),
                     0,
                     fullLocalCommand,
@@ -306,9 +318,9 @@ public class TerminalLauncher {
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + launchCommand;
+                    getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell()) + "\n" + launchCommand;
             var pane = new TerminalPaneConfiguration(
-                    multiplexerLaunchRequest,
+                    multiplexerTabLaunchRequest,
                     AppNames.ofCurrent().getName(),
                     0,
                     fullLocalCommand,
@@ -319,10 +331,16 @@ public class TerminalLauncher {
     }
 
     private static Optional<TerminalLaunchConfiguration> launchProxy(
-            TerminalLaunchConfiguration launchConfiguration, UUID launchRequest) throws Exception {
+            TerminalLaunchConfiguration launchConfiguration) throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {
             return Optional.empty();
+        }
+
+        // We can't track sessions inside another environment, so map the ids to the proxy container process
+        var proxyContainerLaunchRequest = UUID.randomUUID();
+        for (TerminalPaneConfiguration pane : launchConfiguration.getPanes()) {
+            TerminalView.get().addSubstitution(pane.getRequest(), proxyContainerLaunchRequest);
         }
 
         var panes = new ArrayList<TerminalPaneConfiguration>();
@@ -335,7 +353,7 @@ public class TerminalLauncher {
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
             var fullLocalCommand =
-                    getTerminalRegisterCommand(launchRequest, LocalShell.getShell()) + "\n" + launchCommand;
+                    getTerminalRegisterCommand(proxyContainerLaunchRequest, LocalShell.getShell()) + "\n" + launchCommand;
             // Restart for the next time
             proxyControl.get().start();
             panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));

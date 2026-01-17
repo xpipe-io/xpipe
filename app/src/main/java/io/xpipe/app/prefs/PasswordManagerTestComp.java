@@ -22,11 +22,13 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PasswordManagerTestComp extends SimpleComp {
 
     private final StringProperty value;
     private final boolean handleEnter;
+    private final AtomicInteger counter = new AtomicInteger(0);
 
     public PasswordManagerTestComp(StringProperty value, boolean handleEnter) {
         this.value = value;
@@ -85,6 +87,7 @@ public class PasswordManagerTestComp extends SimpleComp {
     }
 
     private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {
+        var currentIndex = counter.incrementAndGet();
         var prefs = AppPrefs.get();
         ThreadHelper.runFailableAsync(() -> {
             if (prefs.passwordManager.getValue() == null || key == null) {
@@ -111,7 +114,9 @@ public class PasswordManagerTestComp extends SimpleComp {
             GlobalTimer.delay(
                     () -> {
                         Platform.runLater(() -> {
-                            testPasswordManagerResult.set(null);
+                            if (counter.get() == currentIndex) {
+                                testPasswordManagerResult.set(null);
+                            }
                         });
                     },
                     Duration.ofSeconds(5));

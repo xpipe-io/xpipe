@@ -150,6 +150,7 @@ public enum PlatformState {
                 // Platform initialization has failed in this case
                 var msg = getErrorMessage(t.getMessage());
                 var ex = new UnsupportedOperationException(msg, t);
+                ErrorEventFactory.expected(ex);
                 PlatformState.setCurrent(PlatformState.EXITED);
                 lastError = ex;
                 return;

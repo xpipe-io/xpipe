@@ -24,6 +24,7 @@ import javafx.application.Platform;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
+import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
@@ -87,6 +88,11 @@ public abstract class AppOperationMode {
                 if (Platform.isFxApplicationThread()
                         && ex instanceof IllegalArgumentException
                         && ex.getStackTrace()[0].toString().contains("Rectangle2D")) {
+                    return;
+                }
+
+                // Some random AWT errors are thrown sometimes
+                if (ex instanceof AWTError) {
                     return;
                 }
 
