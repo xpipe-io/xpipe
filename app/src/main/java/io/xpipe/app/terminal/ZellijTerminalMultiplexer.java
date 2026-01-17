@@ -123,7 +123,10 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
                 TerminalView.get().removeListener(this);
                 ThreadHelper.runFailableAsync(() -> {
                     var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
-                    sc.command(String.join("\n", asyncLines)).executeAndCheck();
+                    var command = sc.command(String.join("\n", asyncLines));
+                    // Zellij sometimes freezes
+                    command.killOnTimeout(CountDown.of().start(10_000));
+                    command.executeAndCheck();
                 });
             }
         };
