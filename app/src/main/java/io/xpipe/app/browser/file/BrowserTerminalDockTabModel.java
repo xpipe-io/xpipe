@@ -66,24 +66,18 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
 
                 opened.set(true);
-                var sessions = TerminalView.get().getSessions();
-                var tv = sessions.stream()
-                        .filter(s -> terminalRequests.contains(s.getRequest())
-                                && s.getTerminal().isRunning())
-                        .map(s -> s.getTerminal().controllable())
-                        .flatMap(Optional::stream)
-                        .toList();
-                for (int i = 0; i < tv.size() - 1; i++) {
-                    dockModel.closeTerminal(tv.get(i));
-                }
 
+                var closed = dockModel.closeOtherTerminals(session.getRequest());
                 // Closing and opening windows at the same time might be problematic for some bad implementations
-                if (tv.size() > 1) {
+                if (closed) {
                     ThreadHelper.sleep(250);
                 }
 
-                var toTrack = tv.getLast();
-                dockModel.trackTerminal(toTrack, true);
+                var controllable = session.getTerminal().controllable();
+                if (controllable.isEmpty()) {
+                    return;
+                }
+                dockModel.trackTerminal(controllable.get(), true);
             }
 
             @Override

@@ -3,7 +3,6 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -18,10 +17,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
-public class TerminalDockManager {
+public class TerminalDockHubManager {
 
     public static boolean isSupported() {
-        if (OsType.ofLocal() == OsType.WINDOWS) {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
             return false;
         }
 
@@ -30,18 +29,23 @@ public class TerminalDockManager {
             return false;
         }
 
-        var tabs = term.getOpenFormat() != TerminalOpenFormat.NEW_WINDOW;
-        if (tabs) {
-            return true;
+        var tabsSupported = term.getOpenFormat() != TerminalOpenFormat.NEW_WINDOW || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
+        if (!tabsSupported) {
+            return false;
         }
 
-        return TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
+        var modeSupported = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.UNSUPPORTED;
+        if (!modeSupported) {
+            return false;
+        }
+
+        return true;
     }
 
-    private static TerminalDockManager INSTANCE;
+    private static TerminalDockHubManager INSTANCE;
 
     public static void init() {
-        INSTANCE = new TerminalDockManager();
+        INSTANCE = new TerminalDockHubManager();
 
         AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
             if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
@@ -59,7 +63,7 @@ public class TerminalDockManager {
         });
     }
 
-    public static TerminalDockManager get() {
+    public static TerminalDockHubManager get() {
         return INSTANCE;
     }
 
@@ -105,11 +109,18 @@ public class TerminalDockManager {
                 }
 
                 var term = AppPrefs.get().terminalType().getValue();
-                controllable.get().removeShadow();
-                if (term instanceof TrackableTerminalType t && t.getDockMode() == TerminalDockMode.BORDERLESS) {
-                    controllable.get().removeBorders();
+                if (term instanceof TrackableTerminalType t) {
+                    if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
+                        return;
+                    }
+
+                    controllable.get().removeShadow();
+                    if (t.getDockMode() == TerminalDockMode.BORDERLESS) {
+                        controllable.get().removeBorders();
+                    }
                 }
                 dockModel.trackTerminal(controllable.get(), !detached.get());
+                dockModel.closeOtherTerminals(session.getRequest());
                 openDock();
             }
 
@@ -157,6 +168,10 @@ public class TerminalDockManager {
     }
 
     public void openTerminal(UUID request) {
+        if (!isSupported()) {
+            return;
+        }
+
         hubRequests.add(request);
     }
 

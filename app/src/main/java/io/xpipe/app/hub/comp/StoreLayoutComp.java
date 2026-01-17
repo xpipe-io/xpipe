@@ -7,9 +7,8 @@ import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.InputHelper;
-import io.xpipe.app.terminal.TerminalDockBrowserComp;
 import io.xpipe.app.terminal.TerminalDockHubComp;
-import io.xpipe.app.terminal.TerminalDockManager;
+import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.util.ObservableSubscriber;
 
 import javafx.scene.input.KeyCode;
@@ -52,7 +51,7 @@ public class StoreLayoutComp extends SimpleComp {
                     });
         });
 
-        var model = TerminalDockManager.get();
+        var model = TerminalDockHubManager.get();
         var dock = new TerminalDockHubComp(model.getDockModel());
         var stack = new StackPane(comp.createRegion(), dock.createRegion());
         stack.getStyleClass().add("store-layout");

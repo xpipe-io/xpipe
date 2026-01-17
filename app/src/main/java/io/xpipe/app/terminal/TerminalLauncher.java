@@ -214,7 +214,7 @@ public class TerminalLauncher {
         }
 
         for (TerminalPaneConfiguration pane : config.getPanes()) {
-            TerminalDockManager.get().openTerminal(pane.getRequest());
+            TerminalDockHubManager.get().openTerminal(pane.getRequest());
         }
 
         try {

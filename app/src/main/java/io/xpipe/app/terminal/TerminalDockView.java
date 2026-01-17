@@ -6,7 +6,9 @@ import io.xpipe.app.util.Rect;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public class TerminalDockView {
 
@@ -37,6 +39,19 @@ public class TerminalDockView {
         if (dock && viewBounds != null) {
             terminal.updatePosition(viewBounds);
         }
+    }
+
+    public synchronized boolean closeOtherTerminals(UUID request) {
+        var sessions = TerminalView.get().getSessions();
+        var tv = sessions.stream()
+                .filter(s -> request.equals(s.getRequest()) && s.getTerminal().isRunning())
+                .map(s -> s.getTerminal().controllable())
+                .flatMap(Optional::stream)
+                .toList();
+        for (int i = 0; i < tv.size() - 1; i++) {
+            closeTerminal(tv.get(i));
+        }
+        return tv.size() > 1;
     }
 
     public synchronized void closeTerminal(ControllableTerminalSession terminal) {
