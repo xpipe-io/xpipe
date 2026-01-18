@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -57,7 +58,9 @@ public class TerminalDockHubComp extends SimpleComp {
                 if (newValue) {
                     model.onWindowMinimize();
                 } else {
-                    model.onWindowActivate();
+                    Platform.runLater(() -> {
+                        model.onWindowActivate();
+                    });
                 }
             }
         };

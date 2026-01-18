@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -242,6 +243,7 @@ public class TerminalDockHubManager {
             enabled.set(true);
             showing.set(true);
 
+            NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(false);
             AppLayoutModel.get().getQueueEntries().add(queueEntry);
         });
     }
@@ -255,6 +257,8 @@ public class TerminalDockHubManager {
             dockModel.toggleView(false);
             enabled.set(false);
             showing.set(false);
+
+            NativeWinWindowControl.MAIN_WINDOW.setWindowsTransitionsEnabled(true);
             AppLayoutModel.get().getQueueEntries().remove(queueEntry);
         });
     }

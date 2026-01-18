@@ -169,9 +169,11 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
-        // Dock terminal if needed
-        for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
-            TerminalDockHubManager.get().openTerminal(pane.getRequest());
+        if (effectivePreferTabs) {
+            // Dock terminal if needed
+            for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
+                TerminalDockHubManager.get().openTerminal(pane.getRequest());
+            }
         }
 
         if (effectivePreferTabs) {

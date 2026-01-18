@@ -140,7 +140,12 @@ public class NativeWinWindowControl {
         return r.longValue() == 0;
     }
 
+    public void setWindowsTransitionsEnabled(boolean enabled) {
+        setWindowAttribute(DmwaWindowAttribute.DWMWA_TRANSITIONS_FORCEDISABLED.get(), !enabled);
+    }
+
     public enum DmwaWindowAttribute {
+        DWMWA_TRANSITIONS_FORCEDISABLED(3),
         DWMWA_USE_IMMERSIVE_DARK_MODE(20),
         DWMWA_SYSTEMBACKDROP_TYPE(38);
 

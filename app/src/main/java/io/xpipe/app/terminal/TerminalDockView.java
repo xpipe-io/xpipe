@@ -132,7 +132,7 @@ public class TerminalDockView {
     }
 
     public synchronized void onWindowActivate() {
-        TrackEvent.withTrace("Terminal view focus gained").handle();
+        TrackEvent.withTrace("Terminal view window activated").handle();
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
@@ -141,7 +141,8 @@ public class TerminalDockView {
 
             terminalInstance.show();
             if (viewActive) {
-                terminalInstance.alwaysInFront();
+                terminalInstance.frontOfMainWindow();
+                terminalInstance.focus();
             } else {
                 terminalInstance.back();
             }
@@ -149,7 +150,7 @@ public class TerminalDockView {
     }
 
     public synchronized void onWindowMinimize() {
-        TrackEvent.withTrace("Terminal view minimized").handle();
+        TrackEvent.withTrace("Terminal view window minimized").handle();
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.updateBoundsState();
