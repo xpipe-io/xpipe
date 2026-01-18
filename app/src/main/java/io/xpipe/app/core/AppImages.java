@@ -43,7 +43,7 @@ public class AppImages {
         var exts = AppExtensionManager.getInstance().getContentModules();
         for (Module ext : exts) {
             AppResources.with(ext.getName(), "img/", basePath -> {
-                var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
+                var skipLarge = AppScale.hasDefaultDisplayScale();
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -62,7 +62,7 @@ public class AppImages {
 
     private static void loadOsIcons() {
         AppResources.with(AppResources.MAIN_MODULE, "os", basePath -> {
-            var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
+            var skipLarge = AppScale.hasDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -80,7 +80,7 @@ public class AppImages {
 
     private static void loadWelcomeImages() {
         AppResources.with(AppResources.MAIN_MODULE, "welcome", basePath -> {
-            var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
+            var skipLarge = AppScale.hasDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

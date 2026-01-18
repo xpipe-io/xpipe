@@ -156,14 +156,6 @@ public class AppMainWindow {
         return INSTANCE;
     }
 
-    public ObservableDoubleValue displayScale() {
-        if (getStage() == null) {
-            return new SimpleDoubleProperty(1.0);
-        }
-
-        return getStage().outputScaleXProperty();
-    }
-
     public void show() {
         stage.show();
         if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
