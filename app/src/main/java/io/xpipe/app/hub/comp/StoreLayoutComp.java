@@ -9,6 +9,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.terminal.TerminalDockHubComp;
 import io.xpipe.app.terminal.TerminalDockHubManager;
+import io.xpipe.app.terminal.TerminalDockMode;
 import io.xpipe.app.util.ObservableSubscriber;
 
 import javafx.scene.input.KeyCode;
@@ -51,10 +52,15 @@ public class StoreLayoutComp extends SimpleComp {
                     });
         });
 
-        var model = TerminalDockHubManager.get();
-        var dock = new TerminalDockHubComp(model.getDockModel());
-        var stack = new StackPane(comp.createRegion(), dock.createRegion());
+        var stack = new StackPane(comp.createRegion());
         stack.getStyleClass().add("store-layout");
+
+        if (TerminalDockHubManager.isPossiblySupported()) {
+            var model = TerminalDockHubManager.get();
+            var dock = new TerminalDockHubComp(model.getDockModel());
+            stack.getChildren().add(dock.createRegion());
+        }
+
         return stack;
     }
 }

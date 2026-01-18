@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 
 import lombok.Getter;
@@ -9,14 +10,19 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 public class TerminalDockView {
 
     @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
+    private final UnaryOperator<Rect> windowBoundsFunction;
+
 
     private Rect viewBounds;
     private boolean viewActive;
+
+    public TerminalDockView(UnaryOperator<Rect> windowBoundsFunction) {this.windowBoundsFunction = windowBoundsFunction;}
 
     public synchronized boolean isRunning() {
         return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
@@ -31,7 +37,10 @@ public class TerminalDockView {
     }
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
-        terminalInstances.add(terminal);
+        if (!terminalInstances.add(terminal)) {
+            return;
+        }
+
         // The main window always loses focus when the terminal is opened,
         // so only put it in front
         // If we refocus the main window, it will get put always in front then
@@ -71,7 +80,10 @@ public class TerminalDockView {
 
         this.viewActive = active;
         if (active) {
-            terminalInstances.forEach(terminalInstance -> terminalInstance.alwaysInFront());
+            terminalInstances.forEach(terminalInstance -> {
+                terminalInstance.frontOfMainWindow();
+                terminalInstance.focus();
+            });
             updatePositions();
         } else {
             terminalInstances.forEach(terminalInstance -> terminalInstance.back());
@@ -183,7 +195,7 @@ public class TerminalDockView {
             return;
         }
 
-        this.viewBounds = new Rect(x, y, w, h);
+        this.viewBounds = windowBoundsFunction.apply(new Rect(x, y, w, h));
         updatePositions();
     }
 
@@ -192,7 +204,8 @@ public class TerminalDockView {
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
-            terminalInstance.alwaysInFront();
+            terminalInstance.frontOfMainWindow();
+            terminalInstance.focus();
             terminalInstance.updatePosition(viewBounds);
         });
     }

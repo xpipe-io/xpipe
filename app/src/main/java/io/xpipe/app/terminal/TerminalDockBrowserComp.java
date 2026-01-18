@@ -8,6 +8,7 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 
+import io.xpipe.app.util.GlobalTimer;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
@@ -25,6 +26,7 @@ import javafx.stage.WindowEvent;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TerminalDockBrowserComp extends SimpleComp {
@@ -105,11 +107,13 @@ public class TerminalDockBrowserComp extends SimpleComp {
         var focus = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model.onFocusGain();
-                } else {
-                    model.onFocusLost();
-                }
+                GlobalTimer.delay(() -> {
+                    if (newValue) {
+                        model.onFocusGain();
+                    } else {
+                        model.onFocusLost();
+                    }
+                }, Duration.ofMillis(100));
             }
         };
         var show = new EventHandler<WindowEvent>() {

@@ -9,6 +9,11 @@ import java.util.Base64;
 public class PwshTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
     @Override
+    public TerminalDockMode getDockMode() {
+        return TerminalDockMode.WITH_BORDER;
+    }
+
+    @Override
     public TerminalOpenFormat getOpenFormat() {
         return TerminalOpenFormat.NEW_WINDOW;
     }

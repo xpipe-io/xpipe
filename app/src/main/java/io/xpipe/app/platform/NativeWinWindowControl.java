@@ -76,8 +76,6 @@ public class NativeWinWindowControl {
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
     }
 
-    public void removeShadow() {}
-
     public boolean isIconified() {
         return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }

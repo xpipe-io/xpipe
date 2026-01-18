@@ -1,14 +1,19 @@
 package io.xpipe.app.terminal;
 
+import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
+import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.ListChangeListener;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -18,6 +23,14 @@ import java.util.UUID;
 
 @Getter
 public class TerminalDockHubManager {
+
+    public static boolean isPossiblySupported() {
+        if (OsType.ofLocal() != OsType.WINDOWS) {
+            return false;
+        }
+
+        return true;
+    }
 
     public static boolean isSupported() {
         if (OsType.ofLocal() != OsType.WINDOWS) {
@@ -45,15 +58,14 @@ public class TerminalDockHubManager {
     private static TerminalDockHubManager INSTANCE;
 
     public static void init() {
+        if (!isPossiblySupported()) {
+            return;
+        }
+
         INSTANCE = new TerminalDockHubManager();
 
-        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-            if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
-                INSTANCE.selectHub();
-            } else {
-                INSTANCE.unselectHub();
-            }
-        });
+        INSTANCE.addLayoutListeners();
+        INSTANCE.addDialogListeners();
 
         TerminalView.get().addListener(INSTANCE.createListener());
 
@@ -68,14 +80,33 @@ public class TerminalDockHubManager {
     }
 
     private final Set<UUID> hubRequests = new HashSet<>();
+    private final BooleanProperty enabled = new SimpleBooleanProperty();
     private final BooleanProperty showing = new SimpleBooleanProperty();
     private final BooleanProperty detached = new SimpleBooleanProperty();
     private final BooleanProperty minimized = new SimpleBooleanProperty();
-    private final TerminalDockView dockModel = new TerminalDockView();
+    private final TerminalDockView dockModel = new TerminalDockView(rect -> {
+        var term = AppPrefs.get().terminalType().getValue();
+        var adjust = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.BORDERLESS;
+        return adjust ? new Rect(rect.getX() - 9, rect.getY() - 1, rect.getW() + 16, rect.getH() + 9) : rect;
+    });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"),
             new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
                 refreshDockStatus();
+
+                if (!enabled.get()) {
+                    return false;
+                }
+
+                if (!showing.get()) {
+                    // Run later to guarantee order of operations
+                    Platform.runLater(() -> {
+                        AppLayoutModel.get().selectConnections();
+                        showDock();
+                        attach();
+                    });
+                    return false;
+                }
 
                 if (minimized.get() || detached.get()) {
                     attach();
@@ -87,13 +118,47 @@ public class TerminalDockHubManager {
                     return false;
                 }
 
-                if (!showing.get()) {
-                    showDock();
-                    return false;
-                }
-
                 return false;
     });
+
+    private void addDialogListeners() {
+        var wasShowing = new SimpleBooleanProperty();
+        var wasAttached = new SimpleBooleanProperty();
+        AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
+            if (c.getList().size() == 0) {
+                if (wasShowing.get()) {
+                    INSTANCE.showDock();
+                }
+                if (wasAttached.get()) {
+                    INSTANCE.attach();
+                }
+            } else {
+                wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
+                wasShowing.set(INSTANCE.showing.get());
+                INSTANCE.hideDock();
+            }
+        });
+    }
+
+    private void addLayoutListeners() {
+        var wasShowing = new SimpleBooleanProperty();
+        var wasAttached = new SimpleBooleanProperty();
+        AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
+            if (AppLayoutModel.get().getEntries().indexOf(newValue) == 0) {
+                if (wasShowing.get()) {
+                    INSTANCE.showDock();
+                }
+                if (wasAttached.get()) {
+                    INSTANCE.attach();
+                }
+            } else {
+                wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
+                wasShowing.set(INSTANCE.showing.get());
+                INSTANCE.hideDock();
+            }
+        });
+    }
+
 
     private TerminalView.Listener createListener() {
         var listener = new TerminalView.Listener() {
@@ -114,14 +179,13 @@ public class TerminalDockHubManager {
                         return;
                     }
 
-                    controllable.get().removeShadow();
                     if (t.getDockMode() == TerminalDockMode.BORDERLESS) {
                         controllable.get().removeBorders();
                     }
                 }
                 dockModel.trackTerminal(controllable.get(), !detached.get());
                 dockModel.closeOtherTerminals(session.getRequest());
-                openDock();
+                enableDock();
             }
 
             @Override
@@ -141,7 +205,7 @@ public class TerminalDockHubManager {
                                 && s.getTerminal().isRunning())
                         .toList();
                 if (remaining.isEmpty()) {
-                    closeDock();
+                    disableDock();
                 }
             }
         };
@@ -160,13 +224,6 @@ public class TerminalDockHubManager {
         detached.set(dockModel.isCustomBounds());
     }
 
-    public void selectHub() {
-        dockModel.onFocusLost();
-    }
-
-    public void unselectHub() {
-    }
-
     public void openTerminal(UUID request) {
         if (!isSupported()) {
             return;
@@ -175,16 +232,30 @@ public class TerminalDockHubManager {
         hubRequests.add(request);
     }
 
-    public void openDock() {
+    public void enableDock() {
         PlatformThread.runLaterIfNeeded(() -> {
-            if (showing.get()) {
+            if (enabled.get()) {
                 return;
             }
 
             dockModel.toggleView(true);
+            enabled.set(true);
             showing.set(true);
 
             AppLayoutModel.get().getQueueEntries().add(queueEntry);
+        });
+    }
+
+    public void disableDock() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            if (!enabled.get()) {
+                return;
+            }
+
+            dockModel.toggleView(false);
+            enabled.set(false);
+            showing.set(false);
+            AppLayoutModel.get().getQueueEntries().remove(queueEntry);
         });
     }
 
@@ -199,11 +270,6 @@ public class TerminalDockHubManager {
         });
     }
 
-    public void attach() {
-        dockModel.attach();
-        detached.set(false);
-    }
-
     public void hideDock() {
         PlatformThread.runLaterIfNeeded(() -> {
             if (!showing.get()) {
@@ -215,15 +281,8 @@ public class TerminalDockHubManager {
         });
     }
 
-    public void closeDock() {
-        PlatformThread.runLaterIfNeeded(() -> {
-            if (!showing.get()) {
-                return;
-            }
-
-            dockModel.toggleView(false);
-            showing.set(false);
-            AppLayoutModel.get().getQueueEntries().remove(queueEntry);
-        });
+    public void attach() {
+        dockModel.attach();
+        detached.set(false);
     }
 }

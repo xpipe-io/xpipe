@@ -2,6 +2,7 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.core.window.AppMainWindow;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -66,7 +67,9 @@ public class TerminalDockHubComp extends SimpleComp {
                 if (newValue) {
                     model.onFocusGain();
                 } else {
-                    model.onFocusLost();
+                    Platform.runLater(() -> {
+                        model.onFocusLost();
+                    });
                 }
             }
         };
@@ -126,9 +129,9 @@ public class TerminalDockHubComp extends SimpleComp {
         var sx = region.getScene().getWindow().getOutputScaleX();
         var sy = region.getScene().getWindow().getOutputScaleY();
         model.resizeView(
-                (int) Math.ceil(bounds.getMinX() * sx + p.getLeft()),
-                (int) Math.ceil(bounds.getMinY() * sy + p.getTop()),
-                (int) Math.floor(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
-                (int) Math.floor(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
+                (int) Math.round(bounds.getMinX() * sx + p.getLeft()),
+                (int) Math.round(bounds.getMinY() * sy + p.getTop()),
+                (int) Math.round(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
+                (int) Math.round(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
     }
 }

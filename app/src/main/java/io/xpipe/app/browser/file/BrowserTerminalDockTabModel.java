@@ -27,12 +27,13 @@ import javafx.collections.ObservableList;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     private final BrowserSessionTab origin;
     private final ObservableList<UUID> terminalRequests;
-    private final TerminalDockView dockModel = new TerminalDockView();
+    private final TerminalDockView dockModel = new TerminalDockView(UnaryOperator.identity());
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;

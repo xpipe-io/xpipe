@@ -169,6 +169,11 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
+        // Dock terminal if needed
+        for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
+            TerminalDockHubManager.get().openTerminal(pane.getRequest());
+        }
+
         if (effectivePreferTabs) {
             synchronized (TerminalLauncher.class) {
                 // There will be timing issues when launching multiple tabs in a short time span
@@ -204,10 +209,6 @@ public class TerminalLauncher {
             throws Exception {
         if (type == null) {
             return;
-        }
-
-        for (TerminalPaneConfiguration pane : config.getPanes()) {
-            TerminalDockHubManager.get().openTerminal(pane.getRequest());
         }
 
         try {

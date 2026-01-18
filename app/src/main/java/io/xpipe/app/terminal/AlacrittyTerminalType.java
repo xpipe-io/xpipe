@@ -36,6 +36,11 @@ public interface AlacrittyTerminalType extends ExternalTerminalType, TrackableTe
     class Windows implements ExternalApplicationType.PathApplication, ExternalTerminalType, AlacrittyTerminalType {
 
         @Override
+        public TerminalDockMode getDockMode() {
+            return TerminalDockMode.WITH_BORDER;
+        }
+
+        @Override
         public void launch(TerminalLaunchConfiguration configuration) throws Exception {
             // Alacritty is bugged and will not accept arguments with spaces even if they are correctly passed/escaped
             // So this will not work when the script file has spaces
