@@ -3,7 +3,9 @@ package io.xpipe.app.core;
 import io.xpipe.app.prefs.AppPrefs;
 import javafx.stage.Screen;
 
-public class AppScale {
+public class AppDisplayScale {
+
+    private static Double screenOutputScale;
 
     public static boolean hasDefaultDisplayScale() {
         return getEffectiveDisplayScale() == 1.0;
@@ -19,7 +21,9 @@ public class AppScale {
             }
         }
 
-        var def = Screen.getPrimary().getOutputScaleX();
-        return def;
+        if (screenOutputScale == null) {
+            screenOutputScale = Screen.getPrimary().getOutputScaleX();
+        }
+        return screenOutputScale;
     }
 }

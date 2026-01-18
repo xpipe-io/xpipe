@@ -1,6 +1,5 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 
@@ -16,8 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -43,7 +40,7 @@ public class AppImages {
         var exts = AppExtensionManager.getInstance().getContentModules();
         for (Module ext : exts) {
             AppResources.with(ext.getName(), "img/", basePath -> {
-                var skipLarge = AppScale.hasDefaultDisplayScale();
+                var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -62,7 +59,7 @@ public class AppImages {
 
     private static void loadOsIcons() {
         AppResources.with(AppResources.MAIN_MODULE, "os", basePath -> {
-            var skipLarge = AppScale.hasDefaultDisplayScale();
+            var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -80,7 +77,7 @@ public class AppImages {
 
     private static void loadWelcomeImages() {
         AppResources.with(AppResources.MAIN_MODULE, "welcome", basePath -> {
-            var skipLarge = AppScale.hasDefaultDisplayScale();
+            var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {

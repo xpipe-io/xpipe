@@ -2,7 +2,7 @@ package io.xpipe.app.browser.icon;
 
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.core.AppScale;
+import io.xpipe.app.core.AppDisplayScale;
 import org.apache.commons.io.FilenameUtils;
 
 public class BrowserIconManager {
@@ -18,7 +18,7 @@ public class BrowserIconManager {
     }
 
     public static void loadIfNecessary(String s) {
-        var res = AppScale.hasDefaultDisplayScale() ? "24" : "40";
+        var res = AppDisplayScale.hasDefaultDisplayScale() ? "24" : "40";
         var key = "browser/" + FilenameUtils.getBaseName(s) + "-" + res + ".png";
         if (AppImages.hasImage(key)) {
             return;

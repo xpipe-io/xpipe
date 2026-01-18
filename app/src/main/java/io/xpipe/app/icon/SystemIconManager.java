@@ -1,18 +1,14 @@
 package io.xpipe.app.icon;
 
 import io.xpipe.app.core.*;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class SystemIconManager {
@@ -76,7 +72,7 @@ public class SystemIconManager {
         }
 
         var dir = SystemIconCache.getDirectory(icon.getSource());
-        var res = AppScale.hasDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
+        var res = AppDisplayScale.hasDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
         var files = new ArrayList<Path>();
         for (Integer re : res) {
             files.add(dir.resolve(icon.getId() + "-" + re + ".png"));

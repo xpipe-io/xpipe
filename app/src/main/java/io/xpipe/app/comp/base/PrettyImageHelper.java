@@ -2,16 +2,12 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppScale;
-import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.core.FilePath;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.Optional;
@@ -47,7 +43,7 @@ public class PrettyImageHelper {
             return rasterizedImageIfExists(img, height).orElse(null);
         }
 
-        var scale = AppScale.getEffectiveDisplayScale();
+        var scale = AppDisplayScale.getEffectiveDisplayScale();
         var mult = Math.round(scale * height);
         var base = FilePath.of(img).getBaseName();
         var available = IntStream.of(availableSizes)
