@@ -28,8 +28,6 @@ public class FileBrowserCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("fileBrowser")
                 .sub(new OptionsBuilder()
-                        .pref(prefs.enableTerminalDocking)
-                        .addToggle(prefs.enableTerminalDocking)
                         .pref(prefs.editFilesWithDoubleClick)
                         .addToggle(prefs.editFilesWithDoubleClick)
                         .pref(prefs.downloadsDirectory)

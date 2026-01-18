@@ -123,19 +123,8 @@ public class TerminalDockHubManager {
     });
 
     private void addDialogListeners() {
-        var wasShowing = new SimpleBooleanProperty();
-        var wasAttached = new SimpleBooleanProperty();
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
-            if (c.getList().size() == 0) {
-                if (wasShowing.get()) {
-                    INSTANCE.showDock();
-                }
-                if (wasAttached.get()) {
-                    INSTANCE.attach();
-                }
-            } else {
-                wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
-                wasShowing.set(INSTANCE.showing.get());
+            if (c.getList().size() > 0) {
                 INSTANCE.hideDock();
             }
         });

@@ -2,10 +2,14 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.NativeWinWindowControl;
+import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 
+import javafx.application.Platform;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +50,15 @@ public class TerminalDockView {
         // If we refocus the main window, it will get put always in front then
         terminal.frontOfMainWindow();
         if (dock && viewBounds != null) {
-            terminal.updatePosition(viewBounds);
+            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+
+            // Ugly fix for Windows Terminal instances using size constraints on first resize
+            // This will cause the dock to interpret is as detached if we don't fix it again
+            if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
+                GlobalTimer.delay(() -> {
+                    terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+                }, Duration.ofMillis(100));
+            }
         }
     }
 
@@ -187,7 +199,7 @@ public class TerminalDockView {
                 return;
             }
 
-            terminalInstance.updatePosition(viewBounds);
+            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
         });
     }
 
@@ -196,7 +208,7 @@ public class TerminalDockView {
             return;
         }
 
-        this.viewBounds = windowBoundsFunction.apply(new Rect(x, y, w, h));
+        this.viewBounds = new Rect(x, y, w, h);
         updatePositions();
     }
 
@@ -207,7 +219,7 @@ public class TerminalDockView {
             terminalInstance.show();
             terminalInstance.frontOfMainWindow();
             terminalInstance.focus();
-            terminalInstance.updatePosition(viewBounds);
+            terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
         });
     }
 }

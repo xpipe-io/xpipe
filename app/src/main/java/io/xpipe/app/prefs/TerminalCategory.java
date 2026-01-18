@@ -177,6 +177,12 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(terminalChoice(true))
+                .sub(new OptionsBuilder()
+                .pref(prefs.enableTerminalDocking)
+                .addToggle(prefs.enableTerminalDocking))
+                .hide(Bindings.createBooleanBinding(() -> {
+                    return !TerminalDockHubManager.isSupported();
+                }, prefs.terminalType, prefs.terminalMultiplexer))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
