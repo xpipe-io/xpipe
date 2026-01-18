@@ -7,18 +7,24 @@ import io.xpipe.app.ext.FileEntry;
 public class BrowserIcons {
 
     public static Comp<?> createDefaultFileIcon() {
-        return PrettyImageHelper.ofFixedSizeSquare("browser/default_file.svg", 24);
+        var s = "browser/default_file.svg";
+        BrowserIconManager.loadIfNecessary(s);
+        return PrettyImageHelper.ofFixedSizeSquare(s, 24);
     }
 
     public static Comp<?> createDefaultDirectoryIcon() {
-        return PrettyImageHelper.ofFixedSizeSquare("browser/default_folder.svg", 24);
+        var s = "browser/default_folder.svg";
+        BrowserIconManager.loadIfNecessary(s);
+        return PrettyImageHelper.ofFixedSizeSquare(s, 24);
     }
 
     public static Comp<?> createContextMenuIcon(BrowserIconFileType type) {
+        BrowserIconManager.loadIfNecessary(type.getIcon());
         return PrettyImageHelper.ofFixedSizeSquare(type.getIcon(), 16);
     }
 
-    public static Comp<?> createIcon(FileEntry entry) {
-        return PrettyImageHelper.ofFixedSizeSquare(BrowserIconManager.getFileIcon(entry), 24);
+    public static Comp<?> createIcon(String s) {
+        BrowserIconManager.loadIfNecessary(s);
+        return PrettyImageHelper.ofFixedSizeSquare(s, 24);
     }
 }

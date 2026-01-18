@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.window.AppDialog;
@@ -172,9 +173,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    PrettyImageHelper.ofFixedSize(
-                                    BrowserIconManager.getFileIcon(browserEntry.getRawFileEntry()), 24, 24)
-                            .createRegion());
+                    BrowserIcons.createIcon(browserEntry.getIcon()).createRegion());
             createMenu();
             addInputListeners();
         }

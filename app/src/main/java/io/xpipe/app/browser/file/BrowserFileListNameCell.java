@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.ext.FileKind;
@@ -213,7 +214,9 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 // Visibility seems to be bugged, so use opacity
                 setOpacity(0.0);
             } else {
-                img.set(getTableRow().getItem().getIcon());
+                var icon = getTableRow().getItem().getIcon();
+                BrowserIconManager.loadIfNecessary(icon);
+                img.set(icon);
 
                 var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                 pseudoClassStateChanged(PseudoClass.getPseudoClass("folder"), isDirectory);

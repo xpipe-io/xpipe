@@ -3,10 +3,14 @@ package io.xpipe.app.icon;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppResources;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
+import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +21,7 @@ public class SystemIconManager {
     private static final Path DIRECTORY =
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("pool");
 
+    private static final Set<SystemIcon> loadedIconImages = new HashSet<>();
     private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
     private static int cacheSourceHash;
@@ -65,8 +70,27 @@ public class SystemIconManager {
         return ICONS;
     }
 
-    public static String getIconFile(SystemIcon icon) {
-        return "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
+    public static synchronized String getAndLoadIconFile(SystemIcon icon) {
+        var id = "icons/" + icon.getSource().getId() + "/" + icon.getId() + ".svg";
+        if (loadedIconImages.contains(icon)) {
+            return id;
+        }
+
+        var dir = SystemIconCache.getDirectory(icon.getSource());
+        var res = AppMainWindow.get().displayScale().get() == 1.0 ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
+        var files = new ArrayList<Path>();
+        for (Integer re : res) {
+            files.add(dir.resolve(icon.getId() + "-" + re + ".png"));
+            files.add(dir.resolve(icon.getId() + "-" + re + "-dark.png"));
+        }
+        for (var file : files) {
+            if (Files.isRegularFile(file)) {
+                AppImages.loadImage(file, "icons/" + icon.getSource().getId() + "/" + file.getFileName());
+            }
+        }
+
+        loadedIconImages.add(icon);
+        return id;
     }
 
     public static Optional<SystemIcon> getIcon(String id) {
@@ -111,7 +135,6 @@ public class SystemIconManager {
         cacheSourceHash = SystemIconCache.getCacheSourceHash();
         reloadSources();
         sourceHash = calculateSourceHash();
-        reloadImages();
         AppPrefs.get().preferMonochromeIcons().addListener((observableValue, o, n) -> {
             sourceHash = calculateSourceHash();
         });
@@ -120,7 +143,7 @@ public class SystemIconManager {
         });
     }
 
-    public static List<SystemIconSource> initAdditional() {
+    public static void initAdditional() {
         var l = new ArrayList<SystemIconSource>();
         for (var source : getEffectiveSources()) {
             if (!LOADED.containsKey(source)) {
@@ -134,17 +157,6 @@ public class SystemIconManager {
             }
         }
         sourceHash = calculateSourceHash();
-        return l;
-    }
-
-    public static void loadAdditional(List<SystemIconSource> additional) {
-        for (var source : additional) {
-            try {
-                AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).handle();
-            }
-        }
     }
 
     public static synchronized void reloadSources() throws Exception {
@@ -164,11 +176,17 @@ public class SystemIconManager {
         });
     }
 
-    private static void reloadImages() {
+    public static void prepareUsedIconImages() {
+        for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
+            storeEntry.getEffectiveIconFile();
+        }
+    }
+
+    private static synchronized void reloadImages() {
         AppImages.remove(s -> s.startsWith("icons/"));
         try {
-            for (var source : getEffectiveSources()) {
-                AppImages.loadRasterImages(SystemIconCache.getDirectory(source), "icons/" + source.getId());
+            for (var loadedIconImage : loadedIconImages) {
+                getAndLoadIconFile(loadedIconImage);
             }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
@@ -195,6 +213,12 @@ public class SystemIconManager {
         Files.createDirectories(DIRECTORY);
         reloadSources();
         sourceHash = calculateSourceHash();
+    }
+
+    public static synchronized void loadAllAvailableIconImages() {
+        for (SystemIcon icon : getIcons()) {
+            getAndLoadIconFile(icon);
+        }
     }
 
     public static Path getPoolPath() {

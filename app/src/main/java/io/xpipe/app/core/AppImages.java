@@ -71,32 +71,17 @@ public class AppImages {
         TrackEvent.trace("Loaded images in " + module + ":" + dir + " in " + elapsed.toMillis() + " ms");
     }
 
-    public static void loadRasterImages(Path directory, String prefix) throws IOException {
-        if (!Files.isDirectory(directory)) {
-            return;
-        }
-
-        Files.walkFileTree(directory, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                if (!file.toString().endsWith(".png")) {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                var relativeFileName = FilenameUtils.separatorsToUnix(
-                        directory.relativize(file).toString());
-                var key = prefix + "/" + relativeFileName;
-                if (images.containsKey(key)) {
-                    return FileVisitResult.CONTINUE;
-                }
-
-                images.put(key, loadImage(file));
-                return FileVisitResult.CONTINUE;
+    public static void loadImage(String module, String key, String file) {
+        AppResources.with(module, file, p -> {
+            if (images.containsKey(key)) {
+                return;
             }
+
+            images.put(key, loadImage(p));
         });
     }
 
-    public static boolean hasNormalImage(String file) {
+    public static boolean hasImage(String file) {
         if (file == null) {
             return false;
         }
@@ -142,6 +127,14 @@ public class AppImages {
             }
         }
         return img;
+    }
+
+    public static void loadImage(Path p, String key) {
+        if (p == null) {
+            return;
+        }
+
+        images.put(key, loadImage(p));
     }
 
     public static Image loadImage(Path p) {

@@ -21,13 +21,13 @@ public class PrettyImageHelper {
         if (img != null && img.endsWith(".svg")) {
             var base = FilePath.of(img).getBaseName();
             var renderedName = base + "-" + height + ".png";
-            if (AppImages.hasNormalImage(renderedName)) {
+            if (AppImages.hasImage(renderedName)) {
                 return Optional.of(renderedName);
             }
         }
 
         if (img != null && img.endsWith(".png")) {
-            if (AppImages.hasNormalImage(img)) {
+            if (AppImages.hasImage(img)) {
                 return Optional.of(img);
             }
         }
@@ -52,7 +52,7 @@ public class PrettyImageHelper {
                     var mult = Math.round(obs.get() * height);
                     var base = FilePath.of(img).getBaseName();
                     var available = IntStream.of(availableSizes)
-                            .filter(integer -> AppImages.hasNormalImage(base + "-" + integer + ".png"))
+                            .filter(integer -> AppImages.hasImage(base + "-" + integer + ".png"))
                             .boxed()
                             .toList();
                     var closest = available.stream()

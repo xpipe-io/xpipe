@@ -355,7 +355,7 @@ public class DataStoreEntry extends StorageElement {
 
         var found = SystemIconManager.getIcon(icon);
         if (found.isPresent()) {
-            return SystemIconManager.getIconFile(found.get());
+            return SystemIconManager.getAndLoadIconFile(found.get());
         } else {
             return "disabled_icon.png";
         }
