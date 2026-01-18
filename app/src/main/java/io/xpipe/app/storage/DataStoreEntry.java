@@ -346,7 +346,7 @@ public class DataStoreEntry extends StorageElement {
 
     public String getEffectiveIconFile() {
         if (getValidity() == Validity.LOAD_FAILED) {
-            return "disabled_icon.png";
+            return "error.png";
         }
 
         if (icon == null) {
@@ -357,7 +357,7 @@ public class DataStoreEntry extends StorageElement {
         if (found.isPresent()) {
             return SystemIconManager.getAndLoadIconFile(found.get());
         } else {
-            return "disabled_icon.png";
+            return "error.png";
         }
     }
 

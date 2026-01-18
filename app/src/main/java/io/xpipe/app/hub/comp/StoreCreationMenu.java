@@ -92,7 +92,7 @@ public class StoreCreationMenu {
 
         var actionMenu = categoryMenu("addMacro", "mdmz-miscellaneous_services", DataStoreCreationCategory.MACRO, null);
         var item = new MenuItem();
-        item.setGraphic(PrettyImageHelper.ofFixedSize("app:shortcut/actionShortcut_icon.svg", 16, 16)
+        item.setGraphic(PrettyImageHelper.ofFixedSize("action.png", 16, 16)
                 .createRegion());
         item.textProperty().bind(AppI18n.observable("actionShortcut"));
         item.setOnAction(event -> {

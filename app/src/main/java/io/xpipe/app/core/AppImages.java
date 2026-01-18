@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 
@@ -31,53 +32,87 @@ public class AppImages {
     }
 
     public static void init() {
-        if (images.size() > 0) {
-            return;
-        }
+        loadBundledProviderIcons();
+        loadOsIcons();
+        loadWelcomeImages();
+        loadMiscImages();
+        loadLogos();
+    }
 
-        TrackEvent.info("Loading images ...");
-        for (var module : AppExtensionManager.getInstance().getContentModules()) {
-            loadDirectory(module.getName(), "img", true);
+    private static void loadBundledProviderIcons() {
+        var exts = AppExtensionManager.getInstance().getContentModules();
+        for (Module ext : exts) {
+            AppResources.with(ext.getName(), "img/", basePath -> {
+                var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
+                Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        var name = file.getFileName().toString();
+                        if (name.contains("-80") && skipLarge) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        AppImages.loadImage(file, name);
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            });
         }
     }
 
-    public static void loadDirectory(String module, String dir, boolean loadImages) {
-        var start = Instant.now();
-        AppResources.with(module, dir, basePath -> {
-            if (!Files.exists(basePath)) {
-                return;
-            }
-
-            var simpleName = FilenameUtils.getExtension(module);
-            String defaultPrefix = simpleName + ":";
+    private static void loadOsIcons() {
+        AppResources.with(AppResources.MAIN_MODULE, "os", basePath -> {
+            var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    var relativeFileName = FilenameUtils.separatorsToUnix(
-                            basePath.relativize(file).toString());
-                    var key = defaultPrefix + relativeFileName;
-                    if (images.containsKey(key)) {
+                    var name = file.getFileName().toString();
+                    if (name.contains("-40") && skipLarge) {
                         return FileVisitResult.CONTINUE;
                     }
 
-                    if (loadImages) {
-                        images.put(key, loadImage(file));
-                    }
+                    AppImages.loadImage(file, "os/" + name);
                     return FileVisitResult.CONTINUE;
                 }
             });
         });
-        var elapsed = Duration.between(start, Instant.now());
-        TrackEvent.trace("Loaded images in " + module + ":" + dir + " in " + elapsed.toMillis() + " ms");
     }
 
-    public static void loadImage(String module, String key, String file) {
-        AppResources.with(module, file, p -> {
-            if (images.containsKey(key)) {
-                return;
-            }
+    private static void loadWelcomeImages() {
+        AppResources.with(AppResources.MAIN_MODULE, "welcome", basePath -> {
+            var skipLarge = AppMainWindow.get().displayScale().get() == 1.0;
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    var name = file.getFileName().toString();
+                    if (name.contains("-244") && skipLarge) {
+                        return FileVisitResult.CONTINUE;
+                    }
 
-            images.put(key, loadImage(p));
+                    AppImages.loadImage(file, "welcome/" + name);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        });
+    }
+
+    private static void loadLogos() {
+        AppResources.with(AppResources.MAIN_MODULE, "logo", basePath -> {
+            Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    var relativeFileName = FilenameUtils.separatorsToUnix(basePath.getParent().relativize(file).toString());
+                    AppImages.loadImage(file, relativeFileName);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        });
+    }
+
+    private static void loadMiscImages() {
+        AppResources.with(AppResources.MAIN_MODULE, "", basePath -> {
+            loadImage(basePath.resolve("action.png"), "action.png");
+            loadImage(basePath.resolve("error.png"), "error.png");
         });
     }
 
@@ -90,7 +125,7 @@ public class AppImages {
             return true;
         }
 
-        var key = file.contains(":") ? file : "app:" + file;
+        var key = file.contains(":") ? file.split(":", 2)[1] : file;
         if (images.containsKey(key)) {
             return true;
         }
@@ -107,13 +142,12 @@ public class AppImages {
             return images.get(file);
         }
 
-        var key = file.contains(":") ? file : "app:" + file;
-
+        var key = file.contains(":") ? file.split(":", 2)[1] : file;
         if (images.containsKey(key)) {
             return images.get(key);
         }
 
-        TrackEvent.warn("Normal image " + key + " not found");
+        TrackEvent.warn("Image " + key + " not found");
         return DEFAULT_IMAGE;
     }
 

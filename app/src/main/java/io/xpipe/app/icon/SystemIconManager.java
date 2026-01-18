@@ -1,19 +1,18 @@
 package io.xpipe.app.icon;
 
-import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppImages;
-import io.xpipe.app.core.AppProperties;
-import io.xpipe.app.core.AppResources;
+import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
-import org.apache.commons.io.FilenameUtils;
 
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class SystemIconManager {
