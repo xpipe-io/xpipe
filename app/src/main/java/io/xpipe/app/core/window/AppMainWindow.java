@@ -14,6 +14,7 @@ import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.core.OsType;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableDoubleValue;
@@ -67,6 +68,18 @@ public class AppMainWindow {
 
         PlatformThread.runLaterIfNeededBlocking(() -> {
             initEmpty(show);
+        });
+    }
+
+    public static void postInit() {
+        if (INSTANCE == null || INSTANCE.getStage() == null) {
+            return;
+        }
+
+        // Ugly solution to only start tracking kb input after we are finished starting up
+        // Otherwise, any typed vault password will always make it think that kb input is active
+        Platform.runLater(() -> {
+            AppWindowStyle.addNavigationPseudoClasses(INSTANCE.getStage().getScene());
         });
     }
 
