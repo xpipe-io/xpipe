@@ -66,6 +66,7 @@ public class OsLogoComp extends SimpleComp {
             AppResources.with(AppResources.MAIN_MODULE, "os", file -> {
                 try (var list = Files.list(file)) {
                     list.filter(path -> path.toString().endsWith(".png")
+                                    && !path.toString().contains("-dark")
                                     && !path.toString().endsWith(LINUX_DEFAULT_24)
                                     && !path.toString().endsWith("-40.png"))
                             .map(path -> path.getFileName().toString())
