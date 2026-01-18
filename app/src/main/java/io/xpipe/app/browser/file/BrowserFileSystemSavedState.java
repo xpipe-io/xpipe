@@ -75,7 +75,7 @@ public class BrowserFileSystemSavedState {
         AppCache.update("fs-state-" + model.getEntry().get().getUuid(), this);
     }
 
-    public void cd(FilePath dir, boolean delay) {
+    public void cd(FilePath dir) {
         if (dir == null) {
             lastDirectory = null;
             return;
@@ -83,26 +83,21 @@ public class BrowserFileSystemSavedState {
 
         lastDirectory = dir;
 
-        if (delay) {
-            // After 10 seconds
-            GlobalTimer.delayAsync(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            // Synchronize with platform thread
-                            Platform.runLater(() -> {
-                                if (Objects.equals(lastDirectory, dir)) {
-                                    updateRecent(dir);
-                                    save();
-                                }
-                            });
-                        }
-                    },
-                    Duration.ofMillis(10000));
-        } else {
-            updateRecent(dir);
-            save();
-        }
+        // After 10 seconds
+        GlobalTimer.delayAsync(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Synchronize with platform thread
+                        Platform.runLater(() -> {
+                            if (Objects.equals(lastDirectory, dir)) {
+                                updateRecent(dir);
+                                save();
+                            }
+                        });
+                    }
+                },
+                Duration.ofMillis(10000));
     }
 
     private synchronized void updateRecent(FilePath dir) {

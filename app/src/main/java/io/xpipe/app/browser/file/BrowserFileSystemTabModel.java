@@ -194,13 +194,8 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     public void close() {
         BooleanScope.executeExclusive(busy, () -> {
             var current = currentPath.getValue();
-            // We might close this after storage shutdown
-            // If this entry does not exist, it's not that bad if we save it anyway
-            if (
-            //                    DataStorage.get() != null
-            //                    && DataStorage.get().getStoreEntries().contains(getEntry().get())
-            savedState != null && current != null) {
-                savedState.cd(current, false);
+            if (savedState != null && current != null) {
+                savedState.cd(current);
                 BrowserHistorySavedStateImpl.get()
                         .add(new BrowserHistorySavedState.Entry(getEntry().get().getUuid(), current));
                 BrowserHistorySavedStateImpl.get().save();
@@ -350,6 +345,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
         }
 
         if (path == null) {
+            savedState.cd(null);
             currentPath.set(null);
             fileList.setAll(Stream.of());
             return Optional.empty();
@@ -477,7 +473,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
 
         loadFilesSync(path);
         filter.setValue(null);
-        savedState.cd(path, true);
+        savedState.cd(path);
         history.updateCurrent(path);
         currentPath.set(path);
     }
@@ -558,7 +554,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     public void initWithDefaultDirectory() {
-        savedState.cd(null, false);
+        savedState.cd(null);
         history.updateCurrent(null);
     }
 
