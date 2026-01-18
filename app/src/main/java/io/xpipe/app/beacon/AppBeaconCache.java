@@ -6,46 +6,71 @@ import io.xpipe.beacon.BeaconClientException;
 
 import lombok.Value;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Value
 public class AppBeaconCache {
 
-    Set<BeaconShellSession> shellSessions = new HashSet<>();
+    Map<UUID, BeaconShellSession> shellSessionsById = new ConcurrentHashMap<>();
+
+    public Collection<BeaconShellSession> getShellSessions() {
+        return shellSessionsById.values();
+    }
 
     public BeaconShellSession getShellSession(UUID uuid) throws BeaconClientException {
-        var found = shellSessions.stream()
-                .filter(beaconShellSession ->
-                        beaconShellSession.getEntry().getUuid().equals(uuid))
-                .findFirst();
-        if (found.isEmpty()) {
+        var session = shellSessionsById.get(uuid);
+        if (session == null) {
             throw new BeaconClientException("No active shell session known for id " + uuid);
         }
-        return found.get();
+        return session;
     }
 
     public BeaconShellSession getOrStart(DataStoreEntryRef<ShellStore> ref) throws Exception {
-        var existing = AppBeaconServer.get().getCache().getShellSessions().stream()
-                .filter(beaconShellSession -> beaconShellSession.getEntry().equals(ref.get()))
-                .findFirst();
-        var control = (existing.isPresent()
-                ? existing.get().getControl()
-                : ref.getStore().standaloneControl().start());
-        control.setNonInteractive();
-        control.start();
+        var entry = ref.get();
+        try {
+            var session = shellSessionsById.computeIfAbsent(entry.getUuid(), key -> {
+                try {
+                    var control = ref.getStore().standaloneControl();
+                    control.setNonInteractive();
+                    control = control.start();
 
-        var d = control.getShellDialect().getDumbMode();
-        if (!d.supportsAnyPossibleInteraction()) {
-            control.close();
-            d.throwIfUnsupported();
+                    var d = control.getShellDialect().getDumbMode();
+                    if (!d.supportsAnyPossibleInteraction()) {
+                        control.close();
+                        d.throwIfUnsupported();
+                    }
+
+                    return new BeaconShellSession(entry, control);
+                } catch (Exception ex) {
+                    throw new ShellSessionInitException(ex);
+                }
+            });
+            session.getControl().setNonInteractive();
+            return session;
+        } catch (ShellSessionInitException ex) {
+            throw ex.getCause();
+        }
+    }
+
+    public void removeShellSession(UUID uuid) {
+        shellSessionsById.remove(uuid);
+    }
+
+    private static final class ShellSessionInitException extends RuntimeException {
+
+        private final Exception cause;
+
+        private ShellSessionInitException(Exception cause) {
+            super(cause);
+            this.cause = cause;
         }
 
-        if (existing.isEmpty()) {
-            AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(ref.get(), control));
+        @Override
+        public synchronized Exception getCause() {
+            return cause;
         }
-
-        return new BeaconShellSession(ref.get(), control);
     }
 }
