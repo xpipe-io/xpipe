@@ -30,6 +30,7 @@ public abstract class DataStorage {
     public static final UUID ALL_SCRIPTS_CATEGORY_UUID = UUID.fromString("19024cf9-d192-41a9-88a6-a22694cf716a");
     public static final UUID PREDEFINED_SCRIPTS_CATEGORY_UUID = UUID.fromString("5faf1d71-0efc-4293-8b70-299406396973");
     public static final UUID CUSTOM_SCRIPTS_CATEGORY_UUID = UUID.fromString("d3496db5-b709-41f9-abc0-ee0a660fbab9");
+    public static final UUID SCRIPT_SOURCES_CATEGORY_UUID = UUID.fromString("4b766928-372b-4ac4-9d10-260ce65288cd");
     public static final UUID DEFAULT_CATEGORY_UUID = UUID.fromString("97458c07-75c0-4f9d-a06e-92d8cdf67c40");
     public static final UUID LOCAL_ID = UUID.fromString("f0ec68aa-63f5-405c-b178-9a4454556d6b");
     public static final UUID ALL_IDENTITIES_CATEGORY_UUID = UUID.fromString("23a5565d-b343-4ab2-abf4-48a5d12dda22");
@@ -179,6 +180,12 @@ public abstract class DataStorage {
         if (getStoreCategoryIfPresent(CUSTOM_SCRIPTS_CATEGORY_UUID).isEmpty()) {
             var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, CUSTOM_SCRIPTS_CATEGORY_UUID, "Custom");
             cat.setDirectory(categoriesDir.resolve(CUSTOM_SCRIPTS_CATEGORY_UUID.toString()));
+            storeCategories.add(cat);
+        }
+
+        if (getStoreCategoryIfPresent(SCRIPT_SOURCES_CATEGORY_UUID).isEmpty()) {
+            var cat = DataStoreCategory.createNew(ALL_SCRIPTS_CATEGORY_UUID, SCRIPT_SOURCES_CATEGORY_UUID, "Sources");
+            cat.setDirectory(categoriesDir.resolve(SCRIPT_SOURCES_CATEGORY_UUID.toString()));
             storeCategories.add(cat);
         }
 
@@ -993,7 +1000,8 @@ public abstract class DataStorage {
                 || cat.getUuid().equals(PREDEFINED_SCRIPTS_CATEGORY_UUID)
                 || cat.getUuid().equals(LOCAL_IDENTITIES_CATEGORY_UUID)
                 || cat.getUuid().equals(CUSTOM_SCRIPTS_CATEGORY_UUID)
-                || cat.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)) {
+                || cat.getUuid().equals(SYNCED_IDENTITIES_CATEGORY_UUID)
+                || cat.getUuid().equals(SCRIPT_SOURCES_CATEGORY_UUID)) {
             return false;
         }
 

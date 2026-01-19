@@ -5,19 +5,24 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.ext.ShellDialectChoiceComp;
+import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.SecretValue;
 import io.xpipe.core.UuidHelper;
 import javafx.beans.property.*;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +42,8 @@ public interface ScriptSource {
             var path = new SimpleObjectProperty<>(property.getValue().getPath() != null ? FilePath.of(property.getValue().getPath()) : null);
             return new OptionsBuilder()
                     .nameAndDescription("scriptDirectory")
-                    .addComp(new ContextualFileReferenceChoiceComp(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()), path, null, List.of(), null, true))
+                    .addComp(new ContextualFileReferenceChoiceComp(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
+                            path, null, List.of(), null, true), path)
                     .nonNull()
                     .bind(
                             () -> Directory.builder()
@@ -47,13 +53,25 @@ public interface ScriptSource {
         }
 
         @Override
-        public void prepare() {
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(path);
+        }
 
+        @Override
+        public void prepare() {
+            if (!Files.isDirectory(path)) {
+                throw ErrorEventFactory.expected(new IllegalStateException("Source directory " + path + " does not exist"));
+            }
         }
 
         @Override
         public Path getLocalPath() {
             return path;
+        }
+
+        @Override
+        public String toSummary() {
+            return path.toString();
         }
     }
 
@@ -87,19 +105,64 @@ public interface ScriptSource {
         }
 
         @Override
-        public void prepare() {
+        public void checkComplete() throws ValidationException {
+            Validators.nonNull(url);
+        }
 
+        @Override
+        public void prepare() throws Exception {
+            if (Files.exists(getLocalPath())) {
+                ProcessControlProvider.get().pullRepository(getLocalPath());
+            } else {
+                ProcessControlProvider.get().cloneRepository(url, getLocalPath());
+            }
         }
 
         @Override
         public Path getLocalPath() {
             return AppCache.getBasePath().resolve("scripts").resolve(getName());
         }
+
+        @Override
+        public String toSummary() {
+            return url;
+        }
     }
 
-    void prepare();
+    void checkComplete() throws ValidationException;
+
+    void prepare() throws Exception;
 
     Path getLocalPath();
+
+    String toSummary();
+
+    default List<ScriptSourceEntry> listScripts() throws Exception {
+        var l = new ArrayList<ScriptSourceEntry>();
+        Files.walkFileTree(getLocalPath(), new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                var name = file.getFileName().toString();
+                var dialect = ShellDialectChoiceComp.ICONS.keySet().stream().filter(shellDialect -> {
+                    return name.endsWith("." + shellDialect.getScriptFileEnding());
+                }).findFirst();
+                if (dialect.isEmpty()) {
+                    return FileVisitResult.CONTINUE;
+                }
+
+                var entry = ScriptSourceEntry.builder()
+                        .name(name)
+                        .source(ScriptSource.this)
+                        .dialect(dialect.get())
+                        .localFile(file)
+                        .build();
+                l.add(entry);
+
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return l;
+    }
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

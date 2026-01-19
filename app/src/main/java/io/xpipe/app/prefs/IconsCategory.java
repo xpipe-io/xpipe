@@ -29,6 +29,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
+import javafx.scene.layout.Region;
 import org.apache.commons.io.FilenameUtils;
 
 import java.net.URI;
@@ -65,7 +66,10 @@ public class IconsCategory extends AppPrefsCategory {
         AppPrefs.get().getIconSources().subscribe((newValue) -> {
             sources.setAll(SystemIconManager.getAllSources());
         });
-        var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s, sources), true);
+        var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s, sources), false);
+        box.apply(struc -> {
+            struc.get().minHeightProperty().bind(((Region) struc.get().getContent()).heightProperty());
+        });
 
         var busy = new SimpleBooleanProperty(false);
         var refreshButton = new TileButtonComp("refreshSources", "refreshSourcesDescription", "mdi2r-refresh", e -> {
