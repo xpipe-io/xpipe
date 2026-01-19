@@ -185,11 +185,7 @@ public abstract class AppOperationMode {
             ThreadHelper.runAsync(() -> {
                 DataStorage.get().generateCaches();
             });
-            // Ugly solution to only start tracking kb input after we are finished starting up
-            // Otherwise, any typed vault password will always make think that kb input is active
-            Platform.runLater(() -> {
-                AppWindowStyle.addNavigationPseudoClasses(AppMainWindow.get().getStage().getScene());
-            });
+            AppMainWindow.postInit();
         } catch (Throwable ex) {
             ErrorEventFactory.fromThrowable(ex).term().handle();
         }
