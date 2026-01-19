@@ -34,7 +34,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ScriptSourceStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+public class ScriptSourceStoreProvider implements DataStoreProvider {
 
     @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
@@ -77,7 +77,7 @@ public class ScriptSourceStoreProvider implements EnabledParentStoreProvider, Da
 
         return new OptionsBuilder()
                 .nameAndDescription("scriptSourceType")
-                .sub(sourceChoice.build())
+                .sub(sourceChoice.build(), source)
                 .bind(
                         () -> {
                             return ScriptSourceStore.builder().source(source.get()).build();
@@ -89,7 +89,7 @@ public class ScriptSourceStoreProvider implements EnabledParentStoreProvider, Da
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
         ScriptSourceStore st = wrapper.getEntry().getStore().asNeeded();
-        return st.getSource().toSummary();
+        return st.getSource().toName();
     }
 
     @Override
@@ -97,14 +97,9 @@ public class ScriptSourceStoreProvider implements EnabledParentStoreProvider, Da
         ScriptSourceStore st = section.getWrapper().getEntry().getStore().asNeeded();
         return Bindings.createStringBinding(() -> {
             var s = st.getState();
-            return s.getEntries() != null ? s.getEntries().size() + "" : null;
+            var summary = st.getSource().toSummary();
+            return summary + (s.getEntries() != null ? " (" + s.getEntries().size() + ")" : "");
         }, section.getWrapper().getPersistentState());
-    }
-
-    @SneakyThrows
-    @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "proc:shellEnvironment_icon.svg";
     }
 
     @Override

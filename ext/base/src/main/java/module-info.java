@@ -43,6 +43,7 @@ open module io.xpipe.ext.base {
             RunHubBatchScriptActionProvider,
             RunHubScriptActionProvider,
             RunTerminalScriptActionProvider,
+            ScriptSourceRefreshHubProvider,
             SimpleScriptQuickEditHubLeafProvider,
             StoreStartActionProvider,
             StoreStopActionProvider,

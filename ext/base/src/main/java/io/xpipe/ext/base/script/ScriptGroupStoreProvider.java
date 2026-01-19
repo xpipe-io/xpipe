@@ -85,11 +85,6 @@ public class ScriptGroupStoreProvider implements EnabledParentStoreProvider, Dat
     }
 
     @Override
-    public String getDisplayIconFileName(DataStore store) {
-        return "proc:shellEnvironment_icon.svg";
-    }
-
-    @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return ScriptGroupStore.builder().build();
     }

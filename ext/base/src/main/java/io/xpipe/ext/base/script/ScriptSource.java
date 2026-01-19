@@ -1,12 +1,15 @@
 package io.xpipe.ext.base.script;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
@@ -27,6 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ScriptSource.Directory.class),
+        @JsonSubTypes.Type(value = ScriptSource.GitRepository.class)
+})
 public interface ScriptSource {
 
     @JsonTypeName("directory")
@@ -72,6 +79,11 @@ public interface ScriptSource {
         @Override
         public String toSummary() {
             return path.toString();
+        }
+
+        @Override
+        public String toName() {
+            return AppI18n.get("directorySource");
         }
     }
 
@@ -127,6 +139,11 @@ public interface ScriptSource {
         public String toSummary() {
             return url;
         }
+
+        @Override
+        public String toName() {
+            return AppI18n.get("gitRepositorySource");
+        }
     }
 
     void checkComplete() throws ValidationException;
@@ -136,6 +153,8 @@ public interface ScriptSource {
     Path getLocalPath();
 
     String toSummary();
+
+    String toName();
 
     default List<ScriptSourceEntry> listScripts() throws Exception {
         var l = new ArrayList<ScriptSourceEntry>();

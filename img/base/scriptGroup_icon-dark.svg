@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.68 206.97"
+   version="1.1"
+   sodipodi:docname="shelEnvironment_icon-dark.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview15"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.0703483"
+     inkscape:cx="72.693081"
+     inkscape:cy="84.526838"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2" />
+  <defs
+     id="defs4">
+    <style
+       id="style2">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title6">shell environment v2</title>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="bg"
+     style="display:inline">
+    <ellipse
+       style="fill:#2e2e2e;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:1.333;stroke-linecap:round"
+       id="path1374"
+       cx="165.94623"
+       cy="41.680531"
+       rx="34.19622"
+       ry="22.870531" />
+  </g>
+  <metadata
+     id="metadata923">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>shell environment v2</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="fg"
+     style="display:inline">
+    <path
+       class="cls-1"
+       d="m 215.09,242.25 v 0 a 4.28,4.28 0 0 0 -6,6.05 l 23.32,23.34 -23.3,23.32 a 4.28,4.28 0 0 0 -0.47,6 4.29,4.29 0 0 0 6,0.46 4.56,4.56 0 0 0 0.44,-0.44 l 26.36,-26.36 a 4.29,4.29 0 0 0 0,-6 z"
+       transform="translate(-161.92,-143.11)"
+       id="path8"
+       style="fill:#f6f6f6;fill-opacity:1" />
+    <path
+       class="cls-1"
+       d="M 306.76,294.67 H 252.1 a 4.28,4.28 0 1 0 0,8.56 h 54.66 a 4.28,4.28 0 0 0 0,-8.56 z"
+       transform="translate(-161.92,-143.11)"
+       id="path10"
+       style="fill:#f6f6f6;fill-opacity:1" />
+    <path
+       class="cls-1"
+       d="m 366.61,182.47 a 39.37,39.37 0 0 0 -72.94,-20.55 h -108 a 23.83,23.83 0 0 0 -23.8,23.8 v 140.56 a 23.83,23.83 0 0 0 23.8,23.8 h 140.61 a 23.83,23.83 0 0 0 23.8,-23.8 V 214.52 a 39.31,39.31 0 0 0 16.53,-32.05 z m -45.39,10.44 8.52,-22.41 a 1.89,1.89 0 0 1 2,-1.46 1.86,1.86 0 0 1 1.85,1.81 3.62,3.62 0 0 1 -0.28,1.18 l -8.52,22.41 a 1.94,1.94 0 0 1 -3.81,-0.36 3.57,3.57 0 0 1 0.24,-1.17 z M 317.88,176 a 1.86,1.86 0 0 1 2,1.92 c 0,0.82 -0.18,1.61 -1.68,2.25 l -11.47,5 11.47,5 c 1.5,0.65 1.68,1.43 1.68,2.25 a 1.86,1.86 0 0 1 -2,1.92 4.19,4.19 0 0 1 -2,-0.5 l -14.5,-6.66 a 2.22,2.22 0 0 1 0,-4.06 l 14.5,-6.66 a 4.19,4.19 0 0 1 2,-0.46 z m -147.4,9.7 a 15.26,15.26 0 0 1 15.24,-15.24 h 104 A 39.48,39.48 0 0 0 292.5,201 h -122 z m 171,140.56 A 15.26,15.26 0 0 1 326.24,341.5 H 185.72 A 15.26,15.26 0 0 1 170.48,326.26 V 209.52 h 128.19 a 39.33,39.33 0 0 0 42.85,9.63 z m 11.56,-139 -14.5,6.66 a 4.21,4.21 0 0 1 -2,0.5 1.86,1.86 0 0 1 -2,-1.92 c 0,-0.82 0.18,-1.6 1.67,-2.25 l 11.47,-5 -11.47,-5 c -1.49,-0.64 -1.67,-1.43 -1.67,-2.25 a 1.86,1.86 0 0 1 2,-1.92 4.21,4.21 0 0 1 2,0.5 l 14.5,6.66 a 2.23,2.23 0 0 1 0,4.06 z"
+       transform="translate(-161.92,-143.11)"
+       id="path12"
+       style="fill:#f6f6f6;fill-opacity:1" />
+  </g>
+</svg>
