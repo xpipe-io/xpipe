@@ -124,7 +124,7 @@ public class BrowserHistoryTabComp extends SimpleComp {
 
         var open = new IntroComp(
                 "browserWelcomeEmpty",
-                new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("graphics/Hips.svg", 100, 122)));
+                new LabelGraphic.CompGraphic(PrettyImageHelper.ofSpecificFixedSize("welcome/hips.svg", 100, 122)));
         open.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2f-folder-open-outline"));
         open.setButtonAction(() -> {
             BrowserFullSessionModel.DEFAULT.openFileSystemAsync(

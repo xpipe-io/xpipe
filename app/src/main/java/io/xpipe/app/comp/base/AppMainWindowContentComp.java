@@ -82,8 +82,7 @@ public class AppMainWindowContentComp extends SimpleComp {
             loadingAnimation.start();
 
             // This allows for assigning logos even if AppImages has not been initialized yet
-            var dir = "img/logo/";
-            AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
+            AppResources.with(AppResources.MAIN_MODULE, "", path -> {
                 var image = AppPrefs.get() != null
                                 && AppPrefs.get().theme().getValue().isDark()
                         ? path.resolve("loading-160-dark.png")

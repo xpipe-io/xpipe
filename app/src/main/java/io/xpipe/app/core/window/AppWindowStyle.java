@@ -74,7 +74,7 @@ public class AppWindowStyle {
         stage.getIcons().clear();
 
         // This allows for assigning logos even if AppImages has not been initialized yet
-        var dir = OsType.ofLocal() == OsType.MACOS ? "img/logo/padded" : "img/logo/full";
+        var dir = OsType.ofLocal() == OsType.MACOS ? "logo/padded" : "logo/full";
         AppResources.with(AppResources.MAIN_MODULE, dir, path -> {
             var size =
                     switch (OsType.ofLocal()) {

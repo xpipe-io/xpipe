@@ -30,7 +30,8 @@ public class BrowserFileOverviewComp extends SimpleComp {
     protected Region createSimple() {
         Function<FileEntry, Comp<?>> factory = entry -> {
             return Comp.of(() -> {
-                var icon = BrowserIcons.createIcon(entry);
+                var be = new BrowserEntry(entry, model.getFileList());
+                var icon = BrowserIcons.createIcon(be.getIcon());
                 var graphic = new HorizontalComp(List.of(
                         icon,
                         new BrowserQuickAccessButtonComp(() -> new BrowserEntry(entry, model.getFileList()), model)));

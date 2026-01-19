@@ -158,14 +158,15 @@ public class AppBaseMode extends AppOperationMode {
                     imagesLoaded.countDown();
                     SystemIconManager.init();
                     syncPrefsLoaded.await();
-                    var additional = SystemIconManager.initAdditional();
+                    SystemIconManager.initAdditional();
                     iconsInit.countDown();
-                    SystemIconManager.loadAdditional(additional);
+                    storageLoaded.await();
+                    SystemIconManager.prepareUsedIconImages();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
                 },
                 () -> {
-                    BrowserIconManager.loadIfNecessary();
+                    BrowserIconManager.init();
                     shellLoaded.await();
                     BrowserLocalFileSystem.init();
                     storageLoaded.await();

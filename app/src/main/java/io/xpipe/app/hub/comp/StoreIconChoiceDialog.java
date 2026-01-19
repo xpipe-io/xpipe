@@ -29,11 +29,8 @@ public class StoreIconChoiceDialog {
     }
 
     public static void show(DataStoreEntry entry) {
-        ThreadHelper.runFailableAsync(() -> {
-            SystemIconManager.reloadSourceHashes();
-            var dialog = new StoreIconChoiceDialog(entry);
-            dialog.getOverlay().show();
-        });
+        var dialog = new StoreIconChoiceDialog(entry);
+        dialog.getOverlay().show();
     }
 
     private ModalOverlay createOverlay() {

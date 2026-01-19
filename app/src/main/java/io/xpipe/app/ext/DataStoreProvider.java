@@ -194,7 +194,7 @@ public interface DataStoreProvider {
 
     default String getDisplayIconFileName(DataStore store) {
         var png = getModuleName() + ":" + getId() + "_icon.png";
-        if (AppImages.hasNormalImage(png)) {
+        if (AppImages.hasImage(png)) {
             return png;
         }
 

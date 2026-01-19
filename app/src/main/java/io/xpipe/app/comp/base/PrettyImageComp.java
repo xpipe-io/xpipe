@@ -75,9 +75,9 @@ public class PrettyImageComp extends SimpleComp {
                             }
 
                             var value = image.getValue();
-                            if (AppImages.hasNormalImage(value)) {
+                            if (AppImages.hasImage(value)) {
                                 return AppImages.image(value);
-                            } else if (AppImages.hasNormalImage(value.replace("-dark", ""))) {
+                            } else if (AppImages.hasImage(value.replace("-dark", ""))) {
                                 return AppImages.image(value.replace("-dark", ""));
                             } else {
                                 TrackEvent.withWarn("Image file not found")

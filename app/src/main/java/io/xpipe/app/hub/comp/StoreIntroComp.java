@@ -18,7 +18,7 @@ public class StoreIntroComp extends SimpleComp {
     @Override
     public Region createSimple() {
         var hub = new IntroComp("storeIntro", new LabelGraphic.NodeGraphic(() -> PrettyImageHelper.ofSpecificFixedSize(
-                        "graphics/Wave.svg", 80, 144)
+                        "welcome/wave.svg", 80, 144)
                 .createRegion()));
         hub.setButtonAction(() -> {
             ScanDialog.showSingleAsync(DataStorage.get().local());

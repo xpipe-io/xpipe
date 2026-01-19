@@ -1,6 +1,8 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.CompStructure;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -46,9 +48,13 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
 
         var graphic = Bindings.createStringBinding(
                 () -> {
-                    return model.getCurrentDirectory() != null
-                            ? BrowserIconManager.getFileIcon(model.getCurrentDirectory())
-                            : null;
+                    if (model.getCurrentDirectory() == null) {
+                        return null;
+                    }
+
+                    var icon = new BrowserEntry(model.getCurrentDirectory(), model.getFileList()).getIcon();
+                    BrowserIconManager.loadIfNecessary(icon);
+                    return icon;
                 },
                 PlatformThread.sync(model.getCurrentPath()));
         var breadcrumbsGraphic = PrettyImageHelper.ofFixedSize(graphic, 24, 24)

@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.Comp;
 import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
@@ -56,7 +57,9 @@ public class BrowserFileSelectionListComp extends SimpleComp {
                         list,
                         entry -> {
                             return Comp.of(() -> {
-                                var image = PrettyImageHelper.ofFixedSizeSquare(entry.getIcon(), 24)
+                                var icon = entry.getIcon();
+                                BrowserIconManager.loadIfNecessary(icon);
+                                var image = PrettyImageHelper.ofFixedSizeSquare(icon, 24)
                                         .createRegion();
                                 var t = nameTransformation.apply(entry);
                                 var l = new Label(t.getValue(), image);
