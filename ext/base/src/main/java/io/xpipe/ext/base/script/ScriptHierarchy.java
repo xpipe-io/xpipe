@@ -13,27 +13,20 @@ import java.util.function.Predicate;
 @Value
 public class ScriptHierarchy {
 
-    DataStoreEntryRef<? extends ScriptStore> base;
+    DataStoreEntryRef<?> base;
     List<ScriptHierarchy> children;
 
-    public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<SimpleScriptStore>> include) {
-        var all = new HashSet<>(ScriptStoreSetup.getEnabledScripts());
-
-        // Add individual children of groups
-        // This is not recursive
-        for (DataStoreEntryRef<ScriptStore> ref : new HashSet<>(all)) {
-            if (ref.getStore() instanceof ScriptGroupStore groupStore) {
-                all.addAll(groupStore.getEffectiveScripts());
-            }
-        }
+    public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<ScriptStore>> include) {
+        var enabled = ScriptStoreSetup.getEnabledScripts();
+        var all = new HashSet<DataStoreEntryRef<?>>(ScriptStoreSetup.getEnabledScripts());
 
         // Add parents
-        for (DataStoreEntryRef<ScriptStore> ref : new HashSet<>(all)) {
-            var current = ref;
+        for (DataStoreEntryRef<ScriptStore> ref : enabled) {
+            DataStoreEntryRef<?> current = ref;
             while (true) {
                 var parent = DataStorage.get().getDefaultDisplayParent(current.get());
                 if (parent.isPresent()) {
-                    DataStoreEntryRef<ScriptStore> next = parent.get().ref();
+                    DataStoreEntryRef<ScriptGroupStore> next = parent.get().ref();
                     all.add(next);
                     current = next;
                 } else {
@@ -51,10 +44,6 @@ public class ScriptHierarchy {
 
         var mapped = top.stream()
                 .map(ref -> buildHierarchy(ref, check -> {
-                    if (!(check.getStore() instanceof SimpleScriptStore)) {
-                        return true;
-                    }
-
                     if (!include.test(check.asNeeded())) {
                         return false;
                     }
@@ -70,9 +59,13 @@ public class ScriptHierarchy {
     }
 
     private static ScriptHierarchy buildHierarchy(
-            DataStoreEntryRef<ScriptStore> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
-        if (ref.getStore() instanceof ScriptGroupStore groupStore) {
-            var children = groupStore.getImmediateChildrenScripts().stream()
+            DataStoreEntryRef<?> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
+        if (ref.getStore() instanceof ScriptGroupStore) {
+            var directChildren = DataStorage.get().getStoreChildren(ref.get()).stream()
+                    .filter(entry -> entry.getValidity().isUsable() && entry.getStore() instanceof ScriptStore)
+                    .map(dataStoreEntry -> dataStoreEntry.<ScriptStore>ref())
+                    .toList();
+            var children = directChildren.stream()
                     .filter(include)
                     .map(c -> buildHierarchy(c, include))
                     .filter(hierarchy -> hierarchy.show())
@@ -105,10 +98,10 @@ public class ScriptHierarchy {
     }
 
     public boolean isLeaf() {
-        return base != null && base.getStore() instanceof SimpleScriptStore && children.isEmpty();
+        return base != null && base.getStore() instanceof ScriptStore && children.isEmpty();
     }
 
-    public DataStoreEntryRef<SimpleScriptStore> getLeafBase() {
+    public DataStoreEntryRef<ScriptStore> getLeafBase() {
         return base.asNeeded();
     }
 }

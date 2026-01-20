@@ -122,7 +122,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         };
     }
 
-    private BrowserMenuBranchProvider createActionForScript(DataStoreEntryRef<SimpleScriptStore> ref) {
+    private BrowserMenuBranchProvider createActionForScript(DataStoreEntryRef<ScriptStore> ref) {
         return new MultiExecuteMenuProvider() {
 
             @Override

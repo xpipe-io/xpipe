@@ -19,7 +19,7 @@ public class RunBackgroundScriptActionProvider implements ActionProvider {
     @SuperBuilder
     public static class Action extends StoreAction<ShellStore> {
 
-        private final DataStoreEntryRef<SimpleScriptStore> scriptStore;
+        private final DataStoreEntryRef<ScriptStore> scriptStore;
 
         @Override
         public void executeImpl() throws Exception {

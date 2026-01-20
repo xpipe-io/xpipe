@@ -23,7 +23,7 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
     @SuperBuilder
     public static class Action extends MultiStoreAction<ShellStore> {
 
-        private final DataStoreEntryRef<SimpleScriptStore> scriptStore;
+        private final DataStoreEntryRef<ScriptStore> scriptStore;
 
         @Override
         public void executeImpl() throws Exception {

@@ -20,7 +20,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.Arrays;
 
-public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<SimpleScriptStore> {
+public class ScriptQuickEditHubLeafProvider implements HubLeafProvider<ScriptStore> {
 
     @Override
     public StoreActionCategory getCategory() {
@@ -28,18 +28,18 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     }
 
     @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<SimpleScriptStore> store) {
+    public ObservableValue<String> getName(DataStoreEntryRef<ScriptStore> store) {
         return AppI18n.observable("edit");
     }
 
     @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<SimpleScriptStore> store) {
+    public LabelGraphic getIcon(DataStoreEntryRef<ScriptStore> store) {
         return new LabelGraphic.IconGraphic("mdal-edit");
     }
 
     @Override
-    public Class<SimpleScriptStore> getApplicableClass() {
-        return SimpleScriptStore.class;
+    public Class<ScriptStore> getApplicableClass() {
+        return ScriptStore.class;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
     }
 
     @Override
-    public AbstractAction createAction(DataStoreEntryRef<SimpleScriptStore> store) {
+    public AbstractAction createAction(DataStoreEntryRef<ScriptStore> store) {
         return Action.builder().ref(store).build();
     }
 
@@ -59,7 +59,7 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
 
     @Jacksonized
     @SuperBuilder
-    public static class Action extends StoreAction<SimpleScriptStore> {
+    public static class Action extends StoreAction<ScriptStore> {
 
         @Override
         public void executeImpl() {

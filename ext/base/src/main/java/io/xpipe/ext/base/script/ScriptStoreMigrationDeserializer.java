@@ -7,21 +7,19 @@ import com.fasterxml.jackson.databind.deser.std.DelegatingDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.TreeTraversingParser;
-import io.xpipe.app.storage.DataStorage;
 
 import java.io.IOException;
 
-public class SimpleScriptMigrationDeserializer extends DelegatingDeserializer {
+public class ScriptStoreMigrationDeserializer extends DelegatingDeserializer {
 
-    public SimpleScriptMigrationDeserializer(JsonDeserializer<?> d) {
+    public ScriptStoreMigrationDeserializer(JsonDeserializer<?> d) {
         super(d);
     }
 
     @Override
     protected JsonDeserializer<?> newDelegatingInstance(JsonDeserializer<?> newDelegatee) {
-        return new SimpleScriptMigrationDeserializer(newDelegatee);
+        return new ScriptStoreMigrationDeserializer(newDelegatee);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
@@ -10,14 +9,12 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.process.OsFileSystem;
-import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -33,7 +30,7 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
 
     @Override
     public DocumentationLink getHelpLink() {
@@ -67,14 +64,14 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        SimpleScriptStore st = store.getStore().asNeeded();
+        ScriptStore st = store.getStore().asNeeded();
         return st.getGroup().get();
     }
 
     @SneakyThrows
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
-        SimpleScriptStore st = store.getValue().asNeeded();
+        ScriptStore st = store.getValue().asNeeded();
 
         var textSource = new SimpleObjectProperty<>(st.getTextSource());
         var group = new SimpleObjectProperty<>(st.getGroup());
@@ -156,7 +153,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .nonNull()
                 .bind(
                         () -> {
-                            return SimpleScriptStore.builder()
+                            return ScriptStore.builder()
                                     .textSource(textSource.get())
                                     .group(group.get())
                                     .scripts(new ArrayList<>(others.get()))
@@ -173,7 +170,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public String summaryString(StoreEntryWrapper wrapper) {
-        SimpleScriptStore st = wrapper.getEntry().getStore().asNeeded();
+        ScriptStore st = wrapper.getEntry().getStore().asNeeded();
         if (!st.isShellScript()) {
             return null;
         }
@@ -192,7 +189,7 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public ObservableValue<String> informationString(StoreSection section) {
-        SimpleScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
+        ScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
         var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
         var shell = st.isShellScript() ? AppI18n.get("shell") : null;
@@ -218,13 +215,13 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
             return "proc:shellEnvironment_icon.svg";
         }
 
-        SimpleScriptStore st = store.asNeeded();
+        ScriptStore st = store.asNeeded();
         return ShellDialectChoiceComp.getImageName(st.getMinimumDialect());
     }
 
     @Override
     public DataStore defaultStore(DataStoreCategory category) {
-        return SimpleScriptStore.builder().scripts(List.of()).build();
+        return ScriptStore.builder().scripts(List.of()).build();
     }
 
     @Override
@@ -234,6 +231,6 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
 
     @Override
     public List<Class<?>> getStoreClasses() {
-        return List.of(SimpleScriptStore.class);
+        return List.of(ScriptStore.class);
     }
 }

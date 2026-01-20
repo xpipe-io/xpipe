@@ -4,7 +4,6 @@ import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
 
@@ -17,7 +16,7 @@ public class ScriptStoreSetup {
     }
 
     public static void controlWithScripts(
-            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
+            ShellControl pc, Collection<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
         try {
             var dialect = pc.getShellDialect();
             if (dialect == null) {
@@ -102,7 +101,7 @@ public class ScriptStoreSetup {
         }
     }
 
-    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<SimpleScriptStore>> refs)
+    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<ScriptStore>> refs)
             throws Exception {
         if (refs.isEmpty()) {
             return null;
@@ -140,7 +139,7 @@ public class ScriptStoreSetup {
         sc.view().mkdir(targetDir);
 
         var d = sc.getShellDialect();
-        for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
+        for (DataStoreEntryRef<ScriptStore> scriptStore : refs) {
             var src = scriptStore.getStore().getTextSource();
             var content = src.getText();
             var fileName = OsFileSystem.of(sc.getOsType())
@@ -154,25 +153,40 @@ public class ScriptStoreSetup {
         return targetDir;
     }
 
-    public static List<DataStoreEntryRef<ScriptStore>> getEnabledScripts() {
-        return DataStorage.get().getStoreEntries().stream()
+    public static Set<DataStoreEntryRef<ScriptStore>> getEnabledScripts() {
+        var l = new HashSet<DataStoreEntryRef<ScriptStore>>();
+        DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
-                        && dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isEnabled())
-                .map(DataStoreEntry::<ScriptStore>ref)
-                .toList();
+                        && dataStoreEntry.getStore() instanceof ScriptGroupStore g
+                        && g.getParent() == null)
+                .forEach(e -> addGroupChildren(e.ref(), l));
+        return l;
     }
 
-    public static List<DataStoreEntryRef<SimpleScriptStore>> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
-        var seen = new LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>>();
+    private static void addGroupChildren(DataStoreEntryRef<ScriptGroupStore> group, Set<DataStoreEntryRef<ScriptStore>> l) {
+        var children = DataStorage.get().getStoreChildren(group.get());
+        if (group.getStore().getState().isEnabled()) {
+            children.stream()
+                    .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
+                            && dataStoreEntry.getStore() instanceof ScriptStore)
+                    .forEach(e -> l.add(e.ref()));
+        }
+
+        children.stream()
+                .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
+                        && dataStoreEntry.getStore() instanceof ScriptGroupStore)
+                .forEach(e -> addGroupChildren(e.ref(), l));
+    }
+
+    public static List<DataStoreEntryRef<ScriptStore>> flatten(Collection<DataStoreEntryRef<ScriptStore>> scripts) {
+        var seen = new LinkedHashSet<DataStoreEntryRef<ScriptStore>>();
         scripts.stream()
                 .filter(scriptStoreDataStoreEntryRef ->
                         scriptStoreDataStoreEntryRef.get().getValidity().isUsable())
                 .forEach(scriptStoreDataStoreEntryRef ->
                         scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
 
-        var dependencies =
-                new HashMap<DataStoreEntryRef<? extends ScriptStore>, Set<DataStoreEntryRef<SimpleScriptStore>>>();
+        var dependencies = new HashMap<DataStoreEntryRef<? extends ScriptStore>, Set<DataStoreEntryRef<ScriptStore>>>();
         seen.forEach(ref -> {
             var f = new HashSet<>(ref.getStore().queryFlattenedScripts());
             f.remove(ref);
