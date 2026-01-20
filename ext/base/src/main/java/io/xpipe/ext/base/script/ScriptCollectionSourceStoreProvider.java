@@ -21,6 +21,11 @@ import java.util.UUID;
 public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
 
     @Override
+    public int getOrderPriority() {
+        return 1;
+    }
+
+    @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
         return DataStorage.SCRIPT_SOURCES_CATEGORY_UUID;
     }

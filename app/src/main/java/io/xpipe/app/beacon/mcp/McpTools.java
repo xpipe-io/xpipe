@@ -380,7 +380,7 @@ public final class McpTools {
                                     .getExtendedLayer()
                                     .findModule(AppNames.extModuleName("base"))
                                     .orElseThrow(),
-                            AppNames.extModuleName("base") + ".script.SimpleScriptStore");
+                            AppNames.extModuleName("base") + ".script.ScriptStore");
                     var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class);
                     var command = (String) method.invoke(script.getStore(), shellSession.getControl());
                     var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);

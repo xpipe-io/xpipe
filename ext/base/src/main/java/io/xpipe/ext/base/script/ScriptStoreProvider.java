@@ -212,7 +212,7 @@ public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStor
     @Override
     public String getDisplayIconFileName(DataStore store) {
         if (store == null) {
-            return "proc:shellEnvironment_icon.svg";
+            return "base:script_icon.svg";
         }
 
         ScriptStore st = store.asNeeded();
