@@ -616,6 +616,14 @@ public class StoreViewState {
                 .orElseThrow();
     }
 
+    public StoreCategoryWrapper getScriptSourcesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
     public StoreCategoryWrapper getAllIdentitiesCategory() {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->

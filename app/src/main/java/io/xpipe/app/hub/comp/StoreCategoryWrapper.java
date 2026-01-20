@@ -73,6 +73,10 @@ public class StoreCategoryWrapper {
                 nameProperty());
     }
 
+    public boolean canMove() {
+        return DataStorage.get().canMoveStoreCategory(category);
+    }
+
     public StoreCategoryWrapper getRoot() {
         return StoreViewState.get().getCategoryWrapper(root);
     }

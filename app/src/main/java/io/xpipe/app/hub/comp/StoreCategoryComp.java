@@ -240,28 +240,24 @@ public class StoreCategoryComp extends SimpleComp {
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 
-        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-        StoreViewState.get()
-                .getSortedCategories(getCategory().getRoot())
-                .getList()
-                .forEach(storeCategoryWrapper -> {
-                    MenuItem m = new MenuItem();
-                    m.textProperty()
-                            .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                    + storeCategoryWrapper.getName().getValue());
-                    m.setOnAction(event -> {
-                        category.moveToParent(storeCategoryWrapper.getCategory());
-                        event.consume();
-                    });
-                    if (storeCategoryWrapper.getParent() == null
-                            || storeCategoryWrapper.equals(category)
-                            || storeCategoryWrapper.equals(category.getParent())) {
-                        m.setDisable(true);
-                    }
-
-                    move.getItems().add(m);
+        if (category.canMove()) {
+            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+            StoreViewState.get().getSortedCategories(getCategory().getRoot()).getList().forEach(storeCategoryWrapper -> {
+                MenuItem m = new MenuItem();
+                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
+                m.setOnAction(event -> {
+                    category.moveToParent(storeCategoryWrapper.getCategory());
+                    event.consume();
                 });
-        contextMenu.getItems().add(move);
+                if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(category) || storeCategoryWrapper.equals(
+                        category.getParent())) {
+                    m.setDisable(true);
+                }
+
+                move.getItems().add(m);
+            });
+            contextMenu.getItems().add(move);
+        }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.setOnAction(event -> {

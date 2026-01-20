@@ -1008,6 +1008,10 @@ public abstract class DataStorage {
         return true;
     }
 
+    public boolean canMoveStoreCategory(@NonNull DataStoreCategory cat) {
+        return canDeleteStoreCategory(cat);
+    }
+
     public void deleteStoreCategory(@NonNull DataStoreCategory cat, boolean deleteChildren, boolean deleteEntries) {
         if (!canDeleteStoreCategory(cat)) {
             return;

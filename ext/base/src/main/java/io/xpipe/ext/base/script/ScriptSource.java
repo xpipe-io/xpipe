@@ -12,6 +12,7 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -157,12 +158,20 @@ public interface ScriptSource {
     String toName();
 
     default List<ScriptSourceEntry> listScripts() throws Exception {
+        var availableDialects = List.of(
+                ShellDialects.SH,
+                ShellDialects.BASH,
+                ShellDialects.ZSH,
+                ShellDialects.FISH,
+                ShellDialects.CMD,
+                ShellDialects.POWERSHELL,
+                ShellDialects.POWERSHELL_CORE);
         var l = new ArrayList<ScriptSourceEntry>();
         Files.walkFileTree(getLocalPath(), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 var name = file.getFileName().toString();
-                var dialect = ShellDialectChoiceComp.ICONS.keySet().stream().filter(shellDialect -> {
+                var dialect = availableDialects.stream().filter(shellDialect -> {
                     return name.endsWith("." + shellDialect.getScriptFileEnding());
                 }).findFirst();
                 if (dialect.isEmpty()) {
