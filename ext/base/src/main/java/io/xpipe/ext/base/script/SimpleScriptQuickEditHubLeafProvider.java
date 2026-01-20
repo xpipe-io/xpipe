@@ -8,6 +8,7 @@ import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.hub.comp.StoreCreationDialog;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.FileOpener;
@@ -75,14 +76,20 @@ public class SimpleScriptQuickEditHubLeafProvider implements HubLeafProvider<Sim
                 return;
             }
 
+            var inPlace = ref.getStore().getTextSource() instanceof ScriptTextSource.InPlace;
+            if (!inPlace) {
+                StoreCreationDialog.showEdit(ref.get());
+                return;
+            }
+
             var script = ref.getStore();
             var dialect = script.getMinimumDialect();
             var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsFileSystem.ofLocal().makeFileSystemCompatible(ref.get().getName());
-            FileOpener.openString(name + "." + ext, this, script.getCommands(), (s) -> {
+            FileOpener.openString(name + "." + ext, this, script.getTextSource().getText().getValue(), (s) -> {
                 DataStorage.get()
                         .updateEntryStore(
-                                ref.get(), script.toBuilder().commands(s).build());
+                                ref.get(), script.toBuilder().textSource(ScriptTextSource.InPlace.builder().dialect(dialect).text(ShellScript.of(s)).build()).build());
             });
         }
     }

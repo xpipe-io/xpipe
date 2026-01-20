@@ -23,6 +23,15 @@ public class ShellScript {
         return new ShellScript(lines.stream().collect(Collectors.joining("\n")));
     }
 
+    public String withoutShebang() {
+        var shebang = value.startsWith("#!");
+        if (shebang) {
+            return value.lines().skip(1).collect(Collectors.joining("\n"));
+        } else {
+            return value;
+        }
+    }
+
     @Override
     public String toString() {
         return value;

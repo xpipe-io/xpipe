@@ -2,7 +2,9 @@ package io.xpipe.ext.base.script;
 
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.core.AppResources;
+import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import lombok.Getter;
@@ -18,34 +20,29 @@ import java.util.function.Supplier;
 public enum PredefinedScriptStore {
     APT_UPDATE("Apt upgrade", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
-            .minimumDialect(ShellDialects.SH)
-            .commands(file(("apt_upgrade.sh")))
+            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("apt_upgrade.sh")).build())
             .shellScript(true)
             .runnableScript(true)
             .build()),
     REMOVE_CR("CRLF to LF", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.FILES.getEntry())
-            .minimumDialect(ShellDialects.SH)
-            .commands(file(("crlf_to_lf.sh")))
+            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("crlf_to_lf.sh")).build())
             .fileScript(true)
             .shellScript(true)
             .build()),
     DIFF("Diff", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.FILES.getEntry())
-            .minimumDialect(ShellDialects.SH)
-            .commands(file(("diff.sh")))
+            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("diff.sh")).build())
             .fileScript(true)
             .build()),
     GIT_CONFIG("Git Config", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
-            .minimumDialect(null)
-            .commands(file(("git_config.sh")))
+            .textSource(ScriptTextSource.InPlace.builder().text(file("git_config.sh")).build())
             .runnableScript(true)
             .build()),
     SYSTEM_HEALTH_STATUS("System health status", () -> SimpleScriptStore.builder()
             .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
-            .minimumDialect(ShellDialects.SH)
-            .commands(file(("system_health.sh")))
+            .textSource(ScriptTextSource.InPlace.builder().text(file("system_health.sh")).build())
             .initScript(true)
             .build());
 
@@ -62,11 +59,11 @@ public enum PredefinedScriptStore {
         this.uuid = UUID.nameUUIDFromBytes(name.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String file(String name) {
+    public static ShellScript file(String name) {
         AtomicReference<String> string = new AtomicReference<>();
         AppResources.with(AppNames.extModuleName("base"), "scripts/" + name, var1 -> {
             string.set(Files.readString(var1));
         });
-        return string.get();
+        return ShellScript.of(string.get());
     }
 }

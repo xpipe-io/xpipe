@@ -7,12 +7,9 @@ import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.icon.SystemIconSource;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
@@ -32,16 +29,16 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ScriptSource.Directory.class),
-        @JsonSubTypes.Type(value = ScriptSource.GitRepository.class)
+        @JsonSubTypes.Type(value = ScriptCollectionSource.Directory.class),
+        @JsonSubTypes.Type(value = ScriptCollectionSource.GitRepository.class)
 })
-public interface ScriptSource {
+public interface ScriptCollectionSource {
 
     @JsonTypeName("directory")
     @Value
     @Jacksonized
     @Builder
-    class Directory implements ScriptSource {
+    class Directory implements ScriptCollectionSource {
 
         Path path;
 
@@ -92,7 +89,7 @@ public interface ScriptSource {
     @Value
     @Jacksonized
     @Builder
-    class GitRepository implements ScriptSource {
+    class GitRepository implements ScriptCollectionSource {
 
         String url;
 
@@ -157,16 +154,9 @@ public interface ScriptSource {
 
     String toName();
 
-    default List<ScriptSourceEntry> listScripts() throws Exception {
-        var availableDialects = List.of(
-                ShellDialects.SH,
-                ShellDialects.BASH,
-                ShellDialects.ZSH,
-                ShellDialects.FISH,
-                ShellDialects.CMD,
-                ShellDialects.POWERSHELL,
-                ShellDialects.POWERSHELL_CORE);
-        var l = new ArrayList<ScriptSourceEntry>();
+    default List<ScriptCollectionSourceEntry> listScripts() throws Exception {
+        var availableDialects = ScriptDialects.getSupported();
+        var l = new ArrayList<ScriptCollectionSourceEntry>();
         Files.walkFileTree(getLocalPath(), new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -178,9 +168,9 @@ public interface ScriptSource {
                     return FileVisitResult.CONTINUE;
                 }
 
-                var entry = ScriptSourceEntry.builder()
+                var entry = ScriptCollectionSourceEntry.builder()
                         .name(name)
-                        .source(ScriptSource.this)
+                        .source(ScriptCollectionSource.this)
                         .dialect(dialect.get())
                         .localFile(file)
                         .build();

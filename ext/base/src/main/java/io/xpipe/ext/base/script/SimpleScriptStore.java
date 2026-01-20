@@ -29,37 +29,30 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 public class SimpleScriptStore extends ScriptStore implements SelfReferentialStore {
 
-    ShellDialect minimumDialect;
-    String commands;
+    ScriptTextSource textSource;
     boolean initScript;
     boolean shellScript;
     boolean fileScript;
     boolean runnableScript;
 
-    public String getCommands() {
-        return commands != null ? commands : "";
+    public ShellDialect getMinimumDialect() {
+        return textSource != null ? textSource.getDialect() : null;
     }
 
     public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
-        return minimumDialect == null || minimumDialect.isCompatibleTo(targetType);
+        return getMinimumDialect() == null || getMinimumDialect().isCompatibleTo(targetType);
     }
 
     public boolean isCompatible(ShellDialect dialect) {
-        return minimumDialect == null || minimumDialect.isCompatibleTo(dialect);
+        return getMinimumDialect() == null || getMinimumDialect().isCompatibleTo(dialect);
     }
 
     private String assembleScript(ShellControl shellControl, boolean args) {
         if (isCompatible(shellControl)) {
-            var shebang = getCommands().startsWith("#");
-            // Fix new lines and shebang
-            var fixedCommands = getCommands()
-                    .lines()
-                    .skip(shebang ? 1 : 0)
-                    .collect(Collectors.joining(
-                            shellControl.getShellDialect().getNewLine().getNewLineString()));
+            var raw = getTextSource().getText().withoutShebang();
             var targetType = shellControl.getOriginalShellDialect();
-            var script = ScriptHelper.createExecScript(targetType, shellControl, fixedCommands);
+            var script = ScriptHelper.createExecScript(targetType, shellControl, raw);
             return targetType.sourceScriptCommand(shellControl, script.toString()) + (args ? " "
                     + targetType.getCatchAllVariable() : "");
         }
@@ -82,6 +75,7 @@ public class SimpleScriptStore extends ScriptStore implements SelfReferentialSto
 
     @Override
     public void checkComplete() throws Throwable {
+        Validators.nonNull(textSource);
         Validators.nonNull(group);
         super.checkComplete();
         if (!initScript && !shellScript && !fileScript && !runnableScript) {

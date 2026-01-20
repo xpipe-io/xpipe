@@ -71,7 +71,7 @@ public class ScriptStoreSetup {
                 pc.withInitSnippet(
                         new ShellTerminalInitCommand() {
 
-                            String dir;
+                            FilePath dir;
 
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
@@ -84,7 +84,7 @@ public class ScriptStoreSetup {
                                 }
 
                                 return Optional.ofNullable(
-                                        shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                                        shellControl.getShellDialect().addToPathVariableCommand(List.of(dir.toString()), true));
                             }
 
                             @Override
@@ -102,14 +102,14 @@ public class ScriptStoreSetup {
         }
     }
 
-    private static String initScriptsDirectory(ShellControl proc, List<DataStoreEntryRef<SimpleScriptStore>> refs)
+    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<SimpleScriptStore>> refs)
             throws Exception {
         if (refs.isEmpty()) {
             return null;
         }
 
         var applicable = refs.stream()
-                .filter(simpleScriptStore -> simpleScriptStore.getStore().isCompatible(proc.getShellDialect()))
+                .filter(simpleScriptStore -> simpleScriptStore.getStore().isCompatible(sc.getShellDialect()))
                 .toList();
         if (applicable.isEmpty()) {
             return null;
@@ -119,13 +119,11 @@ public class ScriptStoreSetup {
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
-                .join(proc.getShellDialect().getId())
-                .toString();
-        var hashFile = FilePath.of(targetDir, "hash");
-        var d = proc.getShellDialect();
-        if (d.createFileExistsCommand(proc, hashFile.toString()).executeAndCheck()) {
-            var read = d.getFileReadCommand(proc, hashFile.toString()).readStdoutOrThrow();
+        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(sc, "scripts")
+                .join(sc.getShellDialect().getId());
+        var hashFile = targetDir.join("hash");
+        if (sc.view().fileExists(hashFile)) {
+            var read = sc.view().readTextFile(hashFile);
             try {
                 var readHash = Integer.parseInt(read);
                 if (hash == readHash) {
@@ -136,21 +134,23 @@ public class ScriptStoreSetup {
             }
         }
 
-        if (d.directoryExists(proc, targetDir).executeAndCheck()) {
-            d.deleteFileOrDirectory(proc, targetDir).execute();
+        if (sc.view().directoryExists(targetDir)) {
+            sc.view().deleteDirectory(targetDir);
         }
-        proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
+        sc.view().mkdir(targetDir);
 
+        var d = sc.getShellDialect();
         for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
-            var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
-            var fileName = OsFileSystem.of(proc.getOsType())
+            var src = scriptStore.getStore().getTextSource();
+            var content = src.getText();
+            var fileName = OsFileSystem.of(sc.getOsType())
                     .makeFileSystemCompatible(
                             scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-            var scriptFile = FilePath.of(targetDir, fileName + "." + d.getScriptFileEnding());
-            proc.view().writeScriptFile(scriptFile, content);
+            var scriptFile = targetDir.join(fileName + "." + d.getScriptFileEnding());
+            sc.view().writeScriptFile(scriptFile, content.getValue());
         }
 
-        proc.view().writeTextFile(hashFile, String.valueOf(hash));
+        sc.view().writeTextFile(hashFile, String.valueOf(hash));
         return targetDir;
     }
 

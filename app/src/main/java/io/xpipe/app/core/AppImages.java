@@ -40,6 +40,10 @@ public class AppImages {
         var exts = AppExtensionManager.getInstance().getContentModules();
         for (Module ext : exts) {
             AppResources.with(ext.getName(), "img/", basePath -> {
+                if (!Files.exists(basePath)) {
+                    return;
+                }
+
                 var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override

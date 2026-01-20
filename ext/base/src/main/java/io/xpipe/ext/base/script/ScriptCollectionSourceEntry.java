@@ -10,10 +10,10 @@ import java.nio.file.Path;
 @Value
 @Builder
 @Jacksonized
-public class ScriptSourceEntry {
+public class ScriptCollectionSourceEntry {
 
     String name;
     ShellDialect dialect;
-    ScriptSource source;
+    ScriptCollectionSource source;
     Path localFile;
 }

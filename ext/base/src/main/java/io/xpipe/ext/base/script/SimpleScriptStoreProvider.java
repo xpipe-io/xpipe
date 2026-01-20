@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellDialect;
@@ -75,22 +76,11 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         SimpleScriptStore st = store.getValue().asNeeded();
 
+        var textSource = new SimpleObjectProperty<>(st.getTextSource());
         var group = new SimpleObjectProperty<>(st.getGroup());
-        Property<ShellDialect> dialect = new SimpleObjectProperty<>(st.getMinimumDialect());
-        var others =
-                new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
-        Property<String> commandProp = new SimpleObjectProperty<>(st.getCommands());
+        var others = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
 
-        var availableDialects = List.of(
-                ShellDialects.SH,
-                ShellDialects.BASH,
-                ShellDialects.ZSH,
-                ShellDialects.FISH,
-                ShellDialects.CMD,
-                ShellDialects.POWERSHELL,
-                ShellDialects.POWERSHELL_CORE);
-        Comp<?> choice =
-                new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
+        var textSourceChoice = OptionsChoiceBuilder.builder().property(textSource).available(ScriptTextSource.getClasses()).build();
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -134,20 +124,9 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 FXCollections.observableList(vals), name, selectedExecTypes, v -> false, () -> false);
 
         return new OptionsBuilder()
-                .name("minimumShellDialect")
-                .description("minimumShellDialectDescription")
-                .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
-                .addComp(choice, dialect)
-                .name("scriptContents")
-                .description("scriptContentsDescription")
-                .documentationLink(DocumentationLink.SCRIPTING_EDITING)
-                .addComp(
-                        new IntegratedTextAreaComp(commandProp, false, "commands", Bindings.createStringBinding(() -> {
-                            return dialect.getValue() != null
-                                    ? dialect.getValue().getScriptFileEnding()
-                                    : "sh";
-                        })),
-                        commandProp)
+                .nameAndDescription("scriptSourceType")
+                .sub(textSourceChoice.build(), textSource)
+                .nonNull()
                 .nameAndDescription("executionType")
                 .documentationLink(DocumentationLink.SCRIPTING_TYPES)
                 .addComp(selectorComp, selectedExecTypes)
@@ -178,11 +157,10 @@ public class SimpleScriptStoreProvider implements EnabledParentStoreProvider, Da
                 .bind(
                         () -> {
                             return SimpleScriptStore.builder()
+                                    .textSource(textSource.get())
                                     .group(group.get())
-                                    .minimumDialect(dialect.getValue())
                                     .scripts(new ArrayList<>(others.get()))
                                     .description(st.getDescription())
-                                    .commands(commandProp.getValue())
                                     .initScript(selectedExecTypes.contains(0))
                                     .runnableScript(selectedExecTypes.contains(1))
                                     .fileScript(selectedExecTypes.contains(2))

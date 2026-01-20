@@ -43,6 +43,20 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     public static IntegratedTextAreaComp script(
             ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
+        var type = Bindings.createStringBinding(
+                () -> {
+                    return host.getValue() != null
+                            && host.getValue().getStore() instanceof StatefulDataStore<?> sd
+                            && sd.getState() instanceof SystemState ss
+                            && ss.getShellDialect() != null
+                            ? ss.getShellDialect().getScriptFileEnding()
+                            : "sh";
+                },
+                host);
+        return script(value, type);
+    }
+
+    public static IntegratedTextAreaComp script(Property<ShellScript> value, ObservableValue<String> fileType) {
         var string = new SimpleStringProperty();
         value.subscribe(shellScript -> {
             string.set(shellScript != null ? shellScript.getValue() : null);
@@ -54,16 +68,7 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                 string,
                 false,
                 "script",
-                Bindings.createStringBinding(
-                        () -> {
-                            return host.getValue() != null
-                                            && host.getValue().getStore() instanceof StatefulDataStore<?> sd
-                                            && sd.getState() instanceof SystemState ss
-                                            && ss.getShellDialect() != null
-                                    ? ss.getShellDialect().getScriptFileEnding()
-                                    : "sh";
-                        },
-                        host));
+                fileType);
         return i;
     }
 
