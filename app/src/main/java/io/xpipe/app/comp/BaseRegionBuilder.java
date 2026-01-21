@@ -15,6 +15,12 @@ import java.util.function.Consumer;
 
 public abstract class BaseRegionBuilder<T extends Region, B extends BaseRegionBuilder<T, B>> extends AbstractRegionBuilder<T, B> {
 
+    public BaseRegionBuilder() {
+        apply(t -> {
+            BindingsHelper.preserve(t, this);
+        });
+    }
+
     public B hgrow() {
         apply(t -> HBox.setHgrow(t, Priority.ALWAYS));
         return self();
