@@ -3,11 +3,13 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
-import io.xpipe.app.comp.Comp;
+
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.beans.value.ObservableValue;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 public final class BrowserHistoryTabModel extends BrowserSessionTab {
 
@@ -16,7 +18,7 @@ public final class BrowserHistoryTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public Comp<?> comp() {
+    public BaseRegionBuilder<?,?> comp() {
         return new BrowserHistoryTabComp((BrowserFullSessionModel) browserModel);
     }
 

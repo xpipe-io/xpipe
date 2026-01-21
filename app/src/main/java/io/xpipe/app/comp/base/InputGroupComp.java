@@ -1,9 +1,10 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
 
+
+
+
+import io.xpipe.app.comp.RegionBuilder;
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -11,20 +12,22 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
 import lombok.Setter;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 
-public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
+public class InputGroupComp extends RegionBuilder<InputGroup> {
 
-    private final List<Comp<?>> entries;
+    private final List<BaseRegionBuilder<?,?>> entries;
 
-    private Comp<?> mainReference;
+    private BaseRegionBuilder<?,?> mainReference;
 
-    public InputGroupComp(List<Comp<?>> comps) {
+    public InputGroupComp(List<BaseRegionBuilder<?,?>> comps) {
         entries = List.copyOf(comps);
     }
 
-    public InputGroupComp setMainReference(Comp<?> mainReference) {
+    public InputGroupComp setMainReference(BaseRegionBuilder<?,?> mainReference) {
         this.mainReference = mainReference;
         return this;
     }
@@ -34,11 +37,11 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
     }
 
     @Override
-    public CompStructure<InputGroup> createBase() {
+    public InputGroup createSimple() {
         InputGroup b = new InputGroup();
         b.getStyleClass().add("input-group-comp");
         for (var entry : entries) {
-            b.getChildren().add(entry.createRegion());
+            b.getChildren().add(entry.build());
         }
         b.setAlignment(Pos.CENTER);
 
@@ -70,6 +73,6 @@ public class InputGroupComp extends Comp<CompStructure<InputGroup>> {
             });
         }
 
-        return new SimpleCompStructure<>(b);
+        return b;
     }
 }

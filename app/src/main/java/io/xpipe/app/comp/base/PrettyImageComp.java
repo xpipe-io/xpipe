@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
@@ -17,7 +18,7 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
-public class PrettyImageComp extends SimpleComp {
+public class PrettyImageComp extends SimpleRegionBuilder {
 
     private final ObservableValue<String> value;
     private final double width;

@@ -35,7 +35,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
         var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
         var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
-        var field = new TextFieldComp(keyProperty).apply(struc -> struc.get()
+        var field = new TextFieldComp(keyProperty).apply(struc -> struc
                 .promptTextProperty()
                 .bind(Bindings.createStringBinding(
                         () -> {

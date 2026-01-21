@@ -61,13 +61,13 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
         var textField = new LazyTextFieldComp(text)
                 .minWidth(USE_PREF_SIZE)
-                .createStructure()
+                .buildStructure()
                 .getTextField();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
         setupRename(fileList, textField);
 
-        Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
+        Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).build();
         HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), textField);
         quickAccess.prefHeightProperty().bind(graphic.heightProperty());
         graphic.setAlignment(Pos.CENTER_LEFT);
@@ -96,7 +96,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             return notDir || isParentLink;
                         },
                         itemProperty()))
-                .createRegion();
+                .build();
         return quickAccess;
     }
 

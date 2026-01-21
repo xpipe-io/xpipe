@@ -1,21 +1,24 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
 
+
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class ModalOverlayStackComp extends SimpleComp {
+public class ModalOverlayStackComp extends SimpleRegionBuilder {
 
-    private final Comp<?> background;
+    private final BaseRegionBuilder<?,?> background;
     private final ObservableList<ModalOverlay> modalOverlay;
 
-    public ModalOverlayStackComp(Comp<?> background, ObservableList<ModalOverlay> modalOverlay) {
+    public ModalOverlayStackComp(BaseRegionBuilder<?,?> background, ObservableList<ModalOverlay> modalOverlay) {
         this.background = background;
         this.modalOverlay = modalOverlay;
     }
@@ -26,10 +29,10 @@ public class ModalOverlayStackComp extends SimpleComp {
         for (var i = 0; i < 5; i++) {
             current = buildModalOverlay(current, i);
         }
-        return current.createRegion();
+        return current.build();
     }
 
-    private Comp<?> buildModalOverlay(Comp<?> current, int index) {
+    private BaseRegionBuilder<?,?> buildModalOverlay(BaseRegionBuilder<?,?> current, int index) {
         AtomicInteger currentIndex = new AtomicInteger(index);
         var prop = new SimpleObjectProperty<>(modalOverlay.size() > index ? modalOverlay.get(index) : null);
         modalOverlay.addListener((ListChangeListener<? super ModalOverlay>) c -> {
@@ -50,7 +53,7 @@ public class ModalOverlayStackComp extends SimpleComp {
             }
         });
         var comp = new ModalOverlayComp(current, prop);
-        comp.styleClass("modal-overlay-stack-element");
+        comp.style("modal-overlay-stack-element");
         return comp;
     }
 }

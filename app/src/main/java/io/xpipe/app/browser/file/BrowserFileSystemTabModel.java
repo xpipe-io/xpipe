@@ -6,7 +6,7 @@ import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserStoreSessionTab;
 import io.xpipe.app.browser.action.impl.TransferFilesActionProvider;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
-import io.xpipe.app.comp.Comp;
+
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -32,6 +32,8 @@ import javafx.collections.ObservableList;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -141,7 +143,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     @Override
-    public Comp<?> comp() {
+    public BaseRegionBuilder<?,?> comp() {
         return new BrowserFileSystemTabComp(this, true);
     }
 

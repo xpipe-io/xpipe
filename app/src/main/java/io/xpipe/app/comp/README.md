@@ -63,11 +63,11 @@ The reason a Comp is designed to be a factory is to allow for hot
 reloading your created GUI in conjunction with the hot-reload functionality in your IDE:
 
 ````java
-    void setupReload(Scene scene, Comp<?> content) {
-        var contentR = content.createRegion();
+    void setupReload(Scene scene, BaseRegionBuilder<?,?> content) {
+        var contentR = content.build();
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode().equals(KeyCode.F5)) {
-                var newContentR = content.createRegion();
+                var newContentR = content.build();
                 scene.setRoot(newContentR);
                 event.consume();
             }

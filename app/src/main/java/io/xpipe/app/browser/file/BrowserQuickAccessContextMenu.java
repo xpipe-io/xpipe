@@ -173,7 +173,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    BrowserIcons.createIcon(browserEntry.getIcon()).createRegion());
+                    BrowserIcons.createIcon(browserEntry.getIcon()).build());
             createMenu();
             addInputListeners();
         }

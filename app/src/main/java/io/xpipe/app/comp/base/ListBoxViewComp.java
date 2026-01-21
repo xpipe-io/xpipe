@@ -1,9 +1,10 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
@@ -22,12 +23,14 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Setter;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
+public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even");
@@ -37,14 +40,14 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
 
-    private final Function<T, Comp<?>> compFunction;
+    private final Function<T, BaseRegionBuilder<?,?>> compFunction;
     private final boolean scrollBar;
 
     @Setter
     private boolean visibilityControl = false;
 
     public ListBoxViewComp(
-            ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
+            ObservableList<T> shown, ObservableList<T> all, Function<T, BaseRegionBuilder<?,?>> compFunction, boolean scrollBar) {
         this.shown = shown;
         this.all = all;
         this.compFunction = compFunction;
@@ -52,7 +55,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     @Override
-    public CompStructure<ScrollPane> createBase() {
+    public ScrollPane createSimple() {
         Map<T, Region> cache = new IdentityHashMap<>();
 
         VBox vbox = new VBox();
@@ -106,7 +109,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
         registerVisibilityListeners(scroll, vbox);
 
-        return new SimpleCompStructure<>(scroll);
+        return scroll;
     }
 
     private void registerVisibilityListeners(ScrollPane scroll, VBox vbox) {
@@ -315,7 +318,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
-                                var r = comp.createRegion();
+                                var r = comp.build();
                                 if (visibilityControl) {
                                     r.setVisible(false);
                                 }

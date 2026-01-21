@@ -82,9 +82,12 @@ dependencies {
     api "org.kordamp.ikonli:ikonli-javafx:12.4.0"
     api "org.slf4j:slf4j-api:2.0.17"
     api "org.slf4j:slf4j-jdk-platform-logging:2.0.17"
-    api 'io.xpipe:modulefs:0.1.7'
+    api 'io.xpipe:modulefs:0.1.8'
     api 'net.synedra:validatorfx:0.4.2'
     api files("$rootDir/gradle/gradle_scripts/atlantafx-base-2.0.2.jar")
+
+    api("org.int4.fx:fx-values:0.4")
+    api files("$rootDir/gradle/gradle_scripts/fx-builders-1.0.0-SNAPSHOT.jar")
 }
 
 apply from: "$rootDir/gradle/gradle_scripts/local_junit_suite.gradle"

@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.ThreadHelper;
 
@@ -11,27 +12,27 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.layout.StackPane;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
-public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
+public class LoadingOverlayComp extends RegionBuilder<StackPane> {
 
-    private final Comp<?> comp;
+    private final BaseRegionBuilder<?,?> comp;
     private final ObservableValue<Boolean> loading;
     private final boolean showIcon;
 
-    public LoadingOverlayComp(Comp<?> comp, ObservableValue<Boolean> loading, boolean showIcon) {
+    public LoadingOverlayComp(BaseRegionBuilder<?,?> comp, ObservableValue<Boolean> loading, boolean showIcon) {
         this.comp = comp;
         this.loading = loading;
         this.showIcon = showIcon;
     }
 
     @Override
-    public CompStructure<StackPane> createBase() {
-        var compStruc = comp.createStructure();
-        var r = compStruc.get();
-
+    public StackPane createSimple() {
+        var r = comp.build();
         var loadingOverlay = new StackPane();
         if (showIcon) {
-            var loading = new LoadingIconComp(this.loading, AppFontSizes::title).createRegion();
+            var loading = new LoadingIconComp(this.loading, AppFontSizes::title).build();
             loading.prefWidthProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
@@ -88,6 +89,6 @@ public class LoadingOverlayComp extends Comp<CompStructure<StackPane>> {
         stack.prefWidthProperty().bind(r.prefWidthProperty());
         stack.prefHeightProperty().bind(r.prefHeightProperty());
 
-        return new SimpleCompStructure<>(stack);
+        return stack;
     }
 }

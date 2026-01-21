@@ -1,7 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.RegionBuilder;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
@@ -26,10 +28,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.time.Duration;
 
-public class AppMainWindowContentComp extends SimpleComp {
+public class AppMainWindowContentComp extends SimpleRegionBuilder {
 
     private final Stage stage;
 
@@ -38,11 +42,11 @@ public class AppMainWindowContentComp extends SimpleComp {
     }
 
     @Override
-    protected Region createSimple() {
+    public Region createSimple() {
         var overlay = AppDialog.getModalOverlays();
         var loaded = AppMainWindow.getLoadedContent();
         var sidebarPresent = new SimpleBooleanProperty();
-        var bg = Comp.of(() -> {
+        var bg = RegionBuilder.of(() -> {
             var loadingIcon = new ImageView();
             loadingIcon.setFitWidth(80);
             loadingIcon.setFitHeight(80);
@@ -93,8 +97,8 @@ public class AppMainWindowContentComp extends SimpleComp {
             var version = new LabelComp(
                     (AppNames.ofCurrent().getName()) + " " + AppProperties.get().getVersion());
             version.apply(struc -> {
-                AppFontSizes.apply(struc.get(), appFontSizes -> "15");
-                struc.get().setOpacity(0.65);
+                AppFontSizes.apply(struc, appFontSizes -> "15");
+                struc.setOpacity(0.65);
             });
 
             var loadingTextCounter = new SimpleIntegerProperty();
@@ -118,19 +122,19 @@ public class AppMainWindowContentComp extends SimpleComp {
                     AppMainWindow.getLoadingText(),
                     loadingTextCounter);
             var text = new LabelComp(loadingTextAnimated);
-            text.styleClass("loading-text");
+            text.style("loading-text");
             text.apply(struc -> {
-                struc.get().setOpacity(0.8);
+                struc.setOpacity(0.8);
             });
 
             var vbox = new VBox(
-                    Comp.vspacer().createRegion(),
+                    RegionBuilder.vspacer().build(),
                     loadingIcon,
-                    Comp.vspacer(19).createRegion(),
-                    version.createRegion(),
-                    Comp.vspacer().createRegion(),
-                    text.createRegion(),
-                    Comp.vspacer(20).createRegion());
+                    RegionBuilder.vspacer(19).build(),
+                    version.build(),
+                    RegionBuilder.vspacer().build(),
+                    text.build(),
+                    RegionBuilder.vspacer(20).build());
             vbox.setAlignment(Pos.CENTER);
 
             var pane = new StackPane(vbox);
@@ -181,7 +185,7 @@ public class AppMainWindowContentComp extends SimpleComp {
         });
 
         var modal = new ModalOverlayStackComp(bg, overlay);
-        var r = modal.createRegion();
+        var r = modal.build();
         var p = r.lookupAll(".modal-overlay-stack-element");
         sidebarPresent.subscribe(v -> {
             if (v) {

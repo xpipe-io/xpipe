@@ -1,7 +1,9 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.hub.comp.StoreEntryComp;
@@ -18,6 +20,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -105,8 +109,8 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return Comp.empty();
+    default BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+        return RegionBuilder.empty();
     }
 
     default boolean canConnectDuringCreation() {

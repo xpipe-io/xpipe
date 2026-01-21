@@ -1,7 +1,8 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -21,12 +22,14 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
+public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
     private final ObjectProperty<DataStoreEntryRef<T>> selected;
 
@@ -67,7 +70,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         },
                         selected),
                 () -> {});
-        button.descriptor(d -> d.name(Bindings.createStringBinding(
+        button.describe(d -> d.name(Bindings.createStringBinding(
                 () -> {
                     return selected.getValue() != null
                             ? toName(selected.getValue().get())
@@ -76,9 +79,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 selected,
                 AppI18n.activeLanguage())));
         button.apply(struc -> {
-                    struc.get().setMaxWidth(20000);
-                    struc.get().setAlignment(Pos.CENTER_LEFT);
-                    Comp<?> graphic = PrettyImageHelper.ofFixedSize(
+                    struc.setMaxWidth(20000);
+                    struc.setAlignment(Pos.CENTER_LEFT);
+                    BaseRegionBuilder<?,?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
                                         var val = selected.getValue();
@@ -91,12 +94,12 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                                     selected),
                             16,
                             16);
-                    struc.get().setGraphic(graphic.createRegion());
-                    struc.get().setOnAction(event -> {
-                        popover.show(struc.get());
+                    struc.setGraphic(graphic.build());
+                    struc.setOnAction(event -> {
+                        popover.show(struc);
                         event.consume();
                     });
-                    struc.get().setOnMouseClicked(event -> {
+                    struc.setOnMouseClicked(event -> {
                         if (event.getButton() != MouseButton.SECONDARY) {
                             return;
                         }
@@ -105,9 +108,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         event.consume();
                     });
                 })
-                .styleClass("choice-comp");
+                .style("choice-comp");
 
-        var r = button.createRegion();
+        var r = button.build();
 
         var dropdownIcon = new FontIcon("mdal-keyboard_arrow_down");
         dropdownIcon.setDisable(true);
@@ -134,18 +137,18 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 pane.requestFocus();
             });
         });
-        clearButton.descriptor(d -> d.nameKey("clear"));
-        clearButton.styleClass(Styles.FLAT);
+        clearButton.describe(d -> d.nameKey("clear"));
+        clearButton.style(Styles.FLAT);
         clearButton.hide(selected.isNull().or(pane.disabledProperty()));
         clearButton.apply(struc -> {
-            struc.get().setOpacity(0.7);
-            struc.get().getStyleClass().add("clear-button");
-            AppFontSizes.xs(struc.get());
-            AnchorPane.setRightAnchor(struc.get(), 30.0);
-            AnchorPane.setTopAnchor(struc.get(), 3.0);
-            AnchorPane.setBottomAnchor(struc.get(), 3.0);
+            struc.setOpacity(0.7);
+            struc.getStyleClass().add("clear-button");
+            AppFontSizes.xs(struc);
+            AnchorPane.setRightAnchor(struc, 30.0);
+            AnchorPane.setTopAnchor(struc, 3.0);
+            AnchorPane.setBottomAnchor(struc, 3.0);
         });
-        pane.getChildren().add(clearButton.createRegion());
+        pane.getChildren().add(clearButton.build());
 
         return pane;
     }

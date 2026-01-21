@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
@@ -46,7 +47,7 @@ public class ErrorHandlerDialog {
                 errorModal.addButton(new ModalButton(
                         "stackTrace",
                         () -> {
-                            var detailsModal = ModalOverlay.of("errorDetails", Comp.of(() -> {
+                            var detailsModal = ModalOverlay.of("errorDetails", RegionBuilder.of(() -> {
                                 var content = createStackTraceContent(event);
                                 content.setPrefWidth(650);
                                 content.setPrefHeight(750);
@@ -68,7 +69,7 @@ public class ErrorHandlerDialog {
                         },
                         false,
                         false)).augment(button -> button.disableProperty().bind(reported));
-                errorModal.addButtonBarComp(Comp.hspacer());
+                errorModal.addButtonBarComp(RegionBuilder.hspacer());
             }
             var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;
             var hideOk = hasCustomActions;

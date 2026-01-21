@@ -1,12 +1,14 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.ext.PrefsChoiceValue;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 public class SystemCategory extends AppPrefsCategory {
 
@@ -20,7 +22,7 @@ public class SystemCategory extends AppPrefsCategory {
         return new LabelGraphic.IconGraphic("mdi2d-desktop-classic");
     }
 
-    public Comp<?> create() {
+    public BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
         builder.addTitle("system")

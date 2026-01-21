@@ -1,7 +1,10 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -17,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
+public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
     private final ListProperty<DataStoreEntryRef<T>> selectedList;
     private final Class<T> storeClass;
@@ -53,11 +56,11 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                             }
 
                             var label = new LabelComp(t.get().getName()).apply(struc -> {
-                                struc.get()
+                                struc
                                         .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
                                                         t.get().getEffectiveIconFile(), 16)
-                                                .createRegion());
-                                struc.get().setGraphicTextGap(8);
+                                                .build());
+                                struc.setGraphicTextGap(8);
                             });
 
                             var up = new IconButtonComp("mdi2a-arrow-up", () -> {
@@ -92,14 +95,14 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                                 selectedList.remove(t);
                             });
                             var row = editable
-                                    ? new HorizontalComp(List.of(label, Comp.hspacer(), up, down, delete)).spacing(5)
-                                    : new HorizontalComp(List.of(label, Comp.hspacer()));
-                            return row.styleClass("entry");
+                                    ? new HorizontalComp(List.of(label, RegionBuilder.hspacer(), up, down, delete)).spacing(5)
+                                    : new HorizontalComp(List.of(label, RegionBuilder.hspacer()));
+                            return row.style("entry");
                         },
                         false)
                 .padding(new Insets(0))
-                .apply(struc -> struc.get().setMinHeight(0))
-                .apply(struc -> ((VBox) struc.get().getContent()).setSpacing(5));
+                .apply(struc -> struc.setMinHeight(0))
+                .apply(struc -> ((VBox) struc.getContent()).setSpacing(5));
         var selected = new SimpleObjectProperty<DataStoreEntryRef<T>>();
         var add = new StoreChoiceComp<>(null, selected, storeClass, applicableCheck, initialCategory);
         selected.addListener((observable, oldValue, newValue) -> {
@@ -110,13 +113,13 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleComp {
                 selected.setValue(null);
             }
         });
-        var list = new ArrayList<Comp<?>>();
+        var list = new ArrayList<BaseRegionBuilder<?,?>>();
         list.add(listBox);
         if (editable) {
-            list.add(Comp.vspacer(5).hide(Bindings.isEmpty(selectedList)));
+            list.add(RegionBuilder.vspacer(5).hide(Bindings.isEmpty(selectedList)));
             list.add(add);
         }
-        var vbox = new VerticalComp(list).apply(struc -> struc.get().setFillWidth(true));
-        return vbox.styleClass("data-store-list-choice-comp").createRegion();
+        var vbox = new VerticalComp(list).apply(struc -> struc.setFillWidth(true));
+        return vbox.style("data-store-list-choice-comp").build();
     }
 }

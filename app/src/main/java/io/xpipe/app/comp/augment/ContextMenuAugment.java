@@ -1,19 +1,19 @@
 package io.xpipe.app.comp.augment;
 
-import io.xpipe.app.comp.CompStructure;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.Side;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S> {
+public class ContextMenuAugment<S extends Region> implements Consumer<S> {
 
     private final Predicate<MouseEvent> mouseEventCheck;
     private final Predicate<KeyEvent> keyEventCheck;
@@ -29,7 +29,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
     }
 
     @Override
-    public void augment(S struc) {
+    public void accept(S struc) {
         var currentContextMenu = new AtomicReference<ContextMenu>();
 
         Supplier<Boolean> hide = () -> {
@@ -41,7 +41,7 @@ public class ContextMenuAugment<S extends CompStructure<?>> implements Augment<S
             return false;
         };
 
-        var r = struc.get();
+        var r = struc;
         r.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (mouseEventCheck != null && mouseEventCheck.test(event)) {
                 if (!hide.get()) {

@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -19,7 +21,7 @@ import lombok.Setter;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
+public class ComboTextFieldComp extends RegionBuilder<ComboBox<String>> {
 
     private final Property<String> value;
     private final ObservableList<String> predefinedValues;
@@ -38,7 +40,7 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     }
 
     @Override
-    public CompStructure<ComboBox<String>> createBase() {
+    public ComboBox<String> createSimple() {
         var text = new ComboBox<>(predefinedValues);
         text.addEventFilter(KeyEvent.ANY, event -> {
             Platform.runLater(() -> {
@@ -84,6 +86,6 @@ public class ComboTextFieldComp extends Comp<CompStructure<ComboBox<String>>> {
             ke.consume();
         });
 
-        return new SimpleCompStructure<>(text);
+        return text;
     }
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import javafx.application.Platform;
@@ -15,7 +16,7 @@ import javafx.stage.WindowEvent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TerminalDockHubComp extends SimpleComp {
+public class TerminalDockHubComp extends SimpleRegionBuilder {
 
     private final TerminalDockView model;
 

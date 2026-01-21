@@ -1,7 +1,9 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.platform.BindingsHelper;
@@ -22,7 +24,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
+public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
 
     private static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
     private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
@@ -110,7 +112,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
     }
 
     protected ListBoxViewComp<StoreSection> createChildrenList(
-            Function<StoreSection, Comp<?>> function, ObservableBooleanValue hide) {
+            Function<StoreSection, BaseRegionBuilder<?,?>> function, ObservableBooleanValue hide) {
         var content = new ListBoxViewComp<>(
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
@@ -119,13 +121,13 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         content.setVisibilityControl(true);
         content.minHeight(0);
         content.hgrow();
-        content.styleClass("children-content");
+        content.style("children-content");
         content.hide(hide);
-        content.apply(struc -> struc.get().setFocusTraversable(false));
+        content.apply(struc -> struc.setFocusTraversable(false));
         return content;
     }
 
-    protected Comp<CompStructure<Button>> createExpandButton(
+    protected RegionBuilder<Button> createExpandButton(
             Runnable action, int width, ObservableBooleanValue expanded) {
         var icon = Bindings.createObjectBinding(
                 () -> new LabelGraphic.IconGraphic(
@@ -138,25 +140,25 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         expandButton
                 .minWidth(width)
                 .prefWidth(width)
-                .descriptor(d -> d.nameKey("expand"))
+                .describe(d -> d.nameKey("expand"))
                 .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
-                .styleClass("expand-button")
+                .style("expand-button")
                 .maxHeight(100);
         return expandButton;
     }
 
-    protected Comp<CompStructure<Button>> createQuickAccessButton(int width, Consumer<StoreSection> r) {
+    protected RegionBuilder<Button> createQuickAccessButton(int width, Consumer<StoreSection> r) {
         var quickAccessDisabled = Bindings.createBooleanBinding(
                 () -> {
                     return section.getShownChildren().getList().isEmpty();
                 },
                 section.getShownChildren().getList());
         var quickAccessButton = new StoreQuickAccessButtonComp(section, r)
-                .styleClass("quick-access-button")
+                .style("quick-access-button")
                 .minWidth(width)
                 .prefWidth(width)
                 .maxHeight(100)
-                .descriptor(d -> d.nameKey("quickAccess"))
+                .describe(d -> d.nameKey("quickAccess"))
                 .disable(quickAccessDisabled);
         return quickAccessButton;
     }

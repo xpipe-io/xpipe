@@ -1,6 +1,7 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -48,7 +49,7 @@ public class AppAvCheck {
             return;
         }
 
-        var modal = ModalOverlay.of(Comp.of(() -> {
+        var modal = ModalOverlay.of(RegionBuilder.of(() -> {
             AtomicReference<Region> markdown = new AtomicReference<>();
             AppResources.with(AppResources.MAIN_MODULE, "misc/antivirus.md", file -> {
                 markdown.set(new MarkdownComp(
@@ -66,7 +67,7 @@ public class AppAvCheck {
                                 false)
                         .prefWidth(550)
                         .prefHeight(600)
-                        .createRegion());
+                        .build());
             });
             return markdown.get();
         }));

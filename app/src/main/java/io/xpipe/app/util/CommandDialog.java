@@ -1,6 +1,7 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ProcessOutputException;
@@ -55,7 +56,7 @@ public class CommandDialog {
     private static void show(String out) {
         var modal = ModalOverlay.of(
                 "commandOutput",
-                Comp.of(() -> {
+                RegionBuilder.of(() -> {
                             var text = new TextArea(out);
                             text.setWrapText(true);
                             text.setEditable(false);

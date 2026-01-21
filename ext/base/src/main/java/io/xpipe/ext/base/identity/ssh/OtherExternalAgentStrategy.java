@@ -37,7 +37,7 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
                 .addComp(
-                        new TextFieldComp(publicKey).apply(struc -> struc.get()
+                        new TextFieldComp(publicKey).apply(struc -> struc
                                 .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
                         publicKey)
                 .bind(

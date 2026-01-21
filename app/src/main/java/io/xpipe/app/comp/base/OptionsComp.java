@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
@@ -29,13 +30,14 @@ import javafx.util.Duration;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Getter
-public class OptionsComp extends Comp<CompStructure<VBox>> {
+public class OptionsComp extends RegionBuilder<VBox> {
 
     private final List<Entry> entries;
     private final List<Check> checks;
@@ -46,7 +48,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
     }
 
     @Override
-    public CompStructure<VBox> createBase() {
+    public VBox createSimple() {
         VBox pane = new VBox();
         pane.getStyleClass().add("options-comp");
 
@@ -55,7 +57,7 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
 
         Region firstComp = null;
         for (var entry : getEntries()) {
-            Region compRegion = entry.comp() != null ? entry.comp().createRegion() : new Region();
+            Region compRegion = entry.comp() != null ? entry.comp().build() : new Region();
 
             if (firstComp == null) {
                 compRegion.getStyleClass().add("first");
@@ -274,12 +276,12 @@ public class OptionsComp extends Comp<CompStructure<VBox>> {
             }
         });
 
-        return new SimpleCompStructure<>(pane);
+        return pane;
     }
 
     public record Entry(
             ObservableValue<String> description,
             String documentationLink,
             ObservableValue<String> name,
-            Comp<?> comp) {}
+            AbstractRegionBuilder<?, ?> comp) {}
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.platform;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.GuiDialog;
@@ -20,6 +21,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -70,8 +73,8 @@ public class OptionsBuilder {
     private ObservableValue<String> name;
     private ObservableValue<String> description;
     private String documentationLink;
-    private Comp<?> comp;
-    private Comp<?> lastCompHeadReference;
+    private BaseRegionBuilder<?,?> comp;
+    private BaseRegionBuilder<?,?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
 
@@ -106,7 +109,7 @@ public class OptionsBuilder {
             Function<ComboBox<ChoicePaneComp.Entry>, Region> transformer) {
         var list = options.entrySet().stream()
                 .map(e -> new ChoicePaneComp.Entry(
-                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : Comp.empty()))
+                        e.getKey(), e.getValue() != null ? e.getValue().buildComp() : RegionBuilder.empty()))
                 .toList();
         var validatorList = options.values().stream()
                 .map(builder -> builder != null ? builder.buildEffectiveValidator() : new SimpleValidator())
@@ -179,7 +182,7 @@ public class OptionsBuilder {
         sub(builder, null);
         var subComp = this.comp;
         var pane = new SimpleTitledPaneComp(AppI18n.observable(key), subComp, true);
-        pane.apply(struc -> struc.get().setExpanded(false));
+        pane.apply(struc -> struc.setExpanded(false));
         this.comp = pane;
         return this;
     }
@@ -212,13 +215,13 @@ public class OptionsBuilder {
     public OptionsBuilder addTitle(String titleKey) {
         finishCurrent();
         entries.add(new OptionsComp.Entry(
-                null, null, null, new LabelComp(AppI18n.observable(titleKey)).styleClass("title-header")));
+                null, null, null, new LabelComp(AppI18n.observable(titleKey)).style("title-header")));
         return this;
     }
 
     public OptionsBuilder addTitle(ObservableValue<String> title) {
         finishCurrent();
-        entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).styleClass("title-header")));
+        entries.add(new OptionsComp.Entry(null, null, null, new LabelComp(title).style("title-header")));
         return this;
     }
 
@@ -260,14 +263,14 @@ public class OptionsBuilder {
     public OptionsBuilder check(Function<Validator, Check> c) {
         var check = c.apply(ownValidator);
         lastCompHeadReference.apply(s -> {
-            check.decorates(s.get());
+            check.decorates(s);
         });
         allChecks.add(check);
         return this;
     }
 
     public OptionsBuilder check(Check c) {
-        lastCompHeadReference.apply(s -> c.decorates(s.get()));
+        lastCompHeadReference.apply(s -> c.decorates(s));
         allChecks.add(c);
         return this;
     }
@@ -308,7 +311,7 @@ public class OptionsBuilder {
         return check(Validator.nonNullIf(ownValidator, e, p, b));
     }
 
-    private void pushComp(Comp<?> comp) {
+    private void pushComp(BaseRegionBuilder<?,?> comp) {
         finishCurrent();
         this.comp = comp;
         this.lastCompHeadReference = comp;
@@ -349,9 +352,9 @@ public class OptionsBuilder {
         var comp = new TextFieldComp(prop, false);
         BindingsHelper.preserve(comp, s);
         comp.apply(struc -> {
-            struc.get().setEditable(false);
-            struc.get().setOpacity(0.9);
-            struc.get().setFocusTraversable(false);
+            struc.setEditable(false);
+            struc.setOpacity(0.9);
+            struc.setFocusTraversable(false);
         });
         pushComp(comp);
         return this;
@@ -365,7 +368,7 @@ public class OptionsBuilder {
     }
 
     public OptionsBuilder spacer(double size) {
-        return addComp(Comp.of(() -> new Spacer(size, Orientation.VERTICAL)));
+        return addComp(RegionBuilder.of(() -> new Spacer(size, Orientation.VERTICAL)));
     }
 
     public OptionsBuilder name(String nameKey) {
@@ -406,12 +409,12 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addComp(Comp<?> comp) {
+    public OptionsBuilder addComp(BaseRegionBuilder<?,?> comp) {
         pushComp(comp);
         return this;
     }
 
-    public OptionsBuilder addComp(Comp<?> comp, Property<?> prop) {
+    public OptionsBuilder addComp(BaseRegionBuilder<?,?> comp, Property<?> prop) {
         pushComp(comp);
         props.add(prop);
         return this;
@@ -494,7 +497,7 @@ public class OptionsBuilder {
     }
 
     public Region build() {
-        return buildComp().createRegion();
+        return buildComp().build();
     }
 
     public GuiDialog buildDialog() {

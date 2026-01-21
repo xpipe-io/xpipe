@@ -1,8 +1,10 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -23,11 +25,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StoreEntryListBatchBarComp extends SimpleComp {
+public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
@@ -45,41 +49,41 @@ public class StoreEntryListBatchBarComp extends SimpleComp {
                 AppI18n.activeLanguage()));
         l.minWidth(Region.USE_PREF_SIZE);
         l.apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER);
+            struc.setAlignment(Pos.CENTER);
         });
         var actions = new HorizontalComp(createActions());
         actions.spacing(2);
         var close = new IconButtonComp("mdi2c-close", () -> {
             StoreViewState.get().getBatchMode().setValue(false);
         });
-        close.descriptor(d -> d.nameKey("close"));
+        close.describe(d -> d.nameKey("close"));
         close.apply(struc -> {
-            struc.get().getStyleClass().remove(Styles.FLAT);
-            struc.get().minWidthProperty().bind(struc.get().heightProperty());
-            struc.get().prefWidthProperty().bind(struc.get().heightProperty());
-            struc.get().maxWidthProperty().bind(struc.get().heightProperty());
+            struc.getStyleClass().remove(Styles.FLAT);
+            struc.minWidthProperty().bind(struc.heightProperty());
+            struc.prefWidthProperty().bind(struc.heightProperty());
+            struc.maxWidthProperty().bind(struc.heightProperty());
         });
         var bar = new HorizontalComp(List.of(
-                checkbox, Comp.hspacer(12), l, Comp.hspacer(20), actions, Comp.hspacer(), Comp.hspacer(20), close));
+                checkbox, RegionBuilder.hspacer(12), l, RegionBuilder.hspacer(20), actions, RegionBuilder.hspacer(), RegionBuilder.hspacer(20), close));
         bar.apply(struc -> {
-            struc.get().setFillHeight(true);
-            struc.get().setAlignment(Pos.CENTER_LEFT);
+            struc.setFillHeight(true);
+            struc.setAlignment(Pos.CENTER_LEFT);
         });
         bar.minHeight(40);
         bar.prefHeight(40);
-        bar.styleClass("bar");
-        bar.styleClass("store-entry-list-status-bar");
-        return bar.createRegion();
+        bar.style("bar");
+        bar.style("store-entry-list-status-bar");
+        return bar.build();
     }
 
-    private ObservableList<Comp<?>> createActions() {
+    private ObservableList<BaseRegionBuilder<?,?>> createActions() {
         var l = DerivedObservableList.<ActionProvider>arrayList(true);
         StoreViewState.get().getEffectiveBatchModeSelection().getList().addListener((ListChangeListener<
                         ? super StoreEntryWrapper>)
                 c -> {
                     l.setContent(getCompatibleActionProviders());
                 });
-        return l.<Comp<?>>mapped(actionProvider -> {
+        return l.<BaseRegionBuilder<?,?>>mapped(actionProvider -> {
                     return buildButton(actionProvider);
                 })
                 .getList();
@@ -118,10 +122,10 @@ public class StoreEntryListBatchBarComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> Comp<?> buildButton(ActionProvider p) {
+    private <T extends DataStore> BaseRegionBuilder<?,?> buildButton(ActionProvider p) {
         BatchHubProvider<T> s = (BatchHubProvider<T>) p;
         if (s == null) {
-            return Comp.empty();
+            return RegionBuilder.empty();
         }
 
         var childrenRefs = StoreViewState.get()

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
 import io.xpipe.app.core.AppResources;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OsLogoComp extends SimpleComp {
+public class OsLogoComp extends SimpleRegionBuilder {
 
     private static final Map<String, String> ICONS = new HashMap<>();
     private static final String LINUX_DEFAULT_24 = "linux-24.png";
@@ -54,7 +55,7 @@ public class OsLogoComp extends SimpleComp {
         return new StackComp(List.of(
                         new SystemStateComp(state).hide(hide),
                         PrettyImageHelper.ofFixedSize(img, 24, 24).visible(hide)))
-                .createRegion();
+                .build();
     }
 
     private String getImage(String name, OsType.Any type) {

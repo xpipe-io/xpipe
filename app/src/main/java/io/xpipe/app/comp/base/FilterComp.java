@@ -1,9 +1,10 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
+
+
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppOpenArguments;
 import io.xpipe.app.platform.PlatformThread;
@@ -22,7 +23,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.List;
 import java.util.Objects;
 
-public class FilterComp extends Comp<CompStructure<CustomTextField>> {
+public class FilterComp extends RegionBuilder<CustomTextField> {
 
     private final Property<String> filterText;
 
@@ -31,7 +32,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
     }
 
     @Override
-    public CompStructure<CustomTextField> createBase() {
+    public CustomTextField createSimple() {
         var fi = new FontIcon("mdi2m-magnify");
         var clear = new FontIcon("mdi2c-close");
         clear.setCursor(Cursor.DEFAULT);
@@ -56,7 +57,7 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
                                     : fi;
                         },
                         filter.focusedProperty()));
-        CompDescriptor.builder().nameKey("search").build().apply(filter);
+        RegionDescriptor.builder().nameKey("search").build().apply(filter);
 
         filter.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (new KeyCodeCombination(KeyCode.ESCAPE).match(event)) {
@@ -85,6 +86,6 @@ public class FilterComp extends Comp<CompStructure<CustomTextField>> {
             filterText.setValue(n != null && n.length() > 0 ? n : null);
         });
 
-        return new SimpleCompStructure<>(filter);
+        return filter;
     }
 }

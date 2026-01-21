@@ -1,7 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+
+
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.util.FileOpener;
 
 import javafx.application.Platform;
@@ -16,7 +18,7 @@ import atlantafx.base.theme.Styles;
 import lombok.Builder;
 import lombok.Value;
 
-public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
+public class MarkdownEditorComp extends RegionStructureBuilder<AnchorPane, MarkdownEditorComp.Structure> {
 
     private final Property<String> value;
     private final String identifier;
@@ -32,15 +34,14 @@ public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
                         () -> FileOpener.openString(identifier + ".md", this, value.getValue(), (s) -> {
                             Platform.runLater(() -> value.setValue(s));
                         }))
-                .styleClass("edit-button")
-                .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
-                .createStructure()
-                .get();
+                .style("edit-button")
+                .apply(struc -> struc.getStyleClass().remove(Styles.FLAT))
+                .build();
     }
 
     @Override
     public Structure createBase() {
-        var markdown = new MarkdownComp(value, s -> s, true).createRegion();
+        var markdown = new MarkdownComp(value, s -> s, true).build();
         var editButton = createOpenButton();
         var pane = new AnchorPane(markdown, editButton);
         pane.setPickOnBounds(false);
@@ -53,7 +54,7 @@ public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
 
     @Value
     @Builder
-    public static class TextAreaStructure implements CompStructure<StackPane> {
+    public static class TextAreaStructure implements RegionStructure<StackPane> {
         StackPane pane;
         TextArea textArea;
 
@@ -65,7 +66,7 @@ public class MarkdownEditorComp extends Comp<MarkdownEditorComp.Structure> {
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<AnchorPane> {
+    public static class Structure implements RegionStructure<AnchorPane> {
         AnchorPane pane;
         Region markdown;
         Button editButton;

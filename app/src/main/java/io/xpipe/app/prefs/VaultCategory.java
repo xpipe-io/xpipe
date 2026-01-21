@@ -1,6 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
@@ -36,7 +38,7 @@ public class VaultCategory extends AppPrefsCategory {
     }
 
     @SneakyThrows
-    public Comp<?> create() {
+    public BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
 
@@ -68,7 +70,7 @@ public class VaultCategory extends AppPrefsCategory {
 
         var authChoice =
                 ChoiceComp.ofTranslatable(prefs.vaultAuthentication, Arrays.asList(VaultAuthentication.values()), true);
-        authChoice.apply(struc -> struc.get().setOpacity(1.0));
+        authChoice.apply(struc -> struc.setOpacity(1.0));
         authChoice.maxWidth(600);
 
         var groupStrategy =
@@ -82,7 +84,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .name("vaultTypeName" + vaultTypeKey)
                         .description("vaultTypeContent" + vaultTypeKey)
                         .documentationLink(DocumentationLink.TEAM_VAULTS)
-                        .addComp(Comp.empty())
+                        .addComp(RegionBuilder.empty())
                         .licenseRequirement("team")
                         .nameAndDescription("vaultAuthentication")
                         .addComp(authChoice, prefs.vaultAuthentication)
@@ -105,7 +107,7 @@ public class VaultCategory extends AppPrefsCategory {
                         .hide(new SimpleBooleanProperty(
                                 DataStorageSyncHandler.getInstance().supportsSync()))
                         .nameAndDescription("teamVaults")
-                        .addComp(Comp.empty())
+                        .addComp(RegionBuilder.empty())
                         .licenseRequirement("team")
                         .disable(!LicenseProvider.get().getFeature("team").isSupported())
                         .hide(uh.getUserCount() > 1));

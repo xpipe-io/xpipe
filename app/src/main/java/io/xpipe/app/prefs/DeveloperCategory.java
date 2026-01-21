@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.InputGroupComp;
@@ -40,7 +41,7 @@ public class DeveloperCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();
         Runnable test = () -> {
@@ -60,13 +61,13 @@ public class DeveloperCategory extends AppPrefsCategory {
 
         var runLocalCommand = new InputGroupComp(List.of(
                         new TextFieldComp(localCommand)
-                                .apply(struc -> struc.get().setPromptText("Local command"))
+                                .apply(struc -> struc.setPromptText("Local command"))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdi2p-play"), test)))
                 .setMainReference(0)
                 .padding(new Insets(15, 0, 0, 0))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .apply(struc -> struc.get().setFillHeight(true))
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> struc.setFillHeight(true))
                 .maxWidth(600);
         var sub = new OptionsBuilder()
                 .nameAndDescription("developerDisableUpdateVersionCheck")

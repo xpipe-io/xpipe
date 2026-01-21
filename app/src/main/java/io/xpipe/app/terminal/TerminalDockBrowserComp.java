@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -29,7 +30,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class TerminalDockBrowserComp extends SimpleComp {
+public class TerminalDockBrowserComp extends SimpleRegionBuilder {
 
     private final TerminalDockView model;
     private final ObservableBooleanValue opened;
@@ -69,7 +70,7 @@ public class TerminalDockBrowserComp extends SimpleComp {
                     stack.pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), true);
                     label.textProperty().bind(AppI18n.observable("terminalStarting"));
                     if (!AppPrefs.get().performanceMode().get()) {
-                        var l = new LoadingIconComp(new SimpleBooleanProperty(true), AppFontSizes::sm).createRegion();
+                        var l = new LoadingIconComp(new SimpleBooleanProperty(true), AppFontSizes::sm).build();
                         label.setGraphic(l);
                     }
                 }

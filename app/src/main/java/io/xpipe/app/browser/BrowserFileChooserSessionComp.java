@@ -4,7 +4,8 @@ import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabComp;
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
@@ -61,8 +62,8 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             file.accept(fileStores.size() > 0 ? fileStores.getFirst() : null);
         });
         var comp = new BrowserFileChooserSessionComp(model, filter)
-                .styleClass("browser")
-                .styleClass("chooser");
+                .style("browser")
+                .style("chooser");
         var selection = new SimpleStringProperty();
         model.getFileSelection().addListener((ListChangeListener<? super BrowserEntry>) c -> {
             selection.set(
@@ -72,10 +73,10 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
         });
         var selectionField = new TextFieldComp(selection);
         selectionField.apply(struc -> {
-            struc.get().setEditable(false);
-            AppFontSizes.base(struc.get());
+            struc.setEditable(false);
+            AppFontSizes.base(struc);
         });
-        selectionField.styleClass("chooser-selection");
+        selectionField.style("chooser-selection");
         selectionField.hgrow();
         var modal = ModalOverlay.of(save ? "saveFileTitle" : "openFileTitle", comp);
         modal.setRequireCloseButtonForClose(true);
@@ -133,24 +134,24 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
                 action,
                 category,
                 filter);
-        var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
+        var bookmarksContainer = new StackComp(List.of(bookmarksList)).style("bookmarks-container");
         bookmarksContainer
                 .apply(struc -> {
                     var rec = new Rectangle();
-                    rec.widthProperty().bind(struc.get().widthProperty());
-                    rec.heightProperty().bind(struc.get().heightProperty());
+                    rec.widthProperty().bind(struc.widthProperty());
+                    rec.heightProperty().bind(struc.heightProperty());
                     rec.setArcHeight(7);
                     rec.setArcWidth(7);
-                    struc.get().getChildren().getFirst().setClip(rec);
+                    struc.getChildren().getFirst().setClip(rec);
                 })
                 .vgrow();
 
-        var stack = Comp.of(() -> {
+        var stack = RegionBuilder.of(() -> {
             var s = new StackPane();
             model.getSelectedEntry().subscribe(selected -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     if (selected != null) {
-                        s.getChildren().setAll(new BrowserFileSystemTabComp(selected, false).createRegion());
+                        s.getChildren().setAll(new BrowserFileSystemTabComp(selected, false).build());
                     } else {
                         s.getChildren().clear();
                     }
@@ -164,14 +165,14 @@ public class BrowserFileChooserSessionComp extends ModalOverlayContentComp {
             return s;
         });
 
-        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).styleClass("left");
+        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer)).style("left");
         var splitPane = new LeftSplitPaneComp(vertical, stack)
                 .withInitialWidth(AppLayoutModel.get().getSavedState().getBrowserConnectionsWidth())
-                .apply(struc -> {
+                .applyStructure(struc -> {
                     struc.getLeft().setMinWidth(200);
                     struc.getLeft().setMaxWidth(500);
                 });
         splitPane.disable(model.getBusy());
-        return splitPane.prefHeight(2000).createRegion();
+        return splitPane.prefHeight(2000).build();
     }
 }

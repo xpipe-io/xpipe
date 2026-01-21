@@ -1,7 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+
+
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.core.OsType;
 
@@ -12,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import lombok.Builder;
@@ -19,7 +22,7 @@ import lombok.Value;
 
 import java.util.Objects;
 
-public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
+public class LazyTextFieldComp extends RegionStructureBuilder<StackPane, LazyTextFieldComp.Structure> {
 
     private final Property<String> currentValue;
     private final Property<String> appliedValue;
@@ -109,7 +112,7 @@ public class LazyTextFieldComp extends Comp<LazyTextFieldComp.Structure> {
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<StackPane> {
+    public static class Structure implements RegionStructure<StackPane> {
         StackPane pane;
         TextField textField;
 

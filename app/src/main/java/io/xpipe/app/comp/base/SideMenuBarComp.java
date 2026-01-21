@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.AppProperties;
@@ -26,19 +27,21 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import lombok.AllArgsConstructor;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
+public class SideMenuBarComp extends RegionBuilder<VBox> {
 
     private final Property<AppLayoutModel.Entry> value;
     private final List<AppLayoutModel.Entry> entries;
     private final ObservableList<AppLayoutModel.QueueEntry> queueEntries;
 
     @Override
-    public CompStructure<VBox> createBase() {
+    public VBox createSimple() {
         var vbox = new VBox();
         vbox.setFillWidth(true);
 
@@ -56,19 +59,19 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
 
                 value.setValue(e);
             });
-            b.descriptor(d -> d.name(e.name()));
+            b.describe(d -> d.name(e.name()));
 
             var stack = createStyle(e, b);
             var shortcut = e.combination();
             if (shortcut != null) {
-                stack.apply(struc -> struc.get().getProperties().put("shortcut", shortcut));
+                stack.apply(struc -> struc.getProperties().put("shortcut", shortcut));
             }
-            vbox.getChildren().add(stack.createRegion());
+            vbox.getChildren().add(stack.build());
         }
 
         {
             var b = new IconButtonComp("mdi2u-update", () -> UpdateAvailableDialog.showIfNeeded(false));
-            b.descriptor(d -> d.nameKey("updateAvailableTooltip"));
+            b.describe(d -> d.nameKey("updateAvailableTooltip"));
             var stack = createStyle(null, b);
             stack.hide(Bindings.createBooleanBinding(
                     () -> {
@@ -79,15 +82,15 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                 == null;
                     },
                     AppDistributionType.get().getUpdateHandler().getPreparedUpdate()));
-            vbox.getChildren().add(stack.createRegion());
+            vbox.getChildren().add(stack.build());
         }
 
         if (!AppProperties.get().isStaging()) {
             var b = new IconButtonComp("mdoal-insights", () -> Hyperlinks.open(Hyperlinks.GITHUB_PTB));
-            b.descriptor(d -> d.nameKey("ptbAvailableTooltip"));
+            b.describe(d -> d.nameKey("ptbAvailableTooltip"));
             var stack = createStyle(null, b);
             stack.hide(AppLayoutModel.get().getPtbAvailable().not());
-            vbox.getChildren().add(stack.createRegion());
+            vbox.getChildren().add(stack.build());
         }
 
         var filler = new Button();
@@ -105,10 +108,10 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 for (int i = l.size() - 1; i >= 0; i--) {
                     var item = l.get(i);
                     var b = new IconButtonComp(item.getIcon(), null);
-                    b.descriptor(d -> d.name(item.getName()));
+                    b.describe(d -> d.name(item.getName()));
                     b.apply(struc -> {
-                        struc.get().setOnAction(e -> {
-                            struc.get().setDisable(true);
+                        struc.setOnAction(e -> {
+                            struc.setDisable(true);
                             ThreadHelper.runAsync(() -> {
                                 try {
                                     var r = item.getAction().get();
@@ -124,12 +127,12 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                     throw t;
                                 }
                             });
-                            struc.get().setDisable(false);
+                            struc.setDisable(false);
                             e.consume();
                         });
                     });
                     var stack = createStyle(null, b);
-                    queueButtons.getChildren().add(stack.createRegion());
+                    queueButtons.getChildren().add(stack.build());
                 }
             });
         });
@@ -137,20 +140,20 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
         vbox.setMinHeight(0);
         vbox.setPrefHeight(0);
 
-        return new SimpleCompStructure<>(vbox);
+        return vbox;
     }
 
-    private Comp<?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
+    private BaseRegionBuilder<?,?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
         var selected = PseudoClass.getPseudoClass("selected");
 
         b.apply(struc -> {
-            AppFontSizes.lg(struc.get());
-            struc.get().setAlignment(Pos.CENTER);
+            AppFontSizes.lg(struc);
+            struc.setAlignment(Pos.CENTER);
 
-            struc.get().pseudoClassStateChanged(selected, value.getValue().equals(e));
+            struc.pseudoClassStateChanged(selected, value.getValue().equals(e));
             value.addListener((c, o, n) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
-                    struc.get().pseudoClassStateChanged(selected, n.equals(e));
+                    struc.pseudoClassStateChanged(selected, n.equals(e));
                 });
             });
         });
@@ -180,12 +183,12 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                 },
                 Platform.getPreferences().accentColorProperty());
 
-        var indicator = Comp.empty().styleClass("indicator");
+        var indicator = RegionBuilder.empty().style("indicator");
         var stack =
-                new StackComp(List.of(indicator, b)).apply(struc -> struc.get().setAlignment(Pos.CENTER_RIGHT));
+                new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
-            var indicatorRegion = (Region) struc.get().getChildren().getFirst();
-            var buttonRegion = (Region) struc.get().getChildren().get(1);
+            var indicatorRegion = (Region) struc.getChildren().getFirst();
+            var buttonRegion = (Region) struc.getChildren().get(1);
             indicatorRegion.setMaxWidth(7);
             indicatorRegion.prefHeightProperty().bind(buttonRegion.heightProperty());
             indicatorRegion
@@ -196,13 +199,13 @@ public class SideMenuBarComp extends Comp<CompStructure<VBox>> {
                                     return selectedBorder.get();
                                 }
 
-                                if (struc.get().isHover()) {
+                                if (struc.isHover()) {
                                     return hoverBorder.get();
                                 }
 
                                 return noneBorder.get();
                             },
-                            struc.get().hoverProperty(),
+                            struc.hoverProperty(),
                             value,
                             hoverBorder,
                             selectedBorder,

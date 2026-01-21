@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.animation.AnimationTimer;
@@ -12,7 +13,7 @@ import javafx.scene.layout.Region;
 
 import java.util.function.Consumer;
 
-public class LoadingIconComp extends SimpleComp {
+public class LoadingIconComp extends SimpleRegionBuilder {
 
     private static final char[] chars = new char[] {'⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'};
 

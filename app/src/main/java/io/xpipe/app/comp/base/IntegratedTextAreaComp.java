@@ -1,7 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+
+
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
@@ -26,7 +28,7 @@ import lombok.Value;
 
 import java.nio.file.Files;
 
-public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structure> {
+public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, IntegratedTextAreaComp.Structure> {
 
     private final Property<String> value;
     private final boolean lazy;
@@ -82,23 +84,23 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                                 (s) -> {
                                     Platform.runLater(() -> value.setValue(s));
                                 }))
-                .styleClass("edit-button")
-                .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
-                .descriptor(d -> d.nameKey("edit"))
-                .createRegion();
+                .style("edit-button")
+                .apply(struc -> struc.getStyleClass().remove(Styles.FLAT))
+                .describe(d -> d.nameKey("edit"))
+                .build();
     }
 
     @Override
     public Structure createBase() {
         var textArea = new TextAreaComp(value, lazy);
-        textArea.apply(struc -> {
+        textArea.applyStructure(struc -> {
             struc.getTextArea().prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> {
                 var val = value.getValue() != null ? value.getValue() : "";
                 var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
                 return Math.max(1, count);
             }, value));
         });
-        var textAreaStruc = textArea.createStructure();
+        var textAreaStruc = textArea.buildStructure();
         var copyButton = createOpenButton();
         var pane = new AnchorPane(textAreaStruc.get(), copyButton);
         pane.setPickOnBounds(false);
@@ -112,7 +114,7 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<AnchorPane> {
+    public static class Structure implements RegionStructure<AnchorPane> {
         AnchorPane pane;
         TextArea textArea;
 

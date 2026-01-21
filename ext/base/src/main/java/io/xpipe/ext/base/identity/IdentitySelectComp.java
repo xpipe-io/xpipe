@@ -1,8 +1,10 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -43,7 +45,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
+public class IdentitySelectComp extends RegionBuilder<HBox> {
 
     private final ObjectProperty<DataStoreEntryRef<IdentityStore>> selectedReference;
     private final Property<String> inPlaceUser;
@@ -144,7 +146,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
     }
 
     @Override
-    public CompStructure<HBox> createBase() {
+    public HBox createSimple() {
         ObservableValue<LabelGraphic> icon = Bindings.createObjectBinding(
                 () -> {
                     return selectedReference.get() != null
@@ -159,23 +161,22 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 addNamedIdentity();
             }
         });
-        addButton.descriptor(d -> d.nameKey("addReusableIdentity"));
+        addButton.describe(d -> d.nameKey("addReusableIdentity"));
 
-        var nodes = new ArrayList<Comp<?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?,?>>();
         nodes.add(createComboBox());
         nodes.add(addButton);
-        var layout = new InputGroupComp(nodes).setMainReference(0).apply(struc -> struc.get().setFillHeight(true));
+        var layout = new InputGroupComp(nodes).setMainReference(0).apply(struc -> struc.setFillHeight(true));
 
         layout.apply(struc -> {
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 Platform.runLater(() -> {
-                    struc.get().getChildren().getFirst().requestFocus();
+                    struc.getChildren().getFirst().requestFocus();
                 });
             });
         });
 
-        var structure = layout.createStructure();
-        return new SimpleCompStructure<>(structure.get());
+        return layout.build();
     }
 
     private String formatName(DataStoreEntry storeEntry) {
@@ -194,7 +195,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
         this.selectedReference.setValue(newRef);
     }
 
-    private Comp<?> createComboBox() {
+    private BaseRegionBuilder<?,?> createComboBox() {
         var map = new LinkedHashMap<String, DataStoreEntryRef<IdentityStore>>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
             if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {
@@ -259,7 +260,7 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                                     var provider = store.get().getProvider();
                                     var image = provider.getDisplayIconFileName(store.getStore());
                                     setGraphic(PrettyImageHelper.ofFixedSize(image, 16, 16)
-                                            .createRegion());
+                                            .build());
                                 }
                             } else {
                                 setGraphic(null);
@@ -267,8 +268,8 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                         }
                     };
                 });
-        combo.apply(struc -> struc.get().setEditable(allowUserInput));
-        combo.styleClass(Styles.LEFT_PILL);
+        combo.apply(struc -> struc.setEditable(allowUserInput));
+        combo.style(Styles.LEFT_PILL);
 
         combo.apply(struc -> {
             var binding = Bindings.createStringBinding(
@@ -281,11 +282,11 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                     },
                     AppI18n.activeLanguage(),
                     selectedReference);
-            struc.get().promptTextProperty().bind(binding);
+            struc.promptTextProperty().bind(binding);
         });
 
         combo.apply(struc -> {
-            struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.ESCAPE && !allowUserInput) {
                     selectedReference.setValue(null);
                     prop.setValue(null);
@@ -308,15 +309,15 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 ((Region) po.getContentNode()).setMaxHeight(350);
                 po.showingProperty().addListener((o, oldValue, newValue) -> {
                     if (!newValue) {
-                        struc.get().hide();
+                        struc.hide();
                     }
                 });
             });
 
-            var skin = new ComboBoxListViewSkin<>(struc.get()) {
+            var skin = new ComboBoxListViewSkin<>(struc) {
                 @Override
                 public void show() {
-                    popover.show(struc.get());
+                    popover.show(struc);
                 }
 
                 @Override
@@ -325,18 +326,18 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
                 }
             };
             MenuHelper.fixComboBoxSkin(skin);
-            struc.get().setSkin(skin);
+            struc.setSkin(skin);
         });
 
         combo.apply(struc -> {
-            struc.get().getEditor().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            struc.getEditor().focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue && selectedReference.get() != null) {
                     Platform.runLater(() -> {
-                        if (struc.get().isShowing()) {
+                        if (struc.isShowing()) {
                             return;
                         }
 
-                        struc.get().getEditor().selectAll();
+                        struc.getEditor().selectAll();
                     });
                 }
             });
@@ -346,29 +347,29 @@ public class IdentitySelectComp extends Comp<CompStructure<HBox>> {
             selectedReference.setValue(null);
             inPlaceUser.setValue(null);
         });
-        clearButton.styleClass(Styles.FLAT);
+        clearButton.style(Styles.FLAT);
         clearButton.hide(selectedReference.isNull());
         clearButton.apply(struc -> {
-            struc.get().setOpacity(0.7);
-            struc.get().getStyleClass().add("clear-button");
-            AppFontSizes.xs(struc.get());
-            AnchorPane.setRightAnchor(struc.get(), 30.0);
-            AnchorPane.setTopAnchor(struc.get(), 3.0);
-            AnchorPane.setBottomAnchor(struc.get(), 3.0);
+            struc.setOpacity(0.7);
+            struc.getStyleClass().add("clear-button");
+            AppFontSizes.xs(struc);
+            AnchorPane.setRightAnchor(struc, 30.0);
+            AnchorPane.setTopAnchor(struc, 3.0);
+            AnchorPane.setBottomAnchor(struc, 3.0);
         });
 
         var stack = new AnchorComp(List.of(combo, clearButton));
-        stack.styleClass("identity-select-comp");
+        stack.style("identity-select-comp");
         stack.hgrow();
         stack.apply(struc -> {
-            var comboRegion = (Region) struc.get().getChildren().getFirst();
-            struc.get().prefWidthProperty().bind(comboRegion.prefWidthProperty());
-            struc.get().prefHeightProperty().bind(comboRegion.prefHeightProperty());
+            var comboRegion = (Region) struc.getChildren().getFirst();
+            struc.prefWidthProperty().bind(comboRegion.prefWidthProperty());
+            struc.prefHeightProperty().bind(comboRegion.prefHeightProperty());
             AnchorPane.setLeftAnchor(comboRegion, 0.0);
             AnchorPane.setRightAnchor(comboRegion, 0.0);
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
-                    struc.get().getChildren().getFirst().requestFocus();
+                    struc.getChildren().getFirst().requestFocus();
                 }
             });
         });

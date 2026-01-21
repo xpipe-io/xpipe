@@ -9,7 +9,8 @@ import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
@@ -55,7 +56,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                         var name = new SimpleStringProperty();
                         var modal = ModalOverlay.of(
                                 "newFile",
-                                Comp.of(() -> {
+                                RegionBuilder.of(() -> {
                                             var creationName = new TextField();
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;
@@ -102,7 +103,7 @@ public class NewItemMenuProvider implements BrowserMenuBranchProvider {
                         var name = new SimpleStringProperty();
                         var modal = ModalOverlay.of(
                                 "newDirectory",
-                                Comp.of(() -> {
+                                RegionBuilder.of(() -> {
                                             var creationName = new TextField();
                                             creationName.textProperty().bindBidirectional(name);
                                             return creationName;

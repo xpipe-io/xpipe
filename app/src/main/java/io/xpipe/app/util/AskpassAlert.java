@@ -41,7 +41,7 @@ public class AskpassAlert {
                         });
                     }
 
-                    var text = new SecretFieldComp(prop, false).createStructure();
+                    var text = new SecretFieldComp(prop, false).buildStructure();
                     alert.getDialogPane().setContent(new StackPane(text.get()));
                     var stage = (Stage) alert.getDialogPane().getScene().getWindow();
                     stage.setAlwaysOnTop(true);

@@ -22,8 +22,8 @@ public class AsktextAlert {
                     alert.setHeaderText(prompt);
                     alert.setAlertType(Alert.AlertType.CONFIRMATION);
 
-                    var text = new TextFieldComp(prop, false).createStructure();
-                    alert.getDialogPane().setContent(new StackPane(text.get()));
+                    var text = new TextFieldComp(prop, false).build();
+                    alert.getDialogPane().setContent(new StackPane(text));
                     var stage = (Stage) alert.getDialogPane().getScene().getWindow();
                     stage.setAlwaysOnTop(true);
 
@@ -66,8 +66,8 @@ public class AsktextAlert {
                         anim.start();
                         // Wait 1 pulse before focus so that the scene can be assigned to text
                         Platform.runLater(() -> {
-                            text.get().requestFocus();
-                            text.get().end();
+                            text.requestFocus();
+                            text.end();
                         });
                         event.consume();
                     });

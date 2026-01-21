@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -27,7 +28,7 @@ public class AppGreetingsDialog {
 
         AppResources.with(AppResources.MAIN_MODULE, "misc/welcome.md", file -> {
             var md = Files.readString(file);
-            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).createRegion();
+            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).build();
             tp.setContent(markdown);
         });
 
@@ -42,7 +43,7 @@ public class AppGreetingsDialog {
 
         AppResources.with(AppResources.MAIN_MODULE, "misc/eula.md", file -> {
             var md = Files.readString(file);
-            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).createRegion();
+            var markdown = new MarkdownComp(md, UnaryOperator.identity(), true).build();
             tp.setContent(markdown);
         });
 
@@ -65,7 +66,7 @@ public class AppGreetingsDialog {
         var read = new SimpleBooleanProperty();
         var accepted = new SimpleBooleanProperty();
 
-        var modal = ModalOverlay.of(Comp.of(() -> {
+        var modal = ModalOverlay.of(RegionBuilder.of(() -> {
             var content = List.of(createIntroduction(), createEula());
             var accordion = new Accordion(content.toArray(TitledPane[]::new));
             accordion.setExpandedPane(content.get(0));
@@ -75,7 +76,7 @@ public class AppGreetingsDialog {
                 }
             });
 
-            var acceptanceBox = Comp.of(() -> {
+            var acceptanceBox = RegionBuilder.of(() -> {
                         var cb = new CheckBox();
                         cb.selectedProperty().bindBidirectional(accepted);
 
@@ -86,7 +87,7 @@ public class AppGreetingsDialog {
                         label.setGraphicTextGap(10);
                         return label;
                     })
-                    .createRegion();
+                    .build();
 
             var layout = new BorderPane();
             layout.setCenter(accordion);

@@ -1,8 +1,9 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
@@ -19,11 +20,13 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
 
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-public class ActionShortcutComp extends SimpleComp {
+public class ActionShortcutComp extends SimpleRegionBuilder {
 
     private final Property<AbstractAction> action;
     private final Runnable onCreateMacro;
@@ -51,7 +54,7 @@ public class ActionShortcutComp extends SimpleComp {
         return options.build();
     }
 
-    private Comp<?> createUrlComp() {
+    private BaseRegionBuilder<?,?> createUrlComp() {
         var url = new SimpleStringProperty();
         action.subscribe((v) -> {
             var s = ActionUrls.toUrl(v);
@@ -63,16 +66,16 @@ public class ActionShortcutComp extends SimpleComp {
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyUrl(url.getValue());
                 })
-                .descriptor(d -> d.nameKey("copyUrl"));
+                .describe(d -> d.nameKey("copyUrl"));
         var field = new TextFieldComp(url);
-        field.apply(struc -> struc.get().setEditable(false));
+        field.apply(struc -> struc.setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
         group.setMainReference(field);
         group.hide(Bindings.isNull(url));
         return group;
     }
 
-    private Comp<?> createDesktopComp() {
+    private BaseRegionBuilder<?,?> createDesktopComp() {
         var url = BindingsHelper.map(action, abstractAction -> ActionUrls.toUrl(abstractAction));
         var name = new SimpleStringProperty();
         action.subscribe((v) -> {
@@ -88,7 +91,7 @@ public class ActionShortcutComp extends SimpleComp {
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })
-                .descriptor(d -> d.nameKey("createShortcut"));
+                .describe(d -> d.nameKey("createShortcut"));
         var field = new TextFieldComp(name);
         var group = new InputGroupComp(List.of(field, copyButton));
         group.setMainReference(field);
@@ -96,7 +99,7 @@ public class ActionShortcutComp extends SimpleComp {
         return group;
     }
 
-    private Comp<?> createApiComp() {
+    private BaseRegionBuilder<?,?> createApiComp() {
         var url = "curl -X POST \"http://localhost:" + AppBeaconServer.get().getPort() + "/action\" ...";
         var text = AppI18n.observable("actionApiUrl", url);
         var prop = new SimpleStringProperty();
@@ -107,9 +110,9 @@ public class ActionShortcutComp extends SimpleComp {
                         ClipboardHelper.copyUrl(sa.toNode().toPrettyString());
                     }
                 })
-                .descriptor(d -> d.nameKey("copyBody"));
+                .describe(d -> d.nameKey("copyBody"));
         var field = new TextFieldComp(prop, true);
-        field.apply(struc -> struc.get().setEditable(false));
+        field.apply(struc -> struc.setEditable(false));
         var group = new InputGroupComp(List.of(field, copyButton));
         group.setMainReference(field);
         group.hide(BindingsHelper.map(action, v -> !(v instanceof SerializableAction)));
@@ -117,7 +120,7 @@ public class ActionShortcutComp extends SimpleComp {
     }
 
     @SuppressWarnings("unused")
-    private Comp<?> createMacroComp() {
+    private BaseRegionBuilder<?,?> createMacroComp() {
         var button = new ButtonComp(
                 AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), onCreateMacro);
         return button;

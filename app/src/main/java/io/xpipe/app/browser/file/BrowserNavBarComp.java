@@ -3,8 +3,11 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.browser.icon.BrowserIcons;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
@@ -33,7 +36,7 @@ import javafx.scene.shape.Rectangle;
 
 import atlantafx.base.theme.Styles;
 
-public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
+public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBarComp.Structure> {
 
     private static final PseudoClass INVISIBLE = PseudoClass.getPseudoClass("invisible");
     private final BrowserFileSystemTabModel model;
@@ -58,33 +61,32 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 },
                 PlatformThread.sync(model.getCurrentPath()));
         var breadcrumbsGraphic = PrettyImageHelper.ofFixedSize(graphic, 24, 24)
-                .styleClass("path-graphic")
-                .createRegion();
+                .style("path-graphic")
+                .build();
 
         var homeButton = new ButtonComp(null, breadcrumbsGraphic, null)
-                .descriptor(d -> d.nameKey("directoryOptions"))
+                .describe(d -> d.nameKey("directoryOptions"))
                 .apply(new ContextMenuAugment<>(event -> event.getButton() == MouseButton.PRIMARY, null, () -> {
                     return model.getInOverview().get() ? null : new BrowserContextMenu(model, null, false);
                 }))
-                .createRegion();
+                .build();
         homeButton.getStyleClass().add(Styles.LEFT_PILL);
         homeButton.getStyleClass().add("path-graphic-button");
         AppFontSizes.sm(homeButton);
 
         var historyButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2h-history"), null)
-                .descriptor(
+                .describe(
                         d -> d.nameKey("history").shortcut(new KeyCodeCombination(KeyCode.H, KeyCombination.ALT_DOWN)))
-                .styleClass(Styles.RIGHT_PILL)
+                .style(Styles.RIGHT_PILL)
                 .apply(new ContextMenuAugment<>(
                         event -> event.getButton() == MouseButton.PRIMARY, null, this::createContextMenu))
-                .createStructure()
-                .get();
+                .build();
         AppFontSizes.xs(historyButton);
 
         var breadcrumbs = new BrowserBreadcrumbBar(model);
 
-        var pathRegion = pathBar.createStructure().get();
-        var breadcrumbsRegion = breadcrumbs.createRegion();
+        var pathRegion = pathBar.build();
+        var breadcrumbsRegion = breadcrumbs.build();
         breadcrumbsRegion.setOnMouseClicked(event -> {
             pathRegion.requestFocus();
             event.consume();
@@ -145,7 +147,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         }
     }
 
-    private Comp<CompStructure<TextField>> createPathBar() {
+    private RegionBuilder<TextField> createPathBar() {
         var path = new SimpleStringProperty();
         model.getCurrentPath().subscribe((newValue) -> {
             PlatformThread.runLaterIfNeeded(() -> {
@@ -163,22 +165,22 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
             });
         });
         var pathBar =
-                new TextFieldComp(path, true).styleClass(Styles.CENTER_PILL).styleClass("path-text");
-        pathBar.descriptor(d -> d.nameKey("currentPath"));
+                new TextFieldComp(path, true).style(Styles.CENTER_PILL).style("path-text");
+        pathBar.describe(d -> d.nameKey("currentPath"));
         pathBar.apply(struc -> {
-            struc.get().focusedProperty().subscribe(val -> {
-                struc.get()
+            struc.focusedProperty().subscribe(val -> {
+                struc
                         .pseudoClassStateChanged(
                                 INVISIBLE, !val && !model.getInOverview().get());
 
                 if (val) {
                     Platform.runLater(() -> {
-                        struc.get().end();
+                        struc.end();
                     });
                 }
             });
 
-            struc.get().addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
+            struc.addEventHandler(KeyEvent.KEY_PRESSED, ke -> {
                 if (ke.getCode().equals(KeyCode.ENTER)) {
                     ke.consume();
                 }
@@ -188,9 +190,9 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
                 // Pseudo classes do not apply if set instantly before shown
                 // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                 Platform.runLater(() -> {
-                    struc.get()
+                    struc
                             .pseudoClassStateChanged(
-                                    INVISIBLE, !val && !struc.get().isFocused());
+                                    INVISIBLE, !val && !struc.isFocused());
                 });
             });
         });
@@ -260,7 +262,7 @@ public class BrowserNavBarComp extends Comp<BrowserNavBarComp.Structure> {
         return cm;
     }
 
-    public record Structure(HBox box, TextField textField, Button historyButton) implements CompStructure<HBox> {
+    public record Structure(HBox box, TextField textField, Button historyButton) implements RegionStructure<HBox> {
 
         @Override
         public HBox get() {

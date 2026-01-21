@@ -1,8 +1,10 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconManager;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppStyle;
@@ -31,7 +33,7 @@ import java.util.function.Function;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
-public class BrowserFileSelectionListComp extends SimpleComp {
+public class BrowserFileSelectionListComp extends SimpleRegionBuilder {
 
     ObservableList<BrowserEntry> list;
     Function<BrowserEntry, ObservableValue<String>> nameTransformation;
@@ -41,7 +43,7 @@ public class BrowserFileSelectionListComp extends SimpleComp {
     }
 
     public static Image snapshot(ObservableList<BrowserEntry> list) {
-        var r = new BrowserFileSelectionListComp(list).styleClass("drag").createRegion();
+        var r = new BrowserFileSelectionListComp(list).style("drag").build();
         var scene = new Scene(r);
         AppWindowStyle.addStylesheets(scene);
         AppStyle.addStylesheets(scene);
@@ -56,11 +58,11 @@ public class BrowserFileSelectionListComp extends SimpleComp {
                         list,
                         list,
                         entry -> {
-                            return Comp.of(() -> {
+                            return RegionBuilder.of(() -> {
                                 var icon = entry.getIcon();
                                 BrowserIconManager.loadIfNecessary(icon);
                                 var image = PrettyImageHelper.ofFixedSizeSquare(icon, 24)
-                                        .createRegion();
+                                        .build();
                                 var t = nameTransformation.apply(entry);
                                 var l = new Label(t.getValue(), image);
                                 l.setGraphicTextGap(6);
@@ -75,8 +77,8 @@ public class BrowserFileSelectionListComp extends SimpleComp {
                             });
                         },
                         true)
-                .styleClass("selected-file-list")
+                .style("selected-file-list")
                 .hide(Bindings.isEmpty(list));
-        return c.createRegion();
+        return c.build();
     }
 }

@@ -15,9 +15,11 @@ import javafx.scene.layout.Region;
 import lombok.Builder;
 import lombok.Value;
 
+import java.util.function.Consumer;
+
 @Value
 @Builder
-public class CompDescriptor {
+public class RegionDescriptor {
 
     ObservableValue<String> name;
     ObservableValue<String> description;
@@ -95,9 +97,9 @@ public class CompDescriptor {
         }
     }
 
-    public static class CompDescriptorBuilder {
+    public static class RegionDescriptorBuilder {
 
-        public CompDescriptorBuilder nameKey(String key) {
+        public RegionDescriptorBuilder nameKey(String key) {
             return name(AppI18n.observable(key));
         }
     }

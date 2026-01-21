@@ -63,7 +63,7 @@ public class EnpassPasswordManager implements PasswordManager {
                 e -> e.equals(DataStorage.get().local()),
                 true);
         comp.apply(struc -> {
-            var text = (TextField) struc.get().getChildren().getFirst();
+            var text = (TextField) struc.getChildren().getFirst();
             text.requestFocus();
             text.setPromptText(AppSystemInfo.ofCurrent()
                     .getUserHome()
@@ -71,9 +71,9 @@ public class EnpassPasswordManager implements PasswordManager {
                     .toString());
 
             // Show prompt text, remove focus
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 Platform.runLater(() -> {
-                    struc.get().getParent().requestFocus();
+                    struc.getParent().requestFocus();
                 });
             });
         });

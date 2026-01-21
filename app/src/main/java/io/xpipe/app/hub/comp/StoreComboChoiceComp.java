@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.MenuHelper;
@@ -23,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public class StoreComboChoiceComp<T extends DataStore> extends SimpleComp {
+public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
     @Value
     public static class ComboValue<T extends DataStore> {

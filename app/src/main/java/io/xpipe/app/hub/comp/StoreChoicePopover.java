@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -136,11 +137,11 @@ public class StoreChoicePopover<T extends DataStore> {
                             initialCategory != null ? initialCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory)
-                    .styleClass(Styles.LEFT_PILL);
+                    .style(Styles.LEFT_PILL);
             var filter =
-                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
+                    new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();
 
-            var addButton = Comp.of(() -> {
+            var addButton = RegionBuilder.of(() -> {
                         var m = MenuHelper.createMenuButton();
                         m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
@@ -148,17 +149,17 @@ public class StoreChoicePopover<T extends DataStore> {
                         StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
-                    .descriptor(d -> d.nameKey("addConnection"))
+                    .describe(d -> d.nameKey("addConnection"))
                     .padding(new Insets(-5))
-                    .styleClass(Styles.RIGHT_PILL);
+                    .style(Styles.RIGHT_PILL);
 
             var top = new HorizontalComp(List.of(category, filter, addButton))
-                    .styleClass("top")
-                    .apply(struc -> struc.get().setFillHeight(true))
+                    .style("top")
+                    .apply(struc -> struc.setFillHeight(true))
                     .apply(struc -> {
-                        var first = ((Region) struc.get().getChildren().get(0));
-                        var second = ((Region) struc.get().getChildren().get(1));
-                        var third = ((Region) struc.get().getChildren().get(1));
+                        var first = ((Region) struc.getChildren().get(0));
+                        var second = ((Region) struc.getChildren().get(1));
+                        var third = ((Region) struc.getChildren().get(1));
                         second.prefHeightProperty().bind(first.heightProperty());
                         second.minHeightProperty().bind(first.heightProperty());
                         second.maxHeightProperty().bind(first.heightProperty());
@@ -167,18 +168,17 @@ public class StoreChoicePopover<T extends DataStore> {
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners
-                        struc.get()
+                        struc
                                 .getChildren()
                                 .get(0)
                                 .focusedProperty()
                                 .addListener((observable, oldValue, newValue) -> {
                                     if (newValue) {
-                                        struc.get().getChildren().get(1).requestFocus();
+                                        struc.getChildren().get(1).requestFocus();
                                     }
                                 });
                     })
-                    .createStructure()
-                    .get();
+                    .build();
 
             var emptyText = Bindings.createStringBinding(
                     () -> {
@@ -190,14 +190,14 @@ public class StoreChoicePopover<T extends DataStore> {
                     StoreViewState.get().getAllEntries().getList());
             var emptyLabel =
                     new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
-            emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
+            emptyLabel.apply(struc -> AppFontSizes.sm(struc));
             emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
             emptyLabel.minHeight(80);
 
             var listStack = new StackComp(List.of(emptyLabel, section));
             listStack.vgrow();
 
-            var r = listStack.createRegion();
+            var r = listStack.build();
             var content = new VBox(top, r);
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");

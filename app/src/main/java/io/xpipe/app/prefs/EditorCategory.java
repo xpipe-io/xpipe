@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
@@ -29,7 +30,7 @@ public class EditorCategory extends AppPrefsCategory {
                     });
                 })
                 .padding(new Insets(6, 11, 6, 5))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
         var choice = ChoiceComp.ofTranslatable(
                 prefs.externalEditor, PrefsChoiceValue.getSupported(ExternalEditorType.class), false);
@@ -45,8 +46,8 @@ public class EditorCategory extends AppPrefsCategory {
                 .minWidth(Region.USE_PREF_SIZE);
 
         var h = new HorizontalComp(List.of(choice.hgrow(), visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
+            struc.setAlignment(Pos.CENTER_LEFT);
+            struc.setSpacing(10);
         });
         h.maxWidth(600);
 
@@ -55,7 +56,7 @@ public class EditorCategory extends AppPrefsCategory {
                 .addComp(h)
                 .nameAndDescription("customEditorCommand")
                 .addComp(new TextFieldComp(prefs.customEditorCommand, true)
-                        .apply(struc -> struc.get().setPromptText("myeditor $FILE")))
+                        .apply(struc -> struc.setPromptText("myeditor $FILE")))
                 .hide(prefs.externalEditor.isNotEqualTo(ExternalEditorType.CUSTOM))
                 .addComp(editorTest)
                 .nameAndDescription("customEditorCommandInTerminal")
@@ -75,7 +76,7 @@ public class EditorCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         return new OptionsBuilder()
                 .addTitle("editorConfiguration")
                 .sub(editorChoice())

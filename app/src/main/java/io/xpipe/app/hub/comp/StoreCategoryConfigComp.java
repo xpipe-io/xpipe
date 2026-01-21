@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -25,7 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
-public class StoreCategoryConfigComp extends SimpleComp {
+public class StoreCategoryConfigComp extends SimpleRegionBuilder {
 
     private final StoreCategoryWrapper wrapper;
     private final Property<DataStoreCategoryConfig> config;
@@ -82,8 +83,8 @@ public class StoreCategoryConfigComp extends SimpleComp {
                     setGraphic(DataStoreColor.createDisplayGraphic(color));
                 }
             };
-            struc.get().setButtonCell(cell.get());
-            struc.get().setCellFactory(ignored -> {
+            struc.setButtonCell(cell.get());
+            struc.setCellFactory(ignored -> {
                 return cell.get();
             });
         });

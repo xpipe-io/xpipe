@@ -1,6 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -25,7 +27,7 @@ public class DisplayCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("displayOptions")
@@ -33,7 +35,7 @@ public class DisplayCategory extends AppPrefsCategory {
                         .pref(prefs.uiScale)
                         .addComp(
                                 new IntFieldComp(prefs.uiScale).maxWidth(100).apply(struc -> {
-                                    struc.get().setPromptText("100");
+                                    struc.setPromptText("100");
                                 }),
                                 prefs.uiScale)
                         .hide(new SimpleBooleanProperty(OsType.ofLocal() == OsType.MACOS))
@@ -49,7 +51,7 @@ public class DisplayCategory extends AppPrefsCategory {
                 .sub(new OptionsBuilder()
                         .pref(prefs.windowOpacity)
                         .addComp(
-                                Comp.of(() -> {
+                                RegionBuilder.of(() -> {
                                             var s = new Slider(0.3, 1.0, prefs.windowOpacity.get());
                                             s.getStyleClass().add(Styles.SMALL);
                                             prefs.windowOpacity.bind(s.valueProperty());

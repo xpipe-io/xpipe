@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
@@ -17,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.Objects;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class IntFieldComp extends Comp<CompStructure<TextField>> {
+public class IntFieldComp extends RegionBuilder<TextField> {
 
     Property<Integer> value;
     int minValue;
@@ -36,7 +37,7 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
     }
 
     @Override
-    public CompStructure<TextField> createBase() {
+    public TextField createSimple() {
         var field = new TextField(value.getValue() != null ? value.getValue().toString() : null);
 
         value.addListener((ChangeListener<Number>) (observableValue, oldValue, newValue) -> {
@@ -101,6 +102,6 @@ public class IntFieldComp extends Comp<CompStructure<TextField>> {
             }
         });
 
-        return new SimpleCompStructure<>(field);
+        return field;
     }
 }

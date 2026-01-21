@@ -1,7 +1,9 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.DelayedInitComp;
 import io.xpipe.app.comp.base.LeftSplitPaneComp;
 import io.xpipe.app.core.AppLayoutModel;
@@ -18,14 +20,14 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-public class StoreLayoutComp extends SimpleComp {
+public class StoreLayoutComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
         var delayed = new DelayedInitComp(
-                Comp.of(() -> createContent()),
+                RegionBuilder.of(() -> createContent()),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
-        return delayed.createRegion();
+        return delayed.build();
     }
 
     private Region createContent() {
@@ -46,19 +48,19 @@ public class StoreLayoutComp extends SimpleComp {
                 });
         comp.apply(struc -> {
             InputHelper.onKeyCombination(
-                    struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                    struc, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
                         filterTrigger.trigger();
                         keyEvent.consume();
                     });
         });
 
-        var stack = new StackPane(comp.createRegion());
+        var stack = new StackPane(comp.build());
         stack.getStyleClass().add("store-layout");
 
         if (TerminalDockHubManager.isPossiblySupported()) {
             var model = TerminalDockHubManager.get();
             var dock = new TerminalDockHubComp(model.getDockModel());
-            stack.getChildren().add(dock.createRegion());
+            stack.getChildren().add(dock.build());
         }
 
         return stack;

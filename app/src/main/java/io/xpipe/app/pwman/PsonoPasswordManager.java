@@ -44,7 +44,7 @@ public class PsonoPasswordManager implements PasswordManager {
                 .addComp(
                         new TextFieldComp(serverUrl)
                                 .apply(struc -> {
-                                    struc.get().setPromptText("https://www.psono.pw/server");
+                                    struc.setPromptText("https://www.psono.pw/server");
                                 })
                                 .maxWidth(600),
                         serverUrl)

@@ -1,7 +1,9 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
@@ -18,11 +20,13 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 import java.util.Map;
 
-public class ActionConfirmComp extends SimpleComp {
+public class ActionConfirmComp extends SimpleRegionBuilder {
 
     private final AbstractAction action;
 
@@ -38,11 +42,11 @@ public class ActionConfirmComp extends SimpleComp {
                 .addComp(createList());
         options.nameAndDescription("actionConfiguration").addComp(createTable());
         var scroll = new ScrollComp(options.buildComp());
-        return scroll.createRegion();
+        return scroll.build();
     }
 
     @SuppressWarnings("unchecked")
-    private Comp<?> createList() {
+    private BaseRegionBuilder<?,?> createList() {
         var listProp = new SimpleListProperty<DataStoreEntryRef<DataStore>>(FXCollections.observableArrayList());
         if (action instanceof BatchStoreAction<?> ba) {
             listProp.setAll(((BatchStoreAction<DataStore>) ba).getRefs());
@@ -60,9 +64,9 @@ public class ActionConfirmComp extends SimpleComp {
         return choice;
     }
 
-    private Comp<?> createTable() {
+    private BaseRegionBuilder<?,?> createTable() {
         var map = action.toDisplayMap();
-        return Comp.of(() -> {
+        return RegionBuilder.of(() -> {
             var grid = new GridPane();
             grid.setHgap(11);
             grid.setVgap(2);

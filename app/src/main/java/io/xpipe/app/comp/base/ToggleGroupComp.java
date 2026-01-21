@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -16,7 +17,7 @@ import atlantafx.base.theme.Styles;
 import java.util.Map;
 import java.util.Objects;
 
-public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
+public class ToggleGroupComp<T> extends RegionBuilder<HBox> {
 
     private final Property<T> value;
     private final ObservableValue<Map<T, ObservableValue<String>>> range;
@@ -27,7 +28,7 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
     }
 
     @Override
-    public CompStructure<HBox> createBase() {
+    public HBox createSimple() {
         var box = new HBox();
         box.getStyleClass().add("toggle-group-comp");
         ToggleGroup group = new ToggleGroup();
@@ -74,6 +75,6 @@ public class ToggleGroupComp<T> extends Comp<CompStructure<HBox>> {
             });
         });
 
-        return new SimpleCompStructure<>(box);
+        return box;
     }
 }

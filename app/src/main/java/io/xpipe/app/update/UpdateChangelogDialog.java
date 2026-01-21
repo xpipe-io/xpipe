@@ -1,6 +1,7 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -49,8 +50,8 @@ public class UpdateChangelogDialog {
         }
         shown = true;
 
-        var comp = Comp.of(() -> {
-            var markdown = new MarkdownComp(update.getRawDescription(), s -> s, false).createRegion();
+        var comp = RegionBuilder.of(() -> {
+            var markdown = new MarkdownComp(update.getRawDescription(), s -> s, false).build();
             return markdown;
         });
         var modal = ModalOverlay.of("updateChangelogAlertTitle", comp.prefWidth(600), null);

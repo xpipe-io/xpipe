@@ -1,7 +1,9 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppNames;
@@ -32,23 +34,23 @@ public class AboutCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         var props = createProperties();
         var update = new UpdateCheckComp().prefWidth(600);
         return new VerticalComp(List.of(
                         props,
-                        Comp.vspacer(1),
+                        RegionBuilder.vspacer(1),
                         update,
-                        Comp.vspacer(5),
-                        Comp.hseparator().padding(Insets.EMPTY).maxWidth(600)))
-                .apply(s -> s.get().setFillWidth(true))
-                .apply(struc -> struc.get().setSpacing(12))
-                .styleClass("information")
-                .styleClass("about-tab");
+                        RegionBuilder.vspacer(5),
+                        RegionBuilder.hseparator().padding(Insets.EMPTY).maxWidth(600)))
+                .apply(s -> s.setFillWidth(true))
+                .apply(struc -> struc.setSpacing(12))
+                .style("information")
+                .style("about-tab");
     }
 
-    private Comp<?> createProperties() {
-        var title = Comp.of(() -> {
+    private BaseRegionBuilder<?,?> createProperties() {
+        var title = RegionBuilder.of(() -> {
             return JfxHelper.createNamedEntry(
                     new ReadOnlyStringWrapper(AppNames.ofCurrent().getName() + " Desktop"),
                     new SimpleStringProperty("Version " + AppProperties.get().getVersion() + " ("
@@ -56,31 +58,31 @@ public class AboutCategory extends AppPrefsCategory {
                     "logo/logo.png");
         });
 
-        title.styleClass(Styles.TEXT_BOLD);
+        title.style(Styles.TEXT_BOLD);
 
         var section = new OptionsBuilder()
-                .addComp(Comp.vspacer(40))
+                .addComp(RegionBuilder.vspacer(40))
                 .addComp(title, null)
-                .addComp(Comp.vspacer(10))
+                .addComp(RegionBuilder.vspacer(10))
                 .name("build")
                 .addComp(
                         new LabelComp(AppProperties.get().getBuild())
-                                .descriptor(
-                                        d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                .describe(
+                                        d -> d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .name("distribution")
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString())
-                        .descriptor(d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)))
+                        .describe(d -> d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)))
                 .name("virtualMachine")
                 .addComp(
                         new LabelComp(System.getProperty("java.vm.vendor") + " "
                                         + System.getProperty("java.vm.name")
                                         + " "
                                         + System.getProperty("java.vm.version"))
-                                .descriptor(
-                                        d -> d.focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                .describe(
+                                        d -> d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .buildComp();
-        return section.styleClass("properties-comp");
+        return section.style("properties-comp");
     }
 }

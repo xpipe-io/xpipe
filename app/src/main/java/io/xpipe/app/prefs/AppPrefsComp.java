@@ -1,7 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.platform.PlatformThread;
@@ -15,7 +16,7 @@ import javafx.scene.layout.*;
 
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
-public class AppPrefsComp extends SimpleComp {
+public class AppPrefsComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
@@ -25,16 +26,16 @@ public class AppPrefsComp extends SimpleComp {
         var boxComp = new ListBoxViewComp<>(FXCollections.observableArrayList(categories), FXCollections.observableArrayList(categories), appPrefsCategory -> {
             var r = appPrefsCategory
                     .create()
-                    .styleClass("prefs-container")
-                    .styleClass(appPrefsCategory.getId());
+                    .style("prefs-container")
+                    .style(appPrefsCategory.getId());
             return r;
         }, false);
         boxComp.apply(struc -> {
-            struc.get().getContent().getStyleClass().add("prefs-box");
+            struc.getContent().getStyleClass().add("prefs-box");
         });
         boxComp.maxWidth(850);
         boxComp.setVisibilityControl(true);
-        var box = boxComp.createRegion();
+        var box = boxComp.build();
 
         var pane = new GraphicDecorationStackPane();
         pane.getChildren().add(box);
@@ -87,7 +88,7 @@ public class AppPrefsComp extends SimpleComp {
         scrollPane.setFitToWidth(true);
         HBox.setHgrow(scrollPane, Priority.ALWAYS);
 
-        var sidebar = new AppPrefsSidebarComp().createRegion();
+        var sidebar = new AppPrefsSidebarComp().build();
         sidebar.setMinWidth(260);
         sidebar.setPrefWidth(260);
         sidebar.setMaxWidth(260);

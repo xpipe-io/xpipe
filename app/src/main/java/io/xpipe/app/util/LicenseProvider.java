@@ -1,10 +1,12 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.ExtensionException;
 import io.xpipe.core.ModuleLayerLoader;
 
 import javafx.beans.value.ObservableValue;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ServiceLoader;
 
@@ -34,7 +36,7 @@ public abstract class LicenseProvider {
 
     public abstract void init();
 
-    public abstract Comp<?> overviewPage();
+    public abstract BaseRegionBuilder<?,?> overviewPage();
 
     public abstract boolean hasPaidLicense();
 

@@ -1,8 +1,10 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
+
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.util.ThreadHelper;
@@ -26,11 +28,11 @@ public class StoreSectionComp extends StoreSectionBaseComp {
     }
 
     @Override
-    public CompStructure<VBox> createBase() {
+    public VBox createSimple() {
         var entryButton = StoreEntryComp.customSection(section);
         entryButton.hgrow();
         entryButton.apply(struc -> {
-            struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (section.getWrapper().getRenaming().get()) {
                     return;
                 }
@@ -41,7 +43,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                 }
                 if (event.getCode() == KeyCode.RIGHT) {
                     var ref = (VBox)
-                            ((HBox) struc.get().getParent()).getChildren().getFirst();
+                            ((HBox) struc.getParent()).getChildren().getFirst();
                     if (entryButton.isFullSize()) {
                         var btn = (Button) ref.getChildren().getFirst();
                         btn.fire();
@@ -57,8 +59,8 @@ public class StoreSectionComp extends StoreSectionBaseComp {
             });
         });
         quickAccessButton.vgrow();
-        quickAccessButton.descriptor(d -> d.nameKey("quickAccess")
-                .focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
+        quickAccessButton.describe(d -> d.nameKey("quickAccess")
+                .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
                 .shortcut(new KeyCodeCombination(KeyCode.RIGHT)));
 
         var expandButton = createExpandButton(
@@ -66,17 +68,17 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                 30,
                 section.getWrapper().getExpanded());
         expandButton.vgrow();
-        expandButton.descriptor(d -> d.nameKey("expand")
-                .focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
+        expandButton.describe(d -> d.nameKey("expand")
+                .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
                 .shortcut(new KeyCodeCombination(KeyCode.SPACE)));
-        var buttonList = new ArrayList<Comp<?>>();
+        var buttonList = new ArrayList<BaseRegionBuilder<?,?>>();
         if (entryButton.isFullSize()) {
             buttonList.add(quickAccessButton);
         }
         buttonList.add(expandButton);
         var buttons = new VerticalComp(buttonList);
         var topEntryList = new HorizontalComp(List.of(buttons, entryButton));
-        topEntryList.apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+        topEntryList.apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
         topEntryList.minHeight(entryButton.getHeight());
         topEntryList.maxHeight(entryButton.getHeight());
         topEntryList.prefHeight(entryButton.getHeight());
@@ -85,14 +87,14 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
 
         var full = new VerticalComp(
-                List.of(topEntryList, Comp.hseparator().hide(Bindings.not(effectiveExpanded)), content));
-        full.styleClass("store-entry-section-comp");
+                List.of(topEntryList, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));
+        full.style("store-entry-section-comp");
         full.apply(struc -> {
-            struc.get().setFillWidth(true);
-            var hbox = ((HBox) struc.get().getChildren().getFirst());
-            addPseudoClassListeners(struc.get(), section.getWrapper().getExpanded());
-            addVisibilityListeners(struc.get(), hbox);
+            struc.setFillWidth(true);
+            var hbox = ((HBox) struc.getChildren().getFirst());
+            addPseudoClassListeners(struc, section.getWrapper().getExpanded());
+            addVisibilityListeners(struc, hbox);
         });
-        return full.createStructure();
+        return full.build();
     }
 }

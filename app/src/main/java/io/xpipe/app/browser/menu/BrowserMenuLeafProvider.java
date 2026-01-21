@@ -6,7 +6,7 @@ import io.xpipe.app.browser.action.BrowserActionProvider;
 import io.xpipe.app.browser.action.BrowserActionProviders;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
-import io.xpipe.app.comp.CompDescriptor;
+import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -73,7 +73,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
             }
             event.consume();
         });
-        CompDescriptor.builder().name(name).shortcut(getShortcut()).build().apply(b);
+        RegionDescriptor.builder().name(name).shortcut(getShortcut()).build().apply(b);
         var graphic = getIcon();
         if (graphic != null) {
             b.setGraphic(graphic.createGraphicNode());

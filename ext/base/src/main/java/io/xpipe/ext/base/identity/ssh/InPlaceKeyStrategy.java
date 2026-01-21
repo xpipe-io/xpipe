@@ -62,14 +62,14 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .build()
                 .build();
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get()
+            struc
                     .promptTextProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
                                 return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
                             },
                             AppI18n.activeLanguage()));
-            struc.get().setEditable(false);
+            struc.setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     var generated = ProcessControlProvider.get()
@@ -78,20 +78,20 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         publicKey.set(generated);
                     }
                 })
-                .descriptor(d -> d.nameKey("generatePublicKey"))
+                .describe(d -> d.nameKey("generatePublicKey"))
                 .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyText(publicKey.get());
                 })
                 .disable(publicKey.isNull())
-                .descriptor(d -> d.nameKey("copyPublicKey"));
+                .describe(d -> d.nameKey("copyPublicKey"));
 
         var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);
 
         return options.nameAndDescription("inPlaceKeyText")
                 .addComp(
-                        new TextAreaComp(key).apply(struc -> {
+                        new TextAreaComp(key).applyStructure(struc -> {
                             struc.getTextArea()
                                     .setPromptText(
                                             """

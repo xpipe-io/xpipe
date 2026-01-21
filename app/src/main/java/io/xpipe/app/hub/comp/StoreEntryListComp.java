@@ -1,7 +1,8 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
 import io.xpipe.app.comp.base.VerticalComp;
@@ -16,13 +17,15 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class StoreEntryListComp extends SimpleComp {
+public class StoreEntryListComp extends SimpleRegionBuilder {
 
-    private Comp<?> createList() {
+    private BaseRegionBuilder<?,?> createList() {
         var shown = StoreViewState.get()
                 .getCurrentTopLevelSection()
                 .getShownChildren()
@@ -43,29 +46,29 @@ public class StoreEntryListComp extends SimpleComp {
         content.apply(struc -> {
             // Reset scroll
             StoreViewState.get().getActiveCategory().addListener((observable, oldValue, newValue) -> {
-                struc.get().setVvalue(0);
+                struc.setVvalue(0);
             });
 
             // Reset scroll
             AppLayoutModel.get().getSelected().addListener((observable, oldValue, newValue) -> {
-                struc.get().setVvalue(0);
+                struc.setVvalue(0);
             });
 
             // Reset scroll
             StoreViewState.get().getFilterString().addListener((observable, oldValue, newValue) -> {
-                struc.get().setVvalue(0);
+                struc.setVvalue(0);
             });
 
             AppPrefs.get().condenseConnectionDisplay().subscribe(dense -> {
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("dense"), dense);
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("dense"), dense);
             });
         });
-        content.styleClass("store-list-comp");
+        content.style("store-list-comp");
         content.vgrow();
 
         var statusBar = new StoreEntryListBatchBarComp();
         statusBar.apply(struc -> {
-            VBox.setMargin(struc.get(), new Insets(3, 6, 4, 2));
+            VBox.setMargin(struc, new Insets(3, 6, 4, 2));
         });
         statusBar.hide(StoreViewState.get().getBatchMode().not());
         return new VerticalComp(List.of(content, statusBar));
@@ -161,7 +164,7 @@ public class StoreEntryListComp extends SimpleComp {
                         .getCurrentTopLevelSection()
                         .getShownChildren()
                         .getList());
-        var map = new LinkedHashMap<Comp<?>, ObservableValue<Boolean>>();
+        var map = new LinkedHashMap<BaseRegionBuilder<?,?>, ObservableValue<Boolean>>();
         map.put(
                 new StoreNotFoundComp(),
                 Bindings.and(
@@ -177,6 +180,6 @@ public class StoreEntryListComp extends SimpleComp {
         map.put(new StoreScriptSourcesIntroComp(), showScriptSourcesIntro);
         map.put(new StoreIdentitiesIntroComp(), showIdentitiesIntro);
 
-        return new MultiContentComp(false, map, false).createRegion();
+        return new MultiContentComp(false, map, false).build();
     }
 }

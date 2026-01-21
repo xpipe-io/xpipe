@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.ShellStoreState;
 
@@ -16,7 +17,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.StackedFontIcon;
 
 @Getter
-public class SystemStateComp extends SimpleComp {
+public class SystemStateComp extends SimpleRegionBuilder {
 
     private final ObservableValue<State> state;
 

@@ -1,7 +1,8 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.RegionDescriptor;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.platform.InputHelper;
 
@@ -9,7 +10,7 @@ import javafx.scene.layout.Region;
 
 import java.util.function.Supplier;
 
-public class BrowserQuickAccessButtonComp extends SimpleComp {
+public class BrowserQuickAccessButtonComp extends SimpleRegionBuilder {
 
     private final Supplier<BrowserEntry> base;
     private final BrowserFileSystemTabModel model;
@@ -23,22 +24,22 @@ public class BrowserQuickAccessButtonComp extends SimpleComp {
     protected Region createSimple() {
         var cm = new BrowserQuickAccessContextMenu(base, model);
         var button = new IconButtonComp("mdi2c-chevron-double-right");
-        button.descriptor(d -> d.nameKey("quickAccess").focusTraversal(CompDescriptor.FocusTraversal.DISABLED));
+        button.describe(d -> d.nameKey("quickAccess").focusTraversal(RegionDescriptor.FocusTraversal.DISABLED));
         button.apply(struc -> {
-            struc.get().setOnAction(event -> {
+            struc.setOnAction(event -> {
                 if (!cm.isShowing()) {
-                    cm.showMenu(struc.get());
+                    cm.showMenu(struc);
                 } else {
                     cm.hide();
                 }
                 event.consume();
             });
-            InputHelper.onRight(struc.get(), false, keyEvent -> {
-                cm.showMenu(struc.get());
+            InputHelper.onRight(struc, false, keyEvent -> {
+                cm.showMenu(struc);
                 keyEvent.consume();
             });
         });
-        button.styleClass("quick-access-button");
-        return button.createRegion();
+        button.style("quick-access-button");
+        return button.build();
     }
 }

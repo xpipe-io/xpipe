@@ -1,13 +1,14 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
 
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;
 
 @Getter
-public abstract class ModalOverlayContentComp extends SimpleComp {
+public abstract class ModalOverlayContentComp extends SimpleRegionBuilder {
 
     protected ModalOverlay modalOverlay;
 

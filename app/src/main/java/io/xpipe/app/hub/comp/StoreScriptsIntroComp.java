@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.core.AppCache;
@@ -11,7 +12,7 @@ import javafx.scene.layout.Region;
 
 import java.util.List;
 
-public class StoreScriptsIntroComp extends SimpleComp {
+public class StoreScriptsIntroComp extends SimpleRegionBuilder {
 
     private final BooleanProperty show;
 
@@ -32,6 +33,6 @@ public class StoreScriptsIntroComp extends SimpleComp {
         });
 
         var list = new IntroListComp(List.of(top, bottom));
-        return list.createRegion();
+        return list.build();
     }
 }

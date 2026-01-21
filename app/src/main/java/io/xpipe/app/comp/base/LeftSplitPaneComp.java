@@ -1,8 +1,10 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
 
+
+
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -10,26 +12,28 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 
 import lombok.Value;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
+public class LeftSplitPaneComp extends RegionStructureBuilder<SplitPane, LeftSplitPaneComp.Structure> {
 
-    private final Comp<?> left;
-    private final Comp<?> center;
+    private final BaseRegionBuilder<?,?> left;
+    private final BaseRegionBuilder<?,?> center;
     private Double initialWidth;
     private Consumer<Double> onDividerChange;
 
-    public LeftSplitPaneComp(Comp<?> left, Comp<?> center) {
+    public LeftSplitPaneComp(BaseRegionBuilder<?,?> left, BaseRegionBuilder<?,?> center) {
         this.left = left;
         this.center = center;
     }
 
     @Override
     public Structure createBase() {
-        var c = center.createRegion();
-        var sidebar = left.createRegion();
+        var c = center.build();
+        var sidebar = left.build();
         if (initialWidth != null) {
             sidebar.setPrefWidth(initialWidth);
         }
@@ -105,7 +109,7 @@ public class LeftSplitPaneComp extends Comp<LeftSplitPaneComp.Structure> {
     }
 
     @Value
-    public static class Structure implements CompStructure<SplitPane> {
+    public static class Structure implements RegionStructure<SplitPane> {
 
         Region left;
         Region center;

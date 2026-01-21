@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -27,7 +28,7 @@ import lombok.Getter;
 import static atlantafx.base.theme.Styles.ACCENT;
 import static atlantafx.base.theme.Styles.BUTTON_OUTLINED;
 
-public class ErrorHandlerComp extends SimpleComp {
+public class ErrorHandlerComp extends SimpleRegionBuilder {
 
     private final ErrorEvent event;
     private final Runnable closeDialogAction;
@@ -67,7 +68,7 @@ public class ErrorHandlerComp extends SimpleComp {
         });
         b.disable(busy);
         b.maxWidth(2000);
-        return b.createRegion();
+        return b.build();
     }
 
     private Region createTop() {

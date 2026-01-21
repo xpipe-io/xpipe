@@ -1,6 +1,7 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -40,7 +41,7 @@ public class PasswordManagerCommand implements PasswordManager {
         var script = new SimpleObjectProperty<>(
                 property.getValue() != null ? property.getValue().getScript() : null);
 
-        var templates = Comp.of(() -> {
+        var templates = RegionBuilder.of(() -> {
             var cb = MenuHelper.createMenuButton();
             AppFontSizes.base(cb);
             cb.textProperty().bind(BindingsHelper.flatMap(template, t -> {

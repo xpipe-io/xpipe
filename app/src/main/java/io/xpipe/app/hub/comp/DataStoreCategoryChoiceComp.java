@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -13,7 +14,7 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-public class DataStoreCategoryChoiceComp extends SimpleComp {
+public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
 
     private final StoreCategoryWrapper root;
     private final Property<StoreCategoryWrapper> external;

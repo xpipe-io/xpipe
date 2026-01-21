@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -15,7 +16,7 @@ import javafx.scene.control.Label;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class LabelComp extends Comp<CompStructure<Label>> {
+public class LabelComp extends RegionBuilder<Label> {
 
     private final ObservableValue<String> text;
     private final ObservableValue<LabelGraphic> graphic;
@@ -33,7 +34,7 @@ public class LabelComp extends Comp<CompStructure<Label>> {
     }
 
     @Override
-    public CompStructure<Label> createBase() {
+    public Label createSimple() {
         var label = new Label();
         text.subscribe(t -> {
             PlatformThread.runLaterIfNeeded(() -> label.setText(t));
@@ -42,6 +43,6 @@ public class LabelComp extends Comp<CompStructure<Label>> {
             PlatformThread.runLaterIfNeeded(() -> label.setGraphic(t != null ? t.createGraphicNode() : null));
         });
         label.setAlignment(Pos.CENTER);
-        return new SimpleCompStructure<>(label);
+        return label;
     }
 }

@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 
@@ -16,7 +17,7 @@ public class UpdatesCategory extends AppPrefsCategory {
         return new LabelGraphic.IconGraphic("mdi2d-download-box-outline");
     }
 
-    public Comp<?> create() {
+    public BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
         builder.addTitle("updates")

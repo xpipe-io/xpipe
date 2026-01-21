@@ -65,7 +65,7 @@ public class PassboltPasswordManager implements PasswordManager {
                 .addComp(
                         new TextFieldComp(serverUrl)
                                 .apply(struc -> {
-                                    struc.get().setPromptText("https://cloud.passbolt.com/myorg");
+                                    struc.setPromptText("https://cloud.passbolt.com/myorg");
                                 })
                                 .maxWidth(600),
                         serverUrl)

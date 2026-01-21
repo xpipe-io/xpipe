@@ -1,7 +1,9 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.CountComp;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
@@ -27,11 +29,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import atlantafx.base.theme.Styles;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
 
-public class StoreEntryListOverviewComp extends SimpleComp {
+public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
     private final ObservableSubscriber filterTrigger;
 
@@ -69,18 +73,18 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                         StoreViewState.get().getActiveCategory());
         var count = new CountComp(allCount, allCount, Function.identity());
 
-        var c = count.createRegion();
+        var c = count.build();
         var sep = new Separator(Orientation.VERTICAL);
         sep.setPadding(new Insets(6, 3, 4, 3));
         var topBar = new HBox(
                 label,
                 c,
-                Comp.hspacer().createRegion(),
-                createIndexSortButton().createRegion(),
+                RegionBuilder.hspacer().build(),
+                createIndexSortButton().build(),
                 sep,
-                createDateSortButton().createRegion(),
-                Comp.hspacer(2).createRegion(),
-                createAlphabeticalSortButton().createRegion());
+                createDateSortButton().build(),
+                RegionBuilder.hspacer(2).build(),
+                createAlphabeticalSortButton().build());
         if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.xxxl(label);
             AppFontSizes.xxxl(c);
@@ -94,12 +98,12 @@ public class StoreEntryListOverviewComp extends SimpleComp {
     }
 
     private Region createGroupListFilter() {
-        var filter = new FilterComp(StoreViewState.get().getFilterString()).createRegion();
+        var filter = new FilterComp(StoreViewState.get().getFilterString()).build();
         filterTrigger.subscribe(() -> {
             filter.requestFocus();
         });
         var add = createAddButton();
-        var batchMode = createBatchModeButton().createRegion();
+        var batchMode = createBatchModeButton().build();
         var hbox = new HBox(add, filter, batchMode);
         filter.minHeightProperty().bind(add.heightProperty());
         filter.prefHeightProperty().bind(add.heightProperty());
@@ -135,23 +139,23 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         return menu;
     }
 
-    private Comp<?> createBatchModeButton() {
+    private BaseRegionBuilder<?,?> createBatchModeButton() {
         var batchMode = StoreViewState.get().getBatchMode();
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
         });
-        b.descriptor(d -> d.nameKey("batchMode"));
-        b.styleClass("batch-mode-button");
+        b.describe(d -> d.nameKey("batchMode"));
+        b.style("batch-mode-button");
         b.apply(struc -> {
             batchMode.subscribe(a -> {
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), a);
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("active"), a);
             });
-            struc.get().getStyleClass().remove(Styles.FLAT);
+            struc.getStyleClass().remove(Styles.FLAT);
         });
         return b;
     }
 
-    private Comp<?> createIndexSortButton() {
+    private BaseRegionBuilder<?,?> createIndexSortButton() {
         var sortMode = StoreViewState.get().getGlobalSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
@@ -172,7 +176,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         button.apply(struc -> {
-            struc.get()
+            struc
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
@@ -184,11 +188,11 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        button.descriptor(d -> d.nameKey("sortIndexed"));
+        button.describe(d -> d.nameKey("sortIndexed"));
         return button;
     }
 
-    private Comp<?> createAlphabeticalSortButton() {
+    private BaseRegionBuilder<?,?> createAlphabeticalSortButton() {
         var sortMode = StoreViewState.get().getTieSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
@@ -212,7 +216,6 @@ public class StoreEntryListOverviewComp extends SimpleComp {
         });
         alphabetical.apply(alphabeticalR -> {
             alphabeticalR
-                    .get()
                     .opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
@@ -224,11 +227,11 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        alphabetical.descriptor(d -> d.nameKey("sortAlphabetical"));
+        alphabetical.describe(d -> d.nameKey("sortAlphabetical"));
         return alphabetical;
     }
 
-    private Comp<?> createDateSortButton() {
+    private BaseRegionBuilder<?,?> createDateSortButton() {
         var sortMode = StoreViewState.get().getTieSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
@@ -251,8 +254,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
             }
         });
         date.apply(dateR -> {
-            dateR.get()
-                    .opacityProperty()
+            dateR.opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 if (sortMode.getValue() == StoreSectionSortMode.DATE_ASC
@@ -263,7 +265,7 @@ public class StoreEntryListOverviewComp extends SimpleComp {
                             },
                             sortMode));
         });
-        date.descriptor(d -> d.nameKey("sortLastUsed"));
+        date.describe(d -> d.nameKey("sortLastUsed"));
         return date;
     }
 

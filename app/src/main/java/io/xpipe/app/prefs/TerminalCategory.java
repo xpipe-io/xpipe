@@ -1,6 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.PrefsChoiceValue;
@@ -43,7 +45,7 @@ public class TerminalCategory extends AppPrefsCategory {
                 prefs.terminalType, PrefsChoiceValue.getSupported(ExternalTerminalType.class), false);
         c.maxWidth(1000);
         c.apply(struc -> {
-            struc.get().setCellFactory(param -> {
+            struc.setCellFactory(param -> {
                 return new ListCell<>() {
 
                     {
@@ -98,8 +100,8 @@ public class TerminalCategory extends AppPrefsCategory {
         visit.visible(visitVisible);
 
         var h = new HorizontalComp(List.of(c.hgrow(), visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
+            struc.setAlignment(Pos.CENTER_LEFT);
+            struc.setSpacing(10);
         });
         h.maxWidth(600);
 
@@ -122,7 +124,7 @@ public class TerminalCategory extends AppPrefsCategory {
                     });
                 })
                 .padding(new Insets(6, 11, 6, 5))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
         var builder = new OptionsBuilder().pref(prefs.terminalType);
         if (!docsLink) {
@@ -131,7 +133,7 @@ public class TerminalCategory extends AppPrefsCategory {
         builder.addComp(h, prefs.terminalType);
         builder.pref(prefs.customTerminalCommand)
                 .addComp(new TextFieldComp(prefs.customTerminalCommand, true)
-                        .apply(struc -> struc.get().setPromptText("myterminal -e $CMD"))
+                        .apply(struc -> struc.setPromptText("myterminal -e $CMD"))
                         .hide(prefs.terminalType.isNotEqualTo(ExternalTerminalType.CUSTOM)))
                 .addComp(terminalTest);
         return builder;
@@ -148,7 +150,7 @@ public class TerminalCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
             var feature = LicenseProvider.get().getFeature("logging");
@@ -240,14 +242,14 @@ public class TerminalCategory extends AppPrefsCategory {
                             : null);
         });
         var proxyChoice = new DelayedInitComp(
-                Comp.of(() -> {
+                RegionBuilder.of(() -> {
                     var comp = new StoreChoiceComp<>(
                             null,
                             ref,
                             ShellStore.class,
                             r -> r.get().equals(DataStorage.get().local()) || TerminalProxyManager.canUseAsProxy(r),
                             StoreViewState.get().getAllConnectionsCategory());
-                    return comp.createRegion();
+                    return comp.build();
                 }),
                 () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
         proxyChoice.maxWidth(getCompWidth());
@@ -301,7 +303,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             },
                             prefs.terminalMultiplexer));
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     return hbox;
@@ -345,7 +347,7 @@ public class TerminalCategory extends AppPrefsCategory {
                             },
                             prefs.terminalPrompt));
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     return hbox;

@@ -1,8 +1,10 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -18,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
+public class IntComboFieldComp extends RegionBuilder<ComboBox<String>> {
 
     Property<Integer> value;
     List<Integer> predefined;
@@ -31,7 +33,7 @@ public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
     }
 
     @Override
-    public CompStructure<ComboBox<String>> createBase() {
+    public ComboBox<String> createSimple() {
         var text = MenuHelper.<String>createComboBox();
         text.setEditable(true);
         text.setValue(value.getValue() != null ? value.getValue().toString() : null);
@@ -76,6 +78,6 @@ public class IntComboFieldComp extends Comp<CompStructure<ComboBox<String>>> {
             value.setValue(intValue);
         });
 
-        return new SimpleCompStructure<>(text);
+        return text;
     }
 }

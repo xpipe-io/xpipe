@@ -1,6 +1,8 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 
 import javafx.beans.binding.Bindings;
@@ -9,10 +11,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
 
-    public DenseStoreEntryComp(StoreSection section, Comp<?> content) {
+    public DenseStoreEntryComp(StoreSection section, BaseRegionBuilder<?,?> content) {
         super(section, content);
     }
 
@@ -23,8 +27,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
 
         var state = getWrapper().getEntry().getProvider() != null
                 ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
-                : Comp.empty();
-        information.setGraphic(state.createRegion());
+                : RegionBuilder.empty();
+        information.setGraphic(state.build());
 
         var summary = getWrapper().getShownSummary();
         if (getWrapper().getEntry().getProvider() != null) {
@@ -69,20 +73,20 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         var grid = new GridPane();
         grid.setHgap(8);
 
-        var tags = createTags().createRegion();
-        var index = createOrderIndex().createRegion();
-        var name = createName().createRegion();
+        var tags = createTags().build();
+        var index = createOrderIndex().build();
+        var name = createName().build();
         name.maxWidthProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
                             return grid.getWidth() / 2.5;
                         },
                         grid.widthProperty()));
-        var notes = new StoreNotesComp(getWrapper()).createRegion();
-        var userIcon = createUserIcon().createRegion();
-        var pinIcon = createPinIcon().createRegion();
+        var notes = new StoreNotesComp(getWrapper()).build();
+        var userIcon = createUserIcon().build();
+        var pinIcon = createPinIcon().build();
 
-        var selection = createBatchSelection().createRegion();
+        var selection = createBatchSelection().build();
         grid.add(selection, 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(25));
         StoreViewState.get().getBatchMode().subscribe(batch -> {
@@ -93,7 +97,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
             }
         });
 
-        var storeIcon = createIcon(28, 24, AppFontSizes::xxxl);
+        var storeIcon = createIcon(28, 24, AppFontSizes::xxxl).build();
         GridPane.setHalignment(storeIcon, HPos.CENTER);
         grid.add(storeIcon, 1, 0);
         grid.getColumnConstraints().add(new ColumnConstraints(34));
@@ -111,7 +115,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         nameCC.setHgrow(Priority.ALWAYS);
         grid.getColumnConstraints().addAll(nameCC);
 
-        var active = new StoreActiveComp(getWrapper()).createRegion();
+        var active = new StoreActiveComp(getWrapper()).build();
         var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
         getWrapper().getSessionActive().subscribe(aBoolean -> {
             if (!aBoolean) {
@@ -128,7 +132,7 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.addRow(0, info);
         grid.getColumnConstraints().addAll(infoCC, custom);
 
-        var cr = content != null ? content.createRegion() : new Region();
+        var cr = content != null ? content.build() : new Region();
         cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -13,6 +14,8 @@ import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class StoreSection {
         }
     }
 
-    public static Comp<?> customSection(StoreSection e) {
+    public static BaseRegionBuilder<?,?> customSection(StoreSection e) {
         return new StoreSectionComp(e);
     }
 

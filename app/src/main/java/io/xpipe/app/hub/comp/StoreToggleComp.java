@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ToggleSwitchComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
@@ -23,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @AllArgsConstructor
-public class StoreToggleComp extends SimpleComp {
+public class StoreToggleComp extends SimpleRegionBuilder {
 
     private final String nameKey;
     private final ObservableValue<LabelGraphic> graphic;
@@ -86,7 +87,7 @@ public class StoreToggleComp extends SimpleComp {
                         StoreViewState.get().triggerStoreListVisibilityUpdate();
                     });
                 });
-        t.descriptor(d -> d.nameKey("showNonRunningChildren"));
+        t.describe(d -> d.nameKey("showNonRunningChildren"));
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });
@@ -110,12 +111,12 @@ public class StoreToggleComp extends SimpleComp {
         var t = new ToggleSwitchComp(value, AppI18n.observable(nameKey), graphic)
                 .visible(visible)
                 .disable(disable);
-        t.descriptor(d -> d.nameKey("toggleEnabled"));
+        t.describe(d -> d.nameKey("toggleEnabled"));
         value.addListener((observable, oldValue, newValue) -> {
             ThreadHelper.runAsync(() -> {
                 onChange.accept(newValue);
             });
         });
-        return t.createRegion();
+        return t.build();
     }
 }

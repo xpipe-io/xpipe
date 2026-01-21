@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -157,7 +158,7 @@ public class StoreCreationDialog {
         var modal = ModalOverlay.of(nameKey, comp);
         var queueEntry = StoreCreationQueueEntry.of(model, modal);
         comp.apply(struc -> {
-            struc.get().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            struc.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     var changed = model.hasBeenModified();
                     if (!changed) {
@@ -181,7 +182,7 @@ public class StoreCreationDialog {
             return model.getBusy().get() ? AppI18n.get("testingConnection") : null;
         }, model.getBusy(), AppI18n.activeLanguage()));
         modal.addButtonBarComp(loadingLabel);
-        modal.addButtonBarComp(Comp.hspacer());
+        modal.addButtonBarComp(RegionBuilder.hspacer());
         modal.addButton(new ModalButton(
                         "docs",
                         () -> {
@@ -223,7 +224,7 @@ public class StoreCreationDialog {
                 false,
                 true)).augment(button -> {
                     button.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-                        return model.getBusy().get() ? new LoadingIconComp(model.getBusy(), AppFontSizes::base).styleClass("store-creator-busy").createRegion() : null;
+                        return model.getBusy().get() ? new LoadingIconComp(model.getBusy(), AppFontSizes::base).style("store-creator-busy").build() : null;
                     }, PlatformThread.sync(model.getBusy())));
                     button.textProperty().bind(Bindings.createStringBinding(() -> {
                         return !model.getBusy().get() ? AppI18n.get("finish") : null;

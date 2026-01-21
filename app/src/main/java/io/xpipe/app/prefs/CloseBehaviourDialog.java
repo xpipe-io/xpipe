@@ -1,6 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -35,9 +36,9 @@ public class CloseBehaviourDialog {
                 new SimpleObjectProperty<>(AppPrefs.get().closeBehaviour().getValue());
         var label = new LabelComp(AppI18n.observable("closeBehaviourAlertTitleHeader"));
         label.apply(struc -> {
-            struc.get().setWrapText(true);
+            struc.setWrapText(true);
         });
-        var content = new VerticalComp(List.of(label, Comp.of(() -> {
+        var content = new VerticalComp(List.of(label, RegionBuilder.of(() -> {
                     ToggleGroup group = new ToggleGroup();
                     var vb = new VBox();
                     vb.setSpacing(7);

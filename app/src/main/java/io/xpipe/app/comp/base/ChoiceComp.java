@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -24,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
+public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
 
     Property<T> value;
     ObservableValue<Map<T, ObservableValue<String>>> range;
@@ -45,7 +46,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
     }
 
     @Override
-    public CompStructure<ComboBox<T>> createBase() {
+    public ComboBox<T> createSimple() {
         var cb = MenuHelper.<T>createComboBox();
         cb.setConverter(new StringConverter<>() {
             @Override
@@ -85,6 +86,6 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
         cb.getStyleClass().add("choice-comp");
         cb.setMaxWidth(10000);
-        return new SimpleCompStructure<>(cb);
+        return cb;
     }
 }

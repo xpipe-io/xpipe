@@ -38,7 +38,7 @@ public class WorkspaceCreationDialog {
                 .addString(path)
                 .buildComp()
                 .prefWidth(500)
-                .apply(struc -> AppFontSizes.xs(struc.get()));
+                .apply(struc -> AppFontSizes.xs(struc));
         var modal = ModalOverlay.of("workspaceCreationAlertTitle", content);
         modal.addButton(ModalButton.ok(() -> {
             ThreadHelper.runAsync(() -> {

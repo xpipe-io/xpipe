@@ -1,6 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class ListSelectorComp<T> extends SimpleComp {
+public class ListSelectorComp<T> extends SimpleRegionBuilder {
 
     ObservableList<T> values;
     Function<T, String> toString;

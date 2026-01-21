@@ -92,14 +92,14 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .build();
 
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc.get()
+            struc
                     .promptTextProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
                                 return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
                             },
                             AppI18n.activeLanguage()));
-            struc.get().setEditable(false);
+            struc.setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
@@ -128,13 +128,13 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                         }
                     });
                 })
-                .descriptor(d -> d.nameKey("generatePublicKey"))
+                .describe(d -> d.nameKey("generatePublicKey"))
                 .disable(keyPath.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyText(publicKey.get());
                 })
                 .disable(publicKey.isNull())
-                .descriptor(d -> d.nameKey("copyPublicKey"));
+                .describe(d -> d.nameKey("copyPublicKey"));
 
         var publicKeyBox = new InputGroupComp(List.of(publicKeyField, copyButton, generateButton));
         publicKeyBox.setMainReference(publicKeyField);

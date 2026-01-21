@@ -3,8 +3,10 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserTransferComp;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
@@ -37,7 +39,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-public class BrowserFullSessionComp extends SimpleComp {
+public class BrowserFullSessionComp extends SimpleRegionBuilder {
 
     private final BrowserFullSessionModel model;
 
@@ -48,37 +50,37 @@ public class BrowserFullSessionComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var filterTrigger = new ObservableSubscriber();
-        var left = Comp.of(() -> createLeftSide(filterTrigger));
+        var left = RegionBuilder.of(() -> createLeftSide(filterTrigger));
 
         var leftSplit = new SimpleDoubleProperty();
         var rightSplit = new SimpleDoubleProperty();
         var tabs = new BrowserSessionTabsComp(model, leftSplit, rightSplit);
         tabs.apply(struc -> {
-            struc.get().setViewOrder(1);
-            struc.get().setPickOnBounds(false);
-            AnchorPane.setTopAnchor(struc.get(), 0.0);
-            AnchorPane.setBottomAnchor(struc.get(), 0.0);
-            AnchorPane.setLeftAnchor(struc.get(), 0.0);
-            AnchorPane.setRightAnchor(struc.get(), 0.0);
+            struc.setViewOrder(1);
+            struc.setPickOnBounds(false);
+            AnchorPane.setTopAnchor(struc, 0.0);
+            AnchorPane.setBottomAnchor(struc, 0.0);
+            AnchorPane.setLeftAnchor(struc, 0.0);
+            AnchorPane.setRightAnchor(struc, 0.0);
         });
 
         left.apply(struc -> {
-            struc.get()
+            struc
                     .paddingProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
         var loadingIndicator = new LoadingIconComp(model.getBusy(), AppFontSizes::xxxl)
                 .apply(struc -> {
-                    AnchorPane.setTopAnchor(struc.get(), 0.0);
-                    AnchorPane.setRightAnchor(struc.get(), 0.0);
+                    AnchorPane.setTopAnchor(struc, 0.0);
+                    AnchorPane.setRightAnchor(struc, 0.0);
                 })
-                .styleClass("tab-loading-indicator");
+                .style("tab-loading-indicator");
 
         var pinnedStack = createSplitStack(rightSplit, tabs);
 
         var loadingStack = new AnchorComp(List.of(tabs, pinnedStack, loadingIndicator));
-        loadingStack.apply(struc -> struc.get().setPickOnBounds(false));
+        loadingStack.apply(struc -> struc.setPickOnBounds(false));
         var delayedStack = new DelayedInitComp(
                 left, () -> StoreViewState.get() != null && StoreViewState.get().isInitialized());
         delayedStack.hide(AppMainWindow.get().getStage().widthProperty().lessThan(1000));
@@ -90,34 +92,34 @@ public class BrowserFullSessionComp extends SimpleComp {
                     }
                     leftSplit.set(d);
                 });
-        splitPane.apply(struc -> {
+        splitPane.applyStructure(struc -> {
             struc.getLeft().setMinWidth(200);
             struc.getLeft().setMaxWidth(500);
             struc.get().setPickOnBounds(false);
         });
 
         splitPane.apply(struc -> {
-            struc.get().skinProperty().subscribe(newValue -> {
+            struc.skinProperty().subscribe(newValue -> {
                 if (newValue != null) {
                     Platform.runLater(() -> {
-                        struc.get().getChildrenUnmodifiable().forEach(node -> {
+                        struc.getChildrenUnmodifiable().forEach(node -> {
                             node.setClip(null);
                             node.setPickOnBounds(false);
                         });
-                        struc.get().lookupAll(".split-pane-divider").forEach(node -> node.setViewOrder(-1));
+                        struc.lookupAll(".split-pane-divider").forEach(node -> node.setViewOrder(-1));
                     });
                 }
             });
         });
         splitPane.apply(struc -> {
             InputHelper.onKeyCombination(
-                    struc.get(), new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
+                    struc, new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN), false, keyEvent -> {
                         filterTrigger.trigger();
                         keyEvent.consume();
                     });
         });
-        splitPane.styleClass("browser");
-        var r = splitPane.createRegion();
+        splitPane.style("browser");
+        var r = splitPane.build();
         return r;
     }
 
@@ -162,15 +164,15 @@ public class BrowserFullSessionComp extends SimpleComp {
                 action,
                 category,
                 filter);
-        var bookmarksContainer = new StackComp(List.of(bookmarksList)).styleClass("bookmarks-container");
+        var bookmarksContainer = new StackComp(List.of(bookmarksList)).style("bookmarks-container");
         bookmarksContainer
                 .apply(struc -> {
                     var rec = new Rectangle();
-                    rec.widthProperty().bind(struc.get().widthProperty());
-                    rec.heightProperty().bind(struc.get().heightProperty());
+                    rec.widthProperty().bind(struc.widthProperty());
+                    rec.heightProperty().bind(struc.heightProperty());
                     rec.setArcHeight(11);
                     rec.setArcWidth(11);
-                    struc.get().getChildren().getFirst().setClip(rec);
+                    struc.getChildren().getFirst().setClip(rec);
                 })
                 .vgrow();
         var localDownloadStage = new BrowserTransferComp(model.getLocalTransfersStage())
@@ -187,14 +189,14 @@ public class BrowserFullSessionComp extends SimpleComp {
         localDownloadStage.prefHeight(200);
         localDownloadStage.maxHeight(200);
         var vertical =
-                new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).styleClass("left");
-        return vertical.createRegion();
+                new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).style("left");
+        return vertical.build();
     }
 
     private StackComp createSplitStack(SimpleDoubleProperty rightSplit, BrowserSessionTabsComp tabs) {
         var cache = new HashMap<BrowserSessionTab, Region>();
         var splitStack = new StackComp(List.of());
-        splitStack.apply(struc -> struc.get().setPickOnBounds(false));
+        splitStack.apply(struc -> struc.setPickOnBounds(false));
         splitStack.apply(struc -> {
             model.getEffectiveRightTab().subscribe((newValue) -> {
                 PlatformThread.runLaterIfNeeded(() -> {
@@ -202,39 +204,39 @@ public class BrowserFullSessionComp extends SimpleComp {
                     cache.keySet().removeIf(browserSessionTab -> !all.contains(browserSessionTab));
 
                     if (newValue == null) {
-                        struc.get().getChildren().clear();
+                        struc.getChildren().clear();
                         return;
                     }
 
                     var cached = cache.containsKey(newValue);
                     if (!cached) {
-                        cache.put(newValue, newValue.comp().createRegion());
+                        cache.put(newValue, newValue.comp().build());
                     }
                     var r = cache.get(newValue);
-                    struc.get().getChildren().clear();
-                    struc.get().getChildren().add(r);
+                    struc.getChildren().clear();
+                    struc.getChildren().add(r);
 
-                    struc.get().setMinWidth(rightSplit.get());
-                    struc.get().setPrefWidth(rightSplit.get());
-                    struc.get().setMaxWidth(rightSplit.get());
+                    struc.setMinWidth(rightSplit.get());
+                    struc.setPrefWidth(rightSplit.get());
+                    struc.setMaxWidth(rightSplit.get());
                 });
             });
 
             rightSplit.addListener((observable, oldValue, newValue) -> {
-                struc.get().setMinWidth(newValue.doubleValue());
-                struc.get().setPrefWidth(newValue.doubleValue());
-                struc.get().setMaxWidth(newValue.doubleValue());
+                struc.setMinWidth(newValue.doubleValue());
+                struc.setPrefWidth(newValue.doubleValue());
+                struc.setMaxWidth(newValue.doubleValue());
             });
 
             var clip = new Rectangle();
-            clip.widthProperty().bind(struc.get().widthProperty());
-            clip.heightProperty().bind(struc.get().heightProperty());
-            struc.get().setClip(clip);
+            clip.widthProperty().bind(struc.widthProperty());
+            clip.heightProperty().bind(struc.heightProperty());
+            struc.setClip(clip);
 
-            AnchorPane.setBottomAnchor(struc.get(), 0.0);
-            AnchorPane.setRightAnchor(struc.get(), 0.0);
+            AnchorPane.setBottomAnchor(struc, 0.0);
+            AnchorPane.setRightAnchor(struc, 0.0);
             tabs.getHeaderHeight().subscribe(number -> {
-                AnchorPane.setTopAnchor(struc.get(), number.doubleValue());
+                AnchorPane.setTopAnchor(struc, number.doubleValue());
             });
         });
         return splitStack;

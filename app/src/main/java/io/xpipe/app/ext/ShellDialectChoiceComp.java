@@ -1,6 +1,7 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
-public class ShellDialectChoiceComp extends SimpleComp {
+public class ShellDialectChoiceComp extends SimpleRegionBuilder {
 
     public enum NullHandling {
         NULL_IS_DEFAULT,
@@ -73,9 +74,9 @@ public class ShellDialectChoiceComp extends SimpleComp {
                 setGraphic(
                         item != null
                                 ? PrettyImageHelper.ofFixedSizeSquare("proc:" + ICONS.get(item), 16)
-                                        .createRegion()
+                                        .build()
                                 : PrettyImageHelper.ofFixedSizeSquare("proc:defaultShell_icon.svg", 16)
-                                        .createRegion());
+                                        .build());
             }
         };
         var cb = new ComboBox<ShellDialect>();

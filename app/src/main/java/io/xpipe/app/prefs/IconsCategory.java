@@ -1,7 +1,9 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppFontSizes;
@@ -49,7 +51,7 @@ public class IconsCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?,?> create() {
         return new OptionsBuilder()
                 .addTitle("customIcons")
                 .sub(new OptionsBuilder()
@@ -61,14 +63,14 @@ public class IconsCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private Comp<?> createOverview() {
+    private BaseRegionBuilder<?,?> createOverview() {
         var sources = FXCollections.<SystemIconSource>observableArrayList();
         AppPrefs.get().getIconSources().subscribe((newValue) -> {
             sources.setAll(SystemIconManager.getAllSources());
         });
         var box = new ListBoxViewComp<>(sources, sources, s -> createSourceEntry(s, sources), false);
         box.apply(struc -> {
-            struc.get().minHeightProperty().bind(((Region) struc.get().getContent()).heightProperty());
+            struc.minHeightProperty().bind(((Region) struc.getContent()).heightProperty());
         });
 
         var busy = new SimpleBooleanProperty(false);
@@ -88,7 +90,7 @@ public class IconsCategory extends AppPrefsCategory {
                     var remote = new SimpleStringProperty();
                     var modal = ModalOverlay.of(
                             "repositoryUrl",
-                            Comp.of(() -> {
+                            RegionBuilder.of(() -> {
                                         var creationName = new TextField();
                                         creationName.textProperty().bindBidirectional(remote);
                                         return creationName;
@@ -188,18 +190,18 @@ public class IconsCategory extends AppPrefsCategory {
         addDirectoryButton.maxWidth(2000);
 
         var vbox = new VerticalComp(List.of(
-                Comp.vspacer(10),
+                RegionBuilder.vspacer(10),
                 box,
-                Comp.hseparator(),
+                RegionBuilder.hseparator(),
                 refreshButton,
-                Comp.hseparator(),
+                RegionBuilder.hseparator(),
                 addDirectoryButton,
                 addGitButton));
         vbox.spacing(10);
         return vbox;
     }
 
-    private Comp<?> createSourceEntry(SystemIconSource source, List<SystemIconSource> sources) {
+    private BaseRegionBuilder<?,?> createSourceEntry(SystemIconSource source, List<SystemIconSource> sources) {
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdal-delete_outline"), () -> {
             if (!AppDialog.confirm("iconSourceDeletion")) {
                 return;
@@ -215,9 +217,9 @@ public class IconsCategory extends AppPrefsCategory {
         }
 
         var disabled = AppCache.getNonNull("disabledIconSources", Set.class, () -> Set.<String>of());
-        var enabled = Comp.of(() -> {
+        var enabled = RegionBuilder.of(() -> {
             var cb = new CheckBox();
-            CompDescriptor.builder().nameKey("enabled").build().apply(cb);
+            RegionDescriptor.builder().nameKey("enabled").build().apply(cb);
             cb.setSelected(!disabled.contains(source.getId()));
             cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 var set = new LinkedHashSet<>(
@@ -240,7 +242,7 @@ public class IconsCategory extends AppPrefsCategory {
         });
 
         var buttons = new HorizontalComp(List.of(enabled, delete));
-        buttons.apply(struc -> struc.get().setFillHeight(true));
+        buttons.apply(struc -> struc.setFillHeight(true));
         buttons.spacing(15);
 
         var tile = new TileButtonComp(

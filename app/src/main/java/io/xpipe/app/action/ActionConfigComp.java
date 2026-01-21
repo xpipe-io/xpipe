@@ -1,7 +1,9 @@
 package io.xpipe.app.action;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.hub.action.BatchStoreAction;
@@ -16,8 +18,10 @@ import io.xpipe.app.storage.DataStoreEntryRef;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.scene.layout.Region;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 
-public class ActionConfigComp extends SimpleComp {
+public class ActionConfigComp extends SimpleRegionBuilder {
 
     private final Property<AbstractAction> action;
 
@@ -37,7 +41,7 @@ public class ActionConfigComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private Comp<?> createMultiChooser() {
+    private BaseRegionBuilder<?,?> createMultiChooser() {
         var listProp = new SimpleListProperty<DataStoreEntryRef<DataStore>>(FXCollections.observableArrayList());
         if (action.getValue() instanceof BatchStoreAction<?> ba) {
             listProp.setAll(((BatchStoreAction<DataStore>) ba).getRefs());
@@ -63,7 +67,7 @@ public class ActionConfigComp extends SimpleComp {
     }
 
     @SuppressWarnings("unchecked")
-    private Comp<?> createChooser() {
+    private BaseRegionBuilder<?,?> createChooser() {
         var singleProp = new SimpleObjectProperty<DataStoreEntryRef<DataStore>>();
         var s = action.getValue() instanceof StoreAction<?> sa ? sa.getRef() : null;
         singleProp.set((DataStoreEntryRef<DataStore>) s);
@@ -84,7 +88,7 @@ public class ActionConfigComp extends SimpleComp {
         return choice;
     }
 
-    private Comp<?> createTextArea() {
+    private BaseRegionBuilder<?,?> createTextArea() {
         var config = new SimpleStringProperty();
         var s = action.getValue() instanceof SerializableAction sa ? sa.toConfigNode() : null;
         config.set(s != null && s.size() > 0 ? s.toPrettyString() : null);

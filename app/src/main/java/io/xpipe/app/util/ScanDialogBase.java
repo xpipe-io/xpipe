@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.Comp;
+
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
@@ -130,7 +132,7 @@ public class ScanDialogBase {
         });
     }
 
-    public Comp<?> createComp() {
+    public BaseRegionBuilder<?,?> createComp() {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);
@@ -150,7 +152,7 @@ public class ScanDialogBase {
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
                         () -> available.size() > 3)
-                .createRegion();
+                .build();
         stackPane.getChildren().add(r);
 
         if (showButton) {
@@ -173,7 +175,7 @@ public class ScanDialogBase {
             entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
         }
 
-        var comp = new LoadingOverlayComp(Comp.of(() -> stackPane), busy, true).vgrow();
+        var comp = new LoadingOverlayComp(RegionBuilder.of(() -> stackPane), busy, true).vgrow();
         return comp;
     }
 }

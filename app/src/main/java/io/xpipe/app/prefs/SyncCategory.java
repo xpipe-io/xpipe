@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
@@ -16,6 +16,8 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public class SyncCategory extends AppPrefsCategory {
         return new LabelGraphic.IconGraphic("mdrmz-vpn_lock");
     }
 
-    public Comp<?> create() {
+    public BaseRegionBuilder<?,?> create() {
         var prefs = AppPrefs.get();
         AtomicReference<Region> button = new AtomicReference<>();
 
@@ -49,13 +51,13 @@ public class SyncCategory extends AppPrefsCategory {
                 }
             });
         });
-        testButton.apply(struc -> button.set(struc.get()));
+        testButton.apply(struc -> button.set(struc));
         testButton.padding(new Insets(6, 10, 6, 6));
 
         var testRow = new HorizontalComp(List.of(testButton))
                 .spacing(10)
                 .padding(new Insets(10, 0, 0, 0))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT));
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
         var remoteRepo = new TextFieldComp(prefs.storageGitRemote).hgrow();
         remoteRepo.disable(prefs.enableGitStorage.not());

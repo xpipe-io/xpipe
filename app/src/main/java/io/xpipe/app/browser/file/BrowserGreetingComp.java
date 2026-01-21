@@ -1,6 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.SimpleComp;
+
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -13,7 +14,7 @@ import atlantafx.base.theme.Styles;
 
 import java.time.LocalDateTime;
 
-public class BrowserGreetingComp extends SimpleComp {
+public class BrowserGreetingComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {

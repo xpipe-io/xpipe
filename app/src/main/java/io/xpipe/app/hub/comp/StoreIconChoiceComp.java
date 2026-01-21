@@ -80,7 +80,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         var loading = new LoadingIconComp(busy, AppFontSizes::title)
                 .prefWidth(60)
                 .hide(busy.not())
-                .createRegion();
+                .build();
         var refresh = createRefreshPane();
         var stack = new StackPane();
         stack.getChildren().addAll(table, refresh, loading);
@@ -126,11 +126,11 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         refreshButton.disable(refreshing);
         var text = new LabelComp(AppI18n.observable("refreshIconsDescription"));
         text.apply(struc -> {
-            struc.get().setWrapText(true);
-            struc.get().setTextAlignment(TextAlignment.CENTER);
-            struc.get().setPrefWidth(300);
+            struc.setWrapText(true);
+            struc.setTextAlignment(TextAlignment.CENTER);
+            struc.setPrefWidth(300);
         });
-        text.styleClass(Styles.TEXT_SUBTLE);
+        text.style(Styles.TEXT_SUBTLE);
         text.visible(refreshing);
         var vbox = new VerticalComp(List.of(refreshButton, text)).spacing(25);
         vbox.hide(Bindings.createBooleanBinding(() -> {
@@ -149,8 +149,8 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
             return true;
         }, busy, refreshing));
-        vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER));
-        return vbox.createRegion();
+        vbox.apply(struc -> struc.setAlignment(Pos.CENTER));
+        return vbox.build();
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
@@ -214,7 +214,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             super();
 
             root.setContentDisplay(ContentDisplay.TOP);
-            Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).createRegion();
+            Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).build();
             root.setGraphic(imageView);
             root.setGraphicTextGap(10);
             root.getStyleClass().addAll("icon-label", TEXT_SMALL);
