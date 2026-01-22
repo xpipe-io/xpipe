@@ -45,7 +45,7 @@ public abstract class RegionBuilder<T extends Region> extends BaseRegionBuilder<
     }
 
     public static <R extends Region> RegionBuilder<R> of(Supplier<R> r) {
-        return new RegionBuilder<R>() {
+        return new RegionBuilder<>() {
 
             @Override
             protected R createSimple() {

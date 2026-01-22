@@ -2,6 +2,7 @@ package io.xpipe.ext.base.script;
 
 
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -10,6 +11,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.StoreStateFormat;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -68,6 +70,7 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
         return new OptionsBuilder()
                 .nameAndDescription("scriptCollectionSourceType")
                 .sub(sourceChoice.build(), source)
+                .nonNull()
                 .bind(
                         () -> {
                             return ScriptCollectionSourceStore.builder().source(source.get()).build();
@@ -88,8 +91,10 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
         return Bindings.createStringBinding(() -> {
             var s = st.getState();
             var summary = st.getSource().toSummary();
-            return summary + (s.getEntries() != null ? " (" + s.getEntries().size() + ")" : "");
-        }, section.getWrapper().getPersistentState());
+            var format = new StoreStateFormat(List.of(), summary,
+                    s.getEntries() != null ? AppI18n.get("scriptsContained", s.getEntries().size()) : null);
+            return format.format();
+        }, section.getWrapper().getPersistentState(), AppI18n.activeLanguage());
     }
 
     @Override

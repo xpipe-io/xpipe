@@ -119,7 +119,7 @@ public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStor
         };
         var selectedExecTypes = new SimpleListProperty<>(FXCollections.observableList(selectedStart));
         var selectorComp = new ListSelectorComp<>(
-                FXCollections.observableList(vals), name, selectedExecTypes, v -> false, () -> false);
+                FXCollections.observableList(vals), name, ignored -> null, selectedExecTypes, v -> false, () -> false);
 
         return new OptionsBuilder()
                 .nameAndDescription("scriptSourceType")

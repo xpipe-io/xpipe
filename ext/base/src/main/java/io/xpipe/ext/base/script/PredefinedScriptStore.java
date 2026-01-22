@@ -41,7 +41,7 @@ public enum PredefinedScriptStore {
             .build()),
     SYSTEM_HEALTH_STATUS("System health status", () -> ScriptStore.builder()
             .group(PredefinedScriptGroup.MANAGEMENT.getEntry())
-            .textSource(ScriptTextSource.InPlace.builder().text(file("system_health.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("system_health.sh")).build())
             .initScript(true)
             .build());
 

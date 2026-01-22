@@ -58,7 +58,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             () -> {
                 var w = App.getApp().getStage().getWidth();
                 if (w >= 1000) {
-                    return (w / 2.1) - 100;
+                    return (w / 2.0) - 100;
                 } else {
                     return (w / 1.7) - 50;
                 }
@@ -68,7 +68,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             () -> {
                 var w = App.getApp().getStage().getWidth();
                 if (w >= 1000) {
-                    return (w / 2.1) - 200;
+                    return (w / 2.0) - 200;
                 } else {
                     return (w / 1.7) - 150;
                 }

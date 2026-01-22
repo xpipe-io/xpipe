@@ -149,6 +149,7 @@ public class ScanDialogBase {
         var r = new ListSelectorComp<>(
                         available,
                         nameFunc,
+                so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
                         () -> available.size() > 3)

@@ -101,6 +101,7 @@ public class UserReportComp extends ModalOverlayContentComp {
 
                             return file.getFileName().toString();
                         },
+                file -> null,
                         includedDiagnostics,
                         file -> false,
                         () -> false)

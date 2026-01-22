@@ -3,12 +3,14 @@ package io.xpipe.app.comp.base;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -18,6 +20,7 @@ import javafx.scene.layout.VBox;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.int4.fx.builders.pane.HBoxBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +34,8 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
 
     ObservableList<T> values;
     Function<T, String> toString;
-    ListProperty<T> selected;
+    Function<T, LabelGraphic> toGraphic;
+    ObservableList<T> selected;
     Predicate<T> disable;
     Supplier<Boolean> showAllSelector;
 
@@ -67,6 +71,7 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
                 cb.setDisable(true);
             }
             cbs.add(cb);
+
             cb.setAccessibleText(toString.apply(v));
             cb.setSelected(selected.contains(v));
             cb.selectedProperty().addListener((c, o, n) -> {
@@ -76,7 +81,20 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
                     selected.remove(v);
                 }
             });
-            var l = new Label(toString.apply(v), cb);
+
+            Region graphicRegion;
+            var graphic = toGraphic.apply(v);
+            if (graphic != null) {
+                graphicRegion = new HBoxBuilder()
+                        .apply(h -> h.setSpacing(10))
+                        .apply(h -> h.setAlignment(Pos.CENTER))
+                        .nodes(cb, graphic.createGraphicNode());
+            } else {
+                graphicRegion = cb;
+            }
+
+            var l = new Label(toString.apply(v), graphicRegion);
+            l.setAlignment(Pos.CENTER);
             l.setGraphicTextGap(9);
             l.setOnMouseClicked(event -> {
                 if (disable.test(v)) {

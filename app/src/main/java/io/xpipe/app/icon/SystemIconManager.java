@@ -139,7 +139,6 @@ public class SystemIconManager {
     }
 
     public static void initAdditional() {
-        var l = new ArrayList<SystemIconSource>();
         for (var source : getEffectiveSources()) {
             if (!LOADED.containsKey(source)) {
                 var data = SystemIconSourceData.of(source);
@@ -148,7 +147,6 @@ public class SystemIconManager {
                     var icon = new SystemIcon(source, systemIconSourceFile.getName());
                     ICONS.add(icon);
                 });
-                l.add(source);
             }
         }
         sourceHash = calculateSourceHash();

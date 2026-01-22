@@ -68,6 +68,10 @@ public abstract class BaseRegionBuilder<T extends Region, B extends BaseRegionBu
         });
     }
 
+    public B show(ObservableValue<Boolean> when) {
+        return this.hide(when.map((b) -> !b).orElse(true));
+    }
+
     public B hide(ObservableValue<Boolean> o) {
         return apply(struc -> {
             var region = struc;

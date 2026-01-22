@@ -97,6 +97,11 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
             struc.getTextArea().prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> {
                 var val = value.getValue() != null ? value.getValue() : "";
                 var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+                // Somehow the handling of trailing newlines is weird
+                // This makes the handling better for JavaFX text areas
+                if (val.contains("\n")) {
+                    count++;
+                }
                 return Math.max(1, count);
             }, value));
         });

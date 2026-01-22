@@ -14,7 +14,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @JsonTypeName("scriptCollectionSource")
-public class ScriptCollectionSourceStore implements DataStore, StatefulDataStore<ScriptCollectionSourceStore.State> {
+public class ScriptCollectionSourceStore implements DataStore, StatefulDataStore<ScriptCollectionSourceStore.State>, ValidatableStore {
 
     ScriptCollectionSource source;
 
@@ -28,6 +28,11 @@ public class ScriptCollectionSourceStore implements DataStore, StatefulDataStore
         source.prepare();
         var l = source.listScripts();
         setState(State.builder().entries(l).build());
+    }
+
+    @Override
+    public void validate() throws Exception {
+        source.prepare();
     }
 
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

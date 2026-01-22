@@ -43,7 +43,11 @@ public class ScriptStoreMigrationDeserializer extends DelegatingDeserializer {
             return p;
         }
 
-        migrate((ObjectNode) node);
+        // Check if already in the new format
+        if (node.get("textSource") == null) {
+            migrate((ObjectNode) node);
+        }
+
         var newJsonParser = new TreeTraversingParser(((ObjectNode) node), p.getCodec());
         newJsonParser.nextToken();
         return newJsonParser;

@@ -114,6 +114,12 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                 () -> {
                     if (StoreViewState.get()
                             .getActiveCategory()
+                            .getValue().equals(StoreViewState.get().getScriptSourcesCategory())) {
+                        return false;
+                    }
+
+                    if (StoreViewState.get()
+                            .getActiveCategory()
                             .getValue()
                             .getRoot()
                             .equals(StoreViewState.get().getAllScriptsCategory())) {

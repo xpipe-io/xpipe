@@ -36,6 +36,18 @@ public class StoreIconChoiceDialog {
     private ModalOverlay createOverlay() {
         var filterText = new SimpleStringProperty();
         var filter = new FilterComp(filterText).hgrow();
+        // Ugly solution to focus the filter on show
+        filter.apply(r -> {
+            r.sceneProperty().subscribe(s -> {
+                if (s != null) {
+                    Platform.runLater(() -> {
+                        Platform.runLater(() -> {
+                            r.requestFocus();
+                        });
+                    });
+                }
+            });
+        });
         var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();
                     AppPrefs.get().selectCategory("icons");

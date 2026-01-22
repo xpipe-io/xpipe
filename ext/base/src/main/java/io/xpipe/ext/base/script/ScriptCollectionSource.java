@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -135,7 +136,8 @@ public interface ScriptCollectionSource {
 
         @Override
         public String toSummary() {
-            return url;
+            return url.replace("http://", "").replace("https://", "")
+                    .replace("file://", "").replace("ssh://", "");
         }
 
         @Override
@@ -154,31 +156,40 @@ public interface ScriptCollectionSource {
 
     String toName();
 
-    default List<ScriptCollectionSourceEntry> listScripts() throws Exception {
+    default List<ScriptCollectionSourceEntry> listScripts() {
         var availableDialects = ScriptDialects.getSupported();
         var l = new ArrayList<ScriptCollectionSourceEntry>();
-        Files.walkFileTree(getLocalPath(), new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                var name = file.getFileName().toString();
-                var dialect = availableDialects.stream().filter(shellDialect -> {
-                    return name.endsWith("." + shellDialect.getScriptFileEnding());
-                }).findFirst();
-                if (dialect.isEmpty()) {
+
+        if (!Files.exists(getLocalPath())) {
+            return l;
+        }
+
+        try {
+            Files.walkFileTree(getLocalPath(), new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    var name = file.getFileName().toString();
+                    var dialect = availableDialects.stream().filter(shellDialect -> {
+                        return name.endsWith("." + shellDialect.getScriptFileEnding());
+                    }).findFirst();
+                    if (dialect.isEmpty()) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    var entry = ScriptCollectionSourceEntry.builder()
+                            .name(name)
+                            .source(ScriptCollectionSource.this)
+                            .dialect(dialect.get())
+                            .localFile(file)
+                            .build();
+                    l.add(entry);
+
                     return FileVisitResult.CONTINUE;
                 }
-
-                var entry = ScriptCollectionSourceEntry.builder()
-                        .name(name)
-                        .source(ScriptCollectionSource.this)
-                        .dialect(dialect.get())
-                        .localFile(file)
-                        .build();
-                l.add(entry);
-
-                return FileVisitResult.CONTINUE;
-            }
-        });
+            });
+        } catch (IOException e) {
+            ErrorEventFactory.fromThrowable(e).expected().handle();
+        }
         return l;
     }
 

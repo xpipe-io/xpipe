@@ -96,7 +96,7 @@ public class PageantStrategy implements SshIdentityStrategy {
     @Override
     public void buildCommand(CommandBuilder builder) {}
 
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    private String getIdentityAgent(ShellControl sc) {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
             return getPageantWindowsPipe();
         }

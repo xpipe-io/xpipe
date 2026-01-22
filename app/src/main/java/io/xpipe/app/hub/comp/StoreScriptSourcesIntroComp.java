@@ -22,7 +22,7 @@ public class StoreScriptSourcesIntroComp extends SimpleRegionBuilder {
         intro.setButtonGraphic(new LabelGraphic.IconGraphic("mdi2p-play-circle"));
         intro.setButtonDefault(true);
         intro.setButtonAction(() -> {
-            StoreCreationDialog.showCreation(DataStoreProviders.byId("scriptSource").orElseThrow(), DataStoreCreationCategory.SCRIPT);
+            StoreCreationDialog.showCreation(DataStoreProviders.byId("scriptCollectionSource").orElseThrow(), DataStoreCreationCategory.SCRIPT);
         });
         var list = new IntroListComp(List.of(intro));
         return list.build();
