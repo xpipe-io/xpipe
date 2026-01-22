@@ -75,6 +75,7 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
                 storeClass,
                 applicableCheck,
                 initialCategory,
+                null,
                 "selectConnection",
                 "noCompatibleConnection");
 

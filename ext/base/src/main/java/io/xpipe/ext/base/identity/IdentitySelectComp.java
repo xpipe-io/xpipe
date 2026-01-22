@@ -302,6 +302,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
                     IdentityStore.class,
                     null,
                     StoreViewState.get().getAllIdentitiesCategory(),
+                    null,
                     "selectIdentity",
                     "noCompatibleIdentity");
 

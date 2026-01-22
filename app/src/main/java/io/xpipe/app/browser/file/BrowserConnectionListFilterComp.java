@@ -32,7 +32,8 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
         var category = new DataStoreCategoryChoiceComp(
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
-                        this.category)
+                        this.category,
+                true)
                 .style(Styles.LEFT_PILL)
                 .apply(struc -> {
                     AppFontSizes.base(struc);

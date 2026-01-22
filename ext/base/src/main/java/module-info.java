@@ -34,7 +34,7 @@ open module io.xpipe.ext.base {
     requires com.sun.jna;
     requires javafx.base;
     requires javafx.graphics;
-
+    
     provides ActionProvider with
             IdentityApplyHubLeafProvider,
             AbstractHostCreationActionProvider,

@@ -22,6 +22,8 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.val;
 import org.int4.fx.builders.common.AbstractRegionBuilder;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -33,22 +35,33 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
     private final ObjectProperty<DataStoreEntryRef<T>> selected;
 
-    private final StoreChoicePopover<T> popover;
+    private StoreChoicePopover<T> popover;
 
     public StoreChoiceComp(
             DataStoreEntry self,
             ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper initialCategory) {
+            StoreCategoryWrapper categoryRoot) {
+        this(self, selected, storeClass, applicableCheck, categoryRoot, null);
+    }
+
+    public StoreChoiceComp(
+            DataStoreEntry self,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper categoryRoot,
+            StoreCategoryWrapper explicitCategory) {
         this.selected = selected;
         this.popover = new StoreChoicePopover<>(
                 self,
                 selected,
                 storeClass,
                 applicableCheck,
-                initialCategory,
-                "selectConnection",
+                categoryRoot,
+                explicitCategory,
+                StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot) ? "selectConnection" : "selectEntry",
                 "noCompatibleConnection");
     }
 
@@ -60,13 +73,21 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
         return DataStorage.get().getStoreEntryDisplayName(entry);
     }
 
+    protected String toGraphic(DataStoreEntry entry) {
+        if (entry == null) {
+            return null;
+        }
+
+        return entry.getEffectiveIconFile();
+    }
+
     @Override
     protected Region createSimple() {
         var button = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
                             var val = selected.getValue();
-                            return val != null ? toName(val.get()) : null;
+                            return toName(val != null ? val.get() : null);
                         },
                         selected),
                 () -> {});
@@ -84,12 +105,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                     BaseRegionBuilder<?,?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        var val = selected.getValue();
-                                        if (val == null) {
-                                            return null;
-                                        }
-
-                                        return val.get().getEffectiveIconFile();
+                                        return toGraphic(selected.getValue() != null ? selected.getValue().get() : null);
                                     },
                                     selected),
                             16,
@@ -119,6 +135,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
         AppFontSizes.xl(dropdownIcon);
 
         var pane = new AnchorPane(r, dropdownIcon);
+        r.prefHeightProperty().bind(pane.heightProperty());
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 r.requestFocus();

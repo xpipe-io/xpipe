@@ -29,7 +29,7 @@ public class ScriptCollectionSourceImportHubProvider implements HubLeafProvider<
 
     @Override
     public LabelGraphic getIcon(DataStoreEntryRef<ScriptCollectionSourceStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2f-file-undo-outline");
+        return new LabelGraphic.IconGraphic("mdi2i-import");
     }
 
     @Override

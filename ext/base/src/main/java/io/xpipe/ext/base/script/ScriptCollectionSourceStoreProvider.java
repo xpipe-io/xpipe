@@ -91,8 +91,9 @@ public class ScriptCollectionSourceStoreProvider implements DataStoreProvider {
         return Bindings.createStringBinding(() -> {
             var s = st.getState();
             var summary = st.getSource().toSummary();
+            var init = s.getEntries() != null;
             var format = new StoreStateFormat(List.of(), summary,
-                    s.getEntries() != null ? AppI18n.get("scriptsContained", s.getEntries().size()) : null);
+                    init ? AppI18n.get("scriptsContained", s.getEntries().size()) : null, !init ? AppI18n.get("notInitialized") : null);
             return format.format();
         }, section.getWrapper().getPersistentState(), AppI18n.activeLanguage());
     }

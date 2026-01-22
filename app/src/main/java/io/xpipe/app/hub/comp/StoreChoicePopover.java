@@ -43,7 +43,8 @@ public class StoreChoicePopover<T extends DataStore> {
     private final Property<DataStoreEntryRef<T>> selected;
     private final Class<?> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
-    private final StoreCategoryWrapper initialCategory;
+    private final StoreCategoryWrapper rootCategory;
+    private final StoreCategoryWrapper explicitCategory;
     private final String titleKey;
     private final String noMatchKey;
     private Consumer<Popover> consumer;
@@ -74,9 +75,9 @@ public class StoreChoicePopover<T extends DataStore> {
         if (popover == null || applicableCheck != null) {
             var cur = StoreViewState.get().getActiveCategory().getValue();
             var selectedCategory = new SimpleObjectProperty<>(
-                    initialCategory != null
-                            ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory)
-                            : cur);
+                    explicitCategory != null ? explicitCategory : (rootCategory != null
+                            ? (rootCategory.getRoot().equals(cur.getRoot()) ? cur : rootCategory)
+                            : cur));
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
@@ -101,7 +102,7 @@ public class StoreChoicePopover<T extends DataStore> {
             var applicableMatch =
                     StoreViewState.get().getCurrentTopLevelSection().anyMatches(applicable);
             if (!applicableMatch) {
-                selectedCategory.set(initialCategory);
+                selectedCategory.set(rootCategory);
             }
 
             var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
@@ -134,9 +135,10 @@ public class StoreChoicePopover<T extends DataStore> {
                     initialExpanded);
 
             var category = new DataStoreCategoryChoiceComp(
-                            initialCategory != null ? initialCategory.getRoot() : null,
+                            rootCategory != null ? rootCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
-                            selectedCategory)
+                            selectedCategory,
+                    explicitCategory == null)
                     .style(Styles.LEFT_PILL);
             var filter =
                     new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();

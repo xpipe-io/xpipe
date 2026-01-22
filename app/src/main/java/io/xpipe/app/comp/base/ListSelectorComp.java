@@ -11,6 +11,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -65,6 +66,7 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
         }
         vbox.getChildren().clear();
         cbs.clear();
+        var newChildren = new ArrayList<Node>();
         for (var v : currentVals) {
             var cb = new CheckBox(null);
             if (disable.test(v)) {
@@ -105,8 +107,9 @@ public class ListSelectorComp<T> extends SimpleRegionBuilder {
                 event.consume();
             });
             l.opacityProperty().bind(cb.opacityProperty());
-            vbox.getChildren().add(l);
+            newChildren.add(l);
         }
+        vbox.getChildren().addAll(newChildren);
 
         if (showAllSelector.get()) {
             var allSelector = new CheckBox(null);

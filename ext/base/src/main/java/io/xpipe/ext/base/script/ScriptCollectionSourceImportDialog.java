@@ -1,25 +1,38 @@
 package io.xpipe.ext.base.script;
 
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ShellDialectIcons;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreCreationDialog;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
+import io.xpipe.core.FilePath;
+import io.xpipe.ext.base.desktop.DesktopBaseStore;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ScriptCollectionSourceImportDialog {
 
@@ -30,6 +43,7 @@ public class ScriptCollectionSourceImportDialog {
     private final StringProperty filter = new SimpleStringProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final IntegerProperty count = new SimpleIntegerProperty();
+    private final ObjectProperty<DataStoreEntryRef<ScriptGroupStore>> targetGroup = new SimpleObjectProperty<>();
 
     public ScriptCollectionSourceImportDialog(ScriptCollectionSource source) {
         this.source = source;
@@ -45,6 +59,7 @@ public class ScriptCollectionSourceImportDialog {
         var filterField = new FilterComp(filter).hgrow();
         // Ugly solution to focus the filter on show
         filterField.apply(r -> {
+            HBox.setHgrow(r, Priority.SOMETIMES);
             r.sceneProperty().subscribe(s -> {
                 if (s != null) {
                     Platform.runLater(() -> {
@@ -81,7 +96,35 @@ public class ScriptCollectionSourceImportDialog {
 
         var stack = new StackComp(List.of(notFound, selector));
         stack.prefWidth(600);
-        stack.prefHeight(700);
+        stack.prefHeight(650);
+
+        var storeChoice = new StoreChoiceComp<>(
+                null,
+                targetGroup,
+                ScriptGroupStore.class,
+                null,
+                StoreViewState.get().getAllScriptsCategory(),
+                StoreViewState.get().getAllScriptsCategory()) {
+            @Override
+            protected String toName(DataStoreEntry entry) {
+                if (entry == null) {
+                    return AppI18n.get("selectCategory");
+                } else {
+                    return super.toName(entry);
+                }
+            }
+
+            @Override
+            protected String toGraphic(DataStoreEntry entry) {
+                if (entry == null) {
+                    return "scriptGroup_icon.svg";
+                } else {
+                    return super.toGraphic(entry);
+                }
+            }
+        };
+        storeChoice.hgrow();
+        storeChoice.maxHeight(100);
 
         var modal = ModalOverlay.of(
                 Bindings.createStringBinding(() -> {
@@ -91,11 +134,40 @@ public class ScriptCollectionSourceImportDialog {
                 null);
         modal.addButtonBarComp(refresh);
         modal.addButtonBarComp(filterField);
+        modal.addButtonBarComp(storeChoice);
         modal.addButton(ModalButton.ok(() -> {
-
+            ThreadHelper.runAsync(() -> {
+                finish();
+            });
                 }))
-                .augment(button -> button.disableProperty().bind(Bindings.isEmpty(selected)));
+                .augment(button -> button.disableProperty().bind(Bindings.isEmpty(selected).or(targetGroup.isNull())));
         modal.show();
+    }
+
+    private void finish() {
+        var targetCat = DataStorage.get().getStoreCategory(targetGroup.getValue().get());
+        StoreViewState.get().selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(targetCat));
+
+        var added = new ArrayList<DataStoreEntry>();
+        for (ScriptCollectionSourceEntry e : selected) {
+            var name = FilePath.of(e.getName()).getBaseName().toString();
+            var textSource = ScriptTextSource.SourceReference.builder().entry(e).build();
+
+            var alreadyAdded = DataStorage.get().getStoreEntries().stream().anyMatch(entry -> entry.getStore() instanceof ScriptStore ss &&
+                            textSource.equals(ss.getTextSource()));
+            if (alreadyAdded) {
+                continue;
+            }
+
+            var store = ScriptStore.builder().textSource(textSource).group(targetGroup.get()).build();
+            var entry = DataStoreEntry.createNew(name, store);
+            DataStorage.get().addStoreEntryIfNotPresent(entry);
+            added.add(entry);
+        }
+
+        if (added.size() == 1) {
+            StoreCreationDialog.showEdit(added.getFirst());
+        }
     }
 
     private void update() {

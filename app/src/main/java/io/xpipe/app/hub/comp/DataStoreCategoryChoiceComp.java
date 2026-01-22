@@ -19,17 +19,20 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
     private final StoreCategoryWrapper root;
     private final Property<StoreCategoryWrapper> external;
     private final Property<StoreCategoryWrapper> value;
+    private final boolean applyExternalInitially;
 
     public DataStoreCategoryChoiceComp(
-            StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value) {
+            StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value, boolean applyExternalInitially) {
         this.root = root;
         this.external = external;
         this.value = value;
+        this.applyExternalInitially = applyExternalInitially;
     }
 
     @Override
     protected Region createSimple() {
         var initialized = new SimpleBooleanProperty();
+        var last = value.getValue();
         external.subscribe(newValue -> {
             if (newValue == null) {
                 value.setValue(root);
@@ -44,6 +47,9 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
             }
             initialized.set(true);
         });
+        if (!applyExternalInitially) {
+            value.setValue(last);
+        }
         var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
