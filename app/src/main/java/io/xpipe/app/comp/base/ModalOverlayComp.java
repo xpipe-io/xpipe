@@ -16,6 +16,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -188,10 +189,10 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
 
         if (newValue.getTitle() != null) {
             var l = new LabelComp(
-                    newValue.getTitle().getValue(),
-                    newValue.getGraphic() != null
+                    newValue.getTitle(),
+                    new SimpleObjectProperty<>(newValue.getGraphic() != null
                             ? newValue.getGraphic()
-                            : new LabelGraphic.IconGraphic("mdi2i-information-outline"));
+                            : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
                 AppFontSizes.xl(struc);

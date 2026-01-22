@@ -104,6 +104,11 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
+    public int getOrderPriority() {
+        return 2;
+    }
+
+    @Override
     public DataStore defaultStore(DataStoreCategory category) {
         return DesktopApplicationStore.builder().build();
     }

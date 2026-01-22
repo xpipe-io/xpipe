@@ -5,67 +5,50 @@
    viewBox="0 0 204.59 204.59"
    version="1.1"
    sodipodi:docname="rdp_icon-dark.svg"
-   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
-   inkscape:export-filename="C:\Projects\xpipe\xpipex\ext\proc\src\main\resources\io\xpipe\ext\proc\resources\img\ssh_icon-16.png"
-   inkscape:export-xdpi="7.5076985"
-   inkscape:export-ydpi="7.5076985"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xml:space="preserve"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <sodipodi:namedview
-     id="namedview873"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"><sodipodi:namedview
+     id="namedview1"
      pagecolor="#000000"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0"
-     inkscape:pagecheckerboard="false"
-     showgrid="false"
-     inkscape:zoom="2.0944327"
-     inkscape:cx="37.00286"
-     inkscape:cy="136.55249"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.3945823"
+     inkscape:cx="-22.945939"
+     inkscape:cy="41.948044"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1009"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Layer_1" />
-  <defs
-     id="defs856">
-    <style
-       id="style854">.cls-1{fill:#ac55ff;}</style>
-  </defs>
-  <title
-     id="title858">ssh draft</title>
-  <metadata
-     id="metadata932">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:title>ssh draft</dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <circle
-     style="fill:none;fill-rule:evenodd;stroke:#0095e3;stroke-width:12;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
-     id="path848"
-     cx="102.4654"
-     cy="102.29661"
-     r="94.123512" />
-  <path
+     inkscape:current-layer="Layer_1" /><defs
+     id="defs856"><style
+       id="style854">.cls-1{fill:#ac55ff;}</style><style
+       id="style2411">.cls-1{fill:#606161;}</style></defs><title
+     id="title858">identity</title><path
      class="cls-1"
-     d="M 158.04147,118.54708 123.2167,88.047024 158.242,52.890022 145.27258,38.706544 101.28422,80.484604 v 15.139354 l 43.47202,38.474302 z"
+     d="M332.32,153.7H179.68a26,26,0,0,0-26,26V332.32a26,26,0,0,0,26,26H332.32a26,26,0,0,0,26-26V179.68A26,26,0,0,0,332.32,153.7Zm14,178.62a14,14,0,0,1-14,14H179.68a14,14,0,0,1-14-14V179.68a14,14,0,0,1,14-14H332.32a14,14,0,0,1,14,14Z"
+     id="path860"
+     style="fill:#dadada;fill-opacity:1"
+     transform="translate(-153.7 -153.7)" /><metadata
+     id="metadata932"><rdf:RDF><cc:Work
+         rdf:about=""><dc:title>identity</dc:title></cc:Work></rdf:RDF></metadata><path
+     class="cls-1"
+     d="M 166.1585,120.5645 127.6738,86.859005 166.38011,48.007151 152.04766,32.33305 103.4363,78.501807 v 16.730436 l 48.04075,42.517797 z"
      id="path870-3"
-     style="fill:#47c943;fill-opacity:1;stroke-width:1.45152"
-     sodipodi:nodetypes="cccccccc" />
-  <path
+     style="fill:#ee780d;fill-opacity:1;stroke-width:1.604;stroke-dasharray:none"
+     sodipodi:nodetypes="cccccccc" /><path
      class="cls-1"
-     d="m 48.331446,89.128527 34.824761,30.500043 -35.02529,35.157 12.96941,14.18348 43.988363,-41.77807 V 112.05163 L 61.616675,73.577355 Z"
+     d="M 44.918433,88.054169 83.403116,121.75965 44.696828,160.6115 59.029257,176.2856 107.64061,130.11683 V 113.3864 L 59.599873,70.868635 Z"
      id="path870-3-2"
-     style="fill:#47c943;fill-opacity:1;stroke-width:1.45152"
-     sodipodi:nodetypes="cccccccc" />
-</svg>
+     style="fill:#35c233;fill-opacity:1;stroke-width:1.60407"
+     sodipodi:nodetypes="cccccccc" /></svg>

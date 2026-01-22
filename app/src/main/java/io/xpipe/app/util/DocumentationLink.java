@@ -97,6 +97,7 @@ public enum DocumentationLink {
     SHELL_ENVIRONMENTS_SCRIPTS("guide/environments#scripts"),
     SERIAL("guide/serial"),
     ICONS("guide/hub#icons"),
+    ONE_PASSWORD_KEYS("guide/password-manager#key-format"),
     GNOME_WAYLAND_SCALING("troubleshoot/wayland-blur"),
     BEACON_PORT_BIND("troubleshoot/beacon-port"),
     SERIAL_IMPLEMENTATION("guide/serial#serial-implementations"),

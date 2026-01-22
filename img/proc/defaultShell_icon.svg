@@ -8,15 +8,20 @@
    y="0px"
    viewBox="0 0 188.2 188.2"
    xml:space="preserve"
-   sodipodi:docname="shellCommand_icon.svg"
+   sodipodi:docname="defaultShell_icon.svg"
    width="188.2"
    height="188.2"
-   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"><defs
-   id="defs29" /><sodipodi:namedview
+   id="defs29"><rect
+     x="59.145859"
+     y="53.768962"
+     width="141.59161"
+     height="130.8378"
+     id="rect1" /></defs><sodipodi:namedview
    id="namedview27"
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -25,15 +30,17 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    showgrid="false"
-   inkscape:zoom="1.6738281"
-   inkscape:cx="94.095683"
-   inkscape:cy="93.796966"
+   inkscape:zoom="1.1835752"
+   inkscape:cx="17.742852"
+   inkscape:cy="41.822438"
    inkscape:window-width="1920"
-   inkscape:window-height="1017"
+   inkscape:window-height="1009"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="Layer_1" />
+   inkscape:current-layer="g24"
+   inkscape:showpageshadow="2"
+   inkscape:deskcolor="#d1d1d1" />
 <style
    type="text/css"
    id="style2">
@@ -53,7 +60,8 @@
    style="fill:#2e2e2e;fill-opacity:1">
 	<g
    id="g10"
-   style="fill:#2e2e2e;fill-opacity:1">
+   style="fill:#2e2e2e;fill-opacity:1"
+   transform="translate(-9.293875,0.84489773)">
 		<path
    class="st1"
    d="m 214.8,242.5 c -1.6,-1.4 -4.1,-1.2 -5.5,0.4 -1.3,1.5 -1.3,3.6 0,5.1 l 23.6,23.6 -23.6,23.6 c -1.6,1.4 -1.8,3.9 -0.4,5.5 1.4,1.6 3.9,1.8 5.5,0.4 0.2,-0.1 0.3,-0.3 0.4,-0.4 l 26.4,-26.4 c 1.5,-1.5 1.5,-4 0,-5.5 z"
@@ -65,20 +73,7 @@
    id="path8"
    style="fill:#2e2e2e;fill-opacity:1" />
 	</g>
-	<g
-   id="g16"
-   style="fill:#2e2e2e;fill-opacity:1">
-		<path
-   class="st1"
-   d="m 306.8,295 h -54.7 c -2.2,0 -3.9,1.7 -3.9,3.9 0,2.2 1.7,3.9 3.9,3.9 h 54.7 c 2.2,0 3.9,-1.7 3.9,-3.9 0,-2.1 -1.8,-3.9 -3.9,-3.9 z"
-   id="path12"
-   style="fill:#2e2e2e;fill-opacity:1" />
-		<path
-   class="st1"
-   d="m 306.8,303.2 h -54.7 c -2.4,0 -4.3,-1.9 -4.3,-4.3 0,-2.4 1.9,-4.3 4.3,-4.3 h 54.7 c 2.4,0 4.3,1.9 4.3,4.3 0,2.4 -2,4.3 -4.3,4.3 z m -54.7,-7.8 c -1.9,0 -3.5,1.6 -3.5,3.5 0,1.9 1.6,3.5 3.5,3.5 h 54.7 c 1.9,0 3.5,-1.6 3.5,-3.5 0,-1.9 -1.6,-3.5 -3.5,-3.5 z"
-   id="path14"
-   style="fill:#2e2e2e;fill-opacity:1" />
-	</g>
+	
 	<g
    id="g22"
    style="fill:#2e2e2e;fill-opacity:1">
@@ -93,5 +88,12 @@
    id="path20"
    style="fill:#2e2e2e;fill-opacity:1" />
 	</g>
-</g>
+<text
+   xml:space="preserve"
+   transform="translate(175.82624,224.35736)"
+   id="text1"
+   style="font-weight:bold;font-size:74.6667px;line-height:0;font-family:Inter;-inkscape-font-specification:'Inter Bold';text-align:start;letter-spacing:-4.38px;writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect1);display:inline;fill:#216d82;stroke-width:1.302;fill-opacity:1"><tspan
+     x="59.146484"
+     y="76.217753"
+     id="tspan1">*?</tspan></text></g>
 </svg>

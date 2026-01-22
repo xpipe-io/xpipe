@@ -31,33 +31,9 @@ public class ShellDialectChoiceComp extends SimpleRegionBuilder {
         NULL_DISABLED
     }
 
-    public static final Map<ShellDialect, String> ICONS = new LinkedHashMap<>();
-
-    static {
-        ICONS.put(ShellDialects.CMD, "cmd_icon.svg");
-        ICONS.put(ShellDialects.POWERSHELL, "powershell_logo.svg");
-        ICONS.put(ShellDialects.POWERSHELL_CORE, "pwsh_logo.png");
-        ICONS.put(ShellDialects.SH, "sh_icon.svg");
-        ICONS.put(ShellDialects.ASH, "sh_icon.svg");
-        ICONS.put(ShellDialects.DASH, "sh_icon.svg");
-        ICONS.put(ShellDialects.BASH, "bash_icon.svg");
-        ICONS.put(ShellDialects.FISH, "fish_icon.svg");
-        ICONS.put(ShellDialects.ZSH, "zsh_icon.svg");
-        ICONS.put(ShellDialects.NUSHELL, "nushell_icon.svg");
-        ICONS.put(ShellDialects.XONSH, "xonsh_icon.png");
-    }
-
     private final List<ShellDialect> available;
     private final Property<ShellDialect> selected;
     private final NullHandling nullHandling;
-
-    public static String getImageName(ShellDialect t) {
-        if (t == null) {
-            return "proc:defaultShell_icon.svg";
-        }
-
-        return "proc:" + ICONS.get(t);
-    }
 
     @Override
     protected Region createSimple() {
@@ -71,12 +47,7 @@ public class ShellDialectChoiceComp extends SimpleRegionBuilder {
                                 : nullHandling == NullHandling.NULL_IS_ALL
                                         ? AppI18n.get("all")
                                         : AppI18n.get("default"));
-                setGraphic(
-                        item != null
-                                ? PrettyImageHelper.ofFixedSizeSquare("proc:" + ICONS.get(item), 16)
-                                        .build()
-                                : PrettyImageHelper.ofFixedSizeSquare("proc:defaultShell_icon.svg", 16)
-                                        .build());
+                setGraphic(PrettyImageHelper.ofFixedSizeSquare(ShellDialectIcons.getImageName(item), 16).build());
             }
         };
         var cb = new ComboBox<ShellDialect>();

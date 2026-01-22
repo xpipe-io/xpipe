@@ -3,11 +3,13 @@ package io.xpipe.ext.base.script;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
+import io.xpipe.app.ext.ShellDialectIcons;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.BooleanScope;
+import io.xpipe.app.util.ThreadHelper;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -23,7 +25,7 @@ public class ScriptCollectionSourceImportDialog {
 
     private final ScriptCollectionSource source;
     private final ObservableList<ScriptCollectionSourceEntry> available = FXCollections.observableArrayList();
-    private final DerivedObservableList<ScriptCollectionSourceEntry> shown = DerivedObservableList.arrayList(true);
+    private final ObservableList<ScriptCollectionSourceEntry> shown = FXCollections.observableArrayList();
     private final ObservableList<ScriptCollectionSourceEntry> selected = FXCollections.observableArrayList();
     private final StringProperty filter = new SimpleStringProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
@@ -55,24 +57,26 @@ public class ScriptCollectionSourceImportDialog {
         });
 
         var refresh = new ButtonComp(null, new FontIcon("mdmz-refresh"), () -> {
-            try (var ignored = new BooleanScope(busy).exclusive().start()) {
-                source.prepare();
-                var all = source.listScripts();
-                available.setAll(all);
-                update();
-            } catch (Exception e) {
-                ErrorEventFactory.fromThrowable(e).handle();
-            }
+            ThreadHelper.runAsync(() -> {
+                try (var ignored = new BooleanScope(busy).exclusive().start()) {
+                    source.prepare();
+                    var all = source.listScripts();
+                    available.setAll(all);
+                    update();
+                } catch (Exception e) {
+                    ErrorEventFactory.fromThrowable(e).handle();
+                }
+            });
         }).maxHeight(100);
 
         var notFound = new LabelComp(AppI18n.observable("noScriptsFound"));
-        notFound.show(Bindings.isEmpty(shown.getList()).and(busy.not()));
+        notFound.show(Bindings.isEmpty(shown).and(busy.not()));
 
-        var selector = new ListSelectorComp<>(shown.getList(),
+        var selector = new ListSelectorComp<>(shown,
                 e -> e.getName()+ " [" + e.getDialect().getDisplayName() + "]",
-                e -> new LabelGraphic.ImageGraphic(ShellDialectChoiceComp.getImageName(e.getDialect()), 16),
+                e -> new LabelGraphic.ImageGraphic(ShellDialectIcons.getImageName(e.getDialect()), 16),
                 selected, e -> false,
-                () -> shown.getList().size() > 0);
+                () -> shown.size() > 0);
         selector.disable(busy);
 
         var stack = new StackComp(List.of(notFound, selector));
@@ -96,7 +100,7 @@ public class ScriptCollectionSourceImportDialog {
 
     private void update() {
         if (filter.get() == null) {
-            shown.setContent(available);
+            shown.setAll(available);
             count.set(available.size());
             return;
         }
@@ -106,7 +110,7 @@ public class ScriptCollectionSourceImportDialog {
         var newList = new ArrayList<ScriptCollectionSourceEntry>();
         newList.addAll(selected);
         newList.addAll(filtered);
-        shown.setContent(newList);
+        shown.setAll(newList);
         count.set(newList.size());
     }
 }

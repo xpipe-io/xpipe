@@ -217,7 +217,7 @@ public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStor
         }
 
         ScriptStore st = store.asNeeded();
-        return ShellDialectChoiceComp.getImageName(st.getMinimumDialect());
+        return ShellDialectIcons.getImageName(st.getMinimumDialect());
     }
 
     @Override
