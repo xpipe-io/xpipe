@@ -65,7 +65,11 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 category.getName().setValue(newValue);
             }
         });
-        var name = new LazyTextFieldComp(prop).style("name").build();
+        var name = new LazyTextFieldComp(prop).style("name").apply(sp -> {
+            category.getRenameTrigger().onFire(() -> {
+                sp.requestFocus();
+            });
+        }).build();
         var showing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
@@ -121,7 +125,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 })
                 .apply(new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
-                            var cm = createContextMenu(name);
+                            var cm = createContextMenu();
                             showing.bind(cm.showingProperty());
                             return cm;
                         }))
@@ -158,7 +162,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                 keyEvent -> keyEvent.getCode() == KeyCode.SPACE,
-                () -> createContextMenu(name)));
+                () -> createContextMenu()));
         categoryButton.apply(struc -> {
             struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.SPACE) {
@@ -200,7 +204,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         return v.build();
     }
 
-    private ContextMenu createContextMenu(Region text) {
+    private ContextMenu createContextMenu() {
         var contextMenu = MenuHelper.createContextMenu();
 
         if (AppPrefs.get().enableHttpApi().get()) {
@@ -219,9 +223,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
         var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
-            DataStorage.get()
-                    .addStoreCategory(
-                            DataStoreCategory.createNew(category.getCategory().getUuid(), AppI18n.get("newCategory")));
+            StoreViewState.get().createNewCategory(category);
         });
         contextMenu.getItems().add(newCategory);
 
@@ -235,8 +237,8 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
         rename.setOnAction(event -> {
-            text.setDisable(false);
-            text.requestFocus();
+            category.getRenameTrigger().fire(null);
+            event.consume();
         });
         contextMenu.getItems().add(rename);
 

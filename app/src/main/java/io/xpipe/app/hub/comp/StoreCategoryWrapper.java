@@ -13,6 +13,7 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 
 import lombok.Getter;
+import org.int4.fx.values.util.Trigger;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -35,6 +36,7 @@ public class StoreCategoryWrapper {
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
+    private final Trigger<Void> renameTrigger = Trigger.of();
     private StoreCategoryWrapper cachedParent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {

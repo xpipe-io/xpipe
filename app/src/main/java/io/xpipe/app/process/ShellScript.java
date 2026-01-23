@@ -11,6 +11,10 @@ public class ShellScript {
 
     String value;
 
+    public static ShellScript empty() {
+        return new ShellScript("");
+    }
+
     public static ShellScript of(String s) {
         return s != null ? new ShellScript(s) : null;
     }

@@ -4,18 +4,21 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
+import io.xpipe.app.comp.base.ButtonComp;
+import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppCache;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ProcessControlProvider;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.hub.comp.StoreChoiceComp;
+import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.Validators;
@@ -23,7 +26,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.UuidHelper;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
@@ -33,10 +35,9 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
+import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ import java.util.List;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ScriptTextSource.InPlace.class),
-        @JsonSubTypes.Type(value = ScriptTextSource.Url.class),
-        @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class)
+        @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class),
+        @JsonSubTypes.Type(value = ScriptTextSource.Url.class)
 })
 public interface ScriptTextSource {
 
@@ -95,8 +96,11 @@ public interface ScriptTextSource {
         }
 
         @Override
+        public void checkAvailable() throws Exception {}
+
+        @Override
         public String toSummary() {
-            return dialect.getDisplayName();
+            return null;
         }
     }
 
@@ -108,7 +112,6 @@ public interface ScriptTextSource {
 
         ShellDialect dialect;
         String url;
-        ShellScript lastText;
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -132,7 +135,7 @@ public interface ScriptTextSource {
                     () -> Url.builder().dialect(dialect.get()).url(url.get()).build(), property);
         }
 
-        private void prepare() throws Exception {
+        public void refresh() throws Exception {
             var path = getLocalPath();
             if (Files.exists(path)) {
                 return;
@@ -163,18 +166,31 @@ public interface ScriptTextSource {
         @Override
         public void checkComplete() throws ValidationException {
             Validators.nonNull(url);
-            Validators.nonNull(lastText);
+        }
+
+        @Override
+        public void checkAvailable() throws Exception {
+            if (!Files.exists(getLocalPath())) {
+                throw ErrorEventFactory.expected(new IllegalStateException("Script URL " + url + " has not been initialized"));
+            }
         }
 
         @Override
         public String toSummary() {
-            return url;
+            try {
+                var uri = URI.create(url);
+                return FilePath.of(uri.getPath()).getFileName();
+            } catch (IllegalArgumentException ignored) {
+                return null;
+            }
         }
 
         @Override
         @SneakyThrows
         public ShellScript getText() {
-            return lastText;
+            var path = getLocalPath();
+            var s = Files.readString(path);
+            return ShellScript.of(s);
         }
     }
 
@@ -184,7 +200,8 @@ public interface ScriptTextSource {
     @Builder
     class SourceReference implements ScriptTextSource {
 
-        ScriptCollectionSourceEntry entry;
+        DataStoreEntryRef<ScriptCollectionSourceStore> ref;
+        String name;
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -193,37 +210,95 @@ public interface ScriptTextSource {
 
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<SourceReference> property) {
-            var entry = new SimpleObjectProperty<>(property.getValue().getEntry());
+            var ref = new SimpleObjectProperty<>(property.getValue().getRef());
+            var name = new SimpleStringProperty(property.getValue().getName());
 
-            return new OptionsBuilder().bind(
-                            () -> SourceReference.builder().entry(entry.get()).build(), property);
+            var sourceChoice = new StoreChoiceComp<>(null, ref, ScriptCollectionSourceStore.class,
+                    ignored -> true,
+                    StoreViewState.get().getAllScriptsCategory(),
+                    StoreViewState.get().getScriptSourcesCategory());
+
+            var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
+                var current = AppDialog.getCurrentModalOverlay();
+                current.ifPresent(modalOverlay -> modalOverlay.close());
+
+                var dialog = new ScriptCollectionSourceImportDialog(ref.get());
+                dialog.show();
+            });
+            importButton.disable(ref.isNull());
+
+            return new OptionsBuilder()
+                    .nameAndDescription("scriptCollectionSourceType")
+                    .addComp(new InputGroupComp(List.of(sourceChoice, importButton)).setMainReference(0), ref)
+                    .nonNull()
+                    .nameAndDescription("scriptSourceName")
+                    .addString(name)
+                    .nonNull()
+                    .bind(
+                            () -> SourceReference.builder().ref(ref.getValue()).name(name.getValue()).build(), property);
         }
 
         @Override
+        @SneakyThrows
         public void checkComplete() throws ValidationException {
-            Validators.nonNull(entry);
-            entry.getSource().checkComplete();
+            Validators.nonNull(ref);
+            ref.checkComplete();
+        }
+
+        @Override
+        public void checkAvailable() throws Exception {
+            var cached = ref.getStore().getState().getEntries();
+            if (cached == null) {
+                throw ErrorEventFactory.expected(new IllegalStateException("Source " + ref.get().getName() + " has not been initialized"));
+            }
+
+            var found = cached.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+            if (found == null) {
+                throw ErrorEventFactory.expected(new IllegalStateException("Script " + name + " not found in local source " + ref.get().getName()));
+            }
         }
 
         @Override
         public String toSummary() {
-            return entry.getName();
+            return ref.get().getName() + "/" + name;
         }
 
         @Override
         public ShellDialect getDialect() {
-            return entry.getDialect();
+            var found = findSourceEntryIfPossible();
+            return found != null ? found.getDialect() : null;
         }
 
         @Override
         @SneakyThrows
         public ShellScript getText() {
-            var r = Files.readString(entry.getLocalFile());
+            var found = findSourceEntryIfPossible();
+            if (found == null) {
+                return ShellScript.empty();
+            }
+
+            var r = Files.readString(found.getLocalFile());
             return ShellScript.of(r);
+        }
+
+        private ScriptCollectionSourceEntry findSourceEntryIfPossible() {
+            var cached = ref.getStore().getState().getEntries();
+            if (cached == null) {
+                return null;
+            }
+
+            var found = cached.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+            if (found == null) {
+                return null;
+            }
+
+            return found;
         }
     }
 
     void checkComplete() throws ValidationException;
+
+    void checkAvailable() throws Exception;
 
     String toSummary();
 
@@ -234,8 +309,8 @@ public interface ScriptTextSource {
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(InPlace.class);
-        l.add(Url.class);
         l.add(SourceReference.class);
+        l.add(Url.class);
         return l;
     }
 }

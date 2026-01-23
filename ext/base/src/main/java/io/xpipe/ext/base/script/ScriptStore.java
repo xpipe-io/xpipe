@@ -13,6 +13,7 @@ import io.xpipe.app.util.Validators;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Singular;
+import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -75,9 +76,15 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return null;
     }
 
+    @SneakyThrows
     public String assembleScriptChain(ShellControl shellControl, boolean args) {
         var nl = shellControl.getShellDialect().getNewLine().getNewLineString();
         var all = queryFlattenedScripts();
+
+        for (DataStoreEntryRef<ScriptStore> ref : all) {
+            ref.getStore().getTextSource().checkAvailable();
+        }
+
         var r = all.stream()
                 .map(ref -> ref.getStore().assembleScript(shellControl, args))
                 .filter(s -> s != null)
@@ -91,6 +98,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(textSource);
+        textSource.checkComplete();
         Validators.nonNull(group);
         Validators.isType(group, ScriptGroupStore.class);
         if (!initScript && !shellScript && !fileScript && !runnableScript) {

@@ -32,7 +32,7 @@ public class ScriptCollectionSourceStore implements DataStore, StatefulDataStore
 
     @Override
     public void validate() throws Exception {
-        source.prepare();
+        refresh();
     }
 
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -12,6 +13,7 @@ import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
 
+import io.xpipe.app.util.GlobalTimer;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -23,6 +25,7 @@ import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -342,6 +345,18 @@ public class StoreViewState {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
+    }
+
+    public void createNewCategory(StoreCategoryWrapper parent) {
+        var cat = DataStoreCategory.createNew(parent.getCategory().getUuid(), AppI18n.get("newCategory"));
+        DataStorage.get().addStoreCategory(cat);
+        // Ugly solution to ensure that the category is added to the scene
+        GlobalTimer.delay(() -> {
+            var wrapper = getCategoryWrapper(cat);
+            Platform.runLater(() -> {
+                wrapper.getRenameTrigger().fire(null);
+            });
+        }, Duration.ofMillis(500));
     }
 
     private void addListeners() {

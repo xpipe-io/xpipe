@@ -166,6 +166,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             AnchorPane.setBottomAnchor(struc, 3.0);
         });
         pane.getChildren().add(clearButton.build());
+        pane.getStyleClass().add("store-choice-comp");
 
         return pane;
     }

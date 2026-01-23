@@ -208,15 +208,6 @@ public abstract class DataStorage {
             localIdentities.get().setParentCategory(ALL_IDENTITIES_CATEGORY_UUID);
         }
 
-        //        var allMacros = getStoreCategoryIfPresent(ALL_MACROS_CATEGORY_UUID);
-        //        if (allMacros.isEmpty()) {
-        //            var cat = DataStoreCategory.createNew(null, ALL_MACROS_CATEGORY_UUID, "All macros");
-        //            cat.setDirectory(categoriesDir.resolve(ALL_MACROS_CATEGORY_UUID.toString()));
-        //            storeCategories.add(cat);
-        //        } else {
-        //            allMacros.get().setParentCategory(null);
-        //        }
-
         if (supportsSync()) {
             var sharedIdentities = getStoreCategoryIfPresent(SYNCED_IDENTITIES_CATEGORY_UUID);
             if (sharedIdentities.isEmpty()) {
@@ -230,17 +221,13 @@ public abstract class DataStorage {
             }
         }
 
-        if (getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).isEmpty()) {
-            storeCategories.add(new DataStoreCategory(
-                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
-                    DEFAULT_CATEGORY_UUID,
-                    "Default",
-                    Instant.now(),
-                    Instant.now(),
-                    true,
-                    ALL_CONNECTIONS_CATEGORY_UUID,
-                    true,
-                    DataStoreCategoryConfig.empty()));
+        var def = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID);
+        if (def.isEmpty()) {
+            DataStoreCategory cat = new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID,
+                    "Default", Instant.now(), Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, true, DataStoreCategoryConfig.empty());
+            storeCategories.add(cat);
+        } else {
+            def.get().setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
         }
 
         storeCategories.forEach(dataStoreCategory -> {

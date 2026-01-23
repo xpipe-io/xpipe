@@ -23,12 +23,21 @@ import lombok.Getter;
 import org.int4.fx.builders.common.AbstractRegionBuilder;
 import io.xpipe.app.comp.BaseRegionBuilder;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AppDialog {
 
     @Getter
     private static final ObservableList<ModalOverlay> modalOverlays = FXCollections.observableArrayList();
+
+    public static Optional<ModalOverlay> getCurrentModalOverlay() {
+        if (modalOverlays.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(modalOverlays.getLast());
+    }
 
     public static void closeDialog(ModalOverlay overlay) {
         PlatformThread.runLaterIfNeeded(() -> {

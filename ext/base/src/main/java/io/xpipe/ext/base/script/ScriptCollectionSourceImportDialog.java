@@ -36,7 +36,7 @@ import java.util.UUID;
 
 public class ScriptCollectionSourceImportDialog {
 
-    private final ScriptCollectionSource source;
+    private final DataStoreEntryRef<ScriptCollectionSourceStore> source;
     private final ObservableList<ScriptCollectionSourceEntry> available = FXCollections.observableArrayList();
     private final ObservableList<ScriptCollectionSourceEntry> shown = FXCollections.observableArrayList();
     private final ObservableList<ScriptCollectionSourceEntry> selected = FXCollections.observableArrayList();
@@ -45,9 +45,9 @@ public class ScriptCollectionSourceImportDialog {
     private final IntegerProperty count = new SimpleIntegerProperty();
     private final ObjectProperty<DataStoreEntryRef<ScriptGroupStore>> targetGroup = new SimpleObjectProperty<>();
 
-    public ScriptCollectionSourceImportDialog(ScriptCollectionSource source) {
+    public ScriptCollectionSourceImportDialog(DataStoreEntryRef<ScriptCollectionSourceStore> source) {
         this.source = source;
-        available.setAll(source.listScripts());
+        available.setAll(source.getStore().getSource().listScripts());
         update();
 
         filter.addListener((observable, oldValue, newValue) -> {
@@ -74,8 +74,8 @@ public class ScriptCollectionSourceImportDialog {
         var refresh = new ButtonComp(null, new FontIcon("mdmz-refresh"), () -> {
             ThreadHelper.runAsync(() -> {
                 try (var ignored = new BooleanScope(busy).exclusive().start()) {
-                    source.prepare();
-                    var all = source.listScripts();
+                    source.getStore().getSource().prepare();
+                    var all = source.getStore().getSource().listScripts();
                     available.setAll(all);
                     update();
                 } catch (Exception e) {
@@ -151,7 +151,7 @@ public class ScriptCollectionSourceImportDialog {
         var added = new ArrayList<DataStoreEntry>();
         for (ScriptCollectionSourceEntry e : selected) {
             var name = FilePath.of(e.getName()).getBaseName().toString();
-            var textSource = ScriptTextSource.SourceReference.builder().entry(e).build();
+            var textSource = ScriptTextSource.SourceReference.builder().ref(source).name(e.getName()).build();
 
             var alreadyAdded = DataStorage.get().getStoreEntries().stream().anyMatch(entry -> entry.getStore() instanceof ScriptStore ss &&
                             textSource.equals(ss.getTextSource()));

@@ -6,6 +6,7 @@ import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
+import lombok.SneakyThrows;
 
 import java.util.*;
 
@@ -101,6 +102,7 @@ public class ScriptStoreSetup {
         }
     }
 
+    @SneakyThrows
     private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<ScriptStore>> refs)
             throws Exception {
         if (refs.isEmpty()) {
@@ -137,6 +139,10 @@ public class ScriptStoreSetup {
             sc.view().deleteDirectory(targetDir);
         }
         sc.view().mkdir(targetDir);
+
+        for (DataStoreEntryRef<ScriptStore> ref : refs) {
+            ref.getStore().getTextSource().checkAvailable();
+        }
 
         var d = sc.getShellDialect();
         for (DataStoreEntryRef<ScriptStore> scriptStore : refs) {

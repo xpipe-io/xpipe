@@ -10,11 +10,16 @@ import javafx.beans.value.ObservableValue;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-public class ScriptCollectionSourceImportHubProvider implements HubLeafProvider<ScriptCollectionSourceStore> {
+public class ScriptUrlSourceRefreshHubProvider implements HubLeafProvider<ScriptStore> {
 
     @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.CUSTOM;
+    }
+
+    @Override
+    public boolean isApplicable(DataStoreEntryRef<ScriptStore> o) {
+        return o.getStore().getTextSource() instanceof ScriptTextSource.Url;
     }
 
     @Override
@@ -23,33 +28,33 @@ public class ScriptCollectionSourceImportHubProvider implements HubLeafProvider<
     }
 
     @Override
-    public ObservableValue<String> getName(DataStoreEntryRef<ScriptCollectionSourceStore> store) {
-        return AppI18n.observable("importScripts");
+    public ObservableValue<String> getName(DataStoreEntryRef<ScriptStore> store) {
+        return AppI18n.observable("refreshSource");
     }
 
     @Override
-    public LabelGraphic getIcon(DataStoreEntryRef<ScriptCollectionSourceStore> store) {
-        return new LabelGraphic.IconGraphic("mdi2i-import");
+    public LabelGraphic getIcon(DataStoreEntryRef<ScriptStore> store) {
+        return new LabelGraphic.IconGraphic("mdi2r-refresh");
     }
 
     @Override
     public Class<?> getApplicableClass() {
-        return ScriptCollectionSourceStore.class;
+        return ScriptStore.class;
     }
 
     @Override
     public String getId() {
-        return "importScriptCollection";
+        return "refreshScriptUrlSource";
     }
 
     @Jacksonized
     @SuperBuilder
-    public static class Action extends StoreAction<ScriptCollectionSourceStore> {
+    public static class Action extends StoreAction<ScriptStore> {
 
         @Override
-        public void executeImpl() {
-            var dialog = new ScriptCollectionSourceImportDialog(ref);
-            dialog.show();
+        public void executeImpl() throws Exception {
+            var url = (ScriptTextSource.Url) ref.getStore().getTextSource();
+            url.refresh();
         }
     }
 }
