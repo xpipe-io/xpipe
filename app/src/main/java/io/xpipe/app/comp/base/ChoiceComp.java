@@ -17,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
 
     Property<T> value;
@@ -69,12 +71,20 @@ public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
             }
         });
         range.subscribe(c -> {
-            var list = FXCollections.observableArrayList(c.keySet());
-            if (!list.contains(null) && includeNone) {
-                list.addFirst(null);
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                var list = FXCollections.observableArrayList(c.keySet());
+                if (!list.contains(null) && includeNone) {
+                    list.addFirst(null);
+                }
 
-            cb.getItems().setAll(list);
+                cb.getItems().setAll(list);
+
+                if (list.size() == 1) {
+                    value.setValue(list.getFirst());
+                } else if (list.isEmpty()) {
+                    value.setValue(null);
+                }
+            });
         });
 
         cb.valueProperty().addListener((observable, oldValue, newValue) -> {
