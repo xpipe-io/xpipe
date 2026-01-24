@@ -282,6 +282,10 @@ public interface ScriptTextSource {
         }
 
         private ScriptCollectionSourceEntry findSourceEntryIfPossible() {
+            if (ref == null) {
+                return null;
+            }
+
             var cached = ref.getStore().getState().getEntries();
             if (cached == null) {
                 return null;
