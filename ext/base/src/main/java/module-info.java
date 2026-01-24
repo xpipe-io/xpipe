@@ -62,8 +62,7 @@ open module io.xpipe.ext.base {
             LocalIdentityStoreProvider,
             SyncedIdentityStoreProvider,
             PasswordManagerIdentityStoreProvider,
-            AbstractHostStoreProvider,
-            ScriptGroupStoreProvider;
+            AbstractHostStoreProvider;
     provides DataStorageExtensionProvider with
             ScriptDataStorageProvider;
 }

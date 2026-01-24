@@ -6,11 +6,13 @@ import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
+import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.*;
@@ -28,7 +30,29 @@ import java.util.Locale;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStoreProvider {
+public class ScriptStoreProvider implements DataStoreProvider {
+
+    @Override
+    public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
+        if (sec.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return StoreEntryComp.create(sec, null, preferLarge);
+        }
+
+        EnabledStoreState initialState = sec.getWrapper().getEntry().getStorePersistentState();
+        var enabled = new SimpleBooleanProperty(initialState.isEnabled());
+        sec.getWrapper().getPersistentState().subscribe((newValue) -> {
+            EnabledStoreState s = sec.getWrapper().getEntry().getStorePersistentState();
+            enabled.set(s.isEnabled());
+        });
+
+        var toggle = StoreToggleComp.<StatefulDataStore<EnabledStoreState>>enableToggle(
+                null, sec, enabled, (s, aBoolean) -> {
+                    var state = s.getState().toBuilder().enabled(aBoolean).build();
+                    s.setState(state);
+                });
+
+        return StoreEntryComp.create(sec, toggle, preferLarge);
+    }
 
     @Override
     public DocumentationLink getHelpLink() {
@@ -60,19 +84,12 @@ public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStor
         return DataStoreCreationCategory.SCRIPT;
     }
 
-    @Override
-    public DataStoreEntry getDisplayParent(DataStoreEntry store) {
-        ScriptStore st = store.getStore().asNeeded();
-        return st.getGroup().get();
-    }
-
     @SneakyThrows
     @Override
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         ScriptStore st = store.getValue().asNeeded();
 
         var textSource = new SimpleObjectProperty<>(st.getTextSource());
-        var group = new SimpleObjectProperty<>(st.getGroup());
         var others = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
 
         var textSourceChoice = OptionsChoiceBuilder.builder().property(textSource).available(ScriptTextSource.getClasses()).build();
@@ -137,23 +154,10 @@ public class ScriptStoreProvider implements EnabledParentStoreProvider, DataStor
                                 scriptStore -> !scriptStore.get().equals(entry) && !others.contains(scriptStore),
                                 StoreViewState.get().getAllScriptsCategory()),
                         others)
-                .name("scriptGroup")
-                .description("scriptGroupDescription")
-                .documentationLink(DocumentationLink.SCRIPTING_GROUPS)
-                .addComp(
-                        new StoreChoiceComp<>(
-                                null,
-                                group,
-                                ScriptGroupStore.class,
-                                null,
-                                StoreViewState.get().getAllScriptsCategory()),
-                        group)
-                .nonNull()
                 .bind(
                         () -> {
                             return ScriptStore.builder()
                                     .textSource(textSource.get())
-                                    .group(group.get())
                                     .scripts(new ArrayList<>(others.get()))
                                     .description(st.getDescription())
                                     .initScript(selectedExecTypes.contains(0))

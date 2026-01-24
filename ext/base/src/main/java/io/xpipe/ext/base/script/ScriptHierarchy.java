@@ -1,81 +1,108 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
 import lombok.Value;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 
 @Value
 public class ScriptHierarchy {
 
-    DataStoreEntryRef<?> base;
+    String name;
+    DataStoreCategory category;
+    DataStoreEntryRef<ScriptStore> script;
     List<ScriptHierarchy> children;
 
     public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<ScriptStore>> include) {
-        var enabled = ScriptStoreSetup.getEnabledScripts();
-        var all = new HashSet<DataStoreEntryRef<?>>(ScriptStoreSetup.getEnabledScripts());
+        var enabled = ScriptStoreSetup.getEnabledScripts().stream().filter(include).toList();
 
-        // Add parents
+        var categories = new HashSet<DataStoreCategory>();
         for (DataStoreEntryRef<ScriptStore> ref : enabled) {
-            DataStoreEntryRef<?> current = ref;
-            while (true) {
-                var parent = DataStorage.get().getDefaultDisplayParent(current.get());
-                if (parent.isPresent()) {
-                    DataStoreEntryRef<ScriptGroupStore> next = parent.get().ref();
-                    all.add(next);
-                    current = next;
-                } else {
-                    break;
+            var cat = DataStorage.get().getStoreCategory(ref.get());
+            var catParents = DataStorage.get().getCategoryParentHierarchy(cat);
+            categories.addAll(catParents);
+        }
+
+        var hierarchy = new ScriptHierarchy(null, null, null, new ArrayList<>());
+        while (true) {
+            var changed = false;
+            for (DataStoreCategory cat : categories) {
+                // We don't support the All Scripts root
+                if (cat.getParentCategory() == null) {
+                    continue;
                 }
+
+                var toAdd = new ScriptHierarchy(cat.getName(), cat, null, new ArrayList<>());
+
+                if (cat.getParentCategory().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID)) {
+                    if (!hierarchy.getChildren().contains(toAdd)) {
+                        hierarchy.getChildren().add(toAdd);
+                        changed = true;
+                    }
+                    continue;
+                }
+
+                var parentHierarchy = findParent(hierarchy, cat);
+                if (parentHierarchy.isEmpty()) {
+                    continue;
+                }
+
+                var alreadyAdded = parentHierarchy.get().getChildren().contains(toAdd);
+                if (alreadyAdded) {
+                    continue;
+                }
+
+                parentHierarchy.get().getChildren().add(toAdd);
+                changed = true;
+            }
+
+            if (!changed) {
+                break;
             }
         }
 
-        var top = all.stream()
-                .filter(ref -> {
-                    var parent = DataStorage.get().getDefaultDisplayParent(ref.get());
-                    return parent.isEmpty();
-                })
-                .toList();
+        for (DataStoreEntryRef<ScriptStore> scriptRef : enabled) {
+            var scriptCategory = DataStorage.get().getStoreCategory(scriptRef.get());
+            var catHierarchy = findParent(hierarchy, scriptCategory);
+            if (catHierarchy.isEmpty()) {
+                continue;
+            }
 
-        var mapped = top.stream()
-                .map(ref -> buildHierarchy(ref, check -> {
-                    if (!include.test(check.asNeeded())) {
-                        return false;
-                    }
+            var childTarget = catHierarchy.get().getChildren().stream()
+                    .filter(child -> child.getCategory().equals(scriptCategory))
+                    .findFirst();
+            if (childTarget.isEmpty()) {
+                continue;
+            }
 
-                    return all.contains(check);
-                }))
-                .map(hierarchy -> condenseHierarchy(hierarchy))
-                .filter(hierarchy -> hierarchy.show())
-                .sorted(Comparator.comparing(scriptHierarchy ->
-                        scriptHierarchy.getBase().get().getName().toLowerCase()))
-                .toList();
-        return condenseHierarchy(new ScriptHierarchy(null, mapped));
+            childTarget.get().getChildren().add(new ScriptHierarchy(scriptRef.get().getName(), null, scriptRef, List.of()));
+        }
+
+        return condenseHierarchy(hierarchy);
     }
 
-    private static ScriptHierarchy buildHierarchy(
-            DataStoreEntryRef<?> ref, Predicate<DataStoreEntryRef<ScriptStore>> include) {
-        if (ref.getStore() instanceof ScriptGroupStore) {
-            var directChildren = DataStorage.get().getStoreChildren(ref.get()).stream()
-                    .filter(entry -> entry.getValidity().isUsable() && entry.getStore() instanceof ScriptStore)
-                    .map(dataStoreEntry -> dataStoreEntry.<ScriptStore>ref())
-                    .toList();
-            var children = directChildren.stream()
-                    .filter(include)
-                    .map(c -> buildHierarchy(c, include))
-                    .filter(hierarchy -> hierarchy.show())
-                    .sorted(Comparator.comparing(scriptHierarchy ->
-                            scriptHierarchy.getBase().get().getName().toLowerCase()))
-                    .toList();
-            return new ScriptHierarchy(ref, children);
-        } else {
-            return new ScriptHierarchy(ref, List.of());
+    private static Optional<ScriptHierarchy> findParent(ScriptHierarchy hierarchy, DataStoreCategory category) {
+        if (category.equals(hierarchy.getCategory())) {
+            return Optional.of(hierarchy);
         }
+
+        if (hierarchy.getChildren().stream().anyMatch(child -> category.equals(child.getCategory()))) {
+            return Optional.of(hierarchy);
+        }
+
+        var children = hierarchy.getChildren();
+        for (ScriptHierarchy child : children) {
+            var foundInChild = findParent(child, category);
+            if (foundInChild.isPresent()) {
+                return foundInChild;
+            }
+        }
+
+        return Optional.empty();
     }
 
     public static ScriptHierarchy condenseHierarchy(ScriptHierarchy hierarchy) {
@@ -83,9 +110,9 @@ public class ScriptHierarchy {
                 hierarchy.getChildren().stream().map(c -> condenseHierarchy(c)).toList();
         if (children.size() == 1 && !children.getFirst().isLeaf()) {
             var nestedChildren = children.getFirst().getChildren();
-            return new ScriptHierarchy(hierarchy.getBase(), nestedChildren);
+            return new ScriptHierarchy(children.getFirst().getName(), hierarchy.getCategory(), hierarchy.getScript(), nestedChildren);
         } else {
-            return new ScriptHierarchy(hierarchy.getBase(), children);
+            return new ScriptHierarchy(hierarchy.getName(), hierarchy.getCategory(), hierarchy.getScript(), children);
         }
     }
 
@@ -94,14 +121,14 @@ public class ScriptHierarchy {
     }
 
     public boolean isEmptyBranch() {
-        return (base == null || base.getStore() instanceof ScriptGroupStore) && children.isEmpty();
+        if (category == null) {
+            return false;
+        }
+
+        return children.isEmpty();
     }
 
     public boolean isLeaf() {
-        return base != null && base.getStore() instanceof ScriptStore && children.isEmpty();
-    }
-
-    public DataStoreEntryRef<ScriptStore> getLeafBase() {
-        return base.asNeeded();
+        return script != null;
     }
 }

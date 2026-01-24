@@ -15,6 +15,7 @@ import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
@@ -172,7 +173,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
 
@@ -214,7 +215,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public RunTerminalScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
     }
@@ -228,7 +229,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
             return RunHubScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
 
@@ -266,7 +267,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public AbstractAction createBatchAction(List<DataStoreEntryRef<ShellStore>> stores) {
             return RunHubBatchScriptActionProvider.Action.builder()
                     .refs(stores)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
 
@@ -274,7 +275,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public RunHubScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunHubScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
     }
@@ -289,7 +290,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
             return RunBackgroundScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
 
@@ -327,7 +328,7 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         public RunBackgroundScriptActionProvider.Action createBatchAction(DataStoreEntryRef<ShellStore> ref) {
             return RunBackgroundScriptActionProvider.Action.builder()
                     .ref(ref)
-                    .scriptStore(hierarchy.getLeafBase())
+                    .scriptStore(hierarchy.getScript())
                     .build();
         }
 
@@ -344,16 +345,16 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
         @Override
         public ObservableValue<String> getName() {
-            return new SimpleStringProperty(hierarchy.getBase().get().getName());
+            return new ReadOnlyObjectWrapper<>(hierarchy.getName());
         }
 
         @Override
         public LabelGraphic getIcon() {
             if (hierarchy.isLeaf()) {
-                return new LabelGraphic.ImageGraphic(hierarchy.getBase().get().getEffectiveIconFile(), 16);
+                return new LabelGraphic.ImageGraphic(hierarchy.getScript().get().getEffectiveIconFile(), 16);
             }
 
-            return new LabelGraphic.IconGraphic("mdi2p-play-box-multiple-outline");
+            return new LabelGraphic.ImageGraphic("base:scriptGroup_icon.svg", 16);
         }
 
         @Override

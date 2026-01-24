@@ -21,28 +21,6 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
             return;
         }
 
-        DataStorage.get()
-                .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                        UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),
-                        DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID,
-                        "My scripts",
-                        ScriptGroupStore.builder().build()));
-
-        for (PredefinedScriptGroup value : PredefinedScriptGroup.values()) {
-            ScriptGroupStore store = ScriptGroupStore.builder()
-                    .description(value.getDescription())
-                    .build();
-            var e = DataStorage.get()
-                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                            UUID.nameUUIDFromBytes(("a " + value.getName()).getBytes(StandardCharsets.UTF_8)),
-                            DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID,
-                            value.getName(),
-                            store));
-            DataStorage.get().updateEntryStore(e, store);
-            e.setExpanded(value.isExpanded());
-            value.setEntry(e.ref());
-        }
-
         for (PredefinedScriptStore value : PredefinedScriptStore.values()) {
             var previous = DataStorage.get().getStoreEntryIfPresent(value.getUuid());
             var store = value.getScriptStore().get();

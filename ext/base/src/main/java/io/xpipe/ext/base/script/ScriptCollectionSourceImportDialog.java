@@ -5,9 +5,7 @@ import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ShellDialectIcons;
-import io.xpipe.app.hub.comp.StoreChoiceComp;
-import io.xpipe.app.hub.comp.StoreCreationDialog;
-import io.xpipe.app.hub.comp.StoreViewState;
+import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
@@ -43,7 +41,7 @@ public class ScriptCollectionSourceImportDialog {
     private final StringProperty filter = new SimpleStringProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
     private final IntegerProperty count = new SimpleIntegerProperty();
-    private final ObjectProperty<DataStoreEntryRef<ScriptGroupStore>> targetGroup = new SimpleObjectProperty<>();
+    private final ObjectProperty<StoreCategoryWrapper> targetCategory = new SimpleObjectProperty<>();
 
     public ScriptCollectionSourceImportDialog(DataStoreEntryRef<ScriptCollectionSourceStore> source) {
         this.source = source;
@@ -98,33 +96,10 @@ public class ScriptCollectionSourceImportDialog {
         stack.prefWidth(600);
         stack.prefHeight(650);
 
-        var storeChoice = new StoreChoiceComp<>(
-                null,
-                targetGroup,
-                ScriptGroupStore.class,
-                null,
-                StoreViewState.get().getAllScriptsCategory(),
-                StoreViewState.get().getAllScriptsCategory()) {
-            @Override
-            protected String toName(DataStoreEntry entry) {
-                if (entry == null) {
-                    return AppI18n.get("selectCategory");
-                } else {
-                    return super.toName(entry);
-                }
-            }
-
-            @Override
-            protected String toGraphic(DataStoreEntry entry) {
-                if (entry == null) {
-                    return "scriptGroup_icon.svg";
-                } else {
-                    return super.toGraphic(entry);
-                }
-            }
-        };
-        storeChoice.hgrow();
-        storeChoice.maxHeight(100);
+        var catChoice = new DataStoreCategoryChoiceComp(StoreViewState.get().getAllScriptsCategory(),
+                StoreViewState.get().getActiveCategory(), targetCategory, false);
+        catChoice.hgrow();
+        catChoice.maxHeight(100);
 
         var modal = ModalOverlay.of(
                 Bindings.createStringBinding(() -> {
@@ -134,19 +109,18 @@ public class ScriptCollectionSourceImportDialog {
                 null);
         modal.addButtonBarComp(refresh);
         modal.addButtonBarComp(filterField);
-        modal.addButtonBarComp(storeChoice);
+        modal.addButtonBarComp(catChoice);
         modal.addButton(ModalButton.ok(() -> {
             ThreadHelper.runAsync(() -> {
                 finish();
             });
                 }))
-                .augment(button -> button.disableProperty().bind(Bindings.isEmpty(selected).or(targetGroup.isNull())));
+                .augment(button -> button.disableProperty().bind(Bindings.isEmpty(selected).or(targetCategory.isNull())));
         modal.show();
     }
 
     private void finish() {
-        var targetCat = DataStorage.get().getStoreCategory(targetGroup.getValue().get());
-        StoreViewState.get().selectCategoryIntoViewIfNeeded(StoreViewState.get().getCategoryWrapper(targetCat));
+        StoreViewState.get().selectCategoryIntoViewIfNeeded(targetCategory.getValue());
 
         var added = new ArrayList<DataStoreEntry>();
         for (ScriptCollectionSourceEntry e : selected) {
@@ -159,7 +133,7 @@ public class ScriptCollectionSourceImportDialog {
                 continue;
             }
 
-            var store = ScriptStore.builder().textSource(textSource).group(targetGroup.get()).build();
+            var store = ScriptStore.builder().textSource(textSource).build();
             var entry = DataStoreEntry.createNew(name, store);
             DataStorage.get().addStoreEntryIfNotPresent(entry);
             added.add(entry);

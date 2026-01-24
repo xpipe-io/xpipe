@@ -29,7 +29,6 @@ import java.util.SequencedCollection;
 @JsonTypeName("script")
 public class ScriptStore implements SelfReferentialStore, StatefulDataStore<EnabledStoreState> {
 
-    DataStoreEntryRef<ScriptGroupStore> group;
     @Singular
     List<DataStoreEntryRef<ScriptStore>> scripts;
     String description;
@@ -99,8 +98,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     public void checkComplete() throws Throwable {
         Validators.nonNull(textSource);
         textSource.checkComplete();
-        Validators.nonNull(group);
-        Validators.isType(group, ScriptGroupStore.class);
         if (!initScript && !shellScript && !fileScript && !runnableScript) {
             throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }

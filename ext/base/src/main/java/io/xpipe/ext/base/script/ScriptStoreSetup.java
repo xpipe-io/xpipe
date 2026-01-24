@@ -4,6 +4,8 @@ import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreCategory;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
 import lombok.SneakyThrows;
@@ -159,29 +161,14 @@ public class ScriptStoreSetup {
         return targetDir;
     }
 
-    public static Set<DataStoreEntryRef<ScriptStore>> getEnabledScripts() {
-        var l = new HashSet<DataStoreEntryRef<ScriptStore>>();
-        DataStorage.get().getStoreEntries().stream()
+    public static List<DataStoreEntryRef<ScriptStore>> getEnabledScripts() {
+        var l = DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
-                        && dataStoreEntry.getStore() instanceof ScriptGroupStore g
-                        && g.getParent() == null)
-                .forEach(e -> addGroupChildren(e.ref(), l));
+                        && dataStoreEntry.getStore() instanceof ScriptStore ss
+                        && ss.getState().isEnabled())
+                .<DataStoreEntryRef<ScriptStore>>map(DataStoreEntry::ref)
+                .toList();
         return l;
-    }
-
-    private static void addGroupChildren(DataStoreEntryRef<ScriptGroupStore> group, Set<DataStoreEntryRef<ScriptStore>> l) {
-        var children = DataStorage.get().getStoreChildren(group.get());
-        if (group.getStore().getState().isEnabled()) {
-            children.stream()
-                    .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
-                            && dataStoreEntry.getStore() instanceof ScriptStore)
-                    .forEach(e -> l.add(e.ref()));
-        }
-
-        children.stream()
-                .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
-                        && dataStoreEntry.getStore() instanceof ScriptGroupStore)
-                .forEach(e -> addGroupChildren(e.ref(), l));
     }
 
     public static List<DataStoreEntryRef<ScriptStore>> flatten(Collection<DataStoreEntryRef<ScriptStore>> scripts) {
