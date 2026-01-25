@@ -3,13 +3,18 @@ package io.xpipe.app.prefs;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppFontSizes;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
+import io.xpipe.app.core.AppRestart;
 import io.xpipe.app.core.mode.AppOperationMode;
+import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.*;
 
 import javafx.beans.property.SimpleObjectProperty;
+
+import java.nio.file.Path;
 
 public class WorkspaceCreationDialog {
 
@@ -52,15 +57,23 @@ public class WorkspaceCreationDialog {
                             shortcutName,
                             "open -d \"" + path.get() + "\" --accept-eula",
                             "-Dio.xpipe.app.dataDir=\"" + path.get() + "\" -Dio.xpipe.app.acceptEula=true");
-                    // This is an async action, so sleep
-                    DesktopHelper.browseFileInDirectory(file);
-                    ThreadHelper.sleep(1000);
-                    AppOperationMode.close();
+                    showConfirmModal(file, Path.of(path.get()));
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();
                 }
             });
         }));
+        modal.show();
+    }
+
+    private static void showConfirmModal(Path shortcut, Path workspaceDir) {
+        var modal = ModalOverlay.of("workspaceRestartTitle", AppDialog.dialogText(AppI18n.observable("workspaceRestartContent", shortcut)));
+        modal.addButton(new ModalButton("browseShortcut", () -> {
+            DesktopHelper.browseFileInDirectory(shortcut);
+        }, false, false));
+        modal.addButton(new ModalButton("restart", () -> {
+            AppRestart.restart(workspaceDir);
+        }, true, true));
         modal.show();
     }
 }

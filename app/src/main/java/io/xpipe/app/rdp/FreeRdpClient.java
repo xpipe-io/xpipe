@@ -60,7 +60,7 @@ public class FreeRdpClient implements ExternalRdpClient {
         }
 
         try (var sc = LocalShell.getShell().start()) {
-            var cmd = sc.getShellDialect().launchAsync(b);
+            var cmd = sc.getShellDialect().launchAsync(b, true);
             sc.command(cmd).sensitive().execute();
         }
     }

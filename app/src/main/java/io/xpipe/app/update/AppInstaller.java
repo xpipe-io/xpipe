@@ -115,7 +115,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        AppRestart.getBackgroundRestartCommand(null, ShellDialects.CMD));
+                        AppRestart.getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, ShellDialects.CMD));
             }
 
             private String getPowershellCommand(String file, String logFile, boolean systemWide) {
@@ -138,7 +138,7 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        AppRestart.getBackgroundRestartCommand(null, ShellDialects.POWERSHELL));
+                        AppRestart.getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, ShellDialects.POWERSHELL));
             }
         }
 
