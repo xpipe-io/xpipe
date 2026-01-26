@@ -83,7 +83,7 @@ public class ScriptQuickEditHubLeafProvider implements HubLeafProvider<ScriptSto
             }
 
             var script = ref.getStore();
-            var dialect = script.getMinimumDialect();
+            var dialect = script.getShellDialect();
             var ext = dialect != null ? dialect.getScriptFileEnding() : "sh";
             var name = OsFileSystem.ofLocal().makeFileSystemCompatible(ref.get().getName());
             FileOpener.openString(name + "." + ext, this, script.getTextSource().getText().getValue(), (s) -> {

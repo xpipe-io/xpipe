@@ -27,13 +27,17 @@ public class ShellScript {
         return new ShellScript(lines.stream().collect(Collectors.joining("\n")));
     }
 
-    public String withoutShebang() {
+    public ShellScript withoutShebang() {
         var shebang = value.startsWith("#!");
         if (shebang) {
-            return value.lines().skip(1).collect(Collectors.joining("\n"));
+            return new ShellScript(value.lines().skip(1).collect(Collectors.joining("\n")));
         } else {
-            return value;
+            return this;
         }
+    }
+
+    public ShellScript withShebang(ShellDialect dialect) {
+        return new ShellScript("#!/usr/bin/env " + dialect.getExecutableName() + "\n" + withoutShebang());
     }
 
     @Override

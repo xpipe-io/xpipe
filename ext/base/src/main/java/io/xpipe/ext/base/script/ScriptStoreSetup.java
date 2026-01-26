@@ -58,7 +58,12 @@ public class ScriptStoreSetup {
                         new ShellTerminalInitCommand() {
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) {
-                                return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl, false));
+                                var assembled = s.getStore().assembleScriptChain(shellControl, false);
+                                if (assembled == null) {
+                                    return Optional.empty();
+                                }
+
+                                return Optional.ofNullable(assembled.getValue());
                             }
 
                             @Override

@@ -8,6 +8,7 @@ import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
+import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
 
@@ -50,34 +51,39 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return seen;
     }
 
-    public ShellDialect getMinimumDialect() {
+    public ShellDialect getShellDialect() {
         return textSource != null ? textSource.getDialect() : null;
     }
 
     public boolean isCompatible(ShellControl shellControl) {
         var targetType = shellControl.getOriginalShellDialect();
-        return getMinimumDialect() == null || getMinimumDialect().isCompatibleTo(targetType);
+        return getShellDialect() == null || getShellDialect().isCompatibleTo(targetType);
     }
 
     public boolean isCompatible(ShellDialect dialect) {
-        return getMinimumDialect() == null || getMinimumDialect().isCompatibleTo(dialect);
+        return getShellDialect() == null || getShellDialect().isCompatibleTo(dialect);
     }
 
     private String assembleScript(ShellControl shellControl, boolean args) {
         if (isCompatible(shellControl)) {
-            var raw = getTextSource().getText().withoutShebang();
+            var raw = getTextSource().getText().withoutShebang().getValue();
+            if (raw.isBlank()) {
+                return null;
+            }
+
             var targetType = shellControl.getOriginalShellDialect();
-            var script = ScriptHelper.createExecScript(targetType, shellControl, raw);
-            return targetType.sourceScriptCommand(shellControl, script.toString()) + (args ? " "
-                    + targetType.getCatchAllVariable() : "");
+            var scriptDialect = getShellDialect() != null ? getShellDialect() : targetType;
+            var script = ScriptHelper.createExecScript(scriptDialect, shellControl, raw);
+            var canSource = targetType.isSourceCompatibleTo(scriptDialect);
+            var base = canSource ? targetType.sourceScriptCommand(shellControl, script.toString()) : targetType.runScriptCommand(shellControl, script.toString());
+            return base + (args ? " " + targetType.getCatchAllVariable() : "");
         }
 
         return null;
     }
 
     @SneakyThrows
-    public String assembleScriptChain(ShellControl shellControl, boolean args) {
-        var nl = shellControl.getShellDialect().getNewLine().getNewLineString();
+    public ShellScript assembleScriptChain(ShellControl shellControl, boolean args) {
         var all = queryFlattenedScripts();
 
         for (DataStoreEntryRef<ScriptStore> ref : all) {
@@ -91,13 +97,14 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         if (r.isEmpty()) {
             return null;
         }
-        return String.join(nl, r);
+        return ShellScript.lines(r);
     }
 
     @Override
     public void checkComplete() throws Throwable {
-        Validators.nonNull(textSource);
-        textSource.checkComplete();
+        if (textSource != null) {
+            textSource.checkComplete();
+        }
         if (!initScript && !shellScript && !fileScript && !runnableScript) {
             throw new ValidationException(AppI18n.get("valueMustNotBeEmpty"));
         }
@@ -132,5 +139,9 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
                         .filter(ref -> ref.get().getValidity().isUsable())
                         .toList()
                 : List.of();
+    }
+
+    public ScriptTextSource getTextSource() {
+        return textSource != null ? textSource : ScriptTextSource.InPlace.builder().build();
     }
 }

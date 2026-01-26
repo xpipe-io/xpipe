@@ -17,7 +17,7 @@ public abstract class BaseRegionBuilder<T extends Region, B extends BaseRegionBu
 
     public BaseRegionBuilder() {
         apply(t -> {
-            BindingsHelper.preserve(t, this);
+            BindingsHelper.preserve(t, BaseRegionBuilder.this);
         });
     }
 

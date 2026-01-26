@@ -46,6 +46,27 @@ public class AppDesktopIntegration {
                         b.runOnWake();
                     }
                 });
+
+                Desktop.getDesktop().addAppEventListener(new UserSessionListener() {
+                    @Override
+                    public void userSessionDeactivated(UserSessionEvent e) {
+                        if (AppPrefs.get() == null) {
+                            return;
+                        }
+
+                        var b = AppPrefs.get().hibernateBehaviour().getValue();
+                        if (b == null) {
+                            return;
+                        }
+
+                        b.runOnSleep();
+                    }
+
+                    @Override
+                    public void userSessionActivated(UserSessionEvent e) {
+
+                    }
+                });
             }
 
             // This will initialize the toolkit on macOS and create the dock icon

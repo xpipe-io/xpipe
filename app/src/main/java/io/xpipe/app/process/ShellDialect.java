@@ -36,6 +36,10 @@ public interface ShellDialect {
         return this.equals(other);
     }
 
+    default boolean isSourceCompatibleTo(ShellDialect other) {
+        return this.equals(other);
+    }
+
     String getCatchAllVariable();
 
     String queryVersion(ShellControl shellControl) throws Exception;

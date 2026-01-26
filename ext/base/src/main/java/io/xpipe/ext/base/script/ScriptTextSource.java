@@ -8,6 +8,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ValidationException;
@@ -85,22 +86,25 @@ public interface ScriptTextSource {
                         return dialect.getValue() != null
                                 ? dialect.getValue().getScriptFileEnding()
                                 : "sh";
-                    }, dialect)))
+                    }, dialect)), text)
                     .bind(() -> InPlace.builder().dialect(dialect.get()).text(text.get()).build(),
                     property);
         }
 
         @Override
-        public void checkComplete() throws ValidationException {
-            Validators.nonNull(text);
-        }
+        public void checkComplete() throws ValidationException {}
 
         @Override
         public void checkAvailable() throws Exception {}
 
         @Override
         public String toSummary() {
-            return null;
+            return AppI18n.get("inPlaceScript");
+        }
+
+        @Override
+        public ShellScript getText() {
+            return text != null ? text : ShellScript.empty();
         }
     }
 
@@ -179,7 +183,7 @@ public interface ScriptTextSource {
         public String toSummary() {
             try {
                 var uri = URI.create(url);
-                return FilePath.of(uri.getPath()).getFileName();
+                return AppI18n.get("sourcedFrom", FilePath.of(uri.getPath()).getFileName());
             } catch (IllegalArgumentException ignored) {
                 return null;
             }
@@ -260,7 +264,7 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            return ref.get().getName() + "/" + name;
+            return AppI18n.get("sourcedFrom", ref.get().getName());
         }
 
         @Override
