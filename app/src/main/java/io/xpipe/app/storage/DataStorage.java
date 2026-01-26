@@ -103,6 +103,10 @@ public abstract class DataStorage {
         }
     }
 
+    public abstract void pullManually();
+
+    public abstract void pushManually();
+
     public abstract void reloadContent();
 
     public abstract SecretKey getVaultKey();

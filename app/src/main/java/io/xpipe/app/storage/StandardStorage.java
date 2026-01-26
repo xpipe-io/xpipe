@@ -7,7 +7,6 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.ext.LocalStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.secret.EncryptionKey;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.GlobalTimer;
@@ -51,11 +50,24 @@ public class StandardStorage extends DataStorage {
         this.dataStorageUserHandler = DataStorageUserHandler.getInstance();
     }
 
-    private void startSyncWatcher() {
-        if (!AppPrefs.get().syncInstantly().get()) {
+    public void pullManually() {
+        if (!busyIo.tryLock()) {
             return;
         }
+        dataStorageSyncHandler.pullManually();
+        busyIo.unlock();
+    }
 
+    @Override
+    public void pushManually() {
+        if (!busyIo.tryLock()) {
+            return;
+        }
+        dataStorageSyncHandler.pushManually();
+        busyIo.unlock();
+    }
+
+    private void startSyncWatcher() {
         GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
             ThreadHelper.runAsync(() -> {
                 if (!busyIo.tryLock()) {

@@ -9,6 +9,12 @@ import javax.crypto.SecretKey;
 public class ImpersistentStorage extends DataStorage {
 
     @Override
+    public void pullManually() {}
+
+    @Override
+    public void pushManually() {}
+
+    @Override
     public void reloadContent() {}
 
     @Override
