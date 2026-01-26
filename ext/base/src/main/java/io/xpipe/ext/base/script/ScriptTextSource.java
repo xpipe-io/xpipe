@@ -181,12 +181,8 @@ public interface ScriptTextSource {
 
         @Override
         public String toSummary() {
-            try {
-                var uri = URI.create(url);
-                return AppI18n.get("sourcedFrom", FilePath.of(uri.getPath()).getFileName());
-            } catch (IllegalArgumentException ignored) {
-                return null;
-            }
+            return AppI18n.get("sourcedFrom", url.replace("http://", "").replace("https://", "")
+                    .replace("file://", "").replace("ssh://", ""));
         }
 
         @Override
