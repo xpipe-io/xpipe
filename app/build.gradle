@@ -23,8 +23,8 @@ dependencies {
     api project(':beacon')
 
     compileOnly 'org.hamcrest:hamcrest:3.0'
-    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.13.4'
-    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.13.4'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.14.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-params:5.14.2'
 
     api 'com.vladsch.flexmark:flexmark:0.64.8'
     api 'com.vladsch.flexmark:flexmark-util:0.64.8'
@@ -48,13 +48,13 @@ dependencies {
     api 'com.vladsch.flexmark:flexmark-ext-yaml-front-matter:0.64.8'
     api 'com.vladsch.flexmark:flexmark-ext-toc:0.64.8'
 
-    api ('io.modelcontextprotocol.sdk:mcp-core:0.14.1')  {
+    api ('io.modelcontextprotocol.sdk:mcp-core:0.17.2')  {
         exclude group: "com.ethlo.time", module: "itu"
     }
-    api ('io.modelcontextprotocol.sdk:mcp-json:0.14.1')  {
+    api ('io.modelcontextprotocol.sdk:mcp-json:0.17.2')  {
         exclude group: "com.ethlo.time", module: "itu"
     }
-    api ('io.modelcontextprotocol.sdk:mcp-json-jackson2:0.13.0')  {
+    api ('io.modelcontextprotocol.sdk:mcp-json-jackson2:0.17.2')  {
         exclude group: "com.ethlo.time", module: "itu"
         exclude group: "com.fasterxml.jackson.dataformat", module: "jackson-dataformat-yaml"
     }
@@ -68,14 +68,14 @@ dependencies {
 
     api "com.github.weisj:jsvg:1.7.2"
     api 'io.xpipe:vernacular:1.16'
-    api 'org.bouncycastle:bcprov-jdk18on:1.81'
+    api 'org.bouncycastle:bcprov-jdk18on:1.83'
     api 'info.picocli:picocli:4.7.7'
-    api 'org.apache.commons:commons-lang3:3.18.0'
+    api 'org.apache.commons:commons-lang3:3.20.0'
     api 'io.sentry:sentry:8.20.0'
-    api 'commons-io:commons-io:2.20.0'
-    api "com.fasterxml.jackson.core:jackson-databind:2.20.0"
-    api "com.fasterxml.jackson.core:jackson-annotations:2.20"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0"
+    api 'commons-io:commons-io:2.21.0'
+    api "com.fasterxml.jackson.core:jackson-databind:2.21.0"
+    api "com.fasterxml.jackson.core:jackson-annotations:2.21"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.0"
     api "org.kordamp.ikonli:ikonli-material2-pack:12.4.0"
     api "org.kordamp.ikonli:ikonli-materialdesign2-pack:12.4.0"
     api 'org.kordamp.ikonli:ikonli-bootstrapicons-pack:12.4.0'
