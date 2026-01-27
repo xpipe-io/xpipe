@@ -228,7 +228,7 @@ public interface ScriptTextSource {
             importButton.disable(ref.isNull());
 
             return new OptionsBuilder()
-                    .nameAndDescription("scriptCollectionSourceType")
+                    .nameAndDescription("scriptCollectionSourceEntry")
                     .addComp(new InputGroupComp(List.of(sourceChoice, importButton)).setMainReference(0), ref)
                     .nonNull()
                     .nameAndDescription("scriptSourceName")

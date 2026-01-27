@@ -135,6 +135,7 @@ public class ScriptCollectionSourceImportDialog {
 
             var store = ScriptStore.builder().textSource(textSource).build();
             var entry = DataStoreEntry.createNew(name, store);
+            entry.setCategoryUuid(targetCategory.getValue().getCategory().getUuid());
             DataStorage.get().addStoreEntryIfNotPresent(entry);
             added.add(entry);
         }

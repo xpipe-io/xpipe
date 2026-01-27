@@ -23,18 +23,20 @@ public class AppPrefsComp extends SimpleRegionBuilder {
         var categories = AppPrefs.get().getCategories().stream()
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
-        var boxComp = new ListBoxViewComp<>(FXCollections.observableArrayList(categories), FXCollections.observableArrayList(categories), appPrefsCategory -> {
-            var r = appPrefsCategory
-                    .create()
-                    .style("prefs-container")
-                    .style(appPrefsCategory.getId());
-            return r;
-        }, false);
+        var list = categories.stream()
+                .map(appPrefsCategory -> {
+                    var r = appPrefsCategory
+                            .create()
+                            .style("prefs-container")
+                            .style(appPrefsCategory.getId());
+                    return r;
+                })
+                .toList();
+        var boxComp = new VerticalComp(list);
         boxComp.apply(struc -> {
-            struc.getContent().getStyleClass().add("prefs-box");
+            struc.getStyleClass().add("prefs-box");
         });
         boxComp.maxWidth(850);
-        boxComp.setVisibilityControl(true);
         var box = boxComp.build();
 
         var pane = new GraphicDecorationStackPane();

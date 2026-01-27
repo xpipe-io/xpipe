@@ -313,6 +313,7 @@ public final class AppPrefs {
             .key("syncMode")
             .valueClass(SyncMode.class)
             .requiresRestart(true)
+            .documentationLink(DocumentationLink.SYNC_MODE)
             .build());
     final ObjectProperty<CloseBehaviour> closeBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(CloseBehaviour.QUIT))

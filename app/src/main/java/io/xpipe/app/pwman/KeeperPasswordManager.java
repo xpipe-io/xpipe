@@ -126,7 +126,6 @@ public class KeeperPasswordManager implements PasswordManager {
                     .add("--password")
                     .addLiteral(r.getSecretValue());
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
-            CommandBuilder fullB;
             if (mfa != null && mfa) {
                 var index = getTotpDurationIndex();
                 if (hasCompletedRequestInSession && index > 0) {
@@ -136,7 +135,6 @@ public class KeeperPasswordManager implements PasswordManager {
                           
                           """;
                     sc.view().writeTextFile(file, input);
-                    fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
                 } else {
                     var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
                     if (totp.getState() != SecretQueryState.NORMAL) {
@@ -150,12 +148,13 @@ public class KeeperPasswordManager implements PasswordManager {
                                 
                                 """.formatted(index != -1 ? "\n" + getTotpDurationValues().get(index) : "", totp.getSecret().getSecretValue());
                     sc.view().writeTextFile(file, input);
-                    fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
                 }
             } else {
-                fullB = b;
+                var input = "\n";
+                sc.view().writeTextFile(file, input);
             }
 
+            var fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
             var queryCommand = sc.command(fullB);
             queryCommand.sensitive();
             queryCommand.killOnTimeout(CountDown.of().start(15_000));
@@ -164,7 +163,7 @@ public class KeeperPasswordManager implements PasswordManager {
             var exitCode = queryCommand.getExitCode();
 
             if (file != null) {
-                sc.view().deleteFileIfPossible(file);
+                // sc.view().deleteFileIfPossible(file);
             }
 
             var out = result[0].replace("\r\n", "\n").replace("""
@@ -198,7 +197,8 @@ public class KeeperPasswordManager implements PasswordManager {
                     (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
 
             if (exitCode != 0) {
-                var wrongPw = outPrefix.contains("Enter password for");
+                // Another password prompt was made
+                var wrongPw = outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
                 if (wrongPw) {
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
                     ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?").expected().handle();
@@ -206,9 +206,6 @@ public class KeeperPasswordManager implements PasswordManager {
                 }
 
                 var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
-                if (message.isEmpty()) {
-                    message = result[0] + "\n" + result[1];
-                }
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }

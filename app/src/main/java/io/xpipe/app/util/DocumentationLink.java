@@ -18,6 +18,8 @@ public enum DocumentationLink {
     WEBTOP_TUN("guide/webtop#networking-tailscale-and-netbird"),
     SYNC("guide/sync"),
     SYNC_LOCAL("guide/sync#local-repositories"),
+    SYNC_MODE("guide/sync#sync-frequency"),
+    SYNC_PLAIN("guide/sync#plain-directories"),
     DESKTOP_APPLICATIONS("guide/desktop-applications"),
     SERVICES("guide/services"),
     SCRIPTING("guide/scripting"),
