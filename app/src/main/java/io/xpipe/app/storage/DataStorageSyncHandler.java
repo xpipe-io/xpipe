@@ -35,7 +35,7 @@ public interface DataStorageSyncHandler {
 
     void beforeStorageSave();
 
-    void afterStorageSave(boolean dispose);
+    void afterStorageSave(boolean pushIfNeeded, boolean dispose);
 
     void handleEntry(DataStoreEntry entry, boolean exists, boolean dirty);
 

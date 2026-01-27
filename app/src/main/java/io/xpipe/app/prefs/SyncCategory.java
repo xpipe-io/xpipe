@@ -76,6 +76,7 @@ public class SyncCategory extends AppPrefsCategory {
                         .addComp(remoteRepo.maxWidth(getCompWidth()), prefs.storageGitRemote)
                         .addComp(testRow)
                         .disable(prefs.storageGitRemote.isNull().or(prefs.enableGitStorage.not()))
+                        .sub(prefs.getCustomOptions("syncToPlainDirectory"))
                         .sub(prefs.getCustomOptions("gitUsername"))
                         .sub(prefs.getCustomOptions("gitPassword"))
                         .sub(prefs.getCustomOptions("gitVaultIdentityStrategy"))
