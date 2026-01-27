@@ -1,11 +1,9 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.ListBoxViewComp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretManager;
@@ -13,26 +11,22 @@ import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.secret.SecretQueryState;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.AskpassAlert;
-import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
+import javafx.beans.property.SimpleStringProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
+import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @JsonTypeName("keeper")
@@ -45,6 +39,10 @@ public class KeeperPasswordManager implements PasswordManager {
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
     private final Boolean mfa;
+    private final String totpDuration;
+
+    @JsonIgnore
+    private boolean hasCompletedRequestInSession;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -60,13 +58,18 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
-        var mfa = new SimpleObjectProperty<>(p.getValue().getMfa());
+        var mfa = new SimpleBooleanProperty(p.getValue().getMfa() != null ?  p.getValue().getMfa() : false);
+        var duration = new SimpleStringProperty(p.getValue().getTotpDuration());
         return new OptionsBuilder()
                 .nameAndDescription("keeperUseMfa")
                 .addToggle(mfa)
+                .name("keeperTotpDuration")
+                .description(AppI18n.observable("keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
+                .addString(duration)
+                .hide(mfa.not())
                 .bind(
                         () -> {
-                            return KeeperPasswordManager.builder().mfa(mfa.get()).build();
+                            return KeeperPasswordManager.builder().mfa(mfa.get()).totpDuration(duration.get()).build();
                         },
                         p);
     }
@@ -122,22 +125,33 @@ public class KeeperPasswordManager implements PasswordManager {
                     .add("--format", "json", "--unmask")
                     .add("--password")
                     .addLiteral(r.getSecretValue());
-            FilePath file = null;
+            FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
             CommandBuilder fullB;
             if (mfa != null && mfa) {
-                var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
-                if (totp.getState() != SecretQueryState.NORMAL) {
-                    return null;
-                }
-
-                var input = """
+                var index = getTotpDurationIndex();
+                if (hasCompletedRequestInSession && index > 0) {
+                    var input = """
                           
                           1
-                          %s
-                          """.formatted(totp.getSecret().getSecretValue());
-                file = sc.getSystemTemporaryDirectory().join("keeper.txt");
-                sc.view().writeTextFile(file, input);
-                fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
+                          
+                          """;
+                    sc.view().writeTextFile(file, input);
+                    fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
+                } else {
+                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
+                    if (totp.getState() != SecretQueryState.NORMAL) {
+                        return null;
+                    }
+
+                    var input = """
+                                
+                                1%s
+                                %s
+                                
+                                """.formatted(index != -1 ? "\n" + getTotpDurationValues().get(index) : "", totp.getSecret().getSecretValue());
+                    sc.view().writeTextFile(file, input);
+                    fullB = CommandBuilder.of().add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat").addFile(file).add("|").add(b);
+                }
             } else {
                 fullB = b;
             }
@@ -192,6 +206,9 @@ public class KeeperPasswordManager implements PasswordManager {
                 }
 
                 var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
+                if (message.isEmpty()) {
+                    message = result[0] + "\n" + result[1];
+                }
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
@@ -204,6 +221,8 @@ public class KeeperPasswordManager implements PasswordManager {
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
+
+            hasCompletedRequestInSession = true;
 
             var fields = tree.get("fields");
             // There multiple schemas
@@ -255,6 +274,17 @@ public class KeeperPasswordManager implements PasswordManager {
         }
     }
 
+    private List<String> getTotpDurationValues() {
+        var values = List.of("login", "12_hours", "24_hours", "30_days", "forever");
+        return values;
+    }
+
+    private int getTotpDurationIndex() {
+        var values = getTotpDurationValues();
+        var index = totpDuration != null ? values.indexOf(totpDuration) : -1;
+        return index;
+    }
+
     @Override
     public String getKeyPlaceholder() {
         return "Record UID";
@@ -263,5 +293,10 @@ public class KeeperPasswordManager implements PasswordManager {
     @Override
     public String getWebsite() {
         return "https://www.keepersecurity.com";
+    }
+
+    @Override
+    public Duration getCacheDuration() {
+        return (mfa != null && mfa && getTotpDurationIndex() < 1) ? Duration.ofDays(10) : Duration.ofSeconds(3);
     }
 }
