@@ -6,13 +6,17 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
+import javafx.scene.Node;
+import javafx.scene.layout.Region;
 import lombok.Value;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -71,6 +75,23 @@ public class BindingsHelper {
         });
         preserve(prop, observableValue);
         return prop;
+    }
+
+    public static <R extends Region, T> void attach(R node, ObservableValue<T> value, Consumer<T> consumer) {
+        var listener = new ChangeListener<T>() {
+            @Override
+            public void changed(ObservableValue<? extends T> observable, T oldValue, T newValue) {
+                consumer.accept(newValue);
+            }
+        };
+        node.sceneProperty().subscribe(scene -> {
+            if (scene != null) {
+                consumer.accept(value.getValue());
+                value.addListener(listener);
+            } else {
+                value.removeListener(listener);
+            }
+        });
     }
 
     @Value

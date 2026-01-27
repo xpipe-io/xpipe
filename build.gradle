@@ -161,14 +161,15 @@ def getJvmArgs() {
     jvmRunArgs += ['-XX:+UseStringDeduplication']
 
     // GC config
-    jvmRunArgs += ['-XX:+UseG1GC',
-                   '-Xms300m',
-                   '-Xmx4G',
-                   '-XX:MinHeapFreeRatio=20',
-                   '-XX:MaxHeapFreeRatio=30',
-                   '-XX:GCTimeRatio=9',
-                   // The default makes GC pauses longer for some reason
-                   '-XX:G1HeapRegionSize=4m'
+    jvmRunArgs += [
+            '-XX:+UseG1GC',
+            '-Xms200m',
+            '-Xmx4G',
+            '-XX:MinHeapFreeRatio=15',
+            '-XX:MaxHeapFreeRatio=25',
+            '-XX:GCTimeRatio=9',
+            // The default makes GC pauses longer for some reason
+            '-XX:G1HeapRegionSize=4m'
     ]
 
     // Why is this not on by default? ...

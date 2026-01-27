@@ -17,12 +17,15 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
 
@@ -66,7 +69,7 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
 
         if (section.getWrapper() != null) {
             if (section.getDepth() == 1) {
-                section.getWrapper().getColor().subscribe(val -> {
+                BindingsHelper.attach(vbox, section.getWrapper().getColor(), val -> {
                     var newList = new ArrayList<>(vbox.getStyleClass());
                     newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                             .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
@@ -81,33 +84,42 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
                 });
             }
 
-            section.getWrapper().getPerUser().subscribe(val -> {
+            BindingsHelper.attach(vbox, section.getWrapper().getPerUser(), val -> {
                 vbox.pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
             });
         }
     }
 
-    protected void addVisibilityListeners(VBox root, HBox hbox) {
-        var children = new ArrayList<>(hbox.getChildren());
-        hbox.getChildren().clear();
-        root.visibleProperty().subscribe((newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue) {
-                    if (!root.isVisible()) {
-                        return;
-                    }
-
-                    if (hbox.getChildren().size() == 0) {
-                        hbox.getChildren().addAll(children);
-                    }
-                } else {
-                    if (root.isVisible()) {
-                        return;
-                    }
-
-                    hbox.getChildren().clear();
+    protected void addVisibilityListeners(VBox root, Pane pane, Supplier<HBox> hbox) {
+        AtomicReference<HBox> built = new AtomicReference<>();
+        Consumer<Boolean> update = (visible) -> {
+            if (visible) {
+                if (root.getScene() == null || !root.isVisible()) {
+                    return;
                 }
-            });
+
+                if (built.get() == null) {
+                    built.set(hbox.get());
+                }
+
+                pane.getChildren().setAll(built.get());
+            } else {
+                if (root.isVisible()) {
+                    return;
+                }
+
+                pane.getChildren().clear();
+            }
+        };
+
+        root.visibleProperty().subscribe((newValue) -> {
+            if (root.getScene() == null) {
+                update.accept(newValue);
+            } else {
+                Platform.runLater(() -> {
+                    update.accept(newValue);
+                });
+            }
         });
     }
 

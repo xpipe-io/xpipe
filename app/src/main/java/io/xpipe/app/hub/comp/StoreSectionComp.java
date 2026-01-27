@@ -10,13 +10,16 @@ import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.int4.fx.builders.pane.StackPaneBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,27 @@ public class StoreSectionComp extends StoreSectionBaseComp {
     @Override
     public VBox createSimple() {
         var entryButton = StoreEntryComp.customSection(section);
+
+        var paneComp = new StackPaneBuilder();
+        paneComp.minHeight(entryButton.getHeight());
+        paneComp.maxHeight(entryButton.getHeight());
+        paneComp.prefHeight(entryButton.getHeight());
+
+        var effectiveExpanded = effectiveExpanded(section.getWrapper().getExpanded());
+        var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
+
+        var full = new VerticalComp(List.of(paneComp, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));
+        full.style("store-entry-section-comp");
+        full.apply(struc -> {
+            struc.setFillWidth(true);
+            var pane = ((Pane) struc.getChildren().getFirst());
+            addPseudoClassListeners(struc, section.getWrapper().getExpanded());
+            addVisibilityListeners(struc, pane, () -> buildContent(entryButton).build());
+        });
+        return full.build();
+    }
+
+    private RegionBuilder<HBox> buildContent(StoreEntryComp entryButton) {
         entryButton.hgrow();
         entryButton.apply(struc -> {
             struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -78,23 +102,14 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         buttonList.add(expandButton);
         var buttons = new VerticalComp(buttonList);
         var topEntryList = new HorizontalComp(List.of(buttons, entryButton));
-        topEntryList.apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
+        topEntryList.apply(struc -> {
+            struc.setAlignment(Pos.CENTER_LEFT);
+        });
+
         topEntryList.minHeight(entryButton.getHeight());
         topEntryList.maxHeight(entryButton.getHeight());
         topEntryList.prefHeight(entryButton.getHeight());
 
-        var effectiveExpanded = effectiveExpanded(section.getWrapper().getExpanded());
-        var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
-
-        var full = new VerticalComp(
-                List.of(topEntryList, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));
-        full.style("store-entry-section-comp");
-        full.apply(struc -> {
-            struc.setFillWidth(true);
-            var hbox = ((HBox) struc.getChildren().getFirst());
-            addPseudoClassListeners(struc, section.getWrapper().getExpanded());
-            addVisibilityListeners(struc, hbox);
-        });
-        return full.build();
+        return topEntryList;
     }
 }
