@@ -1,5 +1,6 @@
 package io.xpipe.app.core.check;
 
+import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorAction;
@@ -37,7 +38,7 @@ public abstract class AppShellChecker {
 
         var attemptFallback = shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue();
         if (!attemptFallback) {
-            // Sometimes we don't to fall back
+            // Sometimes we don't want to fall back
             // The local shell init will fail terminally if it still does not work
             return;
         }
@@ -100,18 +101,24 @@ public abstract class AppShellChecker {
     }
 
     private String formatMessage(String output) {
+        var isDefaultShell = ProcessControlProvider.get()
+                .getAvailableLocalDialects()
+                .getFirst()
+                .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
+        var fallback = isDefaultShell ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell." : "";
         return """
                Shell self-test failed for %s:
                %s
 
                This indicates that something is seriously wrong and certain shell functionality will not work as expected. Some features like the terminal launcher have to create shell scripts for your external terminal emulator to launch.
 
-               %s will now attempt to fall back to another shell.
+               %s
                """
                 .formatted(
                         LocalShell.getDialect().getDisplayName(),
                         modifyOutput(output),
-                        AppNames.ofCurrent().getName());
+                        fallback)
+                .strip();
     }
 
     protected abstract boolean fallBackInstantly();

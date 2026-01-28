@@ -65,7 +65,11 @@ public class BeaconConfig {
                     name,
                     "beacon-auth");
         } else {
-            return Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe-ptb" : "xpipe", "beacon-auth");
+            var path = Path.of(System.getProperty("java.io.tmpdir"), staging ? "xpipe-ptb" : "xpipe", "beacon-auth");
+            if (path.startsWith(Path.of("C:\\Windows"))) {
+                path = Path.of(System.getenv("LOCALAPPDATA")).resolve("TEMP");
+            }
+            return path;
         }
     }
 }
