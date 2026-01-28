@@ -24,8 +24,7 @@ public class WindowsCredentialManager implements PasswordManager {
                     return null;
                 }
 
-                var cmd =
-                        """
+                var cmd = """
                           $code = @"
                           using System.Text;
                           using System;

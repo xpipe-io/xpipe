@@ -1,14 +1,14 @@
 package io.xpipe.app.spice;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.app.vnc.VncLaunchConfig;
+
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -43,7 +43,8 @@ public class CustomSpiceClient implements ExternalSpiceClient {
         }
 
         var format = command.toLowerCase(Locale.ROOT).contains("$file") ? command : command + " $FILE";
-        var toExecute = ExternalApplicationHelper.replaceVariableArgument(format, "ADDRESS", configuration.getFile().toString());
+        var toExecute = ExternalApplicationHelper.replaceVariableArgument(
+                format, "ADDRESS", configuration.getFile().toString());
         ExternalApplicationHelper.startAsync(CommandBuilder.of().add(toExecute));
     }
 

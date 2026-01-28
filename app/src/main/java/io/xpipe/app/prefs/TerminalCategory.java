@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -150,7 +149,7 @@ public class TerminalCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         prefs.enableTerminalLogging.addListener((observable, oldValue, newValue) -> {
             var feature = LicenseProvider.get().getFeature("logging");
@@ -179,12 +178,13 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(terminalChoice(true))
-                .sub(new OptionsBuilder()
-                .pref(prefs.enableTerminalDocking)
-                .addToggle(prefs.enableTerminalDocking))
-                .hide(Bindings.createBooleanBinding(() -> {
-                    return !TerminalDockHubManager.isSupported();
-                }, prefs.terminalType, prefs.terminalMultiplexer))
+                .sub(new OptionsBuilder().pref(prefs.enableTerminalDocking).addToggle(prefs.enableTerminalDocking))
+                .hide(Bindings.createBooleanBinding(
+                        () -> {
+                            return !TerminalDockHubManager.isSupported();
+                        },
+                        prefs.terminalType,
+                        prefs.terminalMultiplexer))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())

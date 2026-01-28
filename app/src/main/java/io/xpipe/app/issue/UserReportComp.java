@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -50,7 +49,7 @@ public class UserReportComp extends ModalOverlayContentComp {
         return sent.get();
     }
 
-    private static BaseRegionBuilder<?,?> privacyPolicy() {
+    private static BaseRegionBuilder<?, ?> privacyPolicy() {
         return RegionBuilder.of(() -> {
             var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
             AppFontSizes.xs(dataPolicyButton);
@@ -101,7 +100,7 @@ public class UserReportComp extends ModalOverlayContentComp {
 
                             return file.getFileName().toString();
                         },
-                file -> null,
+                        file -> null,
                         includedDiagnostics,
                         file -> false,
                         () -> false)

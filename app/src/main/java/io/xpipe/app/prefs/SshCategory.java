@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.platform.LabelGraphic;
@@ -25,7 +24,7 @@ public class SshCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var options = new OptionsBuilder().addTitle("sshConfiguration");
         if (OsType.ofLocal() == OsType.WINDOWS) {

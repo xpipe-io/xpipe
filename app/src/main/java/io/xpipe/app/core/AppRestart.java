@@ -113,7 +113,8 @@ public class AppRestart {
     public static void restart(Path dataDir) {
         AppOperationMode.executeAfterShutdown(() -> {
             try (var sc = LocalShell.getShell().start()) {
-                sc.command(getBackgroundRestartCommand(dataDir, null, sc.getShellDialect())).execute();
+                sc.command(getBackgroundRestartCommand(dataDir, null, sc.getShellDialect()))
+                        .execute();
             }
         });
     }

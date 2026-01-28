@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
@@ -21,7 +20,7 @@ public class WorkspacesCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
                 .addTitle("manageWorkspaces")
                 .sub(new OptionsBuilder()

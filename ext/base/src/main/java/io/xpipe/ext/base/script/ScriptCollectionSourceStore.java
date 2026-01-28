@@ -1,8 +1,9 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.util.Validators;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -14,7 +15,8 @@ import java.util.List;
 @Value
 @Jacksonized
 @JsonTypeName("scriptCollectionSource")
-public class ScriptCollectionSourceStore implements DataStore, StatefulDataStore<ScriptCollectionSourceStore.State>, ValidatableStore {
+public class ScriptCollectionSourceStore
+        implements DataStore, StatefulDataStore<ScriptCollectionSourceStore.State>, ValidatableStore {
 
     ScriptCollectionSource source;
 

@@ -1,15 +1,11 @@
 package io.xpipe.app.prefs;
 
-
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -25,10 +21,7 @@ public class AppPrefsComp extends SimpleRegionBuilder {
                 .toList();
         var list = categories.stream()
                 .map(appPrefsCategory -> {
-                    var r = appPrefsCategory
-                            .create()
-                            .style("prefs-container")
-                            .style(appPrefsCategory.getId());
+                    var r = appPrefsCategory.create().style("prefs-container").style(appPrefsCategory.getId());
                     return r;
                 })
                 .toList();

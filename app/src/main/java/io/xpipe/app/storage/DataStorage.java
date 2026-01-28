@@ -227,8 +227,16 @@ public abstract class DataStorage {
 
         var def = getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID);
         if (def.isEmpty()) {
-            DataStoreCategory cat = new DataStoreCategory(categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()), DEFAULT_CATEGORY_UUID,
-                    "Default", Instant.now(), Instant.now(), true, ALL_CONNECTIONS_CATEGORY_UUID, true, DataStoreCategoryConfig.empty());
+            DataStoreCategory cat = new DataStoreCategory(
+                    categoriesDir.resolve(DEFAULT_CATEGORY_UUID.toString()),
+                    DEFAULT_CATEGORY_UUID,
+                    "Default",
+                    Instant.now(),
+                    Instant.now(),
+                    true,
+                    ALL_CONNECTIONS_CATEGORY_UUID,
+                    true,
+                    DataStoreCategoryConfig.empty());
             storeCategories.add(cat);
         } else {
             def.get().setParentCategory(ALL_CONNECTIONS_CATEGORY_UUID);
@@ -958,11 +966,7 @@ public abstract class DataStorage {
             categoryId = provider.getTargetCategory(store, categoryId);
         }
 
-        var e = DataStoreEntry.createNew(
-                UUID.randomUUID(),
-                categoryId,
-                name,
-                store);
+        var e = DataStoreEntry.createNew(UUID.randomUUID(), categoryId, name, store);
         addStoreEntryIfNotPresent(e);
         return e;
     }

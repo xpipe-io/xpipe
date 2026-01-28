@@ -4,7 +4,6 @@ import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabComp;
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;

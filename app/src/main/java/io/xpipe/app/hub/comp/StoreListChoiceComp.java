@@ -1,9 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.ext.DataStore;
@@ -56,10 +54,9 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                             }
 
                             var label = new LabelComp(t.get().getName()).apply(struc -> {
-                                struc
-                                        .setGraphic(PrettyImageHelper.ofFixedSizeSquare(
-                                                        t.get().getEffectiveIconFile(), 16)
-                                                .build());
+                                struc.setGraphic(PrettyImageHelper.ofFixedSizeSquare(
+                                                t.get().getEffectiveIconFile(), 16)
+                                        .build());
                                 struc.setGraphicTextGap(8);
                             });
 
@@ -95,7 +92,8 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                                 selectedList.remove(t);
                             });
                             var row = editable
-                                    ? new HorizontalComp(List.of(label, RegionBuilder.hspacer(), up, down, delete)).spacing(5)
+                                    ? new HorizontalComp(List.of(label, RegionBuilder.hspacer(), up, down, delete))
+                                            .spacing(5)
                                     : new HorizontalComp(List.of(label, RegionBuilder.hspacer()));
                             return row.style("entry");
                         },
@@ -113,7 +111,7 @@ public class StoreListChoiceComp<T extends DataStore> extends SimpleRegionBuilde
                 selected.setValue(null);
             }
         });
-        var list = new ArrayList<BaseRegionBuilder<?,?>>();
+        var list = new ArrayList<BaseRegionBuilder<?, ?>>();
         list.add(listBox);
         if (editable) {
             list.add(RegionBuilder.vspacer(5).hide(Bindings.isEmpty(selectedList)));

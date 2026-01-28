@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
@@ -11,12 +10,10 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 public class DenseStoreEntryComp extends StoreEntryComp {
 
-    public DenseStoreEntryComp(StoreSection section, BaseRegionBuilder<?,?> content) {
+    public DenseStoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         super(section, content);
     }
 

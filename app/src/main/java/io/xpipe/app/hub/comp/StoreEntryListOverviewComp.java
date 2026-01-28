@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.CountComp;
@@ -29,8 +28,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
 import atlantafx.base.theme.Styles;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Function;
@@ -139,7 +136,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return menu;
     }
 
-    private BaseRegionBuilder<?,?> createBatchModeButton() {
+    private BaseRegionBuilder<?, ?> createBatchModeButton() {
         var batchMode = StoreViewState.get().getBatchMode();
         var b = new IconButtonComp("mdi2l-layers", () -> {
             batchMode.setValue(!batchMode.getValue());
@@ -155,7 +152,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return b;
     }
 
-    private BaseRegionBuilder<?,?> createIndexSortButton() {
+    private BaseRegionBuilder<?, ?> createIndexSortButton() {
         var sortMode = StoreViewState.get().getGlobalSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
@@ -176,8 +173,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
             }
         });
         button.apply(struc -> {
-            struc
-                    .opacityProperty()
+            struc.opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 if (sortMode.getValue() == StoreSectionSortMode.INDEX_ASC
@@ -192,7 +188,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return button;
     }
 
-    private BaseRegionBuilder<?,?> createAlphabeticalSortButton() {
+    private BaseRegionBuilder<?, ?> createAlphabeticalSortButton() {
         var sortMode = StoreViewState.get().getTieSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {
@@ -231,7 +227,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return alphabetical;
     }
 
-    private BaseRegionBuilder<?,?> createDateSortButton() {
+    private BaseRegionBuilder<?, ?> createDateSortButton() {
         var sortMode = StoreViewState.get().getTieSortMode();
         var icon = Bindings.createObjectBinding(
                 () -> {

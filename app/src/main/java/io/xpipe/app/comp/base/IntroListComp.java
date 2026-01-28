@@ -1,17 +1,13 @@
 package io.xpipe.app.comp.base;
 
-
-
-
-import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class IntroListComp extends SimpleRegionBuilder {
 

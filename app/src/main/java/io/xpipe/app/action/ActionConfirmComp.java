@@ -1,7 +1,6 @@
 package io.xpipe.app.action;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ScrollComp;
@@ -20,8 +19,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -46,7 +43,7 @@ public class ActionConfirmComp extends SimpleRegionBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private BaseRegionBuilder<?,?> createList() {
+    private BaseRegionBuilder<?, ?> createList() {
         var listProp = new SimpleListProperty<DataStoreEntryRef<DataStore>>(FXCollections.observableArrayList());
         if (action instanceof BatchStoreAction<?> ba) {
             listProp.setAll(((BatchStoreAction<DataStore>) ba).getRefs());
@@ -64,7 +61,7 @@ public class ActionConfirmComp extends SimpleRegionBuilder {
         return choice;
     }
 
-    private BaseRegionBuilder<?,?> createTable() {
+    private BaseRegionBuilder<?, ?> createTable() {
         var map = action.toDisplayMap();
         return RegionBuilder.of(() -> {
             var grid = new GridPane();

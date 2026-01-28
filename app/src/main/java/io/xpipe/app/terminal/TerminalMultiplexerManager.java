@@ -30,9 +30,12 @@ public class TerminalMultiplexerManager {
             public void onSessionClosed(TerminalView.ShellSession session) {
                 // Technically, due to how multiplexers handle, this can only be 0 or 1
                 // as it only tracks the base shell session the multiplexer runs in
-                var left = TerminalView.get().getSessions().stream().filter(shellSession -> {
-                    return connectionHubRequests.containsKey(shellSession.getRequest()) && shellSession.getTerminal().isRunning();
-                }).count();
+                var left = TerminalView.get().getSessions().stream()
+                        .filter(shellSession -> {
+                            return connectionHubRequests.containsKey(shellSession.getRequest())
+                                    && shellSession.getTerminal().isRunning();
+                        })
+                        .count();
                 if (left == 0) {
                     runningMultiplexerContainer = null;
                     TerminalView.get().removeListener(this);

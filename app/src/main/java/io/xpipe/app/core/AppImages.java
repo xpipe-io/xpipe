@@ -102,7 +102,8 @@ public class AppImages {
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    var relativeFileName = FilenameUtils.separatorsToUnix(basePath.getParent().relativize(file).toString());
+                    var relativeFileName = FilenameUtils.separatorsToUnix(
+                            basePath.getParent().relativize(file).toString());
                     AppImages.loadImage(file, relativeFileName);
                     return FileVisitResult.CONTINUE;
                 }

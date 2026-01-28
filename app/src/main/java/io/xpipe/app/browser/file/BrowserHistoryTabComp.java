@@ -1,8 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -25,8 +24,6 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.*;
 
 import atlantafx.base.theme.Styles;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,14 +60,14 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         var empty = Bindings.createBooleanBinding(() -> list.isEmpty(), list);
         var contentDisplay = createListDisplay(list);
         var emptyDisplay = createEmptyDisplay();
-        var map = new LinkedHashMap<BaseRegionBuilder<?,?>, ObservableValue<Boolean>>();
+        var map = new LinkedHashMap<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>>();
         map.put(emptyDisplay, empty);
         map.put(contentDisplay, empty.not());
         var stack = new MultiContentComp(false, map, false);
         return stack.build();
     }
 
-    private BaseRegionBuilder<?,?> createListDisplay(ObservableList<BrowserHistorySavedState.Entry> list) {
+    private BaseRegionBuilder<?, ?> createListDisplay(ObservableList<BrowserHistorySavedState.Entry> list) {
         var state = BrowserHistorySavedStateImpl.get();
 
         var welcome = new BrowserGreetingComp();
@@ -107,7 +104,8 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
                 .maxWidth(2000)
                 .describe(d -> d.nameKey("restoreAllSessions"));
 
-        var layout = new VerticalComp(List.of(vbox, RegionBuilder.vspacer(5), listBox, RegionBuilder.hseparator(), tile));
+        var layout =
+                new VerticalComp(List.of(vbox, RegionBuilder.vspacer(5), listBox, RegionBuilder.hseparator(), tile));
         layout.style("welcome");
         layout.spacing(14);
         layout.maxWidth(1000);
@@ -118,7 +116,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         return layout;
     }
 
-    private BaseRegionBuilder<?,?> createEmptyDisplay() {
+    private BaseRegionBuilder<?, ?> createEmptyDisplay() {
         var docs = new IntroComp("browserWelcomeDocs", new LabelGraphic.IconGraphic("mdi2b-book-open-variant"));
         docs.setButtonAction(() -> {
             DocumentationLink.INTRO.open();
@@ -139,7 +137,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
         return list;
     }
 
-    private BaseRegionBuilder<?,?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
+    private BaseRegionBuilder<?, ?> entryButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
         var entry = DataStorage.get().getStoreEntryIfPresent(e.getUuid());
         var graphic = entry.get().getEffectiveIconFile();
         var view = PrettyImageHelper.ofFixedSize(graphic, 22, 16);
@@ -166,7 +164,7 @@ public class BrowserHistoryTabComp extends SimpleRegionBuilder {
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
     }
 
-    private BaseRegionBuilder<?,?> dirButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
+    private BaseRegionBuilder<?, ?> dirButton(BrowserHistorySavedState.Entry e, BooleanProperty disable) {
         var name = Bindings.createStringBinding(
                 () -> {
                     var n = e.getPath();

@@ -169,7 +169,9 @@ public class TerminalLauncher {
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
-        if (effectivePreferTabs && AppPrefs.get().enableTerminalDocking().get() && TerminalDockHubManager.isAvailable()) {
+        if (effectivePreferTabs
+                && AppPrefs.get().enableTerminalDocking().get()
+                && TerminalDockHubManager.isAvailable()) {
             // Dock terminal if needed
             for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {
                 TerminalDockHubManager.get().openTerminal(pane.getRequest());
@@ -300,8 +302,8 @@ public class TerminalLauncher {
                             WorkingDirectoryFunction.none());
             // Restart for the next time
             proxyControl.get().start();
-            var fullLocalCommand =
-                    getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell()) + "\n" + proxyLaunchCommand;
+            var fullLocalCommand = getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell())
+                    + "\n" + proxyLaunchCommand;
             var pane = new TerminalPaneConfiguration(
                     multiplexerTabLaunchRequest,
                     AppNames.ofCurrent().getName(),
@@ -320,8 +322,8 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(multiplexerCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
-            var fullLocalCommand =
-                    getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell()) + "\n" + launchCommand;
+            var fullLocalCommand = getTerminalRegisterCommand(multiplexerContainerLaunchRequest, LocalShell.getShell())
+                    + "\n" + launchCommand;
             var pane = new TerminalPaneConfiguration(
                     multiplexerTabLaunchRequest,
                     AppNames.ofCurrent().getName(),
@@ -333,8 +335,8 @@ public class TerminalLauncher {
         }
     }
 
-    private static Optional<TerminalLaunchConfiguration> launchProxy(
-            TerminalLaunchConfiguration launchConfiguration) throws Exception {
+    private static Optional<TerminalLaunchConfiguration> launchProxy(TerminalLaunchConfiguration launchConfiguration)
+            throws Exception {
         var proxyControl = TerminalProxyManager.getProxy();
         if (proxyControl.isEmpty()) {
             return Optional.empty();
@@ -355,8 +357,8 @@ public class TerminalLauncher {
                             TerminalInitFunction.fixed(openCommand),
                             TerminalInitScriptConfig.ofName(AppNames.ofCurrent().getName()),
                             WorkingDirectoryFunction.none());
-            var fullLocalCommand =
-                    getTerminalRegisterCommand(proxyContainerLaunchRequest, LocalShell.getShell()) + "\n" + launchCommand;
+            var fullLocalCommand = getTerminalRegisterCommand(proxyContainerLaunchRequest, LocalShell.getShell()) + "\n"
+                    + launchCommand;
             // Restart for the next time
             proxyControl.get().start();
             panes.add(pane.withScript(LocalShell.getDialect(), fullLocalCommand));

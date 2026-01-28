@@ -2,7 +2,6 @@ package io.xpipe.app.terminal;
 
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
@@ -12,6 +11,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.FilePath;
+
 import lombok.SneakyThrows;
 
 import java.io.IOException;

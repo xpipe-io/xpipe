@@ -1,6 +1,5 @@
 package io.xpipe.app.util;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ListSelectorComp;
@@ -132,7 +131,7 @@ public class ScanDialogBase {
         });
     }
 
-    public BaseRegionBuilder<?,?> createComp() {
+    public BaseRegionBuilder<?, ?> createComp() {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);
@@ -149,7 +148,7 @@ public class ScanDialogBase {
         var r = new ListSelectorComp<>(
                         available,
                         nameFunc,
-                so -> null,
+                        so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
                         () -> available.size() > 3)

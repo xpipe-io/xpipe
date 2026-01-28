@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.comp.base.MultiContentComp;
@@ -17,15 +16,13 @@ import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 
 public class StoreEntryListComp extends SimpleRegionBuilder {
 
-    private BaseRegionBuilder<?,?> createList() {
+    private BaseRegionBuilder<?, ?> createList() {
         var shown = StoreViewState.get()
                 .getCurrentTopLevelSection()
                 .getShownChildren()
@@ -114,7 +111,8 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                 () -> {
                     if (StoreViewState.get()
                             .getActiveCategory()
-                            .getValue().equals(StoreViewState.get().getScriptSourcesCategory())) {
+                            .getValue()
+                            .equals(StoreViewState.get().getScriptSourcesCategory())) {
                         return false;
                     }
 
@@ -133,10 +131,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
         var showScriptSourcesIntro = Bindings.createBooleanBinding(
                 () -> {
                     var cat = StoreViewState.get().getScriptSourcesCategory();
-                    if (StoreViewState.get()
-                            .getActiveCategory()
-                            .getValue()
-                            .equals(cat)) {
+                    if (StoreViewState.get().getActiveCategory().getValue().equals(cat)) {
                         return cat.getAllContainedEntriesCount().get() == 0;
                     }
 
@@ -170,7 +165,7 @@ public class StoreEntryListComp extends SimpleRegionBuilder {
                         .getCurrentTopLevelSection()
                         .getShownChildren()
                         .getList());
-        var map = new LinkedHashMap<BaseRegionBuilder<?,?>, ObservableValue<Boolean>>();
+        var map = new LinkedHashMap<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>>();
         map.put(
                 new StoreNotFoundComp(),
                 Bindings.and(

@@ -1,7 +1,5 @@
 package io.xpipe.app.browser.file;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -53,31 +51,29 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                 .mapped(item -> item.getBrowserEntry())
                 .getList();
         var list = new BrowserFileSelectionListComp(binding, entry -> {
-                    var sourceItem = model.getCurrentItems().stream()
-                            .filter(item -> item.getBrowserEntry() == entry)
-                            .findAny();
-                    if (sourceItem.isEmpty()) {
-                        return new SimpleStringProperty("?");
-                    }
-                    synchronized (sourceItem.get().getProgress()) {
-                        return Bindings.createStringBinding(
-                                () -> {
-                                    var p = sourceItem.get().getProgress().getValue();
-                                    if (p == null || p.getTotal() == 0) {
-                                        return entry.getFileName();
-                                    }
+            var sourceItem = model.getCurrentItems().stream()
+                    .filter(item -> item.getBrowserEntry() == entry)
+                    .findAny();
+            if (sourceItem.isEmpty()) {
+                return new SimpleStringProperty("?");
+            }
+            synchronized (sourceItem.get().getProgress()) {
+                return Bindings.createStringBinding(
+                        () -> {
+                            var p = sourceItem.get().getProgress().getValue();
+                            if (p == null || p.getTotal() == 0) {
+                                return entry.getFileName();
+                            }
 
-                                    var hideProgress = sourceItem
-                                            .get()
-                                            .getDownloadFinished()
-                                            .get();
-                                    var share = p.getTransferred() * 100 / p.getTotal();
-                                    var progressSuffix = hideProgress ? "" : " " + share + "%";
-                                    return entry.getFileName() + progressSuffix;
-                                },
-                                sourceItem.get().getProgress());
-                    }
-                });
+                            var hideProgress =
+                                    sourceItem.get().getDownloadFinished().get();
+                            var share = p.getTransferred() * 100 / p.getTotal();
+                            var progressSuffix = hideProgress ? "" : " " + share + "%";
+                            return entry.getFileName() + progressSuffix;
+                        },
+                        sourceItem.get().getProgress());
+            }
+        });
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
                 .apply(struc -> struc.setWrapText(true))
@@ -112,8 +108,13 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
                 .describe(d -> d.nameKey("downloadStageDescription"));
 
-        var bottom = new HorizontalComp(
-                List.of(RegionBuilder.hspacer(), dragNotice, RegionBuilder.hspacer(), downloadButton, RegionBuilder.hspacer(4), clearButton));
+        var bottom = new HorizontalComp(List.of(
+                RegionBuilder.hspacer(),
+                dragNotice,
+                RegionBuilder.hspacer(),
+                downloadButton,
+                RegionBuilder.hspacer(4),
+                clearButton));
         var listBox = new VerticalComp(List.of(list, bottom))
                 .spacing(5)
                 .padding(new Insets(10, 10, 5, 10))
@@ -123,8 +124,9 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
             struc.addEventFilter(DragEvent.DRAG_ENTERED, event -> {
                 struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), true);
             });
-            struc.addEventFilter(DragEvent.DRAG_EXITED, event -> struc
-                    .pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
+            struc.addEventFilter(
+                    DragEvent.DRAG_EXITED,
+                    event -> struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
             struc.setOnDragOver(event -> {
                 // Accept drops from inside the app window
                 if (event.getGestureSource() != null && event.getGestureSource() != struc) {

@@ -62,8 +62,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                 .build()
                 .build();
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc
-                    .promptTextProperty()
+            struc.promptTextProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
                                 return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
@@ -92,9 +91,7 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
         return options.nameAndDescription("inPlaceKeyText")
                 .addComp(
                         new TextAreaComp(key).applyStructure(struc -> {
-                            struc.getTextArea()
-                                    .setPromptText(
-                                            """
+                            struc.getTextArea().setPromptText("""
                                                       -----BEGIN ... PRIVATE KEY-----
 
 

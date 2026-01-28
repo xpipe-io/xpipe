@@ -3,7 +3,6 @@ package io.xpipe.ext.base.identity.ssh;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.secret.SecretNoneStrategy;
@@ -15,8 +14,6 @@ import io.xpipe.core.OsType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

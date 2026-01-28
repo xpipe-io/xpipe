@@ -24,7 +24,7 @@ public class ShellScript {
     }
 
     public static ShellScript lines(List<String> lines) {
-        return new ShellScript(lines.stream().collect(Collectors.joining("\n")));
+        return new ShellScript(String.join("\n", lines));
     }
 
     public ShellScript withoutShebang() {

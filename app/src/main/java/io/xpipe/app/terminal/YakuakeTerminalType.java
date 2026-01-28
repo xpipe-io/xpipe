@@ -1,11 +1,9 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.util.FlatpakCache;
 
 public class YakuakeTerminalType implements ExternalApplicationType.PathApplication, TrackableTerminalType {
 
@@ -33,16 +31,22 @@ public class YakuakeTerminalType implements ExternalApplicationType.PathApplicat
     public void launch(TerminalLaunchConfiguration configuration) throws Exception {
         CommandSupport.isInLocalPathOrThrow("Yakuake", "yakuake");
 
-        var toggle = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/window", "org.kde.yakuake.toggleWindowState");
+        var toggle = CommandBuilder.of()
+                .add("qdbus", "org.kde.yakuake", "/yakuake/window", "org.kde.yakuake.toggleWindowState");
         LocalShell.getShell().command(toggle).execute();
 
-        var newTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions","org.kde.yakuake.addSession");
+        var newTab =
+                CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions", "org.kde.yakuake.addSession");
         var index = LocalShell.getShell().command(newTab).readStdoutOrThrow();
 
-        var renameTab = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/tabs", "setTabTitle", index).addLiteral(configuration.getColoredTitle());
+        var renameTab = CommandBuilder.of()
+                .add("qdbus", "org.kde.yakuake", "/yakuake/tabs", "setTabTitle", index)
+                .addLiteral(configuration.getColoredTitle());
         LocalShell.getShell().command(renameTab).execute();
 
-        var run = CommandBuilder.of().add("qdbus", "org.kde.yakuake", "/yakuake/sessions", "runCommandInTerminal", index).addFile(configuration.single().getScriptFile());
+        var run = CommandBuilder.of()
+                .add("qdbus", "org.kde.yakuake", "/yakuake/sessions", "runCommandInTerminal", index)
+                .addFile(configuration.single().getScriptFile());
         LocalShell.getShell().command(run).execute();
     }
 

@@ -1,12 +1,10 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
-import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 
-import javafx.application.Platform;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -20,13 +18,15 @@ public class TerminalDockView {
 
     @Getter
     private final Set<ControllableTerminalSession> terminalInstances = new HashSet<>();
-    private final UnaryOperator<Rect> windowBoundsFunction;
 
+    private final UnaryOperator<Rect> windowBoundsFunction;
 
     private Rect viewBounds;
     private boolean viewActive;
 
-    public TerminalDockView(UnaryOperator<Rect> windowBoundsFunction) {this.windowBoundsFunction = windowBoundsFunction;}
+    public TerminalDockView(UnaryOperator<Rect> windowBoundsFunction) {
+        this.windowBoundsFunction = windowBoundsFunction;
+    }
 
     public synchronized boolean isRunning() {
         return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
@@ -55,9 +55,11 @@ public class TerminalDockView {
             // Ugly fix for Windows Terminal instances using size constraints on first resize
             // This will cause the dock to interpret is as detached if we don't fix it again
             if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
-                GlobalTimer.delay(() -> {
-                    terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
-                }, Duration.ofMillis(100));
+                GlobalTimer.delay(
+                        () -> {
+                            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+                        },
+                        Duration.ofMillis(100));
             }
         }
     }

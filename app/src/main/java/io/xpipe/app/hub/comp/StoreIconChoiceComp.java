@@ -11,7 +11,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
@@ -134,22 +133,25 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         text.style(Styles.TEXT_SUBTLE);
         text.visible(refreshing);
         var vbox = new VerticalComp(List.of(refreshButton, text)).spacing(25);
-        vbox.hide(Bindings.createBooleanBinding(() -> {
-            if (busy.get()) {
-                return true;
-            }
+        vbox.hide(Bindings.createBooleanBinding(
+                () -> {
+                    if (busy.get()) {
+                        return true;
+                    }
 
-            var available = icons.stream()
-                    .filter(systemIcon -> AppImages.hasImage(
-                            "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
-                    .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
-                    .toList();
-            if (available.isEmpty()) {
-                return false;
-            }
+                    var available = icons.stream()
+                            .filter(systemIcon -> AppImages.hasImage(
+                                    "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
+                            .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
+                            .toList();
+                    if (available.isEmpty()) {
+                        return false;
+                    }
 
-            return true;
-        }, busy, refreshing));
+                    return true;
+                },
+                busy,
+                refreshing));
         vbox.apply(struc -> struc.setAlignment(Pos.CENTER));
         return vbox.build();
     }

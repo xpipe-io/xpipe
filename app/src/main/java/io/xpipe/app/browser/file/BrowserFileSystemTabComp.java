@@ -209,9 +209,9 @@ public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
     }
 
     private Region createFileListContent() {
-        var directoryView = new BrowserFileListComp(model.getFileList())
-                .apply(struc -> VBox.setVgrow(struc, Priority.ALWAYS));
-        var fileListElements = new ArrayList<BaseRegionBuilder<?,?>>();
+        var directoryView =
+                new BrowserFileListComp(model.getFileList()).apply(struc -> VBox.setVgrow(struc, Priority.ALWAYS));
+        var fileListElements = new ArrayList<BaseRegionBuilder<?, ?>>();
         fileListElements.add(directoryView);
         if (showStatusBar) {
             var statusBar = new BrowserStatusBarComp(model);

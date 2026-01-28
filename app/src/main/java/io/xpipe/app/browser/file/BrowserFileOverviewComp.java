@@ -1,8 +1,7 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIcons;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -16,8 +15,6 @@ import javafx.scene.layout.Region;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 import java.util.function.Function;
@@ -32,7 +29,7 @@ public class BrowserFileOverviewComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
-        Function<FileEntry, BaseRegionBuilder<?,?>> factory = entry -> {
+        Function<FileEntry, BaseRegionBuilder<?, ?>> factory = entry -> {
             return RegionBuilder.of(() -> {
                 var be = new BrowserEntry(entry, model.getFileList());
                 var icon = BrowserIcons.createIcon(be.getIcon());

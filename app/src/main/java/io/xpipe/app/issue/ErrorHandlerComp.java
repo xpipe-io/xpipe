@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppFontSizes;

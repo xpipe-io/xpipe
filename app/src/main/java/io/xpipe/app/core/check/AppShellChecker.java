@@ -1,6 +1,5 @@
 package io.xpipe.app.core.check;
 
-import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorAction;
@@ -11,6 +10,7 @@ import io.xpipe.app.util.DocumentationLink;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+
 import lombok.Value;
 
 import java.util.Optional;
@@ -36,7 +36,8 @@ public abstract class AppShellChecker {
             return;
         }
 
-        var attemptFallback = shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue();
+        var attemptFallback =
+                shouldAttemptFallbackForProcessStartFail() || !originalErr.get().isProcessSpawnIssue();
         if (!attemptFallback) {
             // Sometimes we don't want to fall back
             // The local shell init will fail terminally if it still does not work
@@ -105,7 +106,9 @@ public abstract class AppShellChecker {
                 .getAvailableLocalDialects()
                 .getFirst()
                 .equals(ProcessControlProvider.get().getEffectiveLocalDialect());
-        var fallback = isDefaultShell ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell." : "";
+        var fallback = isDefaultShell
+                ? AppNames.ofCurrent().getName() + " will now attempt to fall back to another shell."
+                : "";
         return """
                Shell self-test failed for %s:
                %s
@@ -113,11 +116,7 @@ public abstract class AppShellChecker {
                This indicates that something is seriously wrong and certain shell functionality will not work as expected. Some features like the terminal launcher have to create shell scripts for your external terminal emulator to launch.
 
                %s
-               """
-                .formatted(
-                        LocalShell.getDialect().getDisplayName(),
-                        modifyOutput(output),
-                        fallback)
+               """.formatted(LocalShell.getDialect().getDisplayName(), modifyOutput(output), fallback)
                 .strip();
     }
 

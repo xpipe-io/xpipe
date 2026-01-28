@@ -1,8 +1,5 @@
 package io.xpipe.ext.base.host;
 
-
-
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -22,7 +19,6 @@ import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.layout.HBox;
 
 import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -60,7 +56,7 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
         });
         addButton.describe(d -> d.nameKey("addAnotherHostName"));
 
-        var nodes = new ArrayList<BaseRegionBuilder<?,?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(combo);
         if (mutable) {
             nodes.add(addButton);
@@ -72,7 +68,7 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
         return layout.build();
     }
 
-    private BaseRegionBuilder<?,?> createComboBox(ObservableBooleanValue adding) {
+    private BaseRegionBuilder<?, ?> createComboBox(ObservableBooleanValue adding) {
         var prop = new SimpleStringProperty();
         currentAddress.subscribe(hostAddress -> {
             prop.setValue(hostAddress);
@@ -138,8 +134,7 @@ public class HostAddressChoiceComp extends RegionBuilder<HBox> {
             skin.setHideOnClick(false);
 
             // The focus seems to break on selection from the popup
-            struc
-                    .selectionModelProperty()
+            struc.selectionModelProperty()
                     .get()
                     .selectedIndexProperty()
                     .addListener((observable, oldValue, newValue) -> {

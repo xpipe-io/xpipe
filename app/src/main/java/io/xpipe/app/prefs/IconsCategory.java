@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
@@ -30,8 +29,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-
 import javafx.scene.layout.Region;
+
 import org.apache.commons.io.FilenameUtils;
 
 import java.net.URI;
@@ -51,7 +50,7 @@ public class IconsCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
                 .addTitle("customIcons")
                 .sub(new OptionsBuilder()
@@ -63,7 +62,7 @@ public class IconsCategory extends AppPrefsCategory {
                 .buildComp();
     }
 
-    private BaseRegionBuilder<?,?> createOverview() {
+    private BaseRegionBuilder<?, ?> createOverview() {
         var sources = FXCollections.<SystemIconSource>observableArrayList();
         AppPrefs.get().getIconSources().subscribe((newValue) -> {
             sources.setAll(SystemIconManager.getAllSources());
@@ -201,7 +200,7 @@ public class IconsCategory extends AppPrefsCategory {
         return vbox;
     }
 
-    private BaseRegionBuilder<?,?> createSourceEntry(SystemIconSource source, List<SystemIconSource> sources) {
+    private BaseRegionBuilder<?, ?> createSourceEntry(SystemIconSource source, List<SystemIconSource> sources) {
         var delete = new IconButtonComp(new LabelGraphic.IconGraphic("mdal-delete_outline"), () -> {
             if (!AppDialog.confirm("iconSourceDeletion")) {
                 return;

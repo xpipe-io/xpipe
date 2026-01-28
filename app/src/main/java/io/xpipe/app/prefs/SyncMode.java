@@ -1,17 +1,16 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.PrefsChoiceValue;
-import io.xpipe.core.XPipeDaemonMode;
+
 import javafx.beans.value.ObservableValue;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
 public enum SyncMode implements PrefsChoiceValue {
-
     INSTANT {
         @Override
         public String getId() {

@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 

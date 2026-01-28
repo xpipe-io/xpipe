@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;

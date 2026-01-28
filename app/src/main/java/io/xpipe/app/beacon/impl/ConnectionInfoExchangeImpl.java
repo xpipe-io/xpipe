@@ -30,7 +30,10 @@ public class ConnectionInfoExchangeImpl extends ConnectionInfoExchange {
             var cat = new StorePath(names.subList(1, names.size()));
             var cache = e.getStoreCache().entrySet().stream()
                     .filter(kv -> {
-                        return kv.getValue() != null && (ClassUtils.isPrimitiveOrWrapper(kv.getValue().getClass()) || kv.getValue() instanceof String);
+                        return kv.getValue() != null
+                                && (ClassUtils.isPrimitiveOrWrapper(
+                                                kv.getValue().getClass())
+                                        || kv.getValue() instanceof String);
                     })
                     .collect(Collectors.toMap(
                             stringObjectEntry -> stringObjectEntry.getKey(),

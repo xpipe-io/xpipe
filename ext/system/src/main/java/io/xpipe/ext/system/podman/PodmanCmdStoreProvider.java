@@ -1,6 +1,5 @@
 package io.xpipe.ext.system.podman;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -34,7 +33,7 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(BindingsHelper.map(w.getPersistentState(), o -> {
             var state = (PodmanCmdStore.State) o;
             if (state.isRunning()) {

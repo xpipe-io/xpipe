@@ -1,16 +1,13 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
-
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.binding.Bindings;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -19,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+
 import org.int4.fx.builders.pane.StackPaneBuilder;
 
 import java.util.ArrayList;
@@ -42,7 +40,8 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         var effectiveExpanded = effectiveExpanded(section.getWrapper().getExpanded());
         var content = createChildrenList(c -> StoreSection.customSection(c), Bindings.not(effectiveExpanded));
 
-        var full = new VerticalComp(List.of(paneComp, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));
+        var full = new VerticalComp(
+                List.of(paneComp, RegionBuilder.hseparator().hide(Bindings.not(effectiveExpanded)), content));
         full.style("store-entry-section-comp");
         full.apply(struc -> {
             struc.setFillWidth(true);
@@ -66,8 +65,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
                     event.consume();
                 }
                 if (event.getCode() == KeyCode.RIGHT) {
-                    var ref = (VBox)
-                            ((HBox) struc.getParent()).getChildren().getFirst();
+                    var ref = (VBox) ((HBox) struc.getParent()).getChildren().getFirst();
                     if (entryButton.isFullSize()) {
                         var btn = (Button) ref.getChildren().getFirst();
                         btn.fire();
@@ -95,7 +93,7 @@ public class StoreSectionComp extends StoreSectionBaseComp {
         expandButton.describe(d -> d.nameKey("expand")
                 .focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)
                 .shortcut(new KeyCodeCombination(KeyCode.SPACE)));
-        var buttonList = new ArrayList<BaseRegionBuilder<?,?>>();
+        var buttonList = new ArrayList<BaseRegionBuilder<?, ?>>();
         if (entryButton.isFullSize()) {
             buttonList.add(quickAccessButton);
         }

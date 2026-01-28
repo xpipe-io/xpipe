@@ -1,11 +1,9 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
@@ -37,9 +35,6 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
-import org.int4.fx.builders.control.TextFieldBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.lang.ref.WeakReference;
@@ -76,15 +71,15 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             App.getApp().getStage().widthProperty());
     private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
-    protected final BaseRegionBuilder<?,?> content;
+    protected final BaseRegionBuilder<?, ?> content;
     protected final IntegerProperty contextMenuCount = new SimpleIntegerProperty();
 
-    public StoreEntryComp(StoreSection section, BaseRegionBuilder<?,?> content) {
+    public StoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         this.section = section;
         this.content = content;
     }
 
-    public static StoreEntryComp create(StoreSection section, BaseRegionBuilder<?,?> content, boolean preferLarge) {
+    public static StoreEntryComp create(StoreSection section, BaseRegionBuilder<?, ?> content, boolean preferLarge) {
         var forceCondensed = AppPrefs.get() != null
                 && AppPrefs.get().condenseConnectionDisplay().get();
         if (!preferLarge || forceCondensed) {
@@ -194,7 +189,8 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                         () -> this.createContextMenu(name))
                 .accept(button);
 
-        var loading = new LoadingOverlayComp(RegionBuilder.of(() -> button), getWrapper().getEffectiveBusy(), false);
+        var loading = new LoadingOverlayComp(
+                RegionBuilder.of(() -> button), getWrapper().getEffectiveBusy(), false);
         if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
         } else if (OsType.ofLocal() == OsType.LINUX) {
@@ -232,7 +228,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         });
     }
 
-    protected BaseRegionBuilder<?,?> createName() {
+    protected BaseRegionBuilder<?, ?> createName() {
         var prop = new SimpleStringProperty();
         getWrapper().getShownName().subscribe(prop::setValue);
         prop.addListener((observable, oldValue, newValue) -> {
@@ -248,7 +244,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return name;
     }
 
-    protected BaseRegionBuilder<?,?> createTags() {
+    protected BaseRegionBuilder<?, ?> createTags() {
         var tagsProp = Bindings.createStringBinding(
                 () -> {
                     return getWrapper().getTags().stream()
@@ -263,7 +259,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return tagsLabel;
     }
 
-    protected BaseRegionBuilder<?,?> createOrderIndex() {
+    protected BaseRegionBuilder<?, ?> createOrderIndex() {
         var prop = new SimpleStringProperty();
         getWrapper().getOrderIndex().subscribe(number -> {
             var i = number.intValue();
@@ -276,7 +272,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return comp;
     }
 
-    protected BaseRegionBuilder<?,?> createUserIcon() {
+    protected BaseRegionBuilder<?, ?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
         button.style("user-icon");
         button.describe(d -> d.nameKey("personalConnection"));
@@ -290,7 +286,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return button;
     }
 
-    protected BaseRegionBuilder<?,?> createPinIcon() {
+    protected BaseRegionBuilder<?, ?> createPinIcon() {
         var button = new IconButtonComp("mdi2p-pin-outline");
         button.disable(new SimpleBooleanProperty(true));
         button.describe(d -> d.nameKey("pinned"));
@@ -303,11 +299,10 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return button;
     }
 
-    protected BaseRegionBuilder<?,?> createIcon(int w, int h, Consumer<Node> fontSize) {
+    protected BaseRegionBuilder<?, ?> createIcon(int w, int h, Consumer<Node> fontSize) {
         var icon = new StoreIconComp(getWrapper(), w, h);
         icon.apply(struc -> {
-            struc
-                    .opacityProperty()
+            struc.opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 if (!getWrapper().getValidity().getValue().isUsable()) {
@@ -351,7 +346,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return ig;
     }
 
-    private BaseRegionBuilder<?,?> buildButton(HubMenuItemProvider<?> p) {
+    private BaseRegionBuilder<?, ?> buildButton(HubMenuItemProvider<?> p) {
         var leaf = p instanceof HubLeafProvider<?> l ? l : null;
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var button = new IconButtonComp(
@@ -365,10 +360,14 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = MenuHelper.createContextMenu();
-                        var children =
-                                branch.getChildren(getWrapper().getEntry().ref()).stream().filter(hubMenuItemProvider -> {
-                                    return hubMenuItemProvider.isApplicable(getWrapper().getEntry().ref());
-                                }).toList();
+                        var children = branch
+                                .getChildren(getWrapper().getEntry().ref())
+                                .stream()
+                                .filter(hubMenuItemProvider -> {
+                                    return hubMenuItemProvider.isApplicable(
+                                            getWrapper().getEntry().ref());
+                                })
+                                .toList();
                         var cats = Arrays.stream(StoreActionCategory.values())
                                 .collect(Collectors.toCollection(ArrayList::new));
                         cats.addFirst(null);
@@ -400,7 +399,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return button;
     }
 
-    protected BaseRegionBuilder<?,?> createSettingsButton(Region name) {
+    protected BaseRegionBuilder<?, ?> createSettingsButton(Region name) {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
         settingsButton.style("settings");
         settingsButton.describe(d -> d.nameKey("more"));
@@ -411,7 +410,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
         return settingsButton;
     }
 
-    protected BaseRegionBuilder<?,?> createBatchSelection() {
+    protected BaseRegionBuilder<?, ?> createBatchSelection() {
         var c = new StoreEntryBatchSelectComp(section);
         c.hide(StoreViewState.get().getBatchMode().not());
         return c;
@@ -553,9 +552,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                             new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
                     index.setOnAction(event -> {
                         var tagName = new SimpleStringProperty();
-                        var modal = ModalOverlay.of(
-                                "addNewTag",
-                                new TextFieldComp(tagName).prefWidth(350));
+                        var modal = ModalOverlay.of("addNewTag", new TextFieldComp(tagName).prefWidth(350));
                         modal.withDefaultButtons(() -> {
                             getWrapper().getEntry().addTag(tagName.getValue());
                         });

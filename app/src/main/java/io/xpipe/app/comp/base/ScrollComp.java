@@ -1,23 +1,19 @@
 package io.xpipe.app.comp.base;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.StackPane;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 public class ScrollComp extends RegionBuilder<ScrollPane> {
 
-    private final BaseRegionBuilder<?,?> content;
+    private final BaseRegionBuilder<?, ?> content;
 
-    public ScrollComp(BaseRegionBuilder<?,?> content) {
+    public ScrollComp(BaseRegionBuilder<?, ?> content) {
         this.content = content;
     }
 

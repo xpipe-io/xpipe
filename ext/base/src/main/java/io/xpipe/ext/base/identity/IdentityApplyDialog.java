@@ -2,7 +2,6 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -161,7 +160,7 @@ public class IdentityApplyDialog {
         }
     }
 
-    private static BaseRegionBuilder<?,?> success() {
+    private static BaseRegionBuilder<?, ?> success() {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-checkbox-marked-outline");
         return new LabelComp(AppI18n.observable("valid"), new ReadOnlyObjectWrapper<>(graphic))
                 .style(Styles.SUCCESS)
@@ -170,7 +169,7 @@ public class IdentityApplyDialog {
                 });
     }
 
-    private static BaseRegionBuilder<?,?> warning() {
+    private static BaseRegionBuilder<?, ?> warning() {
         var graphic = new LabelGraphic.IconGraphic("mdi2a-alert-box-outline");
         return new LabelComp(AppI18n.observable("warning"), new ReadOnlyObjectWrapper<>(graphic))
                 .style(Styles.WARNING)
@@ -179,7 +178,7 @@ public class IdentityApplyDialog {
                 });
     }
 
-    private static BaseRegionBuilder<?,?> fail(BaseRegionBuilder<?,?> fixComp) {
+    private static BaseRegionBuilder<?, ?> fail(BaseRegionBuilder<?, ?> fixComp) {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-close-box-outline");
         var label = new LabelComp(AppI18n.observable("notValid"), new ReadOnlyObjectWrapper<>(graphic))
                 .style(Styles.DANGER);
@@ -195,7 +194,7 @@ public class IdentityApplyDialog {
         }
     }
 
-    private static BaseRegionBuilder<?,?> createAuthorizedKeysOptions(
+    private static BaseRegionBuilder<?, ?> createAuthorizedKeysOptions(
             Property<DataStoreEntryRef<ShellStore>> system,
             ObjectProperty<SystemState> systemState,
             IdentityStore identity,
@@ -258,7 +257,7 @@ public class IdentityApplyDialog {
         return options.buildComp().hide(Bindings.isNull(systemState));
     }
 
-    private static BaseRegionBuilder<?,?> createConfigOptions(
+    private static BaseRegionBuilder<?, ?> createConfigOptions(
             Property<DataStoreEntryRef<ShellStore>> system,
             Property<SystemState> systemState,
             IdentityStore identity,

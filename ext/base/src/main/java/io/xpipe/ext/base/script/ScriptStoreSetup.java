@@ -4,10 +4,10 @@ import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
+
 import lombok.SneakyThrows;
 
 import java.util.*;
@@ -90,8 +90,9 @@ public class ScriptStoreSetup {
                                     return Optional.empty();
                                 }
 
-                                return Optional.ofNullable(
-                                        shellControl.getShellDialect().addToPathVariableCommand(List.of(dir.toString()), true));
+                                return Optional.ofNullable(shellControl
+                                        .getShellDialect()
+                                        .addToPathVariableCommand(List.of(dir.toString()), true));
                             }
 
                             @Override

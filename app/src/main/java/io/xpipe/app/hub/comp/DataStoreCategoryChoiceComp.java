@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -22,7 +21,10 @@ public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
     private final boolean applyExternalInitially;
 
     public DataStoreCategoryChoiceComp(
-            StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value, boolean applyExternalInitially) {
+            StoreCategoryWrapper root,
+            Property<StoreCategoryWrapper> external,
+            Property<StoreCategoryWrapper> value,
+            boolean applyExternalInitially) {
         this.root = root;
         this.external = external;
         this.value = value;

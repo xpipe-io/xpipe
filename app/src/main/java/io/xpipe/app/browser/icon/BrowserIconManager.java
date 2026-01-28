@@ -1,8 +1,9 @@
 package io.xpipe.app.browser.icon;
 
+import io.xpipe.app.core.AppDisplayScale;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.core.AppResources;
-import io.xpipe.app.core.AppDisplayScale;
+
 import org.apache.commons.io.FilenameUtils;
 
 public class BrowserIconManager {

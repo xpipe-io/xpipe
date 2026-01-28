@@ -2,8 +2,8 @@ package io.xpipe.app.comp;
 
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
-
 import io.xpipe.app.platform.PlatformThread;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -14,8 +14,6 @@ import javafx.scene.layout.Region;
 
 import lombok.Builder;
 import lombok.Value;
-
-import java.util.function.Consumer;
 
 @Value
 @Builder

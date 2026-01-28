@@ -18,8 +18,8 @@ import java.util.List;
 
 public class AppWindowsShutdown {
 
-    public static final int WTS_SESSION_LOCK  = 0x7;
-    public static final int WTS_SESSION_UNLOCK  = 0x8;
+    public static final int WTS_SESSION_LOCK = 0x7;
+    public static final int WTS_SESSION_UNLOCK = 0x8;
     public static final int WM_ENDSESSION = 0x16;
     public static final int WM_QUERYENDSESSION = 0x11;
     public static final long ENDSESSION_CRITICAL = 0x40000000L;

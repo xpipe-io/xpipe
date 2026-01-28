@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-import io.xpipe.app.ext.ShellSession;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;

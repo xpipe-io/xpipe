@@ -1,8 +1,6 @@
 package io.xpipe.app.browser.file;
 
-
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -22,8 +20,6 @@ import javafx.scene.layout.Region;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 
@@ -69,7 +65,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return r;
     }
 
-    private BaseRegionBuilder<?,?> createKillButton() {
+    private BaseRegionBuilder<?, ?> createKillButton() {
         var button = new IconButtonComp("mdi2s-stop", () -> {
             ThreadHelper.runAsync(() -> {
                 model.killTransfer();
@@ -95,7 +91,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return button;
     }
 
-    private BaseRegionBuilder<?,?> createProgressEstimateStatus() {
+    private BaseRegionBuilder<?, ?> createProgressEstimateStatus() {
         var text = Bindings.createStringBinding(
                 () -> {
                     var p = model.getProgress().getValue();
@@ -131,7 +127,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return progressComp;
     }
 
-    private BaseRegionBuilder<?,?> createProgressStatus() {
+    private BaseRegionBuilder<?, ?> createProgressStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
             if (p == null) {
                 return null;
@@ -158,7 +154,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return progressComp;
     }
 
-    private BaseRegionBuilder<?,?> createProgressNameStatus() {
+    private BaseRegionBuilder<?, ?> createProgressNameStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
             if (p == null) {
                 return null;
@@ -173,7 +169,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return progressComp;
     }
 
-    private BaseRegionBuilder<?,?> createClipboardStatus() {
+    private BaseRegionBuilder<?, ?> createClipboardStatus() {
         var cc = BrowserClipboard.currentCopyClipboard;
         var ccCount = Bindings.createStringBinding(
                 () -> {
@@ -188,7 +184,7 @@ public class BrowserStatusBarComp extends SimpleRegionBuilder {
         return new LabelComp(ccCount).minWidth(Region.USE_PREF_SIZE);
     }
 
-    private BaseRegionBuilder<?,?> createSelectionStatus() {
+    private BaseRegionBuilder<?, ?> createSelectionStatus() {
         var selectedCount = Bindings.createIntegerBinding(
                 () -> {
                     return model.getFileList().getSelection().size();

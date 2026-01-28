@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
@@ -28,7 +27,7 @@ public class ConnectionHubCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var connectionsBuilder = new OptionsBuilder()
                 .nameAndDescription("connectionNotesTemplate")

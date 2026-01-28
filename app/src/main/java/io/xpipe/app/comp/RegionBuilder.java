@@ -1,13 +1,11 @@
 package io.xpipe.app.comp;
 
-import atlantafx.base.controls.Spacer;
 import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.Region;
-import org.int4.fx.builders.custom.CustomRegionBuilder;
 
-import java.util.ArrayList;
+import atlantafx.base.controls.Spacer;
+
 import java.util.function.Supplier;
 
 public abstract class RegionBuilder<T extends Region> extends BaseRegionBuilder<T, RegionBuilder<T>> {

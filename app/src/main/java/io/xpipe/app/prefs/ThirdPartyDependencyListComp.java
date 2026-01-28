@@ -1,10 +1,6 @@
 package io.xpipe.app.prefs;
 
-
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
-
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.Hyperlinks;

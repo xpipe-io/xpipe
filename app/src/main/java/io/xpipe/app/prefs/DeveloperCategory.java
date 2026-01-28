@@ -1,9 +1,7 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
-import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppProperties;
@@ -18,7 +16,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -41,7 +38,7 @@ public class DeveloperCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var localCommand = new SimpleStringProperty();
         Runnable test = () -> {

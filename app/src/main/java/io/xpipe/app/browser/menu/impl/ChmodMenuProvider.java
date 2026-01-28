@@ -7,7 +7,6 @@ import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;

@@ -343,7 +343,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
         }
     };
-    ExternalTerminalType XTERM = new MultiPathType("app.xterm",  true, List.of("uxterm", "xterm")) {
+    ExternalTerminalType XTERM = new MultiPathType("app.xterm", true, List.of("uxterm", "xterm")) {
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.NEW_WINDOW;

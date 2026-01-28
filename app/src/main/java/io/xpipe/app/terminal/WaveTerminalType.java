@@ -49,18 +49,14 @@ public interface WaveTerminalType extends ExternalTerminalType, TrackableTermina
             var env = sc.view().getEnvironmentVariable("WAVETERM_JWT");
             if (wsh.isEmpty() || env.isEmpty()) {
                 var inPath = sc.view().findProgram("xpipe").isPresent();
-                var msg =
-                        """
+                var msg = """
                           The Wave integration requires XPipe to be launched from Wave itself to have access to its environment variables. Otherwise, XPipe does not have access to the token to control Wave.
 
                           You can do this by first making sure that XPipe is shut down and then running the command "%s" in a local terminal block inside Wave.
-                          """
-                                .formatted(
-                                        inPath
-                                                ? "xpipe open"
-                                                : "\""
-                                                        + AppInstallation.ofCurrent()
-                                                                .getCliExecutablePath() + "\" open");
+                          """.formatted(
+                                inPath
+                                        ? "xpipe open"
+                                        : "\"" + AppInstallation.ofCurrent().getCliExecutablePath() + "\" open");
                 throw ErrorEventFactory.expected(new IllegalStateException(msg));
             }
 

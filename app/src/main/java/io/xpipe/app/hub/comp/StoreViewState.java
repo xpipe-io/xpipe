@@ -12,8 +12,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
-
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -351,12 +351,14 @@ public class StoreViewState {
         var cat = DataStoreCategory.createNew(parent.getCategory().getUuid(), AppI18n.get("newCategory"));
         DataStorage.get().addStoreCategory(cat);
         // Ugly solution to ensure that the category is added to the scene
-        GlobalTimer.delay(() -> {
-            var wrapper = getCategoryWrapper(cat);
-            Platform.runLater(() -> {
-                wrapper.getRenameTrigger().fire(null);
-            });
-        }, Duration.ofMillis(500));
+        GlobalTimer.delay(
+                () -> {
+                    var wrapper = getCategoryWrapper(cat);
+                    Platform.runLater(() -> {
+                        wrapper.getRenameTrigger().fire(null);
+                    });
+                },
+                Duration.ofMillis(500));
     }
 
     private void addListeners() {

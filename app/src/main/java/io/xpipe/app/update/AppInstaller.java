@@ -115,7 +115,8 @@ public class AppInstaller {
                         file,
                         logFile,
                         args,
-                        AppRestart.getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, ShellDialects.CMD));
+                        AppRestart.getBackgroundRestartCommand(
+                                AppProperties.get().getDataDir(), null, ShellDialects.CMD));
             }
 
             private String getPowershellCommand(String file, String logFile, boolean systemWide) {
@@ -138,7 +139,8 @@ public class AppInstaller {
                         file,
                         logFile,
                         startProcessProperty,
-                        AppRestart.getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, ShellDialects.POWERSHELL));
+                        AppRestart.getBackgroundRestartCommand(
+                                AppProperties.get().getDataDir(), null, ShellDialects.POWERSHELL));
             }
         }
 
@@ -147,8 +149,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var command = new ShellScript(String.format(
-                        """
+                var command = new ShellScript(String.format("""
                                                             runinstaller() {
                                                                 echo "Installing downloaded .deb installer ..."
                                                                 echo "+ sudo apt install \\"%s\\""
@@ -162,8 +163,7 @@ public class AppInstaller {
                                                               echo "Update failed ..."
                                                               read key
                                                             fi
-                                                            """,
-                        file, file, AppRestart.getTerminalRestartCommand()));
+                                                            """, file, file, AppRestart.getTerminalRestartCommand()));
                 AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
@@ -183,8 +183,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var command = new ShellScript(String.format(
-                        """
+                var command = new ShellScript(String.format("""
                                                             runinstaller() {
                                                                 echo "Installing downloaded .rpm installer ..."
                                                                 echo "+ sudo rpm -U -v --force \\"%s\\""
@@ -198,8 +197,7 @@ public class AppInstaller {
                                                               echo "Update failed ..."
                                                               read key
                                                             fi
-                                                            """,
-                        file, file, AppRestart.getTerminalRestartCommand()));
+                                                            """, file, file, AppRestart.getTerminalRestartCommand()));
                 AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")
@@ -219,8 +217,7 @@ public class AppInstaller {
 
             @Override
             public void installLocal(Path file) {
-                var command = new ShellScript(String.format(
-                        """
+                var command = new ShellScript(String.format("""
                                                             runinstaller() {
                                                                 echo "Installing downloaded .pkg installer ..."
                                                                 echo "+ sudo installer -verboseR -pkg \\"%s\\" -target /"
@@ -234,8 +231,7 @@ public class AppInstaller {
                                                               echo "Update failed ..."
                                                               read -rs -k 1 key
                                                             fi
-                                                            """,
-                        file, file, AppRestart.getTerminalRestartCommand()));
+                                                            """, file, file, AppRestart.getTerminalRestartCommand()));
                 AppOperationMode.executeAfterShutdown(() -> {
                     TerminalLaunch.builder()
                             .title(AppNames.ofCurrent().getName() + " Updater")

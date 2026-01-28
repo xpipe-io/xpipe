@@ -44,8 +44,9 @@ public class PageantStrategy implements SshIdentityStrategy {
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
                 .addComp(
-                        new TextFieldComp(publicKey).apply(struc -> struc
-                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        new TextFieldComp(publicKey)
+                                .apply(struc -> struc.setPromptText(
+                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
                         publicKey)
                 .bind(
                         () -> {
@@ -120,7 +121,7 @@ public class PageantStrategy implements SshIdentityStrategy {
 
         return l;
     }
-    
+
     private String getPageantWindowsPipe() {
         Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
         var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant*", p);

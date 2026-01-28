@@ -108,8 +108,8 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
                     return null;
                 }
 
-                return new LabelGraphic.CompGraphic(
-                        PrettyImageHelper.ofFixedSize(hierarchy.getScript().get().getEffectiveIconFile(), 16, 16));
+                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(
+                        hierarchy.getScript().get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override

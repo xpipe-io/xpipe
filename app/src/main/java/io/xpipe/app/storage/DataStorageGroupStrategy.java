@@ -66,8 +66,7 @@ public interface DataStorageGroupStrategy {
             var key = new SimpleStringProperty(p.getValue().getKey());
 
             var prefs = AppPrefs.get();
-            var field = new TextFieldComp(key).apply(struc -> struc
-                    .promptTextProperty()
+            var field = new TextFieldComp(key).apply(struc -> struc.promptTextProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
                                 return prefs.passwordManager().getValue() != null

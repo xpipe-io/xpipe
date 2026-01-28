@@ -1,9 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppI18n;
 
 import javafx.geometry.Pos;
@@ -15,7 +12,6 @@ import javafx.scene.layout.VBox;
 
 import atlantafx.base.theme.Styles;
 import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 
@@ -46,7 +42,7 @@ public abstract class DialogComp extends RegionBuilder<Region> {
         return buttons;
     }
 
-    protected AbstractRegionBuilder<?,?> finishButton() {
+    protected AbstractRegionBuilder<?, ?> finishButton() {
         return new ButtonComp(AppI18n.observable(finishKey()), this::finish)
                 .style(Styles.ACCENT)
                 .style("next");
@@ -56,7 +52,7 @@ public abstract class DialogComp extends RegionBuilder<Region> {
         return "finishStep";
     }
 
-    protected List<AbstractRegionBuilder<?,?>> customButtons() {
+    protected List<AbstractRegionBuilder<?, ?>> customButtons() {
         return List.of();
     }
 
@@ -73,9 +69,9 @@ public abstract class DialogComp extends RegionBuilder<Region> {
 
     protected abstract void finish();
 
-    public abstract AbstractRegionBuilder<?,?> content();
+    public abstract AbstractRegionBuilder<?, ?> content();
 
-    protected AbstractRegionBuilder<?,?> pane(AbstractRegionBuilder<?,?> content) {
+    protected AbstractRegionBuilder<?, ?> pane(AbstractRegionBuilder<?, ?> content) {
         var entry = content;
         return RegionBuilder.of(() -> {
             var entryR = entry.build();
@@ -86,7 +82,7 @@ public abstract class DialogComp extends RegionBuilder<Region> {
         });
     }
 
-    public AbstractRegionBuilder<?,?> bottom() {
+    public AbstractRegionBuilder<?, ?> bottom() {
         return null;
     }
 }

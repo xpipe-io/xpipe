@@ -1,9 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
@@ -25,10 +21,15 @@ import io.xpipe.app.util.HttpHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.UuidHelper;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -36,7 +37,6 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
@@ -46,9 +46,9 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ScriptTextSource.InPlace.class),
-        @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class),
-        @JsonSubTypes.Type(value = ScriptTextSource.Url.class)
+    @JsonSubTypes.Type(value = ScriptTextSource.InPlace.class),
+    @JsonSubTypes.Type(value = ScriptTextSource.SourceReference.class),
+    @JsonSubTypes.Type(value = ScriptTextSource.Url.class)
 })
 public interface ScriptTextSource {
 
@@ -72,7 +72,8 @@ public interface ScriptTextSource {
             var text = new SimpleObjectProperty<>(property.getValue().getText());
 
             var availableDialects = ScriptDialects.getSupported();
-            var choice = new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
+            var choice = new ShellDialectChoiceComp(
+                    availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
 
             return new OptionsBuilder()
                     .name("minimumShellDialect")
@@ -82,13 +83,23 @@ public interface ScriptTextSource {
                     .name("scriptContents")
                     .description("scriptContentsDescription")
                     .documentationLink(DocumentationLink.SCRIPTING_EDITING)
-                    .addComp(IntegratedTextAreaComp.script(text, Bindings.createStringBinding(() -> {
-                        return dialect.getValue() != null
-                                ? dialect.getValue().getScriptFileEnding()
-                                : "sh";
-                    }, dialect)), text)
-                    .bind(() -> InPlace.builder().dialect(dialect.get()).text(text.get()).build(),
-                    property);
+                    .addComp(
+                            IntegratedTextAreaComp.script(
+                                    text,
+                                    Bindings.createStringBinding(
+                                            () -> {
+                                                return dialect.getValue() != null
+                                                        ? dialect.getValue().getScriptFileEnding()
+                                                        : "sh";
+                                            },
+                                            dialect)),
+                            text)
+                    .bind(
+                            () -> InPlace.builder()
+                                    .dialect(dialect.get())
+                                    .text(text.get())
+                                    .build(),
+                            property);
         }
 
         @Override
@@ -128,15 +139,23 @@ public interface ScriptTextSource {
             var url = new SimpleStringProperty(property.getValue().getUrl());
 
             var availableDialects = ScriptDialects.getSupported();
-            var choice = new ShellDialectChoiceComp(availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
+            var choice = new ShellDialectChoiceComp(
+                    availableDialects, dialect, ShellDialectChoiceComp.NullHandling.NULL_IS_ALL);
 
             return new OptionsBuilder()
                     .name("minimumShellDialect")
                     .description("minimumShellDialectDescription")
                     .documentationLink(DocumentationLink.SCRIPTING_COMPATIBILITY)
                     .addComp(choice, dialect)
-                    .nameAndDescription("scriptTextSourceUrl").addString(url).nonNull().bind(
-                    () -> Url.builder().dialect(dialect.get()).url(url.get()).build(), property);
+                    .nameAndDescription("scriptTextSourceUrl")
+                    .addString(url)
+                    .nonNull()
+                    .bind(
+                            () -> Url.builder()
+                                    .dialect(dialect.get())
+                                    .url(url.get())
+                                    .build(),
+                            property);
         }
 
         public void refresh() throws Exception {
@@ -175,14 +194,19 @@ public interface ScriptTextSource {
         @Override
         public void checkAvailable() throws Exception {
             if (!Files.exists(getLocalPath())) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Script URL " + url + " has not been initialized"));
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Script URL " + url + " has not been initialized"));
             }
         }
 
         @Override
         public String toSummary() {
-            return AppI18n.get("sourcedFrom", url.replace("http://", "").replace("https://", "")
-                    .replace("file://", "").replace("ssh://", ""));
+            return AppI18n.get(
+                    "sourcedFrom",
+                    url.replace("http://", "")
+                            .replace("https://", "")
+                            .replace("file://", "")
+                            .replace("ssh://", ""));
         }
 
         @Override
@@ -213,7 +237,10 @@ public interface ScriptTextSource {
             var ref = new SimpleObjectProperty<>(property.getValue().getRef());
             var name = new SimpleStringProperty(property.getValue().getName());
 
-            var sourceChoice = new StoreChoiceComp<>(null, ref, ScriptCollectionSourceStore.class,
+            var sourceChoice = new StoreChoiceComp<>(
+                    null,
+                    ref,
+                    ScriptCollectionSourceStore.class,
                     ignored -> true,
                     StoreViewState.get().getAllScriptsCategory(),
                     StoreViewState.get().getScriptSourcesCategory(),
@@ -236,7 +263,11 @@ public interface ScriptTextSource {
                     .addString(name)
                     .nonNull()
                     .bind(
-                            () -> SourceReference.builder().ref(ref.getValue()).name(name.getValue()).build(), property);
+                            () -> SourceReference.builder()
+                                    .ref(ref.getValue())
+                                    .name(name.getValue())
+                                    .build(),
+                            property);
         }
 
         @Override
@@ -250,12 +281,17 @@ public interface ScriptTextSource {
         public void checkAvailable() throws Exception {
             var cached = ref.getStore().getState().getEntries();
             if (cached == null) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Source " + ref.get().getName() + " has not been initialized"));
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Source " + ref.get().getName() + " has not been initialized"));
             }
 
-            var found = cached.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+            var found = cached.stream()
+                    .filter(e -> e.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
             if (found == null) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Script " + name + " not found in local source " + ref.get().getName()));
+                throw ErrorEventFactory.expected(new IllegalStateException("Script " + name
+                        + " not found in local source " + ref.get().getName()));
             }
         }
 
@@ -292,7 +328,10 @@ public interface ScriptTextSource {
                 return null;
             }
 
-            var found = cached.stream().filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+            var found = cached.stream()
+                    .filter(e -> e.getName().equals(name))
+                    .findFirst()
+                    .orElse(null);
             if (found == null) {
                 return null;
             }

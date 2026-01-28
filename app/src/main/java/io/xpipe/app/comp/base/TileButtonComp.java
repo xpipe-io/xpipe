@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
@@ -20,8 +20,6 @@ import javafx.scene.layout.VBox;
 
 import atlantafx.base.controls.Spacer;
 import lombok.*;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Consumer;
@@ -38,7 +36,7 @@ public class TileButtonComp extends RegionStructureBuilder<Button, TileButtonCom
     private double iconSize = 0.55;
 
     @Setter
-    private BaseRegionBuilder<?,?> right;
+    private BaseRegionBuilder<?, ?> right;
 
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);

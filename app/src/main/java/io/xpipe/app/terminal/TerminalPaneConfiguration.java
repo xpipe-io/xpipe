@@ -66,7 +66,8 @@ public class TerminalPaneConfiguration {
         if (!enableLogging || !AppPrefs.get().enableTerminalLogging().get()) {
             var sc = LocalShell.getShell();
             var register = TerminalLauncher.getTerminalRegisterCommand(request, sc);
-            var launcherScript = register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
+            var launcherScript =
+                    register + "\n" + sc.getShellDialect().terminalLauncherScript(request, title, alwaysPromptRestart);
             var config = new TerminalPaneConfiguration(request, title, paneIndex, launcherScript, sc.getShellDialect());
             return config;
         }
@@ -86,21 +87,20 @@ public class TerminalPaneConfiguration {
                     ShellDialects.POWERSHELL,
                     sc,
                     ShellDialects.POWERSHELL.terminalLauncherScript(request, title, alwaysPromptRestart));
-            var content =
-                    """
+            var content = """
                           %s
                           echo 'Transcript started, output file is "sessions\\%s"'
                           Start-Transcript -Force -LiteralPath "%s" > $Out-Null
                           & "%s"
                           Stop-Transcript > $Out-Null
                           echo 'Transcript stopped, output file is "sessions\\%s"'
-                          """
-                            .formatted(
-                                    TerminalLauncher.getTerminalRegisterCommand(request, LocalShell.getLocalPowershell().orElseThrow()),
-                                    logFile.getFileName(),
-                                    logFile,
-                                    launcherScript,
-                                    logFile.getFileName());
+                          """.formatted(
+                            TerminalLauncher.getTerminalRegisterCommand(
+                                    request, LocalShell.getLocalPowershell().orElseThrow()),
+                            logFile.getFileName(),
+                            logFile,
+                            launcherScript,
+                            logFile.getFileName());
             var config = new TerminalPaneConfiguration(request, title, paneIndex, content, ShellDialects.POWERSHELL);
             return config;
         } else {
@@ -132,22 +132,20 @@ public class TerminalPaneConfiguration {
             var scriptCommand = sc.getOsType() == OsType.MACOS || sc.getOsType() == OsType.BSD
                     ? "script -e -q '%s' \"%s\"".formatted(logFile, command)
                     : "script --quiet --command '%s' \"%s\"".formatted(command, logFile);
-            var content =
-                    """
+            var content = """
                           %s
                           echo "Transcript started, output file is sessions/%s"
                           %s
                           echo "Transcript stopped, output file is sessions/%s"
                           cat "%s" | "%s" terminal-clean > "%s.txt"
-                          """
-                            .formatted(
-                                    TerminalLauncher.getTerminalRegisterCommand(request, sc),
-                                    logFile.getFileName(),
-                                    scriptCommand,
-                                    logFile.getFileName(),
-                                    logFile,
-                                    cliExecutable,
-                                    logFile.getBaseName());
+                          """.formatted(
+                            TerminalLauncher.getTerminalRegisterCommand(request, sc),
+                            logFile.getFileName(),
+                            scriptCommand,
+                            logFile.getFileName(),
+                            logFile,
+                            cliExecutable,
+                            logFile.getBaseName());
             var config = new TerminalPaneConfiguration(request, title, paneIndex, content, sc.getShellDialect());
             config.scriptFile = ScriptHelper.createExecScript(sc.getShellDialect(), sc, content);
             return config;

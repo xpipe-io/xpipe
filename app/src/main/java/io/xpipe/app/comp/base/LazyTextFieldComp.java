@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.PlatformThread;
@@ -14,7 +12,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import lombok.Builder;

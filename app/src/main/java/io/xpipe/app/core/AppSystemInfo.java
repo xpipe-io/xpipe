@@ -299,7 +299,8 @@ public abstract class AppSystemInfo {
             if (env != null) {
                 try {
                     return Path.of(env);
-                } catch (InvalidPathException ignored) {}
+                } catch (InvalidPathException ignored) {
+                }
             }
 
             // This can actually fail and return ?

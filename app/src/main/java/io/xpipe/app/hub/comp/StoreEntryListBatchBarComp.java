@@ -1,8 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -25,8 +24,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +61,14 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
             struc.maxWidthProperty().bind(struc.heightProperty());
         });
         var bar = new HorizontalComp(List.of(
-                checkbox, RegionBuilder.hspacer(12), l, RegionBuilder.hspacer(20), actions, RegionBuilder.hspacer(), RegionBuilder.hspacer(20), close));
+                checkbox,
+                RegionBuilder.hspacer(12),
+                l,
+                RegionBuilder.hspacer(20),
+                actions,
+                RegionBuilder.hspacer(),
+                RegionBuilder.hspacer(20),
+                close));
         bar.apply(struc -> {
             struc.setFillHeight(true);
             struc.setAlignment(Pos.CENTER_LEFT);
@@ -76,14 +80,14 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
         return bar.build();
     }
 
-    private ObservableList<BaseRegionBuilder<?,?>> createActions() {
+    private ObservableList<BaseRegionBuilder<?, ?>> createActions() {
         var l = DerivedObservableList.<ActionProvider>arrayList(true);
         StoreViewState.get().getEffectiveBatchModeSelection().getList().addListener((ListChangeListener<
                         ? super StoreEntryWrapper>)
                 c -> {
                     l.setContent(getCompatibleActionProviders());
                 });
-        return l.<BaseRegionBuilder<?,?>>mapped(actionProvider -> {
+        return l.<BaseRegionBuilder<?, ?>>mapped(actionProvider -> {
                     return buildButton(actionProvider);
                 })
                 .getList();
@@ -122,7 +126,7 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends DataStore> BaseRegionBuilder<?,?> buildButton(ActionProvider p) {
+    private <T extends DataStore> BaseRegionBuilder<?, ?> buildButton(ActionProvider p) {
         BatchHubProvider<T> s = (BatchHubProvider<T>) p;
         if (s == null) {
             return RegionBuilder.empty();

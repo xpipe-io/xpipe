@@ -5,7 +5,6 @@ import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -51,7 +50,8 @@ public class StoreIconChoiceDialog {
         var settings = new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                     overlay.close();
                     AppPrefs.get().selectCategory("icons");
-                }).maxHeight(100);
+                })
+                .maxHeight(100);
         var modal = ModalOverlay.of(
                 "chooseCustomIcon",
                 new StoreIconChoiceComp(

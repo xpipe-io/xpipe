@@ -11,8 +11,8 @@ import io.xpipe.core.OsType;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+
 import lombok.AllArgsConstructor;
-import lombok.Value;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +52,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType VSCODIUM_WINDOWS = new VsCodeWindowsType("app.vscodium", "https://vscodium.com/", () -> AppSystemInfo.ofWindows()
+    WindowsType VSCODIUM_WINDOWS = new VsCodeWindowsType(
+            "app.vscodium",
+            "https://vscodium.com/",
+            () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("VSCodium")
@@ -64,58 +67,70 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                     .resolve("VSCodium")
                     .resolve("VSCodium.exe"));
 
-    WindowsType ANTIGRAVITY_WINDOWS = new VsCodeWindowsType("app.antigravity", "https://antigravity.google/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Antigravity")
-            .resolve("bin")
-            .resolve("antigravity.cmd"),
+    WindowsType ANTIGRAVITY_WINDOWS = new VsCodeWindowsType(
+            "app.antigravity",
+            "https://antigravity.google/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Antigravity")
+                    .resolve("bin")
+                    .resolve("antigravity.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("Antigravity")
                     .resolve("Antigravity.exe"));
 
-    WindowsType CURSOR_WINDOWS = new VsCodeWindowsType("app.cursor", "https://cursor.com/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("cursor")
-            .resolve("bin")
-            .resolve("cursor.cmd"),
+    WindowsType CURSOR_WINDOWS = new VsCodeWindowsType(
+            "app.cursor",
+            "https://cursor.com/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("cursor")
+                    .resolve("bin")
+                    .resolve("cursor.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("cursor")
                     .resolve("Cursor.exe"));
 
-    WindowsType VOID_WINDOWS = new VsCodeWindowsType("app.void", "https://voideditor.com/", () -> AppSystemInfo.ofWindows()
-            .getProgramFiles()
-            .resolve("Void")
-            .resolve("bin")
-            .resolve("void.cmd"),
+    WindowsType VOID_WINDOWS = new VsCodeWindowsType(
+            "app.void",
+            "https://voideditor.com/",
             () -> AppSystemInfo.ofWindows()
                     .getProgramFiles()
                     .resolve("Void")
-                    .resolve("Void.exe"));
+                    .resolve("bin")
+                    .resolve("void.cmd"),
+            () -> AppSystemInfo.ofWindows().getProgramFiles().resolve("Void").resolve("Void.exe"));
 
-    WindowsType WINDSURF_WINDOWS = new VsCodeWindowsType("app.windsurf", "https://windsurf.com/editor", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Windsurf")
-            .resolve("bin")
-            .resolve("windsurf.cmd"),
+    WindowsType WINDSURF_WINDOWS = new VsCodeWindowsType(
+            "app.windsurf",
+            "https://windsurf.com/editor",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Windsurf")
+                    .resolve("bin")
+                    .resolve("windsurf.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("Windsurf")
                     .resolve("Windsurf.exe"));
 
-    WindowsType KIRO_WINDOWS = new VsCodeWindowsType("app.kiro", "https://kiro.dev/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Kiro")
-            .resolve("bin")
-            .resolve("kiro.cmd"),
+    WindowsType KIRO_WINDOWS = new VsCodeWindowsType(
+            "app.kiro",
+            "https://kiro.dev/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Kiro")
+                    .resolve("bin")
+                    .resolve("kiro.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
@@ -157,36 +172,45 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         }
     };
 
-    WindowsType TRAE_WINDOWS = new VsCodeWindowsType("app.trae", "https://www.trae.ai/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Trae")
-            .resolve("bin")
-            .resolve("trae.cmd"),
+    WindowsType TRAE_WINDOWS = new VsCodeWindowsType(
+            "app.trae",
+            "https://www.trae.ai/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Trae")
+                    .resolve("bin")
+                    .resolve("trae.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("Trae")
                     .resolve("Trae.exe"));
 
-    WindowsType VSCODE_WINDOWS = new VsCodeWindowsType("app.vscode", "https://code.visualstudio.com/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Microsoft VS Code")
-            .resolve("bin")
-            .resolve("code.cmd"),
+    WindowsType VSCODE_WINDOWS = new VsCodeWindowsType(
+            "app.vscode",
+            "https://code.visualstudio.com/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Microsoft VS Code")
+                    .resolve("bin")
+                    .resolve("code.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
                     .resolve("Microsoft VS Code")
                     .resolve("Code.exe"));
 
-    WindowsType VSCODE_INSIDERS_WINDOWS = new VsCodeWindowsType("app.vscodeInsiders", "https://code.visualstudio.com/insiders/", () -> AppSystemInfo.ofWindows()
-            .getLocalAppData()
-            .resolve("Programs")
-            .resolve("Microsoft VS Code Insiders")
-            .resolve("bin")
-            .resolve("code-insiders.cmd"),
+    WindowsType VSCODE_INSIDERS_WINDOWS = new VsCodeWindowsType(
+            "app.vscodeInsiders",
+            "https://code.visualstudio.com/insiders/",
+            () -> AppSystemInfo.ofWindows()
+                    .getLocalAppData()
+                    .resolve("Programs")
+                    .resolve("Microsoft VS Code Insiders")
+                    .resolve("bin")
+                    .resolve("code-insiders.cmd"),
             () -> AppSystemInfo.ofWindows()
                     .getLocalAppData()
                     .resolve("Programs")
@@ -516,12 +540,15 @@ public interface ExternalEditorType extends PrefsChoiceValue {
         @Override
         public String getExecutable() {
             // Use .cmd script in cmd
-            return LocalShell.getDialect() == ShellDialects.CMD ? script.get().getFileName().toString() : exe.get().getFileName().toString();
+            return LocalShell.getDialect() == ShellDialects.CMD
+                    ? script.get().getFileName().toString()
+                    : exe.get().getFileName().toString();
         }
 
         @Override
         public Optional<Path> determineInstallation() {
-            return Optional.of(LocalShell.getDialect() != ShellDialects.CMD ? exe.get() : script.get()).filter(Files::exists);
+            return Optional.of(LocalShell.getDialect() != ShellDialects.CMD ? exe.get() : script.get())
+                    .filter(Files::exists);
         }
 
         @Override

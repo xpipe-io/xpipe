@@ -3,7 +3,6 @@ package io.xpipe.app.core;
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.comp.BaseRegionBuilder;
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
@@ -25,8 +24,6 @@ import javafx.scene.input.KeyCombination;
 import lombok.*;
 import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -181,7 +178,7 @@ public class AppLayoutModel {
     public record Entry(
             ObservableValue<String> name,
             LabelGraphic icon,
-            BaseRegionBuilder<?,?> comp,
+            BaseRegionBuilder<?, ?> comp,
             Runnable action,
             KeyCombination combination) {}
 

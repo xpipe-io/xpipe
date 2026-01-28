@@ -1,10 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.icon.BrowserIconDirectoryType;
 import io.xpipe.app.browser.icon.BrowserIconManager;
-import io.xpipe.app.browser.icon.BrowserIcons;
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
@@ -164,14 +160,12 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 });
             });
         });
-        var pathBar =
-                new TextFieldComp(path, true).style(Styles.CENTER_PILL).style("path-text");
+        var pathBar = new TextFieldComp(path, true).style(Styles.CENTER_PILL).style("path-text");
         pathBar.describe(d -> d.nameKey("currentPath"));
         pathBar.apply(struc -> {
             struc.focusedProperty().subscribe(val -> {
-                struc
-                        .pseudoClassStateChanged(
-                                INVISIBLE, !val && !model.getInOverview().get());
+                struc.pseudoClassStateChanged(
+                        INVISIBLE, !val && !model.getInOverview().get());
 
                 if (val) {
                     Platform.runLater(() -> {
@@ -190,9 +184,7 @@ public class BrowserNavBarComp extends RegionStructureBuilder<HBox, BrowserNavBa
                 // Pseudo classes do not apply if set instantly before shown
                 // If we start a new tab with a directory set, we have to set the pseudo class one pulse later
                 Platform.runLater(() -> {
-                    struc
-                            .pseudoClassStateChanged(
-                                    INVISIBLE, !val && !struc.isFocused());
+                    struc.pseudoClassStateChanged(INVISIBLE, !val && !struc.isFocused());
                 });
             });
         });

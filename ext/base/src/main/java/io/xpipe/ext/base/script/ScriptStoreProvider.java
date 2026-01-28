@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.script;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.core.AppI18n;
@@ -73,7 +72,7 @@ public class ScriptStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 
@@ -87,10 +86,18 @@ public class ScriptStoreProvider implements DataStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         ScriptStore st = store.getValue().asNeeded();
 
-        var textSource = new SimpleObjectProperty<>(st.getTextSource() != null ? st.getTextSource() : ScriptTextSource.InPlace.builder().build());
-        var others = new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
+        var textSource = new SimpleObjectProperty<>(
+                st.getTextSource() != null
+                        ? st.getTextSource()
+                        : ScriptTextSource.InPlace.builder().build());
+        var others =
+                new SimpleListProperty<>(FXCollections.observableArrayList(new ArrayList<>(st.getEffectiveScripts())));
 
-        var textSourceChoice = OptionsChoiceBuilder.builder().property(textSource).available(ScriptTextSource.getClasses()).allowNull(true).build();
+        var textSourceChoice = OptionsChoiceBuilder.builder()
+                .property(textSource)
+                .available(ScriptTextSource.getClasses())
+                .allowNull(true)
+                .build();
 
         var vals = List.of(0, 1, 2, 3);
         var selectedStart = new ArrayList<Integer>();
@@ -179,10 +186,15 @@ public class ScriptStoreProvider implements DataStoreProvider {
         ScriptStore st = section.getWrapper().getEntry().getStore().asNeeded();
         var init = st.isInitScript() ? AppI18n.get("init") : null;
         var file = st.isFileScript() ? AppI18n.get("fileBrowser") : null;
-        var shell = st.isShellScript() ? AppI18n.get("shell") + getShellSessionScriptName(section.getWrapper()).map(s -> " " + s).orElse("") : null;
+        var shell = st.isShellScript()
+                ? AppI18n.get("shell")
+                        + getShellSessionScriptName(section.getWrapper())
+                                .map(s -> " " + s)
+                                .orElse("")
+                : null;
         var runnable = st.isRunnableScript() ? AppI18n.get("hub") : null;
-        return new ReadOnlyObjectWrapper<>(new StoreStateFormat(
-                List.of(), st.getTextSource().toSummary(), shell, init, file, runnable).format());
+        return new ReadOnlyObjectWrapper<>(
+                new StoreStateFormat(List.of(), st.getTextSource().toSummary(), shell, init, file, runnable).format());
     }
 
     private Optional<String> getShellSessionScriptName(StoreEntryWrapper wrapper) {
@@ -199,7 +211,8 @@ public class ScriptStoreProvider implements DataStoreProvider {
         var os = st.getShellDialect() == ShellDialects.CMD || ShellDialects.isPowershell(st.getShellDialect())
                 ? OsType.WINDOWS
                 : OsType.LINUX;
-        return Optional.of(OsFileSystem.of(os).makeFileSystemCompatible(name) + "." + st.getShellDialect().getScriptFileEnding());
+        return Optional.of(OsFileSystem.of(os).makeFileSystemCompatible(name) + "."
+                + st.getShellDialect().getScriptFileEnding());
     }
 
     @SneakyThrows

@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
@@ -20,8 +19,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.SneakyThrows;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 
@@ -38,7 +35,7 @@ public class BrowserOverviewComp extends SimpleRegionBuilder {
     protected Region createSimple() {
         // The open file system might have already been closed
 
-        var list = new ArrayList<BaseRegionBuilder<?,?>>();
+        var list = new ArrayList<BaseRegionBuilder<?, ?>>();
 
         var recent = DerivedObservableList.wrap(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))

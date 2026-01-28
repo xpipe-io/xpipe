@@ -3,7 +3,6 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;

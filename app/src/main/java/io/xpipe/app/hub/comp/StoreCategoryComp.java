@@ -1,7 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
@@ -13,7 +11,6 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.core.OsType;
@@ -65,12 +62,15 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 category.getName().setValue(newValue);
             }
         });
-        var name = new LazyTextFieldComp(prop).style("name").applyStructure(struc -> {
-            category.getRenameTrigger().onFire(() -> {
-                struc.get().requestFocus();
-                struc.getTextField().selectAll();
-            });
-        }).build();
+        var name = new LazyTextFieldComp(prop)
+                .style("name")
+                .applyStructure(struc -> {
+                    category.getRenameTrigger().onFire(() -> {
+                        struc.get().requestFocus();
+                        struc.getTextField().selectAll();
+                    });
+                })
+                .build();
         var showing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
@@ -247,20 +247,26 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
 
         if (category.canMove()) {
             var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-            StoreViewState.get().getSortedCategories(getCategory().getRoot()).getList().forEach(storeCategoryWrapper -> {
-                MenuItem m = new MenuItem();
-                m.textProperty().setValue("  ".repeat(storeCategoryWrapper.getDepth()) + storeCategoryWrapper.getName().getValue());
-                m.setOnAction(event -> {
-                    category.moveToParent(storeCategoryWrapper.getCategory());
-                    event.consume();
-                });
-                if (storeCategoryWrapper.getParent() == null || storeCategoryWrapper.equals(category) || storeCategoryWrapper.equals(
-                        category.getParent())) {
-                    m.setDisable(true);
-                }
+            StoreViewState.get()
+                    .getSortedCategories(getCategory().getRoot())
+                    .getList()
+                    .forEach(storeCategoryWrapper -> {
+                        MenuItem m = new MenuItem();
+                        m.textProperty()
+                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                        + storeCategoryWrapper.getName().getValue());
+                        m.setOnAction(event -> {
+                            category.moveToParent(storeCategoryWrapper.getCategory());
+                            event.consume();
+                        });
+                        if (storeCategoryWrapper.getParent() == null
+                                || storeCategoryWrapper.equals(category)
+                                || storeCategoryWrapper.equals(category.getParent())) {
+                            m.setDisable(true);
+                        }
 
-                move.getItems().add(m);
-            });
+                        move.getItems().add(m);
+                    });
             contextMenu.getItems().add(move);
         }
 

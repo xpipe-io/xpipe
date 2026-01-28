@@ -1,23 +1,18 @@
 package io.xpipe.ext.base.script;
 
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.ShellDialectChoiceComp;
 import io.xpipe.app.ext.ShellDialectIcons;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.FilePath;
-import io.xpipe.ext.base.desktop.DesktopBaseStore;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -25,12 +20,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import lombok.Getter;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class ScriptCollectionSourceImportDialog {
 
@@ -70,25 +64,28 @@ public class ScriptCollectionSourceImportDialog {
         });
 
         var refresh = new ButtonComp(null, new FontIcon("mdmz-refresh"), () -> {
-            ThreadHelper.runAsync(() -> {
-                try (var ignored = new BooleanScope(busy).exclusive().start()) {
-                    source.getStore().getSource().prepare();
-                    var all = source.getStore().getSource().listScripts();
-                    available.setAll(all);
-                    update();
-                } catch (Exception e) {
-                    ErrorEventFactory.fromThrowable(e).handle();
-                }
-            });
-        }).maxHeight(100);
+                    ThreadHelper.runAsync(() -> {
+                        try (var ignored = new BooleanScope(busy).exclusive().start()) {
+                            source.getStore().getSource().prepare();
+                            var all = source.getStore().getSource().listScripts();
+                            available.setAll(all);
+                            update();
+                        } catch (Exception e) {
+                            ErrorEventFactory.fromThrowable(e).handle();
+                        }
+                    });
+                })
+                .maxHeight(100);
 
         var notFound = new LabelComp(AppI18n.observable("noScriptsFound"));
         notFound.show(Bindings.isEmpty(shown).and(busy.not()));
 
-        var selector = new ListSelectorComp<>(shown,
-                e -> e.getName()+ " [" + e.getDialect().getDisplayName() + "]",
+        var selector = new ListSelectorComp<>(
+                shown,
+                e -> e.getName() + " [" + e.getDialect().getDisplayName() + "]",
                 e -> new LabelGraphic.ImageGraphic(ShellDialectIcons.getImageName(e.getDialect()), 16),
-                selected, e -> false,
+                selected,
+                e -> false,
                 () -> shown.size() > 0);
         selector.disable(busy);
 
@@ -96,26 +93,33 @@ public class ScriptCollectionSourceImportDialog {
         stack.prefWidth(600);
         stack.prefHeight(650);
 
-        var catChoice = new DataStoreCategoryChoiceComp(StoreViewState.get().getAllScriptsCategory(),
-                StoreViewState.get().getActiveCategory(), targetCategory, false);
+        var catChoice = new DataStoreCategoryChoiceComp(
+                StoreViewState.get().getAllScriptsCategory(),
+                StoreViewState.get().getActiveCategory(),
+                targetCategory,
+                false);
         catChoice.hgrow();
         catChoice.maxHeight(100);
 
         var modal = ModalOverlay.of(
-                Bindings.createStringBinding(() -> {
-                    return AppI18n.get("scriptSourceCollectionImportTitle", count.get());
-                }, count, AppI18n.activeLanguage()),
+                Bindings.createStringBinding(
+                        () -> {
+                            return AppI18n.get("scriptSourceCollectionImportTitle", count.get());
+                        },
+                        count,
+                        AppI18n.activeLanguage()),
                 stack,
                 null);
         modal.addButtonBarComp(refresh);
         modal.addButtonBarComp(filterField);
         modal.addButtonBarComp(catChoice);
         modal.addButton(ModalButton.ok(() -> {
-            ThreadHelper.runAsync(() -> {
-                finish();
-            });
+                    ThreadHelper.runAsync(() -> {
+                        finish();
+                    });
                 }))
-                .augment(button -> button.disableProperty().bind(Bindings.isEmpty(selected).or(targetCategory.isNull())));
+                .augment(button ->
+                        button.disableProperty().bind(Bindings.isEmpty(selected).or(targetCategory.isNull())));
         modal.show();
     }
 
@@ -125,10 +129,14 @@ public class ScriptCollectionSourceImportDialog {
         var added = new ArrayList<DataStoreEntry>();
         for (ScriptCollectionSourceEntry e : selected) {
             var name = FilePath.of(e.getName()).getBaseName().toString();
-            var textSource = ScriptTextSource.SourceReference.builder().ref(source).name(e.getName()).build();
+            var textSource = ScriptTextSource.SourceReference.builder()
+                    .ref(source)
+                    .name(e.getName())
+                    .build();
 
-            var alreadyAdded = DataStorage.get().getStoreEntries().stream().anyMatch(entry -> entry.getStore() instanceof ScriptStore ss &&
-                            textSource.equals(ss.getTextSource()));
+            var alreadyAdded = DataStorage.get().getStoreEntries().stream()
+                    .anyMatch(entry ->
+                            entry.getStore() instanceof ScriptStore ss && textSource.equals(ss.getTextSource()));
             if (alreadyAdded) {
                 continue;
             }
@@ -153,7 +161,9 @@ public class ScriptCollectionSourceImportDialog {
         }
 
         var f = filter.get().toLowerCase();
-        var filtered = available.stream().filter(e -> e.getName().toLowerCase().contains(f)).toList();
+        var filtered = available.stream()
+                .filter(e -> e.getName().toLowerCase().contains(f))
+                .toList();
         var newList = new ArrayList<ScriptCollectionSourceEntry>();
         newList.addAll(selected);
         newList.addAll(filtered);

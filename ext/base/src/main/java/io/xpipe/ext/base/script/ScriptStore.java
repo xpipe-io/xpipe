@@ -32,6 +32,7 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
 
     @Singular
     List<DataStoreEntryRef<ScriptStore>> scripts;
+
     String description;
 
     ScriptTextSource textSource;
@@ -75,7 +76,9 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
             var scriptDialect = getShellDialect() != null ? getShellDialect() : targetType;
             var script = ScriptHelper.createExecScript(scriptDialect, shellControl, raw);
             var canSource = targetType.isSourceCompatibleTo(scriptDialect);
-            var base = canSource ? targetType.sourceScriptCommand(shellControl, script.toString()) : targetType.runScriptCommand(shellControl, script.toString());
+            var base = canSource
+                    ? targetType.sourceScriptCommand(shellControl, script.toString())
+                    : targetType.runScriptCommand(shellControl, script.toString());
             return base + (args ? " " + targetType.getCatchAllVariable() : "");
         }
 
@@ -142,6 +145,8 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     }
 
     public ScriptTextSource getTextSource() {
-        return textSource != null ? textSource : ScriptTextSource.InPlace.builder().build();
+        return textSource != null
+                ? textSource
+                : ScriptTextSource.InPlace.builder().build();
     }
 }

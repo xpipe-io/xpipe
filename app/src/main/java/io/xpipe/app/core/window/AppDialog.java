@@ -1,6 +1,6 @@
 package io.xpipe.app.core.window;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -20,8 +20,6 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import lombok.Getter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -116,11 +114,11 @@ public class AppDialog {
         }
     }
 
-    public static BaseRegionBuilder<?,?> dialogTextKey(String s) {
+    public static BaseRegionBuilder<?, ?> dialogTextKey(String s) {
         return dialogText(AppI18n.observable(s));
     }
 
-    public static BaseRegionBuilder<?,?> dialogText(String s) {
+    public static BaseRegionBuilder<?, ?> dialogText(String s) {
         return RegionBuilder.of(() -> {
                     var text = new Text(s);
                     text.getStyleClass().add("dialog-text");
@@ -131,7 +129,7 @@ public class AppDialog {
                 .prefWidth(450);
     }
 
-    public static BaseRegionBuilder<?,?> dialogText(ObservableValue<String> s) {
+    public static BaseRegionBuilder<?, ?> dialogText(ObservableValue<String> s) {
         return RegionBuilder.of(() -> {
                     var text = new Text();
                     text.getStyleClass().add("dialog-text");

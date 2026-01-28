@@ -5,9 +5,6 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
-
 public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
 
     @Override

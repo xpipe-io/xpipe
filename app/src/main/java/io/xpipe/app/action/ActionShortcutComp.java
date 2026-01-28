@@ -1,8 +1,7 @@
 package io.xpipe.app.action;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
@@ -20,8 +19,6 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.Region;
 
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -54,7 +51,7 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         return options.build();
     }
 
-    private BaseRegionBuilder<?,?> createUrlComp() {
+    private BaseRegionBuilder<?, ?> createUrlComp() {
         var url = new SimpleStringProperty();
         action.subscribe((v) -> {
             var s = ActionUrls.toUrl(v);
@@ -75,7 +72,7 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         return group;
     }
 
-    private BaseRegionBuilder<?,?> createDesktopComp() {
+    private BaseRegionBuilder<?, ?> createDesktopComp() {
         var url = BindingsHelper.map(action, abstractAction -> ActionUrls.toUrl(abstractAction));
         var name = new SimpleStringProperty();
         action.subscribe((v) -> {
@@ -99,7 +96,7 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         return group;
     }
 
-    private BaseRegionBuilder<?,?> createApiComp() {
+    private BaseRegionBuilder<?, ?> createApiComp() {
         var url = "curl -X POST \"http://localhost:" + AppBeaconServer.get().getPort() + "/action\" ...";
         var text = AppI18n.observable("actionApiUrl", url);
         var prop = new SimpleStringProperty();
@@ -120,7 +117,7 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
     }
 
     @SuppressWarnings("unused")
-    private BaseRegionBuilder<?,?> createMacroComp() {
+    private BaseRegionBuilder<?, ?> createMacroComp() {
         var button = new ButtonComp(
                 AppI18n.observable("createMacro"), new FontIcon("mdi2c-clipboard-multiple-outline"), onCreateMacro);
         return button;

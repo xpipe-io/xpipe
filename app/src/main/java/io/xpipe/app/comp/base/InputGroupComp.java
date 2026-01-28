@@ -1,33 +1,28 @@
 package io.xpipe.app.comp.base;
 
-
-
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
+
 import javafx.geometry.Pos;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.layout.InputGroup;
-import lombok.Setter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 
 public class InputGroupComp extends RegionBuilder<InputGroup> {
 
-    private final List<BaseRegionBuilder<?,?>> entries;
+    private final List<BaseRegionBuilder<?, ?>> entries;
 
-    private BaseRegionBuilder<?,?> mainReference;
+    private BaseRegionBuilder<?, ?> mainReference;
 
-    public InputGroupComp(List<BaseRegionBuilder<?,?>> comps) {
+    public InputGroupComp(List<BaseRegionBuilder<?, ?>> comps) {
         entries = List.copyOf(comps);
     }
 
-    public InputGroupComp setMainReference(BaseRegionBuilder<?,?> mainReference) {
+    public InputGroupComp setMainReference(BaseRegionBuilder<?, ?> mainReference) {
         this.mainReference = mainReference;
         return this;
     }

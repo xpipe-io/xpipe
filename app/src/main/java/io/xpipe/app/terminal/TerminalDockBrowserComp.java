@@ -1,6 +1,5 @@
 package io.xpipe.app.terminal;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -8,8 +7,8 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
-
 import io.xpipe.app.util.GlobalTimer;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableBooleanValue;
@@ -108,13 +107,15 @@ public class TerminalDockBrowserComp extends SimpleRegionBuilder {
         var focus = new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                GlobalTimer.delay(() -> {
-                    if (newValue) {
-                        model.onFocusGain();
-                    } else {
-                        model.onFocusLost();
-                    }
-                }, Duration.ofMillis(100));
+                GlobalTimer.delay(
+                        () -> {
+                            if (newValue) {
+                                model.onFocusGain();
+                            } else {
+                                model.onFocusLost();
+                            }
+                        },
+                        Duration.ofMillis(100));
             }
         };
         var show = new EventHandler<WindowEvent>() {

@@ -1,6 +1,5 @@
 package io.xpipe.app.vnc;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
@@ -30,7 +29,7 @@ public class VncCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.vncClient)

@@ -1,7 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.comp.RegionDescriptor;
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.platform.InputHelper;

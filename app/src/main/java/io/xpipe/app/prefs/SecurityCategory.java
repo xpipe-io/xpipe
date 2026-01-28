@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -17,7 +16,7 @@ public class SecurityCategory extends AppPrefsCategory {
         return new LabelGraphic.IconGraphic("mdi2s-security-network");
     }
 
-    public BaseRegionBuilder<?,?> create() {
+    public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
         builder.addTitle("security")

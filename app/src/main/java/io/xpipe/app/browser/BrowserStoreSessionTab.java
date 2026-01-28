@@ -1,6 +1,6 @@
 package io.xpipe.app.browser;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -10,8 +10,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 @Getter
 public abstract class BrowserStoreSessionTab<T extends DataStore> extends BrowserSessionTab {
@@ -25,7 +23,7 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
         this.name = DataStorage.get().getStoreEntryDisplayName(entry.get());
     }
 
-    public abstract BaseRegionBuilder<?,?> comp();
+    public abstract BaseRegionBuilder<?, ?> comp();
 
     public abstract boolean canImmediatelyClose();
 

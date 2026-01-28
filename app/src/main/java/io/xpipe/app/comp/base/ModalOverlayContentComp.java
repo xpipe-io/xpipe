@@ -1,8 +1,7 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.Getter;

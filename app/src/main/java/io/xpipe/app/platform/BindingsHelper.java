@@ -8,9 +8,8 @@ import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-
-import javafx.scene.Node;
 import javafx.scene.layout.Region;
+
 import lombok.Value;
 
 import java.lang.ref.WeakReference;

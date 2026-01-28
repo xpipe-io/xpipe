@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.ext.ShellStore;
@@ -18,15 +16,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
 import lombok.Builder;
 import lombok.Value;
-
-import java.nio.file.Files;
 
 public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, IntegratedTextAreaComp.Structure> {
 
@@ -48,9 +42,9 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         var type = Bindings.createStringBinding(
                 () -> {
                     return host.getValue() != null
-                            && host.getValue().getStore() instanceof StatefulDataStore<?> sd
-                            && sd.getState() instanceof SystemState ss
-                            && ss.getShellDialect() != null
+                                    && host.getValue().getStore() instanceof StatefulDataStore<?> sd
+                                    && sd.getState() instanceof SystemState ss
+                                    && ss.getShellDialect() != null
                             ? ss.getShellDialect().getScriptFileEnding()
                             : "sh";
                 },
@@ -66,11 +60,7 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
         string.addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue != null ? new ShellScript(newValue) : null);
         });
-        var i = new IntegratedTextAreaComp(
-                string,
-                false,
-                "script",
-                fileType);
+        var i = new IntegratedTextAreaComp(string, false, "script", fileType);
         return i;
     }
 
@@ -94,14 +84,18 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
     public Structure createBase() {
         var textArea = new TextAreaComp(value, lazy);
         textArea.applyStructure(struc -> {
-            struc.getTextArea().prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> {
-                var val = value.getValue() != null ? value.getValue() : "";
-                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
-                // Somehow the handling of trailing newlines is weird
-                // This makes the handling better for JavaFX text areas
-                count++;
-                return Math.max(1, count);
-            }, value));
+            struc.getTextArea()
+                    .prefRowCountProperty()
+                    .bind(Bindings.createIntegerBinding(
+                            () -> {
+                                var val = value.getValue() != null ? value.getValue() : "";
+                                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+                                // Somehow the handling of trailing newlines is weird
+                                // This makes the handling better for JavaFX text areas
+                                count++;
+                                return Math.max(1, count);
+                            },
+                            value));
         });
         var textAreaStruc = textArea.buildStructure();
         var copyButton = createOpenButton();

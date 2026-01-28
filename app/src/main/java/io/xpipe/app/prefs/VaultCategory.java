@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -38,7 +37,7 @@ public class VaultCategory extends AppPrefsCategory {
     }
 
     @SneakyThrows
-    public BaseRegionBuilder<?,?> create() {
+    public BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var builder = new OptionsBuilder();
 

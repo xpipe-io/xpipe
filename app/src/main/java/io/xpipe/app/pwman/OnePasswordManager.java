@@ -2,7 +2,6 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
@@ -74,7 +73,9 @@ public class OnePasswordManager implements PasswordManager {
                     password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception e) {
             var event = ErrorEventFactory.fromThrowable(e);
-            if (!key.startsWith("op://") && e instanceof ProcessOutputException pex && pex.getOutput().contains("Specify the item")) {
+            if (!key.startsWith("op://")
+                    && e instanceof ProcessOutputException pex
+                    && pex.getOutput().contains("Specify the item")) {
                 event.documentationLink(DocumentationLink.ONE_PASSWORD_KEYS).expected();
             }
             event.handle();

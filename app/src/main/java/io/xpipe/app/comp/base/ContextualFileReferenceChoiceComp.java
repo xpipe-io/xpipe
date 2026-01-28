@@ -1,10 +1,8 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.browser.BrowserFileChooserSessionComp;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileSystemStore;
@@ -29,11 +27,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-import atlantafx.base.theme.Styles;
 import lombok.Setter;
 import lombok.Value;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.nio.file.Files;
@@ -76,21 +71,19 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
     public HBox createSimple() {
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
-                    BrowserFileChooserSessionComp.open(
-                            () -> replacement,
-                            () -> filePath.getValue() != null
-                                    ? filePath.getValue().getParent()
-                                    : null,
-                            fileStore -> {
-                                if (fileStore != null) {
-                                    filePath.setValue(fileStore.getPath());
-                                }
-                            },
-                            false,
-                            directory,
-                            filter);
-                });
+            var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
+            BrowserFileChooserSessionComp.open(
+                    () -> replacement,
+                    () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
+                    fileStore -> {
+                        if (fileStore != null) {
+                            filePath.setValue(fileStore.getPath());
+                        }
+                    },
+                    false,
+                    directory,
+                    filter);
+        });
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!DataStorageSyncHandler.getInstance().supportsSync()) {
@@ -161,7 +154,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
                 },
                 filePath));
 
-        var nodes = new ArrayList<BaseRegionBuilder<?,?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(path);
         nodes.add(fileBrowseButton);
         if (sync != null) {
@@ -178,7 +171,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         return layout.build();
     }
 
-    private BaseRegionBuilder<?,?> createComboBox() {
+    private BaseRegionBuilder<?, ?> createComboBox() {
         var allFiles = new ArrayList<>(previousFileReferences);
         allFiles.addAll(sync != null ? sync.getExistingFiles() : List.of());
         var items = allFiles.stream()
@@ -218,7 +211,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         return combo;
     }
 
-    private BaseRegionBuilder<?,?> createTextField() {
+    private BaseRegionBuilder<?, ?> createTextField() {
         var prop = new SimpleStringProperty();
         filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
             prop.set(s != null ? s.toString() : null);
@@ -226,8 +219,7 @@ public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
         prop.addListener((observable, oldValue, newValue) -> {
             filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
         });
-        var fileNameComp = new TextFieldComp(prop)
-                .apply(struc -> HBox.setHgrow(struc, Priority.ALWAYS));
+        var fileNameComp = new TextFieldComp(prop).apply(struc -> HBox.setHgrow(struc, Priority.ALWAYS));
 
         if (prompt != null) {
             fileNameComp.apply(struc -> {

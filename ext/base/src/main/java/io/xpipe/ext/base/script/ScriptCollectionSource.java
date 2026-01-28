@@ -1,8 +1,5 @@
 package io.xpipe.ext.base.script;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
@@ -14,7 +11,12 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.UuidHelper;
+
 import javafx.beans.property.*;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -30,8 +32,8 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ScriptCollectionSource.Directory.class),
-        @JsonSubTypes.Type(value = ScriptCollectionSource.GitRepository.class)
+    @JsonSubTypes.Type(value = ScriptCollectionSource.Directory.class),
+    @JsonSubTypes.Type(value = ScriptCollectionSource.GitRepository.class)
 })
 public interface ScriptCollectionSource {
 
@@ -45,11 +47,22 @@ public interface ScriptCollectionSource {
 
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<Directory> property) {
-            var path = new SimpleObjectProperty<>(property.getValue().getPath() != null ? FilePath.of(property.getValue().getPath()) : null);
+            var path = new SimpleObjectProperty<>(
+                    property.getValue().getPath() != null
+                            ? FilePath.of(property.getValue().getPath())
+                            : null);
             return new OptionsBuilder()
                     .nameAndDescription("scriptDirectory")
-                    .addComp(new ContextualFileReferenceChoiceComp(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
-                            path, null, List.of(), null, true), path)
+                    .addComp(
+                            new ContextualFileReferenceChoiceComp(
+                                    new ReadOnlyObjectWrapper<>(
+                                            DataStorage.get().local().ref()),
+                                    path,
+                                    null,
+                                    List.of(),
+                                    null,
+                                    true),
+                            path)
                     .nonNull()
                     .bind(
                             () -> Directory.builder()
@@ -66,7 +79,8 @@ public interface ScriptCollectionSource {
         @Override
         public void prepare() {
             if (!Files.isDirectory(path)) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Source directory " + path + " does not exist"));
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Source directory " + path + " does not exist"));
             }
         }
 
@@ -101,9 +115,7 @@ public interface ScriptCollectionSource {
                     .nameAndDescription("scriptSourceUrl")
                     .addString(url)
                     .nonNull()
-                    .bind(
-                            () -> GitRepository.builder().url(url.get()).build(),
-                            property);
+                    .bind(() -> GitRepository.builder().url(url.get()).build(), property);
         }
 
         private String getName() {
@@ -136,8 +148,10 @@ public interface ScriptCollectionSource {
 
         @Override
         public String toSummary() {
-            return url.replace("http://", "").replace("https://", "")
-                    .replace("file://", "").replace("ssh://", "");
+            return url.replace("http://", "")
+                    .replace("https://", "")
+                    .replace("file://", "")
+                    .replace("ssh://", "");
         }
 
         @Override
@@ -169,9 +183,11 @@ public interface ScriptCollectionSource {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     var name = file.getFileName().toString();
-                    var dialect = availableDialects.stream().filter(shellDialect -> {
-                        return name.endsWith("." + shellDialect.getScriptFileEnding());
-                    }).findFirst();
+                    var dialect = availableDialects.stream()
+                            .filter(shellDialect -> {
+                                return name.endsWith("." + shellDialect.getScriptFileEnding());
+                            })
+                            .findFirst();
                     if (dialect.isEmpty()) {
                         return FileVisitResult.CONTINUE;
                     }

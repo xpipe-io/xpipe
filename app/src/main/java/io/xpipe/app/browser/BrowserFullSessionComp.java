@@ -3,8 +3,6 @@ package io.xpipe.app.browser;
 import io.xpipe.app.browser.file.BrowserConnectionListComp;
 import io.xpipe.app.browser.file.BrowserConnectionListFilterComp;
 import io.xpipe.app.browser.file.BrowserTransferComp;
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -65,8 +63,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
         });
 
         left.apply(struc -> {
-            struc
-                    .paddingProperty()
+            struc.paddingProperty()
                     .bind(Bindings.createObjectBinding(
                             () -> new Insets(tabs.getHeaderHeight().get(), 0, 0, 0), tabs.getHeaderHeight()));
         });
@@ -188,8 +185,7 @@ public class BrowserFullSessionComp extends SimpleRegionBuilder {
                         model.getSelectedEntry()));
         localDownloadStage.prefHeight(200);
         localDownloadStage.maxHeight(200);
-        var vertical =
-                new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).style("left");
+        var vertical = new VerticalComp(List.of(bookmarkTopBar, bookmarksContainer, localDownloadStage)).style("left");
         return vertical.build();
     }
 

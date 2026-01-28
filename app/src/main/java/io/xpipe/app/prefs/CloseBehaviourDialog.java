@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ModalButton;

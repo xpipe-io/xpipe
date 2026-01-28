@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TooltipHelper;

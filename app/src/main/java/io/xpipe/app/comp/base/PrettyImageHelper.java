@@ -1,16 +1,14 @@
 package io.xpipe.app.comp.base;
 
-
-import io.xpipe.app.core.AppImages;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppDisplayScale;
+import io.xpipe.app.core.AppImages;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.core.FilePath;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -35,8 +33,7 @@ public class PrettyImageHelper {
         return Optional.empty();
     }
 
-    private static String rasterizedImageIfExistsScaled(
-            String img, int height, int... availableSizes) {
+    private static String rasterizedImageIfExistsScaled(String img, int height, int... availableSizes) {
         if (img == null) {
             return null;
         }
@@ -59,15 +56,15 @@ public class PrettyImageHelper {
         return rasterizedImageIfExists(img, closest).orElse(null);
     }
 
-    public static BaseRegionBuilder<?,?> ofFixedSizeSquare(String img, int size) {
+    public static BaseRegionBuilder<?, ?> ofFixedSizeSquare(String img, int size) {
         return ofFixedSize(img, size, size);
     }
 
-    public static BaseRegionBuilder<?,?> ofFixedSize(String img, int w, int h) {
+    public static BaseRegionBuilder<?, ?> ofFixedSize(String img, int w, int h) {
         return ofFixedSize(new SimpleStringProperty(img), w, h);
     }
 
-    public static BaseRegionBuilder<?,?> ofFixedSize(ObservableValue<String> img, int w, int h) {
+    public static BaseRegionBuilder<?, ?> ofFixedSize(ObservableValue<String> img, int w, int h) {
         if (img == null) {
             return new PrettyImageComp(new SimpleStringProperty(null), w, h);
         }
@@ -78,7 +75,7 @@ public class PrettyImageHelper {
         return new PrettyImageComp(binding, w, h);
     }
 
-    public static BaseRegionBuilder<?,?> ofSpecificFixedSize(String img, int w, int h) {
+    public static BaseRegionBuilder<?, ?> ofSpecificFixedSize(String img, int w, int h) {
         var b = rasterizedImageIfExistsScaled(img, h, h, h * 2);
         return new PrettyImageComp(new ReadOnlyStringWrapper(b), w, h);
     }

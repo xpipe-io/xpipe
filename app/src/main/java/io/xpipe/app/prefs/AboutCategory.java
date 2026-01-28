@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionDescriptor;
@@ -34,7 +33,7 @@ public class AboutCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var props = createProperties();
         var update = new UpdateCheckComp().prefWidth(600);
         return new VerticalComp(List.of(
@@ -49,7 +48,7 @@ public class AboutCategory extends AppPrefsCategory {
                 .style("about-tab");
     }
 
-    private BaseRegionBuilder<?,?> createProperties() {
+    private BaseRegionBuilder<?, ?> createProperties() {
         var title = RegionBuilder.of(() -> {
             return JfxHelper.createNamedEntry(
                     new ReadOnlyStringWrapper(AppNames.ofCurrent().getName() + " Desktop"),
@@ -67,8 +66,8 @@ public class AboutCategory extends AppPrefsCategory {
                 .name("build")
                 .addComp(
                         new LabelComp(AppProperties.get().getBuild())
-                                .describe(
-                                        d -> d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                .describe(d ->
+                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .name("distribution")
                 .addComp(new LabelComp(AppDistributionType.get().toTranslatedString())
@@ -79,8 +78,8 @@ public class AboutCategory extends AppPrefsCategory {
                                         + System.getProperty("java.vm.name")
                                         + " "
                                         + System.getProperty("java.vm.version"))
-                                .describe(
-                                        d -> d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
+                                .describe(d ->
+                                        d.focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY)),
                         null)
                 .buildComp();
         return section.style("properties-comp");

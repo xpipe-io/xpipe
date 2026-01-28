@@ -1,8 +1,7 @@
 package io.xpipe.app.comp.base;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
@@ -33,16 +32,14 @@ import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 public class ModalOverlayComp extends RegionBuilder<Region> {
 
-    private final BaseRegionBuilder<?,?> background;
+    private final BaseRegionBuilder<?, ?> background;
     private final Property<ModalOverlay> overlayContent;
     private final BooleanScope actionRunning = new BooleanScope(new SimpleBooleanProperty()).exclusive();
 
-    public ModalOverlayComp(BaseRegionBuilder<?,?> background, Property<ModalOverlay> overlayContent) {
+    public ModalOverlayComp(BaseRegionBuilder<?, ?> background, Property<ModalOverlay> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
     }
@@ -190,9 +187,10 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
         if (newValue.getTitle() != null) {
             var l = new LabelComp(
                     newValue.getTitle(),
-                    new SimpleObjectProperty<>(newValue.getGraphic() != null
-                            ? newValue.getGraphic()
-                            : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
+                    new SimpleObjectProperty<>(
+                            newValue.getGraphic() != null
+                                    ? newValue.getGraphic()
+                                    : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
             l.apply(struc -> {
                 struc.setGraphicTextGap(8);
                 AppFontSizes.xl(struc);
@@ -209,7 +207,7 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
-                var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?,?>) o).build();
+                var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
                     node.widthProperty().addListener((observable, oldValue, n) -> {
                         var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);

@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
@@ -27,8 +26,6 @@ import atlantafx.base.controls.Popover;
 import atlantafx.base.layout.InputGroup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFi
 
     private final Property<InPlaceSecretValue> value;
     private final boolean allowCopy;
-    private final List<BaseRegionBuilder<?,?>> additionalButtons = new ArrayList<>();
+    private final List<BaseRegionBuilder<?, ?>> additionalButtons = new ArrayList<>();
 
     public SecretFieldComp(Property<InPlaceSecretValue> value, boolean allowCopy) {
         this.value = value;
@@ -57,7 +54,7 @@ public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFi
         return new SecretFieldComp(prop, false);
     }
 
-    public void addButton(BaseRegionBuilder<?,?> button) {
+    public void addButton(BaseRegionBuilder<?, ?> button) {
         this.additionalButtons.add(button);
     }
 
@@ -128,7 +125,7 @@ public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFi
                 })
                 .describe(d -> d.nameKey("copy"));
 
-        var list = new ArrayList<BaseRegionBuilder<?,?>>();
+        var list = new ArrayList<BaseRegionBuilder<?, ?>>();
         var fieldComp = RegionBuilder.of(() -> field);
         list.add(fieldComp);
         if (allowCopy) {

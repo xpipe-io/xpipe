@@ -92,8 +92,7 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .build();
 
         var publicKeyField = new TextFieldComp(publicKey).apply(struc -> {
-            struc
-                    .promptTextProperty()
+            struc.promptTextProperty()
                     .bind(Bindings.createStringBinding(
                             () -> {
                                 return "ssh-... ABCDEF.... (" + AppI18n.get("publicKeyGenerateNotice") + ")";
@@ -103,7 +102,9 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var sc = config.getFileSystem() != null ? config.getFileSystem().getValue().getStore().getOrStartSession() : LocalShell.getShell();
+                        var sc = config.getFileSystem() != null
+                                ? config.getFileSystem().getValue().getStore().getOrStartSession()
+                                : LocalShell.getShell();
                         var path = keyPath.get();
                         if (!sc.view().fileExists(path)) {
                             return;
@@ -144,7 +145,10 @@ public class KeyFileStrategy implements SshIdentityStrategy {
                 .description("locationDescription")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                config.getFileSystem() != null ? config.getFileSystem() : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
+                                config.getFileSystem() != null
+                                        ? config.getFileSystem()
+                                        : new ReadOnlyObjectWrapper<>(
+                                                DataStorage.get().local().ref()),
                                 keyPath,
                                 config.isAllowKeyFileSync() ? sync : null,
                                 List.of(),

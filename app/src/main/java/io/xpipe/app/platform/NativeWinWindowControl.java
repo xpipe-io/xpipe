@@ -1,7 +1,5 @@
 package io.xpipe.app.platform;
 
-import com.sun.jna.platform.win32.*;
-import com.sun.jna.win32.W32APIOptions;
 import io.xpipe.app.util.Rect;
 
 import javafx.stage.Window;
@@ -10,6 +8,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
+import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

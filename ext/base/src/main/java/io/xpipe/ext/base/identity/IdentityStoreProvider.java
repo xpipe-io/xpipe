@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
@@ -23,7 +22,7 @@ public abstract class IdentityStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 

@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -42,8 +41,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         var testPasswordManagerResult = new SimpleStringProperty();
 
         var field = new TextFieldComp(value)
-                .apply(struc -> struc
-                        .promptTextProperty()
+                .apply(struc -> struc.promptTextProperty()
                         .bind(Bindings.createStringBinding(
                                 () -> {
                                     return prefs.passwordManager.getValue() != null
@@ -79,9 +77,8 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
         });
         testInput.hgrow();
 
-        var testPasswordManager = new HorizontalComp(
-                        List.of(testInput, new LabelComp(testPasswordManagerResult).apply(struc -> struc
-                                .setOpacity(0.8))))
+        var testPasswordManager = new HorizontalComp(List.of(
+                        testInput, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .apply(struc -> struc.setFillHeight(true));
         return testPasswordManager.build();

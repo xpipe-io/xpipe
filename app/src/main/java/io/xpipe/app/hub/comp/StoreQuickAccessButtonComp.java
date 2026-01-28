@@ -1,7 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;

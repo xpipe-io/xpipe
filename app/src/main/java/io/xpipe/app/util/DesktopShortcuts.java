@@ -27,8 +27,7 @@ public class DesktopShortcuts {
         }
 
         var icon = AppInstallation.ofCurrent().getLogoPath();
-        var content = String.format(
-                        """
+        var content = String.format("""
                                     $TARGET="%s"
                                     $SHORTCUT="%s"
                                     $ws = New-Object -ComObject WScript.Shell
@@ -38,9 +37,7 @@ public class DesktopShortcuts {
                                     $S.TargetPath = "$TARGET"
                                     $S.Arguments = '%s'
                                     $S.Save()
-                                    """,
-                        executable, shortcutPath, icon, args)
-                .replaceAll("\n", ";");
+                                    """, executable, shortcutPath, icon, args).replaceAll("\n", ";");
         shell.get().command(content).execute();
         return shortcutPath;
     }
@@ -66,8 +63,7 @@ public class DesktopShortcuts {
         // Linux .desktop names are very restrictive
         var fixedName = name.replaceAll("[^\\w _]", "");
         var icon = getOrCreateIcon();
-        var content = String.format(
-                """
+        var content = String.format("""
                                     [Desktop Entry]
                                     Type=Application
                                     Name=%s
@@ -76,8 +72,7 @@ public class DesktopShortcuts {
                                     Icon=%s
                                     Terminal=false
                                     Categories=Utility;Development;
-                                    """,
-                fixedName, executable, args, icon);
+                                    """, fixedName, executable, args, icon);
 
         var osFile = Path.of("/etc/os-release");
         var ubuntu =
@@ -105,12 +100,10 @@ public class DesktopShortcuts {
         var icon = AppInstallation.ofCurrent().getLogoPath();
         var assets = icon.getParent().resolve("Assets.car");
         var base = AppSystemInfo.ofCurrent().getDesktop().resolve(name + ".app");
-        var content = String.format(
-                """
+        var content = String.format("""
                                     #!/usr/bin/env sh
                                     "%s" %s
-                                    """,
-                executable, args);
+                                    """, executable, args);
 
         try (var pc = LocalShell.getShell()) {
             pc.getShellDialect().deleteFileOrDirectory(pc, base.toString()).executeAndCheck();
@@ -122,10 +115,7 @@ public class DesktopShortcuts {
             pc.executeSimpleCommand("chmod ugo+x \"" + macExec + "\"");
 
             pc.view().writeTextFile(FilePath.of(base + "/Contents/PkgInfo"), "APPL????");
-            pc.view()
-                    .writeTextFile(
-                            FilePath.of(base + "/Contents/Info.plist"),
-                            """
+            pc.view().writeTextFile(FilePath.of(base + "/Contents/Info.plist"), """
                                                                                 <?xml version="1.0" encoding="UTF-8"?>
                                                                                 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
                                                                                 <plist version="1.0">

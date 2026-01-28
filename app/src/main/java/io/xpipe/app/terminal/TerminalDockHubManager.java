@@ -11,10 +11,12 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
+
 import lombok.Getter;
 
 import java.time.Duration;
@@ -43,7 +45,8 @@ public class TerminalDockHubManager {
             return false;
         }
 
-        var tabsSupported = term.getOpenFormat() != TerminalOpenFormat.NEW_WINDOW || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
+        var tabsSupported = term.getOpenFormat() != TerminalOpenFormat.NEW_WINDOW
+                || TerminalMultiplexerManager.getEffectiveMultiplexer().isPresent();
         if (!tabsSupported) {
             return false;
         }
@@ -91,8 +94,7 @@ public class TerminalDockHubManager {
         return adjust ? new Rect(rect.getX() - 9, rect.getY() - 1, rect.getW() + 16, rect.getH() + 9) : rect;
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("toggleTerminalDock"),
-            new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
+            AppI18n.observable("toggleTerminalDock"), new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
                 refreshDockStatus();
 
                 if (!enabled.get()) {
@@ -120,7 +122,7 @@ public class TerminalDockHubManager {
                 }
 
                 return false;
-    });
+            });
 
     private void addDialogListeners() {
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
@@ -148,7 +150,6 @@ public class TerminalDockHubManager {
             }
         });
     }
-
 
     private TerminalView.Listener createListener() {
         var listener = new TerminalView.Listener() {

@@ -10,7 +10,6 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;

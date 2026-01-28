@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
@@ -17,12 +16,9 @@ import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -35,7 +31,7 @@ public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutC
     @Override
     public Structure createBase() {
         var model = AppLayoutModel.get();
-        Map<BaseRegionBuilder<?,?>, ObservableValue<Boolean>> map = model.getEntries().stream()
+        Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .filter(entry -> entry.comp() != null)
                 .collect(Collectors.toMap(
                         entry -> entry.comp(),

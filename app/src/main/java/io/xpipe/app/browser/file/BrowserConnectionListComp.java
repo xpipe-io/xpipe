@@ -53,10 +53,9 @@ public final class BrowserConnectionListComp extends SimpleRegionBuilder {
                 selected.addListener((observable, oldValue, newValue) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
                         struc.pseudoClassStateChanged(
-                                        SELECTED,
-                                        newValue != null
-                                                && newValue.equals(
-                                                        s.getWrapper().getEntry()));
+                                SELECTED,
+                                newValue != null
+                                        && newValue.equals(s.getWrapper().getEntry()));
                     });
                 });
             });

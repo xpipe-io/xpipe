@@ -1,6 +1,6 @@
 package io.xpipe.app.platform;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -21,8 +21,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Region;
 
 import atlantafx.base.controls.Spacer;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -73,8 +71,8 @@ public class OptionsBuilder {
     private ObservableValue<String> name;
     private ObservableValue<String> description;
     private String documentationLink;
-    private BaseRegionBuilder<?,?> comp;
-    private BaseRegionBuilder<?,?> lastCompHeadReference;
+    private BaseRegionBuilder<?, ?> comp;
+    private BaseRegionBuilder<?, ?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
 
@@ -311,7 +309,7 @@ public class OptionsBuilder {
         return check(Validator.nonNullIf(ownValidator, e, p, b));
     }
 
-    private void pushComp(BaseRegionBuilder<?,?> comp) {
+    private void pushComp(BaseRegionBuilder<?, ?> comp) {
         finishCurrent();
         this.comp = comp;
         this.lastCompHeadReference = comp;
@@ -409,12 +407,12 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder addComp(BaseRegionBuilder<?,?> comp) {
+    public OptionsBuilder addComp(BaseRegionBuilder<?, ?> comp) {
         pushComp(comp);
         return this;
     }
 
-    public OptionsBuilder addComp(BaseRegionBuilder<?,?> comp, Property<?> prop) {
+    public OptionsBuilder addComp(BaseRegionBuilder<?, ?> comp, Property<?> prop) {
         pushComp(comp);
         props.add(prop);
         return this;

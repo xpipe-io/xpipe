@@ -6,7 +6,6 @@ import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppRestart;
-import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -67,13 +66,22 @@ public class WorkspaceCreationDialog {
     }
 
     private static void showConfirmModal(Path shortcut, Path workspaceDir) {
-        var modal = ModalOverlay.of("workspaceRestartTitle", AppDialog.dialogText(AppI18n.observable("workspaceRestartContent", shortcut)));
-        modal.addButton(new ModalButton("browseShortcut", () -> {
-            DesktopHelper.browseFileInDirectory(shortcut);
-        }, false, false));
-        modal.addButton(new ModalButton("restart", () -> {
-            AppRestart.restart(workspaceDir);
-        }, true, true));
+        var modal = ModalOverlay.of(
+                "workspaceRestartTitle", AppDialog.dialogText(AppI18n.observable("workspaceRestartContent", shortcut)));
+        modal.addButton(new ModalButton(
+                "browseShortcut",
+                () -> {
+                    DesktopHelper.browseFileInDirectory(shortcut);
+                },
+                false,
+                false));
+        modal.addButton(new ModalButton(
+                "restart",
+                () -> {
+                    AppRestart.restart(workspaceDir);
+                },
+                true,
+                true));
         modal.show();
     }
 }

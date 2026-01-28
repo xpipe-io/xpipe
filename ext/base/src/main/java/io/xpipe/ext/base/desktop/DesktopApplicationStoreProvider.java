@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.desktop;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
@@ -124,7 +123,7 @@ public class DesktopApplicationStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(SystemStateComp.State.SUCCESS);
     }
 

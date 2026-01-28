@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppLayoutModel;
@@ -27,8 +25,6 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
 import lombok.AllArgsConstructor;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +139,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
         return vbox;
     }
 
-    private BaseRegionBuilder<?,?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
+    private BaseRegionBuilder<?, ?> createStyle(AppLayoutModel.Entry e, IconButtonComp b) {
         var selected = PseudoClass.getPseudoClass("selected");
 
         b.apply(struc -> {
@@ -184,8 +180,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                 Platform.getPreferences().accentColorProperty());
 
         var indicator = RegionBuilder.empty().style("indicator");
-        var stack =
-                new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
+        var stack = new StackComp(List.of(indicator, b)).apply(struc -> struc.setAlignment(Pos.CENTER_RIGHT));
         stack.apply(struc -> {
             var indicatorRegion = (Region) struc.getChildren().getFirst();
             var buttonRegion = (Region) struc.getChildren().get(1);

@@ -1,9 +1,7 @@
 package io.xpipe.app.comp.base;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -17,8 +15,6 @@ import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import lombok.Setter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 import java.util.function.Function;
@@ -106,7 +102,7 @@ public class ChoicePaneComp extends RegionBuilder<VBox> {
         return vbox;
     }
 
-    public record Entry(ObservableValue<String> name, BaseRegionBuilder<?,?> comp) {
+    public record Entry(ObservableValue<String> name, BaseRegionBuilder<?, ?> comp) {
 
         @Override
         public int hashCode() {

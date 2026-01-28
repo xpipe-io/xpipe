@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;

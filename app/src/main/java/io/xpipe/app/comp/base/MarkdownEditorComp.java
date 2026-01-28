@@ -1,7 +1,5 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.util.FileOpener;

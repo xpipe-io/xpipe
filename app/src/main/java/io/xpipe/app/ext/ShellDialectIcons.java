@@ -1,24 +1,10 @@
 package io.xpipe.app.ext;
 
-
-import io.xpipe.app.comp.SimpleRegionBuilder;
-import io.xpipe.app.comp.base.PrettyImageHelper;
-import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
-import javafx.beans.property.Property;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.skin.ComboBoxListViewSkin;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Region;
-import lombok.AllArgsConstructor;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 public class ShellDialectIcons {
 

@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.AppFontSizes;
@@ -27,8 +26,7 @@ public class StoreCategoryListComp extends SimpleRegionBuilder {
             if (OsType.ofLocal() == OsType.MACOS) {
                 AppFontSizes.lg(struc);
             }
-            struc
-                    .minHeightProperty()
+            struc.minHeightProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 var h = content.getHeight();

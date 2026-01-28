@@ -18,7 +18,8 @@ public class ScriptHierarchy {
     List<ScriptHierarchy> children;
 
     public static ScriptHierarchy buildEnabledHierarchy(Predicate<DataStoreEntryRef<ScriptStore>> include) {
-        var enabled = ScriptStoreSetup.getEnabledScripts().stream().filter(include).toList();
+        var enabled =
+                ScriptStoreSetup.getEnabledScripts().stream().filter(include).toList();
 
         var categories = new HashSet<DataStoreCategory>();
         for (DataStoreEntryRef<ScriptStore> ref : enabled) {
@@ -79,7 +80,10 @@ public class ScriptHierarchy {
                 continue;
             }
 
-            childTarget.get().getChildren().add(new ScriptHierarchy(scriptRef.get().getName(), null, scriptRef, List.of()));
+            childTarget
+                    .get()
+                    .getChildren()
+                    .add(new ScriptHierarchy(scriptRef.get().getName(), null, scriptRef, List.of()));
         }
 
         return condenseHierarchy(hierarchy);
@@ -110,7 +114,8 @@ public class ScriptHierarchy {
                 hierarchy.getChildren().stream().map(c -> condenseHierarchy(c)).toList();
         if (children.size() == 1 && !children.getFirst().isLeaf()) {
             var nestedChildren = children.getFirst().getChildren();
-            return new ScriptHierarchy(children.getFirst().getName(), hierarchy.getCategory(), hierarchy.getScript(), nestedChildren);
+            return new ScriptHierarchy(
+                    children.getFirst().getName(), hierarchy.getCategory(), hierarchy.getScript(), nestedChildren);
         } else {
             return new ScriptHierarchy(hierarchy.getName(), hierarchy.getCategory(), hierarchy.getScript(), children);
         }

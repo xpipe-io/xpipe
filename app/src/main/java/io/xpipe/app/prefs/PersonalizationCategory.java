@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
@@ -95,7 +94,7 @@ public class PersonalizationCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
                 .addTitle("personalization")
                 .sub(new OptionsBuilder().sub(languageChoice()).sub(themeChoice()))

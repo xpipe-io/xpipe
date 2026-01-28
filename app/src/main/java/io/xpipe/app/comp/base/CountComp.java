@@ -1,9 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;

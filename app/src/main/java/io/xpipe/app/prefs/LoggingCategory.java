@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
@@ -26,7 +25,7 @@ public class LoggingCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("sessionLogging")

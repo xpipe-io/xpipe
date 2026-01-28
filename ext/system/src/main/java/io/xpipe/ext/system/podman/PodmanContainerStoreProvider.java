@@ -1,6 +1,5 @@
 package io.xpipe.ext.system.podman;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.DataStore;
@@ -91,7 +90,7 @@ public class PodmanContainerStoreProvider implements ShellStoreProvider {
         return List.of(PodmanContainerStore.class);
     }
 
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
             var state = (ContainerStoreState) o;
             var cs = state.getContainerState();

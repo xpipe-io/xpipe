@@ -1,10 +1,8 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
@@ -23,8 +21,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import lombok.Setter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,14 +36,17 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
 
-    private final Function<T, BaseRegionBuilder<?,?>> compFunction;
+    private final Function<T, BaseRegionBuilder<?, ?>> compFunction;
     private final boolean scrollBar;
 
     @Setter
     private boolean visibilityControl = false;
 
     public ListBoxViewComp(
-            ObservableList<T> shown, ObservableList<T> all, Function<T, BaseRegionBuilder<?,?>> compFunction, boolean scrollBar) {
+            ObservableList<T> shown,
+            ObservableList<T> all,
+            Function<T, BaseRegionBuilder<?, ?>> compFunction,
+            boolean scrollBar) {
         this.shown = shown;
         this.all = all;
         this.compFunction = compFunction;

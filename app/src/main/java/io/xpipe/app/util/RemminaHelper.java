@@ -66,8 +66,7 @@ public class RemminaHelper {
 
         var name = OsFileSystem.ofLocal().makeFileSystemCompatible(configuration.getTitle());
         var file = AppLocalTemp.getLocalTempDataDirectory("remmina").resolve("xpipe-" + name + ".remmina");
-        var string =
-                """
+        var string = """
                      [remmina]
                      protocol=RDP
                      name=%s
@@ -80,20 +79,15 @@ public class RemminaHelper {
                      window_width=%s
                      window_height=%s
                      window_maximize=%s
-                     """
-                        .formatted(
-                                configuration.getTitle(),
-                                user,
-                                domain != null ? domain : "",
-                                configuration
-                                        .getConfig()
-                                        .get("full address")
-                                        .orElseThrow()
-                                        .getValue(),
-                                password != null ? password : "",
-                                w,
-                                h,
-                                maximize);
+                     """.formatted(
+                configuration.getTitle(),
+                user,
+                domain != null ? domain : "",
+                configuration.getConfig().get("full address").orElseThrow().getValue(),
+                password != null ? password : "",
+                w,
+                h,
+                maximize);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;
@@ -109,8 +103,7 @@ public class RemminaHelper {
         // Use window size as remmina's autosize is broken
         var maximize = "0"; // AppMainWindow.get().getStage().isMaximized() ? "1" : "0";
 
-        var string =
-                """
+        var string = """
                      [remmina]
                      protocol=VNC
                      name=%s
@@ -121,15 +114,14 @@ public class RemminaHelper {
                      window_width=%s
                      window_height=%s
                      window_maximize=%s
-                     """
-                        .formatted(
-                                configuration.getTitle(),
-                                configuration.retrieveUsername().orElse(""),
-                                configuration.getHost() + ":" + configuration.getPort(),
-                                password != null ? password : "",
-                                w,
-                                h,
-                                maximize);
+                     """.formatted(
+                        configuration.getTitle(),
+                        configuration.retrieveUsername().orElse(""),
+                        configuration.getHost() + ":" + configuration.getPort(),
+                        password != null ? password : "",
+                        w,
+                        h,
+                        maximize);
         Files.createDirectories(file.getParent());
         Files.writeString(file, string);
         return file;

@@ -18,25 +18,39 @@ import java.util.function.Supplier;
 @Getter
 public enum PredefinedScriptStore {
     APT_UPDATE("Apt upgrade", () -> ScriptStore.builder()
-            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("apt_upgrade.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder()
+                    .dialect(ShellDialects.SH)
+                    .text(file("apt_upgrade.sh"))
+                    .build())
             .shellScript(true)
             .runnableScript(true)
             .build()),
     REMOVE_CR("CRLF to LF", () -> ScriptStore.builder()
-            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("crlf_to_lf.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder()
+                    .dialect(ShellDialects.SH)
+                    .text(file("crlf_to_lf.sh"))
+                    .build())
             .fileScript(true)
             .shellScript(true)
             .build()),
     DIFF("Diff", () -> ScriptStore.builder()
-            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("diff.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder()
+                    .dialect(ShellDialects.SH)
+                    .text(file("diff.sh"))
+                    .build())
             .fileScript(true)
             .build()),
     GIT_CONFIG("Git Config", () -> ScriptStore.builder()
-            .textSource(ScriptTextSource.InPlace.builder().text(file("git_config.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder()
+                    .text(file("git_config.sh"))
+                    .build())
             .runnableScript(true)
             .build()),
     SYSTEM_HEALTH_STATUS("System health status", () -> ScriptStore.builder()
-            .textSource(ScriptTextSource.InPlace.builder().dialect(ShellDialects.SH).text(file("system_health.sh")).build())
+            .textSource(ScriptTextSource.InPlace.builder()
+                    .dialect(ShellDialects.SH)
+                    .text(file("system_health.sh"))
+                    .build())
             .initScript(true)
             .build());
 

@@ -1,9 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.application.Platform;
@@ -12,7 +9,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 

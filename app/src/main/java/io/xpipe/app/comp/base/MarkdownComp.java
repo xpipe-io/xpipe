@@ -1,9 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;

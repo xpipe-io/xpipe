@@ -1,7 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.DelayedInitComp;

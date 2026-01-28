@@ -1,7 +1,6 @@
 package io.xpipe.app.browser;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LoadingIconComp;
@@ -34,8 +33,6 @@ import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
 import lombok.Getter;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.*;
 
@@ -429,8 +426,7 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
             var image = tabModel.getIcon();
             var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16);
             logo.apply(struc -> {
-                struc
-                        .opacityProperty()
+                struc.opacityProperty()
                         .bind(PlatformThread.sync(Bindings.createDoubleBinding(
                                 () -> {
                                     return !tabModel.getBusy().get() ? 1.0 : 0.15;
@@ -459,7 +455,7 @@ public class BrowserSessionTabsComp extends SimpleRegionBuilder {
             tab.textProperty().bind(tabModel.getName());
         }
 
-        BaseRegionBuilder<?,?> comp = tabModel.comp();
+        BaseRegionBuilder<?, ?> comp = tabModel.comp();
         var compRegion = comp.build();
 
         var empty = new StackPane();

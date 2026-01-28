@@ -2,7 +2,6 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
 import io.xpipe.app.comp.RegionDescriptor;
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;

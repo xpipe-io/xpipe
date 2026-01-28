@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
@@ -13,8 +12,6 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.Map;
 
@@ -22,9 +19,10 @@ public class MultiContentComp extends SimpleRegionBuilder {
 
     private final boolean requestFocus;
     private final boolean log;
-    private final Map<BaseRegionBuilder<?,?>, ObservableValue<Boolean>> content;
+    private final Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content;
 
-    public MultiContentComp(boolean requestFocus, Map<BaseRegionBuilder<?,?>, ObservableValue<Boolean>> content, boolean log) {
+    public MultiContentComp(
+            boolean requestFocus, Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> content, boolean log) {
         this.requestFocus = requestFocus;
         this.log = log;
         this.content = FXCollections.observableMap(content);
@@ -32,9 +30,9 @@ public class MultiContentComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
-        ObservableMap<BaseRegionBuilder<?,?>, Region> m = FXCollections.observableHashMap();
+        ObservableMap<BaseRegionBuilder<?, ?>, Region> m = FXCollections.observableHashMap();
         var stack = new StackPane();
-        m.addListener((MapChangeListener<? super BaseRegionBuilder<?,?>, Region>) change -> {
+        m.addListener((MapChangeListener<? super BaseRegionBuilder<?, ?>, Region>) change -> {
             if (change.wasAdded()) {
                 stack.getChildren().add(change.getValueAdded());
             } else {
@@ -54,7 +52,7 @@ public class MultiContentComp extends SimpleRegionBuilder {
             }
         });
 
-        for (Map.Entry<BaseRegionBuilder<?,?>, ObservableValue<Boolean>> e : content.entrySet()) {
+        for (Map.Entry<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> e : content.entrySet()) {
             var name = e.getKey().getClass().getSimpleName();
             if (log) {
                 TrackEvent.trace("Creating content tab region for element " + name);

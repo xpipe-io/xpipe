@@ -1,12 +1,10 @@
 package io.xpipe.app.ext;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.process.ShellDialect;
-import io.xpipe.app.process.ShellDialects;
 
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
@@ -17,9 +15,7 @@ import javafx.scene.layout.Region;
 
 import lombok.AllArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
@@ -47,7 +43,8 @@ public class ShellDialectChoiceComp extends SimpleRegionBuilder {
                                 : nullHandling == NullHandling.NULL_IS_ALL
                                         ? AppI18n.get("all")
                                         : AppI18n.get("default"));
-                setGraphic(PrettyImageHelper.ofFixedSizeSquare(ShellDialectIcons.getImageName(item), 16).build());
+                setGraphic(PrettyImageHelper.ofFixedSizeSquare(ShellDialectIcons.getImageName(item), 16)
+                        .build());
             }
         };
         var cb = new ComboBox<ShellDialect>();

@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -10,8 +9,8 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
 import io.xpipe.core.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -22,10 +21,6 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.val;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Predicate;
@@ -64,10 +59,11 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 categoryRoot,
                 explicitCategory,
                 requireComplete,
-                StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot) ? "selectConnection" : "selectEntry",
+                StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot)
+                        ? "selectConnection"
+                        : "selectEntry",
                 "noCompatibleConnection");
     }
-
 
     public StoreChoiceComp(
             DataStoreEntry self,
@@ -115,10 +111,13 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
         button.apply(struc -> {
                     struc.setMaxWidth(20000);
                     struc.setAlignment(Pos.CENTER_LEFT);
-                    BaseRegionBuilder<?,?> graphic = PrettyImageHelper.ofFixedSize(
+                    BaseRegionBuilder<?, ?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        return toGraphic(selected.getValue() != null ? selected.getValue().get() : null);
+                                        return toGraphic(
+                                                selected.getValue() != null
+                                                        ? selected.getValue().get()
+                                                        : null);
                                     },
                                     selected),
                             16,

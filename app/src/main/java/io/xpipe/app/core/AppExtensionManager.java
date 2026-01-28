@@ -89,16 +89,19 @@ public class AppExtensionManager {
 
             if (AppProperties.get().isLocatorVersionCheck()) {
                 var iv = getLocalInstallVersion(localInstallation);
-                var installVersion = AppVersion.parse(iv).orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
-                var sv = !AppProperties.get().isImage() ? Files.readString(Path.of("version")).strip() : AppProperties.get().getVersion();
-                var sourceVersion = AppVersion.parse(sv).orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
+                var installVersion = AppVersion.parse(iv)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid installation version: " + iv));
+                var sv = !AppProperties.get().isImage()
+                        ? Files.readString(Path.of("version")).strip()
+                        : AppProperties.get().getVersion();
+                var sourceVersion = AppVersion.parse(sv)
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid source version: " + sv));
                 if (!installVersion.equals(sourceVersion)) {
-                    throw new IllegalStateException("Incompatible development version. Source: " +
-                            sv +
-                            ", Installation: " +
-                            iv +
-                            "\n\nPlease try to check out the matching release version in the repository. See https://github" +
-                            ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
+                    throw new IllegalStateException("Incompatible development version. Source: " + sv
+                            + ", Installation: "
+                            + iv
+                            + "\n\nPlease try to check out the matching release version in the repository. See https://github"
+                            + ".com/xpipe-io/xpipe/blob/master/CONTRIBUTING.md#development-setup");
                 }
             }
 

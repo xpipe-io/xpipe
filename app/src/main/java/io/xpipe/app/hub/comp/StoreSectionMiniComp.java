@@ -1,8 +1,6 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 
@@ -14,8 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+
 import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.int4.fx.builders.pane.StackPaneBuilder;
 
 import java.util.ArrayList;
@@ -45,7 +43,7 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
 
     @Override
     public VBox createSimple() {
-        var list = new ArrayList<AbstractRegionBuilder<?,?>>();
+        var list = new ArrayList<AbstractRegionBuilder<?, ?>>();
         if (section.getWrapper() != null) {
             var paneComp = new StackPaneBuilder();
             paneComp.minHeight(28);
@@ -81,10 +79,8 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
         root.style("item");
         root.apply(struc -> {
             struc.setAlignment(Pos.CENTER_LEFT);
-            struc
-                    .setGraphic(PrettyImageHelper.ofFixedSize(
-                                    section.getWrapper().getIconFile(), 16, 16)
-                            .build());
+            struc.setGraphic(PrettyImageHelper.ofFixedSize(section.getWrapper().getIconFile(), 16, 16)
+                    .build());
             struc.setMnemonicParsing(false);
         });
         augment.accept(section, root);
@@ -93,7 +89,7 @@ public class StoreSectionMiniComp extends StoreSectionBaseComp {
 
         var quickAccessButton = createQuickAccessButton(20, action);
 
-        var buttonList = new ArrayList<BaseRegionBuilder<?,?>>();
+        var buttonList = new ArrayList<BaseRegionBuilder<?, ?>>();
         buttonList.add(expandButton);
         buttonList.add(root);
         if (section.getDepth() == 1) {

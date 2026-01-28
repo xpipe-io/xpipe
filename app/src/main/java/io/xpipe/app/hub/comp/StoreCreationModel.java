@@ -6,7 +6,6 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;

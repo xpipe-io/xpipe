@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -33,7 +32,7 @@ public final class BrowserConnectionListFilterComp extends SimpleRegionBuilder {
                         StoreViewState.get().getAllConnectionsCategory(),
                         StoreViewState.get().getActiveCategory(),
                         this.category,
-                true)
+                        true)
                 .style(Styles.LEFT_PILL)
                 .apply(struc -> {
                     AppFontSizes.base(struc);

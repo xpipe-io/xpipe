@@ -19,19 +19,15 @@ public class MacOsPermissions {
             while (state.get()) {
                 // We can't wait in the platform thread, so just return instantly
                 if (Platform.isFxApplicationThread()) {
-                    pc.osascriptCommand(
-                                    """
+                    pc.osascriptCommand("""
                                         tell application "System Events" to keystroke "t"
-                                        """)
-                            .execute();
+                                        """).execute();
                     return true;
                 }
 
-                var success = pc.osascriptCommand(
-                                """
+                var success = pc.osascriptCommand("""
                                                   tell application "System Events" to keystroke "t"
-                                                  """)
-                        .executeAndCheck();
+                                                  """).executeAndCheck();
 
                 if (success) {
                     Platform.runLater(() -> {

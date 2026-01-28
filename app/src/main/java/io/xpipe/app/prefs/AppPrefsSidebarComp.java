@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
@@ -18,8 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.text.TextAlignment;
 
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
@@ -33,7 +30,7 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
         var buttons = effectiveCategories.stream()
-                .<BaseRegionBuilder<?,?>>map(appPrefsCategory -> {
+                .<BaseRegionBuilder<?, ?>>map(appPrefsCategory -> {
                     return new ButtonComp(
                                     AppI18n.observable(appPrefsCategory.getId()),
                                     new ReadOnlyObjectWrapper<>(appPrefsCategory.getIcon()),
@@ -45,10 +42,8 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
                                 struc.setTextAlignment(TextAlignment.LEFT);
                                 struc.setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {
-                                    struc
-                                            .pseudoClassStateChanged(
-                                                    PseudoClass.getPseudoClass("selected"),
-                                                    appPrefsCategory.equals(val));
+                                    struc.pseudoClassStateChanged(
+                                            PseudoClass.getPseudoClass("selected"), appPrefsCategory.equals(val));
                                 });
                             })
                             .maxWidth(2000);
@@ -64,10 +59,7 @@ public class AppPrefsSidebarComp extends SimpleRegionBuilder {
         buttons.add(RegionBuilder.vspacer());
         buttons.add(restartButton);
 
-        var vbox = new VerticalComp(buttons)
-                .style("sidebar")
-                .style("color-box")
-                .style("gray");
+        var vbox = new VerticalComp(buttons).style("sidebar").style("color-box").style("gray");
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {

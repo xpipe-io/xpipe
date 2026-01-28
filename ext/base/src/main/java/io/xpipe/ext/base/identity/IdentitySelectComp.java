@@ -1,8 +1,5 @@
 package io.xpipe.ext.base.identity;
 
-
-
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
@@ -163,7 +160,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         });
         addButton.describe(d -> d.nameKey("addReusableIdentity"));
 
-        var nodes = new ArrayList<BaseRegionBuilder<?,?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(createComboBox());
         nodes.add(addButton);
         var layout = new InputGroupComp(nodes).setMainReference(0).apply(struc -> struc.setFillHeight(true));
@@ -195,7 +192,7 @@ public class IdentitySelectComp extends RegionBuilder<HBox> {
         this.selectedReference.setValue(newRef);
     }
 
-    private BaseRegionBuilder<?,?> createComboBox() {
+    private BaseRegionBuilder<?, ?> createComboBox() {
         var map = new LinkedHashMap<String, DataStoreEntryRef<IdentityStore>>();
         for (DataStoreEntry storeEntry : DataStorage.get().getStoreEntries()) {
             if (storeEntry.getValidity().isUsable() && storeEntry.getStore() instanceof IdentityStore) {

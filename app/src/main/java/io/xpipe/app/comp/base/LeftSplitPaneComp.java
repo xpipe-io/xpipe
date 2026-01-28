@@ -1,10 +1,9 @@
 package io.xpipe.app.comp.base;
 
-
-
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionStructure;
 import io.xpipe.app.comp.RegionStructureBuilder;
+
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -12,20 +11,18 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.Region;
 
 import lombok.Value;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class LeftSplitPaneComp extends RegionStructureBuilder<SplitPane, LeftSplitPaneComp.Structure> {
 
-    private final BaseRegionBuilder<?,?> left;
-    private final BaseRegionBuilder<?,?> center;
+    private final BaseRegionBuilder<?, ?> left;
+    private final BaseRegionBuilder<?, ?> center;
     private Double initialWidth;
     private Consumer<Double> onDividerChange;
 
-    public LeftSplitPaneComp(BaseRegionBuilder<?,?> left, BaseRegionBuilder<?,?> center) {
+    public LeftSplitPaneComp(BaseRegionBuilder<?, ?> left, BaseRegionBuilder<?, ?> center) {
         this.left = left;
         this.center = center;
     }

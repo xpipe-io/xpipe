@@ -1,7 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
@@ -124,7 +122,7 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
     }
 
     protected ListBoxViewComp<StoreSection> createChildrenList(
-            Function<StoreSection, BaseRegionBuilder<?,?>> function, ObservableBooleanValue hide) {
+            Function<StoreSection, BaseRegionBuilder<?, ?>> function, ObservableBooleanValue hide) {
         var content = new ListBoxViewComp<>(
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
@@ -139,8 +137,7 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
         return content;
     }
 
-    protected RegionBuilder<Button> createExpandButton(
-            Runnable action, int width, ObservableBooleanValue expanded) {
+    protected RegionBuilder<Button> createExpandButton(Runnable action, int width, ObservableBooleanValue expanded) {
         var icon = Bindings.createObjectBinding(
                 () -> new LabelGraphic.IconGraphic(
                         expanded.get() && section.getShownChildren().getList().size() > 0

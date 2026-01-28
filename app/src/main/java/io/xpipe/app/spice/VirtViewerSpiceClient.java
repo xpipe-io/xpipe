@@ -1,13 +1,11 @@
 package io.xpipe.app.spice;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.LocalShell;
-import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.app.vnc.VncLaunchConfig;
+
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -47,7 +45,9 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
         public Optional<Path> determineInstallation() {
             try (var stream = Files.list(AppSystemInfo.ofWindows().getProgramFiles())) {
                 var l = stream.toList();
-                var found = l.stream().filter(path -> path.toString().contains("VirtViewer")).findFirst();
+                var found = l.stream()
+                        .filter(path -> path.toString().contains("VirtViewer"))
+                        .findFirst();
                 if (found.isEmpty()) {
                     return Optional.empty();
                 }

@@ -3,7 +3,7 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
@@ -24,10 +24,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
@@ -50,7 +47,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public BaseRegionBuilder<?,?> comp() {
+    public BaseRegionBuilder<?, ?> comp() {
         return new TerminalDockBrowserComp(dockModel, opened);
     }
 

@@ -1,14 +1,12 @@
 package io.xpipe.app.platform;
 
-
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 
 import javafx.scene.Node;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.function.Supplier;
@@ -60,7 +58,7 @@ public abstract class LabelGraphic {
     @EqualsAndHashCode(callSuper = true)
     public static class CompGraphic extends LabelGraphic {
 
-        BaseRegionBuilder<?,?> comp;
+        BaseRegionBuilder<?, ?> comp;
 
         @Override
         public Node createGraphicNode() {

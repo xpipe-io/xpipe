@@ -20,7 +20,6 @@ import javafx.scene.paint.Color;
 
 import atlantafx.base.controls.Popover;
 import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -38,8 +37,8 @@ public class StoreNotesComp extends RegionStructureBuilder<Button, StoreNotesCom
         var n = wrapper.getNotes();
         var button = new IconButtonComp("mdi2n-note-text-outline")
                 .apply(struc -> AppFontSizes.xs(struc))
-                .describe(
-                        d -> d.nameKey("notes").focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
+                .describe(d ->
+                        d.nameKey("notes").focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
                 .style("notes-button")
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
                 .build();
@@ -97,7 +96,7 @@ public class StoreNotesComp extends RegionStructureBuilder<Button, StoreNotesCom
             }
 
             @Override
-            protected List<AbstractRegionBuilder<?,?>> customButtons() {
+            protected List<AbstractRegionBuilder<?, ?>> customButtons() {
                 return List.of(new ButtonComp(AppI18n.observable("cancel"), () -> {
                     ref.get().hide();
                 }));
@@ -111,12 +110,12 @@ public class StoreNotesComp extends RegionStructureBuilder<Button, StoreNotesCom
             }
 
             @Override
-            public BaseRegionBuilder<?,?> content() {
+            public BaseRegionBuilder<?, ?> content() {
                 return RegionBuilder.of(() -> md.get());
             }
 
             @Override
-            public BaseRegionBuilder<?,?> bottom() {
+            public BaseRegionBuilder<?, ?> bottom() {
                 return new ButtonComp(AppI18n.observable("delete"), () -> {
                             n.setValue(new StoreNotes(null, null));
                         })

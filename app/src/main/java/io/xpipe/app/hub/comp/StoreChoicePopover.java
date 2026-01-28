@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -76,9 +75,11 @@ public class StoreChoicePopover<T extends DataStore> {
         if (popover == null || applicableCheck != null) {
             var cur = StoreViewState.get().getActiveCategory().getValue();
             var selectedCategory = new SimpleObjectProperty<>(
-                    explicitCategory != null ? explicitCategory : (rootCategory != null
-                            ? (rootCategory.getRoot().equals(cur.getRoot()) ? cur : rootCategory)
-                            : cur));
+                    explicitCategory != null
+                            ? explicitCategory
+                            : (rootCategory != null
+                                    ? (rootCategory.getRoot().equals(cur.getRoot()) ? cur : rootCategory)
+                                    : cur));
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
@@ -139,10 +140,9 @@ public class StoreChoicePopover<T extends DataStore> {
                             rootCategory != null ? rootCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory,
-                    explicitCategory == null)
+                            explicitCategory == null)
                     .style(Styles.LEFT_PILL);
-            var filter =
-                    new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();
+            var filter = new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();
 
             var addButton = RegionBuilder.of(() -> {
                         var m = MenuHelper.createMenuButton();
@@ -171,15 +171,11 @@ public class StoreChoicePopover<T extends DataStore> {
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners
-                        struc
-                                .getChildren()
-                                .get(0)
-                                .focusedProperty()
-                                .addListener((observable, oldValue, newValue) -> {
-                                    if (newValue) {
-                                        struc.getChildren().get(1).requestFocus();
-                                    }
-                                });
+                        struc.getChildren().get(0).focusedProperty().addListener((observable, oldValue, newValue) -> {
+                            if (newValue) {
+                                struc.getChildren().get(1).requestFocus();
+                            }
+                        });
                     })
                     .build();
 

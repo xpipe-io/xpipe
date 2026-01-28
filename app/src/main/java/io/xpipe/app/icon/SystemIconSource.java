@@ -2,8 +2,6 @@ package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;

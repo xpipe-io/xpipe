@@ -1,6 +1,5 @@
 package io.xpipe.app.issue;
 
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalButton;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -60,15 +59,17 @@ public class ErrorHandlerDialog {
             }
             if (event.isReportable()) {
                 var reported = new SimpleBooleanProperty();
-                errorModal.addButton(new ModalButton(
-                        "report",
-                        () -> {
-                            if (UserReportComp.show(event)) {
-                                reported.set(true);
-                            }
-                        },
-                        false,
-                        false)).augment(button -> button.disableProperty().bind(reported));
+                errorModal
+                        .addButton(new ModalButton(
+                                "report",
+                                () -> {
+                                    if (UserReportComp.show(event)) {
+                                        reported.set(true);
+                                    }
+                                },
+                                false,
+                                false))
+                        .augment(button -> button.disableProperty().bind(reported));
                 errorModal.addButtonBarComp(RegionBuilder.hspacer());
             }
             var hasCustomActions = event.getCustomActions().size() > 0 || event.getLink() != null;

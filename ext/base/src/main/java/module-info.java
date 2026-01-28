@@ -34,7 +34,7 @@ open module io.xpipe.ext.base {
     requires com.sun.jna;
     requires javafx.base;
     requires javafx.graphics;
-    
+
     provides ActionProvider with
             IdentityApplyHubLeafProvider,
             AbstractHostCreationActionProvider,
@@ -43,7 +43,12 @@ open module io.xpipe.ext.base {
             RunBackgroundScriptActionProvider,
             RunHubBatchScriptActionProvider,
             RunHubScriptActionProvider,
-            RunTerminalScriptActionProvider, ScriptCollectionSourceImportHubProvider, ScriptUrlSourceRefreshHubProvider, ScriptCollectionSourceRefreshHubProvider, ScriptCollectionSourceBrowseActionProvider, ScriptQuickEditHubLeafProvider,
+            RunTerminalScriptActionProvider,
+            ScriptCollectionSourceImportHubProvider,
+            ScriptUrlSourceRefreshHubProvider,
+            ScriptCollectionSourceRefreshHubProvider,
+            ScriptCollectionSourceBrowseActionProvider,
+            ScriptQuickEditHubLeafProvider,
             StoreStartActionProvider,
             StoreStopActionProvider,
             StorePauseActionProvider,
@@ -57,7 +62,9 @@ open module io.xpipe.ext.base {
             CustomServiceGroupStoreProvider,
             CustomServiceStoreProvider,
             MappedServiceStoreProvider,
-            FixedServiceStoreProvider, ScriptStoreProvider, ScriptCollectionSourceStoreProvider,
+            FixedServiceStoreProvider,
+            ScriptStoreProvider,
+            ScriptCollectionSourceStoreProvider,
             DesktopApplicationStoreProvider,
             LocalIdentityStoreProvider,
             SyncedIdentityStoreProvider,

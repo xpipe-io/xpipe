@@ -1,6 +1,5 @@
 package io.xpipe.app.update;
 
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;

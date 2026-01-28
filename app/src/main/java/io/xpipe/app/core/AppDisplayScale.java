@@ -1,6 +1,7 @@
 package io.xpipe.app.core;
 
 import io.xpipe.app.prefs.AppPrefs;
+
 import javafx.stage.Screen;
 
 public class AppDisplayScale {

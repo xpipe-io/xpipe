@@ -1,6 +1,5 @@
 package io.xpipe.app.storage;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -27,7 +26,7 @@ public interface DataStorageUserHandler {
 
     SecretKey getEncryptionKey();
 
-    BaseRegionBuilder<?,?> createOverview();
+    BaseRegionBuilder<?, ?> createOverview();
 
     OptionsBuilder createGroupStrategyOptions(ObjectProperty<DataStorageGroupStrategy> groupStrategy);
 

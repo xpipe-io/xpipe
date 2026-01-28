@@ -1,6 +1,5 @@
 package io.xpipe.app.prefs;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
@@ -12,7 +11,7 @@ import io.xpipe.app.util.Hyperlinks;
 
 public class LinksCategory extends AppPrefsCategory {
 
-    private BaseRegionBuilder<?,?> createLinks() {
+    private BaseRegionBuilder<?, ?> createLinks() {
         return new OptionsBuilder()
                 .addTitle("links")
                 .addComp(RegionBuilder.vspacer(19))
@@ -83,8 +82,7 @@ public class LinksCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
-        return createLinks().style("information").style("about-tab").apply(struc -> struc
-                .setPrefWidth(600));
+    protected BaseRegionBuilder<?, ?> create() {
+        return createLinks().style("information").style("about-tab").apply(struc -> struc.setPrefWidth(600));
     }
 }

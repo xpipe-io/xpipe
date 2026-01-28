@@ -1,6 +1,5 @@
 package io.xpipe.app.hub.comp;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
@@ -14,7 +13,7 @@ import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
-    public StandardStoreEntryComp(StoreSection section, BaseRegionBuilder<?,?> content) {
+    public StandardStoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         super(section, content);
     }
 

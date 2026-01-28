@@ -1,6 +1,5 @@
 package io.xpipe.app.browser.file;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;

@@ -1,7 +1,6 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
@@ -20,8 +19,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,7 +106,7 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return RegionBuilder.empty();
     }
 

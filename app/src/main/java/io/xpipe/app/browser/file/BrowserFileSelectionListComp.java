@@ -1,8 +1,6 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIconManager;
-
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ListBoxViewComp;

@@ -1,12 +1,10 @@
 package io.xpipe.app.spice;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.ext.PrefsValue;
-import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.prefs.AppPrefs;
-import io.xpipe.app.rdp.*;
-import io.xpipe.app.vnc.*;
 import io.xpipe.core.OsType;
+
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
 import java.util.List;

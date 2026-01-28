@@ -1,7 +1,6 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppNames;
@@ -24,13 +23,12 @@ public class McpCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected BaseRegionBuilder<?,?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
 
         var mcpConfig = Bindings.createStringBinding(
                 () -> {
-                    var template =
-                            """
+                    var template = """
                            {
                              "mcpServers": {
                                "%s": {

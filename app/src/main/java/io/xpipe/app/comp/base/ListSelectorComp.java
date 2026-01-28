@@ -1,12 +1,10 @@
 package io.xpipe.app.comp.base;
 
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
-import javafx.beans.property.ListProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;

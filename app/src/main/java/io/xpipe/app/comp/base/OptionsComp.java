@@ -1,9 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;

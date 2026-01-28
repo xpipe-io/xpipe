@@ -1,6 +1,5 @@
 package io.xpipe.app.pwman;
 
-
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.core.AppFontSizes;

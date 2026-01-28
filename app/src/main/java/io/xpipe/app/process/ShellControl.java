@@ -151,13 +151,11 @@ public interface ShellControl extends ProcessControl {
     FilePath getSystemTemporaryDirectory();
 
     default CommandControl osascriptCommand(String script) {
-        return command(String.format(
-                """
+        return command(String.format("""
                                      osascript - "$@" <<EOF
                                      %s
                                      EOF
-                                     """,
-                script));
+                                     """, script));
     }
 
     default String executeSimpleStringCommand(String command) throws Exception {

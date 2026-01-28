@@ -1,6 +1,5 @@
 package io.xpipe.ext.base.host;
 
-
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
@@ -32,7 +31,7 @@ public class AbstractHostStoreProvider implements DataStoreProvider {
     }
 
     @Override
-    public BaseRegionBuilder<?,?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 

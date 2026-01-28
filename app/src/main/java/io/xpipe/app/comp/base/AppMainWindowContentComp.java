@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-
 import io.xpipe.app.comp.RegionBuilder;
-
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.window.AppDialog;
@@ -28,8 +26,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import org.int4.fx.builders.common.AbstractRegionBuilder;
-import io.xpipe.app.comp.BaseRegionBuilder;
 
 import java.time.Duration;
 
