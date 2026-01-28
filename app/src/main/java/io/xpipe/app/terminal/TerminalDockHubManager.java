@@ -25,7 +25,7 @@ import java.util.UUID;
 @Getter
 public class TerminalDockHubManager {
 
-    public static boolean isPossiblySupported() {
+    public static boolean isAvailable() {
         if (OsType.ofLocal() != OsType.WINDOWS) {
             return false;
         }
@@ -59,7 +59,7 @@ public class TerminalDockHubManager {
     private static TerminalDockHubManager INSTANCE;
 
     public static void init() {
-        if (!isPossiblySupported()) {
+        if (!isAvailable()) {
             return;
         }
 

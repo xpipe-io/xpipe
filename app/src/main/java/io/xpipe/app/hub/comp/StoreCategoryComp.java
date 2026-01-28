@@ -65,9 +65,10 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
                 category.getName().setValue(newValue);
             }
         });
-        var name = new LazyTextFieldComp(prop).style("name").apply(sp -> {
+        var name = new LazyTextFieldComp(prop).style("name").applyStructure(struc -> {
             category.getRenameTrigger().onFire(() -> {
-                sp.requestFocus();
+                struc.get().requestFocus();
+                struc.getTextField().selectAll();
             });
         }).build();
         var showing = new SimpleBooleanProperty();

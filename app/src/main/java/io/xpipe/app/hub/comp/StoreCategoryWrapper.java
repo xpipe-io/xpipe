@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
@@ -123,6 +124,11 @@ public class StoreCategoryWrapper {
             }
 
             category.setName(n);
+            if (!category.getName().equals(name.getValue())) {
+                Platform.runLater(() -> {
+                    name.setValue(category.getName());
+                });
+            }
         });
 
         expanded.addListener((c, o, n) -> {

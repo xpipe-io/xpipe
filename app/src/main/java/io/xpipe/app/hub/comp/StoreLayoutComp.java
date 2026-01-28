@@ -11,7 +11,6 @@ import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.terminal.TerminalDockHubComp;
 import io.xpipe.app.terminal.TerminalDockHubManager;
-import io.xpipe.app.terminal.TerminalDockMode;
 import io.xpipe.app.util.ObservableSubscriber;
 
 import javafx.scene.input.KeyCode;
@@ -57,7 +56,7 @@ public class StoreLayoutComp extends SimpleRegionBuilder {
         var stack = new StackPane(comp.build());
         stack.getStyleClass().add("store-layout");
 
-        if (TerminalDockHubManager.isPossiblySupported()) {
+        if (TerminalDockHubManager.isAvailable()) {
             var model = TerminalDockHubManager.get();
             var dock = new TerminalDockHubComp(model.getDockModel());
             stack.getChildren().add(dock.build());
