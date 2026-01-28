@@ -4,6 +4,7 @@ import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformState;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.sun.jna.*;
@@ -17,6 +18,8 @@ import java.util.List;
 
 public class AppWindowsShutdown {
 
+    public static final int WTS_SESSION_LOCK  = 0x7;
+    public static final int WTS_SESSION_UNLOCK  = 0x8;
     public static final int WM_ENDSESSION = 0x16;
     public static final int WM_QUERYENDSESSION = 0x11;
     public static final long ENDSESSION_CRITICAL = 0x40000000L;
@@ -102,6 +105,26 @@ public class AppWindowsShutdown {
                             .handle();
 
                     return new WinDef.LRESULT(0);
+                }
+
+                // The awt UserSessionListener does not work, so do it manually
+                if (hookProcStruct.message.longValue() == WinUser.WM_SESSION_CHANGE) {
+                    var type = hookProcStruct.wParam.longValue();
+                    if (type == WTS_SESSION_LOCK || type == WTS_SESSION_UNLOCK) {
+                        if (AppPrefs.get() != null) {
+                            var b = AppPrefs.get().hibernateBehaviour().getValue();
+                            if (b != null) {
+                                ThreadHelper.runAsync(() -> {
+                                    if (type == WTS_SESSION_LOCK) {
+                                        b.runOnSleep();
+                                    } else {
+                                        b.runOnWake();
+                                    }
+                                });
+                                return new WinDef.LRESULT(0);
+                            }
+                        }
+                    }
                 }
             }
             return User32.INSTANCE.CallNextHookEx(
