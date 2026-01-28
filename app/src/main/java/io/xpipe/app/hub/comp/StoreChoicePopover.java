@@ -45,6 +45,7 @@ public class StoreChoicePopover<T extends DataStore> {
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
     private final StoreCategoryWrapper rootCategory;
     private final StoreCategoryWrapper explicitCategory;
+    private final boolean requireComplete;
     private final String titleKey;
     private final String noMatchKey;
     private Consumer<Popover> consumer;
@@ -95,7 +96,7 @@ public class StoreChoicePopover<T extends DataStore> {
                 }
 
                 return storeClass.isAssignableFrom(e.getStore().getClass())
-                        && e.getValidity().isUsable()
+                        && (!requireComplete || e.getValidity().isUsable())
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
 

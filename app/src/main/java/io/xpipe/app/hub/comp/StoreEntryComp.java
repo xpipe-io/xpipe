@@ -366,7 +366,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = MenuHelper.createContextMenu();
                         var children =
-                                branch.getChildren(getWrapper().getEntry().ref());
+                                branch.getChildren(getWrapper().getEntry().ref()).stream().filter(hubMenuItemProvider -> {
+                                    return hubMenuItemProvider.isApplicable(getWrapper().getEntry().ref());
+                                }).toList();
                         var cats = Arrays.stream(StoreActionCategory.values())
                                 .collect(Collectors.toCollection(ArrayList::new));
                         cats.addFirst(null);

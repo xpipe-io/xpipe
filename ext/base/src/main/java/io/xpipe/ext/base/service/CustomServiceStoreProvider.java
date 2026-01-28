@@ -12,6 +12,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.ext.base.host.AbstractHostStore;
 import io.xpipe.ext.base.host.HostAddressGatewayStore;
 
+import io.xpipe.ext.base.host.HostAddressStore;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -86,22 +87,24 @@ public class CustomServiceStoreProvider extends AbstractServiceStoreProvider {
                 hideTunnelToLocalhost,
                 tunnelToLocalhost);
 
-        var hostChoice = new StoreComboChoiceComp<>(
-                hostStore -> hostStore instanceof AbstractHostStore a
-                        ? a.getHostAddress().get()
-                        : hostStore instanceof NetworkTunnelStore t ? t.getTunnelHostName() : "?",
+        var hostChoice = new StoreComboChoiceComp<HostAddressStore>(
+                hostStore -> {
+                    HostAddress addr = hostStore.getHostAddress();
+                    return addr != null && !addr.isEmpty() ? addr.get() : null;
+                },
                 entry,
                 comboHost,
-                DataStore.class,
-                n -> n.getStore() instanceof AbstractHostStore
-                        || (n.getStore() instanceof NetworkTunnelStore t && t.isLocallyTunnelable()),
-                StoreViewState.get().getAllConnectionsCategory());
+                HostAddressStore.class,
+                n -> true,
+                StoreViewState.get().getAllConnectionsCategory(),
+                false);
         var gatewayChoice = new StoreChoiceComp<>(
                 entry,
                 gateway,
                 NetworkTunnelStore.class,
                 ref -> !ref.get().equals(DataStorage.get().local()),
-                StoreViewState.get().getAllConnectionsCategory());
+                StoreViewState.get().getAllConnectionsCategory(),
+                true);
 
         var q = new OptionsBuilder()
                 .nameAndDescription("serviceHost")

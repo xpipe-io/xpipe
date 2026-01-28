@@ -42,8 +42,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             ObjectProperty<DataStoreEntryRef<T>> selected,
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
-            StoreCategoryWrapper categoryRoot) {
-        this(self, selected, storeClass, applicableCheck, categoryRoot, null);
+            StoreCategoryWrapper categoryRoot,
+            boolean requireComplete) {
+        this(self, selected, storeClass, applicableCheck, categoryRoot, null, requireComplete);
     }
 
     public StoreChoiceComp(
@@ -61,8 +62,19 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
                 applicableCheck,
                 categoryRoot,
                 explicitCategory,
+                requireComplete,
                 StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot) ? "selectConnection" : "selectEntry",
                 "noCompatibleConnection");
+    }
+
+
+    public StoreChoiceComp(
+            DataStoreEntry self,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper initialCategory) {
+        this(self, selected, storeClass, applicableCheck, initialCategory, true);
     }
 
     protected String toName(DataStoreEntry entry) {
