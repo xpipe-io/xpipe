@@ -216,7 +216,8 @@ public interface ScriptTextSource {
             var sourceChoice = new StoreChoiceComp<>(null, ref, ScriptCollectionSourceStore.class,
                     ignored -> true,
                     StoreViewState.get().getAllScriptsCategory(),
-                    StoreViewState.get().getScriptSourcesCategory());
+                    StoreViewState.get().getScriptSourcesCategory(),
+                    true);
 
             var importButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2i-import"), () -> {
                 var current = AppDialog.getCurrentModalOverlay();

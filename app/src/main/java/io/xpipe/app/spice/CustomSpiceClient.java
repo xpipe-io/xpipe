@@ -30,7 +30,7 @@ public class CustomSpiceClient implements ExternalSpiceClient {
                 .nameAndDescription("customSpiceCommand")
                 .addComp(
                         new TextFieldComp(command, false)
-                                .apply(struc -> struc.get().setPromptText("myspiceClient $FILE"))
+                                .apply(struc -> struc.setPromptText("myspiceClient $FILE"))
                                 .maxWidth(600),
                         command)
                 .bind(() -> CustomSpiceClient.builder().command(command.get()).build(), property);

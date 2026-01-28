@@ -53,7 +53,8 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper categoryRoot,
-            StoreCategoryWrapper explicitCategory) {
+            StoreCategoryWrapper explicitCategory,
+            boolean requireComplete) {
         this.selected = selected;
         this.popover = new StoreChoicePopover<>(
                 self,
