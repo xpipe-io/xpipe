@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.AppPrefs;
 
 import javafx.stage.Screen;
@@ -7,6 +8,17 @@ import javafx.stage.Screen;
 public class AppDisplayScale {
 
     private static Double screenOutputScale;
+
+    public static void init() {
+        try {
+            Screen primary = Screen.getPrimary();
+            if (primary != null) {
+                screenOutputScale = primary.getOutputScaleX();
+            }
+        } catch (Exception e) {
+            ErrorEventFactory.fromThrowable(e).omit().expected().handle();
+        }
+    }
 
     public static boolean hasDefaultDisplayScale() {
         return getEffectiveDisplayScale() == 1.0;
@@ -22,9 +34,6 @@ public class AppDisplayScale {
             }
         }
 
-        if (screenOutputScale == null) {
-            screenOutputScale = Screen.getPrimary().getOutputScaleX();
-        }
-        return screenOutputScale;
+        return screenOutputScale != null ? screenOutputScale : 1.0;
     }
 }

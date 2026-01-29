@@ -81,9 +81,12 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized CredentialResult retrieveCredentials(String rawKey) {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
-        key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
+        rawKey = rawKey.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
+
+        var username = rawKey.contains("/") ? rawKey.split("/", 2)[1] : null;
+        var key = rawKey.contains("/") ? rawKey.split("/", 2)[0] : rawKey;
 
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper-commander");
@@ -180,6 +183,11 @@ public class KeeperPasswordManager implements PasswordManager {
             var out = result[0]
                     .replace("\r\n", "\n")
                     .replace("""
+                             Select your 2FA method:
+                               1. TOTP (Google and Microsoft Authenticator) \s
+                               q. Cancel login
+                             """, "")
+                    .replace("""
                       Selection: Invalid entry, additional factors of authentication shown may be configured if not currently enabled.
                       Selection:\s
                       2FA Code Duration: Require Every Login.
@@ -193,12 +201,11 @@ public class KeeperPasswordManager implements PasswordManager {
                              """, "")
                     .replace("Selection:", "")
                     .strip();
-            var err = result[1].replace("\r\n", "\n").replace("""
-                             EOF when reading a line
-                             """, "").strip();
+            var err = result[1].replace("\r\n", "\n").replace("EOF when reading a line", "").strip();
 
+            var outLines = out.lines().toList();
             var message = !err.isEmpty() ? out + "\n" + err : out;
-            if (exitCode != 0) {
+            if (exitCode != 0 || (outLines.size() > 0 && outLines.getLast().contains("Invalid entry"))) {
                 // Another password prompt was made
                 var wrongPw = out.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
                 if (wrongPw) {
@@ -215,13 +222,12 @@ public class KeeperPasswordManager implements PasswordManager {
 
             hasCompletedRequestInSession = true;
 
-            var outLines = out.lines().toList();
             if (outLines.isEmpty()) {
                 return null;
             }
 
             var lastLine = outLines.getLast();
-            return new CredentialResult(null, InPlaceSecretValue.of(lastLine));
+            return new CredentialResult(username, InPlaceSecretValue.of(lastLine));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
