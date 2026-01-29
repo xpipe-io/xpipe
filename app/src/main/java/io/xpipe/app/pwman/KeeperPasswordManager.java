@@ -128,9 +128,8 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var b = CommandBuilder.of()
-                    .add(getExecutable(sc), "get")
+                    .add(getExecutable(sc), "find-password")
                     .addLiteral(key)
-                    .add("--format", "json", "--unmask")
                     .add("--password")
                     .addLiteral(r.getSecretValue());
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
@@ -176,9 +175,7 @@ public class KeeperPasswordManager implements PasswordManager {
             var result = queryCommand.readStdoutAndStderr();
             var exitCode = queryCommand.getExitCode();
 
-            if (file != null) {
-                // sc.view().deleteFileIfPossible(file);
-            }
+            sc.view().deleteFileIfPossible(file);
 
             var out = result[0]
                     .replace("\r\n", "\n")
@@ -200,21 +197,10 @@ public class KeeperPasswordManager implements PasswordManager {
                              EOF when reading a line
                              """, "").strip();
 
-            var jsonStart = out.indexOf("{\n");
-            var jsonEnd = out.indexOf("\n}");
-            if (jsonEnd != -1) {
-                jsonEnd += 2;
-            }
-
-            var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
-            var outJson = jsonStart <= 0
-                    ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out)
-                    : (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
-
+            var message = !err.isEmpty() ? out + "\n" + err : out;
             if (exitCode != 0) {
                 // Another password prompt was made
-                var wrongPw =
-                        outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
+                var wrongPw = out.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
                 if (wrongPw) {
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
                     ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?")
@@ -223,69 +209,19 @@ public class KeeperPasswordManager implements PasswordManager {
                     return null;
                 }
 
-                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
-                ErrorEventFactory.fromMessage(message).expected().handle();
-                return null;
-            }
-
-            JsonNode tree;
-            try {
-                tree = JacksonMapper.getDefault().readTree(outJson);
-            } catch (JsonProcessingException e) {
-                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
 
             hasCompletedRequestInSession = true;
 
-            var fields = tree.get("fields");
-            // There multiple schemas
-            if (fields == null || !fields.isArray()) {
-                String login = null;
-                String password = null;
-
-                var l = tree.get("login");
-                if (l != null && l.isTextual()) {
-                    login = l.asText();
-                }
-
-                var p = tree.get("password");
-                if (p != null && p.isTextual()) {
-                    password = p.asText();
-                }
-
-                if (login == null && password == null) {
-                    var message = !err.isEmpty() ? out + "\n" + err : out;
-                    ErrorEventFactory.fromMessage(message)
-                            .description("Received invalid response")
-                            .expected()
-                            .handle();
-                    return null;
-                }
-
-                return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
+            var outLines = out.lines().toList();
+            if (outLines.isEmpty()) {
+                return null;
             }
 
-            String login = null;
-            String password = null;
-            for (JsonNode field : fields) {
-                var type = field.required("type").asText();
-                if (type.equals("login")) {
-                    var v = field.required("value");
-                    if (v.size() > 0) {
-                        login = v.get(0).asText();
-                    }
-                }
-                if (type.equals("password")) {
-                    var v = field.required("value");
-                    if (v.size() > 0) {
-                        password = v.get(0).asText();
-                    }
-                }
-            }
-
-            return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
+            var lastLine = outLines.getLast();
+            return new CredentialResult(null, InPlaceSecretValue.of(lastLine));
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

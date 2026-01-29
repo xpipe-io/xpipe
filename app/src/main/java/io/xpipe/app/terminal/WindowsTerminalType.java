@@ -27,7 +27,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
-    AtomicInteger windowCounter = new AtomicInteger(10);
+    AtomicInteger windowCounter = new AtomicInteger(101);
 
     private static String getFixedTitle(String s) {
         // A weird behavior in Windows Terminal causes the trailing
@@ -40,8 +40,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+        // Start from high window index to guarantee that xpipe uses its own window
         var cmd = CommandBuilder.of()
-                .addIf(configuration.isPreferTabs(), "-w", "1", "nt")
+                .addIf(configuration.isPreferTabs(), "-w", "100", "nt")
                 .addIf(!configuration.isPreferTabs(), "-w", "" + windowCounter.getAndIncrement());
 
         if (configuration.getColor() != null) {

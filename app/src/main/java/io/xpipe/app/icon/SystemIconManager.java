@@ -17,7 +17,7 @@ public class SystemIconManager {
             AppProperties.get().getDataDir().resolve("cache").resolve("icons").resolve("pool");
 
     private static final Set<SystemIcon> loadedIconImages = new HashSet<>();
-    private static final Map<SystemIconSource, SystemIconSourceData> LOADED = new HashMap<>();
+    private static final Map<SystemIconSource, SystemIconSourceData> LOADED_SOURCES = new HashMap<>();
     private static final Set<SystemIcon> ICONS = new HashSet<>();
     private static int cacheSourceHash;
     private static int sourceHash;
@@ -110,7 +110,7 @@ public class SystemIconManager {
     private static synchronized int calculateSourceHash() {
         var total = 0;
         var set = false;
-        for (var e : LOADED.entrySet()) {
+        for (var e : LOADED_SOURCES.entrySet()) {
             total += e.getKey().getPath().hashCode();
             for (SystemIconSourceFile icon : e.getValue().getIcons()) {
                 total += icon.getFile().toString().hashCode();
@@ -140,9 +140,9 @@ public class SystemIconManager {
 
     public static void initAdditional() {
         for (var source : getEffectiveSources()) {
-            if (!LOADED.containsKey(source)) {
+            if (!LOADED_SOURCES.containsKey(source)) {
                 var data = SystemIconSourceData.of(source);
-                LOADED.put(source, data);
+                LOADED_SOURCES.put(source, data);
                 data.getIcons().forEach(systemIconSourceFile -> {
                     var icon = new SystemIcon(source, systemIconSourceFile.getName());
                     ICONS.add(icon);
@@ -155,13 +155,13 @@ public class SystemIconManager {
     public static synchronized void reloadSources() throws Exception {
         Files.createDirectories(DIRECTORY);
 
-        LOADED.clear();
+        LOADED_SOURCES.clear();
         for (var source : getEffectiveSources()) {
-            LOADED.put(source, SystemIconSourceData.of(source));
+            LOADED_SOURCES.put(source, SystemIconSourceData.of(source));
         }
 
         ICONS.clear();
-        LOADED.forEach((source, systemIconSourceData) -> {
+        LOADED_SOURCES.forEach((source, systemIconSourceData) -> {
             systemIconSourceData.getIcons().forEach(systemIconSourceFile -> {
                 var icon = new SystemIcon(source, systemIconSourceFile.getName());
                 ICONS.add(icon);
@@ -177,8 +177,10 @@ public class SystemIconManager {
 
     private static synchronized void reloadImages() {
         AppImages.remove(s -> s.startsWith("icons/"));
+        loadedIconImages.clear();
+
         try {
-            for (var loadedIconImage : loadedIconImages) {
+            for (var loadedIconImage : ICONS) {
                 getAndLoadIconFile(loadedIconImage);
             }
         } catch (Exception e) {
@@ -197,7 +199,7 @@ public class SystemIconManager {
         }
         reloadSources();
         sourceHash = calculateSourceHash();
-        SystemIconCache.rebuildCache(LOADED, sourceHash);
+        SystemIconCache.rebuildCache(LOADED_SOURCES, sourceHash);
         cacheSourceHash = sourceHash;
         reloadImages();
     }
