@@ -103,8 +103,9 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
 
             @Override
             public Duration cacheDuration() {
-                // To reduce password manager access, cache it for a few seconds
-                return Duration.ofSeconds(15);
+                // To reduce password manager access, cache it
+                var pm = AppPrefs.get().passwordManager().getValue();
+                return pm != null ? pm.getCacheDuration() : Duration.ofSeconds(15);
             }
 
             @Override

@@ -108,21 +108,7 @@ public class SideMenuBarComp extends RegionBuilder<VBox> {
                     b.apply(struc -> {
                         struc.setOnAction(e -> {
                             struc.setDisable(true);
-                            ThreadHelper.runAsync(() -> {
-                                try {
-                                    var r = item.getAction().get();
-                                    if (r) {
-                                        Platform.runLater(() -> {
-                                            queueEntries.remove(item);
-                                        });
-                                    }
-                                } catch (Throwable t) {
-                                    Platform.runLater(() -> {
-                                        queueEntries.remove(item);
-                                    });
-                                    throw t;
-                                }
-                            });
+                            item.execute();
                             struc.setDisable(false);
                             e.consume();
                         });

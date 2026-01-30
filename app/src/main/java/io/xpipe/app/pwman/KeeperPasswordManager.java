@@ -82,6 +82,10 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public synchronized CredentialResult retrieveCredentials(String rawKey) {
+        return retrieveCredentials(rawKey, 0);
+    }
+
+    private CredentialResult retrieveCredentials(String rawKey, int retries) {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
         rawKey = rawKey.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
@@ -173,7 +177,7 @@ public class KeeperPasswordManager implements PasswordManager {
                     .add(b);
             var queryCommand = sc.command(fullB);
             queryCommand.sensitive();
-            queryCommand.killOnTimeout(CountDown.of().start(15_000));
+            queryCommand.killOnTimeout(CountDown.of().start(25_000));
 
             var result = queryCommand.readStdoutAndStderr();
             var exitCode = queryCommand.getExitCode();
@@ -208,7 +212,11 @@ public class KeeperPasswordManager implements PasswordManager {
             if (exitCode != 0 || (outLines.size() > 0 && outLines.getLast().contains("Invalid entry"))) {
                 // Another password prompt was made
                 var wrongPw = out.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
-                if (wrongPw) {
+                if (wrongPw && hasCompletedRequestInSession) {
+                    if (retries == 0) {
+                        return retrieveCredentials(rawKey, retries + 1);
+                    }
+
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
                     ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?")
                             .expected()
@@ -257,6 +265,6 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public Duration getCacheDuration() {
-        return (mfa != null && mfa && getTotpDurationIndex() < 1) ? Duration.ofDays(10) : Duration.ofSeconds(3);
+        return (mfa != null && mfa && getTotpDurationIndex() < 1) ? Duration.ofDays(10) : Duration.ofSeconds(30);
     }
 }

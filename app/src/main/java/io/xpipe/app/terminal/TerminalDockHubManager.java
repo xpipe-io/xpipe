@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
@@ -14,7 +15,9 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
@@ -204,6 +207,8 @@ public class TerminalDockHubManager {
     }
 
     public void refreshDockStatus() {
+        dockModel.clearDeadTerminals();
+
         var running = dockModel.isRunning();
         if (!running) {
             minimized.set(false);
@@ -212,7 +217,7 @@ public class TerminalDockHubManager {
         }
 
         minimized.set(dockModel.isMinimized());
-        detached.set(dockModel.isCustomBounds());
+        detached.set(dockModel.isCustomBounds() || dockModel.isMinimized());
     }
 
     public void openTerminal(UUID request) {

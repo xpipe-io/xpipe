@@ -28,6 +28,10 @@ public class TerminalDockView {
         this.windowBoundsFunction = windowBoundsFunction;
     }
 
+    public synchronized void clearDeadTerminals() {
+        terminalInstances.removeIf(controllableTerminalSession -> !controllableTerminalSession.getTerminalProcess().isAlive());
+    }
+
     public synchronized boolean isRunning() {
         return terminalInstances.stream().anyMatch(terminal -> terminal.isRunning());
     }
@@ -215,7 +219,7 @@ public class TerminalDockView {
     }
 
     public void attach() {
-        TrackEvent.withTrace("Terminal view clicked").handle();
+        TrackEvent.withTrace("Terminal view attached").handle();
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();

@@ -9,9 +9,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.stage.WindowEvent;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,6 +72,11 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    var selected = s.getScene().getRoot().lookup(".icon-button-comp:hover");
+                    if (selected instanceof Button b && b.getGraphic() instanceof FontIcon fi && fi.getIconLiteral().equals("mdi2c-console")) {
+                        return;
+                    }
+
                     model.onFocusGain();
                 } else {
                     Platform.runLater(() -> {

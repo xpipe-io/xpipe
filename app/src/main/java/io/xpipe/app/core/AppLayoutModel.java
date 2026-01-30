@@ -196,16 +196,24 @@ public class AppLayoutModel {
 
         public void execute() {
             ThreadHelper.runAsync(() -> {
-                try {
-                    var r = getAction().get();
-                    if (r) {
-                        AppLayoutModel.get().getQueueEntries().remove(this);
-                    }
-                } catch (Throwable t) {
-                    AppLayoutModel.get().getQueueEntries().remove(this);
-                    throw t;
-                }
+                executeSync();
             });
+        }
+
+        public void executeSync() {
+            try {
+                var r = getAction().get();
+                if (r) {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        AppLayoutModel.get().getQueueEntries().remove(this);
+                    });
+                }
+            } catch (Throwable t) {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    AppLayoutModel.get().getQueueEntries().remove(this);
+                });
+                throw t;
+            }
         }
 
         public void hide() {

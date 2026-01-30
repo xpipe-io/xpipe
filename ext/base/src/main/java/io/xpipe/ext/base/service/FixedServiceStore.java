@@ -16,7 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.OptionalInt;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Getter
 @Jacksonized
 @JsonTypeName("fixedService")
@@ -46,6 +46,12 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     @Override
     public boolean licenseRequired() {
         return false;
+    }
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (FixedServiceStore) other;
+        return toBuilder().tunnelToLocalhost(o.tunnelToLocalhost).build();
     }
 
     @Override

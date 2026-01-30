@@ -233,7 +233,6 @@ public class SshIdentityStateManager {
         }
 
         if (sc.getOsType() == OsType.WINDOWS) {
-            stopWindowsAgents(true, true, true);
             checkLocalAgentIdentities(null);
         } else {
             checkLocalAgentIdentities(
