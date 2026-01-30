@@ -59,6 +59,8 @@ public class ImpersistentStorage extends DataStorage {
                 LOCAL_ID, DataStorage.DEFAULT_CATEGORY_UUID, "Local Machine", new LocalStore());
         storeEntries.put(e, e);
         e.validate();
+
+        entriesAvailable = true;
     }
 
     @Override

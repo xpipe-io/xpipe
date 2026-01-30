@@ -57,6 +57,9 @@ public abstract class DataStorage {
     private final Map<DataStore, DataStore> storeMoveCache = new IdentityHashMap<>();
 
     @Getter
+    protected boolean entriesAvailable;
+
+    @Getter
     @Setter
     protected DataStoreCategory selectedCategory;
 
@@ -1217,7 +1220,12 @@ public abstract class DataStorage {
                     return parent.isPresent() && parent.get().equals(entry) && !isParentLoop(entry);
                 })
                 .collect(Collectors.toSet());
-        entry.setChildrenCache(children);
+
+        // Don't build caches too early to prevent wrong caches
+        if (entriesAvailable) {
+            entry.setChildrenCache(children);
+        }
+
         return children;
     }
 

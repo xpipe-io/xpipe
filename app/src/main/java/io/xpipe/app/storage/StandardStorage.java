@@ -275,7 +275,8 @@ public class StandardStorage extends DataStorage {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-        // Update validities from synthetic parent changes
+        entriesAvailable = true;
+        // Update validities from synthetic parent changes and entries available flag changes
         refreshEntries();
         // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
         filterPerUserEntries(storeEntries.keySet());
