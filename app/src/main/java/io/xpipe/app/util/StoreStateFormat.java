@@ -55,7 +55,7 @@ public class StoreStateFormat {
                     return new StoreStateFormat(List.of(), null, info).format();
                 }
 
-                return new StoreStateFormat(features, s.getShellDialect().getDisplayName(), info).format();
+                return new StoreStateFormat(features, s.getOsName() != null ? s.getOsName() : s.getShellDialect().getDisplayName(), info).format();
             }
 
             var joined = Stream.concat(

@@ -62,6 +62,10 @@ public class OsLogoComp extends SimpleRegionBuilder {
             return null;
         }
 
+        if (name.contains("Cisco")) {
+            return null;
+        }
+
         if (ICONS.isEmpty()) {
             AppResources.with(AppResources.MAIN_MODULE, "os", file -> {
                 try (var list = Files.list(file)) {

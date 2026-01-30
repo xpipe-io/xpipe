@@ -101,6 +101,11 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
+        public boolean automaticallyResolveLinks() {
+            return false;
+        }
+
+        @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(

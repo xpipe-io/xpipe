@@ -64,6 +64,7 @@ public class SyncCategory extends AppPrefsCategory {
                 .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT));
 
         var remoteRepo = new TextFieldComp(prefs.storageGitRemote).hgrow();
+        remoteRepo.apply(textField -> textField.setPromptText("https://... | ssh://... | directory path"));
         remoteRepo.disable(prefs.enableGitStorage.not());
 
         var builder = new OptionsBuilder();

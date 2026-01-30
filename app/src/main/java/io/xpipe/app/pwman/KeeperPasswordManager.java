@@ -81,16 +81,9 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String rawKey) {
-        return retrieveCredentials(rawKey, 0);
-    }
-
-    private CredentialResult retrieveCredentials(String rawKey, int retries) {
+    public synchronized CredentialResult retrieveCredentials(String key) {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
-        rawKey = rawKey.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
-
-        var username = rawKey.contains("/") ? rawKey.split("/", 2)[1] : null;
-        var key = rawKey.contains("/") ? rawKey.split("/", 2)[0] : rawKey;
+        key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
         try {
             CommandSupport.isInLocalPathOrThrow("Keeper Commander CLI", "keeper-commander");
@@ -135,8 +128,9 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var b = CommandBuilder.of()
-                    .add(getExecutable(sc), "find-password")
+                    .add(getExecutable(sc), "get")
                     .addLiteral(key)
+                    .add("--format", "json", "--unmask")
                     .add("--password")
                     .addLiteral(r.getSecretValue());
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
@@ -161,8 +155,8 @@ public class KeeperPasswordManager implements PasswordManager {
                                 %s
 
                                 """.formatted(
-                                    index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
-                                    totp.getSecret().getSecretValue());
+                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                            totp.getSecret().getSecretValue());
                     sc.view().writeTextFile(file, input);
                 }
             } else {
@@ -207,16 +201,21 @@ public class KeeperPasswordManager implements PasswordManager {
                     .strip();
             var err = result[1].replace("\r\n", "\n").replace("EOF when reading a line", "").strip();
 
-            var outLines = out.lines().toList();
-            var message = !err.isEmpty() ? out + "\n" + err : out;
-            if (exitCode != 0 || (outLines.size() > 0 && outLines.getLast().contains("Invalid entry"))) {
-                // Another password prompt was made
-                var wrongPw = out.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE;
-                if (wrongPw && hasCompletedRequestInSession) {
-                    if (retries == 0) {
-                        return retrieveCredentials(rawKey, retries + 1);
-                    }
+            var jsonStart = out.indexOf("{\n");
+            var jsonEnd = out.indexOf("\n}");
+            if (jsonEnd != -1) {
+                jsonEnd += 2;
+            }
 
+            var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
+            var outJson = jsonStart <= 0
+                    ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out)
+                    : (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
+
+            if (exitCode != 0) {
+                // Another password prompt was made
+                var wrongPw = (outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) && !hasCompletedRequestInSession;
+                if (wrongPw) {
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
                     ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?")
                             .expected()
@@ -224,18 +223,69 @@ public class KeeperPasswordManager implements PasswordManager {
                     return null;
                 }
 
+                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
+                ErrorEventFactory.fromMessage(message).expected().handle();
+                return null;
+            }
+
+            JsonNode tree;
+            try {
+                tree = JacksonMapper.getDefault().readTree(outJson);
+            } catch (JsonProcessingException e) {
+                var message = !err.isEmpty() ? outPrefix + "\n" + err : outPrefix;
                 ErrorEventFactory.fromMessage(message).expected().handle();
                 return null;
             }
 
             hasCompletedRequestInSession = true;
 
-            if (outLines.isEmpty()) {
-                return null;
+            var fields = tree.get("fields");
+            // There multiple schemas
+            if (fields == null || !fields.isArray()) {
+                String login = null;
+                String password = null;
+
+                var l = tree.get("login");
+                if (l != null && l.isTextual()) {
+                    login = l.asText();
+                }
+
+                var p = tree.get("password");
+                if (p != null && p.isTextual()) {
+                    password = p.asText();
+                }
+
+                if (login == null && password == null) {
+                    var message = !err.isEmpty() ? out + "\n" + err : out;
+                    ErrorEventFactory.fromMessage(message)
+                            .description("Received invalid response")
+                            .expected()
+                            .handle();
+                    return null;
+                }
+
+                return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
             }
 
-            var lastLine = outLines.getLast();
-            return new CredentialResult(username, InPlaceSecretValue.of(lastLine));
+            String login = null;
+            String password = null;
+            for (JsonNode field : fields) {
+                var type = field.required("type").asText();
+                if (type.equals("login")) {
+                    var v = field.required("value");
+                    if (v.size() > 0) {
+                        login = v.get(0).asText();
+                    }
+                }
+                if (type.equals("password")) {
+                    var v = field.required("value");
+                    if (v.size() > 0) {
+                        password = v.get(0).asText();
+                    }
+                }
+            }
+
+            return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

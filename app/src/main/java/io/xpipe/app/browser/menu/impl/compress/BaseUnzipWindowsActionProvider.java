@@ -25,6 +25,11 @@ public abstract class BaseUnzipWindowsActionProvider implements BrowserMenuLeafP
     }
 
     @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
+    }
+
+    @Override
     public LabelGraphic getIcon() {
         return new LabelGraphic.CompGraphic(BrowserIcons.createContextMenuIcon(BrowserIconFileType.byId("zip")));
     }
