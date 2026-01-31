@@ -1,11 +1,15 @@
-package io.xpipe.app.spice;
+package io.xpipe.app.vnc;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.core.AppLocalTemp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.prefs.ExternalApplicationType;
 import io.xpipe.app.process.CommandBuilder;
-
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.app.process.OsFileSystem;
+import io.xpipe.app.spice.ExternalSpiceClient;
+import io.xpipe.app.spice.SpiceLaunchConfig;
+import io.xpipe.app.util.RdpConfig;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -14,11 +18,38 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
+public abstract class RemoteViewerVncClient implements ExternalVncClient {
 
-    protected CommandBuilder createBuilder(SpiceLaunchConfig configuration) {
-        var builder = CommandBuilder.of().addFile(configuration.getFile());
+    protected CommandBuilder createBuilder(VncLaunchConfig configuration) throws Exception {
+        var vv = """
+                 [virt-viewer]
+                 type=vnc
+                 host=%s
+                 port=%s
+                 title=%s
+                 """.formatted(configuration.getHost(), configuration.getPort(), configuration.getTitle());
+
+        var user = configuration.retrieveUsername();
+        if (user.isPresent()) {
+            vv += "username=" + user.get() + "\n";
+        }
+
+        var pass = configuration.retrievePassword();
+        if (pass.isPresent()) {
+            vv += "password=" + pass.get().getSecretValue() + "\n";
+        }
+
+        var file = writeVncConfigFile(configuration.getTitle(), vv);
+        var builder = CommandBuilder.of().addFile(file);
         return builder;
+    }
+
+    private Path writeVncConfigFile(String title, String content) throws Exception {
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
+        var file = AppLocalTemp.getLocalTempDataDirectory("vnc").resolve(name + ".vv");
+        Files.createDirectories(file.getParent());
+        Files.writeString(file, content);
+        return file;
     }
 
     @Override
@@ -26,10 +57,15 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
         return "https://virt-manager.org";
     }
 
+    @Override
+    public boolean supportsPasswords() {
+        return true;
+    }
+
     @Builder
     @Jacksonized
-    @JsonTypeName("virtViewer")
-    public static class Windows extends VirtViewerSpiceClient implements ExternalApplicationType.WindowsType {
+    @JsonTypeName("remoteViewer")
+    public static class Windows extends RemoteViewerVncClient implements ExternalApplicationType.WindowsType {
 
         @Override
         public boolean detach() {
@@ -60,7 +96,7 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
         }
 
         @Override
-        public void launch(SpiceLaunchConfig configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }
@@ -68,11 +104,11 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
 
     @Builder
     @Jacksonized
-    @JsonTypeName("virtViewer")
-    public static class Linux extends VirtViewerSpiceClient implements ExternalApplicationType.LinuxApplication {
+    @JsonTypeName("remoteViewer")
+    public static class Linux extends RemoteViewerVncClient implements ExternalApplicationType.LinuxApplication {
 
         @Override
-        public void launch(SpiceLaunchConfig configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }
@@ -95,11 +131,11 @@ public abstract class VirtViewerSpiceClient implements ExternalSpiceClient {
 
     @Builder
     @Jacksonized
-    @JsonTypeName("virtViewer")
-    public static class MacOs extends VirtViewerSpiceClient implements ExternalApplicationType.PathApplication {
+    @JsonTypeName("remoteViewer")
+    public static class MacOs extends RemoteViewerVncClient implements ExternalApplicationType.PathApplication {
 
         @Override
-        public void launch(SpiceLaunchConfig configuration) throws Exception {
+        public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
         }

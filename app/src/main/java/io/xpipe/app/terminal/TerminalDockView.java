@@ -44,6 +44,10 @@ public class TerminalDockView {
         return terminalInstances.stream().noneMatch(terminal -> terminal.isActive());
     }
 
+    public synchronized void updateCustomBounds() {
+        terminalInstances.forEach(terminal -> terminal.updateBoundsState());
+    }
+
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
         if (!terminalInstances.add(terminal)) {
             return;
@@ -64,6 +68,11 @@ public class TerminalDockView {
                             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
                         },
                         Duration.ofMillis(100));
+                GlobalTimer.delay(
+                        () -> {
+                            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+                        },
+                        Duration.ofMillis(1000));
             }
         }
     }

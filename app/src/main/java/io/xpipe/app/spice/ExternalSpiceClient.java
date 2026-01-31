@@ -20,13 +20,13 @@ public interface ExternalSpiceClient extends PrefsValue {
 
         return switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
-                yield new VirtViewerSpiceClient.Linux();
+                yield new RemoteViewerSpiceClient.Linux();
             }
             case OsType.MacOs ignored -> {
-                yield new VirtViewerSpiceClient.MacOs();
+                yield new RemoteViewerSpiceClient.MacOs();
             }
             case OsType.Windows ignored -> {
-                yield new VirtViewerSpiceClient.Windows();
+                yield new RemoteViewerSpiceClient.Windows();
             }
         };
     }
@@ -44,13 +44,13 @@ public interface ExternalSpiceClient extends PrefsValue {
         var l = new ArrayList<Class<?>>();
         switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> {
-                l.add(VirtViewerSpiceClient.Linux.class);
+                l.add(RemoteViewerSpiceClient.Linux.class);
             }
             case OsType.MacOs ignored -> {
-                l.add(VirtViewerSpiceClient.MacOs.class);
+                l.add(RemoteViewerSpiceClient.MacOs.class);
             }
             case OsType.Windows ignored -> {
-                l.add(VirtViewerSpiceClient.Windows.class);
+                l.add(RemoteViewerSpiceClient.Windows.class);
             }
         }
         l.add(CustomSpiceClient.class);

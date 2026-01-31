@@ -208,6 +208,7 @@ public class TerminalDockHubManager {
 
     public void refreshDockStatus() {
         dockModel.clearDeadTerminals();
+        dockModel.updateCustomBounds();
 
         var running = dockModel.isRunning();
         if (!running) {
