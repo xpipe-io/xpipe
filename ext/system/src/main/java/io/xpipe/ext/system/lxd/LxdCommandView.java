@@ -22,7 +22,7 @@ public class LxdCommandView extends CommandViewBase {
     }
 
     private static ElevationFunction requiresElevation() {
-        return new ElevationFunction() {
+        return ElevationFunction.cached("lxdRequiresElevation", new ElevationFunction() {
             @Override
             public String getPrefix() {
                 return "LXD";
@@ -44,7 +44,7 @@ public class LxdCommandView extends CommandViewBase {
                                         + ".socket && test -w /var/snap/lxd/common/lxd/unix.socket")
                         .executeAndCheck();
             }
-        };
+        });
     }
 
     private static String formatErrorMessage(String s) {

@@ -1379,7 +1379,7 @@ public abstract class DataStorage {
         }
 
         if (!entry.getValidity().isUsable()) {
-            return "Unknown";
+            return entry.getName();
         }
 
         return entry.getProvider().displayName(entry);

@@ -94,7 +94,7 @@ public final class FilePath {
     }
 
     public FilePath removeTrailingSlash() {
-        if (value.equals("/")) {
+        if (value.equals("/") || value.equals("\\")) {
             return FilePath.of(value);
         }
 

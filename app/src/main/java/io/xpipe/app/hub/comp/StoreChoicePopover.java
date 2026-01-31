@@ -22,6 +22,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -211,6 +213,13 @@ public class StoreChoicePopover<T extends DataStore> {
             popover.setTitle(AppI18n.get(titleKey));
             popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
             AppFontSizes.xs(popover.getContentNode());
+
+            popover.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    popover.hide();
+                    event.consume();
+                }
+            });
 
             // Hide on connection creation dialog
             AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
