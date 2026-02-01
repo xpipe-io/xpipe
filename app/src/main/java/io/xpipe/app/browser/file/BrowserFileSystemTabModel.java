@@ -301,7 +301,7 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
     }
 
     private boolean shouldLaunchSplitTerminal() {
-        if (!AppPrefs.get().enableTerminalDocking().get()) {
+        if (!AppPrefs.get().enableFileBrowserTerminalDocking().get()) {
             return false;
         }
 

@@ -391,8 +391,10 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
     final BooleanProperty editFilesWithDoubleClick =
             mapLocal(new GlobalBooleanProperty(false), "editFilesWithDoubleClick", Boolean.class, false);
-    final BooleanProperty enableTerminalDocking =
-            mapLocal(new GlobalBooleanProperty(true), "enableTerminalDocking", Boolean.class, false);
+    final BooleanProperty enableFileBrowserTerminalDocking =
+            mapLocal(new GlobalBooleanProperty(true), "enableFileBrowserTerminalDocking", Boolean.class, false);
+    final BooleanProperty enableConnectionHubTerminalDocking =
+            mapLocal(new GlobalBooleanProperty(true), "enableConnectionHubTerminalDocking", Boolean.class, false);
     final BooleanProperty censorMode = mapLocal(new GlobalBooleanProperty(false), "censorMode", Boolean.class, false);
     final BooleanProperty sshVerboseOutput = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
@@ -524,8 +526,12 @@ public final class AppPrefs {
         return requireDoubleClickForConnections;
     }
 
-    public ObservableBooleanValue enableTerminalDocking() {
-        return enableTerminalDocking;
+    public ObservableBooleanValue enableFileBrowserTerminalDocking() {
+        return enableFileBrowserTerminalDocking;
+    }
+
+    public ObservableBooleanValue enableConnectionHubTerminalDocking() {
+        return enableConnectionHubTerminalDocking;
     }
 
     public ObservableBooleanValue disableSshPinCaching() {

@@ -9,13 +9,16 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.OsFileSystem;
 import io.xpipe.app.spice.ExternalSpiceClient;
 import io.xpipe.app.spice.SpiceLaunchConfig;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.RdpConfig;
 import lombok.Builder;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Optional;
 
 public abstract class RemoteViewerVncClient implements ExternalVncClient {
@@ -45,10 +48,15 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
     }
 
     private Path writeVncConfigFile(String title, String content) throws Exception {
-        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
-        var file = AppLocalTemp.getLocalTempDataDirectory("vnc").resolve(name + ".vv");
+        var file = getFilePath(title);
         Files.createDirectories(file.getParent());
         Files.writeString(file, content);
+        return file;
+    }
+
+    protected Path getFilePath(String title) {
+        var name = OsFileSystem.ofLocal().makeFileSystemCompatible(title);
+        var file = AppLocalTemp.getLocalTempDataDirectory("vnc").resolve(name + ".vv");
         return file;
     }
 
@@ -99,6 +107,9 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
+            GlobalTimer.delay(() -> {
+                FileUtils.deleteQuietly(getFilePath(configuration.getTitle()).toFile());
+            }, Duration.ofSeconds(5));
         }
     }
 
@@ -111,6 +122,9 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
+            GlobalTimer.delay(() -> {
+                FileUtils.deleteQuietly(getFilePath(configuration.getTitle()).toFile());
+            }, Duration.ofSeconds(5));
         }
 
         @Override
@@ -138,6 +152,9 @@ public abstract class RemoteViewerVncClient implements ExternalVncClient {
         public void launch(VncLaunchConfig configuration) throws Exception {
             var builder = createBuilder(configuration);
             launch(builder);
+            GlobalTimer.delay(() -> {
+                FileUtils.deleteQuietly(getFilePath(configuration.getTitle()).toFile());
+            }, Duration.ofSeconds(5));
         }
 
         @Override

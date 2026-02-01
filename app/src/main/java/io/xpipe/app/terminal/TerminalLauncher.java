@@ -170,7 +170,7 @@ public class TerminalLauncher {
         var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
 
         if (effectivePreferTabs
-                && AppPrefs.get().enableTerminalDocking().get()
+                && AppPrefs.get().enableConnectionHubTerminalDocking().get()
                 && TerminalDockHubManager.isAvailable()) {
             // Dock terminal if needed
             for (TerminalPaneConfiguration pane : launchConfig.getPanes()) {

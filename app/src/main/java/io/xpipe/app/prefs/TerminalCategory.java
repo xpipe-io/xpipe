@@ -178,7 +178,6 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(terminalChoice(true))
-                .sub(new OptionsBuilder().pref(prefs.enableTerminalDocking).addToggle(prefs.enableTerminalDocking))
                 .hide(Bindings.createBooleanBinding(
                         () -> {
                             return !TerminalDockHubManager.isSupported();
@@ -189,8 +188,15 @@ public class TerminalCategory extends AppPrefsCategory {
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
                 // .sub(terminalInitScript())
+                .addTitle("terminalBehaviour")
                 .sub(
                         new OptionsBuilder()
+                                .pref(prefs.enableConnectionHubTerminalDocking)
+                                .addToggle(prefs.enableConnectionHubTerminalDocking)
+                                .hide(OsType.ofLocal() != OsType.WINDOWS)
+                                .pref(prefs.enableFileBrowserTerminalDocking)
+                                .addToggle(prefs.enableFileBrowserTerminalDocking)
+                                .hide(OsType.ofLocal() != OsType.WINDOWS)
                                 .name("terminalSplitStrategy")
                                 .description(Bindings.createStringBinding(
                                         () -> {

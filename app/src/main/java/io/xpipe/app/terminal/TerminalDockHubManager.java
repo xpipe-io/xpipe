@@ -146,7 +146,7 @@ public class TerminalDockHubManager {
                 if (wasAttached.get()) {
                     INSTANCE.attach();
                 }
-            } else {
+            } else if (AppLayoutModel.get().getEntries().indexOf(oldValue) == 0) {
                 wasAttached.set(!INSTANCE.minimized.get() && !INSTANCE.detached.get() && INSTANCE.showing.get());
                 wasShowing.set(INSTANCE.showing.get());
                 INSTANCE.hideDock();
@@ -227,6 +227,12 @@ public class TerminalDockHubManager {
         }
 
         hubRequests.add(request);
+
+        if (!enabled.get()) {
+            enableDock();
+        } else if (!showing.get()) {
+            showDock();
+        }
     }
 
     public void enableDock() {
