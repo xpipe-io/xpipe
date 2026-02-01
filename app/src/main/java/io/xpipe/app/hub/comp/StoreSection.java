@@ -168,7 +168,6 @@ public class StoreSection {
                 enabled,
                 e.getPersistentState(),
                 e.getCache(),
-                visibilityObservable,
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
@@ -246,6 +245,7 @@ public class StoreSection {
                 filterString,
                 e.getPersistentState(),
                 e.getCache(),
+                visibilityObservable,
                 updateObservable);
         return new StoreSection(e, cached, filtered, depth);
     }

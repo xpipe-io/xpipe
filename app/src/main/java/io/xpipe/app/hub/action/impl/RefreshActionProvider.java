@@ -17,7 +17,6 @@ public class RefreshActionProvider implements ActionProvider {
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<DataStore> {
-
         @Override
         public void executeImpl() {
             ref.get().validate();
