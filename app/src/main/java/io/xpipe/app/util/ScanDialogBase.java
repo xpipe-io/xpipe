@@ -2,6 +2,7 @@ package io.xpipe.app.util;
 
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
@@ -135,6 +136,11 @@ public class ScanDialogBase {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);
+
+        var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible"))
+                .visible(busy.not().and(Bindings.isEmpty(available)))
+                .build();
+        stackPane.getChildren().add(emptyLabel);
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
             var n = s.getName().getValue();

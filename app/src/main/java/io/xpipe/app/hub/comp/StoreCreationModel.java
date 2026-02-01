@@ -271,14 +271,9 @@ public class StoreCreationModel {
 
         s.checkComplete();
 
-        // Start session for later
         if (s instanceof ShellStore ss) {
-            var sc = ss.getOrStartSession();
-            var unsupported = !sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()
-                    || sc.getTtyState() != ShellTtyState.NONE;
-            if (unsupported) {
-                ss.stopSessionIfNeeded();
-            }
+            // Start session for later
+            ss.getOrStartSession();
         } else if (s instanceof ValidatableStore vs) {
             vs.validate();
         }

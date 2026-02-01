@@ -19,20 +19,15 @@ public interface ScanDialogAction {
                     ObservableList<ScanProvider.ScanOpportunity> selected,
                     DataStoreEntry entry,
                     ShellControl sc) {
-                if (!sc.canHaveSubshells()) {
-                    return false;
-                }
-
-                if (!sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()) {
-                    return false;
-                }
-
-                if (sc.getTtyState() != ShellTtyState.NONE) {
-                    return false;
-                }
-
+                var fullShell = sc.canHaveSubshells() &&
+                        sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction() &&
+                        sc.getTtyState() == ShellTtyState.NONE;
                 var providers = ScanProvider.getAll();
                 for (ScanProvider scanProvider : providers) {
+                    if (!fullShell && scanProvider.requiresFullShell()) {
+                        continue;
+                    }
+
                     try {
                         // Previous scan operation could have exited the shell
                         sc.start();

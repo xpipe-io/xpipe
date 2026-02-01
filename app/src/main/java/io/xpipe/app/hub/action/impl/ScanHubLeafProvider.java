@@ -30,18 +30,6 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     }
 
     @Override
-    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-        var state = o.get().getStorePersistentState();
-        if (state instanceof SystemState systemState) {
-            return (systemState.getShellDialect() == null
-                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
-                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
-        } else {
-            return true;
-        }
-    }
-
-    @Override
     public ObservableValue<String> getName(DataStoreEntryRef<ShellStore> store) {
         return AppI18n.observable("scanConnections");
     }

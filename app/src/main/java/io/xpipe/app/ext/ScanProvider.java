@@ -29,6 +29,10 @@ public abstract class ScanProvider {
 
     public abstract void scan(DataStoreEntry entry, ShellControl sc) throws Throwable;
 
+    public boolean requiresFullShell() {
+        return true;
+    }
+
     public static class Loader implements ModuleLayerLoader {
 
         @Override

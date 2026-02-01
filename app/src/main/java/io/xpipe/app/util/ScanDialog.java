@@ -17,11 +17,7 @@ import java.util.List;
 public class ScanDialog {
 
     public static void showSingleAsync(DataStoreEntry entry) {
-        var showForCon = entry == null
-                || (entry.getStore() instanceof ShellStore
-                        && (!(entry.getStorePersistentState() instanceof SystemState systemState)
-                                || systemState.getTtyState() == null
-                                || systemState.getTtyState() == ShellTtyState.NONE));
+        var showForCon = entry == null || entry.getStore() instanceof ShellStore;
         if (showForCon) {
             showSingle(entry, ScanDialogAction.shellScanAction());
         }

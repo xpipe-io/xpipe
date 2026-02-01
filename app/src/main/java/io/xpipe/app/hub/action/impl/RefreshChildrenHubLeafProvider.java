@@ -64,6 +64,7 @@ public class RefreshChildrenHubLeafProvider implements HubLeafProvider<FixedHier
         @Override
         public void executeImpl() {
             DataStorage.get().refreshChildren(ref.get());
+            ref.get().setExpanded(true);
             StoreViewState.get().triggerStoreListVisibilityUpdate();
         }
     }

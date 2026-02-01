@@ -738,9 +738,8 @@ public abstract class DataStorage {
         if (!newChildren.isEmpty()) {
             e.setExpanded(true);
         }
-        // Force instant to be later in case we are really quick
-        ThreadHelper.sleep(1);
-        toAdd.forEach(nc -> {
+        toAdd.reversed().forEach(nc -> {
+            ThreadHelper.sleep(1);
             // Update after parent entry
             nc.get().notifyUpdate(false, true);
         });
