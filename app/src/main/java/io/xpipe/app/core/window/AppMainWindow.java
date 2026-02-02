@@ -173,6 +173,7 @@ public class AppMainWindow {
         if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
             var ctrl = new NativeWinWindowControl(stage);
             NativeWinWindowControl.MAIN_WINDOW = ctrl;
+            AppWindowsLock.registerHook(ctrl.getWindowHandle());
             AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
         }
         shown = true;

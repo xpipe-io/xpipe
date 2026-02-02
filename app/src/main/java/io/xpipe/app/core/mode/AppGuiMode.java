@@ -29,7 +29,7 @@ public class AppGuiMode extends AppOperationMode {
         // If we are in an externally started shutdown hook, don't close the windows until the platform exits
         // That way, it is kept open to block for shutdowns on Windows systems
         if (OsType.ofLocal() != OsType.WINDOWS || !AppOperationMode.isInShutdownHook()) {
-            Platform.runLater(() -> {
+            PlatformThread.runLaterIfNeededBlocking(() -> {
                 TrackEvent.info("Closing windows");
                 Stage.getWindows().stream().toList().forEach(w -> {
                     w.hide();

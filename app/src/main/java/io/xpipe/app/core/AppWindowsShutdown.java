@@ -1,5 +1,6 @@
 package io.xpipe.app.core;
 
+import com.sun.jna.platform.win32.Wtsapi32;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
@@ -18,11 +19,11 @@ import java.util.List;
 
 public class AppWindowsShutdown {
 
-    public static final int WTS_SESSION_LOCK = 0x7;
-    public static final int WTS_SESSION_UNLOCK = 0x8;
-    public static final int WM_ENDSESSION = 0x16;
-    public static final int WM_QUERYENDSESSION = 0x11;
-    public static final long ENDSESSION_CRITICAL = 0x40000000L;
+    private static final int WH_CALLWNDPROC = 0x4;
+    private static final int WM_ENDSESSION = 0x16;
+    private static final int WM_QUERYENDSESSION = 0x11;
+    private static final long ENDSESSION_CRITICAL = 0x40000000L;
+
     // Prevent GC
     private static final WinShutdownHookProc PROC = new WinShutdownHookProc();
 
@@ -34,7 +35,7 @@ public class AppWindowsShutdown {
             }
 
             PROC.hwnd = hwnd;
-            PROC.hhook = User32.INSTANCE.SetWindowsHookEx(4, PROC, null, windowThreadID);
+            PROC.hhook = User32.INSTANCE.SetWindowsHookEx(WH_CALLWNDPROC, PROC, null, windowThreadID);
         } catch (Throwable t) {
             ErrorEventFactory.fromThrowable(t).omit().handle();
         }
@@ -105,26 +106,6 @@ public class AppWindowsShutdown {
                             .handle();
 
                     return new WinDef.LRESULT(0);
-                }
-
-                // The awt UserSessionListener does not work, so do it manually
-                if (hookProcStruct.message.longValue() == WinUser.WM_SESSION_CHANGE) {
-                    var type = hookProcStruct.wParam.longValue();
-                    if (type == WTS_SESSION_LOCK || type == WTS_SESSION_UNLOCK) {
-                        if (AppPrefs.get() != null) {
-                            var b = AppPrefs.get().hibernateBehaviour().getValue();
-                            if (b != null) {
-                                ThreadHelper.runAsync(() -> {
-                                    if (type == WTS_SESSION_LOCK) {
-                                        b.runOnSleep();
-                                    } else {
-                                        b.runOnWake();
-                                    }
-                                });
-                                return new WinDef.LRESULT(0);
-                            }
-                        }
-                    }
                 }
             }
             return User32.INSTANCE.CallNextHookEx(
