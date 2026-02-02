@@ -94,7 +94,10 @@ public class TerminalDockHubManager {
     private final TerminalDockView dockModel = new TerminalDockView(rect -> {
         var term = AppPrefs.get().terminalType().getValue();
         var adjust = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.BORDERLESS;
-        return adjust ? new Rect(rect.getX() - 9, rect.getY() - 1, rect.getW() + 16, rect.getH() + 9) : rect;
+        // Windows terminal has a tiny top bar in any scenario
+        var topAdjust = term instanceof WindowsTerminalType ? 1 : 0;
+        return adjust ? new Rect(rect.getX() - 9, rect.getY() - 1 - topAdjust, rect.getW() + 16, rect.getH() + 9 + topAdjust) :
+                new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
