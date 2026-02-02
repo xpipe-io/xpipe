@@ -70,10 +70,6 @@ public class StoreViewState {
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
             storeEntryWrapper -> {
-                if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
-                    return false;
-                }
-
                 if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
                     return false;
                 }
@@ -187,8 +183,7 @@ public class StoreViewState {
             batchModeSelection.getList().add(wrapper);
         }
         if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+                || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
         }
     }
@@ -199,8 +194,7 @@ public class StoreViewState {
             batchModeSelection.getList().remove(wrapper);
         }
         if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+                || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
     }

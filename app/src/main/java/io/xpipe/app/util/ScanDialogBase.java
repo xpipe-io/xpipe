@@ -137,10 +137,10 @@ public class ScanDialogBase {
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);
 
-        var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible"))
-                .visible(busy.not().and(Bindings.isEmpty(available)))
-                .build();
-        stackPane.getChildren().add(emptyLabel);
+        if (!showButton) {
+            var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible")).visible(busy.not().and(Bindings.isEmpty(available))).build();
+            stackPane.getChildren().add(emptyLabel);
+        }
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
             var n = s.getName().getValue();

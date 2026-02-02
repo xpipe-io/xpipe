@@ -17,6 +17,11 @@ import lombok.extern.jackson.Jacksonized;
 public class StoreRestartActionProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
+    public boolean runParallel() {
+        return true;
+    }
+
+    @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.CUSTOM;
     }

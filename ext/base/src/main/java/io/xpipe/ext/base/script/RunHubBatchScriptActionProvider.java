@@ -10,6 +10,7 @@ import io.xpipe.app.util.CommandDialog;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class RunHubBatchScriptActionProvider implements ActionProvider {
@@ -27,14 +28,14 @@ public class RunHubBatchScriptActionProvider implements ActionProvider {
 
         @Override
         public void executeImpl() throws Exception {
-            var map = new LinkedHashMap<String, CommandControl>();
+            var list = new ArrayList<CommandDialog.CommandEntry>();
             for (DataStoreEntryRef<ShellStore> ref : refs) {
                 var sc = ref.getStore().getOrStartSession();
                 var script = scriptStore.getStore().assembleScriptChain(sc, false);
                 var cmd = sc.command(script);
-                map.put(ref.get().getName(), cmd);
+                list.add(new CommandDialog.CommandEntry(ref.get().getName(), cmd));
             }
-            CommandDialog.runMultipleAndShow(map);
+            CommandDialog.runMultipleAndShow(list);
         }
 
         @Override

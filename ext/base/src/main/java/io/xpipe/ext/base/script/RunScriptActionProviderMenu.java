@@ -169,11 +169,21 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         ScriptHierarchy hierarchy;
 
         @Override
+        public boolean runParallel() {
+            return true;
+        }
+
+        @Override
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
             return RunTerminalScriptActionProvider.Action.builder()
                     .ref(ref)
                     .scriptStore(hierarchy.getScript())
                     .build();
+        }
+
+        @Override
+        public boolean requiresValidStore() {
+            return true;
         }
 
         @Override
@@ -223,6 +233,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     private static class HubRunActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         ScriptHierarchy hierarchy;
+
+        @Override
+        public boolean requiresValidStore() {
+            return true;
+        }
 
         @Override
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
@@ -286,6 +301,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
         ScriptHierarchy hierarchy;
 
         @Override
+        public boolean requiresValidStore() {
+            return true;
+        }
+
+        @Override
         public AbstractAction createAction(DataStoreEntryRef<ShellStore> ref) {
             return RunBackgroundScriptActionProvider.Action.builder()
                     .ref(ref)
@@ -329,6 +349,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
                     .ref(ref)
                     .scriptStore(hierarchy.getScript())
                     .build();
+        }
+
+        @Override
+        public boolean runParallel() {
+            return true;
         }
 
         @Override
@@ -403,6 +428,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     private static class NoScriptsActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
 
         @Override
+        public boolean requiresValidStore() {
+            return true;
+        }
+
+        @Override
         public void execute(DataStoreEntryRef<ShellStore> ref) {
             var cat = StoreViewState.get().getAllScriptsCategory();
             cat.select();
@@ -447,6 +477,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
 
     private static class ScriptsDisabledActionProvider
             implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        @Override
+        public boolean requiresValidStore() {
+            return true;
+        }
 
         @Override
         public void execute(DataStoreEntryRef<ShellStore> ref) {
@@ -494,6 +529,11 @@ public class RunScriptActionProviderMenu implements HubBranchProvider<ShellStore
     }
 
     private static class NoStateActionProvider implements HubLeafProvider<ShellStore>, BatchHubProvider<ShellStore> {
+
+        @Override
+        public boolean requiresValidStore() {
+            return true;
+        }
 
         @Override
         public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {

@@ -2,9 +2,11 @@ package io.xpipe.app.hub.action;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.ext.DataStore;
+import io.xpipe.app.process.CountDown;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @SuperBuilder
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 public final class BatchStoreAction<T extends DataStore> extends SerializableAction implements StoreContextAction {
 
     private final List<StoreAction<T>> actions;
+    private boolean parallel;
 
     @Override
     public ActionProvider getProvider() {
@@ -40,10 +44,26 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
 
     @Override
     public void executeImpl() {
-        for (AbstractAction action : actions) {
-            if (!action.executeSyncImpl(true)) {
-                break;
+        if (!parallel) {
+            for (AbstractAction action : actions) {
+                // Don't confirm twice
+                if (!action.executeSyncImpl(false)) {
+                    break;
+                }
             }
+        } else {
+            var latch = new CountDownLatch(actions.size());
+            for (AbstractAction action : actions) {
+                ThreadHelper.runAsync(() -> {
+                    // Don't confirm twice
+                    action.executeSyncImpl(false);
+                    latch.countDown();
+                });
+            }
+
+            try {
+                latch.await();
+            } catch (InterruptedException ignored) {}
         }
     }
 

@@ -113,6 +113,10 @@ public class StoreEntryListBatchBarComp extends SimpleRegionBuilder {
                             return false;
                         }
 
+                        if (!w.getEntry().getValidity().isUsable() && s.requiresValidStore()) {
+                            return false;
+                        }
+
                         if (!s.isApplicable(w.getEntry().ref())) {
                             return false;
                         }

@@ -1,5 +1,6 @@
 package io.xpipe.ext.base.store;
 
+import io.xpipe.app.action.AbstractAction;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.action.BatchHubProvider;
 import io.xpipe.app.hub.action.HubLeafProvider;
@@ -12,6 +13,8 @@ import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 public class StoreStartActionProvider implements HubLeafProvider<StartableStore>, BatchHubProvider<StartableStore> {
 
@@ -63,6 +66,11 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
     @Override
     public String getId() {
         return "startStore";
+    }
+
+    @Override
+    public boolean runParallel() {
+        return true;
     }
 
     @Jacksonized
