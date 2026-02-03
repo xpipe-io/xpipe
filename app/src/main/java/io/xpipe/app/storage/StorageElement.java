@@ -85,9 +85,14 @@ public abstract class StorageElement {
         synchronized (listeners) {
             listeners.forEach(l -> l.onUpdate());
         }
+
         // Save changes instantly
-        DataStorage.get().saveAsync();
+        if (isInStorage()) {
+            DataStorage.get().saveAsync();
+        }
     }
+
+    public abstract boolean isInStorage();
 
     public abstract Path[] getShareableFiles();
 
@@ -105,7 +110,7 @@ public abstract class StorageElement {
         }
 
         // Save changes instantly
-        if (modified) {
+        if (modified && isInStorage()) {
             DataStorage.get().saveAsync();
         }
     }

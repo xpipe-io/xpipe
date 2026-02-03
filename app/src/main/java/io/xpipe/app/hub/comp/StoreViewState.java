@@ -82,8 +82,9 @@ public class StoreViewState {
     @Getter
     private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(
             () -> {
-                var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
-                var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
+                var global = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
+                var tie = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
+                var fallback = Comparator.<StoreSection, String>comparing(sec -> sec.getWrapper().getName().getValue());
                 var failed = Comparator.<StoreSection>comparingInt(value -> {
                     if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
                         return 1;
@@ -91,9 +92,9 @@ public class StoreViewState {
 
                     return 0;
                 });
-                return g != null
-                        ? failed.thenComparing(g.comparator().thenComparing(t.comparator()))
-                        : failed.thenComparing(t.comparator());
+                return global != null
+                        ? failed.thenComparing(global.comparator().thenComparing(tie.comparator())).thenComparing(fallback)
+                        : failed.thenComparing(tie.comparator()).thenComparing(fallback);
             },
             globalSortMode,
             tieSortMode);

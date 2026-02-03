@@ -134,9 +134,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             // If one node within has focus and moves out of focus fast,
             // the scrollbar will try to focus another one and move it into view
             // This can result in flicker when scrolling fast enough
-            if (scroll.isFocusWithin()) {
-                scroll.requestFocus();
-            }
+            scroll.requestFocus();
             dirty.set(true);
         });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {

@@ -92,7 +92,12 @@ public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
         AtomicReference<HBox> built = new AtomicReference<>();
         Consumer<Boolean> update = (visible) -> {
             if (visible) {
-                if (root.getScene() == null || !root.isVisible()) {
+                // Ignore any changes before this was added to the scene
+                if (root.getScene() == null && built.get() == null) {
+                    return;
+                }
+
+                if (!root.isVisible()) {
                     return;
                 }
 

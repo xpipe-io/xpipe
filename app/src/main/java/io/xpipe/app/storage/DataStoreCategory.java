@@ -176,6 +176,11 @@ public class DataStoreCategory extends StorageElement {
     }
 
     @Override
+    public boolean isInStorage() {
+        return DataStorage.get().getStoreCategories().contains(this);
+    }
+
+    @Override
     public Path[] getShareableFiles() {
         return new Path[] {directory.resolve("category.json")};
     }

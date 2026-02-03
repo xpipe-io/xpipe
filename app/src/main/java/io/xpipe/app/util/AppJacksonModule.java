@@ -210,10 +210,10 @@ public class AppJacksonModule extends SimpleModule {
                 if (t == null) {
                     return null;
                 }
-                return ShellDialects.byNameIfPresent(t.asText()).orElse(null);
+                return ShellDialects.byIdIfPresent(t.asText()).orElse(null);
             }
 
-            return ShellDialects.byNameIfPresent(tree.asText()).orElse(null);
+            return ShellDialects.byIdIfPresent(tree.asText()).orElse(null);
         }
     }
 

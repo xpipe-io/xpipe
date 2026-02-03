@@ -948,6 +948,13 @@ public abstract class DataStorage {
         for (DataStoreEntry e : toAdd) {
             e.refreshStore();
         }
+
+        // Retain ordering
+        toAdd.reversed().forEach(e -> {
+            ThreadHelper.sleep(1);
+            e.notifyUpdate(false, true);
+        });
+
         this.listeners.forEach(l -> l.onStoreAdd(toAdd.toArray(DataStoreEntry[]::new)));
         saveAsync();
     }

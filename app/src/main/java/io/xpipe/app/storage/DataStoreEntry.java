@@ -526,6 +526,11 @@ public class DataStoreEntry extends StorageElement {
     }
 
     @Override
+    public boolean isInStorage() {
+        return DataStorage.get().getStoreEntries().contains(this);
+    }
+
+    @Override
     public Path[] getShareableFiles() {
         var notes = directory.resolve("notes.md");
         var list = List.of(directory.resolve("store.json"), directory.resolve("entry.json"));
