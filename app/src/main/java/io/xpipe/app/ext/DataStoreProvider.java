@@ -21,6 +21,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,6 +62,10 @@ public interface DataStoreProvider {
 
     default boolean shouldShow(StoreEntryWrapper w) {
         return true;
+    }
+
+    default Comparator<StoreSection> getComparator() {
+        return null;
     }
 
     default void onParentRefresh(DataStoreEntry entry) {}

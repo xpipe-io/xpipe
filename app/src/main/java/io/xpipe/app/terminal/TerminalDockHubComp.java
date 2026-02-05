@@ -73,7 +73,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     var selected = s.getScene().getRoot().lookup(".icon-button-comp:hover");
-                    if (selected instanceof Button b && b.getGraphic() instanceof FontIcon fi && fi.getIconLiteral().equals("mdi2c-console")) {
+                    if (selected instanceof Button b && b.getGraphic() instanceof FontIcon fi && !fi.getIconLiteral().equals("mdi2c-connection")) {
                         return;
                     }
 

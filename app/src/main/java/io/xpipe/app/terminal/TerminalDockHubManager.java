@@ -224,12 +224,22 @@ public class TerminalDockHubManager {
         detached.set(dockModel.isCustomBounds() || dockModel.isMinimized());
     }
 
-    public void openTerminal(UUID request) {
+    public void registerTerminal(UUID request) {
         if (!isSupported()) {
             return;
         }
 
         hubRequests.add(request);
+    }
+
+    public void openTerminal(UUID request) {
+        if (!isSupported()) {
+            return;
+        }
+
+        if (!hubRequests.contains(request)) {
+            return;
+        }
 
         if (!enabled.get()) {
             enableDock();
@@ -276,6 +286,7 @@ public class TerminalDockHubManager {
 
             dockModel.toggleView(true);
             showing.set(true);
+            AppLayoutModel.get().selectConnections();
         });
     }
 

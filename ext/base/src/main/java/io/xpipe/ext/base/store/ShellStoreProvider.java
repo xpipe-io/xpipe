@@ -9,6 +9,7 @@ import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.StoreStateFormat;
@@ -19,6 +20,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ShellStoreProvider extends DataStoreProvider {
 
@@ -31,7 +33,11 @@ public interface ShellStoreProvider extends DataStoreProvider {
             // These prepend scripts, not append
             TerminalPromptManager.configurePromptScript(control);
             ScriptStoreSetup.controlWithDefaultScripts(control);
-            TerminalLaunch.builder().entry(replacement.get()).command(control).launch();
+            var request = UUID.randomUUID();
+            if (TerminalDockHubManager.isAvailable()) {
+                TerminalDockHubManager.get().registerTerminal(request);
+            }
+            TerminalLaunch.builder().request(request).entry(replacement.get()).command(control).launch();
         };
     }
 

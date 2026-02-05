@@ -134,7 +134,10 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             // If one node within has focus and moves out of focus fast,
             // the scrollbar will try to focus another one and move it into view
             // This can result in flicker when scrolling fast enough
-            scroll.requestFocus();
+            var hasWindowFocus = scroll.getScene().getWindow().isFocused();
+            if (scroll.isFocusWithin() || !hasWindowFocus) {
+                scroll.requestFocus();
+            }
             dirty.set(true);
         });
         scroll.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -154,7 +157,18 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             dirty.set(true);
         });
         if (StoreViewState.get() != null) {
-            StoreViewState.get().getEffectiveSortMode().addListener((observable, oldValue, newValue) -> {
+            StoreViewState.get().getGlobalSortMode().addListener((observable, oldValue, newValue) -> {
+                // This is very ugly, but it just takes multiple iterations for the order to apply
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        Platform.runLater(() -> {
+                            dirty.set(true);
+                        });
+                    });
+                });
+            });
+
+            StoreViewState.get().getTieSortMode().addListener((observable, oldValue, newValue) -> {
                 // This is very ugly, but it just takes multiple iterations for the order to apply
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {

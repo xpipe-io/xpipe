@@ -54,9 +54,9 @@ public class StoreSection {
         return new StoreSectionComp(e);
     }
 
-    private static DerivedObservableList<StoreSection> sorted(
+    private static DerivedObservableList<StoreSection> sorted(StoreEntryWrapper wrapper,
             DerivedObservableList<StoreSection> list, ObservableIntegerValue updateObservable) {
-        var sortMode = StoreViewState.get().getEffectiveSortMode();
+        var sortMode = StoreViewState.get().createEffectiveSortMode(wrapper != null ? wrapper.getEntry().getProvider().getComparator() : null);
         return list.sorted(
                 (o1, o2) -> {
                     var r = sortMode.getValue().compare(o1, o2);
@@ -109,7 +109,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, updateObservable);
+        var ordered = sorted(null, cached, updateObservable);
         var shown = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {
@@ -183,7 +183,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, updateObservable);
+        var ordered = sorted(e, cached, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {

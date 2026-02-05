@@ -80,26 +80,6 @@ public class StoreViewState {
             entriesListUpdateObservable);
 
     @Getter
-    private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(
-            () -> {
-                var global = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
-                var tie = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-                var fallback = Comparator.<StoreSection, String>comparing(sec -> sec.getWrapper().getName().getValue());
-                var failed = Comparator.<StoreSection>comparingInt(value -> {
-                    if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
-                        return 1;
-                    }
-
-                    return 0;
-                });
-                return global != null
-                        ? failed.thenComparing(global.comparator().thenComparing(tie.comparator())).thenComparing(fallback)
-                        : failed.thenComparing(tie.comparator()).thenComparing(fallback);
-            },
-            globalSortMode,
-            tieSortMode);
-
-    @Getter
     private boolean initialized = false;
 
     @Getter
@@ -158,6 +138,28 @@ public class StoreViewState {
             l.addAll(storeEntryWrapper.getTags());
         }
         return l.stream().sorted().toList();
+    }
+
+    public ObservableValue<Comparator<StoreSection>> createEffectiveSortMode(Comparator<StoreSection> customComparator) {
+        return Bindings.createObjectBinding(
+                () -> {
+                    var global = globalSortMode.getValue() != null ? globalSortMode.getValue().comparator() : null;
+                    var tie = customComparator != null ? customComparator :
+                            tieSortMode.getValue() != null ? tieSortMode.getValue().comparator() : StoreSectionSortMode.DATE_DESC.comparator();
+                    var fallback = Comparator.<StoreSection, String>comparing(sec -> sec.getWrapper().getName().getValue());
+                    var failed = Comparator.<StoreSection>comparingInt(value -> {
+                        if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+                    return global != null
+                            ? failed.thenComparing(global.thenComparing(tie)).thenComparing(fallback)
+                            : failed.thenComparing(tie).thenComparing(fallback);
+                },
+                globalSortMode,
+                tieSortMode);
     }
 
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {

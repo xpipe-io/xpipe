@@ -52,7 +52,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
-                if (w >= 1000) {
+                if (w > 2000) {
+                    return (w / 1.8) - 100;
+                } else if (w >= 1000) {
                     return (w / 2.0) - 100;
                 } else {
                     return (w / 1.7) - 50;
@@ -62,7 +64,9 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
-                if (w >= 1000) {
+                if (w > 2000) {
+                    return (w / 1.8) - 200;
+                } else if (w >= 1000) {
                     return (w / 2.0) - 200;
                 } else {
                     return (w / 1.7) - 150;
