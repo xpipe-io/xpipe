@@ -18,6 +18,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.LocalFileTracker;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.Validators;
 import io.xpipe.core.*;
 
@@ -71,11 +72,13 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
             struc.setEditable(false);
         });
         var generateButton = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2c-cog-refresh-outline"), () -> {
-                    var generated = ProcessControlProvider.get()
-                            .generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
-                    if (generated != null) {
-                        publicKey.set(generated);
-                    }
+                    ThreadHelper.runAsync(() -> {
+                        var generated = ProcessControlProvider.get()
+                                .generatePublicSshKey(InPlaceSecretValue.of(key.get()), keyPasswordProperty.get());
+                        if (generated != null) {
+                            publicKey.set(generated);
+                        }
+                    });
                 })
                 .describe(d -> d.nameKey("generatePublicKey"))
                 .disable(key.isNull().or(publicKey.isNotNull()).or(keyPasswordProperty.isNull()));
