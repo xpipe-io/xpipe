@@ -34,9 +34,6 @@ public interface ShellStoreProvider extends DataStoreProvider {
             TerminalPromptManager.configurePromptScript(control);
             ScriptStoreSetup.controlWithDefaultScripts(control);
             var request = UUID.randomUUID();
-            if (TerminalDockHubManager.isAvailable()) {
-                TerminalDockHubManager.get().registerTerminal(request);
-            }
             TerminalLaunch.builder().request(request).entry(replacement.get()).command(control).launch();
         };
     }

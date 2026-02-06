@@ -65,11 +65,10 @@ public class TerminalDockHubManager {
     private static TerminalDockHubManager INSTANCE;
 
     public static void init() {
+        INSTANCE = new TerminalDockHubManager();
         if (!isAvailable()) {
             return;
         }
-
-        INSTANCE = new TerminalDockHubManager();
 
         INSTANCE.addLayoutListeners();
         INSTANCE.addDialogListeners();
@@ -224,23 +223,17 @@ public class TerminalDockHubManager {
         detached.set(dockModel.isCustomBounds() || dockModel.isMinimized());
     }
 
-    public void registerTerminal(UUID request) {
-        if (!isSupported()) {
-            return;
-        }
-
-        hubRequests.add(request);
-    }
-
     public void openTerminal(UUID request) {
         if (!isSupported()) {
             return;
         }
 
-        if (!hubRequests.contains(request)) {
+        // Check if we are in the hub interface
+        if (!AppLayoutModel.get().getEntries().getFirst().equals(AppLayoutModel.get().getSelected().getValue())) {
             return;
         }
 
+        hubRequests.add(request);
         if (!enabled.get()) {
             enableDock();
         } else if (!showing.get()) {

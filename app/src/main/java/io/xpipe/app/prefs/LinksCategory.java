@@ -4,10 +4,12 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.comp.base.TileButtonComp;
+import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.app.util.Hyperlinks;
+import io.xpipe.app.util.LicenseProvider;
 
 public class LinksCategory extends AppPrefsCategory {
 
@@ -15,6 +17,14 @@ public class LinksCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("links")
                 .addComp(RegionBuilder.vspacer(19))
+                .addComp(
+                        new TileButtonComp("activeLicense", "activeLicenseDescription", "mdi2k-key-outline", e -> {
+                            AppLayoutModel.get().selectLicense();
+                            e.consume();
+                        })
+                                .maxWidth(2000),
+                        null)
+                .hide(LicenseProvider.get().hasPaidLicense())
                 .addComp(
                         new TileButtonComp("discord", "discordDescription", "bi-discord", e -> {
                                     Hyperlinks.open(Hyperlinks.DISCORD);
