@@ -24,8 +24,7 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
 
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var nonRunning = StoreToggleComp.<LxdCmdStore>childrenToggle(
-                null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
+        var nonRunning = StoreToggleComp.<LxdCmdStore>childrenToggle(true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
                     var state =
                             s.getState().toBuilder().showNonRunning(aBoolean).build();
                     s.setState(state);

@@ -63,6 +63,15 @@ public class StoreToggleComp extends SimpleRegionBuilder {
     }
 
     public static <T extends DataStore> StoreToggleComp childrenToggle(
+            boolean graphic,
+            StoreSection section,
+            Function<T, Boolean> initial,
+            BiConsumer<T, Boolean> setter) {
+        return childrenToggle(null, graphic, section, initial, setter);
+    }
+
+
+    public static <T extends DataStore> StoreToggleComp childrenToggle(
             String nameKey,
             boolean graphic,
             StoreSection section,
@@ -71,11 +80,11 @@ public class StoreToggleComp extends SimpleRegionBuilder {
         var val = new SimpleBooleanProperty();
         ObservableValue<LabelGraphic> g = graphic
                 ? val.map(aBoolean -> aBoolean
-                        ? new LabelGraphic.IconGraphic("mdi2e-eye-plus")
-                        : new LabelGraphic.IconGraphic("mdi2e-eye-minus"))
+                ? new LabelGraphic.IconGraphic("mdi2e-eye-plus")
+                : new LabelGraphic.IconGraphic("mdi2e-eye-minus"))
                 : null;
         var t = new StoreToggleComp(
-                nameKey,
+                null,
                 g,
                 section,
                 new SimpleBooleanProperty(
@@ -86,7 +95,7 @@ public class StoreToggleComp extends SimpleRegionBuilder {
                         StoreViewState.get().triggerStoreListVisibilityUpdate();
                     });
                 });
-        t.describe(d -> d.nameKey("showNonRunningChildren"));
+        t.describe(d -> d.nameKey(nameKey));
         t.value.subscribe((newValue) -> {
             val.set(newValue);
         });

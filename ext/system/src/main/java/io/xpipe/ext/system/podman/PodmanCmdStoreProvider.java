@@ -26,8 +26,7 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
 
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var nonRunning = StoreToggleComp.<PodmanCmdStore>childrenToggle(
-                null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
+        var nonRunning = StoreToggleComp.<PodmanCmdStore>childrenToggle(true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
                     s.setState(s.getState().toBuilder().showNonRunning(aBoolean).build());
                 });
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
