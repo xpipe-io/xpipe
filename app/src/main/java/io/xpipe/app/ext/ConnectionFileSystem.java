@@ -273,7 +273,6 @@ public class ConnectionFileSystem implements FileSystem {
 
         var cmd =
                 shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
-        cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
 
