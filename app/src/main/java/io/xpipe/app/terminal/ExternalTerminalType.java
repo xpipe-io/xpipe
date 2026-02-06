@@ -69,6 +69,30 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
     ExternalTerminalType YAKUAKE = new YakuakeTerminalType();
     ExternalTerminalType KONSOLE = new KonsoleTerminalType();
+
+    ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term", true) {
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return true;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of().add("-T").addQuoted(configuration.getColoredTitle()).add("-e").add(configuration.single().getDialectLaunchCommand());
+        }
+    };
+
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
         public TerminalOpenFormat getOpenFormat() {
@@ -485,6 +509,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             LXTERMINAL,
             Q_TERMINAL,
             WarpTerminalType.LINUX,
+            COOL_RETRO_TERM,
             TERMIUS,
             WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(

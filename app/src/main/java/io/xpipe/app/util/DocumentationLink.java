@@ -5,6 +5,7 @@ import io.xpipe.app.core.AppProperties;
 public enum DocumentationLink {
     API("api"),
     TTY("troubleshoot/tty"),
+    NETWORK_SWITCH("guide/network-switch"),
     SSH_BROKEN_PIPE("troubleshoot/ssh#client-loop-send-disconnect--connection-reset--broken-pipe"),
     WINDOWS_SETUP("guide/installation#windows"),
     MACOS_SETUP("guide/installation#macos"),
@@ -65,6 +66,7 @@ public enum DocumentationLink {
     SSH_BAD_FILE_DESCRIPTOR("troubleshoot/ssh#bad-file-descriptor"),
     SSH_KEX("troubleshoot/ssh#no-matching-key-exchange-method"),
     SSH_IPV6("troubleshoot/ssh#ipv6-issues"),
+    SSH_CONNECTION_RESET("troubleshoot/ssh#connection-reset"),
     SSH_CONNECTION_CLOSED("troubleshoot/ssh#connection-closed-by-remote-host"),
     SSH_KEY_PERMISSIONS("troubleshoot/ssh#key-permissions-too-open"),
     SSH_NO_ROUTE("troubleshoot/ssh#no-route-to-host"),
