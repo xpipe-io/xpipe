@@ -84,12 +84,12 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
 
         @Override
         public boolean useColoredTitle() {
-            return true;
+            return false;
         }
 
         @Override
         protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
-            return CommandBuilder.of().add("-T").addQuoted(configuration.getColoredTitle()).add("-e").add(configuration.single().getDialectLaunchCommand());
+            return CommandBuilder.of().add("-T").addQuoted(configuration.getCleanTitle()).add("-e").add(configuration.single().getDialectLaunchCommand());
         }
     };
 
