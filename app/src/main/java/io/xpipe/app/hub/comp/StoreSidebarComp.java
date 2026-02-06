@@ -28,11 +28,11 @@ public class StoreSidebarComp extends SimpleRegionBuilder {
                         .style("color-box")
                         .style("gray")
                         .style("bar"),
-                new StoreCategoryListComp(StoreViewState.get().getAllScriptsCategory())
+                new StoreCategoryListComp(StoreViewState.get().getAllIdentitiesCategory())
                         .style("color-box")
                         .style("gray")
                         .style("bar"),
-                new StoreCategoryListComp(StoreViewState.get().getAllIdentitiesCategory())
+                new StoreCategoryListComp(StoreViewState.get().getAllScriptsCategory())
                         .style("color-box")
                         .style("gray")
                         .style("bar"),
