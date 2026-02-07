@@ -22,6 +22,9 @@ import java.util.List;
 @EqualsAndHashCode
 public class NativeWinWindowControl {
 
+    private static final int WS_EX_NOACTIVATE = 0x08000000;
+    private static final int WS_EX_APPWINDOW = 0x00040000;
+
     public static NativeWinWindowControl MAIN_WINDOW;
     private final WinDef.HWND windowHandle;
 
@@ -73,6 +76,18 @@ public class NativeWinWindowControl {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
         var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+    }
+
+    public void disableActivate() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style | WS_EX_NOACTIVATE | WS_EX_APPWINDOW;
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+    }
+
+    public void enableActivate() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style & ~(WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
     }
 
     public boolean isIconified() {

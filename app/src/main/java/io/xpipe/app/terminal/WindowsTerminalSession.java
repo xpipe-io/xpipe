@@ -76,6 +76,11 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
+    public void moveToFront() {
+        this.control.defaultOrder();
+    }
+
+    @Override
     public void focus() {
         this.control.activate();
     }

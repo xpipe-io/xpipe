@@ -26,6 +26,8 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
 
     public abstract void frontOfMainWindow();
 
+    public abstract void moveToFront();
+
     public abstract void focus();
 
     public abstract void updatePosition(Rect bounds);

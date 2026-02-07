@@ -133,7 +133,7 @@ public class ScriptStoreSetup {
         if (sc.view().fileExists(hashFile)) {
             var read = sc.view().readTextFile(hashFile);
             try {
-                var readHash = Integer.parseInt(read);
+                var readHash = Integer.parseInt(read.strip());
                 if (hash == readHash) {
                     return targetDir;
                 }
