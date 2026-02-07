@@ -1045,7 +1045,7 @@ public abstract class DataStorage {
             } else {
                 storeEntriesSet.forEach(entry -> {
                     if (entry.getCategoryUuid().equals(delCat.getUuid())) {
-                        entry.setCategoryUuid(DEFAULT_CATEGORY_UUID);
+                        entry.setCategoryUuid(getFallbackCategory(delCat).getUuid());
                     }
                 });
             }
@@ -1055,6 +1055,15 @@ public abstract class DataStorage {
         }
 
         saveAsync();
+    }
+
+    private DataStoreCategory getFallbackCategory(DataStoreCategory cat) {
+        var parent = getStoreCategoryIfPresent(cat.getParentCategory()).orElseThrow();
+        if (parent.getParentCategory() != null) {
+            return parent;
+        }
+
+        return getStoreCategoryIfPresent(DEFAULT_CATEGORY_UUID).orElseThrow();
     }
 
     // Get operations

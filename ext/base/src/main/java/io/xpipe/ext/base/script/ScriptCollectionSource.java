@@ -60,7 +60,7 @@ public interface ScriptCollectionSource {
                                     path,
                                     null,
                                     List.of(),
-                                    null,
+                                    entry -> DataStorage.get().local().equals(entry),
                                     true),
                             path)
                     .nonNull()

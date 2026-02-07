@@ -147,19 +147,29 @@ public class ScriptStoreSetup {
         }
         sc.view().mkdir(targetDir);
 
-        for (DataStoreEntryRef<ScriptStore> ref : refs) {
-            ref.getStore().getTextSource().checkAvailable();
-        }
+        var availableRefs = new ArrayList<>(refs);
+        availableRefs.removeIf(ref -> {
+            try {
+                ref.getStore().getTextSource().checkAvailable();
+                return false;
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).expected().handle();
+                return true;
+            }
+        });
 
         var d = sc.getShellDialect();
-        for (DataStoreEntryRef<ScriptStore> scriptStore : refs) {
-            var src = scriptStore.getStore().getTextSource();
-            var content = src.getText();
-            var fileName = OsFileSystem.of(sc.getOsType())
-                    .makeFileSystemCompatible(
-                            scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-            var scriptFile = targetDir.join(fileName + "." + d.getScriptFileEnding());
-            sc.view().writeScriptFile(scriptFile, content.getValue());
+        for (DataStoreEntryRef<ScriptStore> scriptStore : availableRefs) {
+            var content = scriptStore.getStore().assembleScriptForFile(sc);
+            if (content != null) {
+                var fileName = OsFileSystem.of(sc.getOsType()).makeFileSystemCompatible(
+                        scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
+                var fileType = scriptStore.getStore().getShellDialect() != null ?
+                        scriptStore.getStore().getShellDialect().getScriptFileEnding() :
+                        d.getScriptFileEnding();
+                var scriptFile = targetDir.join(fileName + "." + fileType);
+                sc.view().writeScriptFile(scriptFile, content.getValue());
+            }
         }
 
         sc.view().writeTextFile(hashFile, String.valueOf(hash));

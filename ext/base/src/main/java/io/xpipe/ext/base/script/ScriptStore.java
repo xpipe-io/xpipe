@@ -1,10 +1,7 @@
 package io.xpipe.ext.base.script;
 
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.EnabledStoreState;
-import io.xpipe.app.ext.SelfReferentialStore;
-import io.xpipe.app.ext.StatefulDataStore;
-import io.xpipe.app.ext.ValidationException;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellDialect;
@@ -28,7 +25,7 @@ import java.util.SequencedCollection;
 @Value
 @Jacksonized
 @JsonTypeName("script")
-public class ScriptStore implements SelfReferentialStore, StatefulDataStore<EnabledStoreState> {
+public class ScriptStore implements SelfReferentialStore, StatefulDataStore<EnabledStoreState>, ValidatableStore {
 
     @Singular
     List<DataStoreEntryRef<ScriptStore>> scripts;
@@ -40,6 +37,8 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
     boolean shellScript;
     boolean fileScript;
     boolean runnableScript;
+
+
 
     @Override
     public Class<EnabledStoreState> getStateClass() {
@@ -103,6 +102,18 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return ShellScript.lines(r);
     }
 
+    public ShellScript assembleScriptForFile(ShellControl shellControl) {
+        var raw = getTextSource().getText().withoutShebang().getValue();
+        if (raw.isBlank()) {
+            return null;
+        }
+
+        var targetType = shellControl.getOriginalShellDialect();
+        var scriptDialect = getShellDialect() != null ? getShellDialect() : targetType;
+        var content = scriptDialect.prepareScriptContent(shellControl, raw);
+        return ShellScript.of(content);
+    }
+
     @Override
     public void checkComplete() throws Throwable {
         if (textSource != null) {
@@ -148,5 +159,10 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
         return textSource != null
                 ? textSource
                 : ScriptTextSource.InPlace.builder().build();
+    }
+
+    @Override
+    public void validate() throws Exception {
+        getTextSource().checkAvailable();
     }
 }

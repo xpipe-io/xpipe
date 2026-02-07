@@ -103,6 +103,10 @@ public class ErrorHandlerComp extends SimpleRegionBuilder {
             t = t.getCause() != t && !(t instanceof ProcessOutputException) ? t.getCause() : null;
         }
 
+        if (desc == null && event.getThrowable() != null) {
+            desc = AppI18n.get("errorNoExceptionMessage", event.getThrowable().getClass().getSimpleName());
+        }
+
         if (desc == null) {
             desc = AppI18n.get("errorNoDetail");
         }

@@ -34,7 +34,6 @@ public class ScriptCollectionSourceImportDialog {
     private final ObservableList<ScriptCollectionSourceEntry> selected = FXCollections.observableArrayList();
     private final StringProperty filter = new SimpleStringProperty();
     private final BooleanProperty busy = new SimpleBooleanProperty();
-    private final IntegerProperty count = new SimpleIntegerProperty();
     private final ObjectProperty<StoreCategoryWrapper> targetCategory = new SimpleObjectProperty<>();
 
     public ScriptCollectionSourceImportDialog(DataStoreEntryRef<ScriptCollectionSourceStore> source) {
@@ -45,6 +44,16 @@ public class ScriptCollectionSourceImportDialog {
         filter.addListener((observable, oldValue, newValue) -> {
             update();
         });
+
+        targetCategory.set(findDefaultCategory());
+    }
+
+    private StoreCategoryWrapper findDefaultCategory() {
+        var all = StoreViewState.get().getSortedCategories(StoreViewState.get().getAllScriptsCategory())
+                .filtered(w -> w.getParent() != null &&
+                        !w.getCategory().getUuid().equals(DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID) &&
+                        !w.getCategory().getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID));
+        return all.getList().size() > 0 ? all.getList().getFirst() : null;
     }
 
     public void show() {
@@ -97,16 +106,20 @@ public class ScriptCollectionSourceImportDialog {
                 StoreViewState.get().getAllScriptsCategory(),
                 StoreViewState.get().getActiveCategory(),
                 targetCategory,
-                false);
+                false,
+                w -> {
+                    return w.getParent() != null && !w.equals(StoreViewState.get().getScriptSourcesCategory());
+                });
         catChoice.hgrow();
         catChoice.maxHeight(100);
 
         var modal = ModalOverlay.of(
                 Bindings.createStringBinding(
                         () -> {
-                            return AppI18n.get("scriptSourceCollectionImportTitle", count.get());
+                            return AppI18n.get("scriptSourceCollectionImportTitle", selected.size(), available.size());
                         },
-                        count,
+                        available,
+                        selected,
                         AppI18n.activeLanguage()),
                 stack,
                 null);
@@ -156,7 +169,6 @@ public class ScriptCollectionSourceImportDialog {
     private void update() {
         if (filter.get() == null) {
             shown.setAll(available);
-            count.set(available.size());
             return;
         }
 
@@ -168,6 +180,5 @@ public class ScriptCollectionSourceImportDialog {
         newList.addAll(selected);
         newList.addAll(filtered);
         shown.setAll(newList);
-        count.set(newList.size());
     }
 }

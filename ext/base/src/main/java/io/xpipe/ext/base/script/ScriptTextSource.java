@@ -213,8 +213,18 @@ public interface ScriptTextSource {
         @SneakyThrows
         public ShellScript getText() {
             var path = getLocalPath();
-            var s = Files.readString(path);
-            return ShellScript.of(s);
+
+            if (!Files.exists(path)) {
+                return ShellScript.empty();
+            }
+
+            try {
+                var r = Files.readString(path);
+                return ShellScript.of(r);
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).expected().handle();
+                return ShellScript.empty();
+            }
         }
     }
 
@@ -290,8 +300,13 @@ public interface ScriptTextSource {
                     .findFirst()
                     .orElse(null);
             if (found == null) {
-                throw ErrorEventFactory.expected(new IllegalStateException("Script " + name
-                        + " not found in local source " + ref.get().getName()));
+                throw ErrorEventFactory.expected(new IllegalStateException("Script file " + name
+                        + " not found in local cache for source " + ref.get().getName()));
+            }
+
+            if (!Files.exists(found.getLocalFile())) {
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Referenced script file " + found.getLocalFile() + " does not exist"));
             }
         }
 
@@ -314,8 +329,17 @@ public interface ScriptTextSource {
                 return ShellScript.empty();
             }
 
-            var r = Files.readString(found.getLocalFile());
-            return ShellScript.of(r);
+            if (!Files.exists(found.getLocalFile())) {
+                return ShellScript.empty();
+            }
+
+            try {
+                var r = Files.readString(found.getLocalFile());
+                return ShellScript.of(r);
+            } catch (IOException e) {
+                ErrorEventFactory.fromThrowable(e).expected().handle();
+                return ShellScript.empty();
+            }
         }
 
         private ScriptCollectionSourceEntry findSourceEntryIfPossible() {

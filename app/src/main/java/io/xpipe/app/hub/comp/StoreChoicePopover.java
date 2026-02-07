@@ -142,7 +142,8 @@ public class StoreChoicePopover<T extends DataStore> {
                             rootCategory != null ? rootCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
                             selectedCategory,
-                            explicitCategory == null)
+                            explicitCategory == null,
+                    ignored -> true)
                     .style(Styles.LEFT_PILL);
             var filter = new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();
 

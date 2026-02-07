@@ -226,11 +226,7 @@ public class TerminalDockHubManager {
             return;
         }
 
-        // Check if we are in the hub interface
-        if (!AppLayoutModel.get()
-                .getEntries()
-                .getFirst()
-                .equals(AppLayoutModel.get().getSelected().getValue())) {
+        if (!shouldOpen()) {
             return;
         }
 
@@ -240,6 +236,18 @@ public class TerminalDockHubManager {
         } else if (!showing.get()) {
             showDock();
         }
+    }
+
+    private boolean shouldOpen() {
+        // Check if we are in the hub interface
+        if (!AppLayoutModel.get()
+                .getEntries()
+                .getFirst()
+                .equals(AppLayoutModel.get().getSelected().getValue())) {
+            return false;
+        }
+
+        return true;
     }
 
     public void enableDock() {

@@ -27,6 +27,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
