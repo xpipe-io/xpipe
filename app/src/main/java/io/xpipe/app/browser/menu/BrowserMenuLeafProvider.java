@@ -59,7 +59,7 @@ public interface BrowserMenuLeafProvider extends BrowserMenuItemProvider {
         var m = b.getClass().getDeclaredMethod("build");
         m.setAccessible(true);
         var defValue = c.cast(m.invoke(b));
-        return (AbstractAction) defValue;
+        return defValue;
     }
 
     default Button toButton(Region root, BrowserFileSystemTabModel model, List<BrowserEntry> selected) {

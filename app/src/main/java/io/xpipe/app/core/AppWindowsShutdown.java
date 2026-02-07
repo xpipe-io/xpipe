@@ -1,11 +1,9 @@
 package io.xpipe.app.core;
 
-import com.sun.jna.platform.win32.Wtsapi32;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformState;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 
 import com.sun.jna.*;

@@ -9,7 +9,6 @@ import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
-import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;

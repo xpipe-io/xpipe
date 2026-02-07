@@ -46,7 +46,7 @@ public class PodmanContainerInspectActionProvider implements HubLeafProvider<Pod
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (PodmanContainerStore) ref.getStore();
+            var d = ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
             var output = view.inspect(d.getContainerName());
             FileOpener.openReadOnlyString(output);

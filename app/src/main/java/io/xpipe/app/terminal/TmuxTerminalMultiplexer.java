@@ -37,8 +37,8 @@ public class TmuxTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstCommand =
                 config.getPanes().getFirst().getDialectLaunchCommand().buildSimple();
-        l.addAll(List.of("tmux new-window -t xpipe -n \"" + escape(config.getColoredTitle(), true) + "\" "
-                + escape(firstCommand, false)));
+        l.add("tmux new-window -t xpipe -n \"" + escape(config.getColoredTitle(), true) + "\" "
+                + escape(firstCommand, false));
 
         if (config.getPanes().size() > 1) {
             for (int i = 1; i < config.getPanes().size(); i++) {

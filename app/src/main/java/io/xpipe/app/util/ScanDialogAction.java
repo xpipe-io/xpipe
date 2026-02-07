@@ -19,9 +19,9 @@ public interface ScanDialogAction {
                     ObservableList<ScanProvider.ScanOpportunity> selected,
                     DataStoreEntry entry,
                     ShellControl sc) {
-                var fullShell = sc.canHaveSubshells() &&
-                        sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction() &&
-                        sc.getTtyState() == ShellTtyState.NONE;
+                var fullShell = sc.canHaveSubshells()
+                        && sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()
+                        && sc.getTtyState() == ShellTtyState.NONE;
                 var providers = ScanProvider.getAll();
                 for (ScanProvider scanProvider : providers) {
                     if (!fullShell && scanProvider.requiresFullShell()) {

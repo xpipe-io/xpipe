@@ -11,10 +11,7 @@ import javafx.scene.layout.StackPane;
 import lombok.Value;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.SequencedMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -53,7 +50,8 @@ public class CommandDialog {
 
         try {
             latch.await();
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
 
         var joined = String.join("\n\n", parts);
         show(joined);

@@ -24,7 +24,8 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
 
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
-        var nonRunning = StoreToggleComp.<IncusInstallStore>childrenToggle(true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
+        var nonRunning = StoreToggleComp.<IncusInstallStore>childrenToggle(
+                true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
                     var state =
                             s.getState().toBuilder().showNonRunning(aBoolean).build();
                     s.setState(state);

@@ -1,6 +1,5 @@
 package io.xpipe.app.comp.base;
 
-import atlantafx.base.controls.ModalPaneSkin;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
@@ -18,7 +17,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -31,6 +29,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import atlantafx.base.controls.ModalPane;
+import atlantafx.base.controls.ModalPaneSkin;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
@@ -63,7 +62,10 @@ public class ModalOverlayComp extends RegionBuilder<Region> {
                 scrollPane.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
                 scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                     var lastShowValue = lastShow.getValue();
-                    if (lastShowValue != null && java.time.Duration.between(lastShowValue, Instant.now()).toMillis() > 500) {
+                    if (lastShowValue != null
+                            && java.time.Duration.between(lastShowValue, Instant.now())
+                                            .toMillis()
+                                    > 500) {
                         mouseHandler.handle(event);
                     }
                 });

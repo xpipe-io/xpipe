@@ -77,7 +77,7 @@ public class ZellijTerminalMultiplexer implements TerminalMultiplexer {
         var l = new ArrayList<String>();
         var firstConfig = config.getPanes().getFirst();
         var firstCommand = firstConfig.getDialectLaunchCommand().buildSimple();
-        l.addAll(List.of("zellij attach xpipe"));
+        l.add("zellij attach xpipe");
 
         var sc = TerminalProxyManager.getProxy().orElse(LocalShell.getShell());
         sc.command("zellij delete-session -f xpipe > /dev/null 2>&1").executeAndCheck();

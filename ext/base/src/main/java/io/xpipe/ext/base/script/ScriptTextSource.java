@@ -103,10 +103,10 @@ public interface ScriptTextSource {
         }
 
         @Override
-        public void checkComplete() throws ValidationException {}
+        public void checkComplete() {}
 
         @Override
-        public void checkAvailable() throws Exception {}
+        public void checkAvailable() {}
 
         @Override
         public String toSummary() {
@@ -192,7 +192,7 @@ public interface ScriptTextSource {
         }
 
         @Override
-        public void checkAvailable() throws Exception {
+        public void checkAvailable() {
             if (!Files.exists(getLocalPath())) {
                 throw ErrorEventFactory.expected(
                         new IllegalStateException("Script URL " + url + " has not been initialized"));
@@ -272,13 +272,13 @@ public interface ScriptTextSource {
 
         @Override
         @SneakyThrows
-        public void checkComplete() throws ValidationException {
+        public void checkComplete() {
             Validators.nonNull(ref);
             ref.checkComplete();
         }
 
         @Override
-        public void checkAvailable() throws Exception {
+        public void checkAvailable() {
             var cached = ref.getStore().getState().getEntries();
             if (cached == null) {
                 throw ErrorEventFactory.expected(
@@ -342,7 +342,7 @@ public interface ScriptTextSource {
 
     void checkComplete() throws ValidationException;
 
-    void checkAvailable() throws Exception;
+    void checkAvailable();
 
     String toSummary();
 

@@ -9,7 +9,6 @@ import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.hub.comp.SystemStateComp;
 import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntry;
-import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.terminal.TerminalPromptManager;
 import io.xpipe.app.util.StoreStateFormat;
@@ -34,7 +33,11 @@ public interface ShellStoreProvider extends DataStoreProvider {
             TerminalPromptManager.configurePromptScript(control);
             ScriptStoreSetup.controlWithDefaultScripts(control);
             var request = UUID.randomUUID();
-            TerminalLaunch.builder().request(request).entry(replacement.get()).command(control).launch();
+            TerminalLaunch.builder()
+                    .request(request)
+                    .entry(replacement.get())
+                    .command(control)
+                    .launch();
         };
     }
 

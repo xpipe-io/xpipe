@@ -46,7 +46,7 @@ public class PodmanContainerLogsActionProvider implements HubLeafProvider<Podman
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (PodmanContainerStore) ref.getStore();
+            var d = ref.getStore();
             var view = d.commandView(d.getCmd().getStore().getHost().getStore().getOrStartSession());
             TerminalLaunch.builder()
                     .alwaysKeepOpen(true)

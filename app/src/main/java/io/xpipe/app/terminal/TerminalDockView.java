@@ -29,7 +29,8 @@ public class TerminalDockView {
     }
 
     public synchronized void clearDeadTerminals() {
-        terminalInstances.removeIf(controllableTerminalSession -> !controllableTerminalSession.getTerminalProcess().isAlive());
+        terminalInstances.removeIf(controllableTerminalSession ->
+                !controllableTerminalSession.getTerminalProcess().isAlive());
     }
 
     public synchronized boolean isRunning() {

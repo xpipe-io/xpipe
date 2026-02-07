@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
-import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
@@ -15,9 +14,7 @@ import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
@@ -95,8 +92,9 @@ public class TerminalDockHubManager {
         var adjust = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.BORDERLESS;
         // Windows terminal has a tiny top bar in any scenario
         var topAdjust = term instanceof WindowsTerminalType ? 1 : 0;
-        return adjust ? new Rect(rect.getX() - 9, rect.getY() - 1 - topAdjust, rect.getW() + 16, rect.getH() + 9 + topAdjust) :
-                new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
+        return adjust
+                ? new Rect(rect.getX() - 9, rect.getY() - 1 - topAdjust, rect.getW() + 16, rect.getH() + 9 + topAdjust)
+                : new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
@@ -229,7 +227,10 @@ public class TerminalDockHubManager {
         }
 
         // Check if we are in the hub interface
-        if (!AppLayoutModel.get().getEntries().getFirst().equals(AppLayoutModel.get().getSelected().getValue())) {
+        if (!AppLayoutModel.get()
+                .getEntries()
+                .getFirst()
+                .equals(AppLayoutModel.get().getSelected().getValue())) {
             return;
         }
 

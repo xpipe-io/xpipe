@@ -19,9 +19,9 @@ public class LinksCategory extends AppPrefsCategory {
                 .addComp(RegionBuilder.vspacer(19))
                 .addComp(
                         new TileButtonComp("activeLicense", "activeLicenseDescription", "mdi2k-key-outline", e -> {
-                            AppLayoutModel.get().selectLicense();
-                            e.consume();
-                        })
+                                    AppLayoutModel.get().selectLicense();
+                                    e.consume();
+                                })
                                 .maxWidth(2000),
                         null)
                 .hide(LicenseProvider.get().hasPaidLicense())

@@ -138,7 +138,9 @@ public class ScanDialogBase {
         VBox.setVgrow(stackPane, ALWAYS);
 
         if (!showButton) {
-            var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible")).visible(busy.not().and(Bindings.isEmpty(available))).build();
+            var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible"))
+                    .visible(busy.not().and(Bindings.isEmpty(available)))
+                    .build();
             stackPane.getChildren().add(emptyLabel);
         }
 

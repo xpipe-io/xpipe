@@ -71,7 +71,6 @@ public interface ElevationFunction {
         };
     }
 
-
     static ElevationFunction cached(String key, ElevationFunction elevationFunction) {
         return new ElevationFunction() {
             @Override
@@ -86,7 +85,7 @@ public interface ElevationFunction {
 
             @Override
             public boolean apply(ShellControl shellControl) throws Exception {
-                var view =  shellControl.view();
+                var view = shellControl.view();
                 return view.getCachedPredicate(key, () -> {
                     return elevationFunction.apply(shellControl);
                 });

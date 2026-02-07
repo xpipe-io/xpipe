@@ -7,8 +7,8 @@ import io.xpipe.app.core.AppResources;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.FileOpener;
-
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import java.nio.file.Files;

@@ -140,13 +140,20 @@ public class StoreViewState {
         return l.stream().sorted().toList();
     }
 
-    public ObservableValue<Comparator<StoreSection>> createEffectiveSortMode(Comparator<StoreSection> customComparator) {
+    public ObservableValue<Comparator<StoreSection>> createEffectiveSortMode(
+            Comparator<StoreSection> customComparator) {
         return Bindings.createObjectBinding(
                 () -> {
-                    var global = globalSortMode.getValue() != null ? globalSortMode.getValue().comparator() : null;
-                    var tie = customComparator != null ? customComparator :
-                            tieSortMode.getValue() != null ? tieSortMode.getValue().comparator() : StoreSectionSortMode.DATE_DESC.comparator();
-                    var fallback = Comparator.<StoreSection, String>comparing(sec -> sec.getWrapper().getName().getValue());
+                    var global = globalSortMode.getValue() != null
+                            ? globalSortMode.getValue().comparator()
+                            : null;
+                    var tie = customComparator != null
+                            ? customComparator
+                            : tieSortMode.getValue() != null
+                                    ? tieSortMode.getValue().comparator()
+                                    : StoreSectionSortMode.DATE_DESC.comparator();
+                    var fallback = Comparator.<StoreSection, String>comparing(
+                            sec -> sec.getWrapper().getName().getValue());
                     var failed = Comparator.<StoreSection>comparingInt(value -> {
                         if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
                             return 1;
@@ -185,8 +192,7 @@ public class StoreViewState {
         if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
-        if (wrapper == null
-                || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
         }
     }
@@ -196,8 +202,7 @@ public class StoreViewState {
         if (wrapper != null) {
             batchModeSelection.getList().remove(wrapper);
         }
-        if (wrapper == null
-                || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
     }

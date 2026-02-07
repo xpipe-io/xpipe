@@ -12,14 +12,13 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
-
 import io.xpipe.app.util.ThreadHelper;
+
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -83,7 +82,8 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
                         ProcessControlProvider.get().withDefaultScripts(control);
 
                         var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
-                        var config = new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
+                        var config = new TerminalLauncher.Config(
+                                ref.get(), title, null, UUID.randomUUID(), true, true, control);
                         panes[ii] = config;
                     } finally {
                         latch.countDown();

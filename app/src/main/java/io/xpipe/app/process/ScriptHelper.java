@@ -2,14 +2,10 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
-import io.xpipe.core.SecretValue;
 
 import lombok.SneakyThrows;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class ScriptHelper {
 

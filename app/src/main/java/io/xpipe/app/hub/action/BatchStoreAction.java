@@ -2,7 +2,6 @@ package io.xpipe.app.hub.action;
 
 import io.xpipe.app.action.*;
 import io.xpipe.app.ext.DataStore;
-import io.xpipe.app.process.CountDown;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
@@ -63,7 +62,8 @@ public final class BatchStoreAction<T extends DataStore> extends SerializableAct
 
             try {
                 latch.await();
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 

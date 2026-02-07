@@ -111,8 +111,7 @@ public class ScriptStoreSetup {
     }
 
     @SneakyThrows
-    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<ScriptStore>> refs)
-            throws Exception {
+    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<ScriptStore>> refs) {
         if (refs.isEmpty()) {
             return null;
         }

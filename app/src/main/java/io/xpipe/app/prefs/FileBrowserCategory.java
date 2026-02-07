@@ -5,8 +5,8 @@ import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
-
 import io.xpipe.core.OsType;
+
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import java.util.List;
@@ -48,8 +48,7 @@ public class FileBrowserCategory extends AppPrefsCategory {
                         .addToggle(prefs.enableFileBrowserTerminalDocking)
                         .hide(OsType.ofLocal() != OsType.WINDOWS)
                         .pref(prefs.pinLocalMachineOnStartup)
-                        .addToggle(prefs.pinLocalMachineOnStartup)
-                )
+                        .addToggle(prefs.pinLocalMachineOnStartup))
                 .buildComp();
     }
 }

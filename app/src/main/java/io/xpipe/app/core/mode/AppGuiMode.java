@@ -7,7 +7,6 @@ import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.LicenseProvider;
 import io.xpipe.core.OsType;
 
-import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class AppGuiMode extends AppOperationMode {

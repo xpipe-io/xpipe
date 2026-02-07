@@ -54,7 +54,7 @@ public class IncusContainerEditRunConfigActionProvider implements HubLeafProvide
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (IncusContainerStore) ref.getStore();
+            var d = ref.getStore();
             var elevatedRef = ProcessControlProvider.get()
                     .elevated(d.getInstall().getStore().getHost().get().ref());
             var file = FilePath.of("/run/incus/" + d.getContainerName() + "/lxc.conf");

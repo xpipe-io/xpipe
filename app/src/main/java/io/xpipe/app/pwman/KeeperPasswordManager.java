@@ -155,8 +155,8 @@ public class KeeperPasswordManager implements PasswordManager {
                                 %s
 
                                 """.formatted(
-                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
-                            totp.getSecret().getSecretValue());
+                                    index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                                    totp.getSecret().getSecretValue());
                     sc.view().writeTextFile(file, input);
                 }
             } else {
@@ -199,7 +199,10 @@ public class KeeperPasswordManager implements PasswordManager {
                              """, "")
                     .replace("Selection:", "")
                     .strip();
-            var err = result[1].replace("\r\n", "\n").replace("EOF when reading a line", "").strip();
+            var err = result[1]
+                    .replace("\r\n", "\n")
+                    .replace("EOF when reading a line", "")
+                    .strip();
 
             var jsonStart = out.indexOf("{\n");
             var jsonEnd = out.indexOf("\n}");
@@ -214,7 +217,9 @@ public class KeeperPasswordManager implements PasswordManager {
 
             if (exitCode != 0) {
                 // Another password prompt was made
-                var wrongPw = (outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE) && !hasCompletedRequestInSession;
+                var wrongPw =
+                        (outPrefix.contains("Enter password for") || exitCode == CommandControl.EXIT_TIMEOUT_EXIT_CODE)
+                                && !hasCompletedRequestInSession;
                 if (wrongPw) {
                     SecretManager.clearAll(KEEPER_PASSWORD_ID);
                     ErrorEventFactory.fromMessage("Master password was not accepted by Keeper. Is it correct?")
