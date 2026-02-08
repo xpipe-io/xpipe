@@ -234,3 +234,7 @@
 .monospace {
     -fx-font-family: Monospace;
 }
+
+.ikonli-font-icon.graphic.terminal-dock-button {
+    -fx-icon-color: -color-accent-fg;
+}
