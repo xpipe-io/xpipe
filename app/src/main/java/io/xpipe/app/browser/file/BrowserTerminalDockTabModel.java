@@ -129,14 +129,22 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 AppLayoutModel.get().getSelected());
         viewActive.subscribe(aBoolean -> {
             Platform.runLater(() -> {
-                dockModel.toggleView(aBoolean);
+                if (aBoolean) {
+                    dockModel.activateView();
+                } else {
+                    dockModel.deactivateView();
+                }
             });
         });
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
-                dockModel.toggleView(false);
+                dockModel.deactivateView();
             } else {
-                dockModel.toggleView(viewActive.get());
+                if (viewActive.get()) {
+                    dockModel.activateView();
+                } else {
+                    dockModel.deactivateView();
+                }
             }
         });
     }

@@ -2,6 +2,7 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.util.Rect;
 
+import io.xpipe.app.util.User32Ex;
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
@@ -22,7 +23,6 @@ import java.util.List;
 @EqualsAndHashCode
 public class NativeWinWindowControl {
 
-    private static final int WS_EX_NOACTIVATE = 0x08000000;
     private static final int WS_EX_APPWINDOW = 0x00040000;
 
     public static NativeWinWindowControl MAIN_WINDOW;
@@ -78,16 +78,20 @@ public class NativeWinWindowControl {
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
     }
 
-    public void disableActivate() {
+    public void takeOwnership(WinDef.HWND owner) {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style | WS_EX_NOACTIVATE | WS_EX_APPWINDOW;
+        var mod = style | WS_EX_APPWINDOW;
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, owner);
     }
 
-    public void enableActivate() {
+    public void releaseOwnership() {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style & ~(WS_EX_NOACTIVATE | WS_EX_APPWINDOW);
+        var mod = style & ~(WS_EX_APPWINDOW);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, (WinDef.HWND) null);
     }
 
     public boolean isIconified() {
@@ -98,12 +102,7 @@ public class NativeWinWindowControl {
         return User32.INSTANCE.IsWindowVisible(windowHandle);
     }
 
-    public void alwaysInFront() {
-        orderRelative(new WinDef.HWND(new Pointer(0xFFFFFFFFFFFFFFFFL)));
-    }
-
-    public void defaultOrder() {
-        orderRelative(new WinDef.HWND(new Pointer(-2)));
+    public void moveToFront() {
         orderRelative(new WinDef.HWND(new Pointer(0)));
     }
 
@@ -126,7 +125,7 @@ public class NativeWinWindowControl {
 
     public void move(Rect bounds) {
         User32.INSTANCE.SetWindowPos(
-                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
+                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE | User32.SWP_NOZORDER);
     }
 
     public Rect getBounds() {

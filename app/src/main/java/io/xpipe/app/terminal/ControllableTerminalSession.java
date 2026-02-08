@@ -14,19 +14,19 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
         super(terminalProcess);
     }
 
+    public abstract void own();
+
+    public abstract void disown();
+
     public abstract void removeBorders();
 
     public abstract void show();
 
     public abstract void minimize();
 
-    public abstract void alwaysInFront();
-
-    public abstract void back();
-
     public abstract void frontOfMainWindow();
 
-    public abstract void moveToFront();
+    public abstract void backOfMainWindow();
 
     public abstract void focus();
 

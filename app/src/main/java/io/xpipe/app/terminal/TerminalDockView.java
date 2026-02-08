@@ -46,34 +46,37 @@ public class TerminalDockView {
     }
 
     public synchronized void updateCustomBounds() {
-        terminalInstances.forEach(terminal -> terminal.updateBoundsState());
+        terminalInstances.forEach(terminal -> {
+            terminal.updateBoundsState();
+            if (terminal.isCustomBounds()) {
+                terminal.disown();
+            }
+        });
     }
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
-        if (!terminalInstances.add(terminal)) {
-            return;
+        if (viewActive && dock && viewBounds != null) {
+            // The window might be minimized
+            // We always want to show the terminal though
+            terminal.show();
+
+            terminal.own();
+
+            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+            updateCustomBounds();
         }
 
-        // The main window always loses focus when the terminal is opened,
-        // so only put it in front
-        // If we refocus the main window, it will get put always in front then
-        terminal.frontOfMainWindow();
-        if (dock && viewBounds != null) {
-            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
-
+        var wasAdded = terminalInstances.add(terminal);
+        if (wasAdded && viewActive && dock && viewBounds != null) {
             // Ugly fix for Windows Terminal instances using size constraints on first resize
             // This will cause the dock to interpret is as detached if we don't fix it again
             if (AppPrefs.get().terminalType().getValue() instanceof WindowsTerminalType) {
                 GlobalTimer.delay(
                         () -> {
                             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
+                            updateCustomBounds();
                         },
                         Duration.ofMillis(100));
-                GlobalTimer.delay(
-                        () -> {
-                            terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
-                        },
-                        Duration.ofMillis(1000));
             }
         }
     }
@@ -100,30 +103,13 @@ public class TerminalDockView {
         terminalInstances.remove(terminal);
     }
 
-    public synchronized void toggleView(boolean active) {
-        TrackEvent.withTrace("Terminal view toggled").tag("active", active).handle();
-        if (viewActive == active) {
+    public synchronized void activateView() {
+        TrackEvent.withTrace("Terminal view activated").handle();
+        if (viewActive) {
             return;
         }
 
-        this.viewActive = active;
-        if (active) {
-            terminalInstances.forEach(terminalInstance -> {
-                terminalInstance.frontOfMainWindow();
-                terminalInstance.focus();
-            });
-            updatePositions();
-        } else {
-            terminalInstances.forEach(terminalInstance -> terminalInstance.back());
-        }
-    }
-
-    public synchronized void onFocusGain() {
-        if (!viewActive) {
-            return;
-        }
-
-        TrackEvent.withTrace("Terminal view focus gained").handle();
+        this.viewActive = true;
         terminalInstances.forEach(terminalInstance -> {
             if (!terminalInstance.isActive()) {
                 return;
@@ -134,34 +120,33 @@ public class TerminalDockView {
                 return;
             }
 
-            terminalInstance.show();
-            terminalInstance.alwaysInFront();
+            terminalInstance.own();
+            terminalInstance.focus();
         });
+        updatePositions();
     }
 
-    public synchronized void onFocusLost() {
+    public synchronized void deactivateView() {
+        TrackEvent.withTrace("Terminal view deactivated").handle();
         if (!viewActive) {
             return;
         }
 
-        TrackEvent.withTrace("Terminal view focus lost").handle();
+        this.viewActive = false;
         terminalInstances.forEach(terminalInstance -> {
-            if (!terminalInstance.isActive()) {
-                return;
-            }
-
-            terminalInstance.updateBoundsState();
-            if (terminalInstance.isCustomBounds()) {
-                return;
-            }
-
-            terminalInstance.frontOfMainWindow();
+            terminalInstance.disown();
+            terminalInstance.backOfMainWindow();
         });
+        updatePositions();
     }
 
-    public synchronized void onWindowActivate() {
-        TrackEvent.withTrace("Terminal view window activated").handle();
+    public synchronized void onWindowShow() {
+        TrackEvent.withTrace("Terminal view window shown").handle();
         terminalInstances.forEach(terminalInstance -> {
+            if (terminalInstance.isActive()) {
+                return;
+            }
+
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
                 return;
@@ -169,10 +154,11 @@ public class TerminalDockView {
 
             terminalInstance.show();
             if (viewActive) {
-                terminalInstance.frontOfMainWindow();
+                terminalInstance.own();
                 terminalInstance.focus();
             } else {
-                terminalInstance.back();
+                terminalInstance.disown();
+                terminalInstance.backOfMainWindow();
             }
         });
     }
@@ -233,9 +219,9 @@ public class TerminalDockView {
 
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
-            terminalInstance.frontOfMainWindow();
-            terminalInstance.focus();
             terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
+            terminalInstance.own();
+            terminalInstance.focus();
         });
     }
 }

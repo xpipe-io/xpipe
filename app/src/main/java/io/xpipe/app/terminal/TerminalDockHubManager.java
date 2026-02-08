@@ -4,6 +4,7 @@ import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
+import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
@@ -18,6 +19,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -72,7 +74,7 @@ public class TerminalDockHubManager {
 
         TerminalView.get().addListener(INSTANCE.createListener());
 
-        GlobalTimer.scheduleUntil(Duration.ofSeconds(1), false, () -> {
+        GlobalTimer.scheduleUntil(Duration.ofMillis(500), false, () -> {
             INSTANCE.refreshDockStatus();
             return false;
         });
@@ -97,7 +99,12 @@ public class TerminalDockHubManager {
                 : new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
-            AppI18n.observable("toggleTerminalDock"), new LabelGraphic.IconGraphic("mdi2c-console"), () -> {
+            AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
+                var fi = new FontIcon("mdi2c-console");
+                fi.getStyleClass().add("graphic");
+                fi.getStyleClass().add("terminal-dock-button");
+                return fi;
+    }), () -> {
                 refreshDockStatus();
 
                 if (!enabled.get()) {
@@ -177,7 +184,9 @@ public class TerminalDockHubManager {
                         controllable.get().removeBorders();
                     }
                 }
-                dockModel.trackTerminal(controllable.get(), !detached.get());
+
+                var dock = !detached.get();
+                dockModel.trackTerminal(controllable.get(), dock);
                 dockModel.closeOtherTerminals(session.getRequest());
                 enableDock();
             }
@@ -218,7 +227,7 @@ public class TerminalDockHubManager {
         }
 
         minimized.set(dockModel.isMinimized());
-        detached.set(dockModel.isCustomBounds() || dockModel.isMinimized());
+        detached.set(!dockModel.isMinimized() && (dockModel.isCustomBounds() || AppMainWindow.get().getStage().isIconified()));
     }
 
     public void openTerminal(UUID request) {
@@ -256,7 +265,7 @@ public class TerminalDockHubManager {
                 return;
             }
 
-            dockModel.toggleView(true);
+            dockModel.activateView();
             enabled.set(true);
             showing.set(true);
 
@@ -271,7 +280,7 @@ public class TerminalDockHubManager {
                 return;
             }
 
-            dockModel.toggleView(false);
+            dockModel.deactivateView();
             enabled.set(false);
             showing.set(false);
 
@@ -286,7 +295,7 @@ public class TerminalDockHubManager {
                 return;
             }
 
-            dockModel.toggleView(true);
+            dockModel.activateView();
             showing.set(true);
             AppLayoutModel.get().selectConnections();
         });
@@ -298,7 +307,7 @@ public class TerminalDockHubManager {
                 return;
             }
 
-            dockModel.toggleView(false);
+            dockModel.deactivateView();
             showing.set(false);
         });
     }
@@ -306,5 +315,6 @@ public class TerminalDockHubManager {
     public void attach() {
         dockModel.attach();
         detached.set(false);
+        minimized.set(false);
     }
 }

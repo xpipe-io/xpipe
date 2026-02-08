@@ -100,22 +100,8 @@ public class TerminalDockBrowserComp extends SimpleRegionBuilder {
                 if (newValue) {
                     model.onWindowMinimize();
                 } else {
-                    model.onWindowActivate();
+                    model.onWindowShow();
                 }
-            }
-        };
-        var focus = new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                GlobalTimer.delay(
-                        () -> {
-                            if (newValue) {
-                                model.onFocusGain();
-                            } else {
-                                model.onFocusLost();
-                            }
-                        },
-                        Duration.ofMillis(100));
             }
         };
         var show = new EventHandler<WindowEvent>() {
@@ -139,7 +125,6 @@ public class TerminalDockBrowserComp extends SimpleRegionBuilder {
                 s.widthProperty().removeListener(update);
                 s.heightProperty().removeListener(update);
                 s.iconifiedProperty().removeListener(iconified);
-                s.focusedProperty().removeListener(focus);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_HIDING, hide);
                 if (parent.get() != null) {
@@ -152,7 +137,6 @@ public class TerminalDockBrowserComp extends SimpleRegionBuilder {
                 s.widthProperty().addListener(update);
                 s.heightProperty().addListener(update);
                 s.iconifiedProperty().addListener(iconified);
-                s.focusedProperty().addListener(focus);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.addEventFilter(WindowEvent.WINDOW_HIDING, hide);
                 // As in practice this node is wrapped in another stack pane

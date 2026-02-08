@@ -9,12 +9,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
-
-import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -62,26 +59,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                     model.onWindowMinimize();
                 } else {
                     Platform.runLater(() -> {
-                        model.onWindowActivate();
-                    });
-                }
-            }
-        };
-        var focus = new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    var selected = s.getScene().getRoot().lookup(".icon-button-comp:hover");
-                    if (selected instanceof Button b
-                            && b.getGraphic() instanceof FontIcon fi
-                            && !fi.getIconLiteral().equals("mdi2c-connection")) {
-                        return;
-                    }
-
-                    model.onFocusGain();
-                } else {
-                    Platform.runLater(() -> {
-                        model.onFocusLost();
+                        model.onWindowShow();
                     });
                 }
             }
@@ -107,7 +85,6 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                 s.widthProperty().removeListener(update);
                 s.heightProperty().removeListener(update);
                 s.iconifiedProperty().removeListener(iconified);
-                s.focusedProperty().removeListener(focus);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_HIDING, hide);
                 if (parent.get() != null) {
@@ -120,7 +97,6 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                 s.widthProperty().addListener(update);
                 s.heightProperty().addListener(update);
                 s.iconifiedProperty().addListener(iconified);
-                s.focusedProperty().addListener(focus);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.addEventFilter(WindowEvent.WINDOW_HIDING, hide);
                 // As in practice this node is wrapped in another stack pane

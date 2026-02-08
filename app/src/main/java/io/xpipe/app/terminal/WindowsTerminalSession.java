@@ -1,8 +1,10 @@
 package io.xpipe.app.terminal;
 
+import com.sun.jna.platform.win32.User32;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 
+import io.xpipe.app.util.User32Ex;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -42,6 +44,16 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
+    public void own() {
+        control.takeOwnership(NativeWinWindowControl.MAIN_WINDOW.getWindowHandle());
+    }
+
+    @Override
+    public void disown() {
+        control.releaseOwnership();
+    }
+
+    @Override
     public void removeBorders() {
         control.removeBorders();
     }
@@ -57,27 +69,13 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     @Override
-    public void alwaysInFront() {
-        this.control.alwaysInFront();
-    }
-
-    @Override
-    public void back() {
-        control.defaultOrder();
-        NativeWinWindowControl.MAIN_WINDOW.alwaysInFront();
-        NativeWinWindowControl.MAIN_WINDOW.defaultOrder();
+    public void backOfMainWindow() {
+        getControl().orderRelative(NativeWinWindowControl.MAIN_WINDOW.getWindowHandle());
     }
 
     @Override
     public void frontOfMainWindow() {
-        this.control.alwaysInFront();
-        this.control.defaultOrder();
-        NativeWinWindowControl.MAIN_WINDOW.orderRelative(control.getWindowHandle());
-    }
-
-    @Override
-    public void moveToFront() {
-        this.control.defaultOrder();
+        this.control.moveToFront();
     }
 
     @Override
@@ -114,6 +112,10 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
         var bounds = queryBounds();
         if (bounds.getX() == -32000 || bounds.getY() == -32000) {
+            return;
+        }
+
+        if (lastBounds != null && (lastBounds.getX() == -32000 || lastBounds.getY() == -32000)) {
             return;
         }
 

@@ -5,11 +5,10 @@ import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.ThreadHelper;
 
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.win32.StdCallLibrary;
-import com.sun.jna.win32.W32APIOptions;
+import io.xpipe.app.util.User32Ex;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -74,10 +73,4 @@ public class AppWindowsLock {
         }
     }
 
-    public interface User32Ex extends W32APIOptions {
-
-        User32Ex INSTANCE = Native.load("user32", User32Ex.class, DEFAULT_OPTIONS);
-
-        int SetWindowLongPtr(WinDef.HWND hWnd, int nIndex, WinMsgProc callback);
-    }
 }
