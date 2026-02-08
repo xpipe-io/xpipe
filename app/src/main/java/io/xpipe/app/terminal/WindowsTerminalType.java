@@ -101,7 +101,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     default void checkProfile() throws IOException {
         // Update old configs
         var before =
-                LocalDate.of(2025, 4, 2).atStartOfDay(ZoneId.systemDefault()).toInstant();
+                LocalDate.of(2026, 2, 8).atStartOfDay(ZoneId.systemDefault()).toInstant();
         var outdated = AppCache.getModifiedTime("wtProfileSet")
                 .map(instant -> instant.isBefore(before))
                 .orElse(false);
@@ -137,6 +137,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);
+        // To make docking a better experience
+        newProfile.put("showTabsInTitlebar", true);
         newProfile.putNull("startingDirectory");
         newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {

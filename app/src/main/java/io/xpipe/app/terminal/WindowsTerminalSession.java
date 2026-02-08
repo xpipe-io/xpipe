@@ -97,7 +97,20 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
 
     @Override
     public boolean isActive() {
-        return !control.isIconified();
+        if (control.isIconified()) {
+            return false;
+        }
+
+        if (!control.isVisible()) {
+            return false;
+        }
+
+        var bounds = queryBounds();
+        if (bounds.getX() == 0 && bounds.getY() == 0 && bounds.getW() == 0 && bounds.getH() == 0) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -106,7 +119,7 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     }
 
     public void updateBoundsState() {
-        if (control.isIconified() || !control.isVisible()) {
+        if (!isActive()) {
             return;
         }
 

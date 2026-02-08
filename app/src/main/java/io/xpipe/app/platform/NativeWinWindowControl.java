@@ -80,16 +80,20 @@ public class NativeWinWindowControl {
 
     public void takeOwnership(WinDef.HWND owner) {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style | WS_EX_APPWINDOW;
+        var mod = style & ~(WS_EX_APPWINDOW);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        setWindowsTransitionsEnabled(false);
 
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, owner);
     }
 
     public void releaseOwnership() {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style & ~(WS_EX_APPWINDOW);
+        var mod = style | WS_EX_APPWINDOW;
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        setWindowsTransitionsEnabled(true);
 
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, (WinDef.HWND) null);
     }

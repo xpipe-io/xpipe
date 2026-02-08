@@ -95,7 +95,7 @@ public class TerminalDockHubManager {
         // Windows terminal has a tiny top bar in any scenario
         var topAdjust = term instanceof WindowsTerminalType ? 1 : 0;
         return adjust
-                ? new Rect(rect.getX() - 9, rect.getY() - 1 - topAdjust, rect.getW() + 16, rect.getH() + 9 + topAdjust)
+                ? new Rect(rect.getX() - 8, rect.getY() - 1 - topAdjust, rect.getW() + 16, rect.getH() + 9 + topAdjust)
                 : new Rect(rect.getX(), rect.getY() - topAdjust, rect.getW(), rect.getH() + topAdjust);
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(

@@ -196,6 +196,10 @@ public class TerminalDockView {
         }
 
         terminalInstances.forEach(terminalInstance -> {
+            if (!terminalInstance.isActive()) {
+                return;
+            }
+
             terminalInstance.updateBoundsState();
             if (terminalInstance.isCustomBounds()) {
                 return;
