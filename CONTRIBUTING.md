@@ -39,7 +39,7 @@ To disable the local installation check, you can set the property `io.xpipe.app.
 Note that in case the current master branch is ahead of the latest release, it might happen that there are some incompatibilities when loading data from your local XPipe installation.
 You should therefore always check out the matching version tag for your local repository and local XPipe installation.
 You can find the available version tags at https://github.com/xpipe-io/xpipe/tags.
-So for example if you currently have XPipe `20.0` installed, you should run `git reset --hard 20.0` first to properly compile against it.
+So for example if you currently have XPipe `21.0` installed, you should run `git reset --hard 21.0` first to properly compile against it.
 
 ## Building and Running
 
