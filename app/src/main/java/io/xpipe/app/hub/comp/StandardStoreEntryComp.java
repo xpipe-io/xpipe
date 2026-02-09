@@ -85,8 +85,8 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         info.setHalignment(HPos.LEFT);
         grid.getColumnConstraints().add(info);
 
-        var customSize = content != null ? 100 : 0;
-        var custom = new ColumnConstraints(0, customSize, customSize);
+        var controlsSize = content != null ? 140 : 70;
+        var custom = new ColumnConstraints(0, controlsSize, controlsSize);
         custom.setHalignment(HPos.RIGHT);
         var cr = content != null ? content.build() : new Region();
         cr.getStyleClass().add("custom-content");

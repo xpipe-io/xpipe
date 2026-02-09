@@ -99,8 +99,8 @@ public class DenseStoreEntryComp extends StoreEntryComp {
         grid.add(storeIcon, 1, 0);
         grid.getColumnConstraints().add(new ColumnConstraints(34));
 
-        var customSize = content != null ? 100 : 0;
-        var custom = new ColumnConstraints(0, customSize, customSize);
+        var controlsSize = content != null ? 140 : 70;
+        var custom = new ColumnConstraints(0, controlsSize, controlsSize);
         custom.setHalignment(HPos.RIGHT);
 
         var infoCC = new ColumnConstraints();

@@ -338,6 +338,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             new LinuxType("app.mousepad", "mousepad", "https://docs.xfce.org/apps/mousepad/start", "org.xfce.mousepad");
 
     LinuxPathType PLUMA = new LinuxPathType("app.pluma", "pluma", "https://github.com/mate-desktop/pluma");
+    LinuxPathType COSMIC_EDIT =
+            new LinuxPathType("app.cosmicEdit", "cosmic-edit", "https://github.com/pop-os/cosmic-edit");
     LinuxPathType WESTON_EDITOR =
             new LinuxPathType("app.westonEditor", "weston-editor", "https://wayland.pages.freedesktop.org/weston/");
     ExternalEditorType TEXT_EDIT =
@@ -434,6 +436,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             LEAFPAD,
             MOUSEPAD,
             GNOME,
+            ExternalEditorType.COSMIC_EDIT,
             ExternalEditorType.WESTON_EDITOR,
             ExternalEditorType.CURSOR_LINUX);
     List<ExternalEditorType> MACOS_EDITORS = List.of(

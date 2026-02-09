@@ -163,6 +163,6 @@ public class ScriptStore implements SelfReferentialStore, StatefulDataStore<Enab
 
     @Override
     public void validate() throws Exception {
-        getTextSource().checkAvailable();
+        getTextSource().validate();
     }
 }

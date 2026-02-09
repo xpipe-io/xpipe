@@ -109,6 +109,11 @@ public interface ScriptTextSource {
         public void checkAvailable() {}
 
         @Override
+        public void validate() {
+            checkAvailable();
+        }
+
+        @Override
         public String toSummary() {
             return AppI18n.get("inPlaceScript");
         }
@@ -197,6 +202,12 @@ public interface ScriptTextSource {
                 throw ErrorEventFactory.expected(
                         new IllegalStateException("Script URL " + url + " has not been initialized"));
             }
+        }
+
+        @Override
+        public void validate() throws Exception {
+            refresh();
+            checkAvailable();
         }
 
         @Override
@@ -311,6 +322,11 @@ public interface ScriptTextSource {
         }
 
         @Override
+        public void validate() {
+            checkAvailable();
+        }
+
+        @Override
         public String toSummary() {
             return AppI18n.get("sourcedFrom", ref.get().getName());
         }
@@ -367,6 +383,8 @@ public interface ScriptTextSource {
     void checkComplete() throws ValidationException;
 
     void checkAvailable();
+
+    void validate() throws Exception;
 
     String toSummary();
 

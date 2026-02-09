@@ -64,7 +64,7 @@ public class StoreToggleComp extends SimpleRegionBuilder {
 
     public static <T extends DataStore> StoreToggleComp childrenToggle(
             boolean graphic, StoreSection section, Function<T, Boolean> initial, BiConsumer<T, Boolean> setter) {
-        return childrenToggle(null, graphic, section, initial, setter);
+        return childrenToggle("showNonRunningChildren", graphic, section, initial, setter);
     }
 
     public static <T extends DataStore> StoreToggleComp childrenToggle(
