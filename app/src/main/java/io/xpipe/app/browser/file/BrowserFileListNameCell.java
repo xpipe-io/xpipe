@@ -1,5 +1,6 @@
 package io.xpipe.app.browser.file;
 
+import io.xpipe.app.browser.icon.BrowserIconManager;
 import io.xpipe.app.comp.base.LazyTextFieldComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.ext.FileKind;
@@ -60,13 +61,13 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
 
         var textField = new LazyTextFieldComp(text)
                 .minWidth(USE_PREF_SIZE)
-                .createStructure()
+                .buildStructure()
                 .getTextField();
         var quickAccess = createQuickAccessButton();
         setupShortcuts(tableView, (ButtonBase) quickAccess);
         setupRename(fileList, textField);
 
-        Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).createRegion();
+        Node imageView = PrettyImageHelper.ofFixedSize(img, 24, 24).build();
         HBox graphic = new HBox(imageView, new Spacer(5), quickAccess, new Spacer(1), textField);
         quickAccess.prefHeightProperty().bind(graphic.heightProperty());
         graphic.setAlignment(Pos.CENTER_LEFT);
@@ -95,7 +96,7 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                             return notDir || isParentLink;
                         },
                         itemProperty()))
-                .createRegion();
+                .build();
         return quickAccess;
     }
 
@@ -213,7 +214,9 @@ class BrowserFileListNameCell extends TableCell<BrowserEntry, String> {
                 // Visibility seems to be bugged, so use opacity
                 setOpacity(0.0);
             } else {
-                img.set(getTableRow().getItem().getIcon());
+                var icon = getTableRow().getItem().getIcon();
+                BrowserIconManager.loadIfNecessary(icon);
+                img.set(icon);
 
                 var isDirectory = getTableRow().getItem().getRawFileEntry().getKind() == FileKind.DIRECTORY;
                 pseudoClassStateChanged(PseudoClass.getPseudoClass("folder"), isDirectory);

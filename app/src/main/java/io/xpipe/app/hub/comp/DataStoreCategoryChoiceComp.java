@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -13,22 +13,33 @@ import javafx.scene.layout.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-public class DataStoreCategoryChoiceComp extends SimpleComp {
+import java.util.function.Predicate;
+
+public class DataStoreCategoryChoiceComp extends SimpleRegionBuilder {
 
     private final StoreCategoryWrapper root;
     private final Property<StoreCategoryWrapper> external;
     private final Property<StoreCategoryWrapper> value;
+    private final boolean applyExternalInitially;
+    private final Predicate<StoreCategoryWrapper> filter;
 
     public DataStoreCategoryChoiceComp(
-            StoreCategoryWrapper root, Property<StoreCategoryWrapper> external, Property<StoreCategoryWrapper> value) {
+            StoreCategoryWrapper root,
+            Property<StoreCategoryWrapper> external,
+            Property<StoreCategoryWrapper> value,
+            boolean applyExternalInitially, Predicate<StoreCategoryWrapper> filter
+    ) {
         this.root = root;
         this.external = external;
         this.value = value;
+        this.applyExternalInitially = applyExternalInitially;
+        this.filter = filter;
     }
 
     @Override
     protected Region createSimple() {
         var initialized = new SimpleBooleanProperty();
+        var last = value.getValue();
         external.subscribe(newValue -> {
             if (newValue == null) {
                 value.setValue(root);
@@ -43,7 +54,10 @@ public class DataStoreCategoryChoiceComp extends SimpleComp {
             }
             initialized.set(true);
         });
-        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).getList());
+        if (!applyExternalInitially) {
+            value.setValue(last);
+        }
+        var box = new ComboBox<>(StoreViewState.get().getSortedCategories(root).filtered(filter).getList());
         box.setValue(value.getValue());
         box.valueProperty().addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue);

@@ -2,8 +2,6 @@ package io.xpipe.app.icon;
 
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ValidationException;
-import io.xpipe.app.issue.ErrorEventFactory;
-import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.app.util.Hyperlinks;
 import io.xpipe.app.util.Validators;
@@ -109,29 +107,11 @@ public interface SystemIconSource {
 
         @Override
         public void refresh() throws Exception {
-            try (var sc =
-                    ProcessControlProvider.get().createLocalProcessControl(true).start()) {
-                var present = sc.view().findProgram("git").isPresent();
-                if (!present) {
-                    var msg =
-                            "Git command-line tools are not available in the PATH but are required to use icons from a git repository. For more "
-                                    + "details, see https://git-scm.com/downloads.";
-                    ErrorEventFactory.fromMessage(msg).expected().handle();
-                    return;
-                }
-
-                var dir = SystemIconManager.getPoolPath().resolve(id);
-                if (!Files.exists(dir)) {
-                    sc.command(CommandBuilder.of()
-                                    .add("git", "clone")
-                                    .addQuoted(remote)
-                                    .addFile(dir.toString()))
-                            .execute();
-                } else {
-                    sc.command(CommandBuilder.of().add("git", "pull"))
-                            .withWorkingDirectory(FilePath.of(dir))
-                            .execute();
-                }
+            var dir = SystemIconManager.getPoolPath().resolve(id);
+            if (!Files.exists(dir)) {
+                ProcessControlProvider.get().cloneRepository(remote, dir);
+            } else {
+                ProcessControlProvider.get().pullRepository(dir);
             }
         }
 

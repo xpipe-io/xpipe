@@ -9,6 +9,7 @@ import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.*;
+import io.xpipe.app.spice.ExternalSpiceClient;
 import io.xpipe.app.storage.*;
 import io.xpipe.app.terminal.ExternalTerminalType;
 import io.xpipe.app.terminal.TerminalMultiplexer;
@@ -83,6 +84,7 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(TerminalPrompt.getClasses());
         context.registerSubtypes(ExternalVncClient.getClasses());
         context.registerSubtypes(ExternalRdpClient.getClasses());
+        context.registerSubtypes(ExternalSpiceClient.getClasses());
         context.registerSubtypes(SecretRetrievalStrategy.getClasses());
         context.registerSubtypes(DataStorageGroupStrategy.getClasses());
 
@@ -208,10 +210,10 @@ public class AppJacksonModule extends SimpleModule {
                 if (t == null) {
                     return null;
                 }
-                return ShellDialects.byNameIfPresent(t.asText()).orElse(null);
+                return ShellDialects.byIdIfPresent(t.asText()).orElse(null);
             }
 
-            return ShellDialects.byNameIfPresent(tree.asText()).orElse(null);
+            return ShellDialects.byIdIfPresent(tree.asText()).orElse(null);
         }
     }
 

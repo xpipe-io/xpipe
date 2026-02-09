@@ -3,7 +3,7 @@ package io.xpipe.app.browser.menu.impl.compress;
 import io.xpipe.app.browser.file.BrowserEntry;
 import io.xpipe.app.browser.file.BrowserFileSystemTabModel;
 import io.xpipe.app.browser.menu.*;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
@@ -101,11 +101,16 @@ public class CompressMenuProvider implements BrowserMenuBranchProvider {
         }
 
         @Override
+        public boolean automaticallyResolveLinks() {
+            return false;
+        }
+
+        @Override
         public void execute(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
             var name = new SimpleStringProperty(directory ? entries.getFirst().getFileName() : null);
             var modal = ModalOverlay.of(
                     "archiveName",
-                    Comp.of(() -> {
+                    RegionBuilder.of(() -> {
                                 var creationName = new TextField();
                                 creationName.textProperty().bindBidirectional(name);
                                 return creationName;

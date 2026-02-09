@@ -1,6 +1,6 @@
 package io.xpipe.ext.system.podman;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
@@ -27,13 +27,13 @@ public class PodmanCmdStoreProvider implements DataStoreProvider {
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var nonRunning = StoreToggleComp.<PodmanCmdStore>childrenToggle(
-                null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
+                true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
                     s.setState(s.getState().toBuilder().showNonRunning(aBoolean).build());
                 });
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(BindingsHelper.map(w.getPersistentState(), o -> {
             var state = (PodmanCmdStore.State) o;
             if (state.isRunning()) {

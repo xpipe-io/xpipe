@@ -12,8 +12,7 @@ public class AppDebugModeCheck {
         }
 
         var out = AppLogs.get().getOriginalSysOut();
-        var msg =
-                """
+        var msg = """
 
                   ****************************************
                   * You are running in debug mode!       *

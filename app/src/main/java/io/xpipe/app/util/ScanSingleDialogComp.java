@@ -76,6 +76,6 @@ class ScanSingleDialogComp extends ModalOverlayContentComp {
                 .buildComp()
                 .prefWidth(500)
                 .prefHeight(680);
-        return b.createRegion();
+        return b.build();
     }
 }

@@ -1,8 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.*;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.DialogComp;
 import io.xpipe.app.comp.base.IconButtonComp;
@@ -21,11 +19,12 @@ import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 
 import atlantafx.base.controls.Popover;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
+public class StoreNotesComp extends RegionStructureBuilder<Button, StoreNotesComp.Structure> {
 
     private final StoreEntryWrapper wrapper;
 
@@ -37,13 +36,12 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
     public Structure createBase() {
         var n = wrapper.getNotes();
         var button = new IconButtonComp("mdi2n-note-text-outline")
-                .apply(struc -> AppFontSizes.xs(struc.get()))
-                .descriptor(
-                        d -> d.nameKey("notes").focusTraversal(CompDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
-                .styleClass("notes-button")
+                .apply(struc -> AppFontSizes.xs(struc))
+                .describe(d ->
+                        d.nameKey("notes").focusTraversal(RegionDescriptor.FocusTraversal.ENABLED_FOR_ACCESSIBILITY))
+                .style("notes-button")
                 .hide(BindingsHelper.map(n, s -> s.getCommited() == null && s.getCurrent() == null))
-                .createStructure()
-                .get();
+                .build();
         button.setOpacity(0.85);
         button.prefWidthProperty().bind(button.heightProperty());
 
@@ -89,7 +87,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         var md = new MarkdownEditorComp(prop, "notes-" + wrapper.getName().getValue())
                 .prefWidth(600)
                 .prefHeight(600)
-                .createStructure();
+                .buildStructure();
         var dialog = new DialogComp() {
 
             @Override
@@ -98,7 +96,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
 
             @Override
-            protected List<Comp<?>> customButtons() {
+            protected List<AbstractRegionBuilder<?, ?>> customButtons() {
                 return List.of(new ButtonComp(AppI18n.observable("cancel"), () -> {
                     ref.get().hide();
                 }));
@@ -112,18 +110,18 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
             }
 
             @Override
-            public Comp<?> content() {
-                return Comp.of(() -> md.get());
+            public BaseRegionBuilder<?, ?> content() {
+                return RegionBuilder.of(() -> md.get());
             }
 
             @Override
-            public Comp<?> bottom() {
+            public BaseRegionBuilder<?, ?> bottom() {
                 return new ButtonComp(AppI18n.observable("delete"), () -> {
                             n.setValue(new StoreNotes(null, null));
                         })
                         .hide(BindingsHelper.map(n, v -> v.getCommited() == null));
             }
-        }.createRegion();
+        }.build();
 
         var popover = new Popover(dialog);
         popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
@@ -157,7 +155,7 @@ public class StoreNotesComp extends Comp<StoreNotesComp.Structure> {
         return popover;
     }
 
-    public record Structure(Popover popover, Button button) implements CompStructure<Button> {
+    public record Structure(Popover popover, Button button) implements RegionStructure<Button> {
 
         @Override
         public Button get() {

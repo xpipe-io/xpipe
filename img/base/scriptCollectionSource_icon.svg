@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   id="Layer_1"
+   data-name="Layer 1"
+   viewBox="0 0 204.68 206.97"
+   version="1.1"
+   sodipodi:docname="scriptCollectionSource_icon.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview15"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.0703483"
+     inkscape:cx="21.252463"
+     inkscape:cy="94.911566"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
+  <defs
+     id="defs4">
+    <style
+       id="style2">.cls-1{fill:#ac55ff;}</style>
+  </defs>
+  <title
+     id="title6">shell environment v2</title>
+  <path
+     class="cls-1"
+     d="M215.09,242.25l0,0a4.28,4.28,0,0,0-6,6.05l23.32,23.34-23.3,23.32a4.28,4.28,0,0,0-.47,6,4.29,4.29,0,0,0,6,.46,4.56,4.56,0,0,0,.44-.44l26.36-26.36a4.29,4.29,0,0,0,0-6Z"
+     transform="translate(-161.92 -143.11)"
+     id="path8"
+     style="fill:#2e2e2e;fill-opacity:1" />
+  <path
+     class="cls-1"
+     d="M366.61,182.47a39.37,39.37,0,0,0-72.94-20.55h-108a23.83,23.83,0,0,0-23.8,23.8V326.28a23.83,23.83,0,0,0,23.8,23.8H326.28a23.83,23.83,0,0,0,23.8-23.8V214.52A39.31,39.31,0,0,0,366.61,182.47Zm-45.39,10.44,8.52-22.41a1.89,1.89,0,0,1,2-1.46,1.86,1.86,0,0,1,1.85,1.81,3.62,3.62,0,0,1-.28,1.18l-8.52,22.41a1.94,1.94,0,0,1-3.81-.36A3.57,3.57,0,0,1,321.22,192.91ZM317.88,176a1.86,1.86,0,0,1,2,1.92c0,.82-.18,1.61-1.68,2.25l-11.47,5,11.47,5c1.5.65,1.68,1.43,1.68,2.25a1.86,1.86,0,0,1-2,1.92,4.19,4.19,0,0,1-2-.5l-14.5-6.66a2.22,2.22,0,0,1,0-4.06l14.5-6.66A4.19,4.19,0,0,1,317.88,176Zm-147.4,9.7a15.26,15.26,0,0,1,15.24-15.24h104A39.48,39.48,0,0,0,292.5,201h-122Zm171,140.56a15.26,15.26,0,0,1-15.24,15.24H185.72a15.26,15.26,0,0,1-15.24-15.24V209.52H298.67a39.33,39.33,0,0,0,42.85,9.63Zm11.56-139-14.5,6.66a4.21,4.21,0,0,1-2,.5,1.86,1.86,0,0,1-2-1.92c0-.82.18-1.6,1.67-2.25l11.47-5-11.47-5c-1.49-.64-1.67-1.43-1.67-2.25a1.86,1.86,0,0,1,2-1.92,4.21,4.21,0,0,1,2,.5l14.5,6.66a2.23,2.23,0,0,1,0,4.06Z"
+     transform="translate(-161.92 -143.11)"
+     id="path12"
+     style="fill:#2e2e2e;fill-opacity:1" />
+  <metadata
+     id="metadata923">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:title>shell environment v2</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <path
+     d="m 126.64205,98.327241 c 0,-2.840539 -2.29491,-5.135432 -5.13544,-5.135432 -2.84053,0 -5.13542,2.294893 -5.13542,5.135432 v 33.813599 l -6.64398,-6.64397 c -2.00602,-2.00602 -5.26382,-2.00602 -7.26984,0 -2.00603,2.00603 -2.00603,5.26382 0,7.26985 l 15.40629,15.4063 c 2.00604,2.00602 5.26382,2.00602 7.26985,0 l 15.40631,-15.4063 c 2.00602,-2.00603 2.00602,-5.26382 0,-7.26985 -2.00604,-2.00602 -5.26382,-2.00602 -7.26984,0 l -6.62793,6.64397 z M 95.829455,144.54611 c -5.66502,0 -10.27085,4.60584 -10.27085,10.27086 v 5.13543 c 0,5.66502 4.60583,10.27086 10.27085,10.27086 h 51.354315 c 5.66502,0 10.27086,-4.60584 10.27086,-10.27086 v -5.13543 c 0,-5.66502 -4.60584,-10.27086 -10.27086,-10.27086 h -7.52661 l -9.08329,9.0833 c -5.00706,5.00704 -13.1435,5.00704 -18.15057,0 l -9.06724,-9.0833 z m 48.786605,8.98701 c 5.13542,0 5.13542,7.70313 0,7.70313 -5.13542,0 -5.13542,-7.70313 0,-7.70313 z"
+     id="path1"
+     style="fill:#11b75c;fill-opacity:1;stroke:none;stroke-width:0.160482;stroke-opacity:1" />
+</svg>

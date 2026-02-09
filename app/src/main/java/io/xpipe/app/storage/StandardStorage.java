@@ -50,6 +50,23 @@ public class StandardStorage extends DataStorage {
         this.dataStorageUserHandler = DataStorageUserHandler.getInstance();
     }
 
+    public void pullManually() {
+        if (!busyIo.tryLock()) {
+            return;
+        }
+        dataStorageSyncHandler.pullManually();
+        busyIo.unlock();
+    }
+
+    @Override
+    public void pushManually() {
+        if (!busyIo.tryLock()) {
+            return;
+        }
+        dataStorageSyncHandler.pushManually();
+        busyIo.unlock();
+    }
+
     private void startSyncWatcher() {
         GlobalTimer.scheduleUntil(Duration.ofSeconds(20), false, () -> {
             ThreadHelper.runAsync(() -> {
@@ -258,7 +275,8 @@ public class StandardStorage extends DataStorage {
                 addStoreEntryIfNotPresent(entry1);
             });
         });
-        // Update validities from synthetic parent changes
+        entriesAvailable = true;
+        // Update validities from synthetic parent changes and entries available flag changes
         refreshEntries();
         // Remove user inaccessible entries only when everything is valid, so we can check the parent hierarchies
         filterPerUserEntries(storeEntries.keySet());
@@ -433,7 +451,7 @@ public class StandardStorage extends DataStorage {
 
         deleteLeftovers();
         dataStorageUserHandler.save();
-        dataStorageSyncHandler.afterStorageSave();
+        dataStorageSyncHandler.afterStorageSave(true, dispose);
         if (dispose) {
             disposed = true;
         }

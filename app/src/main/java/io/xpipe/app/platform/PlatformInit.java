@@ -87,6 +87,7 @@ public class PlatformInit {
             AppGpuCheck.check();
             AppFont.init();
             PlatformThread.runLaterIfNeededBlocking(() -> {
+                AppDisplayScale.init();
                 AppStyle.init();
                 AppTheme.init();
             });

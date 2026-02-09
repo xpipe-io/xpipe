@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.core.AppI18n;
 
@@ -11,7 +11,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
 
-public class StoreActiveComp extends SimpleComp {
+public class StoreActiveComp extends SimpleRegionBuilder {
 
     private final StoreEntryWrapper wrapper;
 

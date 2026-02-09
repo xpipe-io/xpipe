@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.IconButtonComp;
@@ -25,7 +25,7 @@ import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class BrowserStatusBarComp extends SimpleComp {
+public class BrowserStatusBarComp extends SimpleRegionBuilder {
 
     BrowserFileSystemTabModel model;
 
@@ -35,27 +35,27 @@ public class BrowserStatusBarComp extends SimpleComp {
                 createProgressNameStatus(),
                 createProgressStatus(),
                 createProgressEstimateStatus(),
-                Comp.hspacer(),
+                RegionBuilder.hspacer(),
                 createClipboardStatus(),
                 createSelectionStatus(),
                 createKillButton()));
         bar.spacing(15);
-        bar.styleClass("status-bar");
+        bar.style("status-bar");
 
         bar.apply(struc -> {
-            struc.get().widthProperty().subscribe(value -> {
+            struc.widthProperty().subscribe(value -> {
                 var veryConstrained = value.doubleValue() < 600;
                 var somewhatConstrained = value.doubleValue() < 710;
-                struc.get().getChildren().get(2).setVisible(!somewhatConstrained);
-                struc.get().getChildren().get(2).setManaged(!somewhatConstrained);
-                struc.get().getChildren().get(4).setVisible(!veryConstrained);
-                struc.get().getChildren().get(4).setManaged(!veryConstrained);
-                struc.get().getChildren().get(5).setVisible(!veryConstrained);
-                struc.get().getChildren().get(5).setManaged(!veryConstrained);
+                struc.getChildren().get(2).setVisible(!somewhatConstrained);
+                struc.getChildren().get(2).setManaged(!somewhatConstrained);
+                struc.getChildren().get(4).setVisible(!veryConstrained);
+                struc.getChildren().get(4).setManaged(!veryConstrained);
+                struc.getChildren().get(5).setVisible(!veryConstrained);
+                struc.getChildren().get(5).setManaged(!veryConstrained);
             });
         });
 
-        var r = bar.createRegion();
+        var r = bar.build();
         r.setOnDragDetected(event -> {
             event.consume();
             r.startFullDrag();
@@ -65,13 +65,13 @@ public class BrowserStatusBarComp extends SimpleComp {
         return r;
     }
 
-    private Comp<?> createKillButton() {
+    private BaseRegionBuilder<?, ?> createKillButton() {
         var button = new IconButtonComp("mdi2s-stop", () -> {
             ThreadHelper.runAsync(() -> {
                 model.killTransfer();
             });
         });
-        button.descriptor(d -> d.nameKey("killTransfer"));
+        button.describe(d -> d.nameKey("killTransfer"));
         var cancel = PlatformThread.sync(model.getTransferCancelled());
         var hide = Bindings.createBooleanBinding(
                 () -> {
@@ -91,7 +91,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         return button;
     }
 
-    private Comp<?> createProgressEstimateStatus() {
+    private BaseRegionBuilder<?, ?> createProgressEstimateStatus() {
         var text = Bindings.createStringBinding(
                 () -> {
                     var p = model.getProgress().getValue();
@@ -121,13 +121,13 @@ public class BrowserStatusBarComp extends SimpleComp {
                 model.getProgress());
 
         var progressComp = new LabelComp(text)
-                .styleClass("progress")
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .style("progress")
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
 
-    private Comp<?> createProgressStatus() {
+    private BaseRegionBuilder<?, ?> createProgressStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
             if (p == null) {
                 return null;
@@ -148,13 +148,13 @@ public class BrowserStatusBarComp extends SimpleComp {
             }
         });
         var progressComp = new LabelComp(text)
-                .styleClass("progress")
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .style("progress")
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .minWidth(Region.USE_PREF_SIZE);
         return progressComp;
     }
 
-    private Comp<?> createProgressNameStatus() {
+    private BaseRegionBuilder<?, ?> createProgressNameStatus() {
         var text = BindingsHelper.map(model.getProgress(), p -> {
             if (p == null) {
                 return null;
@@ -163,13 +163,13 @@ public class BrowserStatusBarComp extends SimpleComp {
             }
         });
         var progressComp = new LabelComp(text)
-                .styleClass("progress")
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
+                .style("progress")
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
                 .hgrow();
         return progressComp;
     }
 
-    private Comp<?> createClipboardStatus() {
+    private BaseRegionBuilder<?, ?> createClipboardStatus() {
         var cc = BrowserClipboard.currentCopyClipboard;
         var ccCount = Bindings.createStringBinding(
                 () -> {
@@ -184,7 +184,7 @@ public class BrowserStatusBarComp extends SimpleComp {
         return new LabelComp(ccCount).minWidth(Region.USE_PREF_SIZE);
     }
 
-    private Comp<?> createSelectionStatus() {
+    private BaseRegionBuilder<?, ?> createSelectionStatus() {
         var selectedCount = Bindings.createIntegerBinding(
                 () -> {
                     return model.getFileList().getSelection().size();
@@ -241,6 +241,6 @@ public class BrowserStatusBarComp extends SimpleComp {
                         mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                         null,
                         () -> new BrowserContextMenu(model, null, false))
-                .augment(new SimpleCompStructure<>(r));
+                .accept(r);
     }
 }

@@ -17,7 +17,7 @@ public class StoreOrderIndexDialog {
                         : null);
         var options = new OptionsBuilder()
                 .nameAndDescription("orderIndex")
-                .addComp(new IntFieldComp(prop, 0, Integer.MAX_VALUE))
+                .addComp(new IntFieldComp(prop, Integer.MIN_VALUE, Integer.MAX_VALUE))
                 .buildComp()
                 .prefWidth(400);
         var modal = ModalOverlay.of("changeOrderIndexTitle", options);

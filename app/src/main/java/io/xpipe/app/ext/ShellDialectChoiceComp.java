@@ -1,11 +1,10 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.process.ShellDialect;
-import io.xpipe.app.process.ShellDialects;
 
 import javafx.beans.property.Property;
 import javafx.scene.control.ComboBox;
@@ -16,13 +15,11 @@ import javafx.scene.layout.Region;
 
 import lombok.AllArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
-public class ShellDialectChoiceComp extends SimpleComp {
+public class ShellDialectChoiceComp extends SimpleRegionBuilder {
 
     public enum NullHandling {
         NULL_IS_DEFAULT,
@@ -30,33 +27,9 @@ public class ShellDialectChoiceComp extends SimpleComp {
         NULL_DISABLED
     }
 
-    public static final Map<ShellDialect, String> ICONS = new LinkedHashMap<>();
-
-    static {
-        ICONS.put(ShellDialects.CMD, "cmd_icon.svg");
-        ICONS.put(ShellDialects.POWERSHELL, "powershell_logo.svg");
-        ICONS.put(ShellDialects.POWERSHELL_CORE, "pwsh_logo.png");
-        ICONS.put(ShellDialects.SH, "sh_icon.svg");
-        ICONS.put(ShellDialects.ASH, "sh_icon.svg");
-        ICONS.put(ShellDialects.DASH, "sh_icon.svg");
-        ICONS.put(ShellDialects.BASH, "bash_icon.svg");
-        ICONS.put(ShellDialects.FISH, "fish_icon.svg");
-        ICONS.put(ShellDialects.ZSH, "zsh_icon.svg");
-        ICONS.put(ShellDialects.NUSHELL, "nushell_icon.svg");
-        ICONS.put(ShellDialects.XONSH, "xonsh_icon.png");
-    }
-
     private final List<ShellDialect> available;
     private final Property<ShellDialect> selected;
     private final NullHandling nullHandling;
-
-    public static String getImageName(ShellDialect t) {
-        if (t == null) {
-            return "proc:defaultShell_icon.svg";
-        }
-
-        return "proc:" + ICONS.get(t);
-    }
 
     @Override
     protected Region createSimple() {
@@ -70,12 +43,8 @@ public class ShellDialectChoiceComp extends SimpleComp {
                                 : nullHandling == NullHandling.NULL_IS_ALL
                                         ? AppI18n.get("all")
                                         : AppI18n.get("default"));
-                setGraphic(
-                        item != null
-                                ? PrettyImageHelper.ofFixedSizeSquare("proc:" + ICONS.get(item), 16)
-                                        .createRegion()
-                                : PrettyImageHelper.ofFixedSizeSquare("proc:defaultShell_icon.svg", 16)
-                                        .createRegion());
+                setGraphic(PrettyImageHelper.ofFixedSizeSquare(ShellDialectIcons.getImageName(item), 16)
+                        .build());
             }
         };
         var cb = new ComboBox<ShellDialect>();

@@ -233,9 +233,6 @@ public class SshIdentityStateManager {
         }
 
         if (sc.getOsType() == OsType.WINDOWS) {
-            CommandSupport.isInPathOrThrow(sc, "ssh-agent", "SSH Agent", null);
-            stopWindowsAgents(false, true, true);
-            sc.executeSimpleBooleanCommand("ssh-agent start");
             checkLocalAgentIdentities(null);
         } else {
             checkLocalAgentIdentities(

@@ -1,9 +1,7 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionDescriptor;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.util.Hyperlinks;
 
@@ -11,13 +9,14 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
-public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
+public class ThirdPartyDependencyListComp extends SimpleRegionBuilder {
 
     private TitledPane createPane(ThirdPartyDependency t) {
         var tp = new TitledPane();
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .name(new ReadOnlyStringWrapper(t.name()))
                 .build()
                 .apply(tp);
@@ -51,7 +50,7 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
     }
 
     @Override
-    public CompStructure<?> createBase() {
+    public Region createSimple() {
         var tps = ThirdPartyDependency.getAll().stream().map(this::createPane).toArray(TitledPane[]::new);
         var acc = new Accordion(tps);
         acc.getStyleClass().add("third-party-dependency-list-comp");
@@ -59,6 +58,6 @@ public class ThirdPartyDependencyListComp extends Comp<CompStructure<?>> {
         var sp = new ScrollPane(acc);
         sp.setFitToWidth(true);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        return new SimpleCompStructure<>(sp);
+        return sp;
     }
 }

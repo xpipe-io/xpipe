@@ -48,7 +48,10 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                 .nameAndDescription("pkcs11Library")
                 .addComp(
                         new ContextualFileReferenceChoiceComp(
-                                config.getFileSystem() != null ? config.getFileSystem() : new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
+                                config.getFileSystem() != null
+                                        ? config.getFileSystem()
+                                        : new ReadOnlyObjectWrapper<>(
+                                                DataStorage.get().local().ref()),
                                 file,
                                 null,
                                 List.of(),

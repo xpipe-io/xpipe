@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.util.GlobalTimer;
 
 import javafx.application.Platform;
@@ -14,9 +14,9 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 @AllArgsConstructor
-public class DelayedInitComp extends SimpleComp {
+public class DelayedInitComp extends SimpleRegionBuilder {
 
-    private final Comp<?> comp;
+    private final BaseRegionBuilder<?, ?> comp;
     private final Supplier<Boolean> condition;
 
     @Override
@@ -28,7 +28,7 @@ public class DelayedInitComp extends SimpleComp {
             }
 
             Platform.runLater(() -> {
-                var r = comp.createRegion();
+                var r = comp.build();
                 stack.getChildren().add(r);
             });
             return true;

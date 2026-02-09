@@ -16,6 +16,11 @@ import lombok.extern.jackson.Jacksonized;
 public class StorePauseActionProvider implements HubLeafProvider<PauseableStore>, BatchHubProvider<PauseableStore> {
 
     @Override
+    public boolean runParallel() {
+        return true;
+    }
+
+    @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.CUSTOM;
     }

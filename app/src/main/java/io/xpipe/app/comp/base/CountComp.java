@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
@@ -16,14 +14,14 @@ import lombok.AllArgsConstructor;
 import java.util.function.Function;
 
 @AllArgsConstructor
-public class CountComp extends Comp<CompStructure<Label>> {
+public class CountComp extends RegionBuilder<Label> {
 
     private final ObservableIntegerValue sub;
     private final ObservableIntegerValue all;
     private final Function<String, String> transformation;
 
     @Override
-    public CompStructure<Label> createBase() {
+    public Label createSimple() {
         var label = new Label();
         label.setTextOverrun(OverrunStyle.CLIP);
         label.setAlignment(Pos.CENTER);
@@ -39,6 +37,6 @@ public class CountComp extends Comp<CompStructure<Label>> {
                 all);
         label.textProperty().bind(PlatformThread.sync(binding));
         label.getStyleClass().add("count-comp");
-        return new SimpleCompStructure<>(label);
+        return label;
     }
 }

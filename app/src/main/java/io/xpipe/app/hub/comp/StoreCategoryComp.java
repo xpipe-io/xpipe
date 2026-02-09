@@ -1,7 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -11,7 +11,6 @@ import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 import io.xpipe.app.util.DesktopHelper;
 import io.xpipe.core.OsType;
@@ -44,7 +43,7 @@ import java.util.Locale;
 
 @EqualsAndHashCode(callSuper = true)
 @Value
-public class StoreCategoryComp extends SimpleComp {
+public class StoreCategoryComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
 
@@ -63,7 +62,15 @@ public class StoreCategoryComp extends SimpleComp {
                 category.getName().setValue(newValue);
             }
         });
-        var name = new LazyTextFieldComp(prop).styleClass("name").createRegion();
+        var name = new LazyTextFieldComp(prop)
+                .style("name")
+                .applyStructure(struc -> {
+                    category.getRenameTrigger().onFire(() -> {
+                        struc.get().requestFocus();
+                        struc.getTextField().selectAll();
+                    });
+                })
+                .build();
         var showing = new SimpleBooleanProperty();
 
         var expandIcon = Bindings.createObjectBinding(
@@ -82,16 +89,16 @@ public class StoreCategoryComp extends SimpleComp {
                     category.toggleExpanded();
                 })
                 .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER);
+                    struc.setAlignment(Pos.CENTER);
                     if (OsType.ofLocal() == OsType.WINDOWS) {
-                        HBox.setMargin(struc.get(), new Insets(0, 0, 2.3, 0));
+                        HBox.setMargin(struc, new Insets(0, 0, 2.3, 0));
                     } else if (OsType.ofLocal() == OsType.MACOS) {
-                        HBox.setMargin(struc.get(), new Insets(0, 0, 1.8, 0));
+                        HBox.setMargin(struc, new Insets(0, 0, 1.8, 0));
                     }
                 })
                 .disable(Bindings.isEmpty(category.getChildren().getList()))
-                .styleClass("expand-button")
-                .descriptor(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)));
+                .style("expand-button")
+                .describe(d -> d.nameKey("expand").shortcut(new KeyCodeCombination(KeyCode.SPACE)));
 
         var focus = new SimpleBooleanProperty();
         var hover = new SimpleBooleanProperty();
@@ -112,19 +119,19 @@ public class StoreCategoryComp extends SimpleComp {
                 hover,
                 focus);
         var statusButton = new IconButtonComp(statusIcon)
-                .apply(struc -> AppFontSizes.xs(struc.get()))
+                .apply(struc -> AppFontSizes.xs(struc))
                 .apply(struc -> {
-                    struc.get().setAlignment(Pos.CENTER);
-                    struc.get().setPadding(new Insets(0, 0, 0, 0));
+                    struc.setAlignment(Pos.CENTER);
+                    struc.setPadding(new Insets(0, 0, 0, 0));
                 })
                 .apply(new ContextMenuAugment<>(
                         mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, null, () -> {
-                            var cm = createContextMenu(name);
+                            var cm = createContextMenu();
                             showing.bind(cm.showingProperty());
                             return cm;
                         }))
-                .descriptor(d -> d.nameKey("configuration"))
-                .styleClass("status-button");
+                .describe(d -> d.nameKey("configuration"))
+                .style("status-button");
 
         var count = new CountComp(
                 category.getShownContainedEntriesCount(),
@@ -138,27 +145,27 @@ public class StoreCategoryComp extends SimpleComp {
                 .or(focus);
         var h = new HorizontalComp(List.of(
                 expandButton,
-                Comp.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
-                Comp.of(() -> name).hgrow(),
-                Comp.hspacer(2),
+                RegionBuilder.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
+                RegionBuilder.of(() -> name).hgrow(),
+                RegionBuilder.hspacer(2),
                 count,
-                Comp.hspacer(7),
+                RegionBuilder.hspacer(7),
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
         var categoryButton = new ButtonComp(
                         null, new SimpleObjectProperty<>(new LabelGraphic.CompGraphic(h)), category::select)
-                .descriptor(d -> d.name(prop).shortcut(new KeyCodeCombination(KeyCode.SPACE)))
-                .styleClass("category-button")
-                .apply(struc -> hover.bind(struc.get().hoverProperty()))
-                .apply(struc -> focus.bind(struc.get().focusWithinProperty()))
+                .describe(d -> d.name(prop).shortcut(new KeyCodeCombination(KeyCode.SPACE)))
+                .style("category-button")
+                .apply(struc -> hover.bind(struc.hoverProperty()))
+                .apply(struc -> focus.bind(struc.focusWithinProperty()))
                 .maxWidth(2000);
         categoryButton.apply(new ContextMenuAugment<>(
                 mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                 keyEvent -> keyEvent.getCode() == KeyCode.SPACE,
-                () -> createContextMenu(name)));
+                () -> createContextMenu()));
         categoryButton.apply(struc -> {
-            struc.get().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            struc.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                 if (event.getCode() == KeyCode.SPACE) {
                     category.toggleExpanded();
                     event.consume();
@@ -172,7 +179,7 @@ public class StoreCategoryComp extends SimpleComp {
                         storeCategoryWrapper.nameProperty().getValue().toLowerCase(Locale.ROOT)));
         var children =
                 new ListBoxViewComp<>(l, l, storeCategoryWrapper -> new StoreCategoryComp(storeCategoryWrapper), false);
-        children.styleClass("children");
+        children.style("children");
         children.minHeight(0);
         children.setVisibilityControl(true);
 
@@ -184,21 +191,21 @@ public class StoreCategoryComp extends SimpleComp {
                 category.getChildren().getList(),
                 category.getExpanded());
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
-        v.styleClass("category");
+        v.style("category");
         v.apply(struc -> {
             StoreViewState.get().getActiveCategory().subscribe(val -> {
-                struc.get().pseudoClassStateChanged(SELECTED, val.equals(category));
+                struc.pseudoClassStateChanged(SELECTED, val.equals(category));
             });
 
             category.getColor().subscribe((c) -> {
-                DataStoreColor.applyStyleClasses(c, struc.get());
+                DataStoreColor.applyStyleClasses(c, struc);
             });
         });
 
-        return v.createRegion();
+        return v.build();
     }
 
-    private ContextMenu createContextMenu(Region text) {
+    private ContextMenu createContextMenu() {
         var contextMenu = MenuHelper.createContextMenu();
 
         if (AppPrefs.get().enableHttpApi().get()) {
@@ -217,9 +224,7 @@ public class StoreCategoryComp extends SimpleComp {
 
         var newCategory = new MenuItem(AppI18n.get("createNewCategory"), new FontIcon("mdi2p-plus-thick"));
         newCategory.setOnAction(event -> {
-            DataStorage.get()
-                    .addStoreCategory(
-                            DataStoreCategory.createNew(category.getCategory().getUuid(), AppI18n.get("newCategory")));
+            StoreViewState.get().createNewCategory(category);
         });
         contextMenu.getItems().add(newCategory);
 
@@ -233,35 +238,37 @@ public class StoreCategoryComp extends SimpleComp {
 
         var rename = new MenuItem(AppI18n.get("rename"), new FontIcon("mdal-edit"));
         rename.setOnAction(event -> {
-            text.setDisable(false);
-            text.requestFocus();
+            category.getRenameTrigger().fire(null);
+            event.consume();
         });
         contextMenu.getItems().add(rename);
 
         contextMenu.getItems().add(new SeparatorMenuItem());
 
-        var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
-        StoreViewState.get()
-                .getSortedCategories(getCategory().getRoot())
-                .getList()
-                .forEach(storeCategoryWrapper -> {
-                    MenuItem m = new MenuItem();
-                    m.textProperty()
-                            .setValue("  ".repeat(storeCategoryWrapper.getDepth())
-                                    + storeCategoryWrapper.getName().getValue());
-                    m.setOnAction(event -> {
-                        category.moveToParent(storeCategoryWrapper.getCategory());
-                        event.consume();
-                    });
-                    if (storeCategoryWrapper.getParent() == null
-                            || storeCategoryWrapper.equals(category)
-                            || storeCategoryWrapper.equals(category.getParent())) {
-                        m.setDisable(true);
-                    }
+        if (category.canMove()) {
+            var move = new Menu(AppI18n.get("moveTo"), new FontIcon("mdi2f-folder-move-outline"));
+            StoreViewState.get()
+                    .getSortedCategories(getCategory().getRoot())
+                    .getList()
+                    .forEach(storeCategoryWrapper -> {
+                        MenuItem m = new MenuItem();
+                        m.textProperty()
+                                .setValue("  ".repeat(storeCategoryWrapper.getDepth())
+                                        + storeCategoryWrapper.getName().getValue());
+                        m.setOnAction(event -> {
+                            category.moveToParent(storeCategoryWrapper.getCategory());
+                            event.consume();
+                        });
+                        if (storeCategoryWrapper.getParent() == null
+                                || storeCategoryWrapper.equals(category)
+                                || storeCategoryWrapper.equals(category.getParent())) {
+                            m.setDisable(true);
+                        }
 
-                    move.getItems().add(m);
-                });
-        contextMenu.getItems().add(move);
+                        move.getItems().add(m);
+                    });
+            contextMenu.getItems().add(move);
+        }
 
         var del = new MenuItem(AppI18n.get("remove"), new FontIcon("mdal-delete_outline"));
         del.setOnAction(event -> {

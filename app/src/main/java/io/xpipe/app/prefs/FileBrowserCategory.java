@@ -1,10 +1,11 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -23,13 +24,11 @@ public class FileBrowserCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         return new OptionsBuilder()
                 .addTitle("fileBrowser")
                 .sub(new OptionsBuilder()
-                        .pref(prefs.enableTerminalDocking)
-                        .addToggle(prefs.enableTerminalDocking)
                         .pref(prefs.editFilesWithDoubleClick)
                         .addToggle(prefs.editFilesWithDoubleClick)
                         .pref(prefs.downloadsDirectory)
@@ -45,6 +44,9 @@ public class FileBrowserCategory extends AppPrefsCategory {
                                                 true)
                                         .maxWidth(getCompWidth()),
                                 prefs.downloadsDirectory)
+                        .pref(prefs.enableFileBrowserTerminalDocking)
+                        .addToggle(prefs.enableFileBrowserTerminalDocking)
+                        .hide(OsType.ofLocal() != OsType.WINDOWS)
                         .pref(prefs.pinLocalMachineOnStartup)
                         .addToggle(prefs.pinLocalMachineOnStartup))
                 .buildComp();

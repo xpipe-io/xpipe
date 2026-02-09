@@ -1,6 +1,6 @@
 package io.xpipe.ext.system.lxd;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreUsageCategory;
@@ -25,7 +25,7 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
     @Override
     public StoreEntryComp customEntryComp(StoreSection sec, boolean preferLarge) {
         var nonRunning = StoreToggleComp.<LxdCmdStore>childrenToggle(
-                null, true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
+                true, sec, s -> s.getState().isShowNonRunning(), (s, aBoolean) -> {
                     var state =
                             s.getState().toBuilder().showNonRunning(aBoolean).build();
                     s.setState(state);
@@ -33,7 +33,7 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
         return StoreEntryComp.create(sec, nonRunning, preferLarge);
     }
 
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(BindingsHelper.map(w.getPersistentState(), o -> {
             var state = (LxdCmdStore.State) o;
             if (state.isReachable()) {

@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.SimpleTitledPaneComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
@@ -22,7 +22,7 @@ import lombok.SneakyThrows;
 
 import java.util.ArrayList;
 
-public class BrowserOverviewComp extends SimpleComp {
+public class BrowserOverviewComp extends SimpleRegionBuilder {
 
     private final BrowserFileSystemTabModel model;
 
@@ -35,7 +35,7 @@ public class BrowserOverviewComp extends SimpleComp {
     protected Region createSimple() {
         // The open file system might have already been closed
 
-        var list = new ArrayList<Comp<?>>();
+        var list = new ArrayList<BaseRegionBuilder<?, ?>>();
 
         var recent = DerivedObservableList.wrap(model.getSavedState().getRecentDirectories(), true)
                 .mapped(s -> FileEntry.ofDirectory(model.getFileSystem(), s.getDirectory()))
@@ -66,7 +66,7 @@ public class BrowserOverviewComp extends SimpleComp {
         });
         var commonOverview = new BrowserFileOverviewComp(model, commonPlatform, false);
         var commonPane = new SimpleTitledPaneComp(AppI18n.observable("common"), commonOverview, false)
-                .apply(struc -> VBox.setVgrow(struc.get(), Priority.NEVER));
+                .apply(struc -> VBox.setVgrow(struc, Priority.NEVER));
         commonPane.hide(Bindings.isEmpty(commonPlatform));
         list.add(commonPane);
 
@@ -84,8 +84,8 @@ public class BrowserOverviewComp extends SimpleComp {
         rootsPane.hide(Bindings.isEmpty(rootPlatform));
         list.add(rootsPane);
 
-        var vbox = new VerticalComp(list).styleClass("overview");
-        var r = vbox.createRegion();
+        var vbox = new VerticalComp(list).style("overview");
+        var r = vbox.build();
         return r;
     }
 }

@@ -59,8 +59,7 @@ public final class McpTools {
                                             + syncToolSpecification.tool().description())
                             .collect(Collectors.joining("\n"));
 
-                    var text =
-                            """
+                    var text = """
                                The XPipe MCP server offers the following read-only tools:
                                %s
                                These tools will not modify anything on your system and are safe to use.
@@ -68,8 +67,7 @@ public final class McpTools {
                                You can also enable the following potentially destructive tools in the settings menu:
                                %s
                                These tools can perform write operations and other actions that might be potentially destructive.
-                               """
-                                    .formatted(roList, muList);
+                               """.formatted(roList, muList);
 
                     return McpSchema.CallToolResult.builder()
                             .addTextContent(text)
@@ -380,7 +378,7 @@ public final class McpTools {
                                     .getExtendedLayer()
                                     .findModule(AppNames.extModuleName("base"))
                                     .orElseThrow(),
-                            AppNames.extModuleName("base") + ".script.SimpleScriptStore");
+                            AppNames.extModuleName("base") + ".script.ScriptStore");
                     var method = clazz.getDeclaredMethod("assembleScriptChain", ShellControl.class);
                     var command = (String) method.invoke(script.getStore(), shellSession.getControl());
                     var scriptFile = ScriptHelper.createExecScript(shellSession.getControl(), command);

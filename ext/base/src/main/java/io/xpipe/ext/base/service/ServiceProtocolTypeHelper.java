@@ -15,13 +15,13 @@ public class ServiceProtocolTypeHelper {
         var firstFocus = new SimpleBooleanProperty(false);
         var path = new SimpleStringProperty(p.getValue() != null ? p.getValue().getCommandTemplate() : null);
         var comp = new TextFieldComp(path).apply(struc -> {
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
                 if (!firstFocus.get()) {
-                    struc.get().getParent().requestFocus();
+                    struc.getParent().requestFocus();
                     firstFocus.set(true);
                 }
             });
-            struc.get().setPromptText("mycommand open localhost:$PORT");
+            struc.setPromptText("mycommand open localhost:$PORT");
         });
         return new OptionsBuilder()
                 .nameAndDescription("serviceCommand")
@@ -39,7 +39,7 @@ public class ServiceProtocolTypeHelper {
                 .nameAndDescription("servicePath")
                 .addComp(
                         new TextFieldComp(path).apply(struc -> {
-                            struc.get().setPromptText("/sub/path");
+                            struc.setPromptText("/sub/path");
                         }),
                         path)
                 .bind(
@@ -55,7 +55,7 @@ public class ServiceProtocolTypeHelper {
                 .nameAndDescription("servicePath")
                 .addComp(
                         new TextFieldComp(path).apply(struc -> {
-                            struc.get().setPromptText("/sub/path");
+                            struc.setPromptText("/sub/path");
                         }),
                         path)
                 .bind(

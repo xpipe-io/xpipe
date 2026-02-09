@@ -1,12 +1,13 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppResources;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.util.FileOpener;
+import io.xpipe.core.OsType;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 
@@ -27,9 +28,12 @@ public class ConnectionHubCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var connectionsBuilder = new OptionsBuilder()
+                .pref(prefs.enableConnectionHubTerminalDocking)
+                .addToggle(prefs.enableConnectionHubTerminalDocking)
+                .hide(OsType.ofLocal() != OsType.WINDOWS)
                 .nameAndDescription("connectionNotesTemplate")
                 .addComp(
                         new ButtonComp(

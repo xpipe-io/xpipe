@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.TileButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.update.AppDistributionType;
@@ -10,7 +10,7 @@ import io.xpipe.app.util.ThreadHelper;
 import javafx.beans.binding.Bindings;
 import javafx.scene.layout.Region;
 
-public class UpdateCheckComp extends SimpleComp {
+public class UpdateCheckComp extends SimpleRegionBuilder {
 
     private void showDialog() {
         ThreadHelper.runFailableAsync(() -> {
@@ -102,8 +102,8 @@ public class UpdateCheckComp extends SimpleComp {
 
                     refresh();
                 })
-                .styleClass("update-button")
+                .style("update-button")
                 .disable(uh.getBusy())
-                .createRegion();
+                .build();
     }
 }

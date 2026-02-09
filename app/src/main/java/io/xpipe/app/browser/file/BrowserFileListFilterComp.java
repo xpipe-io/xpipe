@@ -1,8 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.*;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.InputHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -20,7 +18,7 @@ import javafx.scene.layout.HBox;
 import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.Structure> {
+public class BrowserFileListFilterComp extends RegionStructureBuilder<HBox, BrowserFileListFilterComp.Structure> {
 
     private final BrowserFileSystemTabModel model;
     private final Property<String> filterString;
@@ -33,9 +31,9 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
     @Override
     public Structure createBase() {
         var expanded = new SimpleBooleanProperty();
-        var text = new TextFieldComp(filterString, false).createStructure().get();
+        var text = new TextFieldComp(filterString, false).build();
         var button = new Button();
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .nameKey("search")
                 .shortcut(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN))
                 .build()
@@ -122,7 +120,7 @@ public class BrowserFileListFilterComp extends Comp<BrowserFileListFilterComp.St
         return new Structure(box, text, button);
     }
 
-    public record Structure(HBox box, TextField textField, Button toggleButton) implements CompStructure<HBox> {
+    public record Structure(HBox box, TextField textField, Button toggleButton) implements RegionStructure<HBox> {
 
         @Override
         public HBox get() {

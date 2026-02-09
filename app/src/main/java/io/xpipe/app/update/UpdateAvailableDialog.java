@@ -1,6 +1,6 @@
 package io.xpipe.app.update;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.MarkdownComp;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.issue.TrackEvent;
@@ -24,8 +24,8 @@ public class UpdateAvailableDialog {
                 .handle();
         var u = uh.getPreparedUpdate().getValue();
 
-        var comp = Comp.of(() -> {
-            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s, false).createRegion();
+        var comp = RegionBuilder.of(() -> {
+            var markdown = new MarkdownComp(u.getBody() != null ? u.getBody() : "", s -> s, false).build();
             return markdown;
         });
         var modal = ModalOverlay.of("updateReadyAlertTitle", comp.prefWidth(600), null);

@@ -87,4 +87,8 @@ public class HostAddress {
             return newer;
         }
     }
+
+    public boolean isEmpty() {
+        return available.isEmpty() || available.getFirst().equals("unknown");
+    }
 }

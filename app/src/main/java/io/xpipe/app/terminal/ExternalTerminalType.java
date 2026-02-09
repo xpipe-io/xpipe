@@ -67,7 +67,36 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
     ExternalTerminalType GNOME_TERMINAL = new GnomeTerminalType();
     ExternalTerminalType GNOME_CONSOLE = new GnomeConsoleType();
     ExternalTerminalType PTYXIS = new PtyxisTerminalType();
+    ExternalTerminalType YAKUAKE = new YakuakeTerminalType();
     ExternalTerminalType KONSOLE = new KonsoleTerminalType();
+
+    ExternalTerminalType COOL_RETRO_TERM = new SimplePathType("app.coolRetroTerm", "cool-retro-term", true) {
+
+        @Override
+        public TerminalOpenFormat getOpenFormat() {
+            return TerminalOpenFormat.NEW_WINDOW;
+        }
+
+        @Override
+        public boolean isRecommended() {
+            return false;
+        }
+
+        @Override
+        public boolean useColoredTitle() {
+            return false;
+        }
+
+        @Override
+        protected CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+            return CommandBuilder.of()
+                    .add("-T")
+                    .addQuoted(configuration.getCleanTitle())
+                    .add("-e")
+                    .add(configuration.single().getDialectLaunchCommand());
+        }
+    };
+
     ExternalTerminalType XFCE = new SimplePathType("app.xfce", "xfce4-terminal", true) {
         @Override
         public TerminalOpenFormat getOpenFormat() {
@@ -342,7 +371,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             return CommandBuilder.of().add("-e").addFile(configuration.single().getScriptFile());
         }
     };
-    ExternalTerminalType XTERM = new MultiPathType("app.xterm",  true, List.of("uxterm", "xterm")) {
+    ExternalTerminalType XTERM = new MultiPathType("app.xterm", true, List.of("uxterm", "xterm")) {
         @Override
         public TerminalOpenFormat getOpenFormat() {
             return TerminalOpenFormat.NEW_WINDOW;
@@ -473,6 +502,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             KONSOLE,
             GNOME_TERMINAL,
             GhosttyTerminalType.GHOSTTY_LINUX,
+            YAKUAKE,
             TILIX,
             GUAKE,
             TILDA,
@@ -483,6 +513,7 @@ public interface ExternalTerminalType extends PrefsChoiceValue {
             LXTERMINAL,
             Q_TERMINAL,
             WarpTerminalType.LINUX,
+            COOL_RETRO_TERM,
             TERMIUS,
             WaveTerminalType.WAVE_LINUX);
     List<ExternalTerminalType> MACOS_TERMINALS = List.of(

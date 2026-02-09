@@ -24,6 +24,6 @@ public class ActionPickComp extends ModalOverlayContentComp {
         });
         var options = new OptionsBuilder().addComp(top).addComp(bottom);
         var scroll = new ScrollComp(options.buildComp());
-        return scroll.createRegion();
+        return scroll.build();
     }
 }

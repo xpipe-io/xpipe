@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
@@ -20,7 +20,7 @@ import java.util.List;
 public class ModalOverlay {
 
     ObservableValue<String> title;
-    Comp<?> content;
+    BaseRegionBuilder<?, ?> content;
     LabelGraphic graphic;
 
     @Singular
@@ -38,19 +38,20 @@ public class ModalOverlay {
     @Setter
     Runnable hideAction;
 
-    public static ModalOverlay of(Comp<?> content) {
+    public static ModalOverlay of(BaseRegionBuilder<?, ?> content) {
         return of((ObservableValue<String>) null, content, null);
     }
 
-    public static ModalOverlay of(String titleKey, Comp<?> content) {
+    public static ModalOverlay of(String titleKey, BaseRegionBuilder<?, ?> content) {
         return of(titleKey, content, null);
     }
 
-    public static ModalOverlay of(String titleKey, Comp<?> content, LabelGraphic graphic) {
+    public static ModalOverlay of(String titleKey, BaseRegionBuilder<?, ?> content, LabelGraphic graphic) {
         return of(titleKey != null ? AppI18n.observable(titleKey) : null, content, graphic);
     }
 
-    public static ModalOverlay of(ObservableValue<String> title, Comp<?> content, LabelGraphic graphic) {
+    public static ModalOverlay of(
+            ObservableValue<String> title, BaseRegionBuilder<?, ?> content, LabelGraphic graphic) {
         return new ModalOverlay(title, content, graphic, new ArrayList<>(), true, false, null);
     }
 
@@ -71,7 +72,7 @@ public class ModalOverlay {
         });
     }
 
-    public void addButtonBarComp(Comp<?> comp) {
+    public void addButtonBarComp(BaseRegionBuilder<?, ?> comp) {
         buttons.add(comp);
     }
 

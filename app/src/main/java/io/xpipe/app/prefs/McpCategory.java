@@ -1,7 +1,7 @@
 package io.xpipe.app.prefs;
 
 import io.xpipe.app.beacon.AppBeaconServer;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.TextAreaComp;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.platform.LabelGraphic;
@@ -23,13 +23,12 @@ public class McpCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
 
         var mcpConfig = Bindings.createStringBinding(
                 () -> {
-                    var template =
-                            """
+                    var template = """
                            {
                              "mcpServers": {
                                "%s": {
@@ -62,7 +61,7 @@ public class McpCategory extends AppPrefsCategory {
                         .pref(prefs.enableMcpMutationTools)
                         .addToggle(prefs.enableMcpMutationTools)
                         .nameAndDescription("mcpClientConfigurationDetails")
-                        .addComp(new TextAreaComp(mcpConfigProp).apply(struc -> {
+                        .addComp(new TextAreaComp(mcpConfigProp).applyStructure(struc -> {
                             struc.getTextArea().setEditable(false);
                             struc.getTextArea().setPrefRowCount(12);
                         }))

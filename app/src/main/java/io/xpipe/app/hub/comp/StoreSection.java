@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
@@ -50,13 +50,17 @@ public class StoreSection {
         }
     }
 
-    public static Comp<?> customSection(StoreSection e) {
+    public static BaseRegionBuilder<?, ?> customSection(StoreSection e) {
         return new StoreSectionComp(e);
     }
 
     private static DerivedObservableList<StoreSection> sorted(
-            DerivedObservableList<StoreSection> list, ObservableIntegerValue updateObservable) {
-        var sortMode = StoreViewState.get().getEffectiveSortMode();
+            StoreEntryWrapper wrapper,
+            DerivedObservableList<StoreSection> list,
+            ObservableIntegerValue updateObservable) {
+        var sortMode = StoreViewState.get()
+                .createEffectiveSortMode(
+                        wrapper != null ? wrapper.getEntry().getProvider().getComparator() : null);
         return list.sorted(
                 (o1, o2) -> {
                     var r = sortMode.getValue().compare(o1, o2);
@@ -109,7 +113,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, updateObservable);
+        var ordered = sorted(null, cached, updateObservable);
         var shown = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {
@@ -168,7 +172,6 @@ public class StoreSection {
                 enabled,
                 e.getPersistentState(),
                 e.getCache(),
-                visibilityObservable,
                 updateObservable);
         var l = new ArrayList<>(parents);
         l.add(e);
@@ -184,7 +187,7 @@ public class StoreSection {
                 visibilityObservable,
                 updateObservable,
                 enabled));
-        var ordered = sorted(cached, updateObservable);
+        var ordered = sorted(e, cached, updateObservable);
         var filtered = ordered.filtered(
                 section -> {
                     if (!enabled.getValue()) {
@@ -246,6 +249,7 @@ public class StoreSection {
                 filterString,
                 e.getPersistentState(),
                 e.getCache(),
+                visibilityObservable,
                 updateObservable);
         return new StoreSection(e, cached, filtered, depth);
     }

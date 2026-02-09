@@ -1,6 +1,6 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.storage.DataStoreColor;
 
 import javafx.beans.property.BooleanProperty;
@@ -22,7 +22,7 @@ public abstract class BrowserSessionTab {
         this.browserModel = browserModel;
     }
 
-    public abstract Comp<?> comp();
+    public abstract BaseRegionBuilder<?, ?> comp();
 
     public abstract boolean canImmediatelyClose();
 

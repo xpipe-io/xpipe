@@ -92,12 +92,10 @@ public class SampleHubLeafProvider implements HubLeafProvider<ShellStore> {
 
                 // Commands can also be more complex and span multiple lines.
                 // In this case, XPipe will internally write a command to a script file and then execute the script
-                try (CommandControl cc = sc.command(
-                                """
+                try (CommandControl cc = sc.command("""
                                                     VAR="value"
                                                     echo "$VAR"
-                                                    """)
-                        .start()) {
+                                                    """).start()) {
                     // Reads stdout, stashes stderr. If the exit code is not 0, it will throw an exception with the
                     // stderr contents.
                     var output = cc.readStdoutOrThrow();

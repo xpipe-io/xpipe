@@ -21,7 +21,7 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     private static ElevationFunction requiresElevation() {
-        return new ElevationFunction() {
+        return ElevationFunction.cached("incusRequiresElevation", new ElevationFunction() {
             @Override
             public String getPrefix() {
                 return "Incus";
@@ -44,7 +44,7 @@ public class IncusCommandView extends CommandViewBase {
                                 + "test -S /var/lib/incus/unix.socket.user && test -w /var/lib/incus/unix.socket.user")
                         .executeAndCheck();
             }
-        };
+        });
     }
 
     private static String formatErrorMessage(String s) {

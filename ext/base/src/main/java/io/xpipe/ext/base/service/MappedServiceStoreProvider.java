@@ -3,7 +3,6 @@ package io.xpipe.ext.base.service;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
 import io.xpipe.app.ext.LocalStore;
-import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.hub.comp.StoreChoiceComp;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -66,8 +65,8 @@ public class MappedServiceStoreProvider extends FixedServiceStoreProvider {
                         new StoreChoiceComp<>(
                                 entry,
                                 host,
-                                NetworkTunnelStore.class,
-                                n -> n.getStore().isLocallyTunnelable(),
+                                DataStore.class,
+                                null,
                                 StoreViewState.get().getAllConnectionsCategory()),
                         host)
                 .nonNull()

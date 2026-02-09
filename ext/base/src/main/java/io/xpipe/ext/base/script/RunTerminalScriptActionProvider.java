@@ -20,7 +20,7 @@ public class RunTerminalScriptActionProvider implements ActionProvider {
     @SuperBuilder
     public static class Action extends StoreAction<ShellStore> {
 
-        DataStoreEntryRef<SimpleScriptStore> scriptStore;
+        DataStoreEntryRef<ScriptStore> scriptStore;
 
         @Override
         public void executeImpl() throws Exception {

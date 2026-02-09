@@ -1,6 +1,6 @@
 package io.xpipe.ext.system.incus;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.GuiDialog;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class IncusContainerStoreProvider implements ShellStoreProvider {
 
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new OsLogoComp(w, BindingsHelper.map(w.getPersistentState(), o -> {
             var state = (ContainerStoreState) o;
             var cs = state.getContainerState();

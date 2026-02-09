@@ -33,9 +33,7 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
 
     @SuppressWarnings("unused")
     public static StarshipTerminalPrompt createDefault() {
-        return StarshipTerminalPrompt.builder()
-                .configuration(
-                        """
+        return StarshipTerminalPrompt.builder().configuration("""
                                                               # Get editor completions based on the config schema
                                                               "$schema" = 'https://starship.rs/config-schema.json'
 
@@ -49,8 +47,7 @@ public class StarshipTerminalPrompt extends ConfigFileTerminalPrompt {
                                                               # Disable the package module, hiding it from the prompt completely
                                                               [package]
                                                               disabled = true
-                                                              """)
-                .build();
+                                                              """).build();
     }
 
     @Override

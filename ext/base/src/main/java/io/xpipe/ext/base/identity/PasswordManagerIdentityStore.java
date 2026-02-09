@@ -40,7 +40,9 @@ public class PasswordManagerIdentityStore extends IdentityStore
         var instant = getCache("lastQueried", Instant.class, null);
         if (instant != null) {
             var now = Instant.now();
-            if (Duration.between(instant, now).toSeconds() < 15) {
+            var pm = AppPrefs.get().passwordManager().getValue();
+            var cacheDuration = pm != null ? pm.getCacheDuration().toSeconds() : 15;
+            if (Duration.between(instant, now).toSeconds() < cacheDuration) {
                 return false;
             }
         }

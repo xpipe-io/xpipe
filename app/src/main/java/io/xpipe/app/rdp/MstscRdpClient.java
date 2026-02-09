@@ -64,14 +64,22 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
 
         var file = writeRdpConfigFile(configuration.getTitle(), adaptedRdpConfig);
         LocalShell.getShell()
-                .command(CommandBuilder.of().add(getExecutable()).addFile(file.toString())).execute();
+                .command(CommandBuilder.of().add(getExecutable()).addFile(file.toString()))
+                .execute();
 
-        GlobalTimer.delay(() -> {
-            FileUtils.deleteQuietly(file.toFile());
-        }, Duration.ofSeconds(1));
+        GlobalTimer.delay(
+                () -> {
+                    FileUtils.deleteQuietly(file.toFile());
+                },
+                Duration.ofSeconds(1));
 
         if (!setCache) {
-            var localhost = configuration.getConfig().get("full address").orElseThrow().getValue().startsWith("localhost");
+            var localhost = configuration
+                    .getConfig()
+                    .get("full address")
+                    .orElseThrow()
+                    .getValue()
+                    .startsWith("localhost");
             if (localhost) {
                 saveLocalhostRegistryCache(configuration.getStoreId());
             }
@@ -113,20 +121,33 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
                 return true;
             }
 
-            var ex = WindowsRegistry.local().keyExists(WindowsRegistry.HKEY_CURRENT_USER, "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
+            var ex = WindowsRegistry.local()
+                    .keyExists(
+                            WindowsRegistry.HKEY_CURRENT_USER,
+                            "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
             if (!ex) {
                 return false;
             }
 
-            var user = WindowsRegistry.local().readStringValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
-                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "UsernameHint").orElse(null);
-            var cert = WindowsRegistry.local().readBinaryValueIfPresent(WindowsRegistry.HKEY_CURRENT_USER,
-                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "CertHash").orElse(null);
+            var user = WindowsRegistry.local()
+                    .readStringValueIfPresent(
+                            WindowsRegistry.HKEY_CURRENT_USER,
+                            "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost",
+                            "UsernameHint")
+                    .orElse(null);
+            var cert = WindowsRegistry.local()
+                    .readBinaryValueIfPresent(
+                            WindowsRegistry.HKEY_CURRENT_USER,
+                            "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost",
+                            "CertHash")
+                    .orElse(null);
             if (user == null && cert == null) {
                 return true;
             }
 
-            AppCache.update("rdp-" + entry, RegistryCache.builder().usernameHint(user).certHash(cert).build());
+            AppCache.update(
+                    "rdp-" + entry,
+                    RegistryCache.builder().usernameHint(user).certHash(cert).build());
             return true;
         });
     }
@@ -137,23 +158,38 @@ public class MstscRdpClient implements ExternalApplicationType.PathApplication, 
     }
 
     private boolean prepareLocalhostRegistryCache(RdpLaunchConfig configuration) {
-        WindowsRegistry.local().deleteKey(WindowsRegistry.HKEY_CURRENT_USER,
-                "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
+        WindowsRegistry.local()
+                .deleteKey(
+                        WindowsRegistry.HKEY_CURRENT_USER,
+                        "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost");
 
-        var localhost = configuration.getConfig().get("full address").orElseThrow().getValue().startsWith("localhost");
+        var localhost = configuration
+                .getConfig()
+                .get("full address")
+                .orElseThrow()
+                .getValue()
+                .startsWith("localhost");
         if (localhost) {
             var found = getLocalhostRegistryCache(configuration.getStoreId());
             if (found.isPresent()) {
                 var user = found.get().getUsernameHint();
                 if (user != null) {
-                    WindowsRegistry.local().setStringValue(WindowsRegistry.HKEY_CURRENT_USER,
-                            "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "UsernameHint", user);
+                    WindowsRegistry.local()
+                            .setStringValue(
+                                    WindowsRegistry.HKEY_CURRENT_USER,
+                                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost",
+                                    "UsernameHint",
+                                    user);
                 }
 
                 var cert = found.get().getCertHash();
                 if (cert != null) {
-                    WindowsRegistry.local().setBinaryValue(WindowsRegistry.HKEY_CURRENT_USER,
-                            "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost", "CertHash", cert);
+                    WindowsRegistry.local()
+                            .setBinaryValue(
+                                    WindowsRegistry.HKEY_CURRENT_USER,
+                                    "Software\\Microsoft\\Terminal Server Client\\Servers\\localhost",
+                                    "CertHash",
+                                    cert);
                 }
 
                 return user != null || cert != null;

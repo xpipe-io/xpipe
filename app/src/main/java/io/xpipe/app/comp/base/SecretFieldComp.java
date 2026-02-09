@@ -1,7 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -30,11 +32,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
+public class SecretFieldComp extends RegionStructureBuilder<InputGroup, SecretFieldComp.Structure> {
 
     private final Property<InPlaceSecretValue> value;
     private final boolean allowCopy;
-    private final List<Comp<?>> additionalButtons = new ArrayList<>();
+    private final List<BaseRegionBuilder<?, ?>> additionalButtons = new ArrayList<>();
 
     public SecretFieldComp(Property<InPlaceSecretValue> value, boolean allowCopy) {
         this.value = value;
@@ -52,7 +54,7 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         return new SecretFieldComp(prop, false);
     }
 
-    public void addButton(Comp<?> button) {
+    public void addButton(BaseRegionBuilder<?, ?> button) {
         this.additionalButtons.add(button);
     }
 
@@ -121,10 +123,10 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
         var copyButton = new ButtonComp(null, new FontIcon("mdi2c-clipboard-multiple-outline"), () -> {
                     ClipboardHelper.copyPassword(value.getValue());
                 })
-                .descriptor(d -> d.nameKey("copy"));
+                .describe(d -> d.nameKey("copy"));
 
-        var list = new ArrayList<Comp<?>>();
-        var fieldComp = Comp.of(() -> field);
+        var list = new ArrayList<BaseRegionBuilder<?, ?>>();
+        var fieldComp = RegionBuilder.of(() -> field);
         list.add(fieldComp);
         if (allowCopy) {
             list.add(copyButton);
@@ -133,20 +135,20 @@ public class SecretFieldComp extends Comp<SecretFieldComp.Structure> {
 
         var ig = new InputGroupComp(list);
         ig.setMainReference(fieldComp);
-        ig.styleClass("secret-field-comp");
+        ig.style("secret-field-comp");
         ig.apply(struc -> {
-            struc.get().focusedProperty().addListener((c, o, n) -> {
+            struc.focusedProperty().addListener((c, o, n) -> {
                 if (n) {
                     field.requestFocus();
                 }
             });
         });
 
-        return new Structure(ig.createBase().get(), field);
+        return new Structure(ig.build(), field);
     }
 
     @AllArgsConstructor
-    public static class Structure implements CompStructure<InputGroup> {
+    public static class Structure implements RegionStructure<InputGroup> {
 
         private final InputGroup inputGroup;
 

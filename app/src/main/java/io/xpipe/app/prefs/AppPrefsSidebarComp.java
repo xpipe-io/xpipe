@@ -1,7 +1,8 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.VerticalComp;
 import io.xpipe.app.core.AppI18n;
@@ -21,7 +22,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-public class AppPrefsSidebarComp extends SimpleComp {
+public class AppPrefsSidebarComp extends SimpleRegionBuilder {
 
     @Override
     protected Region createSimple() {
@@ -29,7 +30,7 @@ public class AppPrefsSidebarComp extends SimpleComp {
                 .filter(appPrefsCategory -> appPrefsCategory.show())
                 .toList();
         var buttons = effectiveCategories.stream()
-                .<Comp<?>>map(appPrefsCategory -> {
+                .<BaseRegionBuilder<?, ?>>map(appPrefsCategory -> {
                     return new ButtonComp(
                                     AppI18n.observable(appPrefsCategory.getId()),
                                     new ReadOnlyObjectWrapper<>(appPrefsCategory.getIcon()),
@@ -37,14 +38,12 @@ public class AppPrefsSidebarComp extends SimpleComp {
                                         AppPrefs.get().getSelectedCategory().setValue(appPrefsCategory);
                                     })
                             .apply(struc -> {
-                                struc.get().setGraphicTextGap(9);
-                                struc.get().setTextAlignment(TextAlignment.LEFT);
-                                struc.get().setAlignment(Pos.CENTER_LEFT);
+                                struc.setGraphicTextGap(9);
+                                struc.setTextAlignment(TextAlignment.LEFT);
+                                struc.setAlignment(Pos.CENTER_LEFT);
                                 AppPrefs.get().getSelectedCategory().subscribe(val -> {
-                                    struc.get()
-                                            .pseudoClassStateChanged(
-                                                    PseudoClass.getPseudoClass("selected"),
-                                                    appPrefsCategory.equals(val));
+                                    struc.pseudoClassStateChanged(
+                                            PseudoClass.getPseudoClass("selected"), appPrefsCategory.equals(val));
                                 });
                             })
                             .maxWidth(2000);
@@ -57,25 +56,22 @@ public class AppPrefsSidebarComp extends SimpleComp {
         restartButton.maxWidth(2000);
         restartButton.visible(AppPrefs.get().getRequiresRestart());
         restartButton.padding(new Insets(6, 10, 6, 6));
-        buttons.add(Comp.vspacer());
+        buttons.add(RegionBuilder.vspacer());
         buttons.add(restartButton);
 
-        var vbox = new VerticalComp(buttons)
-                .styleClass("sidebar")
-                .styleClass("color-box")
-                .styleClass("gray");
+        var vbox = new VerticalComp(buttons).style("sidebar").style("color-box").style("gray");
         vbox.apply(struc -> {
             AppPrefs.get().getSelectedCategory().subscribe(val -> {
                 PlatformThread.runLaterIfNeeded(() -> {
                     var index = val != null ? effectiveCategories.indexOf(val) : 0;
-                    if (index >= struc.get().getChildren().size()) {
+                    if (index >= struc.getChildren().size()) {
                         return;
                     }
 
-                    ((Button) struc.get().getChildren().get(index)).fire();
+                    ((Button) struc.getChildren().get(index)).fire();
                 });
             });
         });
-        return vbox.createRegion();
+        return vbox.build();
     }
 }

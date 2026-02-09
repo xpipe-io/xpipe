@@ -6,4 +6,6 @@ import io.xpipe.app.ext.HostAddress;
 public interface HostAddressStore extends DataStore {
 
     HostAddress getHostAddress();
+
+    default void refreshHostAddressOrThrow() throws Exception {}
 }

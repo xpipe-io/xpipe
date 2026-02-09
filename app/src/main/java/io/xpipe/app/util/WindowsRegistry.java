@@ -97,7 +97,8 @@ public abstract class WindowsRegistry {
             try {
                 Advapi32Util.registryCreateKey(hkey(hkey), key);
                 Advapi32Util.registrySetStringValue(hkey(hkey), key, valueName, value);
-            } catch (Win32Exception ignored) {}
+            } catch (Win32Exception ignored) {
+            }
         }
 
         public void setBinaryValue(int hkey, String key, String valueName, byte[] value) {
@@ -108,7 +109,8 @@ public abstract class WindowsRegistry {
             try {
                 Advapi32Util.registryCreateKey(hkey(hkey), key);
                 Advapi32Util.registrySetBinaryValue(hkey(hkey), key, valueName, value);
-            } catch (Win32Exception ignored) {}
+            } catch (Win32Exception ignored) {
+            }
         }
 
         public void deleteKey(int hkey, String key) {
@@ -118,7 +120,8 @@ public abstract class WindowsRegistry {
 
             try {
                 Advapi32Util.registryDeleteKey(hkey(hkey), key);
-            } catch (Win32Exception ignored) {}
+            } catch (Win32Exception ignored) {
+            }
         }
 
         public void deleteValue(int hkey, String key, String valueName) {
@@ -128,7 +131,8 @@ public abstract class WindowsRegistry {
 
             try {
                 Advapi32Util.registryDeleteValue(hkey(hkey), key, valueName);
-            } catch (Win32Exception ignored) {}
+            } catch (Win32Exception ignored) {
+            }
         }
 
         public Optional<byte[]> readBinaryValueIfPresent(int hkey, String key, String valueName) {

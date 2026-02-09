@@ -1,8 +1,8 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.RegionDescriptor;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileEntry;
@@ -37,7 +37,7 @@ import java.util.function.BiConsumer;
 import static io.xpipe.app.util.HumanReadableFormat.byteCount;
 import static javafx.scene.control.TableColumn.SortType.ASCENDING;
 
-public final class BrowserFileListComp extends SimpleComp {
+public final class BrowserFileListComp extends SimpleRegionBuilder {
 
     private static final PseudoClass EMPTY = PseudoClass.getPseudoClass("empty");
     private static final PseudoClass FILE = PseudoClass.getPseudoClass("file");
@@ -145,7 +145,7 @@ public final class BrowserFileListComp extends SimpleComp {
 
         var table = new TableView<BrowserEntry>();
         table.setSkin(new TableViewSkin<>(table));
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .nameKey("directoryContents")
                 .showTooltips(false)
                 .build()

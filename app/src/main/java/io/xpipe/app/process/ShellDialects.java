@@ -61,7 +61,7 @@ public class ShellDialects {
         return d == POWERSHELL || d == POWERSHELL_CORE;
     }
 
-    public static Optional<ShellDialect> byNameIfPresent(String name) {
+    public static Optional<ShellDialect> byIdIfPresent(String name) {
         return ALL.stream().filter(shellType -> shellType.getId().equals(name)).findFirst();
     }
 

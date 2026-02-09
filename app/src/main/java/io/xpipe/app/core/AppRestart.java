@@ -7,6 +7,7 @@ import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.core.OsType;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +68,7 @@ public class AppRestart {
         }
     }
 
-    public static String getBackgroundRestartCommand(String user, ShellDialect dialect) {
-        var dataDir = AppProperties.get().getDataDir();
+    public static String getBackgroundRestartCommand(Path dataDir, String user, ShellDialect dialect) {
         var l = new ArrayList<String>();
         l.addAll(List.of(
                 "-Dio.xpipe.app.mode=gui",
@@ -83,7 +83,7 @@ public class AppRestart {
     }
 
     public static String getBackgroundRestartCommand() {
-        return getBackgroundRestartCommand(null, LocalShell.getDialect());
+        return getBackgroundRestartCommand(AppProperties.get().getDataDir(), null, LocalShell.getDialect());
     }
 
     public static String getTerminalRestartCommand(ShellDialect dialect) {
@@ -106,6 +106,15 @@ public class AppRestart {
         AppOperationMode.executeAfterShutdown(() -> {
             try (var sc = LocalShell.getShell().start()) {
                 sc.command(getBackgroundRestartCommand()).execute();
+            }
+        });
+    }
+
+    public static void restart(Path dataDir) {
+        AppOperationMode.executeAfterShutdown(() -> {
+            try (var sc = LocalShell.getShell().start()) {
+                sc.command(getBackgroundRestartCommand(dataDir, null, sc.getShellDialect()))
+                        .execute();
             }
         });
     }

@@ -1,7 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -9,8 +9,8 @@ import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-
 import io.xpipe.core.OsType;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -26,11 +26,44 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
-public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
+public class StoreChoiceComp<T extends DataStore> extends SimpleRegionBuilder {
 
     private final ObjectProperty<DataStoreEntryRef<T>> selected;
 
-    private final StoreChoicePopover<T> popover;
+    private StoreChoicePopover<T> popover;
+
+    public StoreChoiceComp(
+            DataStoreEntry self,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper categoryRoot,
+            boolean requireComplete) {
+        this(self, selected, storeClass, applicableCheck, categoryRoot, null, requireComplete);
+    }
+
+    public StoreChoiceComp(
+            DataStoreEntry self,
+            ObjectProperty<DataStoreEntryRef<T>> selected,
+            Class<?> storeClass,
+            Predicate<DataStoreEntryRef<T>> applicableCheck,
+            StoreCategoryWrapper categoryRoot,
+            StoreCategoryWrapper explicitCategory,
+            boolean requireComplete) {
+        this.selected = selected;
+        this.popover = new StoreChoicePopover<>(
+                self,
+                selected,
+                storeClass,
+                applicableCheck,
+                categoryRoot,
+                explicitCategory,
+                requireComplete,
+                StoreViewState.get().getAllConnectionsCategory().equals(categoryRoot)
+                        ? "selectConnection"
+                        : "selectEntry",
+                "noCompatibleConnection");
+    }
 
     public StoreChoiceComp(
             DataStoreEntry self,
@@ -38,15 +71,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
             Class<?> storeClass,
             Predicate<DataStoreEntryRef<T>> applicableCheck,
             StoreCategoryWrapper initialCategory) {
-        this.selected = selected;
-        this.popover = new StoreChoicePopover<>(
-                self,
-                selected,
-                storeClass,
-                applicableCheck,
-                initialCategory,
-                "selectConnection",
-                "noCompatibleConnection");
+        this(self, selected, storeClass, applicableCheck, initialCategory, true);
     }
 
     protected String toName(DataStoreEntry entry) {
@@ -57,17 +82,25 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         return DataStorage.get().getStoreEntryDisplayName(entry);
     }
 
+    protected String toGraphic(DataStoreEntry entry) {
+        if (entry == null) {
+            return null;
+        }
+
+        return entry.getEffectiveIconFile();
+    }
+
     @Override
     protected Region createSimple() {
         var button = new ButtonComp(
                 Bindings.createStringBinding(
                         () -> {
                             var val = selected.getValue();
-                            return val != null ? toName(val.get()) : null;
+                            return toName(val != null ? val.get() : null);
                         },
                         selected),
                 () -> {});
-        button.descriptor(d -> d.name(Bindings.createStringBinding(
+        button.describe(d -> d.name(Bindings.createStringBinding(
                 () -> {
                     return selected.getValue() != null
                             ? toName(selected.getValue().get())
@@ -76,27 +109,25 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 selected,
                 AppI18n.activeLanguage())));
         button.apply(struc -> {
-                    struc.get().setMaxWidth(20000);
-                    struc.get().setAlignment(Pos.CENTER_LEFT);
-                    Comp<?> graphic = PrettyImageHelper.ofFixedSize(
+                    struc.setMaxWidth(20000);
+                    struc.setAlignment(Pos.CENTER_LEFT);
+                    BaseRegionBuilder<?, ?> graphic = PrettyImageHelper.ofFixedSize(
                             Bindings.createStringBinding(
                                     () -> {
-                                        var val = selected.getValue();
-                                        if (val == null) {
-                                            return null;
-                                        }
-
-                                        return val.get().getEffectiveIconFile();
+                                        return toGraphic(
+                                                selected.getValue() != null
+                                                        ? selected.getValue().get()
+                                                        : null);
                                     },
                                     selected),
                             16,
                             16);
-                    struc.get().setGraphic(graphic.createRegion());
-                    struc.get().setOnAction(event -> {
-                        popover.show(struc.get());
+                    struc.setGraphic(graphic.build());
+                    struc.setOnAction(event -> {
+                        popover.show(struc);
                         event.consume();
                     });
-                    struc.get().setOnMouseClicked(event -> {
+                    struc.setOnMouseClicked(event -> {
                         if (event.getButton() != MouseButton.SECONDARY) {
                             return;
                         }
@@ -105,9 +136,9 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                         event.consume();
                     });
                 })
-                .styleClass("choice-comp");
+                .style("choice-comp");
 
-        var r = button.createRegion();
+        var r = button.build();
 
         var dropdownIcon = new FontIcon("mdal-keyboard_arrow_down");
         dropdownIcon.setDisable(true);
@@ -116,6 +147,7 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
         AppFontSizes.xl(dropdownIcon);
 
         var pane = new AnchorPane(r, dropdownIcon);
+        r.prefHeightProperty().bind(pane.heightProperty());
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 r.requestFocus();
@@ -134,18 +166,19 @@ public class StoreChoiceComp<T extends DataStore> extends SimpleComp {
                 pane.requestFocus();
             });
         });
-        clearButton.descriptor(d -> d.nameKey("clear"));
-        clearButton.styleClass(Styles.FLAT);
+        clearButton.describe(d -> d.nameKey("clear"));
+        clearButton.style(Styles.FLAT);
         clearButton.hide(selected.isNull().or(pane.disabledProperty()));
         clearButton.apply(struc -> {
-            struc.get().setOpacity(0.7);
-            struc.get().getStyleClass().add("clear-button");
-            AppFontSizes.xs(struc.get());
-            AnchorPane.setRightAnchor(struc.get(), 30.0);
-            AnchorPane.setTopAnchor(struc.get(), 3.0);
-            AnchorPane.setBottomAnchor(struc.get(), 3.0);
+            struc.setOpacity(0.7);
+            struc.getStyleClass().add("clear-button");
+            AppFontSizes.xs(struc);
+            AnchorPane.setRightAnchor(struc, 30.0);
+            AnchorPane.setTopAnchor(struc, 3.0);
+            AnchorPane.setBottomAnchor(struc, 3.0);
         });
-        pane.getChildren().add(clearButton.createRegion());
+        pane.getChildren().add(clearButton.build());
+        pane.getStyleClass().add("store-choice-comp");
 
         return pane;
     }

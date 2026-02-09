@@ -5,7 +5,9 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
+import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
@@ -70,7 +72,13 @@ public class OnePasswordManager implements PasswordManager {
                     username != null ? username.asText() : null,
                     password != null ? InPlaceSecretValue.of(password.asText()) : null);
         } catch (Exception e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            var event = ErrorEventFactory.fromThrowable(e);
+            if (!key.startsWith("op://")
+                    && e instanceof ProcessOutputException pex
+                    && pex.getOutput().contains("Specify the item")) {
+                event.documentationLink(DocumentationLink.ONE_PASSWORD_KEYS).expected();
+            }
+            event.handle();
             return null;
         }
     }

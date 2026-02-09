@@ -1,6 +1,6 @@
 package io.xpipe.app.vnc;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
@@ -29,7 +29,7 @@ public class VncCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var choiceBuilder = OptionsChoiceBuilder.builder()
                 .property(prefs.vncClient)
@@ -45,7 +45,7 @@ public class VncCategory extends AppPrefsCategory {
                             });
                     websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     return hbox;

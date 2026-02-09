@@ -13,6 +13,7 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
+import io.xpipe.app.spice.ExternalSpiceClient;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.terminal.ExternalTerminalType;
@@ -243,6 +244,11 @@ public final class AppPrefs {
             .valueClass(ExternalVncClient.class)
             .documentationLink(DocumentationLink.VNC)
             .build());
+    public final Property<ExternalSpiceClient> spiceClient = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>())
+            .key("spiceClient")
+            .valueClass(ExternalSpiceClient.class)
+            .build());
     final Property<PasswordManager> passwordManager = map(Mapping.builder()
             .property(new GlobalObjectProperty<>())
             .key("passwordManager")
@@ -307,6 +313,13 @@ public final class AppPrefs {
             .valueClass(String.class)
             .requiresRestart(true)
             .documentationLink(DocumentationLink.SYNC)
+            .build());
+    final ObjectProperty<SyncMode> syncMode = map(Mapping.builder()
+            .property(new GlobalObjectProperty<>(SyncMode.INSTANT))
+            .key("syncMode")
+            .valueClass(SyncMode.class)
+            .requiresRestart(true)
+            .documentationLink(DocumentationLink.SYNC_MODE)
             .build());
     final ObjectProperty<CloseBehaviour> closeBehaviour = map(Mapping.builder()
             .property(new GlobalObjectProperty<>(CloseBehaviour.QUIT))
@@ -378,8 +391,10 @@ public final class AppPrefs {
             mapLocal(new GlobalBooleanProperty(false), "requireDoubleClickForConnections", Boolean.class, false);
     final BooleanProperty editFilesWithDoubleClick =
             mapLocal(new GlobalBooleanProperty(false), "editFilesWithDoubleClick", Boolean.class, false);
-    final BooleanProperty enableTerminalDocking =
-            mapLocal(new GlobalBooleanProperty(true), "enableTerminalDocking", Boolean.class, false);
+    final BooleanProperty enableFileBrowserTerminalDocking =
+            mapLocal(new GlobalBooleanProperty(true), "enableFileBrowserTerminalDocking", Boolean.class, false);
+    final BooleanProperty enableConnectionHubTerminalDocking =
+            mapLocal(new GlobalBooleanProperty(true), "enableConnectionHubTerminalDocking", Boolean.class, false);
     final BooleanProperty censorMode = mapLocal(new GlobalBooleanProperty(false), "censorMode", Boolean.class, false);
     final BooleanProperty sshVerboseOutput = map(Mapping.builder()
             .property(new GlobalBooleanProperty(false))
@@ -499,6 +514,10 @@ public final class AppPrefs {
         return sshVerboseOutput;
     }
 
+    public ObservableValue<SyncMode> syncMode() {
+        return syncMode;
+    }
+
     public ObservableBooleanValue censorMode() {
         return censorMode;
     }
@@ -507,8 +526,12 @@ public final class AppPrefs {
         return requireDoubleClickForConnections;
     }
 
-    public ObservableBooleanValue enableTerminalDocking() {
-        return enableTerminalDocking;
+    public ObservableBooleanValue enableFileBrowserTerminalDocking() {
+        return enableFileBrowserTerminalDocking;
+    }
+
+    public ObservableBooleanValue enableConnectionHubTerminalDocking() {
+        return enableConnectionHubTerminalDocking;
     }
 
     public ObservableBooleanValue disableSshPinCaching() {
@@ -801,6 +824,7 @@ public final class AppPrefs {
         externalEditor.setValue(ExternalEditorType.determineDefault(externalEditor.get()));
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
+        spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }

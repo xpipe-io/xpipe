@@ -6,6 +6,7 @@ import io.xpipe.core.SecretValue;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Value;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,10 @@ public interface PasswordManager {
     String getKeyPlaceholder();
 
     String getWebsite();
+
+    default Duration getCacheDuration() {
+        return Duration.ofSeconds(30);
+    }
 
     @Value
     class CredentialResult {

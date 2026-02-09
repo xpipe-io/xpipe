@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 
 import javafx.geometry.Pos;
@@ -13,17 +11,18 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import atlantafx.base.theme.Styles;
+import org.int4.fx.builders.common.AbstractRegionBuilder;
 
 import java.util.List;
 
-public abstract class DialogComp extends Comp<CompStructure<Region>> {
+public abstract class DialogComp extends RegionBuilder<Region> {
 
     protected Region createNavigation() {
         HBox buttons = new HBox();
         buttons.setFillHeight(true);
         var customButton = bottom();
         if (customButton != null) {
-            var c = customButton.createRegion();
+            var c = customButton.build();
             buttons.getChildren().add(c);
             HBox.setHgrow(c, Priority.ALWAYS);
         }
@@ -36,46 +35,46 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
 
         buttons.getChildren()
                 .addAll(customButtons().stream()
-                        .map(buttonComp -> buttonComp.createRegion())
+                        .map(buttonComp -> buttonComp.build())
                         .toList());
         var nextButton = finishButton();
-        buttons.getChildren().add(nextButton.createRegion());
+        buttons.getChildren().add(nextButton.build());
         return buttons;
     }
 
-    protected Comp<?> finishButton() {
+    protected AbstractRegionBuilder<?, ?> finishButton() {
         return new ButtonComp(AppI18n.observable(finishKey()), this::finish)
-                .styleClass(Styles.ACCENT)
-                .styleClass("next");
+                .style(Styles.ACCENT)
+                .style("next");
     }
 
     protected String finishKey() {
         return "finishStep";
     }
 
-    protected List<Comp<?>> customButtons() {
+    protected List<AbstractRegionBuilder<?, ?>> customButtons() {
         return List.of();
     }
 
     @Override
-    public CompStructure<Region> createBase() {
-        var sp = pane(content()).styleClass("dialog-content").createRegion();
+    public Region createSimple() {
+        var sp = pane(content()).style("dialog-content").build();
         VBox vbox = new VBox();
         vbox.getChildren().addAll(sp, createNavigation());
         vbox.getStyleClass().add("dialog-comp");
         vbox.setFillWidth(true);
         VBox.setVgrow(sp, Priority.ALWAYS);
-        return new SimpleCompStructure<>(vbox);
+        return vbox;
     }
 
     protected abstract void finish();
 
-    public abstract Comp<?> content();
+    public abstract AbstractRegionBuilder<?, ?> content();
 
-    protected Comp<?> pane(Comp<?> content) {
+    protected AbstractRegionBuilder<?, ?> pane(AbstractRegionBuilder<?, ?> content) {
         var entry = content;
-        return Comp.of(() -> {
-            var entryR = entry.createRegion();
+        return RegionBuilder.of(() -> {
+            var entryR = entry.build();
             var sp = new ScrollPane(entryR);
             sp.setFitToWidth(true);
             entryR.minHeightProperty().bind(sp.heightProperty());
@@ -83,7 +82,7 @@ public abstract class DialogComp extends Comp<CompStructure<Region>> {
         });
     }
 
-    public Comp<?> bottom() {
+    public AbstractRegionBuilder<?, ?> bottom() {
         return null;
     }
 }

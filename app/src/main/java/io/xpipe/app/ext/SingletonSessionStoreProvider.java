@@ -1,6 +1,6 @@
 package io.xpipe.app.ext;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.hub.action.impl.ToggleActionProvider;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.LabelGraphic;
@@ -28,7 +28,7 @@ public interface SingletonSessionStoreProvider extends DataStoreProvider {
         return StoreEntryComp.create(sec, t, preferLarge);
     }
 
-    default Comp<?> stateDisplay(StoreEntryWrapper w) {
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     SingletonSessionStore<?> s = w.getEntry().getStore().asNeeded();

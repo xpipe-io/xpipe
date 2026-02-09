@@ -1,8 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.*;
 import io.xpipe.app.hub.comp.*;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -20,7 +18,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-public final class BrowserConnectionListComp extends SimpleComp {
+public final class BrowserConnectionListComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
     private final ObservableValue<DataStoreEntry> selected;
@@ -45,7 +43,7 @@ public final class BrowserConnectionListComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var busyEntries = FXCollections.<StoreSection>observableSet(new HashSet<>());
-        BiConsumer<StoreSection, Comp<CompStructure<Button>>> augment = (s, comp) -> {
+        BiConsumer<StoreSection, RegionBuilder<Button>> augment = (s, comp) -> {
             comp.disable(Bindings.createBooleanBinding(
                     () -> {
                         return busyEntries.contains(s) || !applicable.test(s.getWrapper());
@@ -54,12 +52,10 @@ public final class BrowserConnectionListComp extends SimpleComp {
             comp.apply(struc -> {
                 selected.addListener((observable, oldValue, newValue) -> {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        struc.get()
-                                .pseudoClassStateChanged(
-                                        SELECTED,
-                                        newValue != null
-                                                && newValue.equals(
-                                                        s.getWrapper().getEntry()));
+                        struc.pseudoClassStateChanged(
+                                SELECTED,
+                                newValue != null
+                                        && newValue.equals(s.getWrapper().getEntry()));
                     });
                 });
             });
@@ -89,7 +85,7 @@ public final class BrowserConnectionListComp extends SimpleComp {
                 },
                 false);
 
-        var r = section.vgrow().createRegion();
+        var r = section.vgrow().build();
         r.getStyleClass().add("bookmark-list");
         return r;
     }

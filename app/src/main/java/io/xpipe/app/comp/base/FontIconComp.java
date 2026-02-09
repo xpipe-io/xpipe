@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.value.ObservableValue;
@@ -12,7 +12,7 @@ import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 @AllArgsConstructor
-public class FontIconComp extends Comp<FontIconComp.Structure> {
+public class FontIconComp extends RegionStructureBuilder<StackPane, FontIconComp.Structure> {
 
     private final ObservableValue<String> icon;
 
@@ -30,7 +30,7 @@ public class FontIconComp extends Comp<FontIconComp.Structure> {
     }
 
     @Value
-    public static class Structure implements CompStructure<StackPane> {
+    public static class Structure implements RegionStructure<StackPane> {
 
         FontIcon icon;
         StackPane pane;

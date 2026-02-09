@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -22,6 +22,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
@@ -42,7 +44,9 @@ public class StoreChoicePopover<T extends DataStore> {
     private final Property<DataStoreEntryRef<T>> selected;
     private final Class<?> storeClass;
     private final Predicate<DataStoreEntryRef<T>> applicableCheck;
-    private final StoreCategoryWrapper initialCategory;
+    private final StoreCategoryWrapper rootCategory;
+    private final StoreCategoryWrapper explicitCategory;
+    private final boolean requireComplete;
     private final String titleKey;
     private final String noMatchKey;
     private Consumer<Popover> consumer;
@@ -73,9 +77,11 @@ public class StoreChoicePopover<T extends DataStore> {
         if (popover == null || applicableCheck != null) {
             var cur = StoreViewState.get().getActiveCategory().getValue();
             var selectedCategory = new SimpleObjectProperty<>(
-                    initialCategory != null
-                            ? (initialCategory.getRoot().equals(cur.getRoot()) ? cur : initialCategory)
-                            : cur);
+                    explicitCategory != null
+                            ? explicitCategory
+                            : (rootCategory != null
+                                    ? (rootCategory.getRoot().equals(cur.getRoot()) ? cur : rootCategory)
+                                    : cur));
             var filterText = new SimpleStringProperty();
             popover = new Popover();
             Predicate<StoreEntryWrapper> applicable = storeEntryWrapper -> {
@@ -93,14 +99,14 @@ public class StoreChoicePopover<T extends DataStore> {
                 }
 
                 return storeClass.isAssignableFrom(e.getStore().getClass())
-                        && e.getValidity().isUsable()
+                        && (!requireComplete || e.getValidity().isUsable())
                         && (applicableCheck == null || applicableCheck.test(e.ref()));
             };
 
             var applicableMatch =
                     StoreViewState.get().getCurrentTopLevelSection().anyMatches(applicable);
             if (!applicableMatch) {
-                selectedCategory.set(initialCategory);
+                selectedCategory.set(rootCategory);
             }
 
             var applicableCount = StoreViewState.get().getAllEntries().getList().stream()
@@ -133,14 +139,15 @@ public class StoreChoicePopover<T extends DataStore> {
                     initialExpanded);
 
             var category = new DataStoreCategoryChoiceComp(
-                            initialCategory != null ? initialCategory.getRoot() : null,
+                            rootCategory != null ? rootCategory.getRoot() : null,
                             StoreViewState.get().getActiveCategory(),
-                            selectedCategory)
-                    .styleClass(Styles.LEFT_PILL);
-            var filter =
-                    new FilterComp(filterText).styleClass(Styles.CENTER_PILL).hgrow();
+                            selectedCategory,
+                            explicitCategory == null,
+                    ignored -> true)
+                    .style(Styles.LEFT_PILL);
+            var filter = new FilterComp(filterText).style(Styles.CENTER_PILL).hgrow();
 
-            var addButton = Comp.of(() -> {
+            var addButton = RegionBuilder.of(() -> {
                         var m = MenuHelper.createMenuButton();
                         m.setGraphic(new FontIcon("mdi2p-plus-box-outline"));
                         m.setMaxHeight(100);
@@ -148,17 +155,17 @@ public class StoreChoicePopover<T extends DataStore> {
                         StoreCreationMenu.addButtons(m, false);
                         return m;
                     })
-                    .descriptor(d -> d.nameKey("addConnection"))
+                    .describe(d -> d.nameKey("addConnection"))
                     .padding(new Insets(-5))
-                    .styleClass(Styles.RIGHT_PILL);
+                    .style(Styles.RIGHT_PILL);
 
             var top = new HorizontalComp(List.of(category, filter, addButton))
-                    .styleClass("top")
-                    .apply(struc -> struc.get().setFillHeight(true))
+                    .style("top")
+                    .apply(struc -> struc.setFillHeight(true))
                     .apply(struc -> {
-                        var first = ((Region) struc.get().getChildren().get(0));
-                        var second = ((Region) struc.get().getChildren().get(1));
-                        var third = ((Region) struc.get().getChildren().get(1));
+                        var first = ((Region) struc.getChildren().get(0));
+                        var second = ((Region) struc.getChildren().get(1));
+                        var third = ((Region) struc.getChildren().get(1));
                         second.prefHeightProperty().bind(first.heightProperty());
                         second.minHeightProperty().bind(first.heightProperty());
                         second.maxHeightProperty().bind(first.heightProperty());
@@ -167,18 +174,13 @@ public class StoreChoicePopover<T extends DataStore> {
                     .apply(struc -> {
                         // Ugly solution to focus the text field
                         // Somehow this does not work through the normal on shown listeners
-                        struc.get()
-                                .getChildren()
-                                .get(0)
-                                .focusedProperty()
-                                .addListener((observable, oldValue, newValue) -> {
-                                    if (newValue) {
-                                        struc.get().getChildren().get(1).requestFocus();
-                                    }
-                                });
+                        struc.getChildren().get(0).focusedProperty().addListener((observable, oldValue, newValue) -> {
+                            if (newValue) {
+                                struc.getChildren().get(1).requestFocus();
+                            }
+                        });
                     })
-                    .createStructure()
-                    .get();
+                    .build();
 
             var emptyText = Bindings.createStringBinding(
                     () -> {
@@ -190,14 +192,14 @@ public class StoreChoicePopover<T extends DataStore> {
                     StoreViewState.get().getAllEntries().getList());
             var emptyLabel =
                     new LabelComp(emptyText, new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2f-filter")));
-            emptyLabel.apply(struc -> AppFontSizes.sm(struc.get()));
+            emptyLabel.apply(struc -> AppFontSizes.sm(struc));
             emptyLabel.hide(BindingsHelper.map(emptyText, s -> s == null));
             emptyLabel.minHeight(80);
 
             var listStack = new StackComp(List.of(emptyLabel, section));
             listStack.vgrow();
 
-            var r = listStack.createRegion();
+            var r = listStack.build();
             var content = new VBox(top, r);
             content.setFillWidth(true);
             content.getStyleClass().add("choice-comp-content");
@@ -212,6 +214,13 @@ public class StoreChoicePopover<T extends DataStore> {
             popover.setTitle(AppI18n.get(titleKey));
             popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
             AppFontSizes.xs(popover.getContentNode());
+
+            popover.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+                if (event.getCode() == KeyCode.ESCAPE) {
+                    popover.hide();
+                    event.consume();
+                }
+            });
 
             // Hide on connection creation dialog
             AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {

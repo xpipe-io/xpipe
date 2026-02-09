@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLogs;
@@ -15,11 +15,13 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -27,26 +29,48 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import atlantafx.base.controls.ModalPane;
+import atlantafx.base.controls.ModalPaneSkin;
 import atlantafx.base.layout.ModalBox;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import net.synedra.validatorfx.GraphicDecorationStackPane;
 
-public class ModalOverlayComp extends SimpleComp {
+import java.time.Instant;
 
-    private final Comp<?> background;
+public class ModalOverlayComp extends RegionBuilder<Region> {
+
+    private final BaseRegionBuilder<?, ?> background;
     private final Property<ModalOverlay> overlayContent;
     private final BooleanScope actionRunning = new BooleanScope(new SimpleBooleanProperty()).exclusive();
 
-    public ModalOverlayComp(Comp<?> background, Property<ModalOverlay> overlayContent) {
+    public ModalOverlayComp(BaseRegionBuilder<?, ?> background, Property<ModalOverlay> overlayContent) {
         this.background = background;
         this.overlayContent = overlayContent;
     }
 
     @Override
     protected Region createSimple() {
-        var bgRegion = background.createRegion();
+        var lastShow = new SimpleObjectProperty<Instant>();
+        var bgRegion = background.build();
         var modal = new ModalPane();
+        modal.setSkin(new ModalPaneSkin(modal) {
+
+            @Override
+            protected void registerListeners() {
+                super.registerListeners();
+
+                scrollPane.removeEventFilter(MouseEvent.MOUSE_PRESSED, mouseHandler);
+                scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                    var lastShowValue = lastShow.getValue();
+                    if (lastShowValue != null
+                            && java.time.Duration.between(lastShowValue, Instant.now())
+                                            .toMillis()
+                                    > 500) {
+                        mouseHandler.handle(event);
+                    }
+                });
+            }
+        });
         modal.setInTransitionFactory(
                 OsType.ofLocal() == OsType.LINUX ? null : node -> Animations.fadeIn(node, Duration.millis(150)));
         modal.setOutTransitionFactory(
@@ -84,7 +108,9 @@ public class ModalOverlayComp extends SimpleComp {
         });
 
         modal.displayProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
+            if (newValue) {
+                lastShow.setValue(Instant.now());
+            } else {
                 overlayContent.setValue(null);
                 bgRegion.setDisable(false);
                 bgRegion.requestFocus();
@@ -170,7 +196,7 @@ public class ModalOverlayComp extends SimpleComp {
     }
 
     private Region toBox(ModalPane pane, ModalOverlay newValue) {
-        Region r = newValue.getContent().createRegion();
+        Region r = newValue.getContent().build();
         var validatorPane = new GraphicDecorationStackPane();
         validatorPane.getChildren().add(r);
 
@@ -185,17 +211,18 @@ public class ModalOverlayComp extends SimpleComp {
 
         if (newValue.getTitle() != null) {
             var l = new LabelComp(
-                    newValue.getTitle().getValue(),
-                    newValue.getGraphic() != null
-                            ? newValue.getGraphic()
-                            : new LabelGraphic.IconGraphic("mdi2i-information-outline"));
+                    newValue.getTitle(),
+                    new SimpleObjectProperty<>(
+                            newValue.getGraphic() != null
+                                    ? newValue.getGraphic()
+                                    : new LabelGraphic.IconGraphic("mdi2i-information-outline")));
             l.apply(struc -> {
-                struc.get().setGraphicTextGap(8);
-                AppFontSizes.xl(struc.get());
+                struc.setGraphicTextGap(8);
+                AppFontSizes.xl(struc);
             });
-            content.getChildren().addFirst(l.createRegion());
+            content.getChildren().addFirst(l.build());
         } else {
-            content.getChildren().addFirst(Comp.vspacer(0).createRegion());
+            content.getChildren().addFirst(RegionBuilder.vspacer(0).build());
         }
 
         if (newValue.getButtons().size() > 0) {
@@ -205,7 +232,7 @@ public class ModalOverlayComp extends SimpleComp {
             buttonBar.setSpacing(10);
             buttonBar.setAlignment(Pos.CENTER_RIGHT);
             for (var o : newValue.getButtons()) {
-                var node = o instanceof ModalButton mb ? toButton(mb) : ((Comp<?>) o).createRegion();
+                var node = o instanceof ModalButton mb ? toButton(mb) : ((BaseRegionBuilder<?, ?>) o).build();
                 if (o instanceof ModalButton) {
                     node.widthProperty().addListener((observable, oldValue, n) -> {
                         var d = Math.min(Math.max(n.doubleValue(), 70.0), 200.0);
@@ -264,8 +291,8 @@ public class ModalOverlayComp extends SimpleComp {
         if (newValue.getContent() instanceof ModalOverlayContentComp mocc) {
             var busy = mocc.busy();
             if (busy != null) {
-                var loading = new LoadingOverlayComp(Comp.of(() -> modalBox), busy, true);
-                return loading.createRegion();
+                var loading = new LoadingOverlayComp(RegionBuilder.of(() -> modalBox), busy, true);
+                return loading.build();
             }
         }
 

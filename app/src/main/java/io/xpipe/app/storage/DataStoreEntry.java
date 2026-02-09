@@ -346,7 +346,7 @@ public class DataStoreEntry extends StorageElement {
 
     public String getEffectiveIconFile() {
         if (getValidity() == Validity.LOAD_FAILED) {
-            return "disabled_icon.png";
+            return "error.png";
         }
 
         if (icon == null) {
@@ -355,9 +355,9 @@ public class DataStoreEntry extends StorageElement {
 
         var found = SystemIconManager.getIcon(icon);
         if (found.isPresent()) {
-            return SystemIconManager.getIconFile(found.get());
+            return SystemIconManager.getAndLoadIconFile(found.get());
         } else {
-            return "disabled_icon.png";
+            return "error.png";
         }
     }
 
@@ -523,6 +523,11 @@ public class DataStoreEntry extends StorageElement {
         if (changed) {
             notifyUpdate(false, true);
         }
+    }
+
+    @Override
+    public boolean isInStorage() {
+        return DataStorage.get().getStoreEntries().contains(this);
     }
 
     @Override

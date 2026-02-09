@@ -35,8 +35,7 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
         var options = new OptionsBuilder();
         var prefs = AppPrefs.get();
         var keyProperty = options.map(p, SecretPasswordManagerStrategy::getKey);
-        var field = new TextFieldComp(keyProperty).apply(struc -> struc.get()
-                .promptTextProperty()
+        var field = new TextFieldComp(keyProperty).apply(struc -> struc.promptTextProperty()
                 .bind(Bindings.createStringBinding(
                         () -> {
                             return prefs.passwordManager().getValue() != null
@@ -104,8 +103,9 @@ public class SecretPasswordManagerStrategy implements SecretRetrievalStrategy {
 
             @Override
             public Duration cacheDuration() {
-                // To reduce password manager access, cache it for a few seconds
-                return Duration.ofSeconds(15);
+                // To reduce password manager access, cache it
+                var pm = AppPrefs.get().passwordManager().getValue();
+                return pm != null ? pm.getCacheDuration() : Duration.ofSeconds(15);
             }
 
             @Override

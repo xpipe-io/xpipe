@@ -3,7 +3,6 @@ package io.xpipe.ext.base.identity.ssh;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
@@ -43,8 +42,9 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
                 .addComp(
-                        new TextFieldComp(publicKey).apply(struc -> struc.get()
-                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        new TextFieldComp(publicKey)
+                                .apply(struc -> struc.setPromptText(
+                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
                         publicKey)
                 .bind(
                         () -> {

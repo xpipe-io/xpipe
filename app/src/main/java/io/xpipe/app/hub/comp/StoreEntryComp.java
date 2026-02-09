@@ -1,9 +1,10 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.action.ActionProvider;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
@@ -44,41 +45,45 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class StoreEntryComp extends SimpleComp {
+public abstract class StoreEntryComp extends SimpleRegionBuilder {
 
     public static final PseudoClass FAILED = PseudoClass.getPseudoClass("failed");
     public static final PseudoClass INCOMPLETE = PseudoClass.getPseudoClass("incomplete");
     public static final ObservableDoubleValue INFO_NO_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
-                if (w >= 1000) {
-                    return (w / 2.1) - 100;
+                if (w > 2000) {
+                    return (w / 1.8) - 170;
+                } else if (w >= 1000) {
+                    return (w / 2.0) - 170;
                 } else {
-                    return (w / 1.7) - 50;
+                    return (w / 1.7) - 120;
                 }
             },
             App.getApp().getStage().widthProperty());
     public static final ObservableDoubleValue INFO_WITH_CONTENT_WIDTH = Bindings.createDoubleBinding(
             () -> {
                 var w = App.getApp().getStage().getWidth();
-                if (w >= 1000) {
-                    return (w / 2.1) - 200;
+                if (w > 2000) {
+                    return (w / 1.8) - 240;
+                } else if (w >= 1000) {
+                    return (w / 2.0) - 240;
                 } else {
-                    return (w / 1.7) - 150;
+                    return (w / 1.7) - 190;
                 }
             },
             App.getApp().getStage().widthProperty());
     private static String DEFAULT_NOTES = null;
     protected final StoreSection section;
-    protected final Comp<?> content;
+    protected final BaseRegionBuilder<?, ?> content;
     protected final IntegerProperty contextMenuCount = new SimpleIntegerProperty();
 
-    public StoreEntryComp(StoreSection section, Comp<?> content) {
+    public StoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         this.section = section;
         this.content = content;
     }
 
-    public static StoreEntryComp create(StoreSection section, Comp<?> content, boolean preferLarge) {
+    public static StoreEntryComp create(StoreSection section, BaseRegionBuilder<?, ?> content, boolean preferLarge) {
         var forceCondensed = AppPrefs.get() != null
                 && AppPrefs.get().condenseConnectionDisplay().get();
         if (!preferLarge || forceCondensed) {
@@ -136,7 +141,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         button.setPadding(Insets.EMPTY);
         button.setMaxWidth(10000);
         button.setFocusTraversable(true);
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .name(getWrapper().getShownName())
                 .description(getWrapper().getShownDescription())
                 .showTooltips(false)
@@ -186,9 +191,10 @@ public abstract class StoreEntryComp extends SimpleComp {
                         mouseEvent -> mouseEvent.getButton() == MouseButton.SECONDARY,
                         null,
                         () -> this.createContextMenu(name))
-                .augment(button);
+                .accept(button);
 
-        var loading = new LoadingOverlayComp(Comp.of(() -> button), getWrapper().getEffectiveBusy(), false);
+        var loading = new LoadingOverlayComp(
+                RegionBuilder.of(() -> button), getWrapper().getEffectiveBusy(), false);
         if (OsType.ofLocal() == OsType.MACOS) {
             AppFontSizes.base(button);
         } else if (OsType.ofLocal() == OsType.LINUX) {
@@ -202,7 +208,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                 }
             });
         }
-        return loading.createRegion();
+        return loading.build();
     }
 
     protected abstract Region createContent();
@@ -226,7 +232,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         });
     }
 
-    protected Comp<?> createName() {
+    protected BaseRegionBuilder<?, ?> createName() {
         var prop = new SimpleStringProperty();
         getWrapper().getShownName().subscribe(prop::setValue);
         prop.addListener((observable, oldValue, newValue) -> {
@@ -235,14 +241,14 @@ public abstract class StoreEntryComp extends SimpleComp {
             }
         });
         var name = new LazyTextFieldComp(prop);
-        name.styleClass("name");
-        name.apply(struc -> {
+        name.style("name");
+        name.applyStructure(struc -> {
             getWrapper().getRenaming().bind(struc.getTextField().focusedProperty());
         });
         return name;
     }
 
-    protected Comp<?> createTags() {
+    protected BaseRegionBuilder<?, ?> createTags() {
         var tagsProp = Bindings.createStringBinding(
                 () -> {
                     return getWrapper().getTags().stream()
@@ -253,11 +259,11 @@ public abstract class StoreEntryComp extends SimpleComp {
                 },
                 getWrapper().getTags());
         var tagsLabel = new LabelComp(tagsProp);
-        tagsLabel.apply(struc -> struc.get().setOpacity(0.85));
+        tagsLabel.apply(struc -> struc.setOpacity(0.85));
         return tagsLabel;
     }
 
-    protected Comp<?> createOrderIndex() {
+    protected BaseRegionBuilder<?, ?> createOrderIndex() {
         var prop = new SimpleStringProperty();
         getWrapper().getOrderIndex().subscribe(number -> {
             var i = number.intValue();
@@ -265,43 +271,42 @@ public abstract class StoreEntryComp extends SimpleComp {
             prop.set(displayed != null ? "[" + displayed + "]" : null);
         });
         var comp = new LabelComp(prop);
-        comp.styleClass("orderIndex");
-        comp.apply(struc -> struc.get().setOpacity(0.85));
+        comp.style("orderIndex");
+        comp.apply(struc -> struc.setOpacity(0.85));
         return comp;
     }
 
-    protected Comp<?> createUserIcon() {
+    protected BaseRegionBuilder<?, ?> createUserIcon() {
         var button = new IconButtonComp("mdi2a-account");
-        button.styleClass("user-icon");
-        button.descriptor(d -> d.nameKey("personalConnection"));
+        button.style("user-icon");
+        button.describe(d -> d.nameKey("personalConnection"));
         button.apply(struc -> {
-            AppFontSizes.base(struc.get());
-            struc.get().setDisable(true);
-            struc.get().setOpacity(1.0);
+            AppFontSizes.base(struc);
+            struc.setDisable(true);
+            struc.setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPerUser()));
-        button.apply(struc -> struc.get().setOpacity(0.85));
+        button.apply(struc -> struc.setOpacity(0.85));
         return button;
     }
 
-    protected Comp<?> createPinIcon() {
+    protected BaseRegionBuilder<?, ?> createPinIcon() {
         var button = new IconButtonComp("mdi2p-pin-outline");
         button.disable(new SimpleBooleanProperty(true));
-        button.descriptor(d -> d.nameKey("pinned"));
+        button.describe(d -> d.nameKey("pinned"));
         button.apply(struc -> {
-            AppFontSizes.xs(struc.get());
-            struc.get().setOpacity(1.0);
+            AppFontSizes.xs(struc);
+            struc.setOpacity(1.0);
         });
         button.hide(Bindings.not(getWrapper().getPinToTop()));
-        button.apply(struc -> struc.get().setOpacity(0.85));
+        button.apply(struc -> struc.setOpacity(0.85));
         return button;
     }
 
-    protected Node createIcon(int w, int h, Consumer<Node> fontSize) {
+    protected BaseRegionBuilder<?, ?> createIcon(int w, int h, Consumer<Node> fontSize) {
         var icon = new StoreIconComp(getWrapper(), w, h);
         icon.apply(struc -> {
-            struc.get()
-                    .opacityProperty()
+            struc.opacityProperty()
                     .bind(Bindings.createDoubleBinding(
                             () -> {
                                 if (!getWrapper().getValidity().getValue().isUsable()) {
@@ -317,14 +322,14 @@ public abstract class StoreEntryComp extends SimpleComp {
         loading.prefWidth(w);
         loading.prefHeight(h);
         var stack = new StackComp(List.of(icon, loading));
-        return stack.createRegion();
+        return stack;
     }
 
     protected Region createButtonBar(Region name) {
         var list = DerivedObservableList.wrap(getWrapper().getMajorActionProviders(), false);
         var buttons = list.mapped(actionProvider -> {
                     var button = buildButton(actionProvider);
-                    return button.createRegion();
+                    return button.build();
                 })
                 .filtered(region -> region != null)
                 .getList();
@@ -332,7 +337,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         var ig = new InputGroup();
         Runnable update = () -> {
             var l = new ArrayList<Node>(buttons);
-            var settingsButton = createSettingsButton(name).createRegion();
+            var settingsButton = createSettingsButton(name).build();
             l.add(settingsButton);
             l.forEach(o -> o.getStyleClass().remove(Styles.FLAT));
             ig.getChildren().setAll(l);
@@ -345,7 +350,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return ig;
     }
 
-    private Comp<?> buildButton(HubMenuItemProvider<?> p) {
+    private BaseRegionBuilder<?, ?> buildButton(HubMenuItemProvider<?> p) {
         var leaf = p instanceof HubLeafProvider<?> l ? l : null;
         var branch = p instanceof HubBranchProvider<?> b ? b : null;
         var button = new IconButtonComp(
@@ -359,8 +364,14 @@ public abstract class StoreEntryComp extends SimpleComp {
             button.apply(new ContextMenuAugment<>(
                     mouseEvent -> mouseEvent.getButton() == MouseButton.PRIMARY, keyEvent -> false, () -> {
                         var cm = MenuHelper.createContextMenu();
-                        var children =
-                                branch.getChildren(getWrapper().getEntry().ref());
+                        var children = branch
+                                .getChildren(getWrapper().getEntry().ref())
+                                .stream()
+                                .filter(hubMenuItemProvider -> {
+                                    return hubMenuItemProvider.isApplicable(
+                                            getWrapper().getEntry().ref());
+                                })
+                                .toList();
                         var cats = Arrays.stream(StoreActionCategory.values())
                                 .collect(Collectors.toCollection(ArrayList::new));
                         cats.addFirst(null);
@@ -388,14 +399,14 @@ public abstract class StoreEntryComp extends SimpleComp {
                         return cm;
                     }));
         }
-        button.descriptor(d -> d.name(p.getName(getWrapper().getEntry().ref())));
+        button.describe(d -> d.name(p.getName(getWrapper().getEntry().ref())));
         return button;
     }
 
-    protected Comp<?> createSettingsButton(Region name) {
+    protected BaseRegionBuilder<?, ?> createSettingsButton(Region name) {
         var settingsButton = new IconButtonComp("mdi2d-dots-horizontal-circle-outline", null);
-        settingsButton.styleClass("settings");
-        settingsButton.descriptor(d -> d.nameKey("more"));
+        settingsButton.style("settings");
+        settingsButton.describe(d -> d.nameKey("more"));
         settingsButton.apply(new ContextMenuAugment<>(
                 event -> event.getButton() == MouseButton.PRIMARY,
                 null,
@@ -403,7 +414,7 @@ public abstract class StoreEntryComp extends SimpleComp {
         return settingsButton;
     }
 
-    protected Comp<?> createBatchSelection() {
+    protected BaseRegionBuilder<?, ?> createBatchSelection() {
         var c = new StoreEntryBatchSelectComp(section);
         c.hide(StoreViewState.get().getBatchMode().not());
         return c;
@@ -545,14 +556,7 @@ public abstract class StoreEntryComp extends SimpleComp {
                             new LabelGraphic.IconGraphic("mdi2t-tag-plus-outline"), "createTag");
                     index.setOnAction(event -> {
                         var tagName = new SimpleStringProperty();
-                        var modal = ModalOverlay.of(
-                                "addNewTag",
-                                Comp.of(() -> {
-                                            var creationName = new TextField();
-                                            creationName.textProperty().bindBidirectional(tagName);
-                                            return creationName;
-                                        })
-                                        .prefWidth(350));
+                        var modal = ModalOverlay.of("addNewTag", new TextFieldComp(tagName).prefWidth(350));
                         modal.withDefaultButtons(() -> {
                             getWrapper().getEntry().addTag(tagName.getValue());
                         });

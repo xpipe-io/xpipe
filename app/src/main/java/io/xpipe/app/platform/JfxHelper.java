@@ -30,7 +30,7 @@ public class JfxHelper {
         }
 
         var size = 40;
-        var graphic = PrettyImageHelper.ofFixedSizeSquare(image, size).createRegion();
+        var graphic = PrettyImageHelper.ofFixedSizeSquare(image, size).build();
 
         var hbox = new HBox(graphic, text);
         hbox.setAlignment(Pos.CENTER_LEFT);

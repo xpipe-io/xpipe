@@ -1,9 +1,8 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.browser.BrowserFileChooserSessionComp;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileSystemStore;
@@ -28,7 +27,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-import atlantafx.base.theme.Styles;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>> {
+public class ContextualFileReferenceChoiceComp extends RegionBuilder<HBox> {
 
     private final Property<DataStoreEntryRef<? extends FileSystemStore>> fileSystem;
     private final Property<FilePath> filePath;
@@ -70,24 +69,22 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
     }
 
     @Override
-    public CompStructure<HBox> createBase() {
+    public HBox createSimple() {
         var path = previousFileReferences.isEmpty() ? createTextField() : createComboBox();
         var fileBrowseButton = new ButtonComp(null, new FontIcon("mdi2f-folder-open-outline"), () -> {
-                    var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
-                    BrowserFileChooserSessionComp.open(
-                            () -> replacement,
-                            () -> filePath.getValue() != null
-                                    ? filePath.getValue().getParent()
-                                    : null,
-                            fileStore -> {
-                                if (fileStore != null) {
-                                    filePath.setValue(fileStore.getPath());
-                                }
-                            },
-                            false,
-                            directory,
-                            filter);
-                });
+            var replacement = ProcessControlProvider.get().replace(fileSystem.getValue());
+            BrowserFileChooserSessionComp.open(
+                    () -> replacement,
+                    () -> filePath.getValue() != null ? filePath.getValue().getParent() : null,
+                    fileStore -> {
+                        if (fileStore != null) {
+                            filePath.setValue(fileStore.getPath());
+                        }
+                    },
+                    false,
+                    directory,
+                    filter);
+        });
 
         var gitShareButton = new ButtonComp(null, new FontIcon("mdi2g-git"), () -> {
             if (!DataStorageSyncHandler.getInstance().supportsSync()) {
@@ -149,8 +146,8 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 ErrorEventFactory.fromThrowable(e).handle();
             }
         });
-        gitShareButton.styleClass("git-sync-file-button");
-        gitShareButton.descriptor(d -> d.nameKey("gitShareFileTooltip"));
+        gitShareButton.style("git-sync-file-button");
+        gitShareButton.describe(d -> d.nameKey("gitShareFileTooltip"));
         gitShareButton.disable(Bindings.createBooleanBinding(
                 () -> {
                     return filePath.getValue() == null
@@ -158,24 +155,24 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
                 },
                 filePath));
 
-        var nodes = new ArrayList<Comp<?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(path);
         nodes.add(fileBrowseButton);
         if (sync != null) {
             nodes.add(gitShareButton);
         }
-        var layout = new InputGroupComp(nodes).setMainReference(path).apply(struc -> struc.get().setFillHeight(true));
+        var layout = new InputGroupComp(nodes).setMainReference(path).apply(struc -> struc.setFillHeight(true));
 
         layout.apply(struc -> {
-            struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
-                struc.get().getChildren().getFirst().requestFocus();
+            struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
+                struc.getChildren().getFirst().requestFocus();
             });
         });
 
-        return new SimpleCompStructure<>(layout.createStructure().get());
+        return layout.build();
     }
 
-    private Comp<?> createComboBox() {
+    private BaseRegionBuilder<?, ?> createComboBox() {
         var allFiles = new ArrayList<>(previousFileReferences);
         allFiles.addAll(sync != null ? sync.getExistingFiles() : List.of());
         var items = allFiles.stream()
@@ -215,7 +212,7 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         return combo;
     }
 
-    private Comp<?> createTextField() {
+    private BaseRegionBuilder<?, ?> createTextField() {
         var prop = new SimpleStringProperty();
         filePath.subscribe(s -> PlatformThread.runLaterIfNeeded(() -> {
             prop.set(s != null ? s.toString() : null);
@@ -223,14 +220,13 @@ public class ContextualFileReferenceChoiceComp extends Comp<CompStructure<HBox>>
         prop.addListener((observable, oldValue, newValue) -> {
             filePath.setValue(newValue != null && !newValue.isBlank() ? FilePath.of(newValue.strip()) : null);
         });
-        var fileNameComp = new TextFieldComp(prop)
-                .apply(struc -> HBox.setHgrow(struc.get(), Priority.ALWAYS));
+        var fileNameComp = new TextFieldComp(prop).apply(struc -> HBox.setHgrow(struc, Priority.ALWAYS));
 
         if (prompt != null) {
             fileNameComp.apply(struc -> {
                 prompt.subscribe(filePath -> {
                     PlatformThread.runLaterIfNeeded(() -> {
-                        struc.get().setPromptText(filePath != null ? filePath.toString() : null);
+                        struc.setPromptText(filePath != null ? filePath.toString() : null);
                     });
                 });
             });

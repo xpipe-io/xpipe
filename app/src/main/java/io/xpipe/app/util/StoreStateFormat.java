@@ -1,11 +1,9 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.hub.comp.StoreSection;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.process.*;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableValue;
 
 import lombok.Value;
@@ -57,7 +55,13 @@ public class StoreStateFormat {
                     return new StoreStateFormat(List.of(), null, info).format();
                 }
 
-                return new StoreStateFormat(features, s.getShellDialect().getDisplayName(), info).format();
+                return new StoreStateFormat(
+                                features,
+                                s.getOsName() != null
+                                        ? s.getOsName()
+                                        : s.getShellDialect().getDisplayName(),
+                                info)
+                        .format();
             }
 
             var joined = Stream.concat(

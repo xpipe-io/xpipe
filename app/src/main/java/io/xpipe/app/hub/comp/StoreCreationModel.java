@@ -6,11 +6,9 @@ import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.ValidatableStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.hub.action.impl.OpenHubMenuLeafProvider;
-import io.xpipe.app.issue.ErrorEvent;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.SimpleValidator;
 import io.xpipe.app.platform.Validator;
-import io.xpipe.app.process.ShellTtyState;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -272,14 +270,9 @@ public class StoreCreationModel {
 
         s.checkComplete();
 
-        // Start session for later
         if (s instanceof ShellStore ss) {
-            var sc = ss.getOrStartSession();
-            var unsupported = !sc.getShellDialect().getDumbMode().supportsAnyPossibleInteraction()
-                    || sc.getTtyState() != ShellTtyState.NONE;
-            if (unsupported) {
-                ss.stopSessionIfNeeded();
-            }
+            // Start session for later
+            ss.getOrStartSession();
         } else if (s instanceof ValidatableStore vs) {
             vs.validate();
         }

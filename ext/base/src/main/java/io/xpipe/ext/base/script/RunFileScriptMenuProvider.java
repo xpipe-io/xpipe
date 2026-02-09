@@ -95,7 +95,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
 
     private BrowserMenuBranchProvider createActionForScriptHierarchy(ScriptHierarchy hierarchy) {
         if (hierarchy.isLeaf()) {
-            return createActionForScript(hierarchy.getLeafBase());
+            return createActionForScript(hierarchy.getScript());
         }
 
         var list = hierarchy.getChildren().stream()
@@ -104,14 +104,17 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         return new BrowserMenuBranchProvider() {
             @Override
             public LabelGraphic getIcon() {
-                return new LabelGraphic.CompGraphic(
-                        PrettyImageHelper.ofFixedSize(hierarchy.getBase().get().getEffectiveIconFile(), 16, 16));
+                if (!hierarchy.isLeaf()) {
+                    return null;
+                }
+
+                return new LabelGraphic.CompGraphic(PrettyImageHelper.ofFixedSize(
+                        hierarchy.getScript().get().getEffectiveIconFile(), 16, 16));
             }
 
             @Override
             public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
-                var b = hierarchy.getBase();
-                return new SimpleStringProperty(b != null ? b.get().getName() : null);
+                return new SimpleStringProperty(hierarchy.getName());
             }
 
             @Override
@@ -122,7 +125,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
         };
     }
 
-    private BrowserMenuBranchProvider createActionForScript(DataStoreEntryRef<SimpleScriptStore> ref) {
+    private BrowserMenuBranchProvider createActionForScript(DataStoreEntryRef<ScriptStore> ref) {
         return new MultiExecuteMenuProvider() {
 
             @Override
@@ -140,7 +143,7 @@ public class RunFileScriptMenuProvider implements BrowserMenuBranchProvider {
             protected List<CommandBuilder> createCommand(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
                 var sc = model.getFileSystem().getShell().orElseThrow();
                 var content = ref.getStore().assembleScriptChain(sc, true);
-                var script = ScriptHelper.createExecScript(sc, content);
+                var script = ScriptHelper.createExecScript(sc, content.getValue());
                 var builder = CommandBuilder.of().add(sc.getShellDialect().runScriptCommand(sc, script.toString()));
                 for (BrowserEntry entry : entries) {
                     builder.addFile(entry.getRawFileEntry().getPath());

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.core.OsType;
 
@@ -12,7 +13,7 @@ import javafx.scene.layout.*;
 
 public class StandardStoreEntryComp extends StoreEntryComp {
 
-    public StandardStoreEntryComp(StoreSection section, Comp<?> content) {
+    public StandardStoreEntryComp(StoreSection section, BaseRegionBuilder<?, ?> content) {
         super(section, content);
     }
 
@@ -27,19 +28,19 @@ public class StandardStoreEntryComp extends StoreEntryComp {
     }
 
     protected Region createContent() {
-        var name = createName().createRegion();
-        var tags = createTags().createRegion();
-        var index = createOrderIndex().createRegion();
-        var notes = new StoreNotesComp(getWrapper()).createRegion();
-        var userIcon = createUserIcon().createRegion();
-        var pinIcon = createPinIcon().createRegion();
+        var name = createName().build();
+        var tags = createTags().build();
+        var index = createOrderIndex().build();
+        var notes = new StoreNotesComp(getWrapper()).build();
+        var userIcon = createUserIcon().build();
+        var pinIcon = createPinIcon().build();
 
         var grid = new GridPane();
         grid.setHgap(6);
         grid.setVgap(OsType.ofLocal() == OsType.MACOS ? 2 : 0);
 
         var selection = createBatchSelection();
-        grid.add(selection.createRegion(), 0, 0, 1, 2);
+        grid.add(selection.build(), 0, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(25));
         StoreViewState.get().getBatchMode().subscribe(batch -> {
             if (batch) {
@@ -50,10 +51,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         });
 
         var storeIcon = createIcon(46, 40, AppFontSizes::title);
-        grid.add(storeIcon, 1, 0, 1, 2);
+        grid.add(storeIcon.build(), 1, 0, 1, 2);
         grid.getColumnConstraints().add(new ColumnConstraints(52));
 
-        var active = new StoreActiveComp(getWrapper()).createRegion();
+        var active = new StoreActiveComp(getWrapper()).build();
         var nameBox = new HBox(name, tags, index, userIcon, pinIcon, notes);
         nameBox.setSpacing(4);
         nameBox.setAlignment(Pos.CENTER_LEFT);
@@ -84,10 +85,10 @@ public class StandardStoreEntryComp extends StoreEntryComp {
         info.setHalignment(HPos.LEFT);
         grid.getColumnConstraints().add(info);
 
-        var customSize = content != null ? 100 : 0;
-        var custom = new ColumnConstraints(0, customSize, customSize);
+        var controlsSize = content != null ? 140 : 70;
+        var custom = new ColumnConstraints(0, controlsSize, controlsSize);
         custom.setHalignment(HPos.RIGHT);
-        var cr = content != null ? content.createRegion() : new Region();
+        var cr = content != null ? content.build() : new Region();
         cr.getStyleClass().add("custom-content");
         var bb = createButtonBar(name);
         var controls = new HBox(cr, bb);
@@ -122,8 +123,8 @@ public class StandardStoreEntryComp extends StoreEntryComp {
 
         var state = getWrapper().getEntry().getProvider() != null
                 ? getWrapper().getEntry().getProvider().stateDisplay(getWrapper())
-                : Comp.empty();
-        information.setGraphic(state.createRegion());
+                : RegionBuilder.empty();
+        information.setGraphic(state.build());
 
         return information;
     }

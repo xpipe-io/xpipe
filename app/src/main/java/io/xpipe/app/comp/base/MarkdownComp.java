@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.core.AppResources;
@@ -31,7 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.UnaryOperator;
 
-public class MarkdownComp extends Comp<CompStructure<StackPane>> {
+public class MarkdownComp extends RegionBuilder<StackPane> {
 
     private static Boolean WEB_VIEW_SUPPORTED;
     private static Path DIR;
@@ -139,7 +137,7 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
     }
 
     @Override
-    public CompStructure<StackPane> createBase() {
+    public StackPane createSimple() {
         var sp = new StackPane();
 
         if (OsType.ofLocal() == OsType.WINDOWS && AppProperties.get().getArch().equals("arm64")) {
@@ -169,6 +167,6 @@ public class MarkdownComp extends Comp<CompStructure<StackPane>> {
             sp.getChildren().add(text);
         }
 
-        return new SimpleCompStructure<>(sp);
+        return sp;
     }
 }

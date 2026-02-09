@@ -81,6 +81,11 @@ public class BaseUntarMenuProvider implements BrowserApplicationPathMenuProvider
         return builder.build();
     }
 
+    @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
+    }
+
     private FilePath getTarget(FilePath name) {
         return FilePath.of(name.toString()
                 .replaceAll("\\.tar$", "")

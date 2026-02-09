@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
@@ -13,13 +13,13 @@ import javafx.scene.layout.Region;
 
 import java.util.List;
 
-public class StoreIntroComp extends SimpleComp {
+public class StoreIntroComp extends SimpleRegionBuilder {
 
     @Override
     public Region createSimple() {
         var hub = new IntroComp("storeIntro", new LabelGraphic.NodeGraphic(() -> PrettyImageHelper.ofSpecificFixedSize(
-                        "graphics/Wave.svg", 80, 144)
-                .createRegion()));
+                        "welcome/wave.svg", 80, 144)
+                .build()));
         hub.setButtonAction(() -> {
             ScanDialog.showSingleAsync(DataStorage.get().local());
         });
@@ -33,6 +33,6 @@ public class StoreIntroComp extends SimpleComp {
         });
 
         var list = new IntroListComp(List.of(hub, sync));
-        return list.createRegion();
+        return list.build();
     }
 }

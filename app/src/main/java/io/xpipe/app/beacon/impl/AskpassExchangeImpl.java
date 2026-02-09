@@ -35,7 +35,7 @@ public class AskpassExchangeImpl extends AskpassExchange {
                 var qe = new AppLayoutModel.QueueEntry(
                         new SimpleStringProperty(msg.getPrompt()),
                         new LabelGraphic.IconGraphic("mdi2f-fingerprint"),
-                        () -> {});
+                        () -> true);
                 AppLayoutModel.get().getQueueEntries().add(qe);
                 GlobalTimer.delay(
                         () -> {

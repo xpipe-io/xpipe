@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
@@ -16,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.util.StringConverter;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.LinkedHashMap;
@@ -24,7 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
+@AllArgsConstructor
+public class ChoiceComp<T> extends RegionBuilder<ComboBox<T>> {
 
     Property<T> value;
     ObservableValue<Map<T, ObservableValue<String>>> range;
@@ -45,7 +45,7 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
     }
 
     @Override
-    public CompStructure<ComboBox<T>> createBase() {
+    public ComboBox<T> createSimple() {
         var cb = MenuHelper.<T>createComboBox();
         cb.setConverter(new StringConverter<>() {
             @Override
@@ -68,12 +68,20 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
             }
         });
         range.subscribe(c -> {
-            var list = FXCollections.observableArrayList(c.keySet());
-            if (!list.contains(null) && includeNone) {
-                list.addFirst(null);
-            }
+            PlatformThread.runLaterIfNeeded(() -> {
+                var list = FXCollections.observableArrayList(c.keySet());
+                if (!list.contains(null) && includeNone) {
+                    list.addFirst(null);
+                }
 
-            cb.getItems().setAll(list);
+                cb.getItems().setAll(list);
+
+                if (list.size() == 1) {
+                    value.setValue(list.getFirst());
+                } else if (list.isEmpty()) {
+                    value.setValue(null);
+                }
+            });
         });
 
         cb.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -85,6 +93,6 @@ public class ChoiceComp<T> extends Comp<CompStructure<ComboBox<T>>> {
 
         cb.getStyleClass().add("choice-comp");
         cb.setMaxWidth(10000);
-        return new SimpleCompStructure<>(cb);
+        return cb;
     }
 }

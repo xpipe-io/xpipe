@@ -1,6 +1,6 @@
 package io.xpipe.app.platform;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 
 import javafx.scene.Node;
@@ -49,8 +49,8 @@ public abstract class LabelGraphic {
         @Override
         public Node createGraphicNode() {
             return PrettyImageHelper.ofFixedSizeSquare(file, size)
-                    .styleClass("graphic")
-                    .createRegion();
+                    .style("graphic")
+                    .build();
         }
     }
 
@@ -58,11 +58,11 @@ public abstract class LabelGraphic {
     @EqualsAndHashCode(callSuper = true)
     public static class CompGraphic extends LabelGraphic {
 
-        Comp<?> comp;
+        BaseRegionBuilder<?, ?> comp;
 
         @Override
         public Node createGraphicNode() {
-            return comp.styleClass("graphic").createRegion();
+            return comp.style("graphic").build();
         }
     }
 

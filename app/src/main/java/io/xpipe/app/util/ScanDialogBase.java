@@ -1,6 +1,8 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.ListSelectorComp;
 import io.xpipe.app.comp.base.LoadingOverlayComp;
 import io.xpipe.app.core.AppI18n;
@@ -130,10 +132,17 @@ public class ScanDialogBase {
         });
     }
 
-    public Comp<?> createComp() {
+    public BaseRegionBuilder<?, ?> createComp() {
         StackPane stackPane = new StackPane();
         stackPane.getStyleClass().add("scan-list");
         VBox.setVgrow(stackPane, ALWAYS);
+
+        if (!showButton) {
+            var emptyLabel = new LabelComp(AppI18n.observable("noScanPossible"))
+                    .visible(busy.not().and(Bindings.isEmpty(available)))
+                    .build();
+            stackPane.getChildren().add(emptyLabel);
+        }
 
         Function<ScanProvider.ScanOpportunity, String> nameFunc = (ScanProvider.ScanOpportunity s) -> {
             var n = s.getName().getValue();
@@ -147,10 +156,11 @@ public class ScanDialogBase {
         var r = new ListSelectorComp<>(
                         available,
                         nameFunc,
+                        so -> null,
                         selected,
                         scanOperation -> scanOperation.isDisabled(),
                         () -> available.size() > 3)
-                .createRegion();
+                .build();
         stackPane.getChildren().add(r);
 
         if (showButton) {
@@ -173,7 +183,7 @@ public class ScanDialogBase {
             entries.addListener((ListChangeListener<? super DataStoreEntryRef<ShellStore>>) c -> onUpdate());
         }
 
-        var comp = new LoadingOverlayComp(Comp.of(() -> stackPane), busy, true).vgrow();
+        var comp = new LoadingOverlayComp(RegionBuilder.of(() -> stackPane), busy, true).vgrow();
         return comp;
     }
 }

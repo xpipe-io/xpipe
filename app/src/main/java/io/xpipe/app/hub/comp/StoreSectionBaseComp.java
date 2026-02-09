@@ -1,7 +1,7 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.platform.BindingsHelper;
@@ -15,14 +15,17 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
+public abstract class StoreSectionBaseComp extends RegionBuilder<VBox> {
 
     private static final PseudoClass EXPANDED = PseudoClass.getPseudoClass("expanded");
     private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
@@ -64,7 +67,7 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
 
         if (section.getWrapper() != null) {
             if (section.getDepth() == 1) {
-                section.getWrapper().getColor().subscribe(val -> {
+                BindingsHelper.attach(vbox, section.getWrapper().getColor(), val -> {
                     var newList = new ArrayList<>(vbox.getStyleClass());
                     newList.removeIf(s -> Arrays.stream(DataStoreColor.values())
                             .anyMatch(dataStoreColor -> dataStoreColor.getId().equals(s)));
@@ -79,38 +82,52 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
                 });
             }
 
-            section.getWrapper().getPerUser().subscribe(val -> {
+            BindingsHelper.attach(vbox, section.getWrapper().getPerUser(), val -> {
                 vbox.pseudoClassStateChanged(PseudoClass.getPseudoClass("per-user"), val);
             });
         }
     }
 
-    protected void addVisibilityListeners(VBox root, HBox hbox) {
-        var children = new ArrayList<>(hbox.getChildren());
-        hbox.getChildren().clear();
-        root.visibleProperty().subscribe((newValue) -> {
-            Platform.runLater(() -> {
-                if (newValue) {
-                    if (!root.isVisible()) {
-                        return;
-                    }
-
-                    if (hbox.getChildren().size() == 0) {
-                        hbox.getChildren().addAll(children);
-                    }
-                } else {
-                    if (root.isVisible()) {
-                        return;
-                    }
-
-                    hbox.getChildren().clear();
+    protected void addVisibilityListeners(VBox root, Pane pane, Supplier<HBox> hbox) {
+        AtomicReference<HBox> built = new AtomicReference<>();
+        Consumer<Boolean> update = (visible) -> {
+            if (visible) {
+                // Ignore any changes before this was added to the scene
+                if (root.getScene() == null && built.get() == null) {
+                    return;
                 }
-            });
+
+                if (!root.isVisible()) {
+                    return;
+                }
+
+                if (built.get() == null) {
+                    built.set(hbox.get());
+                }
+
+                pane.getChildren().setAll(built.get());
+            } else {
+                if (root.isVisible()) {
+                    return;
+                }
+
+                pane.getChildren().clear();
+            }
+        };
+
+        root.visibleProperty().subscribe((newValue) -> {
+            if (root.getScene() == null) {
+                update.accept(newValue);
+            } else {
+                Platform.runLater(() -> {
+                    update.accept(newValue);
+                });
+            }
         });
     }
 
     protected ListBoxViewComp<StoreSection> createChildrenList(
-            Function<StoreSection, Comp<?>> function, ObservableBooleanValue hide) {
+            Function<StoreSection, BaseRegionBuilder<?, ?>> function, ObservableBooleanValue hide) {
         var content = new ListBoxViewComp<>(
                 section.getShownChildren().getList(),
                 section.getAllChildren().getList(),
@@ -119,14 +136,13 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         content.setVisibilityControl(true);
         content.minHeight(0);
         content.hgrow();
-        content.styleClass("children-content");
+        content.style("children-content");
         content.hide(hide);
-        content.apply(struc -> struc.get().setFocusTraversable(false));
+        content.apply(struc -> struc.setFocusTraversable(false));
         return content;
     }
 
-    protected Comp<CompStructure<Button>> createExpandButton(
-            Runnable action, int width, ObservableBooleanValue expanded) {
+    protected RegionBuilder<Button> createExpandButton(Runnable action, int width, ObservableBooleanValue expanded) {
         var icon = Bindings.createObjectBinding(
                 () -> new LabelGraphic.IconGraphic(
                         expanded.get() && section.getShownChildren().getList().size() > 0
@@ -138,25 +154,25 @@ public abstract class StoreSectionBaseComp extends Comp<CompStructure<VBox>> {
         expandButton
                 .minWidth(width)
                 .prefWidth(width)
-                .descriptor(d -> d.nameKey("expand"))
+                .describe(d -> d.nameKey("expand"))
                 .disable(Bindings.size(section.getShownChildren().getList()).isEqualTo(0))
-                .styleClass("expand-button")
+                .style("expand-button")
                 .maxHeight(100);
         return expandButton;
     }
 
-    protected Comp<CompStructure<Button>> createQuickAccessButton(int width, Consumer<StoreSection> r) {
+    protected RegionBuilder<Button> createQuickAccessButton(int width, Consumer<StoreSection> r) {
         var quickAccessDisabled = Bindings.createBooleanBinding(
                 () -> {
                     return section.getShownChildren().getList().isEmpty();
                 },
                 section.getShownChildren().getList());
         var quickAccessButton = new StoreQuickAccessButtonComp(section, r)
-                .styleClass("quick-access-button")
+                .style("quick-access-button")
                 .minWidth(width)
                 .prefWidth(width)
                 .maxHeight(100)
-                .descriptor(d -> d.nameKey("quickAccess"))
+                .describe(d -> d.nameKey("quickAccess"))
                 .disable(quickAccessDisabled);
         return quickAccessButton;
     }

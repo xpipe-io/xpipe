@@ -51,6 +51,7 @@ public abstract class AbstractAction {
     private static final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("cancelActionPicker"), new LabelGraphic.IconGraphic("mdal-cancel_presentation"), () -> {
                 cancelPick();
+                return true;
             });
 
     public static synchronized void cancelPick() {

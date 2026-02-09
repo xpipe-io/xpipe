@@ -7,8 +7,6 @@ import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
-import io.xpipe.app.process.ShellTtyState;
-import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 
@@ -17,11 +15,7 @@ import java.util.List;
 public class ScanDialog {
 
     public static void showSingleAsync(DataStoreEntry entry) {
-        var showForCon = entry == null
-                || (entry.getStore() instanceof ShellStore
-                        && (!(entry.getStorePersistentState() instanceof SystemState systemState)
-                                || systemState.getTtyState() == null
-                                || systemState.getTtyState() == ShellTtyState.NONE));
+        var showForCon = entry == null || entry.getStore() instanceof ShellStore;
         if (showForCon) {
             showSingle(entry, ScanDialogAction.shellScanAction());
         }
@@ -31,7 +25,7 @@ public class ScanDialog {
         var comp = new ScanSingleDialogComp(initialStore != null ? initialStore.ref() : null, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
         var queueEntry = new AppLayoutModel.QueueEntry(
-                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> false);
         var button = new ModalButton(
                 "ok",
                 () -> {
@@ -52,7 +46,7 @@ public class ScanDialog {
         var comp = new ScanMultiDialogComp(entries, action);
         var modal = ModalOverlay.of("scanAlertTitle", comp);
         var queueEntry = new AppLayoutModel.QueueEntry(
-                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> {});
+                AppI18n.observable("scanConnections"), new LabelGraphic.IconGraphic("mdi2l-layers-plus"), () -> false);
         var button = new ModalButton(
                 "ok",
                 () -> {

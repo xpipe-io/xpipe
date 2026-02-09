@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.store;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.OsLogoComp;
 import io.xpipe.app.hub.comp.StoreEntryWrapper;
@@ -19,6 +19,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ObservableValue;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ShellStoreProvider extends DataStoreProvider {
 
@@ -31,7 +32,12 @@ public interface ShellStoreProvider extends DataStoreProvider {
             // These prepend scripts, not append
             TerminalPromptManager.configurePromptScript(control);
             ScriptStoreSetup.controlWithDefaultScripts(control);
-            TerminalLaunch.builder().entry(replacement.get()).command(control).launch();
+            var request = UUID.randomUUID();
+            TerminalLaunch.builder()
+                    .request(request)
+                    .entry(replacement.get())
+                    .command(control)
+                    .launch();
         };
     }
 
@@ -43,7 +49,7 @@ public interface ShellStoreProvider extends DataStoreProvider {
         };
     }
 
-    default Comp<?> stateDisplay(StoreEntryWrapper w) {
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new OsLogoComp(w, SystemStateComp.State.shellState(w));
     }
 

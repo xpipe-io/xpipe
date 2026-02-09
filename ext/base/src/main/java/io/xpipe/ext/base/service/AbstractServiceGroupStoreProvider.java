@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.ext.DataStoreProvider;
@@ -21,7 +21,7 @@ public abstract class AbstractServiceGroupStoreProvider implements DataStoreProv
     }
 
     @Override
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(new SimpleObjectProperty<>(SystemStateComp.State.SUCCESS));
     }
 

@@ -79,7 +79,7 @@ public class AppDesktopIntegration {
                         && AppLogs.get().isWriteToSysout()
                         && Taskbar.isTaskbarSupported()) {
                     try {
-                        var iconUrl = Main.class.getResourceAsStream("resources/img/logo/padded/logo_128x128.png");
+                        var iconUrl = Main.class.getResourceAsStream("resources/logo/padded/logo_128x128.png");
                         if (iconUrl != null) {
                             var awtIcon = ImageIO.read(iconUrl);
                             Taskbar.getTaskbar().setIconImage(awtIcon);

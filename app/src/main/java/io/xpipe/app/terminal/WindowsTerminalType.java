@@ -27,7 +27,7 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     ExternalTerminalType WINDOWS_TERMINAL_PREVIEW = new Preview();
     ExternalTerminalType WINDOWS_TERMINAL_CANARY = new Canary();
 
-    AtomicInteger windowCounter = new AtomicInteger(10);
+    AtomicInteger windowCounter = new AtomicInteger(101);
 
     private static String getFixedTitle(String s) {
         // A weird behavior in Windows Terminal causes the trailing
@@ -40,8 +40,9 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
     }
 
     private static CommandBuilder toCommand(TerminalLaunchConfiguration configuration) {
+        // Start from high window index to guarantee that xpipe uses its own window
         var cmd = CommandBuilder.of()
-                .addIf(configuration.isPreferTabs(), "-w", "1", "nt")
+                .addIf(configuration.isPreferTabs(), "-w", "100", "nt")
                 .addIf(!configuration.isPreferTabs(), "-w", "" + windowCounter.getAndIncrement());
 
         if (configuration.getColor() != null) {
@@ -92,10 +93,15 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         return true;
     }
 
+    @Override
+    default TerminalDockMode getDockMode() {
+        return TerminalDockMode.BORDERLESS;
+    }
+
     default void checkProfile() throws IOException {
         // Update old configs
         var before =
-                LocalDate.of(2025, 4, 2).atStartOfDay(ZoneId.systemDefault()).toInstant();
+                LocalDate.of(2026, 2, 8).atStartOfDay(ZoneId.systemDefault()).toInstant();
         var outdated = AppCache.getModifiedTime("wtProfileSet")
                 .map(instant -> instant.isBefore(before))
                 .orElse(false);
@@ -131,6 +137,8 @@ public interface WindowsTerminalType extends ExternalTerminalType, TrackableTerm
         newProfile.put("name", "XPipe");
         newProfile.put("closeOnExit", "always");
         newProfile.put("suppressApplicationTitle", true);
+        // To make docking a better experience
+        newProfile.put("showTabsInTitlebar", true);
         newProfile.putNull("startingDirectory");
         newProfile.put("elevate", false);
         if (!AppProperties.get().isDevelopmentEnvironment()) {

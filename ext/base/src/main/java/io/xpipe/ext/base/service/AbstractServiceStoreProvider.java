@@ -1,6 +1,6 @@
 package io.xpipe.ext.base.service;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.*;
 import io.xpipe.app.hub.comp.*;
@@ -145,7 +145,7 @@ public abstract class AbstractServiceStoreProvider implements SingletonSessionSt
     }
 
     @Override
-    public Comp<?> stateDisplay(StoreEntryWrapper w) {
+    public BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
         return new SystemStateComp(Bindings.createObjectBinding(
                 () -> {
                     if (!w.getEntry().getValidity().isUsable()) {

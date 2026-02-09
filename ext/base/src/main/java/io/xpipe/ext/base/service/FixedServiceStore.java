@@ -5,6 +5,7 @@ import io.xpipe.app.ext.FixedChildStore;
 import io.xpipe.app.ext.NetworkTunnelStore;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.Validators;
+import io.xpipe.ext.base.host.HostAddressStore;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;
@@ -15,7 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import java.util.OptionalInt;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Getter
 @Jacksonized
 @JsonTypeName("fixedService")
@@ -23,7 +24,7 @@ import java.util.OptionalInt;
 @ToString(callSuper = true)
 public class FixedServiceStore extends AbstractServiceStore implements FixedChildStore {
 
-    private final DataStoreEntryRef<NetworkTunnelStore> host;
+    private final DataStoreEntryRef<HostAddressStore> host;
     private final DataStoreEntryRef<? extends DataStore> displayParent;
     private final Boolean tunnelToLocalhost;
 
@@ -38,13 +39,19 @@ public class FixedServiceStore extends AbstractServiceStore implements FixedChil
     }
 
     @Override
-    public DataStoreEntryRef<NetworkTunnelStore> getHost() {
+    public DataStoreEntryRef<HostAddressStore> getHost() {
         return host;
     }
 
     @Override
     public boolean licenseRequired() {
         return false;
+    }
+
+    @Override
+    public FixedChildStore merge(FixedChildStore other) {
+        var o = (FixedServiceStore) other;
+        return toBuilder().tunnelToLocalhost(o.tunnelToLocalhost).build();
     }
 
     @Override

@@ -23,6 +23,11 @@
     -fx-icon-color: -color-fg-default;
 }
 
+.store-choice-comp.left-pill .choice-comp {
+    -fx-background-radius: 4 0 0 4;
+    -fx-border-radius: 4 0 0 4;
+}
+
 .choice-comp-content > .top {
     -fx-padding: 0.4em;
     -fx-background-color: -color-neutral-subtle;

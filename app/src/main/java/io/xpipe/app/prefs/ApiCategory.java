@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -18,7 +18,7 @@ public class ApiCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
 
         return new OptionsBuilder()

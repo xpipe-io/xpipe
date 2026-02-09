@@ -5,7 +5,7 @@
    viewBox="0 0 188.16 188.16"
    version="1.1"
    sodipodi:docname="sh_icon-dark.svg"
-   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,14 +23,16 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="3.2206128"
-     inkscape:cx="55.424235"
-     inkscape:cy="92.218475"
+     inkscape:cx="55.579485"
+     inkscape:cy="92.684225"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1009"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="Layer_1" />
+     inkscape:current-layer="Layer_1"
+     inkscape:showpageshadow="2"
+     inkscape:deskcolor="#d1d1d1" />
   <defs
      id="defs4">
     <style
@@ -61,7 +63,7 @@
        x="54.75"
        y="0"
        id="tspan14"
-       style="fill:#f6f6f6;fill-opacity:1">&gt;</tspan></text>
+       style="fill:#02b5e9;fill-opacity:1">&gt;</tspan></text>
   <metadata
      id="metadata836">
     <rdf:RDF>

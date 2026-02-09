@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.process.ShellStoreState;
 
@@ -16,7 +16,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.javafx.StackedFontIcon;
 
 @Getter
-public class SystemStateComp extends SimpleComp {
+public class SystemStateComp extends SimpleRegionBuilder {
 
     private final ObservableValue<State> state;
 
@@ -41,16 +41,13 @@ public class SystemStateComp extends SimpleComp {
         border.getStyleClass().add("outer-icon");
         border.setOpacity(0.3);
 
-        var success = Styles.toDataURI(
-                """
+        var success = Styles.toDataURI("""
                                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-success-emphasis; }
                                        """);
-        var failure = Styles.toDataURI(
-                """
+        var failure = Styles.toDataURI("""
                                        .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-danger-emphasis; }
                                        """);
-        var other = Styles.toDataURI(
-                """
+        var other = Styles.toDataURI("""
                                      .stacked-ikonli-font-icon > .outer-icon { -fx-icon-color: -color-accent-emphasis; }
                                      """);
 
@@ -58,8 +55,7 @@ public class SystemStateComp extends SimpleComp {
         pane.getChildren().addAll(fi, border);
         pane.setAlignment(Pos.CENTER);
 
-        var dataClass1 =
-                """
+        var dataClass1 = """
                          .stacked-ikonli-font-icon > .outer-icon {
                              -fx-icon-size: 26px;
                          }

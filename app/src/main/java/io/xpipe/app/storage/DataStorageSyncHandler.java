@@ -11,6 +11,10 @@ public interface DataStorageSyncHandler {
         return (DataStorageSyncHandler) ProcessControlProvider.get().getStorageSyncHandler();
     }
 
+    void pullManually();
+
+    void pushManually();
+
     void reset() throws Exception;
 
     boolean validateConnection();
@@ -31,7 +35,7 @@ public interface DataStorageSyncHandler {
 
     void beforeStorageSave();
 
-    void afterStorageSave();
+    void afterStorageSave(boolean pushIfNeeded, boolean dispose);
 
     void handleEntry(DataStoreEntry entry, boolean exists, boolean dirty);
 

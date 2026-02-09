@@ -3,15 +3,15 @@ package io.xpipe.app.browser.file;
 import io.xpipe.app.browser.BrowserAbstractSessionModel;
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.BrowserSessionTab;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStoreColor;
-import io.xpipe.app.terminal.TerminalDockComp;
-import io.xpipe.app.terminal.TerminalDockModel;
+import io.xpipe.app.terminal.TerminalDockBrowserComp;
+import io.xpipe.app.terminal.TerminalDockView;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.terminal.WindowsTerminalType;
 import io.xpipe.app.util.ThreadHelper;
@@ -25,14 +25,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
 
     private final BrowserSessionTab origin;
     private final ObservableList<UUID> terminalRequests;
-    private final TerminalDockModel dockModel = new TerminalDockModel();
+    private final TerminalDockView dockModel = new TerminalDockView(UnaryOperator.identity());
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;
@@ -47,8 +47,8 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     }
 
     @Override
-    public Comp<?> comp() {
-        return new TerminalDockComp(dockModel, opened);
+    public BaseRegionBuilder<?, ?> comp() {
+        return new TerminalDockBrowserComp(dockModel, opened);
     }
 
     @Override
@@ -66,24 +66,18 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
 
                 opened.set(true);
-                var sessions = TerminalView.get().getSessions();
-                var tv = sessions.stream()
-                        .filter(s -> terminalRequests.contains(s.getRequest())
-                                && s.getTerminal().isRunning())
-                        .map(s -> s.getTerminal().controllable())
-                        .flatMap(Optional::stream)
-                        .toList();
-                for (int i = 0; i < tv.size() - 1; i++) {
-                    dockModel.closeTerminal(tv.get(i));
-                }
 
+                var closed = dockModel.closeOtherTerminals(session.getRequest());
                 // Closing and opening windows at the same time might be problematic for some bad implementations
-                if (tv.size() > 1) {
+                if (closed) {
                     ThreadHelper.sleep(250);
                 }
 
-                var toTrack = tv.getLast();
-                dockModel.trackTerminal(toTrack);
+                var controllable = session.getTerminal().controllable();
+                if (controllable.isEmpty()) {
+                    return;
+                }
+                dockModel.trackTerminal(controllable.get(), true);
             }
 
             @Override
@@ -135,14 +129,22 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 AppLayoutModel.get().getSelected());
         viewActive.subscribe(aBoolean -> {
             Platform.runLater(() -> {
-                dockModel.toggleView(aBoolean);
+                if (aBoolean) {
+                    dockModel.activateView();
+                } else {
+                    dockModel.deactivateView();
+                }
             });
         });
         AppDialog.getModalOverlays().addListener((ListChangeListener<? super ModalOverlay>) c -> {
             if (c.getList().size() > 0) {
-                dockModel.toggleView(false);
+                dockModel.deactivateView();
             } else {
-                dockModel.toggleView(viewActive.get());
+                if (viewActive.get()) {
+                    dockModel.activateView();
+                } else {
+                    dockModel.deactivateView();
+                }
             }
         });
     }

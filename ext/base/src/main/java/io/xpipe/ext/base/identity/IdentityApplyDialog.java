@@ -2,7 +2,8 @@ package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.file.BrowserFileOpener;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -159,33 +160,33 @@ public class IdentityApplyDialog {
         }
     }
 
-    private static Comp<?> success() {
+    private static BaseRegionBuilder<?, ?> success() {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-checkbox-marked-outline");
         return new LabelComp(AppI18n.observable("valid"), new ReadOnlyObjectWrapper<>(graphic))
-                .styleClass(Styles.SUCCESS)
+                .style(Styles.SUCCESS)
                 .apply(struc -> {
-                    AppFontSizes.lg(struc.get());
+                    AppFontSizes.lg(struc);
                 });
     }
 
-    private static Comp<?> warning() {
+    private static BaseRegionBuilder<?, ?> warning() {
         var graphic = new LabelGraphic.IconGraphic("mdi2a-alert-box-outline");
         return new LabelComp(AppI18n.observable("warning"), new ReadOnlyObjectWrapper<>(graphic))
-                .styleClass(Styles.WARNING)
+                .style(Styles.WARNING)
                 .apply(struc -> {
-                    AppFontSizes.lg(struc.get());
+                    AppFontSizes.lg(struc);
                 });
     }
 
-    private static Comp<?> fail(Comp<?> fixComp) {
+    private static BaseRegionBuilder<?, ?> fail(BaseRegionBuilder<?, ?> fixComp) {
         var graphic = new LabelGraphic.IconGraphic("mdi2c-close-box-outline");
         var label = new LabelComp(AppI18n.observable("notValid"), new ReadOnlyObjectWrapper<>(graphic))
-                .styleClass(Styles.DANGER);
+                .style(Styles.DANGER);
         label.apply(struc -> {
-            AppFontSizes.lg(struc.get());
+            AppFontSizes.lg(struc);
         });
         if (fixComp != null) {
-            var hbox = new HorizontalComp(List.of(label, fixComp, Comp.hspacer()));
+            var hbox = new HorizontalComp(List.of(label, fixComp, RegionBuilder.hspacer()));
             hbox.spacing(10);
             return hbox;
         } else {
@@ -193,7 +194,7 @@ public class IdentityApplyDialog {
         }
     }
 
-    private static Comp<?> createAuthorizedKeysOptions(
+    private static BaseRegionBuilder<?, ?> createAuthorizedKeysOptions(
             Property<DataStoreEntryRef<ShellStore>> system,
             ObjectProperty<SystemState> systemState,
             IdentityStore identity,
@@ -256,7 +257,7 @@ public class IdentityApplyDialog {
         return options.buildComp().hide(Bindings.isNull(systemState));
     }
 
-    private static Comp<?> createConfigOptions(
+    private static BaseRegionBuilder<?, ?> createConfigOptions(
             Property<DataStoreEntryRef<ShellStore>> system,
             Property<SystemState> systemState,
             IdentityStore identity,

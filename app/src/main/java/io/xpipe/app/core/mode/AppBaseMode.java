@@ -26,6 +26,7 @@ import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageSyncHandler;
+import io.xpipe.app.terminal.TerminalDockHubManager;
 import io.xpipe.app.terminal.TerminalLauncherManager;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.update.UpdateAvailableDialog;
@@ -148,7 +149,8 @@ public class AppBaseMode extends AppOperationMode {
                     BlobManager.init();
                     TerminalView.init();
                     TerminalLauncherManager.init();
-                    TrackEvent.info("File/Watcher initialization thread completed");
+                    TerminalDockHubManager.init();
+                    TrackEvent.info("File/Terminal initialization thread completed");
                 },
                 () -> {
                     PlatformInit.init(true);
@@ -156,14 +158,15 @@ public class AppBaseMode extends AppOperationMode {
                     imagesLoaded.countDown();
                     SystemIconManager.init();
                     syncPrefsLoaded.await();
-                    var additional = SystemIconManager.initAdditional();
+                    SystemIconManager.initAdditional();
                     iconsInit.countDown();
-                    SystemIconManager.loadAdditional(additional);
+                    storageLoaded.await();
+                    SystemIconManager.prepareUsedIconImages();
                     iconsLoaded.countDown();
                     TrackEvent.info("Platform initialization thread completed");
                 },
                 () -> {
-                    BrowserIconManager.loadIfNecessary();
+                    BrowserIconManager.init();
                     shellLoaded.await();
                     BrowserLocalFileSystem.init();
                     storageLoaded.await();

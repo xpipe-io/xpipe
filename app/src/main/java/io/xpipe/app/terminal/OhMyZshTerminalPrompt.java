@@ -33,9 +33,7 @@ public class OhMyZshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     @SuppressWarnings("unused")
     public static OhMyZshTerminalPrompt createDefault() {
-        return OhMyZshTerminalPrompt.builder()
-                .configuration(
-                        """
+        return OhMyZshTerminalPrompt.builder().configuration("""
                                                              # Set name of the theme to load --- if set to "random", it will
                                                              # load a random theme each time Oh My Zsh is loaded, in which case,
                                                              # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -103,8 +101,7 @@ public class OhMyZshTerminalPrompt extends ConfigFileTerminalPrompt {
                                                              # Example format: plugins=(rails git textmate ruby lighthouse)
                                                              # Add wisely, as too many plugins slow down shell startup.
                                                              plugins=(git)
-                                                             """)
-                .build();
+                                                             """).build();
     }
 
     @Override

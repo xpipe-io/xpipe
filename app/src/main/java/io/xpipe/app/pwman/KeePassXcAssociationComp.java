@@ -1,6 +1,6 @@
 package io.xpipe.app.pwman;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 
 import javafx.geometry.Insets;
@@ -11,7 +11,7 @@ import javafx.scene.layout.Region;
 
 import atlantafx.base.theme.Styles;
 
-public class KeePassXcAssociationComp extends SimpleComp {
+public class KeePassXcAssociationComp extends SimpleRegionBuilder {
 
     private final KeePassXcAssociationKey associationKey;
     private final Runnable onRemove;
@@ -32,7 +32,7 @@ public class KeePassXcAssociationComp extends SimpleComp {
         var keyLabel = new Label(censoredKey);
         keyLabel.setMaxWidth(2000);
         HBox.setHgrow(keyLabel, Priority.ALWAYS);
-        var delButton = new IconButtonComp("mdi2t-trash-can-outline", onRemove).createRegion();
+        var delButton = new IconButtonComp("mdi2t-trash-can-outline", onRemove).build();
         var box = new HBox(nameLabel, keyLabel, delButton);
         box.setSpacing(8);
         box.setPadding(new Insets(5, 0, 5, 0));

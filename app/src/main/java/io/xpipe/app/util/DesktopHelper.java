@@ -165,17 +165,17 @@ public class DesktopHelper {
                 var action = kind == FileKind.DIRECTORY
                         ? "org.freedesktop.FileManager1.ShowFolders"
                         : "org.freedesktop.FileManager1.ShowItems";
-                var dbus = String.format(
-                        """
+                var dbus = String.format("""
                                          dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 %s array:string:"file://%s" string:""
-                                         """,
-                        action, path);
+                                         """, action, path);
                 var success = sc.executeSimpleBooleanCommand(dbus);
                 if (success) {
                     return;
                 }
 
-                var b = CommandBuilder.of().add("xdg-open").addFile(kind == FileKind.DIRECTORY ? path : path.getParent());
+                var b = CommandBuilder.of()
+                        .add("xdg-open")
+                        .addFile(kind == FileKind.DIRECTORY ? path : path.getParent());
                 ExternalApplicationHelper.startAsync(b);
                 sc.command(b).execute();
             }

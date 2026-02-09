@@ -1,10 +1,9 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.ext.FileSystemStore;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.LabelGraphic;
@@ -91,11 +90,11 @@ public class IdentityChoiceBuilder {
                     var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2k-key-plus"), () -> {
                         ProcessControlProvider.get().showSshKeygenDialog(null, identity);
                     });
-                    button.descriptor(d -> d.nameKey("generateKey"));
-                    var comboComp = Comp.of(() -> entryComboBox);
+                    button.describe(d -> d.nameKey("generateKey"));
+                    var comboComp = RegionBuilder.of(() -> entryComboBox);
                     var hbox = new InputGroupComp(List.of(comboComp, button));
                     hbox.setMainReference(comboComp);
-                    return hbox.createRegion();
+                    return hbox.build();
                 })
                 .build()
                 .build();

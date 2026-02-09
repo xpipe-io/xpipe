@@ -2,15 +2,14 @@ package io.xpipe.app.platform;
 
 import io.xpipe.app.util.Rect;
 
+import io.xpipe.app.util.User32Ex;
 import javafx.stage.Window;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,6 +22,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 public class NativeWinWindowControl {
+
+    private static final int WS_EX_APPWINDOW = 0x00040000;
 
     public static NativeWinWindowControl MAIN_WINDOW;
     private final WinDef.HWND windowHandle;
@@ -71,6 +72,32 @@ public class NativeWinWindowControl {
         return refs;
     }
 
+    public void removeBorders() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
+        var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
+    }
+
+    public void takeOwnership(WinDef.HWND owner) {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style & ~(WS_EX_APPWINDOW);
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        setWindowsTransitionsEnabled(false);
+
+        User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, owner);
+    }
+
+    public void releaseOwnership() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style | WS_EX_APPWINDOW;
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+
+        setWindowsTransitionsEnabled(true);
+
+        User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, (WinDef.HWND) null);
+    }
+
     public boolean isIconified() {
         return (User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE) & User32.WS_MINIMIZE) != 0;
     }
@@ -79,12 +106,7 @@ public class NativeWinWindowControl {
         return User32.INSTANCE.IsWindowVisible(windowHandle);
     }
 
-    public void alwaysInFront() {
-        orderRelative(new WinDef.HWND(new Pointer(0xFFFFFFFFFFFFFFFFL)));
-    }
-
-    public void defaultOrder() {
-        orderRelative(new WinDef.HWND(new Pointer(-2)));
+    public void moveToFront() {
         orderRelative(new WinDef.HWND(new Pointer(0)));
     }
 
@@ -107,7 +129,7 @@ public class NativeWinWindowControl {
 
     public void move(Rect bounds) {
         User32.INSTANCE.SetWindowPos(
-                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE);
+                windowHandle, null, bounds.getX(), bounds.getY(), bounds.getW(), bounds.getH(), User32.SWP_NOACTIVATE | User32.SWP_NOZORDER);
     }
 
     public Rect getBounds() {
@@ -135,7 +157,12 @@ public class NativeWinWindowControl {
         return r.longValue() == 0;
     }
 
+    public void setWindowsTransitionsEnabled(boolean enabled) {
+        setWindowAttribute(DmwaWindowAttribute.DWMWA_TRANSITIONS_FORCEDISABLED.get(), !enabled);
+    }
+
     public enum DmwaWindowAttribute {
+        DWMWA_TRANSITIONS_FORCEDISABLED(3),
         DWMWA_USE_IMMERSIVE_DARK_MODE(20),
         DWMWA_SYSTEMBACKDROP_TYPE(38);
 

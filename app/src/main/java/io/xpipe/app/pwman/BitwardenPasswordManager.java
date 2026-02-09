@@ -124,7 +124,7 @@ public class BitwardenPasswordManager implements PasswordManager {
             var password = login.required("password");
             return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));
         } catch (Exception ex) {
-            ErrorEventFactory.fromThrowable(ex).handle();
+            ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;
         }
     }

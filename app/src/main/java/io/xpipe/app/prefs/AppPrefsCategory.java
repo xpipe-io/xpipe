@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 
 public abstract class AppPrefsCategory {
@@ -17,5 +17,5 @@ public abstract class AppPrefsCategory {
 
     protected abstract LabelGraphic getIcon();
 
-    protected abstract Comp<?> create();
+    protected abstract BaseRegionBuilder<?, ?> create();
 }

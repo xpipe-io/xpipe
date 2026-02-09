@@ -1,7 +1,8 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.PlatformThread;
@@ -25,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
+public class AppLayoutComp extends RegionStructureBuilder<BorderPane, AppLayoutComp.Structure> {
 
     @Override
     public Structure createBase() {
         var model = AppLayoutModel.get();
-        Map<Comp<?>, ObservableValue<Boolean>> map = model.getEntries().stream()
+        Map<BaseRegionBuilder<?, ?>, ObservableValue<Boolean>> map = model.getEntries().stream()
                 .filter(entry -> entry.comp() != null)
                 .collect(Collectors.toMap(
                         entry -> entry.comp(),
@@ -42,13 +43,13 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
                         (v1, v2) -> v2,
                         LinkedHashMap::new));
         var multi = new MultiContentComp(true, map, true);
-        multi.styleClass("background");
+        multi.style("background");
 
         var pane = new BorderPane();
         var sidebar = new SideMenuBarComp(model.getSelected(), model.getEntries(), model.getQueueEntries());
-        StackPane multiR = (StackPane) multi.createRegion();
+        StackPane multiR = (StackPane) multi.build();
         pane.setCenter(multiR);
-        var sidebarR = sidebar.createRegion();
+        var sidebarR = sidebar.build();
         pane.setRight(sidebarR);
         model.getSelected().addListener((c, o, n) -> {
             if (o != null && o.equals(model.getEntries().get(2))) {
@@ -83,7 +84,7 @@ public class AppLayoutComp extends Comp<AppLayoutComp.Structure> {
     }
 
     public record Structure(BorderPane pane, StackPane stack, Region sidebar, List<Node> children)
-            implements CompStructure<BorderPane> {
+            implements RegionStructure<BorderPane> {
 
         public void prepareAddition() {
             stack.getChildren().clear();

@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -15,7 +13,7 @@ import javafx.scene.control.Button;
 import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class IconButtonComp extends Comp<CompStructure<Button>> {
+public class IconButtonComp extends RegionBuilder<Button> {
 
     private final ObservableValue<? extends LabelGraphic> icon;
     private final Runnable listener;
@@ -43,7 +41,7 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
     }
 
     @Override
-    public CompStructure<Button> createBase() {
+    public Button createSimple() {
         var button = new Button();
         button.getStyleClass().add(Styles.FLAT);
         // AtlantaFX sets underline to true. This bugs out ikonli: https://github.com/kordamp/ikonli/issues/175
@@ -68,6 +66,6 @@ public class IconButtonComp extends Comp<CompStructure<Button>> {
             });
         }
         button.getStyleClass().add("icon-button-comp");
-        return new SimpleCompStructure<>(button);
+        return button;
     }
 }

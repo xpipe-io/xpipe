@@ -1,7 +1,8 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.StackComp;
@@ -39,7 +40,7 @@ import static atlantafx.base.theme.Styles.DENSE;
 import static atlantafx.base.theme.Styles.toggleStyleClass;
 import static javafx.scene.control.TabPane.TabClosingPolicy.ALL_TABS;
 
-public class BrowserSessionTabsComp extends SimpleComp {
+public class BrowserSessionTabsComp extends SimpleRegionBuilder {
 
     private final BrowserFullSessionModel model;
     private final ObservableDoubleValue leftPadding;
@@ -106,7 +107,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
 
     public Region createSimple() {
         var tabs = createTabPane();
-        var topBackground = Comp.hspacer().styleClass("top-spacer").createRegion();
+        var topBackground = RegionBuilder.hspacer().style("top-spacer").build();
         leftPadding.subscribe(number -> {
             StackPane.setMargin(topBackground, new Insets(0, 0, 0, -number.doubleValue() - 3));
         });
@@ -425,8 +426,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             var image = tabModel.getIcon();
             var logo = PrettyImageHelper.ofFixedSizeSquare(image, 16);
             logo.apply(struc -> {
-                struc.get()
-                        .opacityProperty()
+                struc.opacityProperty()
                         .bind(PlatformThread.sync(Bindings.createDoubleBinding(
                                 () -> {
                                     return !tabModel.getBusy().get() ? 1.0 : 0.15;
@@ -435,7 +435,7 @@ public class BrowserSessionTabsComp extends SimpleComp {
             });
 
             var stack = new StackComp(List.of(logo, loading));
-            tab.setGraphic(stack.createRegion());
+            tab.setGraphic(stack.build());
         }
 
         if (tabModel.getBrowserModel() instanceof BrowserFullSessionModel sessionModel) {
@@ -455,8 +455,8 @@ public class BrowserSessionTabsComp extends SimpleComp {
             tab.textProperty().bind(tabModel.getName());
         }
 
-        Comp<?> comp = tabModel.comp();
-        var compRegion = comp.createRegion();
+        BaseRegionBuilder<?, ?> comp = tabModel.comp();
+        var compRegion = comp.build();
 
         var empty = new StackPane();
         empty.setMinWidth(180);

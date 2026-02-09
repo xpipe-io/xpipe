@@ -7,8 +7,6 @@ import io.xpipe.app.hub.action.HubLeafProvider;
 import io.xpipe.app.hub.action.StoreAction;
 import io.xpipe.app.hub.action.StoreActionCategory;
 import io.xpipe.app.platform.LabelGraphic;
-import io.xpipe.app.process.ShellTtyState;
-import io.xpipe.app.process.SystemState;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.ScanDialog;
 
@@ -27,18 +25,6 @@ public class ScanHubLeafProvider implements HubLeafProvider<ShellStore> {
     @Override
     public boolean isMajor() {
         return true;
-    }
-
-    @Override
-    public boolean isApplicable(DataStoreEntryRef<ShellStore> o) {
-        var state = o.get().getStorePersistentState();
-        if (state instanceof SystemState systemState) {
-            return (systemState.getShellDialect() == null
-                            || systemState.getShellDialect().getDumbMode().supportsAnyPossibleInteraction())
-                    && (systemState.getTtyState() == null || systemState.getTtyState() == ShellTtyState.NONE);
-        } else {
-            return true;
-        }
     }
 
     @Override

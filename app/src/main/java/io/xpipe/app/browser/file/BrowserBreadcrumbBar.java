@@ -1,6 +1,6 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.GlobalTimer;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class BrowserBreadcrumbBar extends SimpleComp {
+public class BrowserBreadcrumbBar extends SimpleRegionBuilder {
 
     private final BrowserFileSystemTabModel model;
     private Instant lastHoverUpdate;

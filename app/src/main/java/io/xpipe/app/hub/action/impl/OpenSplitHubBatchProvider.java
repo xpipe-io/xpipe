@@ -12,15 +12,17 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.terminal.*;
+import io.xpipe.app.util.ThreadHelper;
 
 import javafx.beans.value.ObservableValue;
 
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
 
@@ -65,21 +67,30 @@ public class OpenSplitHubBatchProvider implements BatchHubProvider<ShellStore> {
                 throw ErrorEventFactory.expected(new IllegalStateException(AppI18n.get("noTerminalSet")));
             }
 
-            var panes = new ArrayList<TerminalLauncher.Config>();
-            for (DataStoreEntryRef<ShellStore> ref : getRefs()) {
-                var replacement = ProcessControlProvider.get().replace(ref);
-                ShellStore store = replacement.getStore().asNeeded();
-                var control = store.standaloneControl();
-                // These prepend scripts, not append
-                TerminalPromptManager.configurePromptScript(control);
-                ProcessControlProvider.get().withDefaultScripts(control);
+            var latch = new CountDownLatch(getRefs().size());
+            var panes = new TerminalLauncher.Config[getRefs().size()];
+            for (int i = 0; i < getRefs().size(); i++) {
+                var ii = i;
+                var ref = refs.get(i);
+                ThreadHelper.runFailableAsync(() -> {
+                    try {
+                        var replacement = ProcessControlProvider.get().replace(ref);
+                        ShellStore store = replacement.getStore().asNeeded();
+                        var control = store.standaloneControl();
+                        // These prepend scripts, not append
+                        TerminalPromptManager.configurePromptScript(control);
+                        ProcessControlProvider.get().withDefaultScripts(control);
 
-                var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
-                var config =
-                        new TerminalLauncher.Config(ref.get(), title, null, UUID.randomUUID(), true, true, control);
-                panes.add(config);
+                        var title = DataStorage.get().getStoreEntryDisplayName(ref.get());
+                        var config = new TerminalLauncher.Config(
+                                ref.get(), title, null, UUID.randomUUID(), true, true, control);
+                        panes[ii] = config;
+                    } finally {
+                        latch.countDown();
+                    }
+                });
             }
-            TerminalLauncher.open(panes, true, type);
+            TerminalLauncher.open(Arrays.asList(panes), true, type);
         }
     }
 }

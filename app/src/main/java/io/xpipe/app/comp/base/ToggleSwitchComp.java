@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
@@ -22,14 +20,14 @@ import lombok.Value;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
+public class ToggleSwitchComp extends RegionBuilder<ToggleSwitch> {
 
     Property<Boolean> selected;
     ObservableValue<String> name;
     ObservableValue<LabelGraphic> graphic;
 
     @Override
-    public CompStructure<ToggleSwitch> createBase() {
+    public ToggleSwitch createSimple() {
         var s = new ToggleSwitch();
         s.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getCode() == KeyCode.SPACE || event.getCode() == KeyCode.ENTER) {
@@ -82,6 +80,6 @@ public class ToggleSwitchComp extends Comp<CompStructure<ToggleSwitch>> {
             }
         });
 
-        return new SimpleCompStructure<>(s);
+        return s;
     }
 }

@@ -1,9 +1,8 @@
 package io.xpipe.app.comp.base;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppLayoutModel;
 import io.xpipe.app.hub.comp.StoreViewState;
 import io.xpipe.app.platform.DerivedObservableList;
@@ -27,7 +26,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
+public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
     private static final PseudoClass ODD = PseudoClass.getPseudoClass("odd");
     private static final PseudoClass EVEN = PseudoClass.getPseudoClass("even");
@@ -37,14 +36,17 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     private final ObservableList<T> shown;
     private final ObservableList<T> all;
 
-    private final Function<T, Comp<?>> compFunction;
+    private final Function<T, BaseRegionBuilder<?, ?>> compFunction;
     private final boolean scrollBar;
 
     @Setter
     private boolean visibilityControl = false;
 
     public ListBoxViewComp(
-            ObservableList<T> shown, ObservableList<T> all, Function<T, Comp<?>> compFunction, boolean scrollBar) {
+            ObservableList<T> shown,
+            ObservableList<T> all,
+            Function<T, BaseRegionBuilder<?, ?>> compFunction,
+            boolean scrollBar) {
         this.shown = shown;
         this.all = all;
         this.compFunction = compFunction;
@@ -52,7 +54,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
     }
 
     @Override
-    public CompStructure<ScrollPane> createBase() {
+    public ScrollPane createSimple() {
         Map<T, Region> cache = new IdentityHashMap<>();
 
         VBox vbox = new VBox();
@@ -106,7 +108,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
 
         registerVisibilityListeners(scroll, vbox);
 
-        return new SimpleCompStructure<>(scroll);
+        return scroll;
     }
 
     private void registerVisibilityListeners(ScrollPane scroll, VBox vbox) {
@@ -132,7 +134,8 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             // If one node within has focus and moves out of focus fast,
             // the scrollbar will try to focus another one and move it into view
             // This can result in flicker when scrolling fast enough
-            if (scroll.isFocusWithin()) {
+            var hasWindowFocus = scroll.getScene().getWindow().isFocused();
+            if (scroll.isFocusWithin() || !hasWindowFocus) {
                 scroll.requestFocus();
             }
             dirty.set(true);
@@ -154,7 +157,18 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
             dirty.set(true);
         });
         if (StoreViewState.get() != null) {
-            StoreViewState.get().getEffectiveSortMode().addListener((observable, oldValue, newValue) -> {
+            StoreViewState.get().getGlobalSortMode().addListener((observable, oldValue, newValue) -> {
+                // This is very ugly, but it just takes multiple iterations for the order to apply
+                Platform.runLater(() -> {
+                    Platform.runLater(() -> {
+                        Platform.runLater(() -> {
+                            dirty.set(true);
+                        });
+                    });
+                });
+            });
+
+            StoreViewState.get().getTieSortMode().addListener((observable, oldValue, newValue) -> {
                 // This is very ugly, but it just takes multiple iterations for the order to apply
                 Platform.runLater(() -> {
                     Platform.runLater(() -> {
@@ -315,7 +329,7 @@ public class ListBoxViewComp<T> extends Comp<CompStructure<ScrollPane>> {
                         if (!cache.containsKey(v)) {
                             var comp = compFunction.apply(v);
                             if (comp != null) {
-                                var r = comp.createRegion();
+                                var r = comp.build();
                                 if (visibilityControl) {
                                     r.setVisible(false);
                                 }

@@ -2,7 +2,7 @@ package io.xpipe.app.core;
 
 import io.xpipe.app.browser.BrowserFullSessionComp;
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.hub.comp.StoreLayoutComp;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
@@ -28,6 +28,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Getter
 public class AppLayoutModel {
@@ -177,7 +178,7 @@ public class AppLayoutModel {
     public record Entry(
             ObservableValue<String> name,
             LabelGraphic icon,
-            Comp<?> comp,
+            BaseRegionBuilder<?, ?> comp,
             Runnable action,
             KeyCombination combination) {}
 
@@ -185,18 +186,34 @@ public class AppLayoutModel {
     @NonFinal
     public static class QueueEntry {
 
+        public static QueueEntry ofNotification(String key, String value) {
+            return new QueueEntry(AppI18n.observable(key), new LabelGraphic.IconGraphic(value), () -> true);
+        }
+
         ObservableValue<String> name;
         LabelGraphic icon;
-        Runnable action;
+        Supplier<Boolean> action;
 
-        public void show() {
+        public void execute() {
             ThreadHelper.runAsync(() -> {
-                try {
-                    getAction().run();
-                } finally {
-                    AppLayoutModel.get().getQueueEntries().remove(this);
-                }
+                executeSync();
             });
+        }
+
+        public void executeSync() {
+            try {
+                var r = getAction().get();
+                if (r) {
+                    PlatformThread.runLaterIfNeeded(() -> {
+                        AppLayoutModel.get().getQueueEntries().remove(this);
+                    });
+                }
+            } catch (Throwable t) {
+                PlatformThread.runLaterIfNeeded(() -> {
+                    AppLayoutModel.get().getQueueEntries().remove(this);
+                });
+                throw t;
+            }
         }
 
         public void hide() {

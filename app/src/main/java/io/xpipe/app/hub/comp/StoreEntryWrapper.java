@@ -114,7 +114,8 @@ public class StoreEntryWrapper {
                         }
                     }
                 },
-                shownSummary);
+                shownSummary,
+                AppI18n.activeLanguage());
         this.shownInformation = new SimpleObjectProperty<>();
         this.notes = new SimpleObjectProperty<>(new StoreNotes(entry.getNotes(), entry.getNotes()));
 

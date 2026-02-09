@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.platform.LabelGraphic;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
+public class StoreQuickAccessButtonComp extends RegionBuilder<Button> {
 
     private final StoreSection section;
     private final Consumer<StoreSection> action;
@@ -65,7 +64,7 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
         }
         var m = new Menu(
                 w.getName().getValue(),
-                PrettyImageHelper.ofFixedSizeSquare(graphic, 16).createRegion());
+                PrettyImageHelper.ofFixedSizeSquare(graphic, 16).build());
         m.getItems().setAll(items);
         if (!AppPrefs.get().limitedTouchscreenMode().get()) {
             m.setOnAction(event -> {
@@ -84,11 +83,11 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
     }
 
     @Override
-    public CompStructure<Button> createBase() {
+    public Button createSimple() {
         var button = new IconButtonComp("mdi2c-chevron-double-right");
         button.apply(struc -> {
             AtomicReference<ContextMenu> menu = new AtomicReference<>();
-            struc.get().setOnAction(event -> {
+            struc.setOnAction(event -> {
                 if (menu.get() == null) {
                     menu.set(createMenu());
                 }
@@ -97,10 +96,10 @@ public class StoreQuickAccessButtonComp extends Comp<CompStructure<Button>> {
                     return;
                 }
 
-                MenuHelper.toggleMenuShow(menu.get(), struc.get(), Side.RIGHT);
+                MenuHelper.toggleMenuShow(menu.get(), struc, Side.RIGHT);
                 event.consume();
             });
         });
-        return button.createStructure();
+        return button.build();
     }
 }

@@ -36,6 +36,11 @@ public abstract class BaseUnzipUnixMenuProvider implements BrowserMenuLeafProvid
     }
 
     @Override
+    public boolean automaticallyResolveLinks() {
+        return false;
+    }
+
+    @Override
     public ObservableValue<String> getName(BrowserFileSystemTabModel model, List<BrowserEntry> entries) {
         var sep = OsFileSystem.of(model.getFileSystem().getShell().orElseThrow().getOsType())
                 .getFileSystemSeparator();

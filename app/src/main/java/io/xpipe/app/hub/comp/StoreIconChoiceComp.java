@@ -1,15 +1,17 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
 import io.xpipe.app.comp.base.*;
+import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.platform.LabelGraphic;
+import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.util.BooleanScope;
 import io.xpipe.app.util.ThreadHelper;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -25,7 +27,7 @@ import java.util.*;
 
 import static atlantafx.base.theme.Styles.TEXT_SMALL;
 
-public class StoreIconChoiceComp extends SimpleComp {
+public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
     private final Runnable reshow;
     private final Property<SystemIcon> selected;
@@ -33,6 +35,7 @@ public class StoreIconChoiceComp extends SimpleComp {
     private final int columns;
     private final SimpleStringProperty filter;
     private final Runnable doubleClick;
+    private final BooleanProperty busy = new SimpleBooleanProperty();
 
     public StoreIconChoiceComp(
             Runnable reshow,
@@ -50,12 +53,39 @@ public class StoreIconChoiceComp extends SimpleComp {
     }
 
     @Override
+    protected void setModalOverlay(ModalOverlay modalOverlay) {
+        super.setModalOverlay(modalOverlay);
+        if (modalOverlay != null) {
+            ThreadHelper.runFailableAsync(() -> {
+                BooleanScope.executeExclusive(busy, () -> {
+                    SystemIconManager.reloadSourceHashes();
+                    SystemIconManager.loadAllAvailableIconImages();
+                });
+            });
+        }
+    }
+
+    @Override
     protected Region createSimple() {
         var table = new TableView<List<SystemIcon>>();
+        table.disableProperty().bind(PlatformThread.sync(busy));
         initTable(table);
-        updateData(table, null);
         filter.addListener((observable, oldValue, newValue) -> updateData(table, newValue));
-        return table;
+        busy.addListener((observable, oldValue, newValue) -> {
+            if (oldValue && !newValue) {
+                updateData(table, filter.getValue());
+            }
+        });
+
+        var loading = new LoadingIconComp(busy, AppFontSizes::title)
+                .prefWidth(60)
+                .hide(busy.not())
+                .build();
+        var refresh = createRefreshPane();
+        var stack = new StackPane();
+        stack.getChildren().addAll(table, refresh, loading);
+
+        return stack;
     }
 
     private void initTable(TableView<List<SystemIcon>> table) {
@@ -74,35 +104,56 @@ public class StoreIconChoiceComp extends SimpleComp {
             }
         }
 
+        table.setPlaceholder(new Region());
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getStyleClass().add("icon-browser");
+    }
 
-        var busy = new SimpleBooleanProperty(false);
+    private Region createRefreshPane() {
+        var refreshing = new SimpleBooleanProperty(false);
         var refreshButton = new ButtonComp(
                 AppI18n.observable("refreshIcons"),
                 new SimpleObjectProperty<>(new LabelGraphic.IconGraphic("mdi2r-refresh")),
                 () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        try (var ignored = new BooleanScope(busy).start()) {
+                        try (var ignored = new BooleanScope(refreshing).start()) {
                             SystemIconManager.rebuild();
                         }
                         reshow.run();
                     });
                 });
-        refreshButton.disable(busy);
+        refreshButton.disable(refreshing);
         var text = new LabelComp(AppI18n.observable("refreshIconsDescription"));
         text.apply(struc -> {
-            struc.get().setWrapText(true);
-            struc.get().setTextAlignment(TextAlignment.CENTER);
-            struc.get().setPrefWidth(300);
+            struc.setWrapText(true);
+            struc.setTextAlignment(TextAlignment.CENTER);
+            struc.setPrefWidth(300);
         });
-        text.styleClass(Styles.TEXT_SUBTLE);
-        text.visible(busy);
+        text.style(Styles.TEXT_SUBTLE);
+        text.visible(refreshing);
         var vbox = new VerticalComp(List.of(refreshButton, text)).spacing(25);
-        vbox.apply(struc -> struc.get().setAlignment(Pos.CENTER));
-        var placeholder = new StackPane(vbox.createRegion());
-        table.setPlaceholder(placeholder);
+        vbox.hide(Bindings.createBooleanBinding(
+                () -> {
+                    if (busy.get()) {
+                        return true;
+                    }
+
+                    var available = icons.stream()
+                            .filter(systemIcon -> AppImages.hasImage(
+                                    "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
+                            .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
+                            .toList();
+                    if (available.isEmpty()) {
+                        return false;
+                    }
+
+                    return true;
+                },
+                busy,
+                refreshing));
+        vbox.apply(struc -> struc.setAlignment(Pos.CENTER));
+        return vbox.build();
     }
 
     private void updateData(TableView<List<SystemIcon>> table, String filterString) {
@@ -112,11 +163,10 @@ public class StoreIconChoiceComp extends SimpleComp {
         }
 
         var available = icons.stream()
-                .filter(systemIcon -> AppImages.hasNormalImage(
+                .filter(systemIcon -> AppImages.hasImage(
                         "icons/" + systemIcon.getSource().getId() + "/" + systemIcon.getId() + "-40.png"))
                 .sorted(Comparator.comparing(systemIcon -> systemIcon.getId()))
                 .toList();
-        table.getPlaceholder().setVisible(available.size() == 0);
         var filtered = available;
         if (filterString != null && !filterString.isBlank() && filterString.length() >= 2) {
             filtered = available.stream()
@@ -167,7 +217,7 @@ public class StoreIconChoiceComp extends SimpleComp {
             super();
 
             root.setContentDisplay(ContentDisplay.TOP);
-            Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).createRegion();
+            Region imageView = PrettyImageHelper.ofFixedSize(image, 40, 40).build();
             root.setGraphic(imageView);
             root.setGraphicTextGap(10);
             root.getStyleClass().addAll("icon-label", TEXT_SMALL);
@@ -193,7 +243,7 @@ public class StoreIconChoiceComp extends SimpleComp {
             }
 
             root.setText(icon.getId());
-            image.set(SystemIconManager.getIconFile(icon));
+            image.set(SystemIconManager.getAndLoadIconFile(icon));
             setGraphic(root);
         }
     }

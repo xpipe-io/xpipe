@@ -146,7 +146,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 if (!valid) {
                     ErrorEventFactory.preconfigure(ErrorEventFactory.fromThrowable(first)
                             .description("KeePassXC association for "
-                                    + available.getFirst().getKey() + " failed")
+                                    + available.getFirst().getId() + " failed")
                             .expected());
                     throw first;
                 }

@@ -67,11 +67,9 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                         shell.get().command(content).notComplex().executeAndCheck();
                     }
                     case OsType.Linux ignored -> {
-                        var dbus = String.format(
-                                """
+                        var dbus = String.format("""
                                                  dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItemProperties array:string:"file://%s" string:""
-                                                 """,
-                                localFile);
+                                                 """, localFile);
                         var success = sc.executeSimpleBooleanCommand(dbus);
                         if (success) {
                             return;
@@ -86,16 +84,13 @@ public class OpenFileNativeDetailsActionProvider implements BrowserActionProvide
                                 .execute();
                     }
                     case OsType.MacOs ignored -> {
-                        sc.osascriptCommand(String.format(
-                                        """
+                        sc.osascriptCommand(String.format("""
                                                           set fileEntry to (POSIX file "%s") as text
                                                           tell application "Finder"
                                                               activate
                                                               open information window of alias fileEntry
                                                           end tell
-                                                          """,
-                                        localFile))
-                                .execute();
+                                                          """, localFile)).execute();
                     }
                 }
             }

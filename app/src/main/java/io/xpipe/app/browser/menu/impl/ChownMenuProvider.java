@@ -7,7 +7,7 @@ import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
@@ -155,7 +155,7 @@ public class ChownMenuProvider implements BrowserMenuBranchProvider {
             var user = new SimpleStringProperty();
             var modal = ModalOverlay.of(
                     "userName",
-                    Comp.of(() -> {
+                    RegionBuilder.of(() -> {
                                 var creationName = new TextField();
                                 creationName.textProperty().bindBidirectional(user);
                                 return creationName;

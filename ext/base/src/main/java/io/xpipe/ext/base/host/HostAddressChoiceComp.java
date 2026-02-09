@@ -1,8 +1,7 @@
 package io.xpipe.ext.base.host;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.platform.MenuHelper;
 
@@ -20,12 +19,11 @@ import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.layout.HBox;
 
 import atlantafx.base.controls.Spacer;
-import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.ArrayList;
 
-public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
+public class HostAddressChoiceComp extends RegionBuilder<HBox> {
 
     private final ObjectProperty<String> currentAddress;
     private final ObservableList<String> allAddresses;
@@ -39,7 +37,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
     }
 
     @Override
-    public CompStructure<HBox> createBase() {
+    public HBox createSimple() {
         var adding = new SimpleBooleanProperty(false);
         var combo = createComboBox(adding);
 
@@ -56,9 +54,9 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             currentAddress.setValue(null);
             adding.set(false);
         });
-        addButton.descriptor(d -> d.nameKey("addAnotherHostName"));
+        addButton.describe(d -> d.nameKey("addAnotherHostName"));
 
-        var nodes = new ArrayList<Comp<?>>();
+        var nodes = new ArrayList<BaseRegionBuilder<?, ?>>();
         nodes.add(combo);
         if (mutable) {
             nodes.add(addButton);
@@ -66,11 +64,11 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
 
         var layout = new InputGroupComp(nodes);
         layout.setMainReference(combo);
-        layout.apply(struc -> struc.get().setFillHeight(true));
-        return new SimpleCompStructure<>(layout.createStructure().get());
+        layout.apply(struc -> struc.setFillHeight(true));
+        return layout.build();
     }
 
-    private Comp<?> createComboBox(ObservableBooleanValue adding) {
+    private BaseRegionBuilder<?, ?> createComboBox(ObservableBooleanValue adding) {
         var prop = new SimpleStringProperty();
         currentAddress.subscribe(hostAddress -> {
             prop.setValue(hostAddress);
@@ -121,7 +119,7 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                                 .add(new IconButtonComp("mdi2t-trash-can-outline", () -> {
                                             allAddresses.remove(item);
                                         })
-                                        .createRegion());
+                                        .build());
                     }
 
                     setGraphic(hbox);
@@ -130,24 +128,23 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
             };
         });
         combo.apply(struc -> {
-            var skin = new ComboBoxListViewSkin<>(struc.get());
+            var skin = new ComboBoxListViewSkin<>(struc);
             MenuHelper.fixComboBoxSkin(skin);
-            struc.get().setSkin(skin);
+            struc.setSkin(skin);
             skin.setHideOnClick(false);
 
             // The focus seems to break on selection from the popup
-            struc.get()
-                    .selectionModelProperty()
+            struc.selectionModelProperty()
                     .get()
                     .selectedIndexProperty()
                     .addListener((observable, oldValue, newValue) -> {
                         Platform.runLater(() -> {
-                            struc.get().getParent().requestFocus();
+                            struc.getParent().requestFocus();
                         });
                     });
 
             allAddresses.addListener((ListChangeListener<? super String>) change -> {
-                struc.get().setVisibleRowCount(10);
+                struc.setVisibleRowCount(10);
                 if (!change.next()) {
                     return;
                 }
@@ -156,30 +153,30 @@ public class HostAddressChoiceComp extends Comp<CompStructure<HBox>> {
                     return;
                 }
 
-                if (struc.get().isShowing()) {
-                    struc.get().hide();
+                if (struc.isShowing()) {
+                    struc.hide();
                     if (allAddresses.size() > 0) {
-                        struc.get().show();
+                        struc.show();
                     }
                 } else {
-                    struc.get().requestFocus();
+                    struc.requestFocus();
                     if (allAddresses.size() > 0) {
-                        struc.get().show();
+                        struc.show();
                     }
                 }
 
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
             });
-            struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
+            struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("empty"), allAddresses.isEmpty());
 
             currentAddress.addListener((observable, oldValue, newValue) -> {
                 if (newValue == null) {
-                    struc.get().requestFocus();
+                    struc.requestFocus();
                 }
             });
         });
         combo.hgrow();
-        combo.styleClass("host-address-choice-comp");
+        combo.style("host-address-choice-comp");
         return combo;
     }
 }

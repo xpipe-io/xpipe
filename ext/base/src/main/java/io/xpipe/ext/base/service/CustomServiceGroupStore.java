@@ -17,7 +17,6 @@ public class CustomServiceGroupStore extends AbstractServiceGroupStore<DataStore
 
     @Override
     public void checkComplete() throws Throwable {
-        super.checkComplete();
-        Validators.isType(getParent(), DataStore.class);
+        Validators.nonNull(getParent());
     }
 }

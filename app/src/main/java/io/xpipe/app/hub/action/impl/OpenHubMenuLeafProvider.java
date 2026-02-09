@@ -18,6 +18,11 @@ import lombok.extern.jackson.Jacksonized;
 public class OpenHubMenuLeafProvider implements HubLeafProvider<DataStore>, BatchHubProvider<DataStore> {
 
     @Override
+    public boolean requiresValidStore() {
+        return true;
+    }
+
+    @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.OPEN;
     }

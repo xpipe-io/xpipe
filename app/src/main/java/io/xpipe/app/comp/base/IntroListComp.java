@@ -1,7 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -9,9 +8,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class IntroListComp extends SimpleComp {
+public class IntroListComp extends SimpleRegionBuilder {
 
     private final List<IntroComp> intros;
 
@@ -21,8 +19,7 @@ public class IntroListComp extends SimpleComp {
 
     @Override
     public Region createSimple() {
-        List<Comp<?>> l = intros.stream().map(introComp -> (Comp<?>) introComp).collect(Collectors.toList());
-        var v = new VerticalComp(l).createStructure().get();
+        var v = new VerticalComp(intros).build();
         v.setSpacing(80);
         v.setMinWidth(Region.USE_PREF_SIZE);
         v.setMaxWidth(Region.USE_PREF_SIZE);

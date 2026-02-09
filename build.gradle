@@ -5,8 +5,8 @@ import java.util.stream.Stream
 
 plugins {
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id 'org.gradlex.extra-java-module-info' version '1.13.1' apply false
-    id("com.diffplug.spotless") version "8.0.0" apply false
+    id 'org.gradlex.extra-java-module-info' version '1.14' apply false
+    id("com.diffplug.spotless") version "8.2.1" apply false
 }
 
 allprojects { subproject ->
@@ -161,14 +161,15 @@ def getJvmArgs() {
     jvmRunArgs += ['-XX:+UseStringDeduplication']
 
     // GC config
-    jvmRunArgs += ['-XX:+UseG1GC',
-                   '-Xms300m',
-                   '-Xmx4G',
-                   '-XX:MinHeapFreeRatio=20',
-                   '-XX:MaxHeapFreeRatio=30',
-                   '-XX:GCTimeRatio=9',
-                   // The default makes GC pauses longer for some reason
-                   '-XX:G1HeapRegionSize=4m'
+    jvmRunArgs += [
+            '-XX:+UseG1GC',
+            '-Xms200m',
+            '-Xmx4G',
+            '-XX:MinHeapFreeRatio=15',
+            '-XX:MaxHeapFreeRatio=25',
+            '-XX:GCTimeRatio=9',
+            // The default makes GC pauses longer for some reason
+            '-XX:G1HeapRegionSize=4m'
     ]
 
     // Why is this not on by default? ...
@@ -300,7 +301,8 @@ project.ext {
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
     // Define a custom JavaFX SDK location
-    // customJavaFxPath = null
+    // customJavaFxLibsPath = file("C:\\Projects\\jfx\\build\\sdk\\lib")
+    // customJavaFxJmodsPath = file("C:\\Projects\\jfx\\build\\jmods")
 
     // Other
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""

@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.app.platform.PlatformThread;
@@ -17,7 +17,7 @@ import javafx.scene.layout.StackPane;
 
 import java.util.function.Consumer;
 
-public class PrettyImageComp extends SimpleComp {
+public class PrettyImageComp extends SimpleRegionBuilder {
 
     private final ObservableValue<String> value;
     private final double width;
@@ -75,9 +75,9 @@ public class PrettyImageComp extends SimpleComp {
                             }
 
                             var value = image.getValue();
-                            if (AppImages.hasNormalImage(value)) {
+                            if (AppImages.hasImage(value)) {
                                 return AppImages.image(value);
-                            } else if (AppImages.hasNormalImage(value.replace("-dark", ""))) {
+                            } else if (AppImages.hasImage(value.replace("-dark", ""))) {
                                 return AppImages.image(value.replace("-dark", ""));
                             } else {
                                 TrackEvent.withWarn("Image file not found")

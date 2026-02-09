@@ -17,7 +17,6 @@ import java.io.BufferedOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -273,7 +272,6 @@ public class ConnectionFileSystem implements FileSystem {
 
         var cmd =
                 shellControl.getShellDialect().createStreamFileWriteCommand(shellControl, file.toString(), totalBytes);
-        cmd.setExitTimeout(Duration.ofMillis(Long.MAX_VALUE));
         return cmd.startExternalStdin();
     }
 

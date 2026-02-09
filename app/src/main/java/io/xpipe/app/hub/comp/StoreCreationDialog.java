@@ -1,7 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import atlantafx.base.theme.Styles;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -140,7 +139,7 @@ public class StoreCreationDialog {
             DataStoreEntry existingEntry) {
         var ex = StoreCreationQueueEntry.findExisting(existingEntry);
         if (ex.isPresent()) {
-            ex.get().show();
+            ex.get().execute();
             return;
         }
 
@@ -158,7 +157,7 @@ public class StoreCreationDialog {
         var modal = ModalOverlay.of(nameKey, comp);
         var queueEntry = StoreCreationQueueEntry.of(model, modal);
         comp.apply(struc -> {
-            struc.get().addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+            struc.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
                 if (e.getCode() == KeyCode.ESCAPE) {
                     var changed = model.hasBeenModified();
                     if (!changed) {
@@ -178,11 +177,14 @@ public class StoreCreationDialog {
             AppLayoutModel.get().getQueueEntries().add(queueEntry);
         });
         modal.setRequireCloseButtonForClose(true);
-        var loadingLabel = new LabelComp(Bindings.createStringBinding(() -> {
-            return model.getBusy().get() ? AppI18n.get("testingConnection") : null;
-        }, model.getBusy(), AppI18n.activeLanguage()));
+        var loadingLabel = new LabelComp(Bindings.createStringBinding(
+                () -> {
+                    return model.getBusy().get() ? AppI18n.get("testingConnection") : null;
+                },
+                model.getBusy(),
+                AppI18n.activeLanguage()));
         modal.addButtonBarComp(loadingLabel);
-        modal.addButtonBarComp(Comp.hspacer());
+        modal.addButtonBarComp(RegionBuilder.hspacer());
         modal.addButton(new ModalButton(
                         "docs",
                         () -> {
@@ -217,19 +219,31 @@ public class StoreCreationDialog {
                 });
 
         modal.addButton(new ModalButton(
-                "finish",
-                () -> {
-                    model.finish();
-                },
-                false,
-                true)).augment(button -> {
-                    button.graphicProperty().bind(Bindings.createObjectBinding(() -> {
-                        return model.getBusy().get() ? new LoadingIconComp(model.getBusy(), AppFontSizes::base).styleClass("store-creator-busy").createRegion() : null;
-                    }, PlatformThread.sync(model.getBusy())));
-                    button.textProperty().bind(Bindings.createStringBinding(() -> {
-                        return !model.getBusy().get() ? AppI18n.get("finish") : null;
-                    }, PlatformThread.sync(model.getBusy()), AppI18n.activeLanguage()));
-        });
+                        "finish",
+                        () -> {
+                            model.finish();
+                        },
+                        false,
+                        true))
+                .augment(button -> {
+                    button.graphicProperty()
+                            .bind(Bindings.createObjectBinding(
+                                    () -> {
+                                        return model.getBusy().get()
+                                                ? new LoadingIconComp(model.getBusy(), AppFontSizes::base)
+                                                        .style("store-creator-busy")
+                                                        .build()
+                                                : null;
+                                    },
+                                    PlatformThread.sync(model.getBusy())));
+                    button.textProperty()
+                            .bind(Bindings.createStringBinding(
+                                    () -> {
+                                        return !model.getBusy().get() ? AppI18n.get("finish") : null;
+                                    },
+                                    PlatformThread.sync(model.getBusy()),
+                                    AppI18n.activeLanguage()));
+                });
         model.getFinished().addListener((obs, oldValue, newValue) -> {
             modal.close();
         });

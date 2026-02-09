@@ -1,8 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.ScrollBar;
@@ -10,17 +9,17 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.layout.StackPane;
 
-public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
+public class ScrollComp extends RegionBuilder<ScrollPane> {
 
-    private final Comp<?> content;
+    private final BaseRegionBuilder<?, ?> content;
 
-    public ScrollComp(Comp<?> content) {
+    public ScrollComp(BaseRegionBuilder<?, ?> content) {
         this.content = content;
     }
 
     @Override
-    public CompStructure<ScrollPane> createBase() {
-        var r = content.createRegion();
+    public ScrollPane createSimple() {
+        var r = content.build();
         var stack = new StackPane(r);
         stack.getStyleClass().add("scroll-comp-content");
 
@@ -45,6 +44,6 @@ public class ScrollComp extends Comp<CompStructure<ScrollPane>> {
         StackPane viewport = (StackPane) sp.lookup(".viewport");
         var child = viewport.getChildren().getFirst();
         child.getStyleClass().add("view");
-        return new SimpleCompStructure<>(sp);
+        return sp;
     }
 }

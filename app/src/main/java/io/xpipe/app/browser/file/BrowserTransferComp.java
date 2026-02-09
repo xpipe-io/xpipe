@@ -1,7 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.DerivedObservableList;
@@ -26,7 +26,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
-public class BrowserTransferComp extends SimpleComp {
+public class BrowserTransferComp extends SimpleRegionBuilder {
 
     private final BrowserTransferModel model;
 
@@ -37,48 +37,46 @@ public class BrowserTransferComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var background = new LabelComp(AppI18n.observable("transferDescription"))
-                .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2d-download-outline")))
-                .apply(struc -> struc.get().setWrapText(true))
-                .apply(struc -> struc.get().setTextAlignment(TextAlignment.CENTER))
-                .apply(struc -> struc.get().setContentDisplay(ContentDisplay.TOP))
+                .apply(struc -> struc.setGraphic(new FontIcon("mdi2d-download-outline")))
+                .apply(struc -> struc.setWrapText(true))
+                .apply(struc -> struc.setTextAlignment(TextAlignment.CENTER))
+                .apply(struc -> struc.setContentDisplay(ContentDisplay.TOP))
                 .visible(model.getEmpty());
         var backgroundStack = new StackComp(List.of(background))
-                .styleClass("color-box")
-                .styleClass("gray")
-                .styleClass("download-background");
+                .style("color-box")
+                .style("gray")
+                .style("download-background");
 
         var binding = DerivedObservableList.wrap(model.getItems(), true)
                 .mapped(item -> item.getBrowserEntry())
                 .getList();
         var list = new BrowserFileSelectionListComp(binding, entry -> {
-                    var sourceItem = model.getCurrentItems().stream()
-                            .filter(item -> item.getBrowserEntry() == entry)
-                            .findAny();
-                    if (sourceItem.isEmpty()) {
-                        return new SimpleStringProperty("?");
-                    }
-                    synchronized (sourceItem.get().getProgress()) {
-                        return Bindings.createStringBinding(
-                                () -> {
-                                    var p = sourceItem.get().getProgress().getValue();
-                                    if (p == null || p.getTotal() == 0) {
-                                        return entry.getFileName();
-                                    }
+            var sourceItem = model.getCurrentItems().stream()
+                    .filter(item -> item.getBrowserEntry() == entry)
+                    .findAny();
+            if (sourceItem.isEmpty()) {
+                return new SimpleStringProperty("?");
+            }
+            synchronized (sourceItem.get().getProgress()) {
+                return Bindings.createStringBinding(
+                        () -> {
+                            var p = sourceItem.get().getProgress().getValue();
+                            if (p == null || p.getTotal() == 0) {
+                                return entry.getFileName();
+                            }
 
-                                    var hideProgress = sourceItem
-                                            .get()
-                                            .getDownloadFinished()
-                                            .get();
-                                    var share = p.getTransferred() * 100 / p.getTotal();
-                                    var progressSuffix = hideProgress ? "" : " " + share + "%";
-                                    return entry.getFileName() + progressSuffix;
-                                },
-                                sourceItem.get().getProgress());
-                    }
-                });
+                            var hideProgress =
+                                    sourceItem.get().getDownloadFinished().get();
+                            var share = p.getTransferred() * 100 / p.getTotal();
+                            var progressSuffix = hideProgress ? "" : " " + share + "%";
+                            return entry.getFileName() + progressSuffix;
+                        },
+                        sourceItem.get().getProgress());
+            }
+        });
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
-                .apply(struc -> struc.get().setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
-                .apply(struc -> struc.get().setWrapText(true))
+                .apply(struc -> struc.setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
+                .apply(struc -> struc.setWrapText(true))
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()));
 
         var clearButton = new IconButtonComp("mdi2c-close", () -> {
@@ -87,11 +85,11 @@ public class BrowserTransferComp extends SimpleComp {
                     });
                 })
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
-                .descriptor(d -> d.nameKey("clearTransferDescription"));
+                .describe(d -> d.nameKey("clearTransferDescription"));
 
         var downloadButton = new IconButtonComp("mdi2f-folder-move-outline", null)
                 .apply(struc -> {
-                    struc.get().setOnMouseClicked(e -> {
+                    struc.setOnMouseClicked(e -> {
                         if (e.getButton() == MouseButton.PRIMARY) {
                             var open = !e.isShiftDown();
                             ThreadHelper.runFailableAsync(() -> {
@@ -100,7 +98,7 @@ public class BrowserTransferComp extends SimpleComp {
                             e.consume();
                         }
                     });
-                    struc.get().setOnAction(e -> {
+                    struc.setOnAction(e -> {
                         ThreadHelper.runFailableAsync(() -> {
                             model.transferToDownloads(true);
                         });
@@ -108,29 +106,35 @@ public class BrowserTransferComp extends SimpleComp {
                     });
                 })
                 .hide(Bindings.or(model.getEmpty(), model.getTransferring()))
-                .descriptor(d -> d.nameKey("downloadStageDescription"));
+                .describe(d -> d.nameKey("downloadStageDescription"));
 
-        var bottom = new HorizontalComp(
-                List.of(Comp.hspacer(), dragNotice, Comp.hspacer(), downloadButton, Comp.hspacer(4), clearButton));
+        var bottom = new HorizontalComp(List.of(
+                RegionBuilder.hspacer(),
+                dragNotice,
+                RegionBuilder.hspacer(),
+                downloadButton,
+                RegionBuilder.hspacer(4),
+                clearButton));
         var listBox = new VerticalComp(List.of(list, bottom))
                 .spacing(5)
                 .padding(new Insets(10, 10, 5, 10))
-                .apply(struc -> struc.get().setMinHeight(200))
-                .apply(struc -> struc.get().setMaxHeight(200));
+                .apply(struc -> struc.setMinHeight(200))
+                .apply(struc -> struc.setMaxHeight(200));
         var stack = new StackComp(List.of(backgroundStack, listBox)).apply(struc -> {
-            struc.get().addEventFilter(DragEvent.DRAG_ENTERED, event -> {
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), true);
+            struc.addEventFilter(DragEvent.DRAG_ENTERED, event -> {
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), true);
             });
-            struc.get().addEventFilter(DragEvent.DRAG_EXITED, event -> struc.get()
-                    .pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
-            struc.get().setOnDragOver(event -> {
+            struc.addEventFilter(
+                    DragEvent.DRAG_EXITED,
+                    event -> struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("drag-over"), false));
+            struc.setOnDragOver(event -> {
                 // Accept drops from inside the app window
-                if (event.getGestureSource() != null && event.getGestureSource() != struc.get()) {
+                if (event.getGestureSource() != null && event.getGestureSource() != struc) {
                     event.acceptTransferModes(TransferMode.ANY);
                     event.consume();
                 }
             });
-            struc.get().setOnDragDropped(event -> {
+            struc.setOnDragDropped(event -> {
                 // Accept drops from inside the app window
                 if (event.getGestureSource() != null) {
                     var drag = BrowserClipboard.retrieveDrag(event.getDragboard());
@@ -149,7 +153,7 @@ public class BrowserTransferComp extends SimpleComp {
                     event.consume();
                 }
             });
-            struc.get().setOnDragDetected(event -> {
+            struc.setOnDragDetected(event -> {
                 var items = model.getCurrentItems();
                 var selected =
                         items.stream().map(item -> item.getBrowserEntry()).toList();
@@ -175,7 +179,7 @@ public class BrowserTransferComp extends SimpleComp {
 
                 var cc = new ClipboardContent();
                 cc.putFiles(files);
-                Dragboard db = struc.get().startDragAndDrop(TransferMode.COPY);
+                Dragboard db = struc.startDragAndDrop(TransferMode.COPY);
                 db.setContent(cc);
 
                 Image image = BrowserFileSelectionListComp.snapshot(FXCollections.observableList(selected));
@@ -184,7 +188,7 @@ public class BrowserTransferComp extends SimpleComp {
                 event.setDragDetect(true);
                 event.consume();
             });
-            struc.get().setOnDragDone(event -> {
+            struc.setOnDragDone(event -> {
                 if (!event.isAccepted()) {
                     return;
                 }
@@ -198,11 +202,11 @@ public class BrowserTransferComp extends SimpleComp {
 
         stack.apply(struc -> {
             model.getBrowserSessionModel().getDraggingFiles().addListener((observable, oldValue, newValue) -> {
-                struc.get().pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), newValue);
+                struc.pseudoClassStateChanged(PseudoClass.getPseudoClass("highlighted"), newValue);
             });
         });
 
-        var r = stack.styleClass("transfer").createRegion();
+        var r = stack.style("transfer").build();
         return r;
     }
 }

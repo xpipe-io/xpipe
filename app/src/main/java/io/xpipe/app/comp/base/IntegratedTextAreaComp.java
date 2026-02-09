@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.process.ShellScript;
@@ -16,17 +16,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 
 import atlantafx.base.theme.Styles;
 import lombok.Builder;
 import lombok.Value;
 
-import java.nio.file.Files;
-
-public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structure> {
+public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, IntegratedTextAreaComp.Structure> {
 
     private final Property<String> value;
     private final boolean lazy;
@@ -43,6 +39,20 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     public static IntegratedTextAreaComp script(
             ObservableValue<DataStoreEntryRef<ShellStore>> host, Property<ShellScript> value) {
+        var type = Bindings.createStringBinding(
+                () -> {
+                    return host.getValue() != null
+                                    && host.getValue().getStore() instanceof StatefulDataStore<?> sd
+                                    && sd.getState() instanceof SystemState ss
+                                    && ss.getShellDialect() != null
+                            ? ss.getShellDialect().getScriptFileEnding()
+                            : "sh";
+                },
+                host);
+        return script(value, type);
+    }
+
+    public static IntegratedTextAreaComp script(Property<ShellScript> value, ObservableValue<String> fileType) {
         var string = new SimpleStringProperty();
         value.subscribe(shellScript -> {
             string.set(shellScript != null ? shellScript.getValue() : null);
@@ -50,20 +60,7 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
         string.addListener((observable, oldValue, newValue) -> {
             value.setValue(newValue != null ? new ShellScript(newValue) : null);
         });
-        var i = new IntegratedTextAreaComp(
-                string,
-                false,
-                "script",
-                Bindings.createStringBinding(
-                        () -> {
-                            return host.getValue() != null
-                                            && host.getValue().getStore() instanceof StatefulDataStore<?> sd
-                                            && sd.getState() instanceof SystemState ss
-                                            && ss.getShellDialect() != null
-                                    ? ss.getShellDialect().getScriptFileEnding()
-                                    : "sh";
-                        },
-                        host));
+        var i = new IntegratedTextAreaComp(string, false, "script", fileType);
         return i;
     }
 
@@ -77,23 +74,30 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
                                 (s) -> {
                                     Platform.runLater(() -> value.setValue(s));
                                 }))
-                .styleClass("edit-button")
-                .apply(struc -> struc.get().getStyleClass().remove(Styles.FLAT))
-                .descriptor(d -> d.nameKey("edit"))
-                .createRegion();
+                .style("edit-button")
+                .apply(struc -> struc.getStyleClass().remove(Styles.FLAT))
+                .describe(d -> d.nameKey("edit"))
+                .build();
     }
 
     @Override
     public Structure createBase() {
         var textArea = new TextAreaComp(value, lazy);
-        textArea.apply(struc -> {
-            struc.getTextArea().prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> {
-                var val = value.getValue() != null ? value.getValue() : "";
-                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
-                return Math.max(1, count);
-            }, value));
+        textArea.applyStructure(struc -> {
+            struc.getTextArea()
+                    .prefRowCountProperty()
+                    .bind(Bindings.createIntegerBinding(
+                            () -> {
+                                var val = value.getValue() != null ? value.getValue() : "";
+                                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+                                // Somehow the handling of trailing newlines is weird
+                                // This makes the handling better for JavaFX text areas
+                                count++;
+                                return Math.max(1, count);
+                            },
+                            value));
         });
-        var textAreaStruc = textArea.createStructure();
+        var textAreaStruc = textArea.buildStructure();
         var copyButton = createOpenButton();
         var pane = new AnchorPane(textAreaStruc.get(), copyButton);
         pane.setPickOnBounds(false);
@@ -107,7 +111,7 @@ public class IntegratedTextAreaComp extends Comp<IntegratedTextAreaComp.Structur
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<AnchorPane> {
+    public static class Structure implements RegionStructure<AnchorPane> {
         AnchorPane pane;
         TextArea textArea;
 

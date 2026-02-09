@@ -2,14 +2,10 @@ package io.xpipe.app.process;
 
 import io.xpipe.app.issue.TrackEvent;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.OsType;
-import io.xpipe.core.SecretValue;
 
 import lombok.SneakyThrows;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class ScriptHelper {
 
@@ -50,62 +46,5 @@ public class ScriptHelper {
                 .handle();
         processControl.view().writeScriptFile(file, content);
         return file;
-    }
-
-    public static FilePath createTerminalPreparedAskpassScript(
-            SecretValue pass, ShellControl parent, boolean forceExecutable) throws Exception {
-        return createTerminalPreparedAskpassScript(pass != null ? List.of(pass) : List.of(), parent, forceExecutable);
-    }
-
-    public static FilePath createTerminalPreparedAskpassScript(
-            List<SecretValue> pass, ShellControl parent, boolean forceExecutable) throws Exception {
-        var scriptType = parent.getShellDialect();
-
-        // Fix for powershell as there are permission issues when executing a powershell askpass script
-        if (forceExecutable && ShellDialects.isPowershell(parent)) {
-            scriptType = parent.getOsType() == OsType.WINDOWS ? ShellDialects.CMD : ShellDialects.SH;
-        }
-
-        return createTerminalPreparedAskpassScript(pass, parent, scriptType);
-    }
-
-    private static FilePath createTerminalPreparedAskpassScript(
-            List<SecretValue> pass, ShellControl parent, ShellDialect type) throws Exception {
-        var fileName = "xpipe-" + Math.abs(new Random().nextInt());
-        var temp = parent.getSystemTemporaryDirectory();
-        var fileBase = temp.join(fileName);
-        if (type != parent.getShellDialect()) {
-            try (var sub = parent.subShell(type).start()) {
-                var content = sub.getShellDialect()
-                        .getAskpass()
-                        .prepareFixedContent(
-                                sub,
-                                fileBase.toString(),
-                                pass.stream()
-                                        .map(secretValue -> secretValue.getSecretValue())
-                                        .toList());
-                content = sub.getShellDialect().prepareScriptContent(sub, content);
-                return createExecScriptRaw(
-                        sub,
-                        sub.getSystemTemporaryDirectory()
-                                .join(fileName + "." + sub.getShellDialect().getScriptFileEnding()),
-                        content);
-            }
-        } else {
-            var content = parent.getShellDialect()
-                    .getAskpass()
-                    .prepareFixedContent(
-                            parent,
-                            fileBase.toString(),
-                            pass.stream()
-                                    .map(secretValue -> secretValue.getSecretValue())
-                                    .toList());
-            content = parent.getShellDialect().prepareScriptContent(parent, content);
-            return createExecScriptRaw(
-                    parent,
-                    parent.getSystemTemporaryDirectory()
-                            .join(fileName + "." + parent.getShellDialect().getScriptFileEnding()),
-                    content);
-        }
     }
 }

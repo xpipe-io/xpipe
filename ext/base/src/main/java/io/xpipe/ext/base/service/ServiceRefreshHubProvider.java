@@ -18,6 +18,11 @@ public class ServiceRefreshHubProvider
         implements HubLeafProvider<FixedServiceCreatorStore>, BatchHubProvider<FixedServiceCreatorStore> {
 
     @Override
+    public boolean requiresValidStore() {
+        return true;
+    }
+
+    @Override
     public StoreActionCategory getCategory() {
         return StoreActionCategory.CUSTOM;
     }

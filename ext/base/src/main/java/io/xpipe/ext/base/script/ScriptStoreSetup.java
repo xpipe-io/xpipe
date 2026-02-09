@@ -8,6 +8,8 @@ import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
 
+import lombok.SneakyThrows;
+
 import java.util.*;
 
 public class ScriptStoreSetup {
@@ -17,7 +19,7 @@ public class ScriptStoreSetup {
     }
 
     public static void controlWithScripts(
-            ShellControl pc, List<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
+            ShellControl pc, Collection<DataStoreEntryRef<ScriptStore>> enabledScripts, boolean append) {
         try {
             var dialect = pc.getShellDialect();
             if (dialect == null) {
@@ -56,7 +58,12 @@ public class ScriptStoreSetup {
                         new ShellTerminalInitCommand() {
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) {
-                                return Optional.ofNullable(s.getStore().assembleScriptChain(shellControl, false));
+                                var assembled = s.getStore().assembleScriptChain(shellControl, false);
+                                if (assembled == null) {
+                                    return Optional.empty();
+                                }
+
+                                return Optional.ofNullable(assembled.getValue());
                             }
 
                             @Override
@@ -71,7 +78,7 @@ public class ScriptStoreSetup {
                 pc.withInitSnippet(
                         new ShellTerminalInitCommand() {
 
-                            String dir;
+                            FilePath dir;
 
                             @Override
                             public Optional<String> terminalContent(ShellControl shellControl) throws Exception {
@@ -83,8 +90,9 @@ public class ScriptStoreSetup {
                                     return Optional.empty();
                                 }
 
-                                return Optional.ofNullable(
-                                        shellControl.getShellDialect().addToPathVariableCommand(List.of(dir), true));
+                                return Optional.ofNullable(shellControl
+                                        .getShellDialect()
+                                        .addToPathVariableCommand(List.of(dir.toString()), true));
                             }
 
                             @Override
@@ -102,14 +110,14 @@ public class ScriptStoreSetup {
         }
     }
 
-    private static String initScriptsDirectory(ShellControl proc, List<DataStoreEntryRef<SimpleScriptStore>> refs)
-            throws Exception {
+    @SneakyThrows
+    private static FilePath initScriptsDirectory(ShellControl sc, List<DataStoreEntryRef<ScriptStore>> refs) {
         if (refs.isEmpty()) {
             return null;
         }
 
         var applicable = refs.stream()
-                .filter(simpleScriptStore -> simpleScriptStore.getStore().isCompatible(proc.getShellDialect()))
+                .filter(ss -> ss.getStore().isCompatible(sc.getShellDialect()))
                 .toList();
         if (applicable.isEmpty()) {
             return null;
@@ -119,15 +127,13 @@ public class ScriptStoreSetup {
                 .mapToInt(value ->
                         value.get().getName().hashCode() + value.getStore().hashCode())
                 .sum();
-        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(proc, "scripts")
-                .join(proc.getShellDialect().getId())
-                .toString();
-        var hashFile = FilePath.of(targetDir, "hash");
-        var d = proc.getShellDialect();
-        if (d.createFileExistsCommand(proc, hashFile.toString()).executeAndCheck()) {
-            var read = d.getFileReadCommand(proc, hashFile.toString()).readStdoutOrThrow();
+        var targetDir = ShellTemp.createUserSpecificTempDataDirectory(sc, "scripts")
+                .join(sc.getShellDialect().getId());
+        var hashFile = targetDir.join("hash");
+        if (sc.view().fileExists(hashFile)) {
+            var read = sc.view().readTextFile(hashFile);
             try {
-                var readHash = Integer.parseInt(read);
+                var readHash = Integer.parseInt(read.strip());
                 if (hash == readHash) {
                     return targetDir;
                 }
@@ -136,43 +142,59 @@ public class ScriptStoreSetup {
             }
         }
 
-        if (d.directoryExists(proc, targetDir).executeAndCheck()) {
-            d.deleteFileOrDirectory(proc, targetDir).execute();
+        if (sc.view().directoryExists(targetDir)) {
+            sc.view().deleteDirectory(targetDir);
         }
-        proc.executeSimpleCommand(d.getMkdirsCommand(targetDir));
+        sc.view().mkdir(targetDir);
 
-        for (DataStoreEntryRef<SimpleScriptStore> scriptStore : refs) {
-            var content = d.prepareScriptContent(proc, scriptStore.getStore().getCommands());
-            var fileName = OsFileSystem.of(proc.getOsType())
-                    .makeFileSystemCompatible(
-                            scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
-            var scriptFile = FilePath.of(targetDir, fileName + "." + d.getScriptFileEnding());
-            proc.view().writeScriptFile(scriptFile, content);
+        var availableRefs = new ArrayList<>(refs);
+        availableRefs.removeIf(ref -> {
+            try {
+                ref.getStore().getTextSource().checkAvailable();
+                return false;
+            } catch (Exception ex) {
+                ErrorEventFactory.fromThrowable(ex).expected().handle();
+                return true;
+            }
+        });
+
+        var d = sc.getShellDialect();
+        for (DataStoreEntryRef<ScriptStore> scriptStore : availableRefs) {
+            var content = scriptStore.getStore().assembleScriptForFile(sc);
+            if (content != null) {
+                var fileName = OsFileSystem.of(sc.getOsType()).makeFileSystemCompatible(
+                        scriptStore.get().getName().toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
+                var fileType = scriptStore.getStore().getShellDialect() != null ?
+                        scriptStore.getStore().getShellDialect().getScriptFileEnding() :
+                        d.getScriptFileEnding();
+                var scriptFile = targetDir.join(fileName + "." + fileType);
+                sc.view().writeScriptFile(scriptFile, content.getValue());
+            }
         }
 
-        proc.view().writeTextFile(hashFile, String.valueOf(hash));
+        sc.view().writeTextFile(hashFile, String.valueOf(hash));
         return targetDir;
     }
 
     public static List<DataStoreEntryRef<ScriptStore>> getEnabledScripts() {
-        return DataStorage.get().getStoreEntries().stream()
+        var l = DataStorage.get().getStoreEntries().stream()
                 .filter(dataStoreEntry -> dataStoreEntry.getValidity().isUsable()
-                        && dataStoreEntry.getStore() instanceof ScriptStore scriptStore
-                        && scriptStore.getState().isEnabled())
-                .map(DataStoreEntry::<ScriptStore>ref)
+                        && dataStoreEntry.getStore() instanceof ScriptStore ss
+                        && ss.getState().isEnabled())
+                .<DataStoreEntryRef<ScriptStore>>map(DataStoreEntry::ref)
                 .toList();
+        return l;
     }
 
-    public static List<DataStoreEntryRef<SimpleScriptStore>> flatten(List<DataStoreEntryRef<ScriptStore>> scripts) {
-        var seen = new LinkedHashSet<DataStoreEntryRef<SimpleScriptStore>>();
+    public static List<DataStoreEntryRef<ScriptStore>> flatten(Collection<DataStoreEntryRef<ScriptStore>> scripts) {
+        var seen = new LinkedHashSet<DataStoreEntryRef<ScriptStore>>();
         scripts.stream()
                 .filter(scriptStoreDataStoreEntryRef ->
                         scriptStoreDataStoreEntryRef.get().getValidity().isUsable())
                 .forEach(scriptStoreDataStoreEntryRef ->
                         scriptStoreDataStoreEntryRef.getStore().queryFlattenedScripts(seen));
 
-        var dependencies =
-                new HashMap<DataStoreEntryRef<? extends ScriptStore>, Set<DataStoreEntryRef<SimpleScriptStore>>>();
+        var dependencies = new HashMap<DataStoreEntryRef<? extends ScriptStore>, Set<DataStoreEntryRef<ScriptStore>>>();
         seen.forEach(ref -> {
             var f = new HashSet<>(ref.getStore().queryFlattenedScripts());
             f.remove(ref);

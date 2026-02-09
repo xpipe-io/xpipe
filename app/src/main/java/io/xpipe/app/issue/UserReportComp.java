@@ -1,6 +1,7 @@
 package io.xpipe.app.issue;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.*;
 import io.xpipe.app.prefs.AppPrefs;
@@ -35,7 +36,7 @@ public class UserReportComp extends ModalOverlayContentComp {
         var modal = ModalOverlay.of("errorHandler", comp);
         var sent = new SimpleBooleanProperty();
         modal.addButtonBarComp(privacyPolicy());
-        modal.addButtonBarComp(Comp.hspacer());
+        modal.addButtonBarComp(RegionBuilder.hspacer());
         modal.addButton(new ModalButton(
                 "sendReport",
                 () -> {
@@ -48,16 +49,16 @@ public class UserReportComp extends ModalOverlayContentComp {
         return sent.get();
     }
 
-    private static Comp<?> privacyPolicy() {
-        return Comp.of(() -> {
+    private static BaseRegionBuilder<?, ?> privacyPolicy() {
+        return RegionBuilder.of(() -> {
             var dataPolicyButton = new Hyperlink(AppI18n.get("dataHandlingPolicies"));
             AppFontSizes.xs(dataPolicyButton);
             dataPolicyButton.setOnAction(event1 -> {
                 AppResources.with(AppResources.MAIN_MODULE, "misc/report_privacy_policy.md", file -> {
                     var markDown = new MarkdownComp(Files.readString(file), s -> s, true)
-                            .apply(struc -> struc.get().setMaxWidth(500))
-                            .apply(struc -> struc.get().setMaxHeight(400));
-                    var popover = new Popover(markDown.createRegion());
+                            .apply(struc -> struc.setMaxWidth(500))
+                            .apply(struc -> struc.setMaxHeight(400));
+                    var popover = new Popover(markDown.build());
                     popover.setAutoHide(!AppPrefs.get().limitedTouchscreenMode().get());
                     popover.setCloseButtonEnabled(true);
                     popover.setHeaderAlwaysVisible(false);
@@ -99,11 +100,12 @@ public class UserReportComp extends ModalOverlayContentComp {
 
                             return file.getFileName().toString();
                         },
+                        file -> null,
                         includedDiagnostics,
                         file -> false,
                         () -> false)
-                .styleClass("attachment-list")
-                .createRegion();
+                .style("attachment-list")
+                .build();
 
         var reportSection = new VBox(
                 infoHeader,

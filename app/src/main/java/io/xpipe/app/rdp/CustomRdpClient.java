@@ -30,7 +30,7 @@ public class CustomRdpClient implements ExternalApplicationType, ExternalRdpClie
                 .nameAndDescription("customRdpClientCommand")
                 .addComp(
                         new TextFieldComp(command, false)
-                                .apply(struc -> struc.get().setPromptText("myrdpclient -c $FILE"))
+                                .apply(struc -> struc.setPromptText("myrdpclient -c $FILE"))
                                 .maxWidth(600),
                         command)
                 .bind(() -> CustomRdpClient.builder().command(command.get()).build(), property);

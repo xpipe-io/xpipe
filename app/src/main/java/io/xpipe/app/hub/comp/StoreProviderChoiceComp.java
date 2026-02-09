@@ -1,9 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.*;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.app.ext.DataStoreProviders;
@@ -27,7 +24,7 @@ import java.util.function.Supplier;
 
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @AllArgsConstructor
-public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataStoreProvider>>> {
+public class StoreProviderChoiceComp extends RegionBuilder<ComboBox<DataStoreProvider>> {
 
     Predicate<DataStoreProvider> filter;
     Property<DataStoreProvider> provider;
@@ -48,7 +45,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
     }
 
     @Override
-    public CompStructure<ComboBox<DataStoreProvider>> createBase() {
+    public ComboBox<DataStoreProvider> createSimple() {
         Supplier<ListCell<DataStoreProvider>> cellFactory = () -> new ListCell<>() {
             @Override
             protected void updateItem(DataStoreProvider item, boolean empty) {
@@ -76,7 +73,7 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
         cb.setValue(provider.getValue());
         provider.bind(cb.valueProperty());
         cb.getStyleClass().add("choice-comp");
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .nameKey("chooseConnectionType")
                 .description(Bindings.createStringBinding(
                         () -> {
@@ -96,6 +93,6 @@ public class StoreProviderChoiceComp extends Comp<CompStructure<ComboBox<DataSto
             cb.show();
             event.consume();
         });
-        return new SimpleCompStructure<>(cb);
+        return cb;
     }
 }

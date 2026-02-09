@@ -20,6 +20,10 @@ public interface BatchHubProvider<T extends DataStore> extends ActionProvider {
 
     Class<?> getApplicableClass();
 
+    default boolean requiresValidStore() {
+        return true;
+    }
+
     default boolean isApplicable(DataStoreEntryRef<T> o) {
         return true;
     }
@@ -39,7 +43,14 @@ public interface BatchHubProvider<T extends DataStore> extends ActionProvider {
                 })
                 .filter(action -> action != null)
                 .toList();
-        return BatchStoreAction.<T>builder().actions(individual).build();
+        return BatchStoreAction.<T>builder()
+                .actions(individual)
+                .parallel(runParallel())
+                .build();
+    }
+
+    default boolean runParallel() {
+        return false;
     }
 
     @SneakyThrows

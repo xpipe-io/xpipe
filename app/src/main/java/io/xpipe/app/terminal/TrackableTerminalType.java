@@ -5,4 +5,8 @@ public interface TrackableTerminalType extends ExternalTerminalType {
     default int getProcessHierarchyOffset() {
         return 0;
     }
+
+    default TerminalDockMode getDockMode() {
+        return TerminalDockMode.UNSUPPORTED;
+    }
 }

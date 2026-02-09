@@ -1,7 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.binding.Bindings;
@@ -15,7 +15,7 @@ import lombok.Value;
 
 import java.util.Objects;
 
-public class TextAreaComp extends Comp<TextAreaComp.Structure> {
+public class TextAreaComp extends RegionStructureBuilder<AnchorPane, TextAreaComp.Structure> {
 
     private final Property<String> currentValue;
     private final Property<String> lastAppliedValue;
@@ -80,7 +80,7 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
                     lastAppliedValue);
             var button = new IconButtonComp("mdi2c-checkbox-marked-outline")
                     .hide(isEqual)
-                    .createRegion();
+                    .build();
             anchorPane.getChildren().add(button);
             AnchorPane.setBottomAnchor(button, 10.0);
             AnchorPane.setRightAnchor(button, 10.0);
@@ -94,7 +94,7 @@ public class TextAreaComp extends Comp<TextAreaComp.Structure> {
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<AnchorPane> {
+    public static class Structure implements RegionStructure<AnchorPane> {
         AnchorPane pane;
         TextArea textArea;
 

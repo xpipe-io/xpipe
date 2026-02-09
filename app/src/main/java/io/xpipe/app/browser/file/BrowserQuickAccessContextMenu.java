@@ -1,8 +1,7 @@
 package io.xpipe.app.browser.file;
 
-import io.xpipe.app.browser.icon.BrowserIconManager;
+import io.xpipe.app.browser.icon.BrowserIcons;
 import io.xpipe.app.comp.base.ModalOverlay;
-import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.ext.FileEntry;
 import io.xpipe.app.ext.FileKind;
@@ -119,7 +118,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
         BooleanScope.executeExclusive(model.getBusy(), () -> {
             var dir = entry.getRawFileEntry().resolved().getPath();
             try (var stream = model.getFileSystem().listFiles(model.getFileSystem(), dir)) {
-                var l = stream.map(fileEntry -> fileEntry).toList();
+                var l = stream.toList();
                 // Wait until all files are listed, i.e. do not skip the stream elements
                 list.addAll(l.subList(0, Math.min(l.size(), 150)));
             }
@@ -172,9 +171,7 @@ public class BrowserQuickAccessContextMenu extends ContextMenu {
             this.menu = new Menu(
                     // Use original name, not the link target
                     browserEntry.getRawFileEntry().getName(),
-                    PrettyImageHelper.ofFixedSize(
-                                    BrowserIconManager.getFileIcon(browserEntry.getRawFileEntry()), 24, 24)
-                            .createRegion());
+                    BrowserIcons.createIcon(browserEntry.getIcon()).build());
             createMenu();
             addInputListeners();
         }

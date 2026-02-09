@@ -30,7 +30,7 @@ public class DataStoreEntryRef<T extends DataStore> {
 
     @Override
     public String toString() {
-        return entry.getUuid().toString();
+        return entry.getUuid().toString() + " / " + entry.getName();
     }
 
     public void checkComplete() throws Throwable {

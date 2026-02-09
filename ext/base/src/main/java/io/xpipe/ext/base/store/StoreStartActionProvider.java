@@ -65,6 +65,11 @@ public class StoreStartActionProvider implements HubLeafProvider<StartableStore>
         return "startStore";
     }
 
+    @Override
+    public boolean runParallel() {
+        return true;
+    }
+
     @Jacksonized
     @SuperBuilder
     public static class Action extends StoreAction<StartableStore> {

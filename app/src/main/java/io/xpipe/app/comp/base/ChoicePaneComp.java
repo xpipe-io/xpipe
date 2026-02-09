@@ -1,8 +1,7 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -20,7 +19,7 @@ import lombok.Setter;
 import java.util.List;
 import java.util.function.Function;
 
-public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
+public class ChoicePaneComp extends RegionBuilder<VBox> {
 
     private final List<Entry> entries;
     private final Property<Entry> selected;
@@ -34,7 +33,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
     }
 
     @Override
-    public CompStructure<VBox> createBase() {
+    public VBox createSimple() {
         var list = FXCollections.observableArrayList(entries);
         var cb = MenuHelper.<Entry>createComboBox();
         cb.setItems(list);
@@ -76,7 +75,7 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
                     vbox.getChildren().remove(1);
                 }
             } else {
-                var region = n.comp().createRegion();
+                var region = n.comp().build();
                 if (vbox.getChildren().size() == 1) {
                     vbox.getChildren().add(region);
                 } else {
@@ -100,10 +99,10 @@ public class ChoicePaneComp extends Comp<CompStructure<VBox>> {
 
         vbox.getStyleClass().add("choice-pane-comp");
 
-        return new SimpleCompStructure<>(vbox);
+        return vbox;
     }
 
-    public record Entry(ObservableValue<String> name, Comp<?> comp) {
+    public record Entry(ObservableValue<String> name, BaseRegionBuilder<?, ?> comp) {
 
         @Override
         public int hashCode() {

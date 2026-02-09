@@ -39,6 +39,8 @@ public class KonsoleTerminalType implements ExternalTerminalType, ExternalApplic
         // IntelliJ/XPipe even though we try to detach it.
         // This is not the case for production where it works as expected
         var toExecute = CommandBuilder.of()
+                .add("-p")
+                .add("tabtitle='" + configuration.single().getTitle() + "'")
                 .addIf(configuration.isPreferTabs(), "--new-tab")
                 .add("-e")
                 .addFile(configuration.single().getScriptFile());

@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.core.AppCache;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.ext.DataStoreUsageCategory;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -11,6 +12,7 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.StorageListener;
+import io.xpipe.app.util.GlobalTimer;
 
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -23,6 +25,7 @@ import javafx.collections.ListChangeListener;
 
 import lombok.Getter;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -67,10 +70,6 @@ public class StoreViewState {
     @Getter
     private final DerivedObservableList<StoreEntryWrapper> effectiveBatchModeSelection = batchModeSelection.filtered(
             storeEntryWrapper -> {
-                if (!storeEntryWrapper.getValidity().getValue().isUsable()) {
-                    return false;
-                }
-
                 if (storeEntryWrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
                     return false;
                 }
@@ -79,25 +78,6 @@ public class StoreViewState {
             },
             entriesListVisibilityObservable,
             entriesListUpdateObservable);
-
-    @Getter
-    private final ObservableValue<Comparator<StoreSection>> effectiveSortMode = Bindings.createObjectBinding(
-            () -> {
-                var g = globalSortMode.getValue() != null ? globalSortMode.getValue() : null;
-                var t = tieSortMode.getValue() != null ? tieSortMode.getValue() : StoreSectionSortMode.DATE_DESC;
-                var failed = Comparator.<StoreSection>comparingInt(value -> {
-                    if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
-                        return 1;
-                    }
-
-                    return 0;
-                });
-                return g != null
-                        ? failed.thenComparing(g.comparator().thenComparing(t.comparator()))
-                        : failed.thenComparing(t.comparator());
-            },
-            globalSortMode,
-            tieSortMode);
 
     @Getter
     private boolean initialized = false;
@@ -160,6 +140,35 @@ public class StoreViewState {
         return l.stream().sorted().toList();
     }
 
+    public ObservableValue<Comparator<StoreSection>> createEffectiveSortMode(
+            Comparator<StoreSection> customComparator) {
+        return Bindings.createObjectBinding(
+                () -> {
+                    var global = globalSortMode.getValue() != null
+                            ? globalSortMode.getValue().comparator()
+                            : null;
+                    var tie = customComparator != null
+                            ? customComparator
+                            : tieSortMode.getValue() != null
+                                    ? tieSortMode.getValue().comparator()
+                                    : StoreSectionSortMode.DATE_DESC.comparator();
+                    var fallback = Comparator.<StoreSection, String>comparing(
+                            sec -> sec.getWrapper().getName().getValue());
+                    var failed = Comparator.<StoreSection>comparingInt(value -> {
+                        if (value.getWrapper().getValidity().getValue() == DataStoreEntry.Validity.LOAD_FAILED) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+                    return global != null
+                            ? failed.thenComparing(global.thenComparing(tie)).thenComparing(fallback)
+                            : failed.thenComparing(tie).thenComparing(fallback);
+                },
+                globalSortMode,
+                tieSortMode);
+    }
+
     public ObservableIntegerValue entriesCount(Predicate<StoreEntryWrapper> filter, Observable... observables) {
         return Bindings.size(allEntries
                 .filtered(
@@ -183,9 +192,7 @@ public class StoreViewState {
         if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
-        if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> selectBatchMode(c));
         }
     }
@@ -195,9 +202,7 @@ public class StoreViewState {
         if (wrapper != null) {
             batchModeSelection.getList().remove(wrapper);
         }
-        if (wrapper == null
-                || (wrapper.getValidity().getValue().isUsable()
-                        && wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP)) {
+        if (wrapper == null || wrapper.getEntry().getProvider().getUsageCategory() == DataStoreUsageCategory.GROUP) {
             section.getShownChildren().getList().forEach(c -> unselectBatchMode(c));
         }
     }
@@ -266,7 +271,9 @@ public class StoreViewState {
         }
 
         if (matchingParent == null) {
-            activeCategory.setValue(category);
+            PlatformThread.runLaterIfNeeded(() -> {
+                activeCategory.setValue(category);
+            });
         }
     }
 
@@ -340,6 +347,20 @@ public class StoreViewState {
         PlatformThread.runLaterIfNeeded(() -> {
             entriesListUpdateObservable.set(entriesListUpdateObservable.get() + 1);
         });
+    }
+
+    public void createNewCategory(StoreCategoryWrapper parent) {
+        var cat = DataStoreCategory.createNew(parent.getCategory().getUuid(), AppI18n.get("newCategory"));
+        DataStorage.get().addStoreCategory(cat);
+        // Ugly solution to ensure that the category is added to the scene
+        GlobalTimer.delay(
+                () -> {
+                    var wrapper = getCategoryWrapper(cat);
+                    Platform.runLater(() -> {
+                        wrapper.getRenameTrigger().fire(null);
+                    });
+                },
+                Duration.ofMillis(500));
     }
 
     private void addListeners() {
@@ -610,6 +631,22 @@ public class StoreViewState {
         return categories.getList().stream()
                 .filter(storeCategoryWrapper ->
                         storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.ALL_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getCustomScriptsCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    public StoreCategoryWrapper getScriptSourcesCategory() {
+        return categories.getList().stream()
+                .filter(storeCategoryWrapper ->
+                        storeCategoryWrapper.getCategory().getUuid().equals(DataStorage.SCRIPT_SOURCES_CATEGORY_UUID))
                 .findFirst()
                 .orElseThrow();
     }

@@ -44,6 +44,8 @@ public class BrowserClipboard {
                     // Sometimes file data can contain invalid chars. Why?
                     var files = data.stream()
                             .filter(file -> file.toString().chars().noneMatch(value -> Character.isISOControl(value)))
+                            .filter(file -> !file.toString().isBlank())
+                            .filter(file -> file.exists())
                             .map(f -> f.toPath())
                             .toList();
                     if (files.size() == 0) {

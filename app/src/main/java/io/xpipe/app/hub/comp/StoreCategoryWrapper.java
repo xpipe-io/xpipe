@@ -8,11 +8,13 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreColor;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableStringValue;
 
 import lombok.Getter;
+import org.int4.fx.values.util.Trigger;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -35,6 +37,7 @@ public class StoreCategoryWrapper {
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
     private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
+    private final Trigger<Void> renameTrigger = Trigger.of();
     private StoreCategoryWrapper cachedParent;
 
     public StoreCategoryWrapper(DataStoreCategory category) {
@@ -71,6 +74,10 @@ public class StoreCategoryWrapper {
                 },
                 AppPrefs.get().censorMode(),
                 nameProperty());
+    }
+
+    public boolean canMove() {
+        return DataStorage.get().canMoveStoreCategory(category);
     }
 
     public StoreCategoryWrapper getRoot() {
@@ -117,6 +124,11 @@ public class StoreCategoryWrapper {
             }
 
             category.setName(n);
+            if (!category.getName().equals(name.getValue())) {
+                Platform.runLater(() -> {
+                    name.setValue(category.getName());
+                });
+            }
         });
 
         expanded.addListener((c, o, n) -> {

@@ -17,7 +17,6 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -97,7 +96,7 @@ public class AppMainWindow {
         INSTANCE = new AppMainWindow(stage);
         AppModifiedStage.prepareStage(stage);
 
-        var content = new AppMainWindowContentComp(stage).createRegion();
+        var content = new AppMainWindowContentComp(stage).build();
         content.opacityProperty()
                 .bind(Bindings.createDoubleBinding(
                         () -> {
@@ -149,7 +148,7 @@ public class AppMainWindow {
             try {
                 TrackEvent.info("Window content node creation started");
                 var content = new AppLayoutComp();
-                var s = content.createStructure();
+                var s = content.createBase();
                 TrackEvent.info("Window content node structure created");
                 loadedContent.setValue(s);
             } catch (Throwable t) {
@@ -169,19 +168,12 @@ public class AppMainWindow {
         return INSTANCE;
     }
 
-    public ObservableDoubleValue displayScale() {
-        if (getStage() == null) {
-            return new SimpleDoubleProperty(1.0);
-        }
-
-        return getStage().outputScaleXProperty();
-    }
-
     public void show() {
         stage.show();
         if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
             var ctrl = new NativeWinWindowControl(stage);
             NativeWinWindowControl.MAIN_WINDOW = ctrl;
+            AppWindowsLock.registerHook(ctrl.getWindowHandle());
             AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
         }
         shown = true;

@@ -1,6 +1,6 @@
 package io.xpipe.app.browser;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.ext.DataStore;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreColor;
@@ -23,7 +23,7 @@ public abstract class BrowserStoreSessionTab<T extends DataStore> extends Browse
         this.name = DataStorage.get().getStoreEntryDisplayName(entry.get());
     }
 
-    public abstract Comp<?> comp();
+    public abstract BaseRegionBuilder<?, ?> comp();
 
     public abstract boolean canImmediatelyClose();
 

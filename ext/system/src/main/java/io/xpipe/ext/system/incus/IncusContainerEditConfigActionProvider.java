@@ -51,7 +51,7 @@ public class IncusContainerEditConfigActionProvider implements HubLeafProvider<I
 
         @Override
         public void executeImpl() throws Exception {
-            var d = (IncusContainerStore) ref.getStore();
+            var d = ref.getStore();
             var view = new IncusCommandView(
                     d.getInstall().getStore().getHost().getStore().getOrStartSession());
             TerminalLaunch.builder()

@@ -5,7 +5,7 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 
 public interface VncBaseStore extends DataStore {
 
-    String getEffectiveHost();
+    String getEffectiveHost() throws Exception;
 
     int getEffectivePort();
 

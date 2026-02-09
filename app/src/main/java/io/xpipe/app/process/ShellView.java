@@ -32,6 +32,10 @@ public class ShellView {
         return shellControl.getShellDialect();
     }
 
+    public synchronized void setCachedPredicate(String key, boolean value) {
+        genericCache.put(key, value);
+    }
+
     public synchronized boolean getCachedPredicate(String key, FailableSupplier<Boolean> supplier) throws Exception {
         var v = genericCache.get(key);
         if (v != null) {

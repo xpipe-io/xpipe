@@ -32,9 +32,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
 
     @SuppressWarnings("unused")
     public static OhMyPoshTerminalPrompt createDefault() {
-        return OhMyPoshTerminalPrompt.builder()
-                .configuration(
-                        """
+        return OhMyPoshTerminalPrompt.builder().configuration("""
                                                               {
                                                                 "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
                                                                 "blocks": [
@@ -121,8 +119,7 @@ public class OhMyPoshTerminalPrompt extends ConfigFileTerminalPrompt {
                                                                 "final_space": true,
                                                                 "version": 3
                                                               }
-                                                              """)
-                .build();
+                                                              """).build();
     }
 
     @Override

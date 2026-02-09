@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.PlatformThread;
 
@@ -20,7 +18,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 @Getter
 @AllArgsConstructor
-public class ButtonComp extends Comp<CompStructure<Button>> {
+public class ButtonComp extends RegionBuilder<Button> {
 
     private final ObservableValue<String> name;
     private final ObservableValue<LabelGraphic> graphic;
@@ -45,7 +43,7 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
     }
 
     @Override
-    public CompStructure<Button> createBase() {
+    public Button createSimple() {
         var button = new Button(null);
         button.setMnemonicParsing(false);
         if (name != null) {
@@ -78,6 +76,6 @@ public class ButtonComp extends Comp<CompStructure<Button>> {
             button.setOnAction(e -> getListener().run());
         }
         button.getStyleClass().add("button-comp");
-        return new SimpleCompStructure<>(button);
+        return button;
     }
 }

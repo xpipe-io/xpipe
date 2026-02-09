@@ -10,7 +10,6 @@ import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.skin.ScrollPaneSkin;
@@ -62,11 +61,11 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var showProviders = (!model.isStaticDisplay() && provider.showProviderChoice())
                 || (model.isStaticDisplay() && provider.showProviderChoice());
         if (model.isStaticDisplay()) {
-            providerChoice.apply(struc -> struc.get().setDisable(true));
+            providerChoice.apply(struc -> struc.setDisable(true));
         }
 
         if (showProviders) {
-            layout.getChildren().addFirst(providerChoice.createRegion());
+            layout.getChildren().addFirst(providerChoice.build());
         }
         layout.getChildren().add(new Region());
 
@@ -107,7 +106,7 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 full.sub(propOptions);
 
                 var comp = full.buildComp();
-                var region = comp.styleClass("store-creator-options").createRegion();
+                var region = comp.style("store-creator-options").build();
                 valSp.getChildren().add(region);
 
                 var sp = new ScrollPane(valSp);

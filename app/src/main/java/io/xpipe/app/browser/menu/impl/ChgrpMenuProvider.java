@@ -7,7 +7,7 @@ import io.xpipe.app.browser.menu.BrowserMenuBranchProvider;
 import io.xpipe.app.browser.menu.BrowserMenuCategory;
 import io.xpipe.app.browser.menu.BrowserMenuItemProvider;
 import io.xpipe.app.browser.menu.BrowserMenuLeafProvider;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.FileKind;
@@ -156,7 +156,7 @@ public class ChgrpMenuProvider implements BrowserMenuBranchProvider {
             var group = new SimpleStringProperty();
             var modal = ModalOverlay.of(
                     "groupName",
-                    Comp.of(() -> {
+                    RegionBuilder.of(() -> {
                                 var creationName = new TextField();
                                 creationName.textProperty().bindBidirectional(group);
                                 return creationName;

@@ -1,6 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
@@ -16,7 +16,7 @@ import atlantafx.base.theme.Styles;
 import lombok.Setter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-public class IntroComp extends SimpleComp {
+public class IntroComp extends SimpleRegionBuilder {
 
     private final String translationsKey;
     private final LabelGraphic graphic;
@@ -62,9 +62,9 @@ public class IntroComp extends SimpleComp {
         if (buttonAction != null) {
             var button = new ButtonComp(AppI18n.observable(translationsKey + "Button"), buttonGraphic, buttonAction);
             if (buttonDefault) {
-                button.styleClass(Styles.ACCENT);
+                button.style(Styles.ACCENT);
             }
-            var buttonPane = new StackPane(button.createRegion());
+            var buttonPane = new StackPane(button.build());
             buttonPane.setAlignment(Pos.CENTER);
             v.getChildren().add(buttonPane);
         }

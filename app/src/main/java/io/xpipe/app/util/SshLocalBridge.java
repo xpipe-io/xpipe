@@ -105,8 +105,7 @@ public class SshLocalBridge {
             var config = INSTANCE.getConfig();
             var command = get().getRemoteCommand(sc);
             var pidFile = bridgeDir.resolve("sshd.pid");
-            var content =
-                    """
+            var content = """
                           ForceCommand %s
                           PidFile "%s"
                           StrictModes no
@@ -117,13 +116,12 @@ public class SshLocalBridge {
                           HostKey "%s"
                           PubkeyAuthentication yes
                           AuthorizedKeysFile "%s"
-                          """
-                            .formatted(
-                                    command,
-                                    pidFile.toString(),
-                                    "" + port,
-                                    INSTANCE.getHostKey().toString(),
-                                    INSTANCE.getPubIdentityKey());
+                          """.formatted(
+                            command,
+                            pidFile.toString(),
+                            "" + port,
+                            INSTANCE.getHostKey().toString(),
+                            INSTANCE.getPubIdentityKey());
             Files.writeString(config, content);
 
             // Write to local SSH client config
@@ -203,15 +201,13 @@ public class SshLocalBridge {
     }
 
     private void updateConfig() throws IOException {
-        var hostEntry =
-                """
+        var hostEntry = """
                         Host %s
                             HostName localhost
                             User "%s"
                             Port %s
                             IdentityFile "%s"
-                        """
-                        .formatted(getName(), user, port, getIdentityKey());
+                        """.formatted(getName(), user, port, getIdentityKey());
 
         var file = AppSystemInfo.ofCurrent().getUserHome().resolve(".ssh", "config");
         if (!Files.exists(file)) {
@@ -220,15 +216,13 @@ public class SshLocalBridge {
         }
 
         var content = Files.readString(file).lines().collect(Collectors.joining("\n")) + "\n";
-        var pattern = Pattern.compile(
-                """
+        var pattern = Pattern.compile("""
                                       Host %s
                                        {4}HostName localhost
                                        {4}User "(.+)"
                                        {4}Port (\\d+)
                                        {4}IdentityFile "(.+)"
-                                      """
-                        .formatted(getName()));
+                                      """.formatted(getName()));
         var matcher = pattern.matcher(content);
         if (matcher.find()) {
             var replaced = matcher.replaceFirst(Matcher.quoteReplacement(hostEntry));

@@ -4,8 +4,6 @@ import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.*;
 import io.xpipe.app.core.check.AppDebugModeCheck;
 import io.xpipe.app.core.window.AppMainWindow;
-import io.xpipe.app.core.window.AppSideWindow;
-import io.xpipe.app.core.window.AppWindowStyle;
 import io.xpipe.app.issue.*;
 import io.xpipe.app.platform.PlatformInit;
 import io.xpipe.app.platform.PlatformState;

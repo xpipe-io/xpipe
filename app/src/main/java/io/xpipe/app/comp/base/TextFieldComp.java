@@ -1,8 +1,6 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompStructure;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.platform.PlatformThread;
 
 import javafx.beans.property.Property;
@@ -12,7 +10,7 @@ import javafx.scene.input.KeyCode;
 
 import java.util.Objects;
 
-public class TextFieldComp extends Comp<CompStructure<TextField>> {
+public class TextFieldComp extends RegionBuilder<TextField> {
 
     private final Property<String> lastAppliedValue;
     private final Property<String> currentValue;
@@ -39,7 +37,7 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
     }
 
     @Override
-    public CompStructure<TextField> createBase() {
+    public TextField createSimple() {
         var text = new TextField(currentValue.getValue() != null ? currentValue.getValue() : "");
         text.textProperty().addListener((c, o, n) -> {
             currentValue.setValue(n != null && n.length() > 0 ? n : null);
@@ -72,6 +70,6 @@ public class TextFieldComp extends Comp<CompStructure<TextField>> {
             }
         });
 
-        return new SimpleCompStructure<>(text);
+        return text;
     }
 }

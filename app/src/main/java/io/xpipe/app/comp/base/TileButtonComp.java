@@ -1,8 +1,9 @@
 package io.xpipe.app.comp.base;
 
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.CompStructure;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionDescriptor;
+import io.xpipe.app.comp.RegionStructure;
+import io.xpipe.app.comp.RegionStructureBuilder;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.PlatformThread;
@@ -24,7 +25,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.util.function.Consumer;
 
 @Getter
-public class TileButtonComp extends Comp<TileButtonComp.Structure> {
+public class TileButtonComp extends RegionStructureBuilder<Button, TileButtonComp.Structure> {
 
     private final ObservableValue<String> name;
     private final ObservableValue<String> description;
@@ -35,7 +36,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     private double iconSize = 0.55;
 
     @Setter
-    private Comp<?> right;
+    private BaseRegionBuilder<?, ?> right;
 
     public TileButtonComp(String nameKey, String descriptionKey, String icon, Consumer<ActionEvent> action) {
         this.name = AppI18n.observable(nameKey);
@@ -58,7 +59,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
     @Override
     public Structure createBase() {
         var bt = new Button();
-        CompDescriptor.builder().name(name).description(description).build().apply(bt);
+        RegionDescriptor.builder().name(name).description(description).build().apply(bt);
         bt.getStyleClass().add("tile-button-comp");
         bt.setOnAction(e -> {
             if (action != null) {
@@ -83,10 +84,10 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
         var text = new VBox(header, desc);
         text.setSpacing(2);
 
-        var fi = new FontIconComp(icon).createStructure();
+        var fi = new FontIconComp(icon).buildStructure();
         var pane = fi.getPane();
         var hbox = new HBox(pane, text);
-        Region rightRegion = right != null ? right.createRegion() : null;
+        Region rightRegion = right != null ? right.build() : null;
         if (rightRegion != null) {
             hbox.getChildren().add(new Spacer());
             hbox.getChildren().add(rightRegion);
@@ -119,7 +120,7 @@ public class TileButtonComp extends Comp<TileButtonComp.Structure> {
 
     @Value
     @Builder
-    public static class Structure implements CompStructure<Button> {
+    public static class Structure implements RegionStructure<Button> {
         Button button;
         HBox content;
         FontIcon graphic;

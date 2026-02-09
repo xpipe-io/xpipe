@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
@@ -24,7 +24,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PasswordManagerTestComp extends SimpleComp {
+public class PasswordManagerTestComp extends SimpleRegionBuilder {
 
     private final StringProperty value;
     private final boolean handleEnter;
@@ -41,8 +41,7 @@ public class PasswordManagerTestComp extends SimpleComp {
         var testPasswordManagerResult = new SimpleStringProperty();
 
         var field = new TextFieldComp(value)
-                .apply(struc -> struc.get()
-                        .promptTextProperty()
+                .apply(struc -> struc.promptTextProperty()
                         .bind(Bindings.createStringBinding(
                                 () -> {
                                     return prefs.passwordManager.getValue() != null
@@ -50,10 +49,10 @@ public class PasswordManagerTestComp extends SimpleComp {
                                             : "?";
                                 },
                                 prefs.passwordManager)))
-                .styleClass(Styles.LEFT_PILL)
+                .style(Styles.LEFT_PILL)
                 .hgrow();
         if (handleEnter) {
-            field.apply(struc -> struc.get().setOnKeyPressed(event -> {
+            field.apply(struc -> struc.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ENTER) {
                     testPasswordManager(value.get(), testPasswordManagerResult);
                     event.consume();
@@ -64,26 +63,25 @@ public class PasswordManagerTestComp extends SimpleComp {
         var button = new ButtonComp(null, new FontIcon("mdi2p-play"), () -> {
                     testPasswordManager(value.get(), testPasswordManagerResult);
                 })
-                .descriptor(d -> d.nameKey("test"))
-                .styleClass(Styles.RIGHT_PILL);
+                .describe(d -> d.nameKey("test"))
+                .style(Styles.RIGHT_PILL);
 
         var testInput = new HorizontalComp(List.of(field, button));
         testInput.apply(struc -> {
-            struc.get().setFillHeight(true);
-            var first = ((Region) struc.get().getChildren().get(0));
-            var second = ((Region) struc.get().getChildren().get(1));
+            struc.setFillHeight(true);
+            var first = ((Region) struc.getChildren().get(0));
+            var second = ((Region) struc.getChildren().get(1));
             second.minHeightProperty().bind(first.heightProperty());
             second.maxHeightProperty().bind(first.heightProperty());
             second.prefHeightProperty().bind(first.heightProperty());
         });
         testInput.hgrow();
 
-        var testPasswordManager = new HorizontalComp(
-                        List.of(testInput, new LabelComp(testPasswordManagerResult).apply(struc -> struc.get()
-                                .setOpacity(0.8))))
-                .apply(struc -> struc.get().setAlignment(Pos.CENTER_LEFT))
-                .apply(struc -> struc.get().setFillHeight(true));
-        return testPasswordManager.createRegion();
+        var testPasswordManager = new HorizontalComp(List.of(
+                        testInput, new LabelComp(testPasswordManagerResult).apply(struc -> struc.setOpacity(0.8))))
+                .apply(struc -> struc.setAlignment(Pos.CENTER_LEFT))
+                .apply(struc -> struc.setFillHeight(true));
+        return testPasswordManager.build();
     }
 
     private void testPasswordManager(String key, StringProperty testPasswordManagerResult) {

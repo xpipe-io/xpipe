@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.util.BooleanScope;
 
 import javafx.application.Platform;
@@ -11,7 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 
-public class StoreEntryBatchSelectComp extends SimpleComp {
+public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
 
     private final StoreSection section;
 

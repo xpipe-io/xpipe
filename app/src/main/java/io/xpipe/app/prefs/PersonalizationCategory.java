@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ChoiceComp;
 import io.xpipe.app.comp.base.HorizontalComp;
@@ -27,7 +27,7 @@ public class PersonalizationCategory extends AppPrefsCategory {
     public static OptionsBuilder themeChoice() {
         var prefs = AppPrefs.get();
         var c = ChoiceComp.ofTranslatable(prefs.theme, AppTheme.Theme.ALL, false)
-                .styleClass("theme-switcher");
+                .style("theme-switcher");
         c.apply(struc -> {
             Supplier<ListCell<AppTheme.Theme>> cell = () -> new ListCell<>() {
                 @Override
@@ -59,8 +59,8 @@ public class PersonalizationCategory extends AppPrefsCategory {
                     setGraphicTextGap(8);
                 }
             };
-            struc.get().setButtonCell(cell.get());
-            struc.get().setCellFactory(themeListView -> {
+            struc.setButtonCell(cell.get());
+            struc.setCellFactory(themeListView -> {
                 return cell.get();
             });
         });
@@ -77,8 +77,8 @@ public class PersonalizationCategory extends AppPrefsCategory {
             Hyperlinks.open(Hyperlinks.TRANSLATE);
         });
         var h = new HorizontalComp(List.of(c, visit)).apply(struc -> {
-            struc.get().setAlignment(Pos.CENTER_LEFT);
-            struc.get().setSpacing(10);
+            struc.setAlignment(Pos.CENTER_LEFT);
+            struc.setSpacing(10);
         });
         return new OptionsBuilder().pref(prefs.language).addComp(h, prefs.language);
     }
@@ -94,7 +94,7 @@ public class PersonalizationCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         return new OptionsBuilder()
                 .addTitle("personalization")
                 .sub(new OptionsBuilder().sub(languageChoice()).sub(themeChoice()))

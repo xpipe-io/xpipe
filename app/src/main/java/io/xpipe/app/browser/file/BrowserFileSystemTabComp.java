@@ -2,10 +2,7 @@ package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
 import io.xpipe.app.browser.menu.BrowserMenuProviders;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.CompDescriptor;
-import io.xpipe.app.comp.SimpleComp;
-import io.xpipe.app.comp.SimpleCompStructure;
+import io.xpipe.app.comp.*;
 import io.xpipe.app.comp.augment.ContextMenuAugment;
 import io.xpipe.app.comp.base.*;
 import io.xpipe.app.core.AppFontSizes;
@@ -37,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class BrowserFileSystemTabComp extends SimpleComp {
+public class BrowserFileSystemTabComp extends SimpleRegionBuilder {
 
     private final BrowserFileSystemTabModel model;
     private final boolean showStatusBar;
@@ -57,7 +54,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
         root.setMinWidth(190);
         var overview = new Button(null, new FontIcon("mdi2m-monitor"));
         overview.setOnAction(e -> model.cdAsync((FilePath) null));
-        CompDescriptor.builder()
+        RegionDescriptor.builder()
                 .nameKey("overview")
                 .shortcut(new KeyCodeCombination(KeyCode.HOME, KeyCombination.ALT_DOWN))
                 .build()
@@ -82,9 +79,9 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                         event -> event.getButton() == MouseButton.PRIMARY,
                         null,
                         () -> new BrowserContextMenu(model, null, false))
-                .augment(new SimpleCompStructure<>(menuButton));
+                .accept(menuButton);
         menuButton.disableProperty().bind(model.getInOverview());
-        CompDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);
+        RegionDescriptor.builder().nameKey("directoryOptions").build().apply(menuButton);
 
         var smallWidth = Bindings.createBooleanBinding(
                 () -> {
@@ -104,13 +101,13 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
         var filter = new BrowserFileListFilterComp(model, model.getFilter())
                 .hide(smallWidth)
-                .createStructure();
+                .buildStructure();
 
         var topBar = new HBox();
         topBar.setAlignment(Pos.CENTER);
         topBar.getStyleClass().add("top-bar");
         AppFontSizes.xl(topBar);
-        var navBar = new BrowserNavBarComp(model).createStructure();
+        var navBar = new BrowserNavBarComp(model).buildStructure();
         filter.textField().prefHeightProperty().bind(navBar.get().heightProperty());
         AppFontSizes.base(navBar.get());
 
@@ -126,7 +123,7 @@ public class BrowserFileSystemTabComp extends SimpleComp {
 
         if (model.getBrowserModel() instanceof BrowserFullSessionModel fullSessionModel) {
             var pinButton = new Button();
-            CompDescriptor.builder().nameKey("pinTab").build().apply(pinButton);
+            RegionDescriptor.builder().nameKey("pinTab").build().apply(pinButton);
             pinButton
                     .graphicProperty()
                     .bind(PlatformThread.sync(Bindings.createObjectBinding(
@@ -212,22 +209,22 @@ public class BrowserFileSystemTabComp extends SimpleComp {
     }
 
     private Region createFileListContent() {
-        var directoryView = new BrowserFileListComp(model.getFileList())
-                .apply(struc -> VBox.setVgrow(struc.get(), Priority.ALWAYS));
-        var fileListElements = new ArrayList<Comp<?>>();
+        var directoryView =
+                new BrowserFileListComp(model.getFileList()).apply(struc -> VBox.setVgrow(struc, Priority.ALWAYS));
+        var fileListElements = new ArrayList<BaseRegionBuilder<?, ?>>();
         fileListElements.add(directoryView);
         if (showStatusBar) {
             var statusBar = new BrowserStatusBarComp(model);
             fileListElements.add(statusBar);
         }
         var fileList = new VerticalComp(fileListElements)
-                .styleClass("browser-content")
-                .styleClass("color-box")
-                .styleClass("gray")
+                .style("browser-content")
+                .style("color-box")
+                .style("gray")
                 .apply(struc -> {
-                    struc.get().focusedProperty().addListener((observable, oldValue, newValue) -> {
+                    struc.focusedProperty().addListener((observable, oldValue, newValue) -> {
                         if (newValue) {
-                            struc.get().getChildren().getFirst().requestFocus();
+                            struc.getChildren().getFirst().requestFocus();
                         }
                     });
                 });
@@ -243,9 +240,9 @@ public class BrowserFileSystemTabComp extends SimpleComp {
                     Duration.ofMillis(250));
         });
 
-        var home = new BrowserOverviewComp(model).styleClass("browser-overview");
+        var home = new BrowserOverviewComp(model).style("browser-overview");
         var stack = new MultiContentComp(false, Map.of(home, showOverview, fileList, showOverview.not()), false);
-        var r = stack.styleClass("browser-content-container").createRegion();
+        var r = stack.style("browser-content-container").build();
         r.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 if (r.getChildrenUnmodifiable().get(0).isVisible()) {

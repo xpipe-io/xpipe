@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.LabelGraphic;
@@ -29,7 +29,7 @@ public class RdpCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
 
         var choiceBuilder = OptionsChoiceBuilder.builder()
@@ -46,7 +46,7 @@ public class RdpCategory extends AppPrefsCategory {
                             });
                     websiteLinkButton.minWidth(Region.USE_PREF_SIZE);
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     hbox.setMaxWidth(600);
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);

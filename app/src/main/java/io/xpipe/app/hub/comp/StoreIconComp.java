@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.PrettyImageHelper;
 import io.xpipe.app.comp.base.TooltipHelper;
 import io.xpipe.app.storage.DataStoreEntry;
@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 @AllArgsConstructor
-public class StoreIconComp extends SimpleComp {
+public class StoreIconComp extends SimpleRegionBuilder {
 
     private final StoreEntryWrapper wrapper;
     private final int w;
@@ -25,7 +25,7 @@ public class StoreIconComp extends SimpleComp {
     @Override
     protected Region createSimple() {
         var imageComp = PrettyImageHelper.ofFixedSize(wrapper.getIconFile(), w, h);
-        var storeIcon = imageComp.createRegion();
+        var storeIcon = imageComp.build();
         if (wrapper.getValidity().getValue().isUsable()) {
             Tooltip.install(
                     storeIcon,

@@ -14,6 +14,7 @@ import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -71,4 +72,8 @@ public abstract class ProcessControlProvider {
     public abstract <T extends DataStore> DataStoreEntryRef<T> replace(DataStoreEntryRef<T> ref);
 
     public abstract ModalOverlay createNetworkScanModal();
+
+    public abstract void cloneRepository(String url, Path target) throws Exception;
+
+    public abstract void pullRepository(Path target) throws Exception;
 }

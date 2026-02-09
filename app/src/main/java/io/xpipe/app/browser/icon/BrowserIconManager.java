@@ -1,13 +1,16 @@
 package io.xpipe.app.browser.icon;
 
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileKind;
+import io.xpipe.app.core.AppDisplayScale;
+import io.xpipe.app.core.AppImages;
+import io.xpipe.app.core.AppResources;
+
+import org.apache.commons.io.FilenameUtils;
 
 public class BrowserIconManager {
 
     private static boolean loaded;
 
-    public static synchronized void loadIfNecessary() {
+    public static synchronized void init() {
         if (!loaded) {
             BrowserIconFileType.loadDefinitions();
             BrowserIconDirectoryType.loadDefinitions();
@@ -15,26 +18,15 @@ public class BrowserIconManager {
         }
     }
 
-    public static synchronized String getFileIcon(FileEntry entry) {
-        if (entry == null) {
-            return null;
+    public static void loadIfNecessary(String s) {
+        var res = AppDisplayScale.hasDefaultDisplayScale() ? "24" : "40";
+        var key = "browser/" + FilenameUtils.getBaseName(s) + "-" + res + ".png";
+        if (AppImages.hasImage(key)) {
+            return;
         }
 
-        var r = entry.resolved();
-        if (r.getKind() != FileKind.DIRECTORY) {
-            for (var f : BrowserIconFileType.getAll()) {
-                if (f.matches(r)) {
-                    return f.getIcon();
-                }
-            }
-        } else {
-            for (var f : BrowserIconDirectoryType.getAll()) {
-                if (f.matches(r)) {
-                    return f.getIcon();
-                }
-            }
-        }
-
-        return "browser/" + (r.getKind() == FileKind.DIRECTORY ? "default_folder.svg" : "default_file.svg");
+        AppResources.with(AppResources.MAIN_MODULE, key, file -> {
+            AppImages.loadImage(file, key);
+        });
     }
 }

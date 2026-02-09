@@ -5,13 +5,22 @@ import io.xpipe.app.ext.DataStorageExtensionProvider;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
-
 public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
 
     @Override
     public void storageInit() {
+        if (AppProperties.get().isNewBuildSession()) {
+            var legacyLeftovers = DataStorage.get().getStoreEntries().stream()
+                    .filter(entry -> {
+                        return entry.getValidity() == DataStoreEntry.Validity.LOAD_FAILED
+                                && ("My scripts".equals(entry.getName())
+                                        || "Files".equals(entry.getName())
+                                        || "Management".equals(entry.getName()));
+                    })
+                    .toList();
+            DataStorage.get().deleteWithChildren(legacyLeftovers.toArray(DataStoreEntry[]::new));
+        }
+
         // Don't regenerate if the user deleted anything
         if (!AppProperties.get().isInitialLaunch()) {
             return;
@@ -19,28 +28,6 @@ public class ScriptDataStorageProvider extends DataStorageExtensionProvider {
 
         if (AppProperties.get().isTest()) {
             return;
-        }
-
-        DataStorage.get()
-                .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                        UUID.fromString("a9945ad2-db61-4304-97d7-5dc4330691a7"),
-                        DataStorage.CUSTOM_SCRIPTS_CATEGORY_UUID,
-                        "My scripts",
-                        ScriptGroupStore.builder().build()));
-
-        for (PredefinedScriptGroup value : PredefinedScriptGroup.values()) {
-            ScriptGroupStore store = ScriptGroupStore.builder()
-                    .description(value.getDescription())
-                    .build();
-            var e = DataStorage.get()
-                    .addStoreEntryIfNotPresent(DataStoreEntry.createNew(
-                            UUID.nameUUIDFromBytes(("a " + value.getName()).getBytes(StandardCharsets.UTF_8)),
-                            DataStorage.PREDEFINED_SCRIPTS_CATEGORY_UUID,
-                            value.getName(),
-                            store));
-            DataStorage.get().updateEntryStore(e, store);
-            e.setExpanded(value.isExpanded());
-            value.setEntry(e.ref());
         }
 
         for (PredefinedScriptStore value : PredefinedScriptStore.values()) {

@@ -22,7 +22,7 @@ public interface ShellDialect {
 
     String unsetEnvironmentVariableCommand(String var);
 
-    CommandBuilder launchAsync(CommandBuilder cmd);
+    CommandBuilder launchAsync(CommandBuilder cmd, boolean window);
 
     default String getLicenseFeatureId() {
         return null;
@@ -33,6 +33,10 @@ public interface ShellDialect {
     String getExecutableName();
 
     default boolean isCompatibleTo(ShellDialect other) {
+        return this.equals(other);
+    }
+
+    default boolean isSourceCompatibleTo(ShellDialect other) {
         return this.equals(other);
     }
 

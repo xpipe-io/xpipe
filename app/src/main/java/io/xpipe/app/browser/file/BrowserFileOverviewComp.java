@@ -1,8 +1,9 @@
 package io.xpipe.app.browser.file;
 
 import io.xpipe.app.browser.icon.BrowserIcons;
-import io.xpipe.app.comp.Comp;
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.ext.FileEntry;
@@ -20,7 +21,7 @@ import java.util.function.Function;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class BrowserFileOverviewComp extends SimpleComp {
+public class BrowserFileOverviewComp extends SimpleRegionBuilder {
 
     BrowserFileSystemTabModel model;
     ObservableList<FileEntry> list;
@@ -28,13 +29,14 @@ public class BrowserFileOverviewComp extends SimpleComp {
 
     @Override
     protected Region createSimple() {
-        Function<FileEntry, Comp<?>> factory = entry -> {
-            return Comp.of(() -> {
-                var icon = BrowserIcons.createIcon(entry);
+        Function<FileEntry, BaseRegionBuilder<?, ?>> factory = entry -> {
+            return RegionBuilder.of(() -> {
+                var be = new BrowserEntry(entry, model.getFileList());
+                var icon = BrowserIcons.createIcon(be.getIcon());
                 var graphic = new HorizontalComp(List.of(
                         icon,
                         new BrowserQuickAccessButtonComp(() -> new BrowserEntry(entry, model.getFileList()), model)));
-                var l = new Button(entry.getPath().toString(), graphic.createRegion());
+                var l = new Button(entry.getPath().toString(), graphic.build());
                 l.setGraphicTextGap(1);
                 l.setOnAction(event -> {
                     model.cdAsync(entry.getPath().toString());
@@ -46,10 +48,10 @@ public class BrowserFileOverviewComp extends SimpleComp {
             });
         };
 
-        var c = new ListBoxViewComp<>(list, list, factory, true).styleClass("overview-file-list");
+        var c = new ListBoxViewComp<>(list, list, factory, true).style("overview-file-list");
         if (!grow) {
-            c.apply(struc -> struc.get().setFitToHeight(true));
+            c.apply(struc -> struc.setFitToHeight(true));
         }
-        return c.createRegion();
+        return c.build();
     }
 }

@@ -49,7 +49,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
         socketProp.bind(socketBinding);
         var socketDisplay = new HorizontalComp(List.of(
                         new TextFieldComp(socketProp)
-                                .apply(struc -> struc.get().setEditable(false))
+                                .apply(struc -> struc.setEditable(false))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("ssh");
@@ -73,8 +73,9 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                 .hide(!config.isAllowAgentForward())
                 .nameAndDescription("publicKey")
                 .addComp(
-                        new TextFieldComp(publicKey).apply(struc -> struc.get()
-                                .setPromptText("ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
+                        new TextFieldComp(publicKey)
+                                .apply(struc -> struc.setPromptText(
+                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
                         publicKey)
                 .bind(
                         () -> {

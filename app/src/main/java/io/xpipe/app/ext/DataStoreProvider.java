@@ -1,7 +1,8 @@
 package io.xpipe.app.ext;
 
 import io.xpipe.app.browser.BrowserFullSessionModel;
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppImages;
 import io.xpipe.app.hub.comp.StoreEntryComp;
@@ -20,6 +21,7 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableValue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,9 +64,13 @@ public interface DataStoreProvider {
         return true;
     }
 
+    default Comparator<StoreSection> getComparator() {
+        return null;
+    }
+
     default void onParentRefresh(DataStoreEntry entry) {}
 
-    default void onChildrenRefresh(DataStoreEntry entry) throws Exception {}
+    default void onChildrenRefresh(DataStoreEntry entry) {}
 
     default ObservableBooleanValue busy(StoreEntryWrapper wrapper) {
         return new SimpleBooleanProperty(false);
@@ -105,8 +111,8 @@ public interface DataStoreProvider {
         return true;
     }
 
-    default Comp<?> stateDisplay(StoreEntryWrapper w) {
-        return Comp.empty();
+    default BaseRegionBuilder<?, ?> stateDisplay(StoreEntryWrapper w) {
+        return RegionBuilder.empty();
     }
 
     default boolean canConnectDuringCreation() {
@@ -194,7 +200,7 @@ public interface DataStoreProvider {
 
     default String getDisplayIconFileName(DataStore store) {
         var png = getModuleName() + ":" + getId() + "_icon.png";
-        if (AppImages.hasNormalImage(png)) {
+        if (AppImages.hasImage(png)) {
             return png;
         }
 

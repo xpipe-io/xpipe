@@ -1,6 +1,6 @@
 package io.xpipe.app.prefs;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.BindingsHelper;
@@ -31,7 +31,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
     }
 
     @Override
-    protected Comp<?> create() {
+    protected BaseRegionBuilder<?, ?> create() {
         var prefs = AppPrefs.get();
         var testPasswordManagerValue = new SimpleStringProperty();
 
@@ -55,7 +55,7 @@ public class PasswordManagerCategory extends AppPrefsCategory {
                             },
                             prefs.passwordManager));
 
-                    var hbox = new HBox(entryComboBox, websiteLinkButton.createRegion());
+                    var hbox = new HBox(entryComboBox, websiteLinkButton.build());
                     HBox.setHgrow(entryComboBox, Priority.ALWAYS);
                     hbox.setSpacing(10);
                     return hbox;

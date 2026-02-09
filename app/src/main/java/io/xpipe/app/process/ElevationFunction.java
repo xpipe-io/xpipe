@@ -71,6 +71,28 @@ public interface ElevationFunction {
         };
     }
 
+    static ElevationFunction cached(String key, ElevationFunction elevationFunction) {
+        return new ElevationFunction() {
+            @Override
+            public String getPrefix() {
+                return elevationFunction.getPrefix();
+            }
+
+            @Override
+            public boolean isSpecified() {
+                return elevationFunction.isSpecified();
+            }
+
+            @Override
+            public boolean apply(ShellControl shellControl) throws Exception {
+                var view = shellControl.view();
+                return view.getCachedPredicate(key, () -> {
+                    return elevationFunction.apply(shellControl);
+                });
+            }
+        };
+    }
+
     static ElevationFunction none() {
         return new ElevationFunction() {
             @Override

@@ -1,6 +1,6 @@
 package io.xpipe.app.hub.comp;
 
-import io.xpipe.app.comp.SimpleComp;
+import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.IntroComp;
 import io.xpipe.app.comp.base.IntroListComp;
 import io.xpipe.app.ext.DataStoreCreationCategory;
@@ -13,7 +13,7 @@ import javafx.scene.layout.Region;
 
 import java.util.List;
 
-public class StoreIdentitiesIntroComp extends SimpleComp {
+public class StoreIdentitiesIntroComp extends SimpleRegionBuilder {
 
     @Override
     public Region createSimple() {
@@ -35,6 +35,6 @@ public class StoreIdentitiesIntroComp extends SimpleComp {
         });
 
         var list = new IntroListComp(List.of(top, bottom));
-        return list.createRegion();
+        return list.build();
     }
 }

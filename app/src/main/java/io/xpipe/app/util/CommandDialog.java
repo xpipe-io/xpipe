@@ -1,6 +1,6 @@
 package io.xpipe.app.util;
 
-import io.xpipe.app.comp.Comp;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.process.CommandControl;
 import io.xpipe.app.process.ProcessOutputException;
@@ -8,35 +8,53 @@ import io.xpipe.app.process.ProcessOutputException;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.StackPane;
 
+import lombok.Value;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.util.Map;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class CommandDialog {
 
-    public static void runMultipleAndShow(Map<String, CommandControl> cmds) {
-        StringBuilder acc = new StringBuilder();
-        for (var e : cmds.entrySet()) {
-            String out;
-            try {
-                out = e.getValue().readStdoutOrThrow();
-                out = formatOutput(out);
-            } catch (ProcessOutputException ex) {
-                out = ex.getMessage();
-            } catch (Throwable t) {
-                out = ExceptionUtils.getStackTrace(t);
-            }
+    @Value
+    public static class CommandEntry {
 
-            acc.append(e.getKey())
-                    .append(" (exit code ")
-                    .append(e.getValue().getExitCode())
-                    .append("):\n")
-                    .append(out)
-                    .append("\n\n");
+        String name;
+        CommandControl command;
+    }
+
+    public static void runMultipleAndShow(List<CommandEntry> cmds) {
+        var parts = new String[cmds.size()];
+        var latch = new CountDownLatch(parts.length);
+        for (int i = 0; i < cmds.size(); i++) {
+            var e = cmds.get(i);
+            var ii = i;
+            ThreadHelper.runAsync(() -> {
+                String out;
+                try {
+                    out = e.getCommand().readStdoutOrThrow();
+                    out = formatOutput(out);
+                } catch (ProcessOutputException ex) {
+                    out = ex.getMessage();
+                } catch (Throwable t) {
+                    out = ExceptionUtils.getStackTrace(t);
+                }
+
+                var s = e.getName() + " (exit code " + e.getCommand().getExitCode() + "):\n" + out;
+                parts[ii] = s;
+                latch.countDown();
+            });
         }
-        show(acc.toString());
+
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+        }
+
+        var joined = String.join("\n\n", parts);
+        show(joined);
     }
 
     public static void runAndShow(CommandControl cmd) {
@@ -55,7 +73,7 @@ public class CommandDialog {
     private static void show(String out) {
         var modal = ModalOverlay.of(
                 "commandOutput",
-                Comp.of(() -> {
+                RegionBuilder.of(() -> {
                             var text = new TextArea(out);
                             text.setWrapText(true);
                             text.setEditable(false);
