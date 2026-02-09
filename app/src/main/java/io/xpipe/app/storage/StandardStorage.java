@@ -91,11 +91,13 @@ public class StandardStorage extends DataStorage {
         var storesDir = getStoresDir();
         var categoriesDir = getCategoriesDir();
         var dataDir = getDataDir();
+        var iconsDir = getIconsDir();
 
         try {
             FileUtils.forceMkdir(storesDir.toFile());
             FileUtils.forceMkdir(categoriesDir.toFile());
             FileUtils.forceMkdir(dataDir.toFile());
+            FileUtils.forceMkdir(iconsDir.toFile());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable("Unable to create vault directory", e)
                     .terminal(true)
@@ -400,6 +402,8 @@ public class StandardStorage extends DataStorage {
         try {
             FileUtils.forceMkdir(getStoresDir().toFile());
             FileUtils.forceMkdir(getCategoriesDir().toFile());
+            FileUtils.forceMkdir(getDataDir().toFile());
+            FileUtils.forceMkdir(getIconsDir().toFile());
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e)
                     .description("Unable to create storage directory " + getStoresDir())

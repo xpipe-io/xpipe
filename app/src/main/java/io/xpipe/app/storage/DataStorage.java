@@ -271,6 +271,10 @@ public abstract class DataStorage {
         return dir.resolve("data");
     }
 
+    public Path getIconsDir() {
+        return dir.resolve("icons");
+    }
+
     protected Path getCategoriesDir() {
         return dir.resolve("categories");
     }
