@@ -18,6 +18,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
+import javafx.stage.Screen;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -55,6 +56,12 @@ public class TerminalDockHubManager {
 
         var modeSupported = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.UNSUPPORTED;
         if (!modeSupported) {
+            return false;
+        }
+
+        var primaryScreen = Screen.getPrimary();
+        var uniformScale = Screen.getScreens().stream().allMatch(screen -> screen.getOutputScaleX() == primaryScreen.getOutputScaleX());
+        if (!uniformScale) {
             return false;
         }
 
