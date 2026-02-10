@@ -413,10 +413,19 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
                     };
                     sub.setDumbOpen(open);
                     sub.setTerminalOpen(open);
-                    openTerminalAsync(name, directory, sub, true);
+                    ThreadHelper.runFailableAsync(() -> {
+                        BooleanScope.executeExclusive(busy, () -> {
+                            try (var ignored = sub.start()) {
+                                openTerminalSync(name, directory, sub, true);
+                            }
+                        });
+                    });
                 } else {
-                    var cc = fileSystem.getShell().get().command(adjustedPath);
-                    openTerminalAsync(name, directory, cc, true);
+                    ThreadHelper.runFailableAsync(() -> {
+                        BooleanScope.executeExclusive(busy, () -> {
+                            openTerminalSync(name, directory, fileSystem.getShell().get().command(adjustedPath), true);
+                        });
+                    });
                 }
             });
             return Optional.ofNullable(cps);
