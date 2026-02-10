@@ -89,9 +89,9 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
 
                 var scriptArg = URLEncoder.encode(movedScriptFile.toString(), StandardCharsets.UTF_8);
                 if (!configuration.isPreferTabs()) {
-                    DesktopHelper.openUrl("warp://action/new_window?path=" + scriptArg);
+                    DesktopHelper.openAssociatedApplication("warp://action/new_window?path=" + scriptArg);
                 } else {
-                    DesktopHelper.openUrl("warp://action/new_tab?path=" + scriptArg);
+                    DesktopHelper.openAssociatedApplication("warp://action/new_tab?path=" + scriptArg);
                 }
             }
         }
@@ -125,9 +125,9 @@ public interface WarpTerminalType extends ExternalTerminalType, TrackableTermina
         public void launch(TerminalLaunchConfiguration configuration) {
             var pane = configuration.single();
             if (!configuration.isPreferTabs()) {
-                DesktopHelper.openUrl("warp://action/new_window?path=" + pane.getScriptFile());
+                DesktopHelper.openAssociatedApplication("warp://action/new_window?path=" + pane.getScriptFile());
             } else {
-                DesktopHelper.openUrl("warp://action/new_tab?path=" + pane.getScriptFile());
+                DesktopHelper.openAssociatedApplication("warp://action/new_tab?path=" + pane.getScriptFile());
             }
         }
     }
