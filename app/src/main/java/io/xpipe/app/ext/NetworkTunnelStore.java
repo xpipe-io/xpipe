@@ -27,7 +27,7 @@ public interface NetworkTunnelStore extends DataStore, SelfReferentialStore {
     }
 
     default HostAddress getTunnelHostName() {
-        return null;
+        return HostAddress.empty();
     }
 
     default Optional<DataStoreEntryRef<NetworkTunnelStore>> getUnsupportedParent() {
