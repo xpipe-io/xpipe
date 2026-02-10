@@ -229,7 +229,7 @@ public class AppInstaller {
                                                             runinstaller
                                                             if [ "$?" != 0 ]; then
                                                               echo "Update failed ..."
-                                                              read -rs -k 1 key
+                                                              read key
                                                             fi
                                                             """, file, file, AppRestart.getTerminalRestartCommand()));
                 AppOperationMode.executeAfterShutdown(() -> {

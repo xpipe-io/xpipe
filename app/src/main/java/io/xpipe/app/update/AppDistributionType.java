@@ -28,7 +28,10 @@ public enum AppDistributionType implements Translatable {
     HOMEBREW("homebrew", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(
-                ShellScript.lines("brew upgrade --cask xpipe-io/tap/" + pkg, AppRestart.getTerminalRestartCommand()));
+                ShellScript.lines(
+                        "brew upgrade --cask xpipe-io/tap/" + pkg,
+                        "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
+                        AppRestart.getTerminalRestartCommand()));
     }),
     APT_REPO("apt", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
@@ -36,6 +39,7 @@ public enum AppDistributionType implements Translatable {
                 "echo \"+ sudo apt update && sudo apt install -y " + pkg + "\"",
                 "sudo apt update",
                 "sudo apt install -y " + pkg,
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
     RPM_REPO("rpm", true, () -> {
@@ -43,6 +47,7 @@ public enum AppDistributionType implements Translatable {
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ sudo yum upgrade " + pkg + " --refresh -y\"",
                 "sudo yum upgrade " + pkg + " --refresh -y",
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
     AUR("aur", true, () -> {
@@ -50,6 +55,7 @@ public enum AppDistributionType implements Translatable {
         return new CommandUpdater(ShellScript.lines(
                 "echo \"+ git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si\"",
                 "cd $(mktemp -d) && git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
+                "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
     WEBTOP("webtop", true, () -> new WebtopUpdater()),
