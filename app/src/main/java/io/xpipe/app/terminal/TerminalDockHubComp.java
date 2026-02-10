@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.window.AppMainWindow;
 
+import io.xpipe.app.util.GlobalTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,6 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.stage.WindowEvent;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class TerminalDockHubComp extends SimpleRegionBuilder {
@@ -44,6 +46,16 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
             @Override
             public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
                 update(stack);
+            }
+        };
+        var scale = new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                GlobalTimer.delay(() -> {
+                    Platform.runLater(() -> {
+                        update(stack);
+                    });
+                }, Duration.ofMillis(500));
             }
         };
         var update = new ChangeListener<Number>() {
@@ -87,6 +99,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                 s.iconifiedProperty().removeListener(iconified);
                 s.removeEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.removeEventFilter(WindowEvent.WINDOW_HIDING, hide);
+                s.outputScaleXProperty().addListener(scale);
                 if (parent.get() != null) {
                     parent.get().boundsInParentProperty().removeListener(bounds);
                     parent.set(null);
@@ -97,6 +110,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                 s.widthProperty().addListener(update);
                 s.heightProperty().addListener(update);
                 s.iconifiedProperty().addListener(iconified);
+                s.outputScaleXProperty().removeListener(scale);
                 s.addEventFilter(WindowEvent.WINDOW_SHOWN, show);
                 s.addEventFilter(WindowEvent.WINDOW_HIDING, hide);
                 // As in practice this node is wrapped in another stack pane
