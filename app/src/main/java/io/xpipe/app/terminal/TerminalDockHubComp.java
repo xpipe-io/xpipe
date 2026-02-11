@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.core.window.AppMainWindow;
 
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.GlobalTimer;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -131,9 +132,15 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
         var p = region.getPadding();
         var sx = region.getScene().getWindow().getOutputScaleX();
         var sy = region.getScene().getWindow().getOutputScaleY();
+
+        var scene =  region.getScene();
+        var windowRect = NativeWinWindowControl.MAIN_WINDOW.getBounds();
+        var x = windowRect.getX() + ((p.getLeft() + scene.getX()) * sx);
+        var y = windowRect.getY() + ((p.getTop() + scene.getY()) * sy);
+
         model.resizeView(
-                (int) Math.round(bounds.getMinX() * sx + p.getLeft()),
-                (int) Math.round(bounds.getMinY() * sy + p.getTop()),
+                (int) Math.round(x),
+                (int) Math.round(y),
                 (int) Math.round(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
                 (int) Math.round(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
     }

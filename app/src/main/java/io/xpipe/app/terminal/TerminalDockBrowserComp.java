@@ -5,6 +5,7 @@ import io.xpipe.app.comp.base.LoadingIconComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.window.AppMainWindow;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
@@ -157,10 +158,16 @@ public class TerminalDockBrowserComp extends SimpleRegionBuilder {
         var p = region.getPadding();
         var sx = region.getScene().getWindow().getOutputScaleX();
         var sy = region.getScene().getWindow().getOutputScaleY();
+
+        var scene =  region.getScene();
+        var windowRect = NativeWinWindowControl.MAIN_WINDOW.getBounds();
+        var x = windowRect.getX() + ((p.getLeft() + scene.getX()) * sx);
+        var y = windowRect.getY() + ((p.getTop() + scene.getY()) * sy);
+
         model.resizeView(
-                (int) Math.ceil(bounds.getMinX() * sx + p.getLeft()),
-                (int) Math.ceil(bounds.getMinY() * sy + p.getTop()),
-                (int) Math.floor(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
-                (int) Math.floor(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
+                (int) Math.round(x),
+                (int) Math.round(y),
+                (int) Math.round(bounds.getWidth() * sx - p.getRight() - p.getLeft()),
+                (int) Math.round(bounds.getHeight() * sy - p.getBottom() - p.getTop()));
     }
 }

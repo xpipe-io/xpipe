@@ -47,7 +47,22 @@ public class TerminalDockView {
 
     public synchronized void updateCustomBounds() {
         terminalInstances.forEach(terminal -> {
+            var wasCustom = terminal.isCustomBounds();
             terminal.updateBoundsState();
+
+            if (wasCustom && viewBounds != null) {
+                var currentBounds = terminal.getLastBounds();
+                var targetBounds = windowBoundsFunction.apply(viewBounds);
+                var sum = Math.abs(targetBounds.getX() - currentBounds.getX()) +
+                        Math.abs(targetBounds.getY() - currentBounds.getY()) +
+                        Math.abs(targetBounds.getW() - currentBounds.getW()) +
+                        Math.abs(targetBounds.getH() - currentBounds.getH());
+                if (sum < 10) {
+                    trackTerminal(terminal, true);
+                    return;
+                }
+            }
+
             if (terminal.isCustomBounds()) {
                 terminal.disown();
             }

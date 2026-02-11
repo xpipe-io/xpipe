@@ -59,12 +59,6 @@ public class TerminalDockHubManager {
             return false;
         }
 
-        var primaryScreen = Screen.getPrimary();
-        var uniformScale = Screen.getScreens().stream().allMatch(screen -> screen.getOutputScaleX() == primaryScreen.getOutputScaleX());
-        if (!uniformScale) {
-            return false;
-        }
-
         return true;
     }
 
