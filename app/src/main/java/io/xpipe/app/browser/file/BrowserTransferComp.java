@@ -73,7 +73,7 @@ public class BrowserTransferComp extends SimpleRegionBuilder {
                         },
                         sourceItem.get().getProgress());
             }
-        });
+        }).vgrow();
         var dragNotice = new LabelComp(AppI18n.observable("dragLocalFiles"))
                 .apply(struc -> struc.setGraphic(new FontIcon("mdi2h-hand-back-left-outline")))
                 .apply(struc -> struc.setWrapText(true))
