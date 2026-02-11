@@ -301,8 +301,8 @@ project.ext {
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
     // Define a custom JavaFX SDK location
-    // customJavaFxLibsPath = file("C:\\Projects\\jfx\\build\\sdk\\lib")
-    // customJavaFxJmodsPath = file("C:\\Projects\\jfx\\build\\jmods")
+    customJavaFxLibsPath = null; // file("C:\\Projects\\jfx\\build\\sdk\\lib")
+    customJavaFxJmodsPath = null; // file("C:\\Projects\\jfx\\build\\jmods")
 
     // Other
     deeplApiKey = findProperty('DEEPL_API_KEY') != null ? findProperty('DEEPL_API_KEY') : ""
