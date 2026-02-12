@@ -57,7 +57,7 @@ public class TerminalDockView {
                         Math.abs(targetBounds.getY() - currentBounds.getY()) +
                         Math.abs(targetBounds.getW() - currentBounds.getW()) +
                         Math.abs(targetBounds.getH() - currentBounds.getH());
-                if (sum < 10) {
+                if (sum < 30) {
                     trackTerminal(terminal, true);
                     return;
                 }
@@ -97,16 +97,16 @@ public class TerminalDockView {
     }
 
     public synchronized boolean closeOtherTerminals(UUID request) {
-        var sessions = TerminalView.get().getSessions();
-        var tv = sessions.stream()
-                .filter(s -> request.equals(s.getRequest()) && s.getTerminal().isRunning())
-                .map(s -> s.getTerminal().controllable())
-                .flatMap(Optional::stream)
+        var others = terminalInstances.stream()
+                .filter(terminal -> terminal.getTerminalProcess().isAlive())
+                .filter(terminal -> TerminalView.get().getSessions().stream()
+                        .noneMatch(shellSession -> shellSession.getRequest().equals(request) &&
+                                shellSession.getTerminal().equals(terminal)))
                 .toList();
-        for (int i = 0; i < tv.size() - 1; i++) {
-            closeTerminal(tv.get(i));
+        for (ControllableTerminalSession other : others) {
+            closeTerminal(other);
         }
-        return tv.size() > 1;
+        return others.size() > 0;
     }
 
     public synchronized void closeTerminal(ControllableTerminalSession terminal) {
