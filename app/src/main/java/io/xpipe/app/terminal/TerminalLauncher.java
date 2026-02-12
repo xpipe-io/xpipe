@@ -167,7 +167,7 @@ public class TerminalLauncher {
 
         var effectivePreferTabs =
                 preferTabs && AppPrefs.get().preferTerminalTabs().get();
-        var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, preferTabs, paneList);
+        var launchConfig = new TerminalLaunchConfiguration(color, adjustedTitle, cleanTitle, effectivePreferTabs, paneList);
 
         if (effectivePreferTabs
                 && AppPrefs.get().enableConnectionHubTerminalDocking().get()
