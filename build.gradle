@@ -296,7 +296,7 @@ project.ext {
     }
 
     // JavaFX config
-    devJavafxVersion = '26-ea+19'
+    devJavafxVersion = '27-ea+4'
     platformName = getPlatformName()
     useBundledJavaFx = fullVersion
     bundledJdkJavaFx = ModuleFinder.ofSystem().find("javafx.base").isPresent()
