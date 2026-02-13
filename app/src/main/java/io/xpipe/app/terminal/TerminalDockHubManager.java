@@ -14,13 +14,17 @@ import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
 import javafx.stage.Screen;
 import lombok.Getter;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.Ikonli;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -101,10 +105,13 @@ public class TerminalDockHubManager {
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
-                var fi = new FontIcon("mdi2c-console");
-                fi.getStyleClass().add("graphic");
-                fi.getStyleClass().add("terminal-dock-button");
-                return fi;
+                var inner = new FontIcon();
+                inner.iconCodeProperty().bind(Bindings.createObjectBinding(() -> {
+                    return detached.get() || minimized.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
+                }, detached, minimized));
+                inner.getStyleClass().add("graphic");
+                inner.getStyleClass().add("terminal-dock-button");
+                return inner;
     }), () -> {
                 refreshDockStatus();
 
