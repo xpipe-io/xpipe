@@ -53,8 +53,8 @@ public enum AppDistributionType implements Translatable {
     AUR("aur", true, () -> {
         var pkg = AppNames.ofCurrent().getKebapName();
         return new CommandUpdater(ShellScript.lines(
-                "echo \"+ git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si\"",
-                "cd $(mktemp -d) && git clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
+                "echo \"+ git -c core.autocrlf=false clone https://aur.archlinux.org/" + pkg + " . && makepkg -si\"",
+                "cd $(mktemp -d) && git -c core.autocrlf=false clone https://aur.archlinux.org/" + pkg + " . && makepkg -si --noconfirm",
                 "if [ \"$?\" != 0 ]; then echo \"Update failed ...\"; read key; fi",
                 AppRestart.getTerminalRestartCommand()));
     }),
