@@ -63,7 +63,7 @@ public class DesktopHelper {
 
         if (!Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
             if (OsType.ofLocal() == OsType.LINUX) {
-                LocalExec.readStdoutIfPossible("xdg-open", file.toString());
+                LocalExec.executeAsync("xdg-open", file.toString());
                 return;
             }
         }
@@ -99,7 +99,7 @@ public class DesktopHelper {
             // Windows does not support Action.BROWSE_FILE_DIR
             if (OsType.ofLocal() == OsType.WINDOWS) {
                 // Explorer does not support single quotes, so use normal quotes
-                LocalExec.readStdoutIfPossible("explorer", "/select,", "\"" + file + "\"");
+                LocalExec.executeAsync("explorer", "/select,", "\"" + file + "\"");
                 return;
             }
 

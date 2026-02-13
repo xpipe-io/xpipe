@@ -61,7 +61,7 @@ public class SecretInPlaceStrategy implements SecretRetrievalStrategy {
         return new SecretQuery() {
             @Override
             public SecretQueryResult query(String prompt) {
-                return new SecretQueryResult(value, SecretQueryState.NORMAL);
+                return value != null ? new SecretQueryResult(value, SecretQueryState.NORMAL) : new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
             }
 
             @Override

@@ -44,6 +44,8 @@ import java.util.stream.Stream;
 @Getter
 public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<FileSystemStore> {
 
+    private static boolean wasTerminalDocked;
+
     private final Property<String> filter = new SimpleStringProperty();
     private final BrowserFileListModel fileList;
     private final ReadOnlyObjectWrapper<FilePath> currentPath = new ReadOnlyObjectWrapper<>();
@@ -580,19 +582,24 @@ public final class BrowserFileSystemTabModel extends BrowserStoreSessionTab<File
             throws Exception {
         var dock = shouldLaunchSplitTerminal() && dockIfPossible;
         var uuid = UUID.randomUUID();
-        terminalRequests.add(uuid);
         if (dock
                 && browserModel instanceof BrowserFullSessionModel fullSessionModel
                 && !(fullSessionModel.getSplits().get(this) instanceof BrowserTerminalDockTabModel)) {
+            terminalRequests.add(uuid);
             fullSessionModel.splitTab(this, new BrowserTerminalDockTabModel(browserModel, this, terminalRequests));
         }
+
+        // If we docked once, we don't want to break it by opening new tabs in maybe still docked tabs
+        var preferTabs = !wasTerminalDocked && !dock;
+        wasTerminalDocked = wasTerminalDocked || dock;
+
         TerminalLaunch.builder()
                 .entry(entry.get())
                 .title(name)
                 .directory(directory)
                 .command(processControl)
                 .request(uuid)
-                .preferTabs(!dock)
+                .preferTabs(preferTabs)
                 .launch();
 
         // Restart connection as we will have to start it anyway, so we speed it up by doing it preemptively

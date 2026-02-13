@@ -14,13 +14,17 @@ import io.xpipe.app.util.Rect;
 import io.xpipe.core.OsType;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
 
 import javafx.stage.Screen;
 import lombok.Getter;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.Ikonli;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.materialdesign2.MaterialDesignC;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -56,12 +60,6 @@ public class TerminalDockHubManager {
 
         var modeSupported = term instanceof TrackableTerminalType t && t.getDockMode() != TerminalDockMode.UNSUPPORTED;
         if (!modeSupported) {
-            return false;
-        }
-
-        var primaryScreen = Screen.getPrimary();
-        var uniformScale = Screen.getScreens().stream().allMatch(screen -> screen.getOutputScaleX() == primaryScreen.getOutputScaleX());
-        if (!uniformScale) {
             return false;
         }
 
@@ -107,10 +105,13 @@ public class TerminalDockHubManager {
     });
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
-                var fi = new FontIcon("mdi2c-console");
-                fi.getStyleClass().add("graphic");
-                fi.getStyleClass().add("terminal-dock-button");
-                return fi;
+                var inner = new FontIcon();
+                inner.iconCodeProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
+                    return detached.get() || minimized.get() || !showing.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
+                }, detached, minimized, showing)));
+                inner.getStyleClass().add("graphic");
+                inner.getStyleClass().add("terminal-dock-button");
+                return inner;
     }), () -> {
                 refreshDockStatus();
 

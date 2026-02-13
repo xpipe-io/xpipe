@@ -115,7 +115,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
         var base = getWeztermCommandBase();
         var activeSocket = waitForInstanceStart(1);
         // Always start a new window for split panes as we can't find the pane index to start with
-        if (activeSocket.isEmpty() || configuration.getPanes().size() > 1) {
+        if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
             var gui = CommandBuilder.of().add(base.buildSimple().replace("wezterm.exe", "wezterm-gui.exe"));
             var command = CommandBuilder.of()
                     .add(gui)

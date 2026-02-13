@@ -9,6 +9,11 @@ import javafx.beans.value.ObservableValue;
 public interface CountGroupStoreProvider extends DataStoreProvider {
 
     @Override
+    default boolean includeInConnectionCount() {
+        return false;
+    }
+
+    @Override
     default ObservableValue<String> informationString(StoreSection section) {
         return Bindings.createStringBinding(
                 () -> {

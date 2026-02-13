@@ -9,4 +9,9 @@ public class SecretQueryResult {
 
     SecretValue secret;
     SecretQueryState state;
+
+    public SecretQueryResult(SecretValue secret, SecretQueryState state) {
+        this.secret = secret;
+        this.state = state;
+    }
 }
