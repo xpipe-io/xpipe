@@ -12,6 +12,7 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.app.util.WindowsRegistry;
 import io.xpipe.core.FilePath;
 
+import io.xpipe.core.OsType;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
@@ -56,7 +57,11 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     }
 
     default Path getSocketDir() {
-        return AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "wezterm");
+        if (OsType.ofLocal() == OsType.LINUX) {
+            return Path.of(System.getenv("XDG_RUNTIME_DIR"), "wezterm");
+        } else {
+            return AppSystemInfo.ofCurrent().getUserHome().resolve(".local", "share", "wezterm");
+        }
     }
 
     default Optional<Path> waitForInstanceStart(int count) {
@@ -114,6 +119,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
     default void launch(TerminalLaunchConfiguration configuration) throws Exception {
         var base = getWeztermCommandBase();
         var activeSocket = waitForInstanceStart(1);
+        var tabid = "0";
         // Always start a new window for split panes as we can't find the pane index to start with
         if (activeSocket.isEmpty() || configuration.getPanes().size() > 1 || !configuration.isPreferTabs()) {
             var gui = CommandBuilder.of().add(base.buildSimple().replace("wezterm.exe", "wezterm-gui.exe"));
@@ -122,23 +128,34 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                     .add("start", "--always-new-process")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             ExternalApplicationHelper.startAsync(command);
+            activeSocket = waitForInstanceStart(50);
+            if (activeSocket.isEmpty()) {
+                return;
+            }
         } else {
             var command = CommandBuilder.of()
                     .add(base)
                     .add("cli", "spawn")
                     .add(configuration.getPanes().getFirst().getDialectLaunchCommand());
             command.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
-            LocalShell.getShell()
+            tabid = LocalShell.getShell()
                     .command(command)
                     .withWorkingDirectory(FilePath.of(getSocketDir()))
-                    .execute();
+                    .readStdoutOrThrow();
         }
 
+        var titleCommand = CommandBuilder.of()
+                .add(base)
+                .add("cli", "set-tab-title")
+                .add("--tab-id", tabid)
+                .addQuoted(configuration.getColoredTitle());
+        titleCommand.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
+        LocalShell.getShell()
+                .command(titleCommand)
+                .withWorkingDirectory(FilePath.of(getSocketDir()))
+                .execute();
+
         if (configuration.getPanes().size() > 1) {
-            activeSocket = waitForInstanceStart(50);
-            if (activeSocket.isEmpty()) {
-                return;
-            }
 
             var direction = AppPrefs.get().terminalSplitStrategy().getValue();
             var directionIterator = direction.iterator();
@@ -163,8 +180,7 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                                         activeSocket.get().toString()))
                         .withWorkingDirectory(FilePath.of(getSocketDir()))
                         .execute();
-                directionIterator.next();
-            }
+                directionIterator.next();            }
         }
     }
 
