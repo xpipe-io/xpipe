@@ -178,12 +178,6 @@ public class TerminalCategory extends AppPrefsCategory {
         return new OptionsBuilder()
                 .addTitle("terminalConfiguration")
                 .sub(terminalChoice(true))
-                .hide(Bindings.createBooleanBinding(
-                        () -> {
-                            return !TerminalDockHubManager.isSupported();
-                        },
-                        prefs.terminalType,
-                        prefs.terminalMultiplexer))
                 .sub(terminalPrompt())
                 .sub(terminalProxy())
                 .sub(terminalMultiplexer())
