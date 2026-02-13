@@ -285,11 +285,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             TerminalLaunch.builder()
                     .title(file.toString())
                     .localScript(sc -> new ShellScript(CommandBuilder.of()
-                            .add(getExecutable())
+                            .addFile(getExecutable())
                             .addFile(file.toString())
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
+                    .pauseOnExit(false)
                     .launch();
         }
     };
@@ -319,10 +320,10 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
         @Override
         public Optional<Path> determineInstallation() {
-            var local = AppSystemInfo.ofWindows().getLocalAppData().resolve("Programs", "nvim").resolve("nvim.exe");
-            if (Files.exists(local)) return Optional.of(local);
-            var programFiles = AppSystemInfo.ofWindows().getProgramFiles().resolve("Programs", "nvim").resolve("nvim.exe");
-            if (Files.exists(programFiles)) return Optional.of(programFiles);
+            var programFiles = AppSystemInfo.ofWindows().getProgramFiles().resolve("Neovim", "bin").resolve("nvim.exe");
+            if (Files.exists(programFiles)) {
+                return Optional.of(programFiles);
+            }
             return Optional.empty();
         }
 
@@ -331,11 +332,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             TerminalLaunch.builder()
                     .title(file.toString())
                     .localScript(sc -> new ShellScript(CommandBuilder.of()
-                            .add(findExecutable().toString())
+                            .addFile(findExecutable().toString())
                             .addFile(file)
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
+                    .pauseOnExit(false)
                     .launch();
         }
 
@@ -423,11 +425,12 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             TerminalLaunch.builder()
                     .title(file.toString())
                     .localScript(sc -> new ShellScript(CommandBuilder.of()
-                            .add("nvim")
+                            .addFile("nvim")
                             .addFile(file.toString())
                             .buildFull(sc)))
                     .logIfEnabled(false)
                     .preferTabs(false)
+                    .pauseOnExit(false)
                     .launch();
         }
     };
@@ -455,6 +458,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                         .localScript(sc -> new ShellScript(command.buildFull(sc)))
                         .logIfEnabled(false)
                         .preferTabs(false)
+                        .pauseOnExit(false)
                         .launch();
             } else {
                 ExternalApplicationHelper.startAsync(command);

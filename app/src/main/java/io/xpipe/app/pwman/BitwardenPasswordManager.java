@@ -92,7 +92,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                         .localScript(script)
                         .logIfEnabled(false)
                         .preferTabs(false)
-                        .alwaysKeepOpen(true)
+                        .pauseOnExit(true)
                         .launch();
                 return null;
             }

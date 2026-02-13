@@ -150,13 +150,14 @@ public interface WezTerminalType extends ExternalTerminalType, TrackableTerminal
                 .add("--tab-id", tabid)
                 .addQuoted(configuration.getColoredTitle());
         titleCommand.fixedEnvironment("WEZTERM_UNIX_SOCKET", activeSocket.get().toString());
+        // Sometimes the tab ids don't exist even though it just returned them to us
+        // So just ignore any errors
         LocalShell.getShell()
                 .command(titleCommand)
                 .withWorkingDirectory(FilePath.of(getSocketDir()))
-                .execute();
+                .executeAndCheck();
 
         if (configuration.getPanes().size() > 1) {
-
             var direction = AppPrefs.get().terminalSplitStrategy().getValue();
             var directionIterator = direction.iterator();
             for (int i = 1; i < configuration.getPanes().size(); i++) {
