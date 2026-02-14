@@ -80,7 +80,11 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
         var show = new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
-                update(stack);
+                GlobalTimer.delay(() -> {
+                    Platform.runLater(() -> {
+                        update(stack);
+                    });
+                }, Duration.ofMillis(100));
             }
         };
         var hide = new EventHandler<WindowEvent>() {
@@ -135,6 +139,10 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
 
         var scene =  region.getScene();
         var windowRect = NativeWinWindowControl.MAIN_WINDOW.getBounds();
+        if (windowRect.getX() == 0.0 && windowRect.getY() == 0.0 && windowRect.getW() == 0 && windowRect.getH() == 0) {
+            return;
+        }
+
         var x = windowRect.getX() + ((bounds.getMinX() + p.getLeft() + scene.getX()) * sx);
         var y = windowRect.getY() + ((bounds.getMinY() + p.getTop() + scene.getY()) * sy);
         var w = (bounds.getWidth() * sx) - p.getRight() - p.getLeft();
