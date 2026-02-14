@@ -7,6 +7,7 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.InputGroupComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppProperties;
 import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.ClipboardHelper;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -46,8 +47,6 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
                                 AppDistributionType.get().toTranslatedString().getValue()));
         options.addComp(createUrlComp()).disable(!AppDistributionType.get().isSupportsUrls());
         options.nameAndDescription("actionApiCall").addComp(createApiComp());
-        //        options.nameAndDescription("actionMacro")
-        //                .addComp(createMacroComp());
         return options.build();
     }
 
@@ -83,8 +82,10 @@ public class ActionShortcutComp extends SimpleRegionBuilder {
         });
         var copyButton = new ButtonComp(null, new FontIcon("mdi2f-file-move-outline"), () -> {
                     ThreadHelper.runFailableAsync(() -> {
-                        var file =
-                                DesktopShortcuts.createOpen(name.getValue(), "open \"" + url.getValue() + "\"", null);
+                        var file = DesktopShortcuts.createOpen(
+                                name.getValue(),
+                                "open \"" + url.getValue() + "\" -d \"" + AppProperties.get().getDataDir() + "\"",
+                                null);
                         DesktopHelper.browseFileInDirectory(file);
                     });
                 })
