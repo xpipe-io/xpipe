@@ -124,7 +124,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
     }
 
     private void update(Region region) {
-        if (region.getScene() == null || region.getScene().getWindow() == null) {
+        if (region.getScene() == null || region.getScene().getWindow() == null || NativeWinWindowControl.MAIN_WINDOW == null) {
             return;
         }
 
