@@ -46,6 +46,10 @@ public class AppWindowsShutdown {
                 return;
             }
 
+            if (PROC.hhook == null) {
+                return;
+            }
+
             User32.INSTANCE.UnhookWindowsHookEx(PROC.hhook);
             PROC.hhook = null;
             PROC.hwnd = null;

@@ -42,6 +42,10 @@ public class AppWindowsLock {
                 return;
             }
 
+            if (PROC.oldWindowProc == null) {
+                return;
+            }
+
             User32Ex.INSTANCE.SetWindowLongPtr(hwnd, GWLP_WNDPROC, PROC.oldWindowProc);
             PROC.oldWindowProc = null;
 
