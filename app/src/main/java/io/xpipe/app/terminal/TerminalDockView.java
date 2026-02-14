@@ -1,6 +1,7 @@
 package io.xpipe.app.terminal;
 
 import io.xpipe.app.issue.TrackEvent;
+import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
@@ -71,11 +72,17 @@ public class TerminalDockView {
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
         if (viewActive && dock && viewBounds != null) {
+            // Bring main window to foreground since initial launch
+            NativeWinWindowControl.MAIN_WINDOW.activate();
+
             // The window might be minimized
             // We always want to show the terminal though
             terminal.show();
 
             terminal.own();
+
+            // Bring terminal window in front of main window
+            terminal.focus();
 
             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();
