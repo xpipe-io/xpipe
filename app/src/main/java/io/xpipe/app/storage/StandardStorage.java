@@ -266,8 +266,10 @@ public class StandardStorage extends DataStorage {
         // Bring entries into completed validity if possible
         // Needed for chained stores
         refreshEntries();
-        // Let providers work on complete stores
-        callProviders();
+        if (initialLoad) {
+            // Let providers work on complete stores
+            callProviders();
+        }
         // Update validities after any possible changes
         refreshEntries();
         // Add any possible missing synthetic parents

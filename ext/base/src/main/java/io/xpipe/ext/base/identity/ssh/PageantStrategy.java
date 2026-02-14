@@ -1,6 +1,7 @@
 package io.xpipe.ext.base.identity.ssh;
 
 import io.xpipe.app.comp.base.TextFieldComp;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -124,7 +125,7 @@ public class PageantStrategy implements SshIdentityStrategy {
 
     private String getPageantWindowsPipe() {
         Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
-        var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant*", p);
+        var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant." + AppSystemInfo.ofCurrent().getUser() + "*", p);
         if (r == WinBase.INVALID_HANDLE_VALUE) {
             throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
         }

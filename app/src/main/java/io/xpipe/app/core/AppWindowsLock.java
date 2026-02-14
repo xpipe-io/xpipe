@@ -35,6 +35,26 @@ public class AppWindowsLock {
         }
     }
 
+    public static void unregisterHook(WinDef.HWND hwnd) {
+        try {
+            int windowThreadID = User32.INSTANCE.GetWindowThreadProcessId(hwnd, null);
+            if (windowThreadID == 0) {
+                return;
+            }
+
+            if (PROC.oldWindowProc == null) {
+                return;
+            }
+
+            User32Ex.INSTANCE.SetWindowLongPtr(hwnd, GWLP_WNDPROC, PROC.oldWindowProc);
+            PROC.oldWindowProc = null;
+
+            Wtsapi32.INSTANCE.WTSUnRegisterSessionNotification(hwnd);
+        } catch (Throwable t) {
+            ErrorEventFactory.fromThrowable(t).omit().handle();
+        }
+    }
+
     public interface WinMsgProc extends StdCallLibrary.StdCallCallback {
 
         @SuppressWarnings("unused")

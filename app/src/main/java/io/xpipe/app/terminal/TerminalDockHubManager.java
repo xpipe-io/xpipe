@@ -63,6 +63,10 @@ public class TerminalDockHubManager {
             return false;
         }
 
+        if (NativeWinWindowControl.MAIN_WINDOW == null) {
+            return false;
+        }
+
         return true;
     }
 
