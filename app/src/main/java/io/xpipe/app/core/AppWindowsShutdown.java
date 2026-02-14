@@ -39,6 +39,21 @@ public class AppWindowsShutdown {
         }
     }
 
+    public static void unregisterHook(WinDef.HWND hwnd) {
+        try {
+            int windowThreadID = User32.INSTANCE.GetWindowThreadProcessId(hwnd, null);
+            if (windowThreadID == 0) {
+                return;
+            }
+
+            User32.INSTANCE.UnhookWindowsHookEx(PROC.hhook);
+            PROC.hhook = null;
+            PROC.hwnd = null;
+        } catch (Throwable t) {
+            ErrorEventFactory.fromThrowable(t).omit().handle();
+        }
+    }
+
     public interface WinHookProc extends WinUser.HOOKPROC {
 
         @SuppressWarnings("unused")

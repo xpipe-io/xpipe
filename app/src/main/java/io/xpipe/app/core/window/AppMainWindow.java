@@ -170,12 +170,26 @@ public class AppMainWindow {
 
     public void show() {
         stage.show();
-        if (OsType.ofLocal() == OsType.WINDOWS && !shown) {
-            var ctrl = new NativeWinWindowControl(stage);
-            NativeWinWindowControl.MAIN_WINDOW = ctrl;
-            AppWindowsLock.registerHook(ctrl.getWindowHandle());
-            AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
+
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            var currentControl = new NativeWinWindowControl(stage);
+
+            // Clean up old window as the HWND might not be reused
+            var oldControl = NativeWinWindowControl.MAIN_WINDOW;
+            if (oldControl != null && !oldControl.getWindowHandle().equals(currentControl.getWindowHandle())) {
+                AppWindowsLock.unregisterHook(oldControl.getWindowHandle());
+                AppWindowsShutdown.unregisterHook(oldControl.getWindowHandle());
+                NativeWinWindowControl.MAIN_WINDOW = null;
+            }
+
+            if (NativeWinWindowControl.MAIN_WINDOW == null) {
+                var ctrl = new NativeWinWindowControl(stage);
+                NativeWinWindowControl.MAIN_WINDOW = ctrl;
+                AppWindowsLock.registerHook(ctrl.getWindowHandle());
+                AppWindowsShutdown.registerHook(ctrl.getWindowHandle());
+            }
         }
+
         shown = true;
     }
 
