@@ -186,14 +186,10 @@ public class TerminalDockHubManager {
                     return;
                 }
 
-                var term = AppPrefs.get().terminalType().getValue();
+                var term = controllable.get().getTerminalType();
                 if (term instanceof TrackableTerminalType t) {
                     if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
                         return;
-                    }
-
-                    if (t.getDockMode() == TerminalDockMode.BORDERLESS) {
-                        controllable.get().removeBorders();
                     }
                 }
 

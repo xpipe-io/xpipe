@@ -64,7 +64,7 @@ public class TerminalDockView {
                 }
             }
 
-            if (terminal.isCustomBounds()) {
+            if (!wasCustom && terminal.isCustomBounds()) {
                 terminal.disown();
             }
         });
