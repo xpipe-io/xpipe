@@ -73,21 +73,25 @@ public class NativeWinWindowControl {
     }
 
     public void removeBorders() {
+        var rect = getBounds();
+
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
         var mod = style & ~(User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
 
-        var rect = getBounds();
         User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
+                User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
+        User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
     public void restoreBorders() {
+        var rect = getBounds();
+
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_STYLE);
         var mod = style | User32.WS_CAPTION | User32.WS_THICKFRAME | User32.WS_MAXIMIZEBOX;
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_STYLE, mod);
 
-        var rect = getBounds();
         User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW() + 1, rect.getH(),
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
         User32.INSTANCE.SetWindowPos(windowHandle, null, rect.getX(), rect.getY(), rect.getW(), rect.getH(),

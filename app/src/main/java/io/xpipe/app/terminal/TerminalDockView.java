@@ -228,7 +228,7 @@ public class TerminalDockView {
         });
     }
 
-    public void resizeView(int x, int y, int w, int h) {
+    public synchronized void resizeView(int x, int y, int w, int h) {
         if (w < 100 || h < 100) {
             return;
         }
