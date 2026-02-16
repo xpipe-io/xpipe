@@ -266,7 +266,8 @@ public class PlatformThread {
             return false;
         }
 
-        if (AppOperationMode.isInShutdown()) {
+        // Some other components might already be disposed
+        if (AppOperationMode.isInShutdownHook()) {
             return false;
         }
 

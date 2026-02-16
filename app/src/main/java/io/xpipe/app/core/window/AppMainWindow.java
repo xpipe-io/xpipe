@@ -193,6 +193,16 @@ public class AppMainWindow {
         shown = true;
     }
 
+    public void hide() {
+        PlatformThread.runLaterIfNeeded(() -> {
+            if (!stage.isShowing()) {
+                return;
+            }
+
+            stage.hide();
+        });
+    }
+
     public void focus() {
         if (AppPrefs.get() != null
                 && !AppPrefs.get().focusWindowOnNotifications().get()) {

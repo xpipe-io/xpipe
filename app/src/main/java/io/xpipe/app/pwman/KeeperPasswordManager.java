@@ -105,7 +105,7 @@ public class KeeperPasswordManager implements PasswordManager {
                         .title("Keeper login")
                         .localScript(script)
                         .logIfEnabled(false)
-                        .alwaysKeepOpen(true)
+                        .pauseOnExit(true)
                         .launch();
                 return null;
             }

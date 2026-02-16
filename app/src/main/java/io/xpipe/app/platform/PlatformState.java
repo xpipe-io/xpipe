@@ -113,12 +113,13 @@ public enum PlatformState {
             }
         }
 
-        if (SystemUtils.IS_OS_WINDOWS) {
-            // This is primarily intended to fix Windows unified stage transparency issues
-            // (https://bugs.openjdk.org/browse/JDK-8329382)
-            // But apparently it can also occur without a custom stage on Windows
-            System.setProperty("prism.forceUploadingPainter", "true");
-        }
+        // This issue is now fixed in 27-ea+4
+        // if (SystemUtils.IS_OS_WINDOWS) {
+        // This is primarily intended to fix Windows unified stage transparency issues
+        // (https://bugs.openjdk.org/browse/JDK-8329382)
+        // But apparently it can also occur without a custom stage on Windows
+        // System.setProperty("prism.forceUploadingPainter", "true");
+        // }
 
         if (AppPrefs.get() != null
                 && AppPrefs.get().disableHardwareAcceleration().get()) {

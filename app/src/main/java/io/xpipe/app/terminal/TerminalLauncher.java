@@ -143,8 +143,6 @@ public class TerminalLauncher {
                     config.getProcessControl() instanceof ShellControl
                             ? type.additionalInitCommands()
                             : TerminalInitFunction.none());
-            var alwaysPromptRestart = config.isAlwaysKeepOpen()
-                    || AppPrefs.get().terminalAlwaysPauseOnExit().getValue();
             TerminalLauncherManager.submitAsync(
                     config.getRequest(), config.getProcessControl(), terminalConfig, config.getDirectory(), latch);
             var effectivePreferTabs =
@@ -152,7 +150,7 @@ public class TerminalLauncher {
 
             var paneIndex = configs.indexOf(config);
             var paneConfig = TerminalPaneConfiguration.create(
-                    config.getRequest(), entry, config.getTitle(), paneIndex, effectivePreferTabs, alwaysPromptRestart);
+                    config.getRequest(), entry, config.getTitle(), paneIndex, effectivePreferTabs, config.isAlwaysKeepOpen());
             paneList.add(paneConfig);
         }
 

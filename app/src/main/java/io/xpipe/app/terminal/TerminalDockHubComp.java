@@ -56,7 +56,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                     Platform.runLater(() -> {
                         update(stack);
                     });
-                }, Duration.ofMillis(100));
+                }, Duration.ofMillis(500));
             }
         };
         var update = new ChangeListener<Number>() {

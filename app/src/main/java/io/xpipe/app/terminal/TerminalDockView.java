@@ -72,17 +72,14 @@ public class TerminalDockView {
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
         if (viewActive && dock && viewBounds != null) {
+            terminal.own();
+
             // Bring main window to foreground since initial launch
             NativeWinWindowControl.MAIN_WINDOW.activate();
 
             // The window might be minimized
             // We always want to show the terminal though
             terminal.show();
-
-            terminal.own();
-
-            // Bring terminal window in front of main window
-            terminal.focus();
 
             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();

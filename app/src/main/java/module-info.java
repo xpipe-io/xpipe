@@ -128,6 +128,7 @@ open module io.xpipe.app {
     uses CloudSetupProvider;
 
     provides ActionProvider with
+            GradleRunMenuProvider,
             RefreshHubLeafProvider,
             SetupToolActionProvider,
             XPipeUrlProvider,
