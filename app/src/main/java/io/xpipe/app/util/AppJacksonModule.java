@@ -6,6 +6,7 @@ import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.pwman.KeePassXcAssociationKey;
 import io.xpipe.app.pwman.KeePassXcPasswordManager;
+import io.xpipe.app.pwman.KeeperPasswordManager;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.*;
@@ -87,6 +88,7 @@ public class AppJacksonModule extends SimpleModule {
         context.registerSubtypes(ExternalSpiceClient.getClasses());
         context.registerSubtypes(SecretRetrievalStrategy.getClasses());
         context.registerSubtypes(DataStorageGroupStrategy.getClasses());
+        context.registerSubtypes(KeeperPasswordManager.KeeperAuth.getClasses());
 
         super.setupModule(context);
     }

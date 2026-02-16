@@ -1,9 +1,11 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
@@ -13,7 +15,7 @@ import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.core.*;
 
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,12 +25,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @JsonTypeName("keeper")
 @Getter
@@ -37,11 +43,347 @@ import java.util.UUID;
 @Jacksonized
 public class KeeperPasswordManager implements PasswordManager {
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+    public interface KeeperAuth {
+
+        static List<Class<?>> getClasses() {
+            var l = new ArrayList<Class<?>>();
+            l.add(None.class);
+            l.add(Sms.class);
+            l.add(AuthenticatorApp.class);
+            l.add(SecurityKey.class);
+            l.add(Other.class);
+            return l;
+        }
+
+
+        default List<String> getTotpDurationValues() {
+            var values = List.of("login", "12_hours", "24_hours", "30_days", "forever");
+            return values;
+        }
+
+        String constructKeeperInput(KeeperPasswordManager passwordManager) throws Exception;
+
+        Duration getCacheDuration();
+
+        Duration getCommandTimeout();
+
+        String cleanMessage(String output);
+
+        @JsonTypeName("sms")
+        @Value
+        @Jacksonized
+        @Builder
+        class Sms implements KeeperAuth {
+
+            @SuppressWarnings("unused")
+            public static OptionsBuilder createOptions(Property<Sms> p) {
+                var duration = new SimpleStringProperty(p.getValue().getTotpDuration());
+                return new OptionsBuilder()
+                        .name("keeperTotpDuration")
+                        .description(AppI18n.observable(
+                                "keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
+                        .addString(duration)
+                        .bind(
+                                () -> {
+                                    return Sms.builder()
+                                            .totpDuration(duration.get())
+                                            .build();
+                                },
+                                p);
+            }
+
+            String totpDuration;
+
+            private int getTotpDurationIndex() {
+                var values = getTotpDurationValues();
+                var index = totpDuration != null ? values.indexOf(totpDuration) : -1;
+                return index;
+            }
+
+            private void sendInitialSms() throws Exception {
+                var sc = getOrStartShell();
+                var b = CommandBuilder.of()
+                        .add(getExecutable(), "get")
+                        .addLiteral("test");
+                var file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
+                var input = """
+                            
+                            1
+                            -
+                            q
+                            """;
+                sc.view().writeTextFile(file, input);
+
+                var fullCommand = CommandBuilder.of()
+                        .add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat")
+                        .addFile(file)
+                        .add("|")
+                        .add(b);
+                sc.command(fullCommand).sensitive().execute();
+            }
+
+            @Override
+            public String constructKeeperInput(KeeperPasswordManager passwordManager) throws Exception {
+                sendInitialSms();
+
+                var index = getTotpDurationIndex();
+                if (passwordManager.isHasCompletedRequestInSession() && index > 0) {
+                    var input = """
+
+                          1
+
+                          """;
+                    return input;
+                } else {
+                    var totp = AskpassAlert.queryRaw("Enter Keeper Commander SMS Code", null, true);
+                    if (totp.getState() != SecretQueryState.NORMAL) {
+                        return null;
+                    }
+
+                    var input = """
+
+                                1%s
+                                %s
+
+                                """.formatted(
+                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                            totp.getSecret().getSecretValue());
+                    return input;
+                }
+            }
+
+            @Override
+            public Duration getCacheDuration() {
+                return getTotpDurationIndex() < 1 ? Duration.ofDays(1) : Duration.ofSeconds(30);
+            }
+
+            @Override
+            public Duration getCommandTimeout() {
+                return Duration.ofSeconds(25);
+            }
+
+            @Override
+            public String cleanMessage(String output) {
+                return output
+                        .replaceFirst("""
+                             Select your 2FA method:
+                               1. Send SMS Code.+
+                               q. Cancel login
+                             """, "")
+                        .replace(" Invalid entry, additional factors of authentication shown may be configured if not currently enabled.", "")
+                        .replace("""
+                                2FA Code Duration: Require Every Login.
+                                To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
+                                """, "");
+            }
+        }
+
+        @JsonTypeName("authenticatorApp")
+        @Value
+        @Jacksonized
+        @Builder
+        class AuthenticatorApp implements KeeperAuth {
+
+            @SuppressWarnings("unused")
+            public static OptionsBuilder createOptions(Property<AuthenticatorApp> p) {
+                var duration = new SimpleStringProperty(p.getValue().getTotpDuration());
+                return new OptionsBuilder()
+                        .name("keeperTotpDuration")
+                        .description(AppI18n.observable(
+                                "keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
+                        .addString(duration)
+                        .bind(
+                                () -> {
+                                    return AuthenticatorApp.builder()
+                                            .totpDuration(duration.get())
+                                            .build();
+                                },
+                                p);
+            }
+
+            String totpDuration;
+
+            private int getTotpDurationIndex() {
+                var values = getTotpDurationValues();
+                var index = totpDuration != null ? values.indexOf(totpDuration) : -1;
+                return index;
+            }
+
+            @Override
+            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+                var index = getTotpDurationIndex();
+                if (passwordManager.isHasCompletedRequestInSession() && index > 0) {
+                    var input = """
+
+                          1
+
+                          """;
+                    return input;
+                } else {
+                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
+                    if (totp.getState() != SecretQueryState.NORMAL) {
+                        return null;
+                    }
+
+                    var input = """
+
+                                1%s
+                                %s
+
+                                """.formatted(
+                            index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
+                            totp.getSecret().getSecretValue());
+                    return input;
+                }
+            }
+
+            @Override
+            public Duration getCacheDuration() {
+                return getTotpDurationIndex() < 1 ? Duration.ofDays(1) : Duration.ofSeconds(30);
+            }
+
+            @Override
+            public Duration getCommandTimeout() {
+                return Duration.ofSeconds(25);
+            }
+
+            @Override
+            public String cleanMessage(String output) {
+                return output.replace("""
+                             Select your 2FA method:
+                               1. TOTP (Google and Microsoft Authenticator) \s
+                               q. Cancel login
+                             """, "")
+                        .replace(
+                        """
+                        Selection: Invalid entry, additional factors of authentication shown may be configured if not currently enabled.
+                        Selection:\s
+                        2FA Code Duration: Require Every Login.
+                        To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
+                        """, "")
+                        .replace(
+                        """
+                        This account requires 2FA Authentication
+
+                          1. TOTP (Google and Microsoft Authenticator) \s
+                          q. Quit login attempt and return to Commander prompt
+                        """, "");
+            }
+
+        }
+
+        @JsonTypeName("securityKey")
+        @Value
+        @Jacksonized
+        @Builder
+        class SecurityKey implements KeeperAuth {
+
+            @Override
+            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+                var input = """
+
+                          1
+
+                          """;
+                return input;
+            }
+
+            @Override
+            public Duration getCacheDuration() {
+                return Duration.ofDays(1);
+            }
+
+            @Override
+            public Duration getCommandTimeout() {
+                return null;
+            }
+
+            @Override
+            public String cleanMessage(String output) {
+                return output.replace("""
+                               Select your 2FA method:
+                                 1. WebAuthN (FIDO2 Security Key) \s
+                                 q. Cancel login
+                               """, "")
+                        .replace(" Invalid entry, additional factors of authentication shown may be configured if not currently enabled.", "");
+            }
+        }
+
+
+        @JsonTypeName("other")
+        @Value
+        @Jacksonized
+        @Builder
+        class Other implements KeeperAuth {
+
+            @SuppressWarnings("unused")
+            public static String getOptionsNameKey() {
+                return "keeperOtherAuth";
+            }
+
+            @Override
+            public Duration getCommandTimeout() {
+                return null;
+            }
+
+            @Override
+            public String cleanMessage(String output) {
+                return output;
+            }
+
+            @Override
+            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+                var input = """
+
+                          1
+
+                          """;
+                return input;
+            }
+
+            @Override
+            public Duration getCacheDuration() {
+                return Duration.ofDays(1);
+            }
+        }
+
+        @JsonTypeName("none")
+        @Value
+        @Jacksonized
+        @Builder
+        class None implements KeeperAuth {
+
+            @Override
+            public Duration getCommandTimeout() {
+                return Duration.ofSeconds(25);
+            }
+
+            @Override
+            public String cleanMessage(String output) {
+                return output;
+            }
+
+            @Override
+            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+                var input = """
+
+                          1
+
+                          """;
+                return input;
+            }
+
+            @Override
+            public Duration getCacheDuration() {
+                return Duration.ofSeconds(30);
+            }
+        }
+    }
+
     private static final UUID KEEPER_PASSWORD_ID = UUID.randomUUID();
     private static ShellControl SHELL;
-    private final Boolean mfa;
-    private final String totpDuration;
-
+    private final KeeperAuth twoFactorAuth;
     @JsonIgnore
     private boolean hasCompletedRequestInSession;
 
@@ -53,28 +395,27 @@ public class KeeperPasswordManager implements PasswordManager {
         return SHELL;
     }
 
-    private String getExecutable(ShellControl sc) {
+    private static String getExecutable() {
         return OsType.ofLocal() == OsType.WINDOWS ? "keeper-commander" : "keeper";
     }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
-        var mfa = new SimpleBooleanProperty(
-                p.getValue().getMfa() != null ? p.getValue().getMfa() : false);
-        var duration = new SimpleStringProperty(p.getValue().getTotpDuration());
+        var mfa = new SimpleObjectProperty<>(p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
+
+        var choice = OptionsChoiceBuilder.builder()
+                .allowNull(false)
+                .available(KeeperAuth.getClasses())
+                .property(mfa)
+                .build();
+
         return new OptionsBuilder()
-                .nameAndDescription("keeperUseMfa")
-                .addToggle(mfa)
-                .name("keeperTotpDuration")
-                .description(AppI18n.observable(
-                        "keeperTotpDurationDescription", "login | 12_hours | 24_hours | 30_days | forever"))
-                .addString(duration)
-                .hide(mfa.not())
+                .nameAndDescription("keeper2fa")
+                .sub(choice.build(), mfa)
                 .bind(
                         () -> {
                             return KeeperPasswordManager.builder()
-                                    .mfa(mfa.get())
-                                    .totpDuration(duration.get())
+                                    .twoFactorAuth(mfa.get())
                                     .build();
                         },
                         p);
@@ -100,7 +441,7 @@ public class KeeperPasswordManager implements PasswordManager {
             if (!sc.view().fileExists(config)) {
                 var script = ShellScript.lines(
                         sc.getShellDialect().getEchoCommand("Log in into your Keeper account from the CLI:", false),
-                        getExecutable(sc) + " login");
+                        getExecutable() + " login");
                 TerminalLaunch.builder()
                         .title("Keeper login")
                         .localScript(script)
@@ -128,41 +469,19 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var b = CommandBuilder.of()
-                    .add(getExecutable(sc), "get")
+                    .add(getExecutable(), "get")
                     .addLiteral(key)
                     .add("--format", "json", "--unmask")
                     .add("--password")
                     .addLiteral(r.getSecretValue());
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
-            if (mfa != null && mfa) {
-                var index = getTotpDurationIndex();
-                if (hasCompletedRequestInSession && index > 0) {
-                    var input = """
 
-                          1
-
-                          """;
-                    sc.view().writeTextFile(file, input);
-                } else {
-                    var totp = AskpassAlert.queryRaw("Enter Keeper 2FA Code", null, true);
-                    if (totp.getState() != SecretQueryState.NORMAL) {
-                        return null;
-                    }
-
-                    var input = """
-
-                                1%s
-                                %s
-
-                                """.formatted(
-                                    index != -1 ? "\n" + getTotpDurationValues().get(index) : "",
-                                    totp.getSecret().getSecretValue());
-                    sc.view().writeTextFile(file, input);
-                }
-            } else {
-                var input = "\n";
-                sc.view().writeTextFile(file, input);
+            var effectiveTwoFactor = twoFactorAuth != null ? twoFactorAuth : new KeeperAuth.None();
+            var input = effectiveTwoFactor.constructKeeperInput(this);
+            if (input == null) {
+                return null;
             }
+            sc.view().writeTextFile(file, input);
 
             var fullB = CommandBuilder.of()
                     .add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat")
@@ -171,7 +490,11 @@ public class KeeperPasswordManager implements PasswordManager {
                     .add(b);
             var queryCommand = sc.command(fullB);
             queryCommand.sensitive();
-            queryCommand.killOnTimeout(CountDown.of().start(25_000));
+
+            if (effectiveTwoFactor.getCommandTimeout() != null) {
+                var timeout = effectiveTwoFactor.getCommandTimeout().toMillis();
+                queryCommand.killOnTimeout(CountDown.of().start(timeout));
+            }
 
             var result = queryCommand.readStdoutAndStderr();
             var exitCode = queryCommand.getExitCode();
@@ -179,26 +502,11 @@ public class KeeperPasswordManager implements PasswordManager {
             sc.view().deleteFileIfPossible(file);
 
             var out = result[0]
-                    .replace("\r\n", "\n")
-                    .replace("""
-                             Select your 2FA method:
-                               1. TOTP (Google and Microsoft Authenticator) \s
-                               q. Cancel login
-                             """, "")
-                    .replace("""
-                      Selection: Invalid entry, additional factors of authentication shown may be configured if not currently enabled.
-                      Selection:\s
-                      2FA Code Duration: Require Every Login.
-                      To change duration: 2fa_duration=login|12_hours|24_hours|30_days|forever
-                      """, "")
-                    .replace("""
-                             This account requires 2FA Authentication
-
-                               1. TOTP (Google and Microsoft Authenticator) \s
-                               q. Quit login attempt and return to Commander prompt
-                             """, "")
-                    .replace("Selection:", "")
+                    .replace("\r\n", "\n");
+            out = effectiveTwoFactor.cleanMessage(out);
+            out = out.replace("Selection:", "")
                     .strip();
+
             var err = result[1]
                     .replace("\r\n", "\n")
                     .replace("EOF when reading a line", "")
@@ -211,6 +519,8 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             var outPrefix = jsonStart <= 0 ? out : out.substring(0, jsonStart);
+            outPrefix = outPrefix.lines().filter(s -> !s.isBlank()).map(s -> s.strip()).collect(Collectors.joining("\n"));
+
             var outJson = jsonStart <= 0
                     ? (jsonEnd != -1 ? out.substring(0, jsonEnd) : out)
                     : (jsonEnd != -1 ? out.substring(jsonStart, jsonEnd) : out.substring(jsonStart));
@@ -297,17 +607,6 @@ public class KeeperPasswordManager implements PasswordManager {
         }
     }
 
-    private List<String> getTotpDurationValues() {
-        var values = List.of("login", "12_hours", "24_hours", "30_days", "forever");
-        return values;
-    }
-
-    private int getTotpDurationIndex() {
-        var values = getTotpDurationValues();
-        var index = totpDuration != null ? values.indexOf(totpDuration) : -1;
-        return index;
-    }
-
     @Override
     public String getKeyPlaceholder() {
         return "Record UID";
@@ -320,6 +619,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public Duration getCacheDuration() {
-        return (mfa != null && mfa && getTotpDurationIndex() < 1) ? Duration.ofDays(10) : Duration.ofSeconds(30);
+        var effectiveTwoFactor = twoFactorAuth != null ? twoFactorAuth : new KeeperAuth.None();
+        return effectiveTwoFactor.getCacheDuration();
     }
 }
