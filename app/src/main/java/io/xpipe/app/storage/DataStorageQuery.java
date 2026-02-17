@@ -12,7 +12,7 @@ public class DataStorageQuery {
             var narrow = found.stream()
                     .filter(dataStoreEntry -> dataStoreEntry.getName().equalsIgnoreCase(connection))
                     .toList();
-            if (narrow.size() == 1) {
+            if (narrow.size() >= 1) {
                 return narrow;
             }
         }
