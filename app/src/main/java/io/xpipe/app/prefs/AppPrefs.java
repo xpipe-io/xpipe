@@ -125,6 +125,12 @@ public final class AppPrefs {
             .key("enableMcpMutationTools")
             .valueClass(Boolean.class)
             .build());
+    final StringProperty mcpAdditionalContext = map(Mapping.builder()
+            .property(new GlobalStringProperty(null))
+            .key("mcpAdditionalContext")
+            .valueClass(String.class)
+            .requiresRestart(true)
+            .build());
     final BooleanProperty dontAutomaticallyStartVmSshServer =
             mapVaultShared(new GlobalBooleanProperty(false), "dontAutomaticallyStartVmSshServer", Boolean.class, false);
     final BooleanProperty dontAcceptNewHostKeys =
@@ -580,6 +586,10 @@ public final class AppPrefs {
 
     public ObservableBooleanValue enableMcpMutationTools() {
         return enableMcpMutationTools;
+    }
+
+    public ObservableValue<String> mcpAdditionalContext() {
+        return mcpAdditionalContext;
     }
 
     public ObservableBooleanValue pinLocalMachineOnStartup() {

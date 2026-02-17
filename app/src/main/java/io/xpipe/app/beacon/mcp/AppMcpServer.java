@@ -52,8 +52,8 @@ public class AppMcpServer {
                         .resources(true, true)
                         .tools(true)
                         .prompts(false)
-                        .completions()
                         .build())
+                .instructions(AppPrefs.get().mcpAdditionalContext().getValue())
                 .build();
 
         var readOnlyTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();

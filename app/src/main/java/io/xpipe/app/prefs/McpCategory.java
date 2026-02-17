@@ -2,7 +2,9 @@ package io.xpipe.app.prefs;
 
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.comp.BaseRegionBuilder;
+import io.xpipe.app.comp.base.IntegratedTextAreaComp;
 import io.xpipe.app.comp.base.TextAreaComp;
+import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppNames;
 import io.xpipe.app.platform.LabelGraphic;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -65,7 +67,12 @@ public class McpCategory extends AppPrefsCategory {
                             struc.getTextArea().setEditable(false);
                             struc.getTextArea().setPrefRowCount(12);
                         }))
-                        .hide(prefs.enableMcpServer.not()))
+                        .hide(prefs.enableMcpServer.not())
+                        .pref(prefs.mcpAdditionalContext)
+                        .addComp(new IntegratedTextAreaComp(prefs.mcpAdditionalContext, false, "prompt", new SimpleStringProperty("txt")).applyStructure(structure -> {
+                            structure.getTextArea().promptTextProperty().bind(AppI18n.observable("mcpAdditionalContextSample"));
+                        }))
+                )
                 .buildComp();
     }
 }
