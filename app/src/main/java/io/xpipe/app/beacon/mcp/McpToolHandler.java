@@ -37,7 +37,7 @@ public interface McpToolHandler
                     .isError(true)
                     .build();
         } catch (Throwable e) {
-            ErrorEventFactory.fromThrowable(e).handle();
+            ErrorEventFactory.fromThrowable(e).omit().handle();
             return McpSchema.CallToolResult.builder()
                     .addTextContent(e.getMessage())
                     .isError(true)
