@@ -58,6 +58,8 @@ public abstract class ProcessControlProvider {
 
     public abstract ShellDialect getEffectiveLocalDialect();
 
+    public abstract String executeMcpCommand(ShellControl sc, String command) throws Exception;
+
     public ShellDialect getNextFallbackDialect() {
         var av = getAvailableLocalDialects();
         var index = av.indexOf(getEffectiveLocalDialect());

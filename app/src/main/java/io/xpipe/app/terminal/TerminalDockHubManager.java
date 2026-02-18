@@ -110,9 +110,9 @@ public class TerminalDockHubManager {
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
-                inner.iconCodeProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
-                    return detached.get() || minimized.get() || !showing.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
-                }, detached, minimized, showing)));
+                inner.iconCodeProperty().bind(Bindings.createObjectBinding(() -> {
+                    return detached.get() || minimized.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
+                }, detached, minimized));
                 inner.getStyleClass().add("graphic");
                 inner.getStyleClass().add("terminal-dock-button");
                 return inner;
@@ -186,14 +186,10 @@ public class TerminalDockHubManager {
                     return;
                 }
 
-                var term = AppPrefs.get().terminalType().getValue();
+                var term = controllable.get().getTerminalType();
                 if (term instanceof TrackableTerminalType t) {
                     if (t.getDockMode() == TerminalDockMode.UNSUPPORTED) {
                         return;
-                    }
-
-                    if (t.getDockMode() == TerminalDockMode.BORDERLESS) {
-                        controllable.get().removeBorders();
                     }
                 }
 

@@ -14,6 +14,7 @@ import io.xpipe.app.terminal.TerminalDockBrowserComp;
 import io.xpipe.app.terminal.TerminalDockView;
 import io.xpipe.app.terminal.TerminalView;
 import io.xpipe.app.terminal.WindowsTerminalType;
+import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.ThreadHelper;
 
 import javafx.application.Platform;
@@ -25,6 +26,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import java.time.Duration;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
 
@@ -36,6 +38,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
     private final BooleanProperty opened = new SimpleBooleanProperty();
     private TerminalView.Listener listener;
     private ObservableBooleanValue viewActive;
+    private boolean closed;
 
     public BrowserTerminalDockTabModel(
             BrowserAbstractSessionModel<?> browserModel,
@@ -147,6 +150,14 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
                 }
             }
         });
+
+        GlobalTimer.scheduleUntil(Duration.ofMillis(300), false, () -> {
+            if (viewActive.get()) {
+                dockModel.clearDeadTerminals();
+                dockModel.updateCustomBounds();
+            }
+            return closed;
+        });
     }
 
     @Override
@@ -155,6 +166,7 @@ public final class BrowserTerminalDockTabModel extends BrowserSessionTab {
             TerminalView.get().removeListener(listener);
         }
         dockModel.onClose();
+        closed = true;
     }
 
     @Override

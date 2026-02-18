@@ -26,8 +26,10 @@ public class RunHubScriptActionProvider implements ActionProvider {
         public void executeImpl() throws Exception {
             var sc = ref.getStore().getOrStartSession();
             var script = scriptStore.getStore().assembleScriptChain(sc, false);
-            var cmd = sc.command(script);
-            CommandDialog.runAndShow(cmd);
+            if (script != null) {
+                var cmd = sc.command(script);
+                CommandDialog.runAndShow(cmd);
+            }
         }
 
         @Override

@@ -36,12 +36,6 @@ public class AppBeaconCache {
         control.setNonInteractive();
         control.start();
 
-        var d = control.getShellDialect().getDumbMode();
-        if (!d.supportsAnyPossibleInteraction()) {
-            control.close();
-            d.throwIfUnsupported();
-        }
-
         if (existing.isEmpty()) {
             AppBeaconServer.get().getCache().getShellSessions().add(new BeaconShellSession(ref.get(), control));
         }

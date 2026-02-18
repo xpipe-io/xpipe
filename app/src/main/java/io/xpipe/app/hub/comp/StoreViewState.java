@@ -189,6 +189,9 @@ public class StoreViewState {
 
     public void selectBatchMode(StoreSection section) {
         var wrapper = section.getWrapper();
+        if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return;
+        }
         if (wrapper != null && !batchModeSelectionSet.contains(wrapper)) {
             batchModeSelection.getList().add(wrapper);
         }
@@ -199,6 +202,9 @@ public class StoreViewState {
 
     public void unselectBatchMode(StoreSection section) {
         var wrapper = section.getWrapper();
+        if (wrapper != null && wrapper.getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            return;
+        }
         if (wrapper != null) {
             batchModeSelection.getList().remove(wrapper);
         }

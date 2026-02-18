@@ -64,7 +64,7 @@ public class TerminalDockView {
                 }
             }
 
-            if (terminal.isCustomBounds()) {
+            if (!wasCustom && terminal.isCustomBounds()) {
                 terminal.disown();
             }
         });
@@ -72,6 +72,8 @@ public class TerminalDockView {
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
         if (viewActive && dock && viewBounds != null) {
+            terminal.own();
+
             // Bring main window to foreground since initial launch
             NativeWinWindowControl.MAIN_WINDOW.activate();
 
@@ -83,7 +85,7 @@ public class TerminalDockView {
 
             // Bring terminal window in front of main window
             terminal.focus();
-
+            
             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();
         }
@@ -231,7 +233,7 @@ public class TerminalDockView {
         });
     }
 
-    public void resizeView(int x, int y, int w, int h) {
+    public synchronized void resizeView(int x, int y, int w, int h) {
         if (w < 100 || h < 100) {
             return;
         }

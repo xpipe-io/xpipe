@@ -89,13 +89,19 @@ public class IntegratedTextAreaComp extends RegionStructureBuilder<AnchorPane, I
                     .bind(Bindings.createIntegerBinding(
                             () -> {
                                 var val = value.getValue() != null ? value.getValue() : "";
-                                var count = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+                                var valCount = (int) val.lines().count() + (val.endsWith("\n") ? 1 : 0);
+
+                                var promptVal = struc.getTextArea().getPromptText() != null ? struc.getTextArea().getPromptText() : "";
+                                var promptValCount = (int) promptVal.lines().count() + (promptVal.endsWith("\n") ? 1 : 0);
+
+                                var count = Math.max(valCount, promptValCount);
                                 // Somehow the handling of trailing newlines is weird
                                 // This makes the handling better for JavaFX text areas
                                 count++;
                                 return Math.max(1, count);
                             },
-                            value));
+                            value,
+                            struc.getTextArea().promptTextProperty()));
         });
         var textAreaStruc = textArea.buildStructure();
         var copyButton = createOpenButton();

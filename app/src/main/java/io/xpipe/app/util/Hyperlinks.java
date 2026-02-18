@@ -11,6 +11,6 @@ public class Hyperlinks {
     public static final String GITHUB_WEBTOP = "https://github.com/xpipe-io/xpipe-webtop";
 
     public static void open(String uri) {
-        DesktopHelper.openUrl(uri);
+        DesktopHelper.openBrowser(uri);
     }
 }

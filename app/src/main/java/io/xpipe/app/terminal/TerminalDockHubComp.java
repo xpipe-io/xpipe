@@ -56,7 +56,7 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
                     Platform.runLater(() -> {
                         update(stack);
                     });
-                }, Duration.ofMillis(100));
+                }, Duration.ofMillis(500));
             }
         };
         var update = new ChangeListener<Number>() {
@@ -143,10 +143,21 @@ public class TerminalDockHubComp extends SimpleRegionBuilder {
             return;
         }
 
-        var x = windowRect.getX() + ((bounds.getMinX() + p.getLeft() + scene.getX()) * sx);
-        var y = windowRect.getY() + ((bounds.getMinY() + p.getTop() + scene.getY()) * sy);
+        var xPadding = ((bounds.getMinX() + p.getLeft() + scene.getX()) * sx);
+        var yPadding = ((bounds.getMinY() + p.getTop() + scene.getY()) * sy);
+        var x = windowRect.getX() + xPadding;
+        var y = windowRect.getY() + yPadding;
         var w = (bounds.getWidth() * sx) - p.getRight() - p.getLeft();
         var h = (bounds.getHeight() * sy) - p.getBottom() - p.getTop();
+
+        if (x + w > windowRect.getX() + windowRect.getW()) {
+            x = windowRect.getX() + 10;
+            w = windowRect.getW() - 20;
+        }
+        if (y + h > windowRect.getY() + windowRect.getH()) {
+            y = windowRect.getY() + 10;
+            h = windowRect.getH() - 20;
+        }
 
         model.resizeView(
                 (int) Math.round(x),

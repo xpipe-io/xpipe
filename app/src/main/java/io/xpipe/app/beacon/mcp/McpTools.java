@@ -3,10 +3,7 @@ package io.xpipe.app.beacon.mcp;
 import io.xpipe.app.beacon.AppBeaconServer;
 import io.xpipe.app.core.AppExtensionManager;
 import io.xpipe.app.core.AppNames;
-import io.xpipe.app.ext.ConnectionFileSystem;
-import io.xpipe.app.ext.FileEntry;
-import io.xpipe.app.ext.FileInfo;
-import io.xpipe.app.ext.SingletonSessionStore;
+import io.xpipe.app.ext.*;
 import io.xpipe.app.process.ScriptHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.TerminalInitScriptConfig;
@@ -350,7 +347,7 @@ public final class McpTools {
                     var shellStore = req.getShellStoreRef(system);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
-                    var out = shellSession.getControl().command(command).readStdoutOrThrow();
+                    var out = ProcessControlProvider.get().executeMcpCommand(shellSession.getControl(), command);
                     var formatted = CommandDialog.formatOutput(out);
 
                     return McpSchema.CallToolResult.builder()

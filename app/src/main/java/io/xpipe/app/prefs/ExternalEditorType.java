@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface ExternalEditorType extends PrefsChoiceValue {
-
     ExternalEditorType NOTEPAD = new WindowsType() {
 
         @Override
@@ -280,6 +279,70 @@ public interface ExternalEditorType extends PrefsChoiceValue {
 
     LinuxPathType KIRO_LINUX = new LinuxPathType("app.kiro", "kiro", "https://kiro.dev/");
 
+    LinuxType NEOVIM_LINUX = new LinuxType("app.neovim", "nvim", "https://neovim.io/", null) {
+        @Override
+        public void launch(Path file) throws Exception {
+            TerminalLaunch.builder()
+                    .title(file.toString())
+                    .localScript(sc -> new ShellScript(CommandBuilder.of()
+                            .addFile(getExecutable())
+                            .addFile(file.toString())
+                            .buildFull(sc)))
+                    .logIfEnabled(false)
+                    .preferTabs(false)
+                    .pauseOnExit(false)
+                    .launch();
+        }
+    };
+
+    WindowsType NEOVIM_WINDOWS = new WindowsType() {
+        @Override
+        public String getId() {
+            return "app.neovim";
+        }
+
+        @Override
+        public boolean detach() {
+            return false;
+        }
+
+        @Override
+        public String getExecutable() {
+            return "nvim";
+        }
+
+
+        @Override
+        public String getWebsite() {
+            return "https://neovim.io/";
+        }
+
+
+        @Override
+        public Optional<Path> determineInstallation() {
+            var programFiles = AppSystemInfo.ofWindows().getProgramFiles().resolve("Neovim", "bin").resolve("nvim.exe");
+            if (Files.exists(programFiles)) {
+                return Optional.of(programFiles);
+            }
+            return Optional.empty();
+        }
+
+        @Override
+        public void launch(Path file) throws Exception {
+            TerminalLaunch.builder()
+                    .title(file.toString())
+                    .localScript(sc -> new ShellScript(CommandBuilder.of()
+                            .addFile(findExecutable().toString())
+                            .addFile(file)
+                            .buildFull(sc)))
+                    .logIfEnabled(false)
+                    .preferTabs(false)
+                    .pauseOnExit(false)
+                    .launch();
+        }
+
+    };
+
     WindowsType ZED_WINDOWS = new WindowsType() {
 
         @Override
@@ -356,6 +419,21 @@ public interface ExternalEditorType extends PrefsChoiceValue {
     ExternalEditorType WINDSURF_MACOS = new MacOsEditor("app.windsurf", "Windsurf", "https://windsurf.com/editor");
     ExternalEditorType KIRO_MACOS = new MacOsEditor("app.kiro", "Kiro", "https://kiro.dev/");
     ExternalEditorType TRAE_MACOS = new MacOsEditor("app.trae", "Trae", "https://www.trae.ai/");
+    ExternalEditorType NEOVIM_MACOS = new MacOsEditor("app.neovim", "Neovim", "https://neovim.io/") {
+        @Override
+        public void launch(Path file) throws Exception {
+            TerminalLaunch.builder()
+                    .title(file.toString())
+                    .localScript(sc -> new ShellScript(CommandBuilder.of()
+                            .addFile("nvim")
+                            .addFile(file.toString())
+                            .buildFull(sc)))
+                    .logIfEnabled(false)
+                    .preferTabs(false)
+                    .pauseOnExit(false)
+                    .launch();
+        }
+    };
     ExternalEditorType CUSTOM = new ExternalEditorType() {
 
         @Override
@@ -380,6 +458,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
                         .localScript(sc -> new ShellScript(command.buildFull(sc)))
                         .logIfEnabled(false)
                         .preferTabs(false)
+                        .pauseOnExit(false)
                         .launch();
             } else {
                 ExternalApplicationHelper.startAsync(command);
@@ -422,7 +501,8 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             VSCODE_INSIDERS_WINDOWS,
             VSCODE_WINDOWS,
             NOTEPADPLUSPLUS,
-            NOTEPAD);
+            NOTEPAD,
+            NEOVIM_WINDOWS);
     List<GenericPathType> LINUX_EDITORS = List.of(
             ExternalEditorType.WINDSURF_LINUX,
             ExternalEditorType.KIRO_LINUX,
@@ -435,6 +515,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             PLUMA,
             LEAFPAD,
             MOUSEPAD,
+            NEOVIM_LINUX,
             GNOME,
             ExternalEditorType.COSMIC_EDIT,
             ExternalEditorType.WESTON_EDITOR,
@@ -451,6 +532,7 @@ public interface ExternalEditorType extends PrefsChoiceValue {
             VSCODE_MACOS,
             SUBLIME_MACOS,
             ZED_MACOS,
+            NEOVIM_MACOS,
             TEXT_EDIT);
     List<ExternalEditorType> CROSS_PLATFORM_EDITORS = List.of(FLEET, INTELLIJ, PYCHARM, WEBSTORM, CLION);
 
