@@ -1,6 +1,7 @@
 package io.xpipe.app.hub.comp;
 
 import io.xpipe.app.comp.SimpleRegionBuilder;
+import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.util.BooleanScope;
 
 import javafx.application.Platform;
@@ -23,6 +24,7 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
     protected Region createSimple() {
         var selfUpdate = new SimpleBooleanProperty(false);
         var cb = new CheckBox();
+        externalUpdate(cb);
         cb.setAllowIndeterminate(true);
         cb.selectedProperty().addListener((observable, oldValue, newValue) -> {
             BooleanScope.executeExclusive(selfUpdate, () -> {
@@ -64,6 +66,13 @@ public class StoreEntryBatchSelectComp extends SimpleRegionBuilder {
     }
 
     private void externalUpdate(CheckBox checkBox) {
+        if (section.getWrapper() != null && section.getWrapper().getEntry().getValidity() == DataStoreEntry.Validity.LOAD_FAILED) {
+            checkBox.setSelected(false);
+            checkBox.setIndeterminate(false);
+            checkBox.setDisable(true);
+            return;
+        }
+
         var isSelected = section.getWrapper() == null
                 ? checkBox.isSelected()
                 : StoreViewState.get().isBatchModeSelected(section.getWrapper());
