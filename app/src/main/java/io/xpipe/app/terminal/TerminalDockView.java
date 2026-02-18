@@ -81,11 +81,6 @@ public class TerminalDockView {
             // We always want to show the terminal though
             terminal.show();
 
-            terminal.own();
-
-            // Bring terminal window in front of main window
-            terminal.focus();
-            
             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();
         }

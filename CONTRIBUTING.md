@@ -20,8 +20,8 @@ If you are on Linux or macOS, you can easily accomplish that by using [SDKMAN](h
 ```bash
 curl -s "https://get.sdkman.io" | bash
 . "$HOME/.sdkman/bin/sdkman-init.sh"
-sdk install java 25.0.1-graalce
-sdk default java 25.0.1-graalce
+sdk install java 25.0.2-graalce
+sdk default java 25.0.2-graalce
 ```
 
 On Windows, you have to manually install a JDK, e.g. from [Adoptium](https://adoptium.net/temurin/releases/?version=25).

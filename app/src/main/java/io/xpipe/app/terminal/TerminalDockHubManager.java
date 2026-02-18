@@ -110,9 +110,9 @@ public class TerminalDockHubManager {
     private final AppLayoutModel.QueueEntry queueEntry = new AppLayoutModel.QueueEntry(
             AppI18n.observable("toggleTerminalDock"), new LabelGraphic.NodeGraphic(() -> {
                 var inner = new FontIcon();
-                inner.iconCodeProperty().bind(Bindings.createObjectBinding(() -> {
-                    return detached.get() || minimized.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
-                }, detached, minimized));
+                inner.iconCodeProperty().bind(PlatformThread.sync(Bindings.createObjectBinding(() -> {
+                    return detached.get() || minimized.get() || !showing.get() ? MaterialDesignC.CONSOLE_LINE : MaterialDesignC.CONSOLE;
+                }, detached, minimized, showing)));
                 inner.getStyleClass().add("graphic");
                 inner.getStyleClass().add("terminal-dock-button");
                 return inner;
