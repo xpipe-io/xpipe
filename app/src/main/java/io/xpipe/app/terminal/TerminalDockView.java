@@ -6,6 +6,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.util.GlobalTimer;
 import io.xpipe.app.util.Rect;
 
+import io.xpipe.app.util.ThreadHelper;
 import lombok.Getter;
 
 import java.time.Duration;
@@ -59,6 +60,7 @@ public class TerminalDockView {
                         Math.abs(targetBounds.getW() - currentBounds.getW()) +
                         Math.abs(targetBounds.getH() - currentBounds.getH());
                 if (sum < 30) {
+                    ThreadHelper.sleep(300);
                     trackTerminal(terminal, true);
                     return;
                 }
@@ -71,15 +73,18 @@ public class TerminalDockView {
     }
 
     public synchronized void trackTerminal(ControllableTerminalSession terminal, boolean dock) {
-        if (viewActive && dock && viewBounds != null) {
-            terminal.own();
-
+        if (viewActive && dock && viewBounds != null && NativeWinWindowControl.MAIN_WINDOW.isVisible() && !NativeWinWindowControl.MAIN_WINDOW.isIconified()) {
             // Bring main window to foreground since initial launch
             NativeWinWindowControl.MAIN_WINDOW.activate();
+
+            terminal.own();
 
             // The window might be minimized
             // We always want to show the terminal though
             terminal.show();
+
+            // Move input focus to terminal
+            terminal.focus();
 
             terminal.updatePosition(windowBoundsFunction.apply(viewBounds));
             updateCustomBounds();

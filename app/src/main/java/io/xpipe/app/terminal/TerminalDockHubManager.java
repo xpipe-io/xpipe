@@ -3,6 +3,7 @@ package io.xpipe.app.terminal;
 import io.xpipe.app.comp.base.ModalOverlay;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppLayoutModel;
+import io.xpipe.app.core.mode.AppOperationMode;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.core.window.AppMainWindow;
 import io.xpipe.app.platform.LabelGraphic;
@@ -64,6 +65,14 @@ public class TerminalDockHubManager {
         }
 
         if (NativeWinWindowControl.MAIN_WINDOW == null) {
+            return false;
+        }
+
+        if (AppOperationMode.get() != AppOperationMode.GUI) {
+            return false;
+        }
+
+        if (AppMainWindow.get() == null || !AppMainWindow.get().getStage().isShowing() || AppMainWindow.get().getStage().isIconified()) {
             return false;
         }
 
