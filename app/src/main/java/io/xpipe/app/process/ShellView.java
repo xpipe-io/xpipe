@@ -125,6 +125,10 @@ public class ShellView {
         return userHome;
     }
 
+    public void moveFile(FilePath source, FilePath dest) throws Exception {
+        getDialect().getFileMoveCommand(shellControl, source.toString(), dest.toString()).execute();
+    }
+
     public boolean fileExists(FilePath path) throws Exception {
         return getDialect()
                 .createFileExistsCommand(shellControl, path.toString())
