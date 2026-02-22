@@ -11,7 +11,6 @@ import lombok.Getter;
 
 import java.time.Duration;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -52,7 +51,7 @@ public class TerminalDockView {
             var wasCustom = terminal.isCustomBounds();
             terminal.updateBoundsState();
 
-            if (wasCustom && viewBounds != null) {
+            if (wasCustom && viewBounds != null && viewActive) {
                 var currentBounds = terminal.getLastBounds();
                 var targetBounds = windowBoundsFunction.apply(viewBounds);
                 var sum = Math.abs(targetBounds.getX() - currentBounds.getX()) +
@@ -68,6 +67,8 @@ public class TerminalDockView {
 
             if (!wasCustom && terminal.isCustomBounds()) {
                 terminal.disown();
+                terminal.restoreIcon();
+                terminal.restoreStyle();
             }
         });
     }
@@ -77,7 +78,9 @@ public class TerminalDockView {
             // Bring main window to foreground since initial launch
             NativeWinWindowControl.MAIN_WINDOW.activate();
 
+            terminal.removeIcon();
             terminal.own();
+            terminal.removeStyle();
 
             // The window might be minimized
             // We always want to show the terminal though
@@ -144,7 +147,9 @@ public class TerminalDockView {
                 return;
             }
 
+            terminalInstance.removeIcon();
             terminalInstance.own();
+            terminalInstance.removeStyle();
             terminalInstance.focus();
         });
         updatePositions();
@@ -178,10 +183,13 @@ public class TerminalDockView {
 
             terminalInstance.show();
             if (viewActive) {
+                terminalInstance.removeIcon();
                 terminalInstance.own();
+                terminalInstance.removeStyle();
                 terminalInstance.focus();
             } else {
                 terminalInstance.disown();
+                terminalInstance.restoreIcon();
                 terminalInstance.backOfMainWindow();
             }
         });
@@ -248,7 +256,9 @@ public class TerminalDockView {
         terminalInstances.forEach(terminalInstance -> {
             terminalInstance.show();
             terminalInstance.updatePosition(windowBoundsFunction.apply(viewBounds));
+            terminalInstance.removeIcon();
             terminalInstance.own();
+            terminalInstance.removeStyle();
             terminalInstance.focus();
         });
     }

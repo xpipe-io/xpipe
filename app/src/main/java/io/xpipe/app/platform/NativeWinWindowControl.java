@@ -98,23 +98,23 @@ public class NativeWinWindowControl {
                 User32.SWP_NOACTIVATE | User32.SWP_NOMOVE | User32.SWP_NOZORDER);
     }
 
-    public void takeOwnership(WinDef.HWND owner) {
+    public void removeIcon() {
         var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
         var mod = style & ~(WS_EX_APPWINDOW);
         User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+    }
 
-        setWindowsTransitionsEnabled(false);
+    public void restoreIcon() {
+        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
+        var mod = style | WS_EX_APPWINDOW;
+        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
+    }
 
+    public void takeOwnership(WinDef.HWND owner) {
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, owner);
     }
 
     public void releaseOwnership() {
-        var style = User32.INSTANCE.GetWindowLong(windowHandle, User32.GWL_EXSTYLE);
-        var mod = style | WS_EX_APPWINDOW;
-        User32.INSTANCE.SetWindowLong(windowHandle, User32.GWL_EXSTYLE, mod);
-
-        setWindowsTransitionsEnabled(true);
-
         User32Ex.INSTANCE.SetWindowLongPtr(getWindowHandle(), User32.GWL_HWNDPARENT, (WinDef.HWND) null);
     }
 

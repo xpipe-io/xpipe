@@ -1,10 +1,8 @@
 package io.xpipe.app.terminal;
 
-import com.sun.jna.platform.win32.User32;
 import io.xpipe.app.platform.NativeWinWindowControl;
 import io.xpipe.app.util.Rect;
 
-import io.xpipe.app.util.User32Ex;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -46,14 +44,34 @@ public final class WindowsTerminalSession extends ControllableTerminalSession {
     @Override
     public void own() {
         control.takeOwnership(NativeWinWindowControl.MAIN_WINDOW.getWindowHandle());
+    }
+
+    @Override
+    public void disown() {
+        control.releaseOwnership();
+    }
+
+    @Override
+    public void removeIcon() {
+        control.removeIcon();
+    }
+
+    @Override
+    public void restoreIcon() {
+        control.restoreIcon();
+    }
+
+    @Override
+    public void removeStyle() {
+        control.setWindowsTransitionsEnabled(false);
         if (terminalType != null && terminalType instanceof TrackableTerminalType t && t.getDockMode() == TerminalDockMode.BORDERLESS) {
             control.removeBorders();
         }
     }
 
     @Override
-    public void disown() {
-        control.releaseOwnership();
+    public void restoreStyle() {
+        control.setWindowsTransitionsEnabled(true);
         if (terminalType != null && terminalType instanceof TrackableTerminalType t && t.getDockMode() == TerminalDockMode.BORDERLESS) {
             control.restoreBorders();
         }

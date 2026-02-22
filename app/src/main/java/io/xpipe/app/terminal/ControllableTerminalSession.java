@@ -18,6 +18,14 @@ public abstract class ControllableTerminalSession extends TerminalView.TerminalS
 
     public abstract void disown();
 
+    public abstract void removeIcon();
+
+    public abstract void restoreIcon();
+
+    public abstract void removeStyle();
+
+    public abstract void restoreStyle();
+
     public abstract void show();
 
     public abstract void minimize();
