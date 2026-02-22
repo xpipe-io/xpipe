@@ -245,7 +245,7 @@ public final class AppPrefs {
     public final BooleanProperty dontCachePasswords =
             mapVaultShared(new GlobalBooleanProperty(false), "dontCachePasswords", Boolean.class, false);
     public final Property<ExternalVncClient> vncClient = map(Mapping.builder()
-            .property(new GlobalObjectProperty<>(InternalVncClient.builder().build()))
+            .property(new GlobalObjectProperty<>())
             .key("vncClient")
             .valueClass(ExternalVncClient.class)
             .documentationLink(DocumentationLink.VNC)
@@ -835,6 +835,7 @@ public final class AppPrefs {
         terminalType.set(ExternalTerminalType.determineDefault(terminalType.get()));
         rdpClientType.setValue(ExternalRdpClient.determineDefault(rdpClientType.get()));
         spiceClient.setValue(ExternalSpiceClient.determineDefault(spiceClient.getValue()));
+        vncClient.setValue(ExternalVncClient.determineDefault(vncClient.getValue()));
 
         PrefsProvider.getAll().forEach(prov -> prov.initDefaultValues());
     }
