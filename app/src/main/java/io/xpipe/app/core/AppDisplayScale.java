@@ -20,8 +20,20 @@ public class AppDisplayScale {
         }
     }
 
-    public static boolean hasDefaultDisplayScale() {
-        return getEffectiveDisplayScale() == 1.0;
+    public static boolean hasOnlyDefaultDisplayScale() {
+        if (AppPrefs.get() != null) {
+            var s = AppPrefs.get().uiScale().getValue();
+            if (s != null && s == 100) {
+                return true;
+            }
+
+            var allScreens = Screen.getScreens().stream().allMatch(screen -> screen.getOutputScaleX() == 1.0);
+            if (allScreens) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static double getEffectiveDisplayScale() {

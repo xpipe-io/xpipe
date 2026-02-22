@@ -72,7 +72,7 @@ public class SystemIconManager {
         }
 
         var dir = SystemIconCache.getDirectory(icon.getSource());
-        var res = AppDisplayScale.hasDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
+        var res = AppDisplayScale.hasOnlyDefaultDisplayScale() ? List.of(16, 24, 40) : List.of(16, 24, 40, 80);
         var files = new ArrayList<Path>();
         for (Integer re : res) {
             files.add(dir.resolve(icon.getId() + "-" + re + ".png"));

@@ -44,7 +44,7 @@ public class AppImages {
                     return;
                 }
 
-                var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
+                var skipLarge = AppDisplayScale.hasOnlyDefaultDisplayScale();
                 Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -63,7 +63,7 @@ public class AppImages {
 
     private static void loadOsIcons() {
         AppResources.with(AppResources.MAIN_MODULE, "os", basePath -> {
-            var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
+            var skipLarge = AppDisplayScale.hasOnlyDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
@@ -81,7 +81,7 @@ public class AppImages {
 
     private static void loadWelcomeImages() {
         AppResources.with(AppResources.MAIN_MODULE, "welcome", basePath -> {
-            var skipLarge = AppDisplayScale.hasDefaultDisplayScale();
+            var skipLarge = AppDisplayScale.hasOnlyDefaultDisplayScale();
             Files.walkFileTree(basePath, new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
