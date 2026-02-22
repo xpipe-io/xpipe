@@ -404,7 +404,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
                     var directory = req.getOptionalStringArgument("directory");
-                    var shellStore = req.getShellStoreRef(system, false);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
                     TerminalLaunch.builder()
@@ -427,7 +427,7 @@ public final class McpTools {
                 .callHandler(McpToolHandler.of((req) -> {
                     var system = req.getStringArgument("system");
                     var directory = req.getOptionalStringArgument("directory");
-                    var shellStore = req.getShellStoreRef(system, false);
+                    var shellStore = req.getShellStoreRef(system, true);
                     var shellSession = AppBeaconServer.get().getCache().getOrStart(shellStore);
 
                     var script = shellSession

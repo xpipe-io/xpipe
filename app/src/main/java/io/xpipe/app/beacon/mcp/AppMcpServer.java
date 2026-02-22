@@ -63,10 +63,10 @@ public class AppMcpServer {
         readOnlyTools.add(McpTools.listFiles());
         readOnlyTools.add(McpTools.findFile());
         readOnlyTools.add(McpTools.getFileInfo());
-        readOnlyTools.add(McpTools.openTerminal());
-        readOnlyTools.add(McpTools.openTerminalInline());
 
         var mutationTools = new ArrayList<McpServerFeatures.SyncToolSpecification>();
+        mutationTools.add(McpTools.openTerminal());
+        mutationTools.add(McpTools.openTerminalInline());
         mutationTools.add(McpTools.createFile());
         mutationTools.add(McpTools.writeFile());
         mutationTools.add(McpTools.createDirectory());

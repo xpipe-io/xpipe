@@ -23,12 +23,6 @@ allprojects { subproject ->
         preserveFileTimestamps = true
         useFileSystemPermissions()
     }
-
-    repositories {
-        maven {
-            url = uri("https://central.sonatype.com/repository/maven-snapshots")
-        }
-    }
 }
 
 subprojects {subproject ->
