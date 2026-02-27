@@ -22,22 +22,28 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @JsonTypeName("bitwarden")
+@Builder
+@Jacksonized
 public class BitwardenPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
     private static boolean copied;
-    private PasswordManagerAgentStrategy agentStrategy;
+    private final PasswordManagerAgentStrategy agentStrategy;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -75,7 +81,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
         var agentStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(PasswordManagerAgentStrategy.getClasses())
+                .available(List.of(PasswordManagerAgentStrategy.Agent.class))
                 .property(agentStrategy)
                 .build();
 
@@ -83,7 +89,10 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .addComp(testButton)
                 .nameAndDescription("passwordManagerAgentStrategy")
                 .sub(agentStrategyChoice.build(), agentStrategy)
-                .nonNull();
+                .nonNull()
+                .bind(() -> {
+                    return BitwardenPasswordManager.builder().agentStrategy(agentStrategy.getValue()).build();
+                }, p);
     }
 
 
@@ -258,12 +267,12 @@ public class BitwardenPasswordManager implements PasswordManager {
         return new PasswordManagerKeyStrategy() {
             @Override
             public boolean supportsInlineSshKeys() {
-                return agentStrategy != null && agentStrategy.getSshIdentityStrategy() == null;
+                return true;
             }
 
             @Override
             public boolean supportsAgent() {
-                return agentStrategy != null && agentStrategy.getSshIdentityStrategy() != null;
+                return agentStrategy != null;
             }
 
             @Override
@@ -273,7 +282,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
             @Override
             public SshIdentityStrategy getSshIdentityStrategy() {
-                return agentStrategy != null ? agentStrategy.getSshIdentityStrategy() : null;
+                return agentStrategy.getSshIdentityStrategy();
             }
         };
     }

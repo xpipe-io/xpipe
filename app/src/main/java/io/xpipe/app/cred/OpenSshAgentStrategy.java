@@ -39,16 +39,12 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                 .nameAndDescription("agentSocket")
                 .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
                 .hide(OsType.ofLocal() == OsType.WINDOWS)
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new OpenSshAgentStrategy(forward.get(), publicKey.get());

@@ -23,12 +23,12 @@ public interface PasswordManager {
         l.add(OnePasswordManager.class);
         l.add(KeePassXcPasswordManager.class);
         l.add(BitwardenPasswordManager.class);
-        l.add(DashlanePasswordManager.class);
+        l.add(KeeperPasswordManager.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
             l.add(EnpassPasswordManager.class);
         }
-        l.add(KeeperPasswordManager.class);
+        l.add(DashlanePasswordManager.class);
         l.add(PsonoPasswordManager.class);
         l.add(PassboltPasswordManager.class);
         if (OsType.ofLocal() == OsType.WINDOWS) {

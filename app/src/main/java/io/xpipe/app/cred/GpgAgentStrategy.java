@@ -36,11 +36,11 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
-                .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
                 .addComp(
                         new TextFieldComp(publicKey)
                                 .apply(struc -> struc.setPromptText(

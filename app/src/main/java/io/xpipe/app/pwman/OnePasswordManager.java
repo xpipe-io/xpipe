@@ -1,29 +1,68 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.application.Platform;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Insets;
+import javafx.scene.layout.Region;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.jackson.Jacksonized;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 @JsonTypeName("onePassword")
+@Builder
+@Jacksonized
+@Getter
 public class OnePasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+        return PasswordManagerKeyStrategy.of(true, false, agentStrategy);
     }
 
     private static ShellControl SHELL;
+    private final PasswordManagerAgentStrategy agentStrategy;
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<OnePasswordManager> p) {
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
+
+        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(List.of(PasswordManagerAgentStrategy.Agent.class))
+                .property(agentStrategy)
+                .build();
+
+        return new OptionsBuilder()
+                .nameAndDescription("passwordManagerAgentStrategy")
+                .sub(agentStrategyChoice.build(), agentStrategy)
+                .nonNull()
+                .bind(() -> {
+                    return OnePasswordManager.builder().agentStrategy(agentStrategy.getValue()).build();
+                }, p);
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {

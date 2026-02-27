@@ -1,13 +1,11 @@
 package io.xpipe.app.util;
 
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.HostAddress;
 import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.process.ShellDialects;
 import io.xpipe.app.process.ShellScript;
-import io.xpipe.app.pwman.KeePassXcAssociationKey;
-import io.xpipe.app.pwman.KeePassXcPasswordManager;
-import io.xpipe.app.pwman.KeeperPasswordManager;
-import io.xpipe.app.pwman.PasswordManager;
+import io.xpipe.app.pwman.*;
 import io.xpipe.app.rdp.ExternalRdpClient;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.spice.ExternalSpiceClient;
@@ -80,6 +78,8 @@ public class AppJacksonModule extends SimpleModule {
             context.registerSubtypes(new NamedType(t.getClass()));
         }
 
+        context.registerSubtypes(SshIdentityStrategy.getClasses());
+        context.registerSubtypes(PasswordManagerAgentStrategy.getClasses());
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());

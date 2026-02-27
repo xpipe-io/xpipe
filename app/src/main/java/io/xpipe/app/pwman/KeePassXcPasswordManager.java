@@ -3,9 +3,11 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
@@ -14,6 +16,7 @@ import io.xpipe.core.OsType;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -38,14 +41,42 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcProxyClient client;
 
     private final List<KeePassXcAssociationKey> associationKeys;
+    private final PasswordManagerAgentStrategy agentStrategy;
 
     @Override
     public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+        return new PasswordManagerKeyStrategy() {
+            @Override
+            public boolean supportsInlineSshKeys() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsAgent() {
+                return agentStrategy != null;
+            }
+
+            @Override
+            public boolean supportsJoinedEntries() {
+                return false;
+            }
+
+            @Override
+            public SshIdentityStrategy getSshIdentityStrategy() {
+                return agentStrategy.getSshIdentityStrategy();
+            }
+        };
     }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
+        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(List.of(PasswordManagerAgentStrategy.KeePassXcOpenSshAgent.class, PasswordManagerAgentStrategy.KeePassXcPageant.class))
+                .property(agentStrategy)
+                .build();
+
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
         p.subscribe(keePassXcManager -> {
             DerivedObservableList.wrap(prop, true)
@@ -83,9 +114,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 }))
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
+                .nameAndDescription("passwordManagerAgentStrategy")
+                .sub(agentStrategyChoice.build(), agentStrategy)
                 .bind(
                         () -> {
-                            return new KeePassXcPasswordManager(prop);
+                            return new KeePassXcPasswordManager(prop, agentStrategy.getValue());
                         },
                         p);
     }

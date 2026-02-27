@@ -11,7 +11,6 @@ import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.ArrayList;
@@ -19,26 +18,15 @@ import java.util.List;
 import java.util.Optional;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = NoIdentityStrategy.class),
-    @JsonSubTypes.Type(value = KeyFileStrategy.class),
-    @JsonSubTypes.Type(value = InPlaceKeyStrategy.class),
-    @JsonSubTypes.Type(value = OpenSshAgentStrategy.class),
-    @JsonSubTypes.Type(value = PageantStrategy.class),
-    @JsonSubTypes.Type(value = CustomAgentStrategy.class),
-    @JsonSubTypes.Type(value = GpgAgentStrategy.class),
-    @JsonSubTypes.Type(value = YubikeyPivStrategy.class),
-    @JsonSubTypes.Type(value = CustomPkcs11LibraryStrategy.class),
-    @JsonSubTypes.Type(value = OtherExternalAgentStrategy.class)
-})
 public interface SshIdentityStrategy {
 
-    static List<Class<?>> getSubclasses() {
+    static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
         l.add(NoIdentityStrategy.class);
         l.add(InPlaceKeyStrategy.class);
         l.add(KeyFileStrategy.class);
         l.add(OpenSshAgentStrategy.class);
+        l.add(PasswordManagerAgentStrategy.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(CustomAgentStrategy.class);
         }

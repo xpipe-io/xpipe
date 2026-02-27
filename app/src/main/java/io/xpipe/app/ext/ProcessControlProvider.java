@@ -10,7 +10,6 @@ import io.xpipe.app.process.ShellDialect;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.vnc.VncBaseStore;
-import io.xpipe.core.FilePath;
 import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
@@ -80,5 +79,4 @@ public abstract class ProcessControlProvider {
 
     public abstract void pullRepository(Path target) throws Exception;
 
-    public abstract void checkSshAgent(ShellControl sc, FilePath agent) throws Exception;
 }

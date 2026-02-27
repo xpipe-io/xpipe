@@ -39,16 +39,12 @@ public class PageantStrategy implements SshIdentityStrategy {
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
+                .nameAndDescription("publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
-                .nameAndDescription("publicKey")
-                .addComp(
-                        new TextFieldComp(publicKey)
-                                .apply(struc -> struc.setPromptText(
-                                        "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== Your Comment")),
-                        publicKey)
                 .bind(
                         () -> {
                             return new PageantStrategy(forward.get(), publicKey.get());
@@ -92,6 +88,9 @@ public class PageantStrategy implements SshIdentityStrategy {
                 throw ErrorEventFactory.expected(new IllegalStateException(
                         "Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
             }
+        } else if (parent.isLocal()) {
+            // Check if it exists
+            getPageantWindowsPipe();
         }
     }
 

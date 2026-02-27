@@ -41,8 +41,10 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+        return PasswordManagerKeyStrategy.of(true, true, agentStrategy);
     }
+
+    private final PasswordManagerAgentStrategy agentStrategy;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public interface KeeperAuth {
@@ -402,6 +404,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
         var mfa = new SimpleObjectProperty<>(p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
 
         var choice = OptionsChoiceBuilder.builder()
@@ -409,10 +412,19 @@ public class KeeperPasswordManager implements PasswordManager {
                 .available(KeeperAuth.getClasses())
                 .property(mfa)
                 .build();
+        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(List.of(PasswordManagerAgentStrategy.Agent.class))
+                .property(agentStrategy)
+                .build();
+
 
         return new OptionsBuilder()
                 .nameAndDescription("keeper2fa")
                 .sub(choice.build(), mfa)
+                .nameAndDescription("passwordManagerAgentStrategy")
+                .sub(agentStrategyChoice.build(), agentStrategy)
+                .nonNull()
                 .bind(
                         () -> {
                             return KeeperPasswordManager.builder()
