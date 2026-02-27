@@ -34,6 +34,11 @@ public class PasswordManagerCommand implements PasswordManager {
     private static ShellControl SHELL;
     ShellScript script;
 
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
+
     @SuppressWarnings("unused")
     static OptionsBuilder createOptions(Property<PasswordManagerCommand> property) {
         var template = new SimpleObjectProperty<PasswordManagerCommandTemplate>();
@@ -77,7 +82,7 @@ public class PasswordManagerCommand implements PasswordManager {
         return SHELL;
     }
 
-    public static SecretValue retrieveWithCommand(String cmd) {
+    public static String retrieveWithCommand(String cmd) {
         try (var cc = getOrStartShell().command(cmd).start()) {
             var out = cc.readStdoutOrThrow();
 
@@ -89,7 +94,7 @@ public class PasswordManagerCommand implements PasswordManager {
                         .orElse("");
             }
 
-            return InPlaceSecretValue.of(out);
+            return out;
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable("Unable to retrieve password with command " + cmd, ex)
                     .expected()
@@ -99,14 +104,14 @@ public class PasswordManagerCommand implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public Result query(String key) {
         if (script == null || script.getValue().isBlank()) {
             return null;
         }
 
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         var secret = retrieveWithCommand(cmd);
-        return new CredentialResult(null, secret);
+        return new Result(Credentials.of(null, secret), null);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -30,6 +31,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,11 @@ public class EnpassPasswordManager implements PasswordManager {
     private static final UUID MASTER_PASSWORD_UUID = UUID.randomUUID();
     private static ShellControl SHELL;
     private final FilePath vaultPath;
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -91,7 +98,7 @@ public class EnpassPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Enpass CLI", "enpass-cli");
         } catch (Exception e) {
@@ -159,10 +166,9 @@ public class EnpassPasswordManager implements PasswordManager {
                             "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
                 }
 
-                var login = json.get(0).required("login").asText();
-                var secret = json.get(0).required("password").asText();
-                return new CredentialResult(
-                        !login.isEmpty() ? login : null, !secret.isEmpty() ? InPlaceSecretValue.of(secret) : null);
+                var login = Optional.ofNullable(json.get(0).get("login")).map(JsonNode::textValue).orElse(null);
+                var secret = Optional.ofNullable(json.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+                return new Result(Credentials.of(login, secret), null);
             }
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

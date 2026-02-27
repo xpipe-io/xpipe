@@ -39,6 +39,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     private final List<KeePassXcAssociationKey> associationKeys;
 
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
@@ -228,7 +233,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
     }
 
     @Override
-    public CredentialResult retrieveCredentials(String key) {
+    public Result query(String key) {
         try {
             var hasScheme = Pattern.compile("^\\w+://").matcher(key).find();
             var fixedKey = hasScheme ? key : "https://" + key;
@@ -241,7 +246,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                             .getAssociationKeys()
                     : associationKeys;
             var credentials = client.getCredentials(effectiveKeys, fixedKey);
-            return credentials;
+            return new Result(credentials, null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

@@ -1,10 +1,12 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.TextFieldComp;
-import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
+import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -14,6 +16,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.sun.jna.Memory;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinBase;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -21,24 +26,19 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.ArrayList;
 import java.util.List;
 
-@JsonTypeName("sshAgent")
+@JsonTypeName("pageant")
 @Value
 @Jacksonized
 @Builder
-public class OpenSshAgentStrategy implements SshIdentityStrategy {
+public class PageantStrategy implements SshIdentityStrategy {
 
     @SuppressWarnings("unused")
-    public static OptionsBuilder createOptions(
-            Property<OpenSshAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+    public static OptionsBuilder createOptions(Property<PageantStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var publicKey =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
-                .nameAndDescription("agentSocket")
-                .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
-                .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -51,9 +51,28 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                         publicKey)
                 .bind(
                         () -> {
-                            return new OpenSshAgentStrategy(forward.get(), publicKey.get());
+                            return new PageantStrategy(forward.get(), publicKey.get());
                         },
                         p);
+    }
+
+    private static Boolean supported;
+
+    public static boolean isSupported() {
+        if (supported != null) {
+            return supported;
+        }
+
+        if (OsType.ofLocal() == OsType.WINDOWS) {
+            return true;
+        } else {
+            try {
+                var found = LocalShell.getShell().view().findProgram("pageant").isPresent();
+                return (supported = found);
+            } catch (Exception ex) {
+                return (supported = false);
+            }
+        }
     }
 
     boolean forwardAgent;
@@ -61,25 +80,27 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
 
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
-        if (parent.isLocal()) {
-            SshIdentityStateManager.prepareLocalOpenSshAgent(
-                    parent, AppPrefs.get().defaultSshAgentSocket().getValue());
+        if (parent.getOsType() != OsType.WINDOWS) {
+            var out = parent.executeSimpleStringCommand("pageant -l");
+            if (out.isBlank()) {
+                throw ErrorEventFactory.expected(
+                        new IllegalStateException("Pageant is not running or has no identities"));
+            }
+
+            var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
+            if (socket == null || !socket.toString().contains("pageant")) {
+                throw ErrorEventFactory.expected(new IllegalStateException(
+                        "Pageant is not running as the primary agent via the $SSH_AUTH_SOCK variable."));
+            }
         }
     }
 
     @Override
     public void buildCommand(CommandBuilder builder) {}
 
-    private String getIdentityAgent(ShellControl sc) throws Exception {
-        if (sc.getOsType() == OsType.WINDOWS) {
-            return null;
-        }
-
-        if (AppPrefs.get() != null) {
-            var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
-            if (socket != null) {
-                return socket.resolveTildeHome(sc.view().userHome()).toString();
-            }
+    private String getIdentityAgent(ShellControl sc) {
+        if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
+            return getPageantWindowsPipe();
         }
 
         return null;
@@ -100,5 +121,19 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
         }
 
         return l;
+    }
+
+    private String getPageantWindowsPipe() {
+        Memory p = new Memory(WinBase.WIN32_FIND_DATA.sizeOf());
+        var r = Kernel32.INSTANCE.FindFirstFile("\\\\.\\pipe\\*pageant." + AppSystemInfo.ofCurrent().getUser() + "*", p);
+        if (r == WinBase.INVALID_HANDLE_VALUE) {
+            throw ErrorEventFactory.expected(new IllegalStateException("Pageant is not running"));
+        }
+
+        WinBase.WIN32_FIND_DATA fd = new WinBase.WIN32_FIND_DATA(p);
+        Kernel32.INSTANCE.FindClose(r);
+
+        var file = "\\\\.\\pipe\\" + fd.getFileName();
+        return file;
     }
 }

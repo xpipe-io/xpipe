@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -11,6 +12,8 @@ import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import java.util.Optional;
 
 @JsonTypeName("dashlane")
 public class DashlanePasswordManager implements PasswordManager {
@@ -26,7 +29,7 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Dashlane CLI", "dcli");
         } catch (Exception e) {
@@ -58,11 +61,9 @@ public class DashlanePasswordManager implements PasswordManager {
                     .addLiteral(key));
             var out = cmd.sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(out);
-            var login = tree.get("login");
-            var password = tree.get("password");
-            return new CredentialResult(
-                    login != null ? login.asText() : null,
-                    password != null ? InPlaceSecretValue.of(password.asText()) : null);
+            var login = Optional.ofNullable(tree.get("login")).map(JsonNode::textValue).orElse(null);
+            var password = Optional.ofNullable(tree.get("password")).map(JsonNode::textValue).orElse(null);
+            return new Result(Credentials.of(login, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
@@ -77,5 +78,10 @@ public class DashlanePasswordManager implements PasswordManager {
     @Override
     public String getWebsite() {
         return "https://www.dashlane.com/";
+    }
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
     }
 }

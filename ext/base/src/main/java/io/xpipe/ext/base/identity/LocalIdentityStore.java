@@ -1,8 +1,9 @@
 package io.xpipe.ext.base.identity;
 
+import io.xpipe.app.cred.UsernameStrategy;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretRetrievalStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.EqualsAndHashCode;

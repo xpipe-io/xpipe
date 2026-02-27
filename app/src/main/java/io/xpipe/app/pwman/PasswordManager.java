@@ -1,10 +1,15 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
+import lombok.experimental.FieldDefaults;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -33,18 +38,56 @@ public interface PasswordManager {
         return l;
     }
 
-    CredentialResult retrieveCredentials(String key);
+    Result query(String key);
 
     String getKeyPlaceholder();
 
     String getWebsite();
+
+    PasswordManagerKeyStrategy getKeyStrategy();
 
     default Duration getCacheDuration() {
         return Duration.ofSeconds(30);
     }
 
     @Value
-    class CredentialResult {
+    class Result {
+
+        Credentials credentials;
+        SshKey sshKey;
+    }
+
+    @Getter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class SshKey {
+
+        public static SshKey of(String fingerprint, String publicKey, String privateKey) {
+            if (fingerprint == null && publicKey == null && privateKey == null) {
+                return null;
+            }
+
+            return new SshKey(fingerprint, publicKey, privateKey != null ? InPlaceSecretValue.of(privateKey) : null);
+        }
+
+        String fingerprint;
+        String publicKey;
+        SecretValue privateKey;
+    }
+
+    @Getter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class Credentials {
+
+        public static Credentials of(String username, String password) {
+            if (username == null && password == null) {
+                return null;
+            }
+
+            return new Credentials(username != null && !username.isEmpty() ? username : null,
+                    password != null && !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
+        }
 
         String username;
         SecretValue password;

@@ -1,7 +1,7 @@
 package io.xpipe.ext.base.identity;
 
 import io.xpipe.app.secret.SecretNoneStrategy;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
+import io.xpipe.app.cred.NoIdentityStrategy;
 
 public class IdentitySummary {
 

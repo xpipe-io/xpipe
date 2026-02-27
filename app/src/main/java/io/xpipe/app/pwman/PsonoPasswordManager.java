@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.base.SecretFieldComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
@@ -22,6 +23,8 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.Optional;
+
 @Getter
 @Builder
 @ToString
@@ -33,6 +36,11 @@ public class PsonoPasswordManager implements PasswordManager {
     private final InPlaceSecretValue apiKey;
     private final InPlaceSecretValue apiSecretKey;
     private final String serverUrl;
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PsonoPasswordManager> p) {
@@ -72,7 +80,7 @@ public class PsonoPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         if (serverUrl == null || apiKey == null || apiSecretKey == null) {
             return null;
         }
@@ -102,11 +110,9 @@ public class PsonoPasswordManager implements PasswordManager {
                             .add("json"))
                     .sensitive();
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
-            var username = r.required("username");
-            var password = r.required("password");
-            return new CredentialResult(
-                    username.isNull() ? null : username.asText(),
-                    password.isNull() ? null : InPlaceSecretValue.of(password.asText()));
+            var username = Optional.of(r.required("username")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);
+            var password = Optional.of(r.required("password")).filter(n -> !n.isNull()).map(JsonNode::textValue).orElse(null);;
+            return new Result(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

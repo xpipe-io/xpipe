@@ -275,7 +275,7 @@ public class KeePassXcProxyClient {
         throw new IllegalStateException("Login query failed for an unknown reason");
     }
 
-    public PasswordManager.CredentialResult getCredentials(List<KeePassXcAssociationKey> associationKeys, String key)
+    public PasswordManager.Credentials getCredentials(List<KeePassXcAssociationKey> associationKeys, String key)
             throws IOException {
         var message = getLoginsMessage(associationKeys, key);
         var tree = JacksonMapper.getDefault().readTree(message);
@@ -295,11 +295,9 @@ public class KeePassXcProxyClient {
         }
 
         var object = (ObjectNode) tree.required("entries").get(0);
-        var usernameField = object.required("login").asText();
-        var passwordField = object.required("password").asText();
-        return new PasswordManager.CredentialResult(
-                usernameField.isEmpty() ? null : usernameField,
-                passwordField.isEmpty() ? null : InPlaceSecretValue.of(passwordField));
+        var login = Optional.ofNullable(object.get("login")).map(JsonNode::textValue).orElse(null);
+        var secret = Optional.ofNullable(object.get("password")).map(JsonNode::textValue).orElse(null);
+        return PasswordManager.Credentials.of(login, secret);
     }
 
     /**

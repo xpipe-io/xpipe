@@ -4,9 +4,11 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
+import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
@@ -17,14 +19,17 @@ import io.xpipe.core.OsType;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @JsonTypeName("bitwarden")
@@ -32,6 +37,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
     private static boolean copied;
+    private PasswordManagerAgentStrategy agentStrategy;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -52,6 +58,8 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<BitwardenPasswordManager> p) {
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().agentStrategy);
+
         AtomicReference<Region> button = new AtomicReference<>();
         var testButton = new ButtonComp(AppI18n.observable("sync"), new FontIcon("mdi2r-refresh"), () -> {
             button.get().setDisable(true);
@@ -65,8 +73,17 @@ public class BitwardenPasswordManager implements PasswordManager {
         testButton.apply(struc -> button.set(struc));
         testButton.padding(new Insets(6, 10, 6, 6));
 
+        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+                .allowNull(true)
+                .available(PasswordManagerAgentStrategy.getClasses())
+                .property(agentStrategy)
+                .build();
+
         return new OptionsBuilder()
-                .addComp(testButton);
+                .addComp(testButton)
+                .nameAndDescription("passwordManagerAgentStrategy")
+                .sub(agentStrategyChoice.build(), agentStrategy)
+                .nonNull();
     }
 
 
@@ -149,7 +166,7 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Bitwarden CLI", "bw");
         } catch (Exception e) {
@@ -172,15 +189,29 @@ public class BitwardenPasswordManager implements PasswordManager {
                     CommandBuilder.of().add("bw", "get", "item").addLiteral(key).add("--nointeraction");
             var json = JacksonMapper.getDefault()
                     .readTree(sc.command(cmd).sensitive().readStdoutOrThrow());
-            var login = json.get("login");
-            if (login == null) {
-                throw ErrorEventFactory.expected(
-                        new IllegalArgumentException("No usable login found for item name " + key));
+
+            SshKey credentialSshKey;
+            var sshKey = json.get("sshKey");
+            if (sshKey != null) {
+                var privateKey = Optional.ofNullable(sshKey.get("privateKey")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                var publicKey = Optional.ofNullable(sshKey.get("publicKey")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                var fingerprint = Optional.ofNullable(sshKey.get("fingerprint")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                credentialSshKey = SshKey.of(fingerprint, publicKey, privateKey);
+            } else {
+                credentialSshKey = null;
             }
 
-            var user = login.required("username");
-            var password = login.required("password");
-            return new CredentialResult(user.isNull() ? null : user.asText(), InPlaceSecretValue.of(password.asText()));
+            Credentials creds;
+            var login = json.get("login");
+            if (login != null) {
+                var username = Optional.ofNullable(login.get("username")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                var password = Optional.ofNullable(login.get("password")).map(jsonNode -> jsonNode.textValue()).orElse(null);
+                creds = Credentials.of(username, password);
+            } else {
+                creds = null;
+            }
+
+            return new Result(creds, credentialSshKey);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;
@@ -220,5 +251,30 @@ public class BitwardenPasswordManager implements PasswordManager {
     @Override
     public String getWebsite() {
         return "https://bitwarden.com/";
+    }
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return new PasswordManagerKeyStrategy() {
+            @Override
+            public boolean supportsInlineSshKeys() {
+                return agentStrategy != null && agentStrategy.getSshIdentityStrategy() == null;
+            }
+
+            @Override
+            public boolean supportsAgent() {
+                return agentStrategy != null && agentStrategy.getSshIdentityStrategy() != null;
+            }
+
+            @Override
+            public boolean supportsJoinedEntries() {
+                return false;
+            }
+
+            @Override
+            public SshIdentityStrategy getSshIdentityStrategy() {
+                return agentStrategy != null ? agentStrategy.getSshIdentityStrategy() : null;
+            }
+        };
     }
 }

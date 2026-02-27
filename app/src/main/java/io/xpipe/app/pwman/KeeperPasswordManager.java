@@ -29,11 +29,7 @@ import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.regex.Pattern;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JsonTypeName("keeper")
@@ -42,6 +38,11 @@ import java.util.stream.Collectors;
 @ToString
 @Jacksonized
 public class KeeperPasswordManager implements PasswordManager {
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public interface KeeperAuth {
@@ -422,7 +423,7 @@ public class KeeperPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         // The copy UID button copies the whole URL in the Keeper UI. Why? ...
         key = key.replaceFirst("https://\\w+\\.\\w+/vault/#detail/", "");
 
@@ -579,32 +580,44 @@ public class KeeperPasswordManager implements PasswordManager {
                     return null;
                 }
 
-                return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
+                var creds = Credentials.of(login, password);
+                return new Result(creds, null);
             }
 
-            String login = null;
-            String password = null;
-            for (JsonNode field : fields) {
-                var type = field.required("type").asText();
-                if (type.equals("login")) {
-                    var v = field.required("value");
-                    if (v.size() > 0) {
-                        login = v.get(0).asText();
-                    }
-                }
-                if (type.equals("password")) {
-                    var v = field.required("value");
-                    if (v.size() > 0) {
-                        password = v.get(0).asText();
-                    }
-                }
+            var username = Optional.ofNullable(getValue(tree, "login")).map(n -> n.size() > 0 ? n.get(0).textValue() : null).orElse(null);
+            var password = Optional.ofNullable(getValue(tree, "password")).map(n -> n.size() > 0 ? n.get(0).textValue() : null).orElse(null);
+            var creds = Credentials.of(username, password);
+
+            var keyPairNode = getValue(tree, "keyPair");
+            SshKey sshKey = null;
+            if (keyPairNode != null && keyPairNode.size() > 0) {
+                var publicKey = Optional.ofNullable(keyPairNode.get(0).get("publicKey")).map(JsonNode::textValue).orElse(null);
+                var privateKey = Optional.ofNullable(keyPairNode.get(0).get("privateKey")).map(JsonNode::textValue).orElse(null);
+                sshKey = SshKey.of(null, publicKey, privateKey);
             }
 
-            return new CredentialResult(login, password != null ? InPlaceSecretValue.of(password) : null);
+            return new Result(creds, sshKey);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;
         }
+    }
+
+    private JsonNode getValue(JsonNode node, String name) {
+        var fields = node.get("fields");
+        if (fields == null || !fields.isArray()) {
+            return null;
+        }
+
+        for (JsonNode field : fields) {
+            var id = field.get("type");
+            if (id != null && id.textValue().equals(name)) {
+                var value = field.get("value");
+                return value;
+            }
+        }
+
+        return null;
     }
 
     @Override

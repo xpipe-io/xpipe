@@ -45,6 +45,11 @@ public class PassboltPasswordManager implements PasswordManager {
     private final InPlaceSecretValue passphrase;
     private final Path privateKey;
 
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PassboltPasswordManager> p) {
         var serverUrl = new SimpleStringProperty(p.getValue().getServerUrl());
@@ -123,7 +128,7 @@ public class PassboltPasswordManager implements PasswordManager {
     private boolean mfaTotpInteractiveConfigured;
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("Passbolt CLI", "passbolt");
         } catch (Exception e) {
@@ -174,8 +179,7 @@ public class PassboltPasswordManager implements PasswordManager {
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username").asText();
             var password = r.required("password").asText();
-            return new CredentialResult(
-                    username.isEmpty() ? null : username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
+            return new Result(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

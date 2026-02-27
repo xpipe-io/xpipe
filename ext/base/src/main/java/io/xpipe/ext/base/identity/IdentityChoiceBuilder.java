@@ -16,8 +16,8 @@ import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStorageUserHandler;
 import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.*;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategyChoiceConfig;
+import io.xpipe.app.cred.SshIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategyChoiceConfig;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;

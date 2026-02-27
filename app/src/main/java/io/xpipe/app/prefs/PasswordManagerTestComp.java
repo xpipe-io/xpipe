@@ -21,6 +21,7 @@ import atlantafx.base.theme.Styles;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -96,7 +97,7 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 testPasswordManagerResult.set("    " + AppI18n.get("querying"));
             });
 
-            var r = prefs.passwordManager.getValue().retrieveCredentials(key);
+            var r = prefs.passwordManager.getValue().query(key);
             if (r == null) {
                 Platform.runLater(() -> {
                     testPasswordManagerResult.set(null);
@@ -104,10 +105,22 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
                 return;
             }
 
-            var pass = r.getPassword() != null ? r.getPassword().getSecretValue() : "?";
-            var format = (r.getUsername() != null ? r.getUsername() + " [" + pass + "]" : pass);
+            List<String> elements = new ArrayList<>();
+            if (r.getCredentials() != null && r.getCredentials().getUsername() != null) {
+                elements.add(r.getCredentials().getUsername());
+            }
+
+            if (r.getCredentials() != null && r.getCredentials().getPassword() != null) {
+                elements.add("[" + r.getCredentials().getPassword() + "]");
+            }
+
+            if (r.getSshKey() != null) {
+                elements.add("[" + AppI18n.get("sshKey") + "]");
+            }
+
+            var formatted = String.join(", ", elements);
             Platform.runLater(() -> {
-                testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", format));
+                testPasswordManagerResult.set("    " + AppI18n.get("retrievedPassword", formatted));
             });
             GlobalTimer.delay(
                     () -> {

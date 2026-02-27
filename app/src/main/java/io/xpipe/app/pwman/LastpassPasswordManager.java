@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.CommandBuilder;
@@ -14,9 +15,15 @@ import io.xpipe.core.JacksonMapper;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @JsonTypeName("lastpass")
 public class LastpassPasswordManager implements PasswordManager {
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
 
     private static ShellControl SHELL;
 
@@ -29,7 +36,7 @@ public class LastpassPasswordManager implements PasswordManager {
     }
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("LastPass CLI", "lpass");
         } catch (Exception e) {
@@ -80,11 +87,9 @@ public class LastpassPasswordManager implements PasswordManager {
                         "Ambiguous item name, multiple password entries match: " + String.join(", ", matches)));
             }
 
-            var username = tree.get(0).required("username").asText();
-            var password = tree.get(0).required("password").asText();
-            return new CredentialResult(
-                    !username.isEmpty() ? username : null,
-                    !password.isEmpty() ? InPlaceSecretValue.of(password) : null);
+            var login = Optional.ofNullable(tree.get(0).get("username")).map(JsonNode::textValue).orElse(null);
+            var secret = Optional.ofNullable(tree.get(0).get("password")).map(JsonNode::textValue).orElse(null);
+            return new Result(Credentials.of(login, secret), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

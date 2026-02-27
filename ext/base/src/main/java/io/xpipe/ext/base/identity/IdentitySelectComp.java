@@ -17,8 +17,8 @@ import io.xpipe.app.secret.SecretRetrievalStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
-import io.xpipe.ext.base.identity.ssh.NoIdentityStrategy;
-import io.xpipe.ext.base.identity.ssh.SshIdentityStrategy;
+import io.xpipe.app.cred.NoIdentityStrategy;
+import io.xpipe.app.cred.SshIdentityStrategy;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;

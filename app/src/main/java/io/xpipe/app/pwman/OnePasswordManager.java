@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
@@ -8,7 +9,6 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -17,6 +17,11 @@ import java.util.regex.Pattern;
 
 @JsonTypeName("onePassword")
 public class OnePasswordManager implements PasswordManager {
+
+    @Override
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
 
     private static ShellControl SHELL;
 
@@ -28,8 +33,25 @@ public class OnePasswordManager implements PasswordManager {
         return SHELL;
     }
 
+    private String getValue(JsonNode node, String name) {
+        var fields = node.get("fields");
+        if (fields == null || !fields.isArray()) {
+            return null;
+        }
+
+        for (JsonNode field : fields) {
+            var id = field.get("id");
+            if (id != null && id.textValue().equals(name)) {
+                var value = field.get("value");
+                return value != null ? value.textValue() : null;
+            }
+        }
+
+        return null;
+    }
+
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public synchronized Result query(String key) {
         try {
             CommandSupport.isInLocalPathOrThrow("1Password CLI", "op");
         } catch (Exception e) {
@@ -55,22 +77,25 @@ public class OnePasswordManager implements PasswordManager {
             var b = CommandBuilder.of()
                     .add("op", "item", "get")
                     .addLiteral(name)
-                    .add("--format", "json", "--fields", "username,password");
+                    .add("--format", "json");
             if (vault != null) {
                 b.add("--vault").addLiteral(vault);
             }
 
             var r = getOrStartShell().command(b).sensitive().readStdoutOrThrow();
             var tree = JacksonMapper.getDefault().readTree(r);
-            if (!tree.isArray() || tree.size() != 2) {
-                return null;
-            }
 
-            var username = tree.get(0).get("value");
-            var password = tree.get(1).get("value");
-            return new CredentialResult(
-                    username != null ? username.asText() : null,
-                    password != null ? InPlaceSecretValue.of(password.asText()) : null);
+
+            var username = getValue(tree, "username");
+            var password = getValue(tree, "password");
+            var creds = Credentials.of(username, password);
+
+            var fingerprint = getValue(tree, "fingerprint");
+            var publicKey = getValue(tree, "public_key");
+            var privateKey = getValue(tree, "private_key");
+            var sshKey = SshKey.of(fingerprint, publicKey, privateKey);
+
+            return new Result(creds, sshKey);
         } catch (Exception e) {
             var event = ErrorEventFactory.fromThrowable(e);
             if (!key.startsWith("op://")

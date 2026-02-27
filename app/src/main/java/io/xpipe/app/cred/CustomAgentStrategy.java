@@ -1,10 +1,9 @@
-package io.xpipe.ext.base.identity.ssh;
+package io.xpipe.app.cred;
 
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.platform.BindingsHelper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;

@@ -14,7 +14,12 @@ public class WindowsCredentialManager implements PasswordManager {
     private static boolean loaded = false;
 
     @Override
-    public synchronized CredentialResult retrieveCredentials(String key) {
+    public PasswordManagerKeyStrategy getKeyStrategy() {
+        return PasswordManagerKeyStrategy.none();
+    }
+
+    @Override
+    public synchronized Result query(String key) {
         try {
             if (!loaded) {
                 loaded = true;
@@ -106,7 +111,7 @@ public class WindowsCredentialManager implements PasswordManager {
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();
-            return new CredentialResult(username, password.isEmpty() ? null : InPlaceSecretValue.of(password));
+            return new Result(Credentials.of(username, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;
