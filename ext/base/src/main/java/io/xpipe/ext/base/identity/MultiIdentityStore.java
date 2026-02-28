@@ -30,10 +30,12 @@ import java.util.UUID;
 @ToString(callSuper = true)
 public class MultiIdentityStore extends IdentityStore {
 
-    List<DataStoreEntryRef<IdentityStore>> identities;
+    List<UUID> identities;
 
     public List<DataStoreEntryRef<IdentityStore>> getAvailableIdentities() {
-        return identities.stream().filter(ref -> ref != null && ref.get().getValidity().isUsable()).toList();
+        return identities.stream().map(uuid -> DataStorage.get().getStoreEntryIfPresent(uuid)).flatMap(Optional::stream)
+                .map(e -> e.<IdentityStore>ref())
+                .filter(ref -> ref != null && ref.get().getValidity().isUsable()).toList();
     }
 
     public Optional<DataStoreEntryRef<IdentityStore>> getSelected() {

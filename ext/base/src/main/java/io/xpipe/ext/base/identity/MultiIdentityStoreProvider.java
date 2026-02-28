@@ -15,6 +15,7 @@ import io.xpipe.app.secret.SecretStrategyChoiceConfig;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.app.util.DocumentationLink;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleListProperty;
@@ -23,6 +24,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,17 +34,23 @@ public class MultiIdentityStoreProvider extends IdentityStoreProvider {
     public GuiDialog guiDialog(DataStoreEntry entry, Property<DataStore> store) {
         MultiIdentityStore st = (MultiIdentityStore) store.getValue();
 
-        var identities = new SimpleListProperty<>(FXCollections.observableArrayList(st.getIdentities()));
+        var identities = new SimpleListProperty<>(FXCollections.observableArrayList(st.getAvailableIdentities()));
 
         return new OptionsBuilder()
                 .nameAndDescription("multiIdentityList")
                 .addComp(new StoreListChoiceComp<>(identities, IdentityStore.class,
                         ref -> !(ref.getStore() instanceof MultiIdentityStore) && !identities.contains(ref),
-                        StoreViewState.get().getAllIdentitiesCategory()))
+                        StoreViewState.get().getAllIdentitiesCategory()), identities)
                 .bind(
                         () -> {
+                            var uuids = new LinkedHashSet<UUID>();
+                            for (DataStoreEntryRef<IdentityStore> identity : identities) {
+                                uuids.add(identity.get().getUuid());
+                            }
+                            uuids.addAll(st.getIdentities());
+
                             return MultiIdentityStore.builder()
-                                    .identities(identities)
+                                    .identities(new ArrayList<>(uuids))
                                     .build();
                         },
                         store)
