@@ -39,6 +39,7 @@ open module io.xpipe.ext.base {
             AbstractHostCreationActionProvider,
             HostAddressSwitchBranchProvider,
             LocalIdentityConvertHubLeafProvider,
+            MultiIdentitySwitchBranchProvider,
             RunBackgroundScriptActionProvider,
             RunHubBatchScriptActionProvider,
             RunHubScriptActionProvider,
@@ -68,6 +69,7 @@ open module io.xpipe.ext.base {
             LocalIdentityStoreProvider,
             SyncedIdentityStoreProvider,
             PasswordManagerIdentityStoreProvider,
+            MultiIdentityStoreProvider,
             AbstractHostStoreProvider;
     provides DataStorageExtensionProvider with
             ScriptDataStorageProvider;
