@@ -33,7 +33,7 @@ public class PasswordManagerCommand implements PasswordManager {
     ShellScript script;
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 

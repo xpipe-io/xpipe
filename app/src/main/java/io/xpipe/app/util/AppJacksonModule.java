@@ -107,6 +107,7 @@ public class AppJacksonModule extends SimpleModule {
             var object = JsonNodeFactory.instance.objectNode();
             object.put("type", "keePassXc");
             object.set("associationKeys", tree);
+            object.set("keyStrategy", JacksonMapper.getDefault().valueToTree(value.getKeyStrategy()));
             jgen.writeTree(object);
         }
 
@@ -131,10 +132,14 @@ public class AppJacksonModule extends SimpleModule {
                 return null;
             }
 
+            var keyStrategyNode = tree.get("keyStrategy");
+            var keyStrategy = keyStrategyNode != null ? JacksonMapper.getDefault().treeToValue(keyStrategyNode, PasswordManagerKeyStrategy.class) : null;
+
             if (tree.has("associationKey")) {
                 var parsed = JacksonMapper.getDefault()
                         .treeToValue(tree.required("associationKey"), KeePassXcAssociationKey.class);
                 return KeePassXcPasswordManager.builder()
+                        .keyStrategy(keyStrategy)
                         .associationKeys(parsed != null ? List.of(parsed) : List.of())
                         .build();
             } else {
@@ -144,6 +149,7 @@ public class AppJacksonModule extends SimpleModule {
                 var parsed = (List<KeePassXcAssociationKey>)
                         JacksonMapper.getDefault().treeToValue(tree.required("associationKeys"), javaType);
                 return KeePassXcPasswordManager.builder()
+                        .keyStrategy(keyStrategy)
                         .associationKeys(parsed)
                         .build();
             }

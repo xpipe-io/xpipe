@@ -137,7 +137,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
             return def;
         }
 
-        var strat = r.getKeyStrategy();
+        var strat = r.getKeyConfiguration();
         if (strat == null || (!strat.supportsInlineSshKeys() && !strat.supportsAgent())) {
             return def;
         }

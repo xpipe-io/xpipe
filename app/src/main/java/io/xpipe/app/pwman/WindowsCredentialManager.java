@@ -13,7 +13,7 @@ public class WindowsCredentialManager implements PasswordManager {
     private static boolean loaded = false;
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 

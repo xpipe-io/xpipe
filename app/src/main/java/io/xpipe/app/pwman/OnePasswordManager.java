@@ -30,16 +30,16 @@ import java.util.regex.Pattern;
 public class OnePasswordManager implements PasswordManager {
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
-        return PasswordManagerKeyConfiguration.of(true, false, agentStrategy);
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.of(true, false, keyStrategy);
     }
 
     private static ShellControl SHELL;
-    private final PasswordManagerKeyStrategy agentStrategy;
+    private final PasswordManagerKeyStrategy keyStrategy;
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OnePasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
 
         var agentStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
@@ -48,10 +48,10 @@ public class OnePasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
-                .nameAndDescription("passwordManagerAgentStrategy")
+                .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(agentStrategyChoice.build(), agentStrategy)
                 .bind(() -> {
-                    return OnePasswordManager.builder().agentStrategy(agentStrategy.getValue()).build();
+                    return OnePasswordManager.builder().keyStrategy(agentStrategy.getValue()).build();
                 }, p);
     }
 

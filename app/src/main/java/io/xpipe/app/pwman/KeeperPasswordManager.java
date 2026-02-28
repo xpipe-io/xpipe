@@ -40,11 +40,11 @@ import java.util.stream.Collectors;
 public class KeeperPasswordManager implements PasswordManager {
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
-        return PasswordManagerKeyConfiguration.of(true, true, agentStrategy);
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.of(true, true, keyStrategy);
     }
 
-    private final PasswordManagerKeyStrategy agentStrategy;
+    private final PasswordManagerKeyStrategy keyStrategy;
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
     public interface KeeperAuth {
@@ -404,7 +404,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
         var mfa = new SimpleObjectProperty<>(p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
 
         var choice = OptionsChoiceBuilder.builder()
@@ -422,7 +422,7 @@ public class KeeperPasswordManager implements PasswordManager {
         return new OptionsBuilder()
                 .nameAndDescription("keeper2fa")
                 .sub(choice.build(), mfa)
-                .nameAndDescription("passwordManagerAgentStrategy")
+                .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(agentStrategyChoice.build(), agentStrategy)
                 .bind(
                         () -> {

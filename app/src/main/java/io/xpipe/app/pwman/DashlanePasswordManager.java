@@ -80,7 +80,7 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 }

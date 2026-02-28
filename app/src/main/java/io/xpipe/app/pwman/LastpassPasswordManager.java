@@ -20,7 +20,7 @@ import java.util.Optional;
 public class LastpassPasswordManager implements PasswordManager {
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 

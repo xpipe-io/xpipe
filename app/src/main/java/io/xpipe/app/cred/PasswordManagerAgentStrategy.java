@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
 import io.xpipe.app.comp.base.LabelComp;
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -46,7 +45,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
                 return AppI18n.get("passwordManagerEmpty");
             }
 
-            if (!pwman.getKeyStrategy().supportsAgent()) {
+            if (!pwman.getKeyConfiguration().supportsAgent()) {
                 return AppI18n.get("passwordManagerNoAgentSupport");
             }
 
@@ -87,7 +86,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
 
     private PasswordManagerKeyConfiguration getConfig() {
         var pwman = AppPrefs.get().passwordManager().getValue();
-        return pwman != null && pwman.getKeyStrategy() != null && pwman.getKeyStrategy().supportsAgent() ? pwman.getKeyStrategy() : null;
+        return pwman != null && pwman.getKeyConfiguration() != null && pwman.getKeyConfiguration().supportsAgent() ? pwman.getKeyConfiguration() : null;
     }
 
     @Override

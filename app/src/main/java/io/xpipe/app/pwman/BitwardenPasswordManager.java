@@ -40,7 +40,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;
     private static boolean copied;
-    private final PasswordManagerKeyStrategy agentStrategy;
+    private final PasswordManagerKeyStrategy keyStrategy;
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {
@@ -61,7 +61,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<BitwardenPasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().agentStrategy);
+        var agentStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
 
         AtomicReference<Region> button = new AtomicReference<>();
         var testButton = new ButtonComp(AppI18n.observable("sync"), new FontIcon("mdi2r-refresh"), () -> {
@@ -84,10 +84,10 @@ public class BitwardenPasswordManager implements PasswordManager {
 
         return new OptionsBuilder()
                 .addComp(testButton)
-                .nameAndDescription("passwordManagerAgentStrategy")
+                .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(agentStrategyChoice.build(), agentStrategy)
                 .bind(() -> {
-                    return BitwardenPasswordManager.builder().agentStrategy(agentStrategy.getValue()).build();
+                    return BitwardenPasswordManager.builder().keyStrategy(agentStrategy.getValue()).build();
                 }, p);
     }
 
@@ -259,7 +259,7 @@ public class BitwardenPasswordManager implements PasswordManager {
     }
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean supportsInlineSshKeys() {
@@ -268,7 +268,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
             @Override
             public boolean supportsAgent() {
-                return agentStrategy != null;
+                return keyStrategy != null;
             }
 
             @Override
@@ -278,7 +278,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
             @Override
             public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-                return agentStrategy.getSshIdentityStrategy(publicKey, forward);
+                return keyStrategy.getSshIdentityStrategy(publicKey, forward);
             }
         };
     }

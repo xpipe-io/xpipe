@@ -38,7 +38,7 @@ public class PsonoPasswordManager implements PasswordManager {
     private final String serverUrl;
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 

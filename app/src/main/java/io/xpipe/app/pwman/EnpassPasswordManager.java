@@ -46,7 +46,7 @@ public class EnpassPasswordManager implements PasswordManager {
     private final FilePath vaultPath;
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
     }
 

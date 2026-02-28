@@ -44,7 +44,7 @@ public interface PasswordManager {
 
     String getWebsite();
 
-    PasswordManagerKeyConfiguration getKeyStrategy();
+    PasswordManagerKeyConfiguration getKeyConfiguration();
 
     default Duration getCacheDuration() {
         return Duration.ofSeconds(30);

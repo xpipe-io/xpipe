@@ -41,40 +41,20 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcProxyClient client;
 
     private final List<KeePassXcAssociationKey> associationKeys;
-    private final PasswordManagerKeyStrategy agentStrategy;
+    private final PasswordManagerKeyStrategy keyStrategy;
 
     @Override
-    public PasswordManagerKeyConfiguration getKeyStrategy() {
-        return new PasswordManagerKeyConfiguration() {
-            @Override
-            public boolean supportsInlineSshKeys() {
-                return false;
-            }
-
-            @Override
-            public boolean supportsAgent() {
-                return agentStrategy != null;
-            }
-
-            @Override
-            public boolean supportsJoinedEntries() {
-                return false;
-            }
-
-            @Override
-            public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-                return agentStrategy.getSshIdentityStrategy(publicKey, forward);
-            }
-        };
+    public PasswordManagerKeyConfiguration getKeyConfiguration() {
+        return PasswordManagerKeyConfiguration.of(false, false, keyStrategy);
     }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
         var agentStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class))
-                .property(agentStrategy)
+                .property(keyStrategy)
                 .build();
 
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();
@@ -114,11 +94,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 }))
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
-                .nameAndDescription("passwordManagerAgentStrategy")
-                .sub(agentStrategyChoice.build(), agentStrategy)
+                .nameAndDescription("passwordManagerKeyStrategy")
+                .sub(agentStrategyChoice.build(), keyStrategy)
                 .bind(
                         () -> {
-                            return new KeePassXcPasswordManager(prop, agentStrategy.getValue());
+                            return new KeePassXcPasswordManager(prop, keyStrategy.getValue());
                         },
                         p);
     }
