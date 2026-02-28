@@ -8,6 +8,7 @@ import io.xpipe.app.hub.comp.StoreEntryWrapper;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.platform.Validator;
+import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.prefs.VaultAuthentication;
 import io.xpipe.app.secret.EncryptedValue;
 import io.xpipe.app.secret.SecretNoneStrategy;
@@ -29,8 +30,8 @@ import java.util.UUID;
 public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
 
     @Override
-    public DataStoreCreationCategory getCreationCategory() {
-        return DataStorage.get().supportsSync() ? DataStoreCreationCategory.IDENTITY : null;
+    public boolean allowCreation() {
+        return DataStorage.get().supportsSync();
     }
 
     @Override
@@ -75,6 +76,7 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
                 .allowKeyFileSync(true)
+                .allowPasswordAgentKeyChoice(true)
                 .perUserKeyFileCheck(() -> perUser.get())
                 .build();
 

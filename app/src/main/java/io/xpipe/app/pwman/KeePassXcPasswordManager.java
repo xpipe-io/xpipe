@@ -51,7 +51,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
-        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class))
                 .property(keyStrategy)
@@ -95,7 +95,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
                 .nameAndDescription("passwordManagerKeyStrategy")
-                .sub(agentStrategyChoice.build(), keyStrategy)
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(
                         () -> {
                             return new KeePassXcPasswordManager(prop, keyStrategy.getValue());

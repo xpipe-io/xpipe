@@ -122,7 +122,8 @@ public class StoreCreationDialog {
                 name,
                 prov,
                 base,
-                dataStoreProvider -> (category != null && category.equals(dataStoreProvider.getCreationCategory()))
+                dataStoreProvider -> (category != null && dataStoreProvider.allowCreation() &&
+                        category.equals(dataStoreProvider.getCreationCategory()))
                         || dataStoreProvider.equals(prov),
                 consumer,
                 false,

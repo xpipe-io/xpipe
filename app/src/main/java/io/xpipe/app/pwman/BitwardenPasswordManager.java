@@ -61,7 +61,7 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<BitwardenPasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
 
         AtomicReference<Region> button = new AtomicReference<>();
         var testButton = new ButtonComp(AppI18n.observable("sync"), new FontIcon("mdi2r-refresh"), () -> {
@@ -76,18 +76,18 @@ public class BitwardenPasswordManager implements PasswordManager {
         testButton.apply(struc -> button.set(struc));
         testButton.padding(new Insets(6, 10, 6, 6));
 
-        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
-                .property(agentStrategy)
+                .property(keyStrategy)
                 .build();
 
         return new OptionsBuilder()
                 .addComp(testButton)
                 .nameAndDescription("passwordManagerKeyStrategy")
-                .sub(agentStrategyChoice.build(), agentStrategy)
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(() -> {
-                    return BitwardenPasswordManager.builder().keyStrategy(agentStrategy.getValue()).build();
+                    return BitwardenPasswordManager.builder().keyStrategy(keyStrategy.getValue()).build();
                 }, p);
     }
 
@@ -260,26 +260,6 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return new PasswordManagerKeyConfiguration() {
-            @Override
-            public boolean supportsInlineSshKeys() {
-                return true;
-            }
-
-            @Override
-            public boolean supportsAgent() {
-                return keyStrategy != null;
-            }
-
-            @Override
-            public boolean supportsJoinedEntries() {
-                return false;
-            }
-
-            @Override
-            public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-                return keyStrategy.getSshIdentityStrategy(publicKey, forward);
-            }
-        };
+        return PasswordManagerKeyConfiguration.of(true, false, keyStrategy);
     }
 }

@@ -152,6 +152,7 @@ public class IdentityChoiceBuilder {
                 .allowAgentForward(allowAgentForward)
                 .allowKeyFileSync(true)
                 .perUserKeyFileCheck(() -> false)
+                .allowPasswordAgentKeyChoice(true)
                 .fileSystem(fileSystem)
                 .build();
 

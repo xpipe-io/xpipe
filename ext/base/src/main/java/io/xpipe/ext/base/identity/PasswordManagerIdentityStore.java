@@ -51,7 +51,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
         return true;
     }
 
-    private PasswordManager.Result retrieveCredentials() {
+    private PasswordManager.Result retrieve() {
         if (!checkOutdatedOrRefresh()) {
             var r = getCache("result", PasswordManager.Result.class, null);
             if (r != null) {
@@ -79,6 +79,18 @@ public class PasswordManagerIdentityStore extends IdentityStore
                     new UnsupportedOperationException("Identity " + key + " does not provide a username"));
         }
 
+        if (sshKey != null) {
+            var pwman = AppPrefs.get().passwordManager().getValue();
+            if (pwman.getKeyConfiguration().useInline() && r.getSshKey() == null) {
+                throw ErrorEventFactory.expected(
+                        new UnsupportedOperationException("Identity " + key + " does not provide an SSH key"));
+            }
+
+            if (pwman.getKeyConfiguration().useAgent()) {
+                SshAgentKeyList.validate();
+            }
+        }
+
         setCache("lastQueried", Instant.now());
         setCache("result", r);
 
@@ -87,7 +99,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
     public UsernameStrategy getUsername() {
         return new UsernameStrategy.Dynamic(() -> {
-            var r = retrieveCredentials();
+            var r = retrieve();
             var effective = r != null && r.getCredentials() != null && r.getCredentials().getUsername() != null ? r.getCredentials().getUsername() : "unknown";
             return effective;
         });
@@ -102,7 +114,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
                 return new SecretQuery() {
                     @Override
                     public SecretQueryResult query(String prompt) {
-                        var r = retrieveCredentials();
+                        var r = retrieve();
                         if (r == null || r.getCredentials() == null || r.getCredentials().getPassword() == null) {
                             return new SecretQueryResult(null, SecretQueryState.RETRIEVAL_FAILURE);
                         }
@@ -138,15 +150,15 @@ public class PasswordManagerIdentityStore extends IdentityStore
         }
 
         var strat = r.getKeyConfiguration();
-        if (strat == null || (!strat.supportsInlineSshKeys() && !strat.supportsAgent())) {
+        if (strat == null || (!strat.useInline() && !strat.useAgent())) {
             return def;
         }
 
-        if (strat.supportsInlineSshKeys() && strat.supportsJoinedEntries()) {
+        if (strat.useInline()) {
             return new SshIdentityStrategy() {
                 @Override
                 public void prepareParent(ShellControl parent) throws Exception {
-                    var r = retrieveCredentials();
+                    var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
                         return;
                     }
@@ -157,7 +169,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
                 @Override
                 public void buildCommand(CommandBuilder builder) {
-                    var r = retrieveCredentials();
+                    var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
                         return;
                     }
@@ -168,7 +180,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
                 @Override
                 public List<KeyValue> configOptions(ShellControl sc) throws Exception {
-                    var r = retrieveCredentials();
+                    var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPrivateKey() == null) {
                         return List.of();
                     }
@@ -179,7 +191,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
 
                 @Override
                 public String getPublicKey() {
-                    var r = retrieveCredentials();
+                    var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPublicKey() == null) {
                         return null;
                     }
@@ -189,17 +201,23 @@ public class PasswordManagerIdentityStore extends IdentityStore
             };
         }
 
-        var agentStrat = strat.getSshIdentityStrategy(null, false);
+        if (strat.useAgent() && sshKey != null) {
+            return sshKey;
+        }
+
         return new NoIdentityStrategy();
     }
 
     @Override
     public void checkComplete() throws Throwable {
         Validators.nonNull(key);
+        if (sshKey != null) {
+            sshKey.checkComplete();
+        }
     }
 
     @Override
     public void validate() {
-        retrieveCredentials();
+        retrieve();
     }
 }

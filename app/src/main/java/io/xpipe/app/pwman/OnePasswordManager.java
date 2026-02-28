@@ -39,19 +39,19 @@ public class OnePasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OnePasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
 
-        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
-                .property(agentStrategy)
+                .property(keyStrategy)
                 .build();
 
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerKeyStrategy")
-                .sub(agentStrategyChoice.build(), agentStrategy)
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(() -> {
-                    return OnePasswordManager.builder().keyStrategy(agentStrategy.getValue()).build();
+                    return OnePasswordManager.builder().keyStrategy(keyStrategy.getValue()).build();
                 }, p);
     }
 

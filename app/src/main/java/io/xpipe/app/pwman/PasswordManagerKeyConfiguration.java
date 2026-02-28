@@ -7,18 +7,13 @@ public interface PasswordManagerKeyConfiguration {
     static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, PasswordManagerKeyStrategy strategy) {
         return new PasswordManagerKeyConfiguration() {
             @Override
-            public boolean supportsInlineSshKeys() {
-                return inline;
+            public boolean useInline() {
+                return (strategy == null || !strategy.useAgent()) && inline && joined;
             }
 
             @Override
-            public boolean supportsAgent() {
-                return strategy != null;
-            }
-
-            @Override
-            public boolean supportsJoinedEntries() {
-                return joined;
+            public boolean useAgent() {
+                return strategy != null && strategy.useAgent();
             }
 
             @Override
@@ -31,17 +26,12 @@ public interface PasswordManagerKeyConfiguration {
     static PasswordManagerKeyConfiguration none() {
         return new PasswordManagerKeyConfiguration() {
             @Override
-            public boolean supportsInlineSshKeys() {
+            public boolean useInline() {
                 return false;
             }
 
             @Override
-            public boolean supportsAgent() {
-                return false;
-            }
-
-            @Override
-            public boolean supportsJoinedEntries() {
+            public boolean useAgent() {
                 return false;
             }
 
@@ -52,11 +42,9 @@ public interface PasswordManagerKeyConfiguration {
         };
     }
 
-    boolean supportsInlineSshKeys();
+    boolean useInline();
 
-    boolean supportsAgent();
-
-    boolean supportsJoinedEntries();
+    boolean useAgent();
 
     SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 }

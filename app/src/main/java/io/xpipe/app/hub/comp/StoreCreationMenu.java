@@ -153,7 +153,7 @@ public class StoreCreationMenu {
         });
 
         int lastOrder = providers.getFirst().getOrderPriority();
-        for (io.xpipe.app.ext.DataStoreProvider dataStoreProvider : providers) {
+        for (var dataStoreProvider : providers) {
             if (dataStoreProvider.getOrderPriority() != lastOrder) {
                 menu.getItems().add(new SeparatorMenuItem());
                 lastOrder = dataStoreProvider.getOrderPriority();
@@ -167,6 +167,7 @@ public class StoreCreationMenu {
                 StoreCreationDialog.showCreation(dataStoreProvider, category);
                 event.consume();
             });
+            item.setDisable(!dataStoreProvider.allowCreation());
             menu.getItems().add(item);
         }
         return menu;

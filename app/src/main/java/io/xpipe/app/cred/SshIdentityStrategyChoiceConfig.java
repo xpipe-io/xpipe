@@ -17,5 +17,6 @@ public class SshIdentityStrategyChoiceConfig {
     Supplier<Boolean> perUserKeyFileCheck;
     boolean allowKeyFileSync;
     boolean allowAgentForward;
+    boolean allowPasswordAgentKeyChoice;
     ObservableValue<DataStoreEntryRef<ShellStore>> fileSystem;
 }

@@ -39,6 +39,11 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
+        public boolean useAgent() {
+            return false;
+        }
+
+        @Override
         public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return null;
         }
@@ -51,6 +56,11 @@ public interface PasswordManagerKeyStrategy {
     class Agent implements PasswordManagerKeyStrategy {
 
         FilePath customSocket;
+
+        @Override
+        public boolean useAgent() {
+            return true;
+        }
 
         @SuppressWarnings("unused")
         public static String getOptionsNameKey() {
@@ -135,6 +145,11 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
+        public boolean useAgent() {
+            return true;
+        }
+
+        @Override
         public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return OpenSshAgentStrategy.builder().build();
         }
@@ -158,10 +173,17 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
+        public boolean useAgent() {
+            return true;
+        }
+
+        @Override
         public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PageantStrategy.builder().build();
         }
     }
+
+    boolean useAgent();
 
     SshIdentityStrategy  getSshIdentityStrategy(String publicKey, boolean forward);
 

@@ -19,6 +19,10 @@ public class SshAgentKeyList {
         String name;
     }
 
+    public static void validate(DataStoreEntryRef<ShellStore> ref, SshIdentityStrategy strategy, String publicKey) {
+
+    }
+
     public static List<Entry> listAgentIdentities(DataStoreEntryRef<ShellStore> ref, SshIdentityStrategy strategy) throws Exception {
         var session = ref.getStore().getOrStartSession();
         strategy.prepareParent(session);

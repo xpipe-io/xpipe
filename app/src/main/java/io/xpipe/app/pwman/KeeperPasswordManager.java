@@ -404,7 +404,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeeperPasswordManager> p) {
-        var agentStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
+        var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
         var mfa = new SimpleObjectProperty<>(p.getValue().getTwoFactorAuth() != null ? p.getValue().getTwoFactorAuth() : new KeeperAuth.None());
 
         var choice = OptionsChoiceBuilder.builder()
@@ -412,10 +412,10 @@ public class KeeperPasswordManager implements PasswordManager {
                 .available(KeeperAuth.getClasses())
                 .property(mfa)
                 .build();
-        var agentStrategyChoice = OptionsChoiceBuilder.builder()
+        var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Agent.class))
-                .property(agentStrategy)
+                .available(List.of(PasswordManagerKeyStrategy.Inline.class, PasswordManagerKeyStrategy.Agent.class))
+                .property(keyStrategy)
                 .build();
 
 
@@ -423,11 +423,12 @@ public class KeeperPasswordManager implements PasswordManager {
                 .nameAndDescription("keeper2fa")
                 .sub(choice.build(), mfa)
                 .nameAndDescription("passwordManagerKeyStrategy")
-                .sub(agentStrategyChoice.build(), agentStrategy)
+                .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(
                         () -> {
                             return KeeperPasswordManager.builder()
                                     .twoFactorAuth(mfa.get())
+                                    .keyStrategy(keyStrategy.get())
                                     .build();
                         },
                         p);

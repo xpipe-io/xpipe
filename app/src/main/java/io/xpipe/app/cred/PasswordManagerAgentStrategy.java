@@ -14,6 +14,7 @@ import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.core.KeyValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -45,7 +46,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
                 return AppI18n.get("passwordManagerEmpty");
             }
 
-            if (!pwman.getKeyConfiguration().supportsAgent()) {
+            if (!pwman.getKeyConfiguration().useAgent()) {
                 return AppI18n.get("passwordManagerNoAgentSupport");
             }
 
@@ -67,9 +68,10 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerSshKeyConfig")
                 .addComp(pwmanDisplay)
-                .hide(pwmanProp.isNull())
+                .hide(Bindings.or(pwmanProp.isNull(), new ReadOnlyBooleanWrapper(!config.isAllowPasswordAgentKeyChoice())))
                 .nameAndDescription("publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .hide(!config.isAllowPasswordAgentKeyChoice())
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -86,7 +88,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
 
     private PasswordManagerKeyConfiguration getConfig() {
         var pwman = AppPrefs.get().passwordManager().getValue();
-        return pwman != null && pwman.getKeyConfiguration() != null && pwman.getKeyConfiguration().supportsAgent() ? pwman.getKeyConfiguration() : null;
+        return pwman != null && pwman.getKeyConfiguration() != null && pwman.getKeyConfiguration().useAgent() ? pwman.getKeyConfiguration() : null;
     }
 
     @Override
