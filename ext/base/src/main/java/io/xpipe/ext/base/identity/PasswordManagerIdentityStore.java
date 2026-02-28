@@ -1,7 +1,6 @@
 package io.xpipe.ext.base.identity;
 
-import io.xpipe.app.cred.InPlaceKeyStrategy;
-import io.xpipe.app.cred.UsernameStrategy;
+import io.xpipe.app.cred.*;
 import io.xpipe.app.ext.InternalCacheDataStore;
 import io.xpipe.app.ext.UserScopeStore;
 import io.xpipe.app.ext.ValidatableStore;
@@ -12,8 +11,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.secret.*;
 import io.xpipe.app.util.*;
-import io.xpipe.app.cred.NoIdentityStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.KeyValue;
@@ -37,6 +34,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
         implements InternalCacheDataStore, ValidatableStore, UserScopeStore {
 
     String key;
+    PasswordManagerAgentStrategy sshKey;
     boolean perUser;
 
     private boolean checkOutdatedOrRefresh() {
@@ -144,7 +142,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
             return def;
         }
 
-        if (strat.supportsInlineSshKeys()) {
+        if (strat.supportsInlineSshKeys() && strat.supportsJoinedEntries()) {
             return new SshIdentityStrategy() {
                 @Override
                 public void prepareParent(ShellControl parent) throws Exception {
@@ -191,7 +189,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
             };
         }
 
-        var agentStrat = strat.getSshIdentityStrategy();
+        var agentStrat = strat.getSshIdentityStrategy(null, false);
         return new NoIdentityStrategy();
     }
 

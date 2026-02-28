@@ -41,11 +41,11 @@ public class KeePassXcPasswordManager implements PasswordManager {
     private static KeePassXcProxyClient client;
 
     private final List<KeePassXcAssociationKey> associationKeys;
-    private final PasswordManagerAgentStrategy agentStrategy;
+    private final PasswordManagerKeyStrategy agentStrategy;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return new PasswordManagerKeyStrategy() {
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean supportsInlineSshKeys() {
                 return false;
@@ -62,8 +62,8 @@ public class KeePassXcPasswordManager implements PasswordManager {
             }
 
             @Override
-            public SshIdentityStrategy getSshIdentityStrategy() {
-                return agentStrategy.getSshIdentityStrategy();
+            public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+                return agentStrategy.getSshIdentityStrategy(publicKey, forward);
             }
         };
     }
@@ -73,7 +73,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
         var agentStrategy = new SimpleObjectProperty<>(p.getValue().getAgentStrategy());
         var agentStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerAgentStrategy.KeePassXcOpenSshAgent.class, PasswordManagerAgentStrategy.KeePassXcPageant.class))
+                .available(List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class))
                 .property(agentStrategy)
                 .build();
 

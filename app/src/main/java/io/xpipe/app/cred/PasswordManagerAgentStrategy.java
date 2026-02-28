@@ -3,26 +3,27 @@ package io.xpipe.app.cred;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.HorizontalComp;
+import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
-import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.core.KeyValue;
-import io.xpipe.core.OsType;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JsonTypeName("passwordManager")
@@ -54,8 +55,9 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
         var pwmanProp = new SimpleStringProperty();
         pwmanProp.bind(pwmanBinding);
         var pwmanDisplay = new HorizontalComp(List.of(
-                        new TextFieldComp(pwmanProp)
-                                .apply(struc -> struc.setEditable(false))
+                        new LabelComp(pwmanProp)
+                                .maxWidth(10000)
+                                .apply(label -> label.setAlignment(Pos.CENTER_LEFT))
                                 .hgrow(),
                         new ButtonComp(null, new FontIcon("mdomz-settings"), () -> {
                                     AppPrefs.get().selectCategory("passwordManager");
@@ -66,6 +68,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerSshKeyConfig")
                 .addComp(pwmanDisplay)
+                .hide(pwmanProp.isNull())
                 .nameAndDescription("publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
                 .nameAndDescription("forwardAgent")
@@ -82,24 +85,45 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     boolean forwardAgent;
     String publicKey;
 
+    private PasswordManagerKeyConfiguration getConfig() {
+        var pwman = AppPrefs.get().passwordManager().getValue();
+        return pwman != null && pwman.getKeyStrategy() != null && pwman.getKeyStrategy().supportsAgent() ? pwman.getKeyStrategy() : null;
+    }
+
+    @Override
+    public void checkComplete() throws ValidationException {
+        var config = getConfig();
+        if (config == null) {
+            throw new ValidationException(AppI18n.get("passwordManagerSshKeysNotSupported"));
+        }
+    }
+
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
-        var pwman = AppPrefs.get().passwordManager().getValue();
-        var strat = pwman.getKeyStrategy().getSshIdentityStrategy();
-        strat.prepareParent(parent);
+        var config = getConfig();
+        if (config != null) {
+            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            strat.prepareParent(parent);
+        }
     }
 
     @Override
     public void buildCommand(CommandBuilder builder) {
-        var pwman = AppPrefs.get().passwordManager().getValue();
-        var strat = pwman.getKeyStrategy().getSshIdentityStrategy();
-        strat.buildCommand(builder);
+        var config = getConfig();
+        if (config != null) {
+            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            strat.buildCommand(builder);
+        }
     }
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
-        var pwman = AppPrefs.get().passwordManager().getValue();
-        var strat = pwman.getKeyStrategy().getSshIdentityStrategy();
-        return strat.configOptions(sc);
+        var config = getConfig();
+        if (config != null) {
+            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            return strat.configOptions(sc);
+        } else {
+            return List.of();
+        }
     }
 }

@@ -46,8 +46,8 @@ public class PassboltPasswordManager implements PasswordManager {
     private final Path privateKey;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     @SuppressWarnings("unused")

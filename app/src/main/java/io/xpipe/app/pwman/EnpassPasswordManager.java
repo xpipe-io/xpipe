@@ -14,7 +14,6 @@ import io.xpipe.app.secret.SecretPromptStrategy;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 import io.xpipe.core.FilePath;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import javafx.application.Platform;
@@ -47,8 +46,8 @@ public class EnpassPasswordManager implements PasswordManager {
     private final FilePath vaultPath;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {

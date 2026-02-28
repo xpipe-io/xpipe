@@ -79,7 +79,7 @@ public class AppJacksonModule extends SimpleModule {
         }
 
         context.registerSubtypes(SshIdentityStrategy.getClasses());
-        context.registerSubtypes(PasswordManagerAgentStrategy.getClasses());
+        context.registerSubtypes(PasswordManagerKeyStrategy.getClasses());
         context.registerSubtypes(PasswordManager.getClasses());
         context.registerSubtypes(TerminalMultiplexer.getClasses());
         context.registerSubtypes(TerminalPrompt.getClasses());

@@ -8,7 +8,6 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -81,7 +80,7 @@ public class DashlanePasswordManager implements PasswordManager {
     }
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 }

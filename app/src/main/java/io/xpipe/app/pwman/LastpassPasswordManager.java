@@ -9,7 +9,6 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
-import io.xpipe.core.InPlaceSecretValue;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -21,8 +20,8 @@ import java.util.Optional;
 public class LastpassPasswordManager implements PasswordManager {
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     private static ShellControl SHELL;

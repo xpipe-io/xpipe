@@ -13,8 +13,6 @@ import io.xpipe.app.prefs.ExternalApplicationHelper;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.process.ShellScript;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.core.InPlaceSecretValue;
-import io.xpipe.core.SecretValue;
 
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
@@ -35,8 +33,8 @@ public class PasswordManagerCommand implements PasswordManager {
     ShellScript script;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     @SuppressWarnings("unused")

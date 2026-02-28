@@ -38,8 +38,8 @@ public class PsonoPasswordManager implements PasswordManager {
     private final String serverUrl;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     @SuppressWarnings("unused")

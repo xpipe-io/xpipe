@@ -51,7 +51,7 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
     @Override
     public void prepareParent(ShellControl parent) throws Exception {
         if (parent.isLocal()) {
-            SshIdentityStateManager.prepareLocalExternalAgent();
+            SshIdentityStateManager.prepareLocalExternalAgent(null);
         }
     }
 

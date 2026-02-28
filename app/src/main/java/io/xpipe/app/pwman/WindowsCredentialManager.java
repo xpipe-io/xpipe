@@ -2,7 +2,6 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.LocalShell;
-import io.xpipe.core.InPlaceSecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Value;
@@ -14,8 +13,8 @@ public class WindowsCredentialManager implements PasswordManager {
     private static boolean loaded = false;
 
     @Override
-    public PasswordManagerKeyStrategy getKeyStrategy() {
-        return PasswordManagerKeyStrategy.none();
+    public PasswordManagerKeyConfiguration getKeyStrategy() {
+        return PasswordManagerKeyConfiguration.none();
     }
 
     @Override
