@@ -268,4 +268,8 @@ public class KeyFileStrategy implements SshIdentityStrategy {
         }
         return s;
     }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
+    }
 }

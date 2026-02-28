@@ -37,7 +37,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -123,5 +123,9 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
         }
 
         return l;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

@@ -11,6 +11,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.core.KeyValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -37,8 +38,8 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
             Property<PasswordManagerAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
         var forward =
                 new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
-        var publicKey =
-                new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
+        var identifier =
+                new SimpleStringProperty(p.getValue() != null ? p.getValue().getIdentifier() : null);
 
         var pwmanBinding = Bindings.createObjectBinding(() -> {
             var pwman = AppPrefs.get().passwordManager().getValue();
@@ -69,8 +70,8 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
                 .nameAndDescription("passwordManagerSshKeyConfig")
                 .addComp(pwmanDisplay)
                 .hide(Bindings.or(pwmanProp.isNull(), new ReadOnlyBooleanWrapper(!config.isAllowPasswordAgentKeyChoice())))
-                .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .nameAndDescription(useKeyName() ? "agentKeyName" : "publicKey")
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName()), identifier)
                 .hide(!config.isAllowPasswordAgentKeyChoice())
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
@@ -78,17 +79,22 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
                 .hide(!config.isAllowAgentForward())
                 .bind(
                         () -> {
-                            return new PasswordManagerAgentStrategy(forward.get(), publicKey.get());
+                            return new PasswordManagerAgentStrategy(forward.get(), identifier.get());
                         },
                         p);
     }
 
     boolean forwardAgent;
-    String publicKey;
+    String identifier;
 
-    private PasswordManagerKeyConfiguration getConfig() {
+    private static PasswordManagerKeyConfiguration getConfig() {
         var pwman = AppPrefs.get().passwordManager().getValue();
         return pwman != null && pwman.getKeyConfiguration() != null && pwman.getKeyConfiguration().useAgent() ? pwman.getKeyConfiguration() : null;
+    }
+
+    private static boolean useKeyName() {
+        var config = getConfig();
+        return config != null && config.supportsAgentKeyNames();
     }
 
     @Override
@@ -103,7 +109,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     public void prepareParent(ShellControl parent) throws Exception {
         var config = getConfig();
         if (config != null) {
-            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            var strat = config.getSshIdentityStrategy(null, false);
             strat.prepareParent(parent);
         }
     }
@@ -112,7 +118,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     public void buildCommand(CommandBuilder builder) {
         var config = getConfig();
         if (config != null) {
-            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            var strat = config.getSshIdentityStrategy(null, false);
             strat.buildCommand(builder);
         }
     }
@@ -121,10 +127,26 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var config = getConfig();
         if (config != null) {
-            var strat = config.getSshIdentityStrategy(publicKey, forwardAgent);
+            var strat = config.getSshIdentityStrategy(getPublicKeyStrategy().retrievePublicKey(), forwardAgent);
             return strat.configOptions(sc);
         } else {
             return List.of();
         }
+    }
+
+    @Override
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        if (identifier == null) {
+            return null;
+        }
+
+        if (!useKeyName()) {
+            return PublicKeyStrategy.Fixed.of(identifier);
+        }
+
+        return new PublicKeyStrategy.Dynamic(() -> {
+            return SshAgentKeyList.findAgentIdentity(
+                    DataStorage.get().local().ref(), this, identifier).getPublicKey();
+        });
     }
 }

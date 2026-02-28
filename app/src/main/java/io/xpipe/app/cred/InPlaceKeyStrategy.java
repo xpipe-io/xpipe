@@ -184,4 +184,8 @@ public class InPlaceKeyStrategy implements SshIdentityStrategy {
                         + Math.abs(Objects.hash(this, AppSystemInfo.ofCurrent().getUser())) + ".key");
         return temp;
     }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
+    }
 }

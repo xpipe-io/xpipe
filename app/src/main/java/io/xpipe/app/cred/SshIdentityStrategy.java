@@ -85,5 +85,5 @@ public interface SshIdentityStrategy {
         return new SecretNoneStrategy();
     }
 
-    String getPublicKey();
+    PublicKeyStrategy getPublicKeyStrategy();
 }

@@ -1,6 +1,5 @@
 package io.xpipe.app.cred;
 
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
@@ -32,7 +31,7 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getPublicKey() : null);
         return new OptionsBuilder()
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -66,5 +65,9 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("ForwardAgent", forwardAgent ? "yes" : "no"),
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none"));
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

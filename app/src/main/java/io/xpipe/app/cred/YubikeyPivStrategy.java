@@ -81,7 +81,7 @@ public class YubikeyPivStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public String getPublicKey() {
+    public PublicKeyStrategy getPublicKeyStrategy() {
         return null;
     }
 }

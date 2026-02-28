@@ -10,11 +10,13 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManager;
 import io.xpipe.app.secret.*;
+import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.core.KeyValue;
 import lombok.EqualsAndHashCode;
+import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.Value;
 import lombok.experimental.SuperBuilder;
@@ -51,6 +53,7 @@ public class PasswordManagerIdentityStore extends IdentityStore
         return true;
     }
 
+    @SneakyThrows
     private PasswordManager.Result retrieve() {
         if (!checkOutdatedOrRefresh()) {
             var r = getCache("result", PasswordManager.Result.class, null);
@@ -87,7 +90,8 @@ public class PasswordManagerIdentityStore extends IdentityStore
             }
 
             if (pwman.getKeyConfiguration().useAgent()) {
-                SshAgentKeyList.validate();
+                SshAgentKeyList.findAgentIdentity(DataStorage.get().local().ref(),
+                        pwman.getKeyConfiguration().getSshIdentityStrategy(null, false), sshKey.getIdentifier());
             }
         }
 
@@ -190,13 +194,13 @@ public class PasswordManagerIdentityStore extends IdentityStore
                 }
 
                 @Override
-                public String getPublicKey() {
+                public PublicKeyStrategy getPublicKeyStrategy() {
                     var r = retrieve();
                     if (r == null || r.getSshKey() == null || r.getSshKey().getPublicKey() == null) {
                         return null;
                     }
 
-                    return r.getSshKey().getPublicKey();
+                    return PublicKeyStrategy.Fixed.of(r.getSshKey().getPublicKey());
                 }
             };
         }

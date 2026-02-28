@@ -76,7 +76,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                             return i != null;
                         }))
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -139,5 +139,9 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
         }
 
         return l;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

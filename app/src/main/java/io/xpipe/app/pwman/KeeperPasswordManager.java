@@ -41,7 +41,7 @@ public class KeeperPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, true, keyStrategy);
+        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy);
     }
 
     private final PasswordManagerKeyStrategy keyStrategy;

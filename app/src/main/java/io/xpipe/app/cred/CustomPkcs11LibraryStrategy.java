@@ -116,8 +116,7 @@ public class CustomPkcs11LibraryStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityAgent", "none"));
     }
 
-    @Override
-    public String getPublicKey() {
+    public PublicKeyStrategy getPublicKeyStrategy() {
         return null;
     }
 }

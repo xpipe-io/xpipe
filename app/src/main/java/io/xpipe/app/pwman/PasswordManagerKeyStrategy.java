@@ -119,8 +119,8 @@ public interface PasswordManagerKeyStrategy {
                 }
 
                 @Override
-                public String getPublicKey() {
-                    return "";
+                public PublicKeyStrategy getPublicKeyStrategy() {
+                    return null;
                 }
             };
         }

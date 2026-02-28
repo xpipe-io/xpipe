@@ -30,17 +30,22 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
     private final ObservableValue<DataStoreEntryRef<ShellStore>> ref;
     private final ObservableValue<? extends SshIdentityStrategy> sshIdentityStrategy;
     private final StringProperty value;
+    private final boolean useKeyNames;
 
-    public SshAgentKeyListComp(ObservableValue<DataStoreEntryRef<ShellStore>> ref, ObservableValue<? extends SshIdentityStrategy> sshIdentityStrategy, StringProperty value) {
+    public SshAgentKeyListComp(ObservableValue<DataStoreEntryRef<ShellStore>> ref, ObservableValue<? extends SshIdentityStrategy> sshIdentityStrategy, StringProperty value,
+                               boolean useKeyNames
+    ) {
         this.ref = ref;
         this.sshIdentityStrategy = sshIdentityStrategy;
-        this.value = value;}
+        this.value = value;
+        this.useKeyNames = useKeyNames;
+    }
 
     @Override
     protected Region createSimple() {
         var field = new TextFieldComp(value);
         field.apply(struc -> struc.setPromptText(
-                "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== <key comment>"));
+                useKeyNames ? "<name>" : "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmhLUTJiP...== <key comment>"));
         var button = new ButtonComp(null, new LabelGraphic.IconGraphic("mdi2m-magnify-scan"), null);
         button.apply(struc -> {
             struc.setOnAction(event -> {
@@ -61,7 +66,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                                 entryButton.maxWidth(10000);
                                 entryButton.getStyleClass().add(Styles.FLAT);
                                 entryButton.setOnAction(e -> {
-                                    value.setValue(entry.getPublicKey());
+                                    value.setValue(useKeyNames ? entry.getName() : entry.getPublicKey());
                                     popover.hide();
                                     e.consume();
                                 });

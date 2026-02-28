@@ -4,7 +4,7 @@ import io.xpipe.app.cred.SshIdentityStrategy;
 
 public interface PasswordManagerKeyConfiguration {
 
-    static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, PasswordManagerKeyStrategy strategy) {
+    static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, boolean supportsAgentKeyNames, PasswordManagerKeyStrategy strategy) {
         return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean useInline() {
@@ -14,6 +14,11 @@ public interface PasswordManagerKeyConfiguration {
             @Override
             public boolean useAgent() {
                 return strategy != null && strategy.useAgent();
+            }
+
+            @Override
+            public boolean supportsAgentKeyNames() {
+                return supportsAgentKeyNames;
             }
 
             @Override
@@ -36,6 +41,11 @@ public interface PasswordManagerKeyConfiguration {
             }
 
             @Override
+            public boolean supportsAgentKeyNames() {
+                return false;
+            }
+
+            @Override
             public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
                 return null;
             }
@@ -45,6 +55,8 @@ public interface PasswordManagerKeyConfiguration {
     boolean useInline();
 
     boolean useAgent();
+
+    boolean supportsAgentKeyNames();
 
     SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 }

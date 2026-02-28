@@ -1,6 +1,5 @@
 package io.xpipe.app.cred;
 
-import io.xpipe.app.comp.base.TextFieldComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
@@ -40,7 +39,7 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                 .addStaticString(socket != null ? socket : AppI18n.get("agentSocketNotFound"))
                 .hide(OsType.ofLocal() == OsType.WINDOWS)
                 .nameAndDescription("publicKey")
-                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey), publicKey)
+                .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, publicKey, false), publicKey)
                 .nameAndDescription("forwardAgent")
                 .addToggle(forward)
                 .nonNull()
@@ -96,5 +95,9 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
         }
 
         return l;
+    }
+
+    public PublicKeyStrategy getPublicKeyStrategy() {
+        return PublicKeyStrategy.Fixed.of(publicKey);
     }
 }

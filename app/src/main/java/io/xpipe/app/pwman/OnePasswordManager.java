@@ -31,7 +31,7 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, keyStrategy);
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy);
     }
 
     private static ShellControl SHELL;
