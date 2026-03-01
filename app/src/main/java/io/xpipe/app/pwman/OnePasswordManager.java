@@ -11,6 +11,7 @@ import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ProcessOutputException;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.DocumentationLink;
+import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -20,8 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @JsonTypeName("onePassword")
@@ -36,7 +36,7 @@ public class OnePasswordManager implements PasswordManager {
     }
 
     private static ShellControl SHELL;
-    private static final ListProperty<String> availableAccounts = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private static final MapProperty<String, String> availableAccounts = new SimpleMapProperty<>(FXCollections.observableMap(new LinkedHashMap<>()));
 
     private final String account;
     private final PasswordManagerKeyStrategy keyStrategy;
@@ -71,16 +71,16 @@ public class OnePasswordManager implements PasswordManager {
         return SHELL;
     }
 
-    private List<String> listAccounts() throws Exception {
-        var out = getOrStartShell().command(CommandBuilder.of().add("op", "account", "list", "--format", "json")).readStdoutOrThrow();
+    private SequencedMap<String, String> listAccounts() throws Exception {
+        var out = getOrStartShell().command(CommandBuilder.of().add("op", "account", "list", "--format", "json")).sensitive().readStdoutOrThrow();
         var json = JacksonMapper.getDefault().readTree(out);
         if (!json.isArray()) {
-            return List.of();
+            return new LinkedHashMap<>();
         }
 
-        var emails = new ArrayList<String>();
+        var emails = new LinkedHashMap<String, String>();
         for (JsonNode jsonNode : json) {
-            emails.add(jsonNode.required("email").textValue());
+            emails.put(jsonNode.required("email").textValue(), jsonNode.required("user_uuid").textValue());
         }
         return emails;
     }
@@ -88,20 +88,25 @@ public class OnePasswordManager implements PasswordManager {
     private String getActiveAccount() throws Exception {
         if (!availableAccounts.isEmpty()) {
             if (account != null) {
-                if (!availableAccounts.contains(account)) {
+                if (availableAccounts.get(account) == null) {
                     throw ErrorEventFactory.expected(new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
                 }
-                return account;
+                return availableAccounts.get(account);
             }
-            return availableAccounts.getFirst();
+
+            var first = availableAccounts.entrySet().iterator().next().getValue();
+            return first;
         }
 
         var accounts = listAccounts();
-        availableAccounts.setAll(accounts);
+        // Running commands instantly after each other breaks 1password
+        ThreadHelper.sleep(1500);
+        availableAccounts.clear();
+        availableAccounts.putAll(accounts);
         if (availableAccounts.isEmpty()) {
             throw ErrorEventFactory.expected(new IllegalStateException("No accounts are registered to the 1password CLI"));
         }
-        return availableAccounts.getFirst();
+        return availableAccounts.entrySet().iterator().next().getValue();
     }
 
     private String getValue(JsonNode node, String name) {
