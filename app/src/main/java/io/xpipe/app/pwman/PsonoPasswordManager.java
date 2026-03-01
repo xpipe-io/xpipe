@@ -7,6 +7,7 @@ import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
@@ -60,6 +61,8 @@ public class PsonoPasswordManager implements PasswordManager {
                 .addComp(new SecretFieldComp(apiKey, false).maxWidth(600), apiKey)
                 .nameAndDescription("psonoApiSecretKey")
                 .addComp(new SecretFieldComp(apiSecretKey, false).maxWidth(600), apiSecretKey)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
                             return PsonoPasswordManager.builder()

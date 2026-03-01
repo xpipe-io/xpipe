@@ -9,6 +9,7 @@ import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.util.*;
 import io.xpipe.core.OsType;
@@ -94,6 +95,8 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 }))
                 .hide(Bindings.isEmpty(prop))
                 .addProperty(prop)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(

@@ -1,11 +1,13 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ProcessOutputException;
@@ -53,9 +55,12 @@ public class OnePasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
+                .disableAutoFocus()
                 .nameAndDescription("onePasswordManagerAccount")
                 .addString(account)
                 .hide(account.isNull().and(availableAccounts.emptyProperty()))
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(() -> {

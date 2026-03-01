@@ -6,6 +6,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretManager;
 import io.xpipe.app.secret.SecretPromptStrategy;
@@ -422,6 +423,8 @@ public class KeeperPasswordManager implements PasswordManager {
         return new OptionsBuilder()
                 .nameAndDescription("keeper2fa")
                 .sub(choice.build(), mfa)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(

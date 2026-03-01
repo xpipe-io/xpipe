@@ -6,6 +6,7 @@ import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
@@ -87,6 +88,8 @@ public class EnpassPasswordManager implements PasswordManager {
         return new OptionsBuilder()
                 .nameAndDescription("enpassVaultFile")
                 .addComp(comp, prop)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .bind(
                         () -> {
                             return EnpassPasswordManager.builder()

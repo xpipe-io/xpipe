@@ -33,6 +33,7 @@ public class SshAgentTestComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var button = new ButtonComp(AppI18n.observable("test"), new LabelGraphic.IconGraphic("mdi2p-play"), null);
+        button.padding(new Insets(6, 9, 6, 9));
         button.apply(struc -> {
             struc.setOnAction(event -> {
                 DataStoreEntryRef<ShellStore> refToUse = DataStorage.get().local().ref();

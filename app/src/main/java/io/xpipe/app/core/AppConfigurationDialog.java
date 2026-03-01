@@ -6,6 +6,7 @@ import io.xpipe.app.comp.base.ScrollComp;
 import io.xpipe.app.core.window.AppDialog;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.EditorCategory;
+import io.xpipe.app.prefs.PasswordManagerCategory;
 import io.xpipe.app.prefs.PersonalizationCategory;
 import io.xpipe.app.prefs.TerminalCategory;
 import io.xpipe.app.util.DocumentationLink;
@@ -24,6 +25,7 @@ public class AppConfigurationDialog {
                 .sub(PersonalizationCategory.themeChoice())
                 .sub(TerminalCategory.terminalChoice(false))
                 .sub(EditorCategory.editorChoice())
+                .sub(PasswordManagerCategory.passwordManagerChoice())
                 .buildComp();
         options.style("initial-setup");
         options.style("prefs-container");

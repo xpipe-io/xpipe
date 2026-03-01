@@ -3,6 +3,8 @@ package io.xpipe.app.pwman;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.CommandSupport;
 import io.xpipe.app.process.ShellControl;
@@ -12,6 +14,7 @@ import io.xpipe.app.util.*;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.Property;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -25,6 +28,14 @@ public class LastpassPasswordManager implements PasswordManager {
     }
 
     private static ShellControl SHELL;
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<LastpassPasswordManager> p) {
+        return new OptionsBuilder()
+                .disableAutoFocus()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true));
+    }
 
     private static synchronized ShellControl getOrStartShell() throws Exception {
         if (SHELL == null) {

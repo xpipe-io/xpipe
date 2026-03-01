@@ -75,11 +75,17 @@ public class OptionsBuilder {
     private BaseRegionBuilder<?, ?> lastCompHeadReference;
     private ObservableValue<String> lastNameReference;
     private boolean focusFirstIncomplete = true;
+    private boolean focusEnabled = true;
 
     private final BooleanProperty mappingUpdate = new SimpleBooleanProperty();
 
     public OptionsBuilder disableFirstIncompleteFocus() {
         focusFirstIncomplete = false;
+        return this;
+    }
+
+    public OptionsBuilder disableAutoFocus() {
+        focusEnabled = false;
         return this;
     }
 
@@ -490,7 +496,7 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of());
+        var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of(), focusEnabled);
         return comp;
     }
 

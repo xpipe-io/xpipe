@@ -9,6 +9,7 @@ import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.*;
 import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.*;
@@ -64,7 +65,7 @@ public class BitwardenPasswordManager implements PasswordManager {
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
 
         AtomicReference<Region> button = new AtomicReference<>();
-        var testButton = new ButtonComp(AppI18n.observable("sync"), new FontIcon("mdi2r-refresh"), () -> {
+        var syncButton = new ButtonComp(AppI18n.observable("sync"), new FontIcon("mdi2r-refresh"), () -> {
             button.get().setDisable(true);
             ThreadHelper.runFailableAsync(() -> {
                 sync();
@@ -73,8 +74,8 @@ public class BitwardenPasswordManager implements PasswordManager {
                 });
             });
         });
-        testButton.apply(struc -> button.set(struc));
-        testButton.padding(new Insets(6, 10, 6, 6));
+        syncButton.apply(struc -> button.set(struc));
+        syncButton.padding(new Insets(6, 10, 6, 6));
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
@@ -83,7 +84,10 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
-                .addComp(testButton)
+                .disableAutoFocus()
+                .addComp(syncButton)
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(() -> {

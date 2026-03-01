@@ -1,9 +1,12 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.issue.ErrorEventFactory;
+import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.prefs.PasswordManagerTestComp;
 import io.xpipe.app.process.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.property.Property;
 import lombok.Value;
 
 @JsonTypeName("windowsCredentialManager")
@@ -15,6 +18,14 @@ public class WindowsCredentialManager implements PasswordManager {
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         return PasswordManagerKeyConfiguration.none();
+    }
+
+    @SuppressWarnings("unused")
+    public static OptionsBuilder createOptions(Property<WindowsCredentialManager> p) {
+        return new OptionsBuilder()
+                .disableAutoFocus()
+                .nameAndDescription("passwordManagerTest")
+                .addComp(new PasswordManagerTestComp(true));
     }
 
     @Override
