@@ -109,7 +109,7 @@ public class PasswordManagerCommand implements PasswordManager {
 
         var cmd = ExternalApplicationHelper.replaceVariableArgument(script.getValue(), "KEY", key);
         var secret = retrieveWithCommand(cmd);
-        return new Result(Credentials.of(null, secret), null);
+        return Result.of(Credentials.of(null, secret), null);
     }
 
     @Override

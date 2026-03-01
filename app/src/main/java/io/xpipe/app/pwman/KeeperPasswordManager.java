@@ -596,7 +596,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 }
 
                 var creds = Credentials.of(login, password);
-                return new Result(creds, null);
+                return Result.of(creds, null);
             }
 
             var username = Optional.ofNullable(getValue(tree, "login")).map(n -> n.size() > 0 ? n.get(0).textValue() : null).orElse(null);
@@ -611,7 +611,7 @@ public class KeeperPasswordManager implements PasswordManager {
                 sshKey = SshKey.of(null, publicKey, privateKey);
             }
 
-            return new Result(creds, sshKey);
+            return Result.of(creds, sshKey);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

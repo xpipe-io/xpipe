@@ -24,6 +24,7 @@ public interface PasswordManager {
         l.add(KeePassXcPasswordManager.class);
         l.add(BitwardenPasswordManager.class);
         l.add(KeeperPasswordManager.class);
+        l.add(HashicorpVaultPasswordManager.class);
         if (OsType.ofLocal() != OsType.WINDOWS) {
             l.add(LastpassPasswordManager.class);
             l.add(EnpassPasswordManager.class);
@@ -50,8 +51,17 @@ public interface PasswordManager {
         return Duration.ofSeconds(30);
     }
 
-    @Value
+    @Getter
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     class Result {
+
+        public static Result of(Credentials creds, SshKey sshKey) {
+            if (creds == null && sshKey == null) {
+                return null;
+            }
+            return Result.of(creds, sshKey);
+        }
 
         Credentials credentials;
         SshKey sshKey;

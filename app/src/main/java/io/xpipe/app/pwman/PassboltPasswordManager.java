@@ -67,6 +67,7 @@ public class PassboltPasswordManager implements PasswordManager {
         chooser.setPrompt(new ReadOnlyObjectWrapper<>(FilePath.of("passbolt_private.asc")));
 
         return new OptionsBuilder()
+                .disableAutoFocus()
                 .nameAndDescription("passboltServerUrl")
                 .addComp(
                         new TextFieldComp(serverUrl)
@@ -132,6 +133,10 @@ public class PassboltPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
+        if (serverUrl == null || passphrase == null || privateKey == null) {
+            return null;
+        }
+
         try {
             CommandSupport.isInLocalPathOrThrow("Passbolt CLI", "passbolt");
         } catch (Exception e) {
@@ -182,7 +187,7 @@ public class PassboltPasswordManager implements PasswordManager {
             var r = JacksonMapper.getDefault().readTree(cmd.readStdoutOrThrow());
             var username = r.required("username").asText();
             var password = r.required("password").asText();
-            return new Result(Credentials.of(username, password), null);
+            return Result.of(Credentials.of(username, password), null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

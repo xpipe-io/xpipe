@@ -178,7 +178,7 @@ public class OnePasswordManager implements PasswordManager {
             var privateKey = getValue(tree, "private_key");
             var sshKey = SshKey.of(fingerprint, publicKey, privateKey);
 
-            return new Result(creds, sshKey);
+            return Result.of(creds, sshKey);
         } catch (Exception e) {
             var event = ErrorEventFactory.fromThrowable(e);
             if (!key.startsWith("op://")

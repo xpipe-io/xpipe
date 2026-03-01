@@ -85,7 +85,7 @@ public class DashlanePasswordManager implements PasswordManager {
             var tree = JacksonMapper.getDefault().readTree(out);
             var login = Optional.ofNullable(tree.get("login")).map(JsonNode::textValue).orElse(null);
             var password = Optional.ofNullable(tree.get("password")).map(JsonNode::textValue).orElse(null);
-            return new Result(Credentials.of(login, password), null);
+            return Result.of(Credentials.of(login, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

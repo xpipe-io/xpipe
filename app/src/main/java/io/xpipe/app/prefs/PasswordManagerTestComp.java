@@ -93,8 +93,17 @@ public class PasswordManagerTestComp extends SimpleRegionBuilder {
             var r = prefs.passwordManager.getValue().query(key);
             if (r == null) {
                 Platform.runLater(() -> {
-                    testPasswordManagerResult.set(null);
+                    testPasswordManagerResult.set("    " + AppI18n.get("queryFailed"));
                 });
+                GlobalTimer.delay(
+                        () -> {
+                            Platform.runLater(() -> {
+                                if (counter.get() == currentIndex) {
+                                    testPasswordManagerResult.set(null);
+                                }
+                            });
+                        },
+                        Duration.ofSeconds(5));
                 return;
             }
 

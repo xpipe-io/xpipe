@@ -170,7 +170,7 @@ public class EnpassPasswordManager implements PasswordManager {
 
                 var login = Optional.ofNullable(json.get(0).get("login")).map(JsonNode::textValue).orElse(null);
                 var secret = Optional.ofNullable(json.get(0).get("password")).map(JsonNode::textValue).orElse(null);
-                return new Result(Credentials.of(login, secret), null);
+                return Result.of(Credentials.of(login, secret), null);
             }
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();

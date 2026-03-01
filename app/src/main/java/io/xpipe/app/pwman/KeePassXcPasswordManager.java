@@ -262,7 +262,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
                             .getAssociationKeys()
                     : associationKeys;
             var credentials = client.getCredentials(effectiveKeys, fixedKey);
-            return new Result(credentials, null);
+            return Result.of(credentials, null);
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

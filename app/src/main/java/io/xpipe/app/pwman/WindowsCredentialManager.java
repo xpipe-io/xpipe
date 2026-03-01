@@ -121,7 +121,7 @@ public class WindowsCredentialManager implements PasswordManager {
                     .command("[CredManager.Credential]::GetUserPassword(\"" + key.replaceAll("\"", "`\"") + "\")")
                     .sensitive()
                     .readStdoutOrThrow();
-            return new Result(Credentials.of(username, password), null);
+            return Result.of(Credentials.of(username, password), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;

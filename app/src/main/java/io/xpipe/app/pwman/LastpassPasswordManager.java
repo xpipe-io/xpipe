@@ -99,7 +99,7 @@ public class LastpassPasswordManager implements PasswordManager {
 
             var login = Optional.ofNullable(tree.get(0).get("username")).map(JsonNode::textValue).orElse(null);
             var secret = Optional.ofNullable(tree.get(0).get("password")).map(JsonNode::textValue).orElse(null);
-            return new Result(Credentials.of(login, secret), null);
+            return Result.of(Credentials.of(login, secret), null);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).handle();
             return null;

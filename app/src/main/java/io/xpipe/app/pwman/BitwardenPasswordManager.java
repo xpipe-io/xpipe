@@ -220,7 +220,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 creds = null;
             }
 
-            return new Result(creds, credentialSshKey);
+            return Result.of(creds, credentialSshKey);
         } catch (Exception ex) {
             ErrorEventFactory.fromThrowable(ex).expected().handle();
             return null;
