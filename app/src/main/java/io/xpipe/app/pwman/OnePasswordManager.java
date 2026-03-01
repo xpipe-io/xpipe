@@ -14,12 +14,13 @@ import io.xpipe.app.util.DocumentationLink;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -35,10 +36,14 @@ public class OnePasswordManager implements PasswordManager {
     }
 
     private static ShellControl SHELL;
+    private static final ListProperty<String> availableAccounts = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    private final String account;
     private final PasswordManagerKeyStrategy keyStrategy;
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OnePasswordManager> p) {
+        var account = new SimpleStringProperty(p.getValue().getAccount());
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
 
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
@@ -48,10 +53,13 @@ public class OnePasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
+                .nameAndDescription("onePasswordManagerAccount")
+                .addString(account)
+                .hide(account.isNull().and(availableAccounts.emptyProperty()))
                 .nameAndDescription("passwordManagerKeyStrategy")
                 .sub(keyStrategyChoice.build(), keyStrategy)
                 .bind(() -> {
-                    return OnePasswordManager.builder().keyStrategy(keyStrategy.getValue()).build();
+                    return OnePasswordManager.builder().keyStrategy(keyStrategy.getValue()).account(account.get()).build();
                 }, p);
     }
 
@@ -61,6 +69,39 @@ public class OnePasswordManager implements PasswordManager {
         }
         SHELL.start();
         return SHELL;
+    }
+
+    private List<String> listAccounts() throws Exception {
+        var out = getOrStartShell().command(CommandBuilder.of().add("op", "account", "list", "--format", "json")).readStdoutOrThrow();
+        var json = JacksonMapper.getDefault().readTree(out);
+        if (!json.isArray()) {
+            return List.of();
+        }
+
+        var emails = new ArrayList<String>();
+        for (JsonNode jsonNode : json) {
+            emails.add(jsonNode.required("email").textValue());
+        }
+        return emails;
+    }
+
+    private String getActiveAccount() throws Exception {
+        if (!availableAccounts.isEmpty()) {
+            if (account != null) {
+                if (!availableAccounts.contains(account)) {
+                    throw ErrorEventFactory.expected(new IllegalArgumentException("Account " + account + " is not registered to the 1password CLI"));
+                }
+                return account;
+            }
+            return availableAccounts.getFirst();
+        }
+
+        var accounts = listAccounts();
+        availableAccounts.setAll(accounts);
+        if (availableAccounts.isEmpty()) {
+            throw ErrorEventFactory.expected(new IllegalStateException("No accounts are registered to the 1password CLI"));
+        }
+        return availableAccounts.getFirst();
     }
 
     private String getValue(JsonNode node, String name) {
@@ -104,9 +145,11 @@ public class OnePasswordManager implements PasswordManager {
         }
 
         try {
+            var account = getActiveAccount();
             var b = CommandBuilder.of()
                     .add("op", "item", "get")
                     .addLiteral(name)
+                    .add("--account").addLiteral(account)
                     .add("--format", "json");
             if (vault != null) {
                 b.add("--vault").addLiteral(vault);

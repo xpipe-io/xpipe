@@ -6,6 +6,13 @@ import io.xpipe.app.cred.NoIdentityStrategy;
 public class IdentitySummary {
 
     public static String createSummary(IdentityStore st) {
+        if (st instanceof MultiIdentityStore mis) {
+            var selected = mis.getSelected();
+            if (selected.isPresent()) {
+                return createSummary(selected.get().getStore());
+            }
+        }
+
         var user = st.getUsername().hasUser()
                 ? st.getUsername().getFixedUsername().map(s -> "User " + s).orElse("User")
                 : "Anonymous user";

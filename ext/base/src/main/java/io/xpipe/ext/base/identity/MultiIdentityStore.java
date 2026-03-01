@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.cred.UsernameStrategy;
+import io.xpipe.app.ext.InternalCacheDataStore;
+import io.xpipe.app.ext.StatefulDataStore;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.secret.EncryptedValue;
@@ -28,7 +30,7 @@ import java.util.UUID;
 @Value
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class MultiIdentityStore extends IdentityStore {
+public class MultiIdentityStore extends IdentityStore implements StatefulDataStore<MultiIdentityStoreState> {
 
     List<UUID> identities;
 
@@ -39,7 +41,7 @@ public class MultiIdentityStore extends IdentityStore {
     }
 
     public Optional<DataStoreEntryRef<IdentityStore>> getSelected() {
-        UUID cached = AppCache.getNonNull("id-default-" + getSelfEntry().getUuid(), UUID.class, () -> null);
+        var cached = getState().getSelected();
         if (cached != null) {
             var entry = DataStorage.get().getStoreEntryIfPresent(cached);
             if (entry.isPresent() && entry.get().getValidity().isUsable() && getAvailableIdentities().contains(entry.get().ref())) {
@@ -60,7 +62,7 @@ public class MultiIdentityStore extends IdentityStore {
             return;
         }
 
-        AppCache.update("id-default-" + getSelfEntry().getUuid(), entry.get().getUuid());
+        setState(MultiIdentityStoreState.builder().selected(entry.get().getUuid()).build());
     }
 
     private DataStoreEntryRef<IdentityStore> getSelectedOrThrow() {
@@ -88,5 +90,10 @@ public class MultiIdentityStore extends IdentityStore {
     @Override
     public SshIdentityStrategy getSshIdentity() {
         return getSelectedOrThrow().getStore().getSshIdentity();
+    }
+
+    @Override
+    public Class<MultiIdentityStoreState> getStateClass() {
+        return MultiIdentityStoreState.class;
     }
 }
