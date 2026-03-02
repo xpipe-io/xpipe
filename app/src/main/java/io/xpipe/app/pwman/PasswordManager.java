@@ -60,7 +60,7 @@ public interface PasswordManager {
             if (creds == null && sshKey == null) {
                 return null;
             }
-            return Result.of(creds, sshKey);
+            return new Result(creds, sshKey);
         }
 
         Credentials credentials;

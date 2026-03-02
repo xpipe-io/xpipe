@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,11 +13,9 @@ import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.platform.OptionsChoiceBuilder;
 import io.xpipe.app.prefs.PasswordManagerTestComp;
-import io.xpipe.app.process.CommandBuilder;
-import io.xpipe.app.process.CommandSupport;
-import io.xpipe.app.process.ShellControl;
-import io.xpipe.app.process.ShellDialects;
+import io.xpipe.app.process.*;
 import io.xpipe.app.secret.SecretQueryState;
+import io.xpipe.app.terminal.TerminalLaunch;
 import io.xpipe.app.util.AskpassAlert;
 import io.xpipe.app.util.HttpHelper;
 import io.xpipe.core.*;
@@ -27,6 +26,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.extern.jackson.Jacksonized;
 
 import java.io.IOException;
@@ -35,10 +35,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Getter
 @Builder
@@ -52,12 +49,44 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
         static List<Class<?>> getClasses() {
             var l = new ArrayList<Class<?>>();
+            l.add(Existing.class);
             l.add(Token.class);
             l.add(AppRole.class);
             return l;
         }
 
         String retrieveToken(HashicorpVaultPasswordManager pwman) throws Exception;
+
+        @JsonTypeName("existing")
+        @Value
+        @Jacksonized
+        @Builder
+        class Existing implements VaultAuth {
+
+            @SuppressWarnings("unused")
+            public static String getOptionsNameKey() {
+                return "hashicorpVaultAuthExisting";
+            }
+
+            @Override
+            public String retrieveToken(HashicorpVaultPasswordManager pwman) throws Exception {
+                var sc = getOrStartShell();
+                var script = ShellScript.lines(
+                        sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_ADDR", pwman.getVaultAddress()),
+                        pwman.getVaultNamespace() != null ?
+                                sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_NAMESPACE", pwman.getVaultNamespace()) : null,
+                        sc.getShellDialect().getEchoCommand(
+                                "Your current vault login is expired. Please log in again with your currently selected auth method. The command syntax for this is:",
+                                false),
+                        sc.getShellDialect().getEchoCommand("", false),
+                        sc.getShellDialect().getEchoCommand("vault login --method=<auth_method> [optional auth method specific parameters]", false)
+                );
+                var scriptFile = ScriptHelper.createExecScript(sc, script.toString());
+                TerminalLaunch.builder().localScript(ShellScript.of(sc.getShellDialect().terminalInitCommand(sc, scriptFile.toString(), false))).
+                        title("Vault login").pauseOnExit(false).launch();
+                return null;
+            }
+        }
 
         @JsonTypeName("token")
         @Value
@@ -66,11 +95,16 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
         class Token implements VaultAuth {
 
             @SuppressWarnings("unused")
+            public static String getOptionsNameKey() {
+                return "hashicorpVaultAuthToken";
+            }
+
+            @SuppressWarnings("unused")
             public static OptionsBuilder createOptions(Property<Token> p) {
                 var token = new SimpleObjectProperty<>(p.getValue().getToken());
-                return new OptionsBuilder().name("keeperTotpDuration")
+                return new OptionsBuilder()
                         .nameAndDescription("hashicorpVaultSecretId")
-                        .addComp(new SecretFieldComp(token, false).maxWidth(600), token)
+                        .addComp(new SecretFieldComp(token, true).maxWidth(600), token)
                         .nonNull()
                         .bind(() -> {
                             return Token.builder().token(token.get()).build();
@@ -96,6 +130,11 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
         class AppRole implements VaultAuth {
 
             @SuppressWarnings("unused")
+            public static String getOptionsNameKey() {
+                return "hashicorpVaultAuthAppRole";
+            }
+
+            @SuppressWarnings("unused")
             public static OptionsBuilder createOptions(Property<AppRole> p) {
                 var roleId = new SimpleStringProperty(p.getValue().getRoleId());
                 var secretId = new SimpleObjectProperty<>(p.getValue().getSecretId());
@@ -104,7 +143,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                         .addString(roleId)
                         .nonNull()
                         .nameAndDescription("hashicorpVaultSecretId")
-                        .addComp(new SecretFieldComp(secretId, false).maxWidth(600), secretId)
+                        .addComp(new SecretFieldComp(secretId, true).maxWidth(600), secretId)
                         .nonNull()
                         .bind(
                                 () -> {
@@ -166,7 +205,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
     public static OptionsBuilder createOptions(Property<HashicorpVaultPasswordManager> p) {
         var vaultAddress = new SimpleStringProperty(p.getValue().getVaultAddress());
         var vaultNamespace = new SimpleStringProperty(p.getValue().getVaultNamespace());
-        var vaultAuth = new SimpleObjectProperty<>(p.getValue().getVaultAuth());
+        var vaultAuth = new SimpleObjectProperty<>(p.getValue().getVaultAuth() != null ? p.getValue().getVaultAuth() : new VaultAuth.Existing());
 
         return new OptionsBuilder()
                 .nameAndDescription("hashicorpVaultAddress")
@@ -204,7 +243,22 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
         return SHELL;
     }
 
+    private boolean isLoginValid() throws Exception {
+        var sc = getOrStartShell();
+        var b = CommandBuilder.of().add("vault", "token", "lookup", "-non-interactive", "--format=json");
+        if (getVaultNamespace() != null) {
+            b.fixedEnvironment("VAULT_NAMESPACE", getVaultNamespace());
+        }
+        b.fixedEnvironment("VAULT_ADDR", getVaultAddress());
+        var valid = sc.command(b).sensitive().executeAndCheck();
+        return valid;
+    }
+
     private boolean login() throws Exception {
+        if (isLoginValid()) {
+            return true;
+        }
+
         var token = vaultAuth.retrieveToken(HashicorpVaultPasswordManager.this);
         if (token == null) {
             return false;
@@ -222,6 +276,14 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
+        var keySplit = key.split(":", 2);
+        if (keySplit.length != 2 || keySplit[0].isEmpty() || keySplit[1].isEmpty()) {
+            throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
+        }
+
+        var secretPath = keySplit[0];
+        var keys = Arrays.stream(keySplit[1].split(",")).toList();
+
         if (vaultAddress == null || vaultAuth == null) {
             return null;
         }
@@ -237,13 +299,15 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
         }
 
         try {
-            login();
+            if (!login()) {
+                return null;
+            }
 
             var b = CommandBuilder.of().add("vault", "read", "--format=json", "-non-interactive");
             if (vaultNamespace != null) {
                 b.fixedEnvironment("VAULT_NAMESPACE", vaultNamespace);
             }
-            b.addLiteral(key);
+            b.addLiteral(secretPath);
             b.fixedEnvironment("VAULT_ADDR", vaultAddress);
 
             var out = getOrStartShell().command(b).sensitive().readStdoutOrThrow();
@@ -253,10 +317,21 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                 return null;
             }
 
-            var username = Optional.ofNullable(data.get("username")).map(JsonNode::textValue).orElse(null);
-            var password = Optional.ofNullable(data.get("password")).map(JsonNode::textValue).orElse(null);
-            var creds = Credentials.of(username, password);
-            return Result.of(creds, null);
+            var subData = data.get("data");
+            if (subData == null) {
+                return null;
+            }
+
+            if (keys.size() > 1) {
+                var username = Optional.ofNullable(subData.get(keys.getFirst())).map(JsonNode::textValue).orElse(null);
+                var password = Optional.ofNullable(subData.get(keys.get(1))).map(JsonNode::textValue).orElse(null);
+                var creds = Credentials.of(username, password);
+                return Result.of(creds, null);
+            } else {
+                var password = Optional.ofNullable(subData.get(keys.getFirst())).map(JsonNode::textValue).orElse(null);
+                var creds = Credentials.of(null, password);
+                return Result.of(creds, null);
+            }
         } catch (Exception e) {
             ErrorEventFactory.fromThrowable(e).handle();
             return null;

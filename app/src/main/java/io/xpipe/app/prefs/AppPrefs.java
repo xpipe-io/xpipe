@@ -346,7 +346,6 @@ public final class AppPrefs {
             .property(new GlobalBooleanProperty(false))
             .key("enableTerminalLogging")
             .valueClass(Boolean.class)
-            .licenseFeatureId("logging")
             .documentationLink(DocumentationLink.TERMINAL_LOGGING)
             .build());
     final BooleanProperty enableTerminalStartupBell = map(Mapping.builder()
@@ -425,7 +424,6 @@ public final class AppPrefs {
             new SyncCategory(),
             new PasswordManagerCategory(),
             new TerminalCategory(),
-            new LoggingCategory(),
             new EditorCategory(),
             new RdpCategory(),
             new VncCategory(),
