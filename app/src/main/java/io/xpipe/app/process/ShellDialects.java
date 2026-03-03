@@ -26,7 +26,9 @@ public class ShellDialects {
     public static ShellDialect XONSH;
 
     public static ShellDialect NO_INTERACTION;
-    public static ShellDialect CISCO;
+    public static ShellDialect CISCO_IOS;
+    public static ShellDialect CISCO_IOS_XE;
+    public static ShellDialect CISCO_NXOS;
     public static ShellDialect MIKROTIK;
     public static ShellDialect PALO_ALTO;
     public static ShellDialect RBASH;
@@ -95,7 +97,9 @@ public class ShellDialects {
             NUSHELL = byId("nushell");
             XONSH = byId("xonsh");
             NO_INTERACTION = byId("noInteraction");
-            CISCO = byId("cisco");
+            CISCO_IOS = byId("ciscoIos");
+            CISCO_IOS_XE = byId("ciscoIosXe");
+            CISCO_NXOS = byId("ciscoNxOs");
             MIKROTIK = byId("mikrotik");
             PALO_ALTO = byId("paloAlto");
             RBASH = byId("rbash");
