@@ -215,7 +215,7 @@ public class StoreCreationModel {
         }
 
         // We didn't change anything
-        if (store.getValue().isComplete() && !wasChanged()) {
+        if (store.getValue().isComplete() && !wasChanged() && !isQuickConnect()) {
             commit(false);
             return;
         }

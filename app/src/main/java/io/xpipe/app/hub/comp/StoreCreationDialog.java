@@ -38,6 +38,7 @@ public class StoreCreationDialog {
         StoreCreationConsumer consumer = (newE, validated) -> {
             ThreadHelper.runAsync(() -> {
                 if (!addToStorage) {
+                    DataStorage.get().updateEntry(e, newE);
                     c.accept(e);
                     return;
                 }

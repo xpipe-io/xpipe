@@ -84,19 +84,27 @@ public class StoreQuickConnect {
         DataStorage.get().updateEntryStore(quickConnectEntry, newStore);
 
         var model = StoreCreationDialog.showEdit(quickConnectEntry, newStore, false, finished -> {
+            update(finished.getStore());
             ThreadHelper.runAsync(() -> {
                 try {
+                    DataStorage.get().addStoreEntryInProgress(quickConnectEntry);
                     quickConnectEntry.getProvider().launch(quickConnectEntry).run();
                 } catch (Exception e) {
                     ErrorEventFactory.fromThrowable(e).handle();
+                } finally {
+                    DataStorage.get().removeStoreEntryInProgress(quickConnectEntry);
                 }
             });
         });
-        GlobalTimer.delay(() -> {
-            Platform.runLater(() -> {
-                model.finish();
-            });
-        }, Duration.ofMillis(100));
+
+        var wasCached = AppCache.getNonNull("quickConnect", DataStore.class, () -> null) != null;
+        if (wasCached) {
+            GlobalTimer.delay(() -> {
+                Platform.runLater(() -> {
+                    model.finish();
+                });
+            }, Duration.ofMillis(100));
+        }
         return true;
     }
 }
