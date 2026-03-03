@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
 @Getter

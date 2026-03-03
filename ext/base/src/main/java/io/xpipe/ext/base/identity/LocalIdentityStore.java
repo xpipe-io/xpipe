@@ -12,7 +12,7 @@ import lombok.Value;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @JsonTypeName("localIdentity")
 @Jacksonized
 @Value

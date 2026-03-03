@@ -4,7 +4,6 @@ import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
 import io.xpipe.app.comp.base.CountComp;
-import io.xpipe.app.comp.base.FilterComp;
 import io.xpipe.app.comp.base.IconButtonComp;
 import io.xpipe.app.core.AppFontSizes;
 import io.xpipe.app.core.AppI18n;
@@ -42,7 +41,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         this.filterTrigger = filterTrigger;
     }
 
-    private Region createGroupListHeader() {
+    private Region createHeaderBar() {
         var label = new Label();
         var name = BindingsHelper.flatMap(
                 StoreViewState.get().getActiveCategory(),
@@ -96,27 +95,10 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         return topBar;
     }
 
-    private Region createGroupListFilter() {
-        var prop = new SimpleStringProperty();
-        prop.addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && newValue.length() == 1) {
-                return;
-            }
-
-            Platform.runLater(() -> {
-                StoreViewState.get().getFilterString().setValue(newValue);
-            });
-        });
-        var filter = new StoreFilterComp(prop).build();
-        filterTrigger.subscribe(() -> {
-            filter.requestFocus();
-        });
+    private Region createAddBar() {
         var add = createAddButton();
         var batchMode = createBatchModeButton().build();
-        var hbox = new HBox(add, filter, batchMode);
-        filter.minHeightProperty().bind(add.heightProperty());
-        filter.prefHeightProperty().bind(add.heightProperty());
-        filter.maxHeightProperty().bind(add.heightProperty());
+        var hbox = new HBox(add, batchMode);
         batchMode.minHeightProperty().bind(add.heightProperty());
         batchMode.prefHeightProperty().bind(add.heightProperty());
         batchMode.maxHeightProperty().bind(add.heightProperty());
@@ -124,9 +106,25 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         batchMode.prefWidthProperty().bind(add.heightProperty());
         batchMode.maxWidthProperty().bind(add.heightProperty());
         hbox.setSpacing(8);
+        hbox.setAlignment(Pos.CENTER_LEFT);
+        return hbox;
+    }
+
+
+    private Region createFilterBar(Region addBar) {
+        var filter = new StoreFilterComp().build();
+        filterTrigger.subscribe(() -> {
+            filter.requestFocus();
+        });
+
+        filter.minHeightProperty().bind(addBar.heightProperty());
+        filter.prefHeightProperty().bind(addBar.heightProperty());
+        filter.maxHeightProperty().bind(addBar.heightProperty());
+
+        var hbox = new HBox(filter);
+        hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER);
         HBox.setHgrow(filter, Priority.ALWAYS);
-
         filter.getStyleClass().add("filter-bar");
         return hbox;
     }
@@ -279,7 +277,8 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
     @Override
     public Region createSimple() {
-        var bar = new VBox(createGroupListHeader(), createGroupListFilter());
+        var addBar = createAddBar();
+        var bar = new VBox(createHeaderBar(), addBar, createFilterBar(addBar));
         bar.setFillWidth(true);
         bar.getStyleClass().add("bar");
         bar.getStyleClass().add("store-header-bar");

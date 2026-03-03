@@ -60,18 +60,6 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
             return supported;
         }
 
-        try {
-            var found = LocalShell.getShell()
-                    .view()
-                    .findProgram("gpg-connect-agent")
-                    .isPresent();
-            if (!found) {
-                return (supported = false);
-            }
-        } catch (Exception ex) {
-            return (supported = false);
-        }
-
         if (OsType.ofLocal() == OsType.WINDOWS) {
             var file = AppSystemInfo.ofWindows().getRoamingAppData().resolve("gnupg", "gpg-agent.conf");
             return (supported = Files.exists(file));

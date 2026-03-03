@@ -52,7 +52,7 @@ public class IncusInstallStoreProvider implements DataStoreProvider {
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         IncusInstallStore s = store.getStore().asNeeded();
-        return s.getHost().get();
+        return s.getHost() != null ? s.getHost().get() : null;
     }
 
     @Override

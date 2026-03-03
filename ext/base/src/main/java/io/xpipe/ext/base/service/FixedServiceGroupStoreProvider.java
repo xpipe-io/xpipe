@@ -26,6 +26,6 @@ public class FixedServiceGroupStoreProvider extends AbstractServiceGroupStorePro
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         FixedServiceGroupStore s = store.getStore().asNeeded();
-        return s.getParent().get();
+        return s.getParent() != null ? s.getParent().get() : null;
     }
 }

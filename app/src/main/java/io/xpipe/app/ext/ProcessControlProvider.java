@@ -79,4 +79,6 @@ public abstract class ProcessControlProvider {
 
     public abstract void pullRepository(Path target) throws Exception;
 
+    public abstract DataStore quickConnectStore(String user, String host, Integer port, DataStore existing);
+
 }

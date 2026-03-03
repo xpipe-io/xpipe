@@ -7,6 +7,7 @@ import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.app.util.LocalExec;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -62,7 +63,7 @@ public class PageantStrategy implements SshIdentityStrategy {
             return true;
         } else {
             try {
-                var found = LocalShell.getShell().view().findProgram("pageant").isPresent();
+                var found = LocalExec.readStdoutIfPossible("which", "pageant").isPresent();
                 return (supported = found);
             } catch (Exception ex) {
                 return (supported = false);

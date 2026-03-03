@@ -76,7 +76,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
                         pwman.getVaultNamespace() != null ?
                                 sc.getShellDialect().getSetEnvironmentVariableCommand("VAULT_NAMESPACE", pwman.getVaultNamespace()) : null,
                         sc.getShellDialect().getEchoCommand(
-                                "Your current vault login is expired. Please log in again with your currently selected auth method. The command syntax for this is:",
+                                "Your current vault login is expired. Please log in again with your currently selected auth method. The proper environment variables for your vault have already been configured in this session. The command syntax for this is:",
                                 false),
                         sc.getShellDialect().getEchoCommand("", false),
                         sc.getShellDialect().getEchoCommand("vault login --method=<auth_method> [optional auth method specific parameters]", false)
@@ -103,7 +103,7 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
             public static OptionsBuilder createOptions(Property<Token> p) {
                 var token = new SimpleObjectProperty<>(p.getValue().getToken());
                 return new OptionsBuilder()
-                        .nameAndDescription("hashicorpVaultSecretId")
+                        .nameAndDescription("hashicorpVaultToken")
                         .addComp(new SecretFieldComp(token, true).maxWidth(600), token)
                         .nonNull()
                         .bind(() -> {
@@ -276,14 +276,6 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
 
     @Override
     public synchronized Result query(String key) {
-        var keySplit = key.split(":", 2);
-        if (keySplit.length != 2 || keySplit[0].isEmpty() || keySplit[1].isEmpty()) {
-            throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
-        }
-
-        var secretPath = keySplit[0];
-        var keys = Arrays.stream(keySplit[1].split(",")).toList();
-
         if (vaultAddress == null || vaultAuth == null) {
             return null;
         }
@@ -302,6 +294,14 @@ public class HashicorpVaultPasswordManager implements PasswordManager {
             if (!login()) {
                 return null;
             }
+
+            var keySplit = key.split(":", 2);
+            if (keySplit.length != 2 || keySplit[0].isEmpty() || keySplit[1].isEmpty()) {
+                throw ErrorEventFactory.expected(new IllegalArgumentException("Invalid secret reference format"));
+            }
+
+            var secretPath = keySplit[0];
+            var keys = Arrays.stream(keySplit[1].split(",")).toList();
 
             var b = CommandBuilder.of().add("vault", "read", "--format=json", "-non-interactive");
             if (vaultNamespace != null) {

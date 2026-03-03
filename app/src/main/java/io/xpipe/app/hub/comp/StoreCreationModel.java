@@ -167,6 +167,10 @@ public class StoreCreationModel {
                         store));
     }
 
+    boolean isQuickConnect() {
+        return existingEntry != null && existingEntry.getUuid().equals(StoreQuickConnect.STORE_ID);
+    }
+
     void connect() {
         var temp = entry.getValue() != null ? entry.getValue() : DataStoreEntry.createTempWrapper(store.getValue());
         var action = OpenHubMenuLeafProvider.Action.builder().ref(temp.ref()).build();

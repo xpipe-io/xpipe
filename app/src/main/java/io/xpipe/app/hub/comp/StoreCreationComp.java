@@ -58,8 +58,8 @@ public class StoreCreationComp extends ModalOverlayContentComp {
         var provider = model.getProvider().getValue() != null
                 ? model.getProvider().getValue()
                 : providerChoice.getProviders().getFirst();
-        var showProviders = (!model.isStaticDisplay() && provider.showProviderChoice())
-                || (model.isStaticDisplay() && provider.showProviderChoice());
+        var showProviders = !model.isQuickConnect() && ((!model.isStaticDisplay() && provider.showProviderChoice())
+                || (model.isStaticDisplay() && provider.showProviderChoice()));
         if (model.isStaticDisplay()) {
             providerChoice.apply(struc -> struc.setDisable(true));
         }
@@ -88,7 +88,6 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                     });
                 }
 
-                var propOptions = createStoreProperties();
                 model.getInitialStore().setValue(model.getStore().getValue());
 
                 var valSp = new GraphicDecorationStackPane();
@@ -103,7 +102,11 @@ public class StoreCreationComp extends ModalOverlayContentComp {
                 }
 
                 full.sub(d.getOptions());
-                full.sub(propOptions);
+
+                if (!model.isQuickConnect()) {
+                    var propOptions = createStoreProperties();
+                    full.sub(propOptions);
+                }
 
                 var comp = full.buildComp();
                 var region = comp.style("store-creator-options").build();

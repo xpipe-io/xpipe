@@ -52,7 +52,7 @@ public class LxdCmdStoreProvider implements DataStoreProvider {
     @Override
     public DataStoreEntry getDisplayParent(DataStoreEntry store) {
         LxdCmdStore s = store.getStore().asNeeded();
-        return s.getHost().get();
+        return s.getHost() != null ? s.getHost().get() : null;
     }
 
     @Override
