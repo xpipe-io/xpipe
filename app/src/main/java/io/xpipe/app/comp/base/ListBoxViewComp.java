@@ -118,11 +118,20 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
 
         var dirty = new SimpleBooleanProperty();
         var animationTimer = new AnimationTimer() {
+
+            private long delayThresholdCrossed;
+
             @Override
             public void handle(long now) {
                 if (!dirty.get()) {
                     return;
                 }
+
+                var ms = now / 1_000_000;
+                if (ms < delayThresholdCrossed + (hashCode() % 100)) {
+                    return;
+                }
+                delayThresholdCrossed = ms;
 
                 updateVisibilities(scroll, vbox);
                 dirty.set(false);
@@ -359,7 +368,7 @@ public class ListBoxViewComp<T> extends RegionBuilder<ScrollPane> {
             var d = DerivedObservableList.wrap(listView.getChildren(), true);
             d.setContent(newShown);
             if (refreshVisibilities) {
-                updateVisibilities(scroll, listView);
+                // updateVisibilities(scroll, listView);
             }
         };
         update.run();

@@ -14,7 +14,9 @@ import io.xpipe.app.platform.MenuHelper;
 import io.xpipe.app.util.ObservableSubscriber;
 import io.xpipe.core.OsType;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -95,7 +97,17 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
     }
 
     private Region createGroupListFilter() {
-        var filter = new FilterComp(StoreViewState.get().getFilterString()).build();
+        var prop = new SimpleStringProperty();
+        prop.addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && newValue.length() == 1) {
+                return;
+            }
+
+            Platform.runLater(() -> {
+                StoreViewState.get().getFilterString().setValue(newValue);
+            });
+        });
+        var filter = new StoreFilterComp(prop).build();
         filterTrigger.subscribe(() -> {
             filter.requestFocus();
         });

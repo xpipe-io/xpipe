@@ -69,7 +69,6 @@ public class StoreEntryWrapper {
     private final ObservableValue<String> shownSummary;
     private final ObservableValue<String> shownDescription;
     private final Property<String> shownInformation;
-    private final BooleanProperty largeCategoryOptimizations = new SimpleBooleanProperty();
     private final BooleanProperty readOnly = new SimpleBooleanProperty();
     private final BooleanProperty renaming = new SimpleBooleanProperty();
     private final BooleanProperty pinToTop = new SimpleBooleanProperty();
@@ -220,8 +219,6 @@ public class StoreEntryWrapper {
                         storeCategoryWrapper.getCategory().getUuid().equals(entry.getCategoryUuid()))
                 .findFirst()
                 .orElse(StoreViewState.get().getAllConnectionsCategory()));
-        largeCategoryOptimizations.setValue(
-                category.getValue().getLargeCategoryOptimizations().getValue());
         perUser.setValue(
                 !category.getValue().getRoot().equals(StoreViewState.get().getAllIdentitiesCategory())
                         && entry.isPerUserStore());
