@@ -44,7 +44,6 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
     private final Property<ComboValue<T>> selected;
     private final Function<T, String> stringConverter;
     private final StoreChoicePopover<T> popover;
-    private final boolean requireComplete;
 
     public StoreComboChoiceComp(
             Function<T, String> stringConverter,
@@ -56,7 +55,6 @@ public class StoreComboChoiceComp<T extends DataStore> extends SimpleRegionBuild
             boolean requireComplete) {
         this.stringConverter = stringConverter;
         this.selected = selected;
-        this.requireComplete = requireComplete;
 
         var popoverProp = new SimpleObjectProperty<>(
                 selected.getValue() != null ? selected.getValue().getRef() : null);

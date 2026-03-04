@@ -4,6 +4,7 @@ import io.xpipe.app.ext.DataStoreProvider;
 import io.xpipe.ext.base.desktop.DesktopApplicationStoreProvider;
 import io.xpipe.ext.base.host.AbstractHostCreationActionProvider;
 import io.xpipe.ext.base.host.AbstractHostStoreProvider;
+import io.xpipe.ext.base.host.CopyIpActionProvider;
 import io.xpipe.ext.base.host.HostAddressSwitchBranchProvider;
 import io.xpipe.ext.base.identity.*;
 import io.xpipe.ext.base.script.*;
@@ -35,6 +36,7 @@ open module io.xpipe.ext.base {
     requires javafx.graphics;
 
     provides ActionProvider with
+            CopyIpActionProvider,
             IdentityApplyHubLeafProvider,
             AbstractHostCreationActionProvider,
             HostAddressSwitchBranchProvider,

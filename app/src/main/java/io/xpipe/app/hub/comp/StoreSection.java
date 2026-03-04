@@ -8,6 +8,7 @@ import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
@@ -113,7 +114,7 @@ public class StoreSection {
                     (showInCategory(category.getValue(), section.getWrapper()));
         };
         var cached = topLevel.mapped(storeEntryWrapper -> {
-            var section = new AtomicReference<StoreSection>();
+            var section = new SimpleObjectProperty<StoreSection>();
             var sectionEnabled = Bindings.createBooleanBinding(() -> {
                         if (!enabled.getValue()) {
                             return false;
@@ -121,6 +122,7 @@ public class StoreSection {
 
                         return section.get() != null && showTopLevel.test(section.get());
                     },
+                    section,
                     enabled,
                     category,
                     filterString,
@@ -251,7 +253,7 @@ public class StoreSection {
         };
 
         var cached = allChildren.mapped(c -> {
-            var section = new AtomicReference<StoreSection>();
+            var section = new SimpleObjectProperty<StoreSection>();
             var sectionEnabled = Bindings.createBooleanBinding(() -> {
                         if (!enabled.getValue()) {
                             return false;
@@ -259,6 +261,7 @@ public class StoreSection {
 
                         return section.get() != null && showSection.test(section.get());
                     },
+                    section,
                     enabled,
                     category,
                     filterString,
