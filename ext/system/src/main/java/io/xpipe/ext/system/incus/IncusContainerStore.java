@@ -72,7 +72,7 @@ public class IncusContainerStore
     @Override
     public FixedChildStore merge(FixedChildStore other) {
         var o = (IncusContainerStore) other;
-        return toBuilder().identity(identity != null ? identity : o.identity).build();
+        return toBuilder().identity(identity != null ? identity : o.identity).projectName(o.projectName).build();
     }
 
     @Override
