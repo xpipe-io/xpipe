@@ -189,10 +189,10 @@ public interface PasswordManagerKeyStrategy {
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();
-        l.add(Inline.class);
         l.add(Agent.class);
         l.add(KeePassXcOpenSshAgent.class);
         l.add(KeePassXcPageant.class);
+        l.add(Inline.class);
         return l;
     }
 }

@@ -17,8 +17,23 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider {
+
+    @Override
+    public UUID getTargetCategory(DataStore store, UUID target) {
+        PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store;
+        if (!st.isPerUser()) {
+            return target;
+        }
+
+        var cat = DataStorage.get().getStoreCategoryIfPresent(target).orElseThrow();
+        var inSynced = DataStorage.get().getCategoryParentHierarchy(cat).stream()
+                .anyMatch(dataStoreCategory ->
+                        dataStoreCategory.getUuid().equals(DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID));
+        return inSynced ? target : DataStorage.SYNCED_IDENTITIES_CATEGORY_UUID;
+    }
 
     @Override
     public boolean allowCreation() {
@@ -33,12 +48,9 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
         var sshKey = new SimpleObjectProperty<>(st.getSshKey());
         var perUser = new SimpleBooleanProperty(st.isPerUser());
 
-        var pwMan = AppPrefs.get().passwordManager().getValue();
-        var showKeyChoice = pwMan == null || !pwMan.getKeyConfiguration().useInline();
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
                 .allowKeyFileSync(true)
-                .allowPasswordAgentKeyChoice(showKeyChoice)
                 .perUserKeyFileCheck(() -> false)
                 .fileSystem(new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()))
                 .build();
@@ -48,7 +60,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
         var hideSshKeyChoice = Bindings.createBooleanBinding(() -> {
             var pwman = AppPrefs.get().passwordManager().getValue();
             var strat = pwman.getKeyConfiguration();
-            return !strat.useAgent() && !strat.useInline();
+            return strat.useInline();
         }, AppPrefs.get().passwordManager());
 
         var testComp = new PasswordManagerTestComp(key, false);

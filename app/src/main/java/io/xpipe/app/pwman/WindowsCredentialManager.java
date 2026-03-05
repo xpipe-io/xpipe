@@ -23,7 +23,6 @@ public class WindowsCredentialManager implements PasswordManager {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<WindowsCredentialManager> p) {
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true));
     }

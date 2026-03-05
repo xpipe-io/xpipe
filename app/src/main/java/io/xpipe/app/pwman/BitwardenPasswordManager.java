@@ -84,7 +84,6 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .addComp(syncButton)
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true))

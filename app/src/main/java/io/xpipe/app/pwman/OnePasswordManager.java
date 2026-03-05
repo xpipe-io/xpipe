@@ -55,7 +55,6 @@ public class OnePasswordManager implements PasswordManager {
                 .build();
 
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .nameAndDescription("onePasswordManagerAccount")
                 .addString(account)
                 .hide(account.isNull().and(availableAccounts.emptyProperty()))

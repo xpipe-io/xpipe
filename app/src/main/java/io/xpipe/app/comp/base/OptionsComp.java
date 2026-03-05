@@ -38,12 +38,10 @@ public class OptionsComp extends RegionBuilder<VBox> {
 
     private final List<Entry> entries;
     private final List<Check> checks;
-    private final boolean autoFocus;
 
-    public OptionsComp(List<Entry> entries, List<Check> checks, boolean autoFocus) {
+    public OptionsComp(List<Entry> entries, List<Check> checks) {
         this.entries = entries;
         this.checks = checks;
-        this.autoFocus = autoFocus;
     }
 
     @Override
@@ -241,10 +239,6 @@ public class OptionsComp extends RegionBuilder<VBox> {
         Region finalFirstComp = firstComp;
         pane.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
-                return;
-            }
-
-            if (!autoFocus) {
                 return;
             }
 

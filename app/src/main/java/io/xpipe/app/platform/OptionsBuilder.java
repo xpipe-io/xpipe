@@ -84,11 +84,6 @@ public class OptionsBuilder {
         return this;
     }
 
-    public OptionsBuilder disableAutoFocus() {
-        focusEnabled = false;
-        return this;
-    }
-
     public OptionsBuilder() {
         this.ownValidator = new SimpleValidator();
         this.allValidators.add(ownValidator);
@@ -496,7 +491,7 @@ public class OptionsBuilder {
 
     public OptionsComp buildComp() {
         finishCurrent();
-        var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of(), focusEnabled);
+        var comp = new OptionsComp(entries, focusFirstIncomplete ? allChecks : List.of());
         return comp;
     }
 

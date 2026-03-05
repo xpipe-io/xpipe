@@ -234,3 +234,7 @@
 .ikonli-font-icon.graphic.terminal-dock-button {
     -fx-icon-color: -color-accent-fg;
 }
+
+.text-field:focused {
+    -fx-prompt-text-fill: -color-fg-subtle;
+}

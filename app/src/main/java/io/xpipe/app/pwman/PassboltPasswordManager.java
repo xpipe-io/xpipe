@@ -67,7 +67,6 @@ public class PassboltPasswordManager implements PasswordManager {
         chooser.setPrompt(new ReadOnlyObjectWrapper<>(FilePath.of("passbolt_private.asc")));
 
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .nameAndDescription("passboltServerUrl")
                 .addComp(
                         new TextFieldComp(serverUrl)

@@ -70,6 +70,7 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                                     popover.hide();
                                     e.consume();
                                 });
+                                entryButton.setMinWidth(600);
                                 content.getChildren().add(entryButton);
                             }
                             popover.setContentNode(content);

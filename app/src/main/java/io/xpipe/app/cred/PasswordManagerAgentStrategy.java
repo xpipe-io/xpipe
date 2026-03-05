@@ -7,11 +7,13 @@ import io.xpipe.app.comp.base.LabelComp;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.ext.ValidationException;
 import io.xpipe.app.platform.OptionsBuilder;
+import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.util.Validators;
 import io.xpipe.core.KeyValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -27,7 +29,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
 
-@JsonTypeName("passwordManager")
+@JsonTypeName("passwordManagerAgent")
 @Value
 @Jacksonized
 @Builder
@@ -36,8 +38,6 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
             Property<PasswordManagerAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
-        var forward =
-                new SimpleBooleanProperty(p.getValue() != null && p.getValue().isForwardAgent());
         var identifier =
                 new SimpleStringProperty(p.getValue() != null ? p.getValue().getIdentifier() : null);
 
@@ -69,22 +69,18 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
         return new OptionsBuilder()
                 .nameAndDescription("passwordManagerSshKeyConfig")
                 .addComp(pwmanDisplay)
-                .hide(Bindings.or(pwmanProp.isNull(), new ReadOnlyBooleanWrapper(!config.isAllowPasswordAgentKeyChoice())))
+                .hide(pwmanProp.isNull())
                 .nameAndDescription(useKeyName() ? "agentKeyName" : "publicKey")
                 .addComp(new SshAgentKeyListComp(config.getFileSystem(), p, identifier, useKeyName()), identifier)
-                .hide(!config.isAllowPasswordAgentKeyChoice())
-                .nameAndDescription("forwardAgent")
-                .addToggle(forward)
                 .nonNull()
                 .hide(!config.isAllowAgentForward())
                 .bind(
                         () -> {
-                            return new PasswordManagerAgentStrategy(forward.get(), identifier.get());
+                            return new PasswordManagerAgentStrategy(identifier.get());
                         },
                         p);
     }
 
-    boolean forwardAgent;
     String identifier;
 
     private static PasswordManagerKeyConfiguration getConfig() {
@@ -99,6 +95,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
 
     @Override
     public void checkComplete() throws ValidationException {
+        Validators.nonNull(identifier);
         var config = getConfig();
         if (config == null) {
             throw new ValidationException(AppI18n.get("passwordManagerSshKeysNotSupported"));
@@ -127,7 +124,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
         var config = getConfig();
         if (config != null) {
-            var strat = config.getSshIdentityStrategy(getPublicKeyStrategy().retrievePublicKey(), forwardAgent);
+            var strat = config.getSshIdentityStrategy(getPublicKeyStrategy().retrievePublicKey(), false);
             return strat.configOptions(sc);
         } else {
             return List.of();

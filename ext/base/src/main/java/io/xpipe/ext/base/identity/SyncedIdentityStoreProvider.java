@@ -76,7 +76,6 @@ public class SyncedIdentityStoreProvider extends IdentityStoreProvider {
         var sshIdentityChoiceConfig = SshIdentityStrategyChoiceConfig.builder()
                 .allowAgentForward(true)
                 .allowKeyFileSync(true)
-                .allowPasswordAgentKeyChoice(true)
                 .perUserKeyFileCheck(() -> perUser.get())
                 .build();
 

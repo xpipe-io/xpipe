@@ -32,7 +32,6 @@ public class LastpassPasswordManager implements PasswordManager {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<LastpassPasswordManager> p) {
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true));
     }

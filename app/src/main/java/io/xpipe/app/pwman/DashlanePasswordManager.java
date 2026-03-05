@@ -37,7 +37,6 @@ public class DashlanePasswordManager implements PasswordManager {
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<DashlanePasswordManager> p) {
         return new OptionsBuilder()
-                .disableAutoFocus()
                 .nameAndDescription("passwordManagerTest")
                 .addComp(new PasswordManagerTestComp(true));
     }

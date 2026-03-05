@@ -66,7 +66,7 @@ public class KeeperPasswordManager implements PasswordManager {
             return values;
         }
 
-        String constructKeeperInput(KeeperPasswordManager passwordManager) throws Exception;
+        String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) throws Exception;
 
         Duration getCacheDuration();
 
@@ -105,11 +105,13 @@ public class KeeperPasswordManager implements PasswordManager {
                 return index;
             }
 
-            private void sendInitialSms() throws Exception {
+            private boolean sendInitialSms(SecretValue password) throws Exception {
                 var sc = getOrStartShell();
                 var b = CommandBuilder.of()
                         .add(getExecutable(), "get")
-                        .addLiteral("test");
+                        .addLiteral("xpipe-test")
+                        .add("--password")
+                        .addLiteral(password.getSecretValue());
                 var file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
                 var input = """
                             
@@ -119,20 +121,30 @@ public class KeeperPasswordManager implements PasswordManager {
                             """;
                 sc.view().writeTextFile(file, input);
 
-                var fullCommand = CommandBuilder.of()
+                var fullB = CommandBuilder.of()
                         .add(sc.getShellDialect() == ShellDialects.CMD ? "type" : "cat")
                         .addFile(file)
                         .add("|")
                         .add(b);
-                sc.command(fullCommand).sensitive().execute();
+
+                var command = sc.command(fullB);
+                command.killOnTimeout(CountDown.of().start(30_000));
+                command.sensitive();
+                var success = command.executeAndCheck();
+                // A fail indicates the query went through but the entry was not found
+                if (!success) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager) throws Exception {
-                sendInitialSms();
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) throws Exception {
+                var sent = sendInitialSms(password);
 
                 var index = getTotpDurationIndex();
-                if (passwordManager.isHasCompletedRequestInSession() && index > 0) {
+                if (!sent || (passwordManager.isHasCompletedRequestInSession() && index > 0)) {
                     var input = """
 
                           1
@@ -215,7 +227,7 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) {
                 var index = getTotpDurationIndex();
                 if (passwordManager.isHasCompletedRequestInSession() && index > 0) {
                     var input = """
@@ -284,7 +296,7 @@ public class KeeperPasswordManager implements PasswordManager {
         class SecurityKey implements KeeperAuth {
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) {
                 var input = """
 
                           1
@@ -337,7 +349,7 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) {
                 var input = """
 
                           1
@@ -369,7 +381,7 @@ public class KeeperPasswordManager implements PasswordManager {
             }
 
             @Override
-            public String constructKeeperInput(KeeperPasswordManager passwordManager) {
+            public String constructKeeperInput(KeeperPasswordManager passwordManager, SecretValue password) {
                 var input = """
 
                           1
@@ -493,7 +505,7 @@ public class KeeperPasswordManager implements PasswordManager {
             FilePath file = sc.getSystemTemporaryDirectory().join("keeper" + Math.abs(new Random().nextInt()) + ".txt");
 
             var effectiveTwoFactor = twoFactorAuth != null ? twoFactorAuth : new KeeperAuth.None();
-            var input = effectiveTwoFactor.constructKeeperInput(this);
+            var input = effectiveTwoFactor.constructKeeperInput(this, r);
             if (input == null) {
                 return null;
             }
