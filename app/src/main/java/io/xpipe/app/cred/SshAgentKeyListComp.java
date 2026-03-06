@@ -18,6 +18,7 @@ import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -66,11 +67,12 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                                 entryButton.maxWidth(10000);
                                 entryButton.getStyleClass().add(Styles.FLAT);
                                 entryButton.setOnAction(e -> {
-                                    value.setValue(useKeyNames ? entry.getName() : entry.getPublicKey());
+                                    value.setValue(useKeyNames ? entry.getName() : entry.toString());
                                     popover.hide();
                                     e.consume();
                                 });
-                                entryButton.setMinWidth(600);
+                                entryButton.setMinWidth(400);
+                                entryButton.setAlignment(Pos.CENTER_LEFT);
                                 content.getChildren().add(entryButton);
                             }
                             popover.setContentNode(content);

@@ -143,7 +143,7 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
 
         return new PublicKeyStrategy.Dynamic(() -> {
             return SshAgentKeyList.findAgentIdentity(
-                    DataStorage.get().local().ref(), this, identifier).getPublicKey();
+                    DataStorage.get().local().ref(), this, identifier).toString();
         });
     }
 }

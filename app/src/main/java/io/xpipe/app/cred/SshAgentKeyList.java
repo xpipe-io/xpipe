@@ -23,6 +23,11 @@ public class SshAgentKeyList {
         String type;
         String publicKey;
         String name;
+
+        @Override
+        public String toString() {
+            return type + " " + publicKey + " " + name;
+        }
     }
 
     public static Entry findAgentIdentity(DataStoreEntryRef<ShellStore> ref, SshIdentityStrategy strategy, String identifier) throws Exception {

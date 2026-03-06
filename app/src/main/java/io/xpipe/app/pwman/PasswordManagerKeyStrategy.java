@@ -2,15 +2,12 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.cred.*;
-import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
-import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
-import io.xpipe.core.OsType;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -19,7 +16,6 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javafx.beans.value.ObservableValue;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
@@ -27,7 +23,6 @@ import lombok.extern.jackson.Jacksonized;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManagerKeyStrategy {
@@ -68,7 +63,7 @@ public interface PasswordManagerKeyStrategy {
     @Builder
     class Agent implements PasswordManagerKeyStrategy {
 
-        FilePath customSocket;
+        FilePath socket;
 
         @Override
         public boolean useAgent() {
@@ -82,7 +77,10 @@ public interface PasswordManagerKeyStrategy {
 
         @SuppressWarnings("unused")
         static OptionsBuilder createOptions(Property<Agent> property, OptionsConfig config) {
-            var customSocket = new SimpleObjectProperty<>(property.getValue().getCustomSocket());
+            var customSocket = new SimpleObjectProperty<>(property.getValue().getSocket());
+            if (config.getDefaultSocketLocation() != null && customSocket.get() == null) {
+                customSocket.set(FilePath.of(config.getDefaultSocketLocation()));
+            }
 
             var choice = new ContextualFileReferenceChoiceComp(
                     new ReadOnlyObjectWrapper<>(DataStorage.get().local().ref()),
@@ -97,6 +95,7 @@ public interface PasswordManagerKeyStrategy {
             if (!config.isAllowSocketChoice()) {
                 choice.disable();
             }
+            choice.style("agent-socket-choice");
 
             return new OptionsBuilder()
                     .addComp(new SshAgentTestComp(Bindings.createObjectBinding(() -> {
@@ -104,10 +103,10 @@ public interface PasswordManagerKeyStrategy {
                     }, property)))
                     .nameAndDescription("passwordManagerSshAgentSocket")
                     .addComp(choice, customSocket)
-                    .hide(!config.isAllowSocketChoice())
+                    .hide(!config.isAllowSocketChoice() && config.getDefaultSocketLocation() == null)
                     .bind(
                             () -> Agent.builder()
-                                    .customSocket(customSocket.get())
+                                    .socket(customSocket.get())
                                     .build(),
                             property);
         }
@@ -118,28 +117,30 @@ public interface PasswordManagerKeyStrategy {
                 @Override
                 public void prepareParent(ShellControl parent) throws Exception {
                     if (parent.isLocal()) {
-                        SshIdentityStateManager.prepareLocalExternalAgent(customSocket);
+                        SshIdentityStateManager.prepareLocalExternalAgent(socket);
                     }
                 }
 
                 @Override
-                public void buildCommand(CommandBuilder builder) {
-
-                }
+                public void buildCommand(CommandBuilder builder) {}
 
                 @Override
                 public List<KeyValue> configOptions(ShellControl sc) throws Exception {
                     var file = SshIdentityStrategy.getPublicKeyPath(sc, publicKey);
-                    return List.of(
+                    var l = new ArrayList<>(List.of(
                             new KeyValue("IdentitiesOnly", file.isPresent() ? "yes" : "no"),
                             new KeyValue("ForwardAgent", forward ? "yes" : "no"),
                             new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
-                            new KeyValue("PKCS11Provider", "none"));
+                            new KeyValue("PKCS11Provider", "none")));
+                    if (socket != null) {
+                        l.add(new KeyValue("IdentityAgent", "\"" + socket + "\""));
+                    }
+                    return l;
                 }
 
                 @Override
                 public PublicKeyStrategy getPublicKeyStrategy() {
-                    return null;
+                    return PublicKeyStrategy.Fixed.of(publicKey);
                 }
             };
         }

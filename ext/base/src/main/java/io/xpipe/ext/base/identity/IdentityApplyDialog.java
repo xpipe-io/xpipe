@@ -83,7 +83,7 @@ public class IdentityApplyDialog {
 
                 var publicKey = identity.getSshIdentity().getPublicKeyStrategy().retrievePublicKey();
                 var split = publicKey.split("\\s+");
-                var basePublicKey = split[0] + " " + split[1];
+                var basePublicKey = split.length > 1 ? split[0] + " " + split[1] : split[0];
 
                 inAuthorizedKeys = authorizedKeysContent.toLowerCase().contains(basePublicKey.toLowerCase());
             } else {
