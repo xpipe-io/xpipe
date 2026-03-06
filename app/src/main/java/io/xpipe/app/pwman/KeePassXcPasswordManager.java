@@ -3,8 +3,6 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.core.AppI18n;
-import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -47,15 +45,18 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy, null, false);
+        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy, null);
     }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<KeePassXcPasswordManager> p) {
+        List<Class<?>> strategyList = OsType.ofLocal() == OsType.WINDOWS ?
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class) :
+                List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class);
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().getKeyStrategy());
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class))
+                .available(strategyList)
                 .property(keyStrategy)
                 .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
                         .defaultSocketLocation(null)

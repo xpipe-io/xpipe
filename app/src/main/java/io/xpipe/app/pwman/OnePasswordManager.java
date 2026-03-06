@@ -1,7 +1,6 @@
 package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
@@ -37,7 +36,7 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation(), false);
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
     }
 
     private static ShellControl SHELL;
@@ -49,7 +48,7 @@ public class OnePasswordManager implements PasswordManager {
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
-            case OsType.MacOs macOs -> null;
+            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Group Containers", "2BUA8C4S2C.com.1password", "t", "agent.sock");
             case OsType.Windows windows -> null;
         };
         return socket;
@@ -66,7 +65,7 @@ public class OnePasswordManager implements PasswordManager {
                 .property(keyStrategy)
                 .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
                         .defaultSocketLocation(getSocketLocation())
-                        .allowSocketChoice(OsType.ofLocal() != OsType.WINDOWS)
+                        .allowSocketChoice(false)
                         .build())
                 .build();
 

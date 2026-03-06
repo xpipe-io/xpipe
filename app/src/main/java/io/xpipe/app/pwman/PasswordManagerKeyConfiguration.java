@@ -1,13 +1,12 @@
 package io.xpipe.app.pwman;
 
 import io.xpipe.app.cred.SshIdentityAgentStrategy;
-import io.xpipe.app.cred.SshIdentityStrategy;
 
 import java.nio.file.Path;
 
 public interface PasswordManagerKeyConfiguration {
 
-    static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, boolean supportsAgentKeyNames, PasswordManagerKeyStrategy strategy, Path socket, boolean changeable) {
+    static PasswordManagerKeyConfiguration of(boolean inline, boolean joined, boolean supportsAgentKeyNames, PasswordManagerKeyStrategy strategy, Path socket) {
         return new PasswordManagerKeyConfiguration() {
             @Override
             public boolean useInline() {
@@ -34,10 +33,6 @@ public interface PasswordManagerKeyConfiguration {
                 return socket;
             }
 
-            @Override
-            public boolean canChangeSocketLocation() {
-                return changeable;
-            }
         };
     }
 
@@ -68,10 +63,6 @@ public interface PasswordManagerKeyConfiguration {
                 return null;
             }
 
-            @Override
-            public boolean canChangeSocketLocation() {
-                return false;
-            }
         };
     }
 
@@ -85,5 +76,4 @@ public interface PasswordManagerKeyConfiguration {
 
     Path getDefaultSocketLocation();
 
-    boolean canChangeSocketLocation();
 }

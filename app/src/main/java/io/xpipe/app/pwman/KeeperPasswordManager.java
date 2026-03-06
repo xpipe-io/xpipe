@@ -45,7 +45,7 @@ public class KeeperPasswordManager implements PasswordManager {
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
-            case OsType.MacOs macOs -> null;
+            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support", "Keeper Password Manager", "keeper-ssh-agent.sock");
             case OsType.Windows windows -> null;
         };
         return socket;
@@ -54,7 +54,7 @@ public class KeeperPasswordManager implements PasswordManager {
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
         var socket = getSocketLocation();
-        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy, socket, false);
+        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy, socket);
     }
 
     private final PasswordManagerKeyStrategy keyStrategy;
@@ -441,7 +441,10 @@ public class KeeperPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
                 .property(keyStrategy)
-                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder().defaultSocketLocation(getSocketLocation()).build())
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
+                        .defaultSocketLocation(getSocketLocation())
+                        .allowSocketChoice(false)
+                        .build())
                 .build();
 
 

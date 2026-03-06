@@ -4,7 +4,6 @@ import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.core.AppCache;
 import io.xpipe.app.core.AppI18n;
 import io.xpipe.app.core.AppSystemInfo;
-import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -62,8 +61,8 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
-            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
-            case OsType.MacOs macOs -> null;
+            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".bitwarden-ssh-agent.sock");
+            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Containers", "com.bitwarden.desktop", "Data", ".bitwarden-ssh-agent.sock");
             case OsType.Windows windows -> null;
         };
         return socket;
@@ -92,7 +91,7 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .property(keyStrategy)
                 .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
                         .defaultSocketLocation(getSocketLocation())
-                        .allowSocketChoice(OsType.ofLocal() != OsType.WINDOWS)
+                        .allowSocketChoice(false)
                         .build())
                 .build();
 
@@ -276,6 +275,6 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, null, false);
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation());
     }
 }
