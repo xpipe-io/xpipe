@@ -5,10 +5,7 @@ import io.xpipe.core.OsType;
 import io.xpipe.core.SecretValue;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Duration;
@@ -17,6 +14,24 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManager {
+
+    @SneakyThrows
+    static boolean isPasswordManagerSshAgent(String s) {
+        for (Class<?> c : PasswordManager.getClasses()) {
+            var bm = c.getDeclaredMethod("builder");
+            bm.setAccessible(true);
+            var b = bm.invoke(null);
+
+            var m = b.getClass().getDeclaredMethod("build");
+            m.setAccessible(true);
+            var defValue = (PasswordManager) c.cast(m.invoke(b));
+            var config = defValue.getKeyConfiguration();
+            if (config.getDefaultSocketLocation() != null && config.getDefaultSocketLocation().toString().equals(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

@@ -16,6 +16,7 @@ import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
@@ -52,6 +53,8 @@ public class SshAgentTestComp extends SimpleRegionBuilder {
                                 var entryButton = new Button(entry.getName() + " (" + entry.getType() + ")");
                                 entryButton.maxWidth(10000);
                                 entryButton.getStyleClass().add(Styles.FLAT);
+                                entryButton.setMinWidth(400);
+                                entryButton.setAlignment(Pos.CENTER_LEFT);
                                 content.getChildren().add(entryButton);
                             }
                             popover.setContentNode(content);

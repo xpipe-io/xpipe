@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import io.xpipe.app.comp.base.ButtonComp;
 import io.xpipe.app.comp.base.ListBoxViewComp;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.cred.SshIdentityStrategy;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.DerivedObservableList;
@@ -56,6 +57,10 @@ public class KeePassXcPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.KeePassXcOpenSshAgent.class, PasswordManagerKeyStrategy.KeePassXcPageant.class))
                 .property(keyStrategy)
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
+                        .defaultSocketLocation(null)
+                        .allowSocketChoice(false)
+                        .build())
                 .build();
 
         var prop = FXCollections.<KeePassXcAssociationKey>observableArrayList();

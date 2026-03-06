@@ -3,6 +3,7 @@ package io.xpipe.app.pwman;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -17,12 +18,14 @@ import io.xpipe.app.util.ThreadHelper;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.xpipe.core.OsType;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Path;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,7 +37,7 @@ public class OnePasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, null, false);
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, getSocketLocation(), false);
     }
 
     private static ShellControl SHELL;
@@ -42,6 +45,15 @@ public class OnePasswordManager implements PasswordManager {
 
     private final String account;
     private final PasswordManagerKeyStrategy keyStrategy;
+
+    private static Path getSocketLocation() {
+        var socket = switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getUserHome().resolve(".1password", "agent.sock");
+            case OsType.MacOs macOs -> null;
+            case OsType.Windows windows -> null;
+        };
+        return socket;
+    }
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<OnePasswordManager> p) {
@@ -52,6 +64,10 @@ public class OnePasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
+                        .defaultSocketLocation(getSocketLocation())
+                        .allowSocketChoice(OsType.ofLocal() != OsType.WINDOWS)
+                        .build())
                 .build();
 
         return new OptionsBuilder()

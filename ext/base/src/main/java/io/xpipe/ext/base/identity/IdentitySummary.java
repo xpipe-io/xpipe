@@ -14,7 +14,11 @@ public class IdentitySummary {
         }
 
         if (st instanceof PasswordManagerIdentityStore pmis) {
-            return pmis.getKey();
+            var s = "Credentials " + pmis.getKey();
+            if (pmis.getSshIdentity() != null && !(pmis.getSshIdentity() instanceof NoIdentityStrategy)) {
+                s += " + agent key";
+            }
+            return s;
         }
 
         var user = st.getUsername().hasUser()

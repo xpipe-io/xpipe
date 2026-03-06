@@ -60,6 +60,15 @@ public class BitwardenPasswordManager implements PasswordManager {
         return SHELL;
     }
 
+    private static Path getSocketLocation() {
+        var socket = switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
+            case OsType.MacOs macOs -> null;
+            case OsType.Windows windows -> null;
+        };
+        return socket;
+    }
+
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<BitwardenPasswordManager> p) {
         var keyStrategy = new SimpleObjectProperty<>(p.getValue().keyStrategy);
@@ -81,6 +90,10 @@ public class BitwardenPasswordManager implements PasswordManager {
                 .allowNull(true)
                 .available(List.of(PasswordManagerKeyStrategy.Agent.class))
                 .property(keyStrategy)
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder()
+                        .defaultSocketLocation(getSocketLocation())
+                        .allowSocketChoice(OsType.ofLocal() != OsType.WINDOWS)
+                        .build())
                 .build();
 
         return new OptionsBuilder()

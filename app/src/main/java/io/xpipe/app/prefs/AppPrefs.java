@@ -23,7 +23,6 @@ import io.xpipe.app.terminal.TerminalSplitStrategy;
 import io.xpipe.app.update.AppDistributionType;
 import io.xpipe.app.util.*;
 import io.xpipe.app.vnc.ExternalVncClient;
-import io.xpipe.app.vnc.InternalVncClient;
 import io.xpipe.app.vnc.VncCategory;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.OsType;
@@ -39,10 +38,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Value;
+import lombok.*;
 
 import java.nio.file.Files;
 import java.util.*;
@@ -870,7 +866,16 @@ public final class AppPrefs {
             // as the one is set by default and might not be the right one
             // This happens for example with homebrew ssh
             var shellVariable = LocalShell.getShell().view().getEnvironmentVariable("SSH_AUTH_SOCK");
-            var socketEnvVariable = shellVariable.isEmpty() ? System.getenv("SSH_AUTH_SOCK") : shellVariable.get();
+            if (shellVariable.isPresent() && PasswordManager.isPasswordManagerSshAgent(shellVariable.get())) {
+                shellVariable = Optional.empty();
+            }
+
+            var envVariable = System.getenv("SSH_AUTH_SOCK");
+            if (envVariable != null && PasswordManager.isPasswordManagerSshAgent(envVariable)) {
+                envVariable = null;
+            }
+
+            var socketEnvVariable = shellVariable.isEmpty() ? envVariable : shellVariable.get();
             defaultSshAgentSocket.setValue(FilePath.parse(socketEnvVariable));
         }
 
