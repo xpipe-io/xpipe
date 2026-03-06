@@ -61,13 +61,16 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                             var content = new VBox();
                             content.setPadding(new Insets(10));
                             content.setFillWidth(true);
-                            content.getChildren().add(new Label(AppI18n.get("sshAgentHasKeys")));
+                            var header = new Label(AppI18n.get("sshAgentHasKeys"));
+                            header.setPadding(new Insets(0, 0, 8, 8));
+                            content.getChildren().add(header);
                             for (SshAgentKeyList.Entry entry : list) {
-                                var entryButton = new Button(entry.getName() + " (" + entry.getType() + ")");
-                                entryButton.maxWidth(10000);
+                                var buttonName = entry.getType() + " " + (entry.getName() != null ? entry.getName() : entry.getPublicKey());
+                                var entryButton = new Button(buttonName);
+                                entryButton.setMaxWidth(400);
                                 entryButton.getStyleClass().add(Styles.FLAT);
                                 entryButton.setOnAction(e -> {
-                                    value.setValue(useKeyNames ? entry.getName() : entry.toString());
+                                    value.setValue(useKeyNames && entry.getName() != null ? entry.getName() : entry.toString());
                                     popover.hide();
                                     e.consume();
                                 });
@@ -77,7 +80,9 @@ public class SshAgentKeyListComp extends SimpleRegionBuilder {
                             }
                             popover.setContentNode(content);
                         } else {
-                            popover.setContentNode(new Label(AppI18n.get("sshAgentNoKeys")));
+                            var content = new Label(AppI18n.get("sshAgentNoKeys"));
+                            content.setPadding(new Insets(10));
+                            popover.setContentNode(content);
                         }
 
                         var target = struc.getParent().getChildrenUnmodifiable().getFirst();
