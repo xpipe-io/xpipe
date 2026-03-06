@@ -3,6 +3,7 @@ package io.xpipe.app.cred;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 
 import javafx.beans.property.Property;
@@ -20,7 +21,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class OtherExternalAgentStrategy implements SshIdentityStrategy {
+public class OtherExternalAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -52,6 +53,11 @@ public class OtherExternalAgentStrategy implements SshIdentityStrategy {
         if (parent.isLocal()) {
             SshIdentityStateManager.prepareLocalExternalAgent(null);
         }
+    }
+
+    @Override
+    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+        return null;
     }
 
     @Override

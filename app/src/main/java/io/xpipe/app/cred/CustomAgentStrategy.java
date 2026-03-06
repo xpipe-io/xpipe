@@ -9,6 +9,7 @@ import io.xpipe.app.platform.Validator;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -31,7 +32,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class CustomAgentStrategy implements SshIdentityStrategy {
+public class CustomAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -104,9 +105,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (!sc.isLocal() || sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -117,12 +116,15 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                 agent = AppPrefs.get().defaultSshAgentSocket().getValue();
             }
             if (agent != null) {
-                return agent.resolveTildeHome(sc.view().userHome()).toString();
+                return agent.resolveTildeHome(sc.view().userHome());
             }
         }
 
         return null;
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -133,7 +135,7 @@ public class CustomAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }

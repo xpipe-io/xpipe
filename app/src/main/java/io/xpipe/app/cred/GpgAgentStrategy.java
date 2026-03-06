@@ -7,6 +7,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LicenseProvider;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -27,7 +28,7 @@ import java.util.List;
 @Jacksonized
 @Builder
 @JsonTypeName("gpgAgent")
-public class GpgAgentStrategy implements SshIdentityStrategy {
+public class GpgAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<GpgAgentStrategy> p, SshIdentityStrategyChoiceConfig config) {
@@ -81,9 +82,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -93,8 +92,11 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
             return null;
         }
 
-        return r;
+        return FilePath.of(r);
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -105,7 +107,7 @@ public class GpgAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }

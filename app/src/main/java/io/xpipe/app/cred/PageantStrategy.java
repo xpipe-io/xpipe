@@ -8,6 +8,7 @@ import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.LocalShell;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.util.LocalExec;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -30,7 +31,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class PageantStrategy implements SshIdentityStrategy {
+public class PageantStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(Property<PageantStrategy> p, SshIdentityStrategyChoiceConfig config) {
@@ -95,15 +96,16 @@ public class PageantStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.isLocal() && sc.getOsType() == OsType.WINDOWS) {
-            return getPageantWindowsPipe();
+            return FilePath.of(getPageantWindowsPipe());
         }
 
         return null;
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -114,7 +116,7 @@ public class PageantStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }

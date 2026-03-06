@@ -26,9 +26,9 @@ import java.util.List;
 
 public class SshAgentTestComp extends SimpleRegionBuilder {
 
-    private final ObservableValue<? extends SshIdentityStrategy> sshIdentityStrategy;
+    private final ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy;
 
-    public SshAgentTestComp(ObservableValue<? extends SshIdentityStrategy> sshIdentityStrategy) {this.sshIdentityStrategy = sshIdentityStrategy;}
+    public SshAgentTestComp(ObservableValue<? extends SshIdentityAgentStrategy> sshIdentityStrategy) {this.sshIdentityStrategy = sshIdentityStrategy;}
 
     @Override
     protected Region createSimple() {

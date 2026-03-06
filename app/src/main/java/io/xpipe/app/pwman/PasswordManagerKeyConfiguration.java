@@ -1,5 +1,6 @@
 package io.xpipe.app.pwman;
 
+import io.xpipe.app.cred.SshIdentityAgentStrategy;
 import io.xpipe.app.cred.SshIdentityStrategy;
 
 import java.nio.file.Path;
@@ -24,7 +25,7 @@ public interface PasswordManagerKeyConfiguration {
             }
 
             @Override
-            public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+            public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
                 return strategy.getSshIdentityStrategy(publicKey, forward);
             }
 
@@ -58,7 +59,7 @@ public interface PasswordManagerKeyConfiguration {
             }
 
             @Override
-            public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+            public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
                 return null;
             }
 
@@ -80,7 +81,7 @@ public interface PasswordManagerKeyConfiguration {
 
     boolean supportsAgentKeyNames();
 
-    SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward);
+    SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward);
 
     Path getDefaultSocketLocation();
 

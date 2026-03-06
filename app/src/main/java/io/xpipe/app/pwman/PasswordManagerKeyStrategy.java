@@ -52,7 +52,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return null;
         }
     }
@@ -112,13 +112,18 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
-            return new SshIdentityStrategy() {
+        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+            return new SshIdentityAgentStrategy() {
                 @Override
                 public void prepareParent(ShellControl parent) throws Exception {
                     if (parent.isLocal()) {
                         SshIdentityStateManager.prepareLocalExternalAgent(socket);
                     }
+                }
+
+                @Override
+                public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+                    return socket != null ? socket.resolveTildeHome(parent.view().userHome()) : null;
                 }
 
                 @Override
@@ -170,7 +175,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return OpenSshAgentStrategy.builder().build();
         }
     }
@@ -198,14 +203,14 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @Override
-        public SshIdentityStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
+        public SshIdentityAgentStrategy getSshIdentityStrategy(String publicKey, boolean forward) {
             return PageantStrategy.builder().build();
         }
     }
 
     boolean useAgent();
 
-    SshIdentityStrategy  getSshIdentityStrategy(String publicKey, boolean forward);
+    SshIdentityAgentStrategy  getSshIdentityStrategy(String publicKey, boolean forward);
 
     static List<Class<?>> getClasses() {
         var l = new ArrayList<Class<?>>();

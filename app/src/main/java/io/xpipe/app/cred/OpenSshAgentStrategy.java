@@ -5,6 +5,7 @@ import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.prefs.AppPrefs;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
 
@@ -24,7 +25,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class OpenSshAgentStrategy implements SshIdentityStrategy {
+public class OpenSshAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -63,9 +64,7 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
     }
 
     @Override
-    public void buildCommand(CommandBuilder builder) {}
-
-    private String getIdentityAgent(ShellControl sc) throws Exception {
+    public FilePath determinetAgentSocketLocation(ShellControl sc) throws Exception {
         if (sc.getOsType() == OsType.WINDOWS) {
             return null;
         }
@@ -73,12 +72,15 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
         if (AppPrefs.get() != null) {
             var socket = AppPrefs.get().defaultSshAgentSocket().getValue();
             if (socket != null) {
-                return socket.resolveTildeHome(sc.view().userHome()).toString();
+                return socket.resolveTildeHome(sc.view().userHome());
             }
         }
 
         return null;
     }
+
+    @Override
+    public void buildCommand(CommandBuilder builder) {}
 
     @Override
     public List<KeyValue> configOptions(ShellControl sc) throws Exception {
@@ -89,7 +91,7 @@ public class OpenSshAgentStrategy implements SshIdentityStrategy {
                 new KeyValue("IdentityFile", file.isPresent() ? file.get().toString() : "none"),
                 new KeyValue("PKCS11Provider", "none")));
 
-        var agent = getIdentityAgent(sc);
+        var agent = determinetAgentSocketLocation(sc);
         if (agent != null) {
             l.add(new KeyValue("IdentityAgent", "\"" + agent + "\""));
         }

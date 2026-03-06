@@ -14,6 +14,7 @@ import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.pwman.PasswordManagerKeyConfiguration;
 import io.xpipe.app.storage.DataStorage;
 import io.xpipe.app.util.Validators;
+import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
@@ -33,7 +34,7 @@ import java.util.List;
 @Value
 @Jacksonized
 @Builder
-public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
+public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
 
     @SuppressWarnings("unused")
     public static OptionsBuilder createOptions(
@@ -109,6 +110,11 @@ public class PasswordManagerAgentStrategy implements SshIdentityStrategy {
             var strat = config.getSshIdentityStrategy(null, false);
             strat.prepareParent(parent);
         }
+    }
+
+    @Override
+    public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
+        return null;
     }
 
     @Override

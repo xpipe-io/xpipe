@@ -30,7 +30,7 @@ public class SshAgentKeyList {
         }
     }
 
-    public static Entry findAgentIdentity(DataStoreEntryRef<ShellStore> ref, SshIdentityStrategy strategy, String identifier) throws Exception {
+    public static Entry findAgentIdentity(DataStoreEntryRef<ShellStore> ref, SshIdentityAgentStrategy strategy, String identifier) throws Exception {
         var list = listAgentIdentities(ref, strategy).stream().filter(entry -> {
             return entry.getName().equalsIgnoreCase(identifier) || entry.getPublicKey().equalsIgnoreCase(identifier);
         }).toList();
@@ -47,11 +47,12 @@ public class SshAgentKeyList {
         return list.getFirst();
     }
 
-    public static List<Entry> listAgentIdentities(DataStoreEntryRef<ShellStore> ref, SshIdentityStrategy strategy) throws Exception {
+    public static List<Entry> listAgentIdentities(DataStoreEntryRef<ShellStore> ref, SshIdentityAgentStrategy strategy) throws Exception {
         var session = ref.getStore().getOrStartSession();
         strategy.prepareParent(session);
 
-        var out = session.command(CommandBuilder.of().add("ssh-add", "-L")).readStdoutOrThrow();
+        var socket = strategy.determinetAgentSocketLocation(session);
+        var out = session.command(CommandBuilder.of().add("ssh-add", "-L").fixedEnvironment("SSH_AUTH_SOCK", socket != null ? socket.toString() : null)).readStdoutOrThrow();
         var pattern = Pattern.compile("([^ ]+) ([^ ]+) (.+)");
         var lines = out.lines().toList();
         var list = new ArrayList<Entry>();
