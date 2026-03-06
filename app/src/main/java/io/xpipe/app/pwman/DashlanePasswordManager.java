@@ -22,6 +22,8 @@ import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Region;
+import lombok.Builder;
+import lombok.extern.jackson.Jacksonized;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.List;
@@ -29,6 +31,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @JsonTypeName("dashlane")
+@Builder
+@Jacksonized
 public class DashlanePasswordManager implements PasswordManager {
 
     private static ShellControl SHELL;

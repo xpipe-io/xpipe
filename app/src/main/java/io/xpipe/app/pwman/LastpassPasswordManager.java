@@ -15,11 +15,17 @@ import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
 @JsonTypeName("lastpass")
+@Builder
+@Jacksonized
+@Getter
 public class LastpassPasswordManager implements PasswordManager {
 
     @Override

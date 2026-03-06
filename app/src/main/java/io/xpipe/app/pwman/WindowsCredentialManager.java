@@ -7,10 +7,14 @@ import io.xpipe.app.process.LocalShell;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import javafx.beans.property.Property;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
 
 @JsonTypeName("windowsCredentialManager")
-@Value
+@Builder
+@Jacksonized
 public class WindowsCredentialManager implements PasswordManager {
 
     private static boolean loaded = false;
