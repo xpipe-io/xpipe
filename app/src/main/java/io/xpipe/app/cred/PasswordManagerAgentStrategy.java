@@ -114,7 +114,8 @@ public class PasswordManagerAgentStrategy implements SshIdentityAgentStrategy {
 
     @Override
     public FilePath determinetAgentSocketLocation(ShellControl parent) throws Exception {
-        return null;
+        var config = getConfig();
+        return config != null ? FilePath.of(config.getDefaultSocketLocation()) : null;
     }
 
     @Override

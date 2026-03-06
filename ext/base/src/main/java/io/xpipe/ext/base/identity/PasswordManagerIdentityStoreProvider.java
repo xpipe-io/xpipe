@@ -26,7 +26,7 @@ public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider 
     @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
         PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store;
-        if (!st.isPerUser()) {
+        if (st == null || !st.isPerUser()) {
             return target;
         }
 
