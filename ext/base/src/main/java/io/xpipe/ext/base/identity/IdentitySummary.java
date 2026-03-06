@@ -13,6 +13,10 @@ public class IdentitySummary {
             }
         }
 
+        if (st instanceof PasswordManagerIdentityStore pmis) {
+            return pmis.getKey();
+        }
+
         var user = st.getUsername().hasUser()
                 ? st.getUsername().getFixedUsername().map(s -> "User " + s).orElse("User")
                 : "Anonymous user";

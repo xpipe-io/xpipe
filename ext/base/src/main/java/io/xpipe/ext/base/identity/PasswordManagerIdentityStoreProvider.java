@@ -21,6 +21,8 @@ import java.util.UUID;
 
 public class PasswordManagerIdentityStoreProvider extends IdentityStoreProvider {
 
+
+
     @Override
     public UUID getTargetCategory(DataStore store, UUID target) {
         PasswordManagerIdentityStore st = (PasswordManagerIdentityStore) store;

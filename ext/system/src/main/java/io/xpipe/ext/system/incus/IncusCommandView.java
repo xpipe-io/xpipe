@@ -1,11 +1,14 @@
 package io.xpipe.ext.system.incus;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.xpipe.app.ext.ContainerStoreState;
 import io.xpipe.app.ext.NetworkContainerStoreState;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.process.*;
 import io.xpipe.app.storage.DataStoreEntry;
 import io.xpipe.app.storage.DataStoreEntryRef;
+import io.xpipe.core.JacksonMapper;
 import io.xpipe.ext.base.identity.IdentityValue;
 
 import lombok.NonNull;
@@ -146,15 +149,50 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     private List<ContainerEntry> listContainers() throws Exception {
-        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "csv", "-c", "ens46"))
+        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json", "-c", "ens46"))
                 .start()) {
             var output = c.readStdoutOrThrow();
-            return output.lines().map(s -> {
-                var split = s.split(",", 5);
-                var ipv4 = split[3] != null && !split[3].isEmpty() ? split[3].split("\\s+")[0] : null;
-                var ipv6 = split[4] != null && !split[4].isEmpty()  ? split[4].split("\\s+")[0] : null;
-                return new ContainerEntry(split[0], split[1], split[2], ipv4, ipv6);
-            }).toList();
+            var json = JacksonMapper.getDefault().readTree(output);
+            var l = new ArrayList<ContainerEntry>();
+            for (JsonNode jsonNode : json) {
+                var status = jsonNode.required("status").textValue();
+                var project = jsonNode.required("project").textValue();
+                var name = jsonNode.required("name").textValue();
+                var state = jsonNode.required("state");
+                var network = state.get("network");
+                String ipv4 = null;
+                String ipv6 = null;
+                if (network != null) {
+                    var eth0 = network.get("eth0");
+                    if (eth0 == null && network.size() > 0) {
+                        for (var it = network.fieldNames();it.hasNext();) {
+                            var field = it.next();
+                            if (!field.equals("lo")) {
+                                eth0 = network.required(field);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (eth0 != null) {
+                        var addresses = eth0.required("addresses");
+                        for (JsonNode address : addresses) {
+                            if (!address.required("scope").textValue().equals("global")) {
+                                continue;
+                            }
+
+                            var family = address.required("family").textValue();
+                            if (family.equals("inet")) {
+                                ipv4 = address.required("address").textValue();
+                            } else if (family.equals("inet6")) {
+                                ipv6 = address.required("address").textValue();
+                            }
+                        }
+                    }
+                }
+                l.add(new ContainerEntry(project, name, status, ipv4, ipv6));
+            }
+            return l;
         }
     }
 
