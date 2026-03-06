@@ -149,7 +149,7 @@ public class IncusCommandView extends CommandViewBase {
     }
 
     private List<ContainerEntry> listContainers() throws Exception {
-        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json", "-c", "ens46"))
+        try (var c = build(commandBuilder -> commandBuilder.add("list", "--all-projects", "-f", "json"))
                 .start()) {
             var output = c.readStdoutOrThrow();
             var json = JacksonMapper.getDefault().readTree(output);

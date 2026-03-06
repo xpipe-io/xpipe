@@ -2,10 +2,12 @@ package io.xpipe.app.pwman;
 
 import io.xpipe.app.comp.base.ContextualFileReferenceChoiceComp;
 import io.xpipe.app.cred.*;
+import io.xpipe.app.ext.ShellStore;
 import io.xpipe.app.platform.OptionsBuilder;
 import io.xpipe.app.process.CommandBuilder;
 import io.xpipe.app.process.ShellControl;
 import io.xpipe.app.storage.DataStorage;
+import io.xpipe.app.storage.DataStoreEntryRef;
 import io.xpipe.core.FilePath;
 import io.xpipe.core.KeyValue;
 import io.xpipe.core.OsType;
@@ -17,15 +19,26 @@ import javafx.beans.property.SimpleObjectProperty;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import javafx.beans.value.ObservableValue;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 public interface PasswordManagerKeyStrategy {
+
+    @Value
+    @Builder
+    public class OptionsConfig {
+
+        boolean allowSocketChoice;
+        Path defaultSocketLocation;
+    }
 
     @JsonTypeName("inline")
     @Value
@@ -68,7 +81,7 @@ public interface PasswordManagerKeyStrategy {
         }
 
         @SuppressWarnings("unused")
-        static OptionsBuilder createOptions(Property<Agent> property) {
+        static OptionsBuilder createOptions(Property<Agent> property, OptionsConfig config) {
             var customSocket = new SimpleObjectProperty<>(property.getValue().getCustomSocket());
 
             var choice = new ContextualFileReferenceChoiceComp(
@@ -78,6 +91,12 @@ public interface PasswordManagerKeyStrategy {
                     List.of(),
                     e -> e.equals(DataStorage.get().local()),
                     false);
+            if (config.getDefaultSocketLocation() != null) {
+                choice.setPrompt(new ReadOnlyObjectWrapper<>(FilePath.of(config.getDefaultSocketLocation())));
+            }
+            if (!config.isAllowSocketChoice()) {
+                choice.disable();
+            }
 
             return new OptionsBuilder()
                     .addComp(new SshAgentTestComp(Bindings.createObjectBinding(() -> {
@@ -85,7 +104,7 @@ public interface PasswordManagerKeyStrategy {
                     }, property)))
                     .nameAndDescription("passwordManagerSshAgentSocket")
                     .addComp(choice, customSocket)
-                    .hide(OsType.ofLocal() == OsType.WINDOWS)
+                    .hide(!config.isAllowSocketChoice())
                     .bind(
                             () -> Agent.builder()
                                     .customSocket(customSocket.get())

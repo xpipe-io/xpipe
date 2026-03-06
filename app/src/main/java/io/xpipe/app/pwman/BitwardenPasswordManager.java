@@ -263,6 +263,6 @@ public class BitwardenPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy);
+        return PasswordManagerKeyConfiguration.of(true, false, true, keyStrategy, null, false);
     }
 }

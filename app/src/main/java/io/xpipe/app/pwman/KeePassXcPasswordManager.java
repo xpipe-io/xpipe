@@ -46,7 +46,7 @@ public class KeePassXcPasswordManager implements PasswordManager {
 
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy);
+        return PasswordManagerKeyConfiguration.of(false, false, false, keyStrategy, null, false);
     }
 
     @SuppressWarnings("unused")

@@ -2,6 +2,7 @@ package io.xpipe.app.pwman;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.xpipe.app.core.AppI18n;
+import io.xpipe.app.core.AppSystemInfo;
 import io.xpipe.app.ext.ProcessControlProvider;
 import io.xpipe.app.issue.ErrorEventFactory;
 import io.xpipe.app.platform.OptionsBuilder;
@@ -29,6 +30,7 @@ import lombok.ToString;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,9 +42,19 @@ import java.util.stream.Collectors;
 @Jacksonized
 public class KeeperPasswordManager implements PasswordManager {
 
+    private static Path getSocketLocation() {
+        var socket = switch (OsType.ofLocal()) {
+            case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
+            case OsType.MacOs macOs -> null;
+            case OsType.Windows windows -> null;
+        };
+        return socket;
+    }
+
     @Override
     public PasswordManagerKeyConfiguration getKeyConfiguration() {
-        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy);
+        var socket = getSocketLocation();
+        return PasswordManagerKeyConfiguration.of(true, true, true, keyStrategy, socket, false);
     }
 
     private final PasswordManagerKeyStrategy keyStrategy;
@@ -427,8 +439,9 @@ public class KeeperPasswordManager implements PasswordManager {
                 .build();
         var keyStrategyChoice = OptionsChoiceBuilder.builder()
                 .allowNull(true)
-                .available(List.of(PasswordManagerKeyStrategy.Inline.class, PasswordManagerKeyStrategy.Agent.class))
+                .available(List.of(PasswordManagerKeyStrategy.Agent.class, PasswordManagerKeyStrategy.Inline.class))
                 .property(keyStrategy)
+                .customConfiguration(PasswordManagerKeyStrategy.OptionsConfig.builder().defaultSocketLocation(getSocketLocation()).build())
                 .build();
 
 
