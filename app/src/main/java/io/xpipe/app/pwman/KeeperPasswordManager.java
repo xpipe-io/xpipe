@@ -45,7 +45,7 @@ public class KeeperPasswordManager implements PasswordManager {
     private static Path getSocketLocation() {
         var socket = switch (OsType.ofLocal()) {
             case OsType.Linux ignored -> AppSystemInfo.ofLinux().getConfigDir().resolve("Keeper Password Manager", "keeper-ssh-agent.sock");
-            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getUserHome().resolve("Library", "Application Support", "Keeper Password Manager", "keeper-ssh-agent.sock");
+            case OsType.MacOs macOs -> AppSystemInfo.ofMacOs().getTemp().resolve("keeper-ssh-agent.sock");
             case OsType.Windows windows -> null;
         };
         return socket;
