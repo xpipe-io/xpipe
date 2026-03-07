@@ -237,6 +237,7 @@ public abstract class DataStorage {
                     Instant.now(),
                     Instant.now(),
                     true,
+                    null,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     true,
                     DataStoreCategoryConfig.empty());
@@ -463,6 +464,7 @@ public abstract class DataStorage {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 cat.getUuid(),
                 true,
                 DataStoreCategoryConfig.empty());

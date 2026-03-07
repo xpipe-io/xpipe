@@ -16,7 +16,7 @@ import lombok.AllArgsConstructor;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 @AllArgsConstructor
-public class StoreIconComp extends SimpleRegionBuilder {
+public class StoreEntryIconComp extends SimpleRegionBuilder {
 
     private final StoreEntryWrapper wrapper;
     private final int w;

@@ -66,9 +66,6 @@ public class DataStoreEntry extends StorageElement {
     String lastWrittenNotes;
 
     @NonFinal
-    String icon;
-
-    @NonFinal
     @Getter
     DataStoreColor color;
 
@@ -111,7 +108,7 @@ public class DataStoreEntry extends StorageElement {
             int orderIndex,
             UUID breakOutCategory,
             List<String> tags) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
         this.color = color;
         this.categoryUuid = categoryUuid;
         this.store = store;
@@ -121,7 +118,6 @@ public class DataStoreEntry extends StorageElement {
         this.validity = this.provider != null ? validity : Validity.LOAD_FAILED;
         this.storePersistentStateNode = storePersistentState;
         this.notes = notes;
-        this.icon = icon;
         this.freeze = freeze;
         this.pinToTop = pinToTop;
         this.orderIndex = orderIndex;
@@ -457,18 +453,6 @@ public class DataStoreEntry extends StorageElement {
         var changed = !Objects.equals(storePersistentState, value);
         this.storePersistentState = value;
         this.storePersistentStateNode = JacksonMapper.getDefault().valueToTree(value);
-        if (changed) {
-            notifyUpdate(false, true);
-        }
-    }
-
-    public void setIcon(String icon, boolean force) {
-        if (this.icon != null && !force) {
-            return;
-        }
-
-        var changed = !Objects.equals(this.icon, icon);
-        this.icon = icon;
         if (changed) {
             notifyUpdate(false, true);
         }

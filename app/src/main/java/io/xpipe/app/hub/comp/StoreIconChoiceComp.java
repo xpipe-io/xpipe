@@ -39,7 +39,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
     private final int columns;
     private final SimpleStringProperty filter;
     private final Runnable doubleClick;
-    private final DataStoreEntry entry;
+    private final String defaultIcon;
 
     @Getter
     private final BooleanProperty busy = new SimpleBooleanProperty();
@@ -50,7 +50,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
             Set<SystemIcon> icons,
             int columns,
             SimpleStringProperty filter,
-            Runnable doubleClick, DataStoreEntry entry
+            Runnable doubleClick, String defaultIcon
     ) {
         this.reshow = reshow;
         this.selected = selected;
@@ -58,7 +58,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
         this.columns = columns;
         this.filter = filter;
         this.doubleClick = doubleClick;
-        this.entry = entry;
+        this.defaultIcon = defaultIcon;
     }
 
     @Override
@@ -255,7 +255,7 @@ public class StoreIconChoiceComp extends ModalOverlayContentComp {
 
             if (icon.getSource() == null) {
                 root.setText(AppI18n.get("default"));
-                image.setValue(entry.getProvider().getDisplayIconFileName(entry.getStore()));
+                image.setValue(defaultIcon);
                 setGraphic(root);
                 return;
             }

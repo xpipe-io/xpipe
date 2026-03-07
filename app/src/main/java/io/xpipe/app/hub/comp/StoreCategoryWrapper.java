@@ -36,6 +36,7 @@ public class StoreCategoryWrapper {
     private final IntegerProperty allContainedEntriesCount = new SimpleIntegerProperty();
     private final BooleanProperty expanded = new SimpleBooleanProperty();
     private final Property<DataStoreColor> color = new SimpleObjectProperty<>();
+    private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final Trigger<Void> renameTrigger = Trigger.of();
     private StoreCategoryWrapper cachedParent;
 
@@ -168,6 +169,7 @@ public class StoreCategoryWrapper {
                 DataStorage.get().getEffectiveCategoryConfig(category).getSync()));
         expanded.setValue(category.isExpanded());
         color.setValue(DataStorage.get().getEffectiveCategoryConfig(category).getColor());
+        iconFile.setValue(category.getEffectiveIconFile());
 
         var allEntries = new ArrayList<>(StoreViewState.get().getAllEntries().getList());
         directContainedEntries.setContent(allEntries.stream()

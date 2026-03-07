@@ -1,5 +1,6 @@
 package io.xpipe.app.storage;
 
+import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.core.JacksonMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,10 +39,11 @@ public class DataStoreCategory extends StorageElement {
             Instant lastUsed,
             Instant lastModified,
             boolean dirty,
+            String icon,
             UUID parentCategory,
             boolean expanded,
             DataStoreCategoryConfig config) {
-        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty);
+        super(directory, uuid, name, lastUsed, lastModified, expanded, dirty, icon);
         this.parentCategory = parentCategory;
         this.config = config;
     }
@@ -54,6 +56,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 parentCategory,
                 true,
                 DataStoreCategoryConfig.empty());
@@ -67,6 +70,7 @@ public class DataStoreCategory extends StorageElement {
                 Instant.now(),
                 Instant.now(),
                 true,
+                null,
                 parentCategory,
                 true,
                 DataStoreCategoryConfig.empty());
@@ -131,8 +135,11 @@ public class DataStoreCategory extends StorageElement {
             config = config.withColor(color);
         }
 
+        var iconNode = json.get("icon");
+        String icon = iconNode != null && !iconNode.isNull() ? iconNode.asText() : null;
+
         return Optional.of(
-                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, parentUuid, expanded, config));
+                new DataStoreCategory(dir, uuid, name, lastUsed, lastModified, false, icon, parentUuid, expanded, config));
     }
 
     public boolean setConfig(DataStoreCategoryConfig config) {
@@ -156,6 +163,19 @@ public class DataStoreCategory extends StorageElement {
         this.parentCategory = parentCategory;
         if (changed) {
             notifyUpdate(false, true);
+        }
+    }
+
+    public String getEffectiveIconFile() {
+        if (icon == null) {
+            return "base:localIdentity_icon.svg";
+        }
+
+        var found = SystemIconManager.getIcon(icon);
+        if (found.isPresent()) {
+            return SystemIconManager.getAndLoadIconFile(found.get());
+        } else {
+            return "error.png";
         }
     }
 
@@ -205,6 +225,7 @@ public class DataStoreCategory extends StorageElement {
         stateObj.put("expanded", expanded);
         obj.put("parentUuid", parentCategory != null ? parentCategory.toString() : null);
         obj.set("config", JacksonMapper.getDefault().valueToTree(config));
+        obj.set("icon", mapper.valueToTree(icon));
 
         var entryString = mapper.writeValueAsString(obj);
         var stateString = mapper.writeValueAsString(stateObj);

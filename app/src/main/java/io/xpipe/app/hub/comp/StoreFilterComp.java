@@ -38,7 +38,7 @@ public class StoreFilterComp extends RegionBuilder<CustomTextField> {
         var filter = new CustomTextField();
         filter.setMinHeight(0);
         filter.setMaxHeight(20000);
-        filter.getStyleClass().add("filter-comp");
+        filter.getStyleClass().add("store-filter-comp");
         filter.promptTextProperty().bind(AppI18n.observable("storeFilterPrompt"));
         filter.rightProperty()
                 .bind(Bindings.createObjectBinding(

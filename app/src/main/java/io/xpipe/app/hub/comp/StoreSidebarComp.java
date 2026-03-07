@@ -20,7 +20,11 @@ public class StoreSidebarComp extends SimpleRegionBuilder {
     @Override
     protected Region createSimple() {
         var sideBar = new VerticalComp(List.of(
-                new StoreEntryListOverviewComp(filterTrigger)
+                new StoreEntryListOverviewComp()
+                        .style("color-box")
+                        .style("gray")
+                        .style("bar"),
+                new StoreEntryFilterCompBar(filterTrigger)
                         .style("color-box")
                         .style("gray")
                         .style("bar"),

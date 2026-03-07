@@ -304,7 +304,7 @@ public abstract class StoreEntryComp extends SimpleRegionBuilder {
     }
 
     protected BaseRegionBuilder<?, ?> createIcon(int w, int h, Consumer<Node> fontSize) {
-        var icon = new StoreIconComp(getWrapper(), w, h);
+        var icon = new StoreEntryIconComp(getWrapper(), w, h);
         icon.apply(struc -> {
             struc.opacityProperty()
                     .bind(Bindings.createDoubleBinding(

@@ -59,7 +59,6 @@ public class StoreEntryWrapper {
     private final Property<StoreCategoryWrapper> category = new SimpleObjectProperty<>();
     private final Property<String> summary = new SimpleObjectProperty<>();
     private final ObjectProperty<String> notes;
-    private final Property<String> customIcon = new SimpleObjectProperty<>();
     private final Property<String> iconFile = new SimpleObjectProperty<>();
     private final BooleanProperty sessionActive = new SimpleBooleanProperty();
     private final Property<DataStore> store = new SimpleObjectProperty<>();
@@ -205,7 +204,6 @@ public class StoreEntryWrapper {
         orderIndex.setValue(entry.getOrderIndex());
         color.setValue(entry.getColor());
         notes.setValue(entry.getNotes());
-        customIcon.setValue(entry.getIcon());
         readOnly.setValue(entry.isFreeze());
         iconFile.setValue(entry.getEffectiveIconFile());
         busy.setValue(entry.getBusyCounter().get() != 0);

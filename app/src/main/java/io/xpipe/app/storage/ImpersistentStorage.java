@@ -48,6 +48,7 @@ public class ImpersistentStorage extends DataStorage {
                     Instant.now(),
                     Instant.now(),
                     true,
+                    null,
                     ALL_CONNECTIONS_CATEGORY_UUID,
                     true,
                     DataStoreCategoryConfig.empty());

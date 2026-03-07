@@ -1,5 +1,6 @@
 package io.xpipe.app.hub.comp;
 
+import atlantafx.base.controls.Spacer;
 import io.xpipe.app.comp.BaseRegionBuilder;
 import io.xpipe.app.comp.RegionBuilder;
 import io.xpipe.app.comp.SimpleRegionBuilder;
@@ -35,11 +36,7 @@ import java.util.function.Function;
 
 public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
-    private final ObservableSubscriber filterTrigger;
-
-    public StoreEntryListOverviewComp(ObservableSubscriber filterTrigger) {
-        this.filterTrigger = filterTrigger;
-    }
+    private final ObservableSubscriber quickConnectTrigger = new ObservableSubscriber();
 
     private Region createHeaderBar() {
         var label = new Label();
@@ -97,35 +94,19 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
 
     private Region createAddBar() {
         var add = createAddButton();
+        var quickConnect = createQuickConnectButton().build();
         var batchMode = createBatchModeButton().build();
-        var hbox = new HBox(add, batchMode);
+        var hbox = new HBox(add, new Spacer(Orientation.HORIZONTAL), quickConnect, batchMode);
+
         batchMode.minHeightProperty().bind(add.heightProperty());
         batchMode.prefHeightProperty().bind(add.heightProperty());
         batchMode.maxHeightProperty().bind(add.heightProperty());
         batchMode.minWidthProperty().bind(add.heightProperty());
         batchMode.prefWidthProperty().bind(add.heightProperty());
         batchMode.maxWidthProperty().bind(add.heightProperty());
+
         hbox.setSpacing(8);
         hbox.setAlignment(Pos.CENTER_LEFT);
-        return hbox;
-    }
-
-
-    private Region createFilterBar(Region addBar) {
-        var filter = new StoreFilterComp().build();
-        filterTrigger.subscribe(() -> {
-            filter.requestFocus();
-        });
-
-        filter.minHeightProperty().bind(addBar.heightProperty());
-        filter.prefHeightProperty().bind(addBar.heightProperty());
-        filter.maxHeightProperty().bind(addBar.heightProperty());
-
-        var hbox = new HBox(filter);
-        hbox.setSpacing(8);
-        hbox.setAlignment(Pos.CENTER);
-        HBox.setHgrow(filter, Priority.ALWAYS);
-        filter.getStyleClass().add("filter-bar");
         return hbox;
     }
 
@@ -144,6 +125,18 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
         menu.setMinWidth(Region.USE_PREF_SIZE);
         menu.getStyleClass().add("creation-menu");
         return menu;
+    }
+
+    private BaseRegionBuilder<?, ?> createQuickConnectButton() {
+        var b = new IconButtonComp("mdi2a-animation-play", () -> {
+            quickConnectTrigger.trigger();
+        });
+        b.describe(d -> d.nameKey("quickConnect"));
+        b.style("quick-connect-button");
+        b.apply(struc -> {
+            struc.getStyleClass().remove(Styles.FLAT);
+        });
+        return b;
     }
 
     private BaseRegionBuilder<?, ?> createBatchModeButton() {
@@ -278,7 +271,7 @@ public class StoreEntryListOverviewComp extends SimpleRegionBuilder {
     @Override
     public Region createSimple() {
         var addBar = createAddBar();
-        var bar = new VBox(createHeaderBar(), addBar, createFilterBar(addBar));
+        var bar = new VBox(createHeaderBar(), addBar);
         bar.setFillWidth(true);
         bar.getStyleClass().add("bar");
         bar.getStyleClass().add("store-header-bar");

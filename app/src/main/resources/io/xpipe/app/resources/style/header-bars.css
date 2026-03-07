@@ -3,6 +3,14 @@
     -fx-padding: 0.8em 1.0em 0.8em 1.0em;
 }
 
+.store-filter-bar {
+    -fx-padding: 0.5em 1.0em 0.5em 1.0em;
+}
+
+.store-filter-comp {
+    -fx-padding: 0.3em 0.4em 0.3em 0.4em;
+}
+
 .bar {
     -fx-background-radius: 4;
     -fx-border-radius: 4;
@@ -100,7 +108,7 @@
 }
 
 .store-category-bar > .viewport > .view > .scroll-comp-content {
-    -fx-padding: 0.5em 0.1em 0.2em 0.5em;
+    -fx-padding: 0.5em 0.0em 0.2em 0.5em;
 }
 
 .store-category-bar * {

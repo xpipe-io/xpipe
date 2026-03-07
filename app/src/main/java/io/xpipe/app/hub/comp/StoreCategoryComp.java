@@ -30,13 +30,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.awt.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -46,6 +50,7 @@ import java.util.Locale;
 public class StoreCategoryComp extends SimpleRegionBuilder {
 
     private static final PseudoClass SELECTED = PseudoClass.getPseudoClass("selected");
+    private static final PseudoClass ROOT = PseudoClass.getPseudoClass("root");
 
     StoreCategoryWrapper category;
 
@@ -136,20 +141,25 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var count = new CountComp(
                 category.getShownContainedEntriesCount(),
                 category.getAllContainedEntriesCount(),
-                string -> "(" + string + ")");
+                string -> "[" + string + "]");
+        count.style("count");
         count.hide(Bindings.equal(0, category.getShownContainedEntriesCount()));
         count.minWidth(Region.USE_PREF_SIZE);
+
+        var iconButton = new StoreCategoryIconComp(category, 16);
 
         var showStatus = hover.or(new SimpleBooleanProperty(DataStorage.get().supportsSync()))
                 .or(showing)
                 .or(focus);
         var h = new HorizontalComp(List.of(
                 expandButton,
-                RegionBuilder.hspacer(category.getCategory().getParentCategory() == null ? 3 : 0),
+                RegionBuilder.hspacer(2),
+                iconButton,
+                RegionBuilder.hspacer(4),
                 RegionBuilder.of(() -> name).hgrow(),
                 RegionBuilder.hspacer(2),
                 count,
-                RegionBuilder.hspacer(7),
+                RegionBuilder.hspacer(9),
                 statusButton.hide(showStatus.not())));
         h.padding(new Insets(0, 10, 0, (category.getDepth() * 10)));
 
@@ -193,6 +203,7 @@ public class StoreCategoryComp extends SimpleRegionBuilder {
         var v = new VerticalComp(List.of(categoryButton, children.hide(hide)));
         v.style("category");
         v.apply(struc -> {
+            struc.pseudoClassStateChanged(ROOT, category.getCategory().getParentCategory() == null);
             StoreViewState.get().getActiveCategory().subscribe(val -> {
                 struc.pseudoClassStateChanged(SELECTED, val.equals(category));
             });

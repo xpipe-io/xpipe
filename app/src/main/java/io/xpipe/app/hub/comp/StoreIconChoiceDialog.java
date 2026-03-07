@@ -5,6 +5,7 @@ import io.xpipe.app.icon.SystemIcon;
 import io.xpipe.app.icon.SystemIconManager;
 import io.xpipe.app.platform.PlatformThread;
 import io.xpipe.app.prefs.AppPrefs;
+import io.xpipe.app.storage.DataStoreCategory;
 import io.xpipe.app.storage.DataStoreEntry;
 
 import javafx.application.Platform;
@@ -16,21 +17,44 @@ import javafx.beans.property.SimpleStringProperty;
 import lombok.Getter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.util.function.Consumer;
+
 public class StoreIconChoiceDialog {
 
     private final ObjectProperty<SystemIcon> selected = new SimpleObjectProperty<>();
-    private final DataStoreEntry entry;
+    private final String defaultIcon;
+    private final Consumer<SystemIcon> iconApply;
 
     @Getter
     private final ModalOverlay overlay;
 
-    public StoreIconChoiceDialog(DataStoreEntry entry) {
-        this.entry = entry;
+    public StoreIconChoiceDialog(String defaultIcon, Consumer<SystemIcon> iconApply) {
+        this.defaultIcon = defaultIcon;
+        this.iconApply = iconApply;
         this.overlay = createOverlay();
     }
 
     public static void show(DataStoreEntry entry) {
-        var dialog = new StoreIconChoiceDialog(entry);
+        var dialog = new StoreIconChoiceDialog(entry.getProvider().getDisplayIconFileName(entry.getStore()), s -> {
+            entry.setIcon(
+                    s != null && s.getSource() != null
+                            ? s.getSource().getId() + "/"
+                            + s.getId()
+                            : null,
+                    true);
+        });
+        dialog.getOverlay().show();
+    }
+
+    public static void show(DataStoreCategory entry) {
+        var dialog = new StoreIconChoiceDialog(entry.getEffectiveIconFile(), s -> {
+            entry.setIcon(
+                    s != null && s.getSource() != null
+                            ? s.getSource().getId() + "/"
+                            + s.getId()
+                            : null,
+                    true);
+        });
         dialog.getOverlay().show();
     }
 
@@ -65,7 +89,7 @@ public class StoreIconChoiceDialog {
                 () -> {
                     finish();
                 },
-                entry);
+                defaultIcon);
         comp.prefWidth(600);
 
         var modal = ModalOverlay.of(
@@ -93,12 +117,7 @@ public class StoreIconChoiceDialog {
     }
 
     private void finish() {
-        entry.setIcon(
-                selected.get() != null && selected.getValue().getSource() != null
-                        ? selected.getValue().getSource().getId() + "/"
-                                + selected.getValue().getId()
-                        : null,
-                true);
+        iconApply.accept(selected.get());
         overlay.close();
     }
 }
